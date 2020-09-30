@@ -52,9 +52,11 @@ export default {
     }
   },
   methods: {
-    async fetchIndexeList() {
+    async fetchIndexList() {
+      console.log('---- fetch index list ----')
+
       try {
-        await this.$store.direct.dispatch.index.fetchIndexeList()
+        await this.$store.direct.dispatch.index.fetchIndexList()
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -71,8 +73,19 @@ export default {
         )
       }
     },
-    async fetchCollectionList(index) {
+    async fetchCollectionList() {
+      console.log('---- fetch collection list ----')
+
       try {
+        const index = this.$store.direct.getters.index.getOneIndex(
+          this.$route.params.indexName
+        )
+
+        if (!index) {
+          this.handleDataNotFound()
+          return
+        }
+
         await this.$store.direct.dispatch.index.fetchCollectionList(index)
       } catch (error) {
         this.$log.error(error)
@@ -90,8 +103,29 @@ export default {
         )
       }
     },
-    async fetchCollectionMapping(index, collection) {
+    async fetchCollectionMapping() {
+      console.log('---- fetch collection mapping ----')
+
       try {
+        const index = this.$store.direct.getters.index.getOneIndex(
+          this.$route.params.indexName
+        )
+
+        if (!index) {
+          this.handleDataNotFound()
+          return
+        }
+
+        const collection = this.$store.direct.getters.index.getOneCollection(
+          index,
+          this.$route.params.collectionName
+        )
+
+        if (!collection) {
+          this.handleDataNotFound()
+          return
+        }
+
         await this.$store.direct.dispatch.index.fetchCollectionMapping({
           index,
           collection
@@ -111,78 +145,35 @@ export default {
           }
         )
       }
+    },
+    handleDataNotFound() {
+      this.isFetching = false
+      this.dataNotFound = true
+    },
+    async fetchAllTheThings() {
+      this.dataNotFound = false
+      this.isFetching = true
+
+      await this.fetchIndexList()
+
+      if (this.$route.params.indexName) {
+        await this.fetchCollectionList()
+      }
+
+      if (this.$route.params.indexName && this.$route.params.collectionName) {
+        await this.fetchCollectionMapping()
+      }
+
+      this.isFetching = false
     }
   },
   async mounted() {
-    await this.fetchIndexeList()
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.dataNotFound = false
-    next()
+    await this.fetchAllTheThings()
   },
   watch: {
-    '$route.params.indexName': {
-      async handler(indexName) {
-        if (!indexName) {
-          return
-        }
-
-        this.isFetching = true
-
-        await this.fetchIndexeList()
-
-        const index = this.$store.direct.getters.index.getOneIndex(indexName)
-
-        if (!index) {
-          this.dataNotFound = true
-          this.isFetching = false
-          return
-        }
-
-        await this.fetchCollectionList(index)
-        this.isFetching = false
-      }
-    },
-    '$route.params.collectionName': {
-      async handler(collectionName) {
-        if (!collectionName) {
-          return
-        }
-
-        this.dataNotFound = false
-        this.isFetching = true
-
-        if (!this.$route.params.indexName) {
-          this.dataNotFound = true
-          this.isFetching = false
-          return
-        }
-
-        const index = this.$store.direct.getters.index.getOneIndex(
-          this.$route.params.indexName
-        )
-
-        if (!index) {
-          this.dataNotFound = true
-          this.isFetching = false
-          return
-        }
-
-        await this.fetchCollectionList(index)
-
-        const collection = this.$store.direct.getters.index.getOneCollection(
-          index,
-          collectionName
-        )
-
-        if (!collection) {
-          this.dataNotFound = true
-          this.isFetching = false
-          return
-        }
-
-        await this.fetchCollectionMapping(index, collection)
-        this.isFetching = false
+    $route: {
+      async handler() {
+        await this.fetchAllTheThings()
       }
     }
   }

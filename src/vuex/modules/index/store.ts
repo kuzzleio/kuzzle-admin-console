@@ -42,6 +42,9 @@ const mutations = createMutations<IndexState>()({
       loading
     )
   },
+  setIndexes(state, indexes: Index[]) {
+    Vue.set(state, 'indexes', indexes)
+  },
   setCollections(state, { index, collections }: IndexCollectionsPayload) {
     Vue.set(index, 'collections', collections)
   },
@@ -101,9 +104,9 @@ const actions = createActions({
     await rootGetters.kuzzle.$kuzzle.index.mDelete(indexesNames)
     commit.removeIndexes(indexes)
   },
-  async fetchIndexeList(context) {
+  async fetchIndexList(context) {
     const { commit, rootGetters } = indexActionContext(context)
-    const indexes = state.indexes
+    const indexes: Index[] = []
     commit.setLoadingIndexes(true)
 
     let result = await rootGetters.kuzzle.$kuzzle.index.list()
@@ -112,12 +115,10 @@ const actions = createActions({
     )
 
     for (const indexName of result) {
-      // we only need to add the indexes not yet fetched
-      if (getIndexPosition(state.indexes, indexName) === -1) {
-        commit.addIndex(new Index(indexName))
-      }
+      indexes.push(new Index(indexName))
     }
 
+    commit.setIndexes(indexes)
     commit.setLoadingIndexes(false)
   },
   async fetchCollectionList(context, index: Index) {

@@ -19,146 +19,143 @@
 
     <list-not-allowed v-if="!canSearchIndex" />
     <template v-else>
-      <template v-if="loadingIndexes"></template>
-      <template v-else>
-        <b-row class="mb-3">
-          <b-col class="text-secondary pt-2">
-            {{ indexes.length }}
-            {{ indexes.length === 1 ? 'index' : 'indexes' }}
-          </b-col>
-          <b-col sm="10">
-            <b-row>
-              <b-col cols="6" class="text-right">
-                <b-button
-                  variant="outline-dark"
-                  class="mr-2"
-                  @click="onToggleAllClicked"
-                >
-                  <i
-                    :class="
-                      `far ${
-                        selectedIndexes.length === filteredIndexes.length
-                          ? 'fa-check-square'
-                          : 'fa-square'
-                      } left`
-                    "
-                  />
-                  Toggle all
-                </b-button>
+      <b-row class="mb-3">
+        <b-col class="text-secondary pt-2">
+          {{ indexes.length }}
+          {{ indexes.length === 1 ? 'index' : 'indexes' }}
+        </b-col>
+        <b-col sm="10">
+          <b-row>
+            <b-col cols="6" class="text-right">
+              <b-button
+                variant="outline-dark"
+                class="mr-2"
+                @click="onToggleAllClicked"
+              >
+                <i
+                  :class="
+                    `far ${
+                      selectedIndexes.length === filteredIndexes.length
+                        ? 'fa-check-square'
+                        : 'fa-square'
+                    } left`
+                  "
+                />
+                Toggle all
+              </b-button>
 
-                <b-button
-                  variant="outline-danger"
-                  :disabled="!bulkDeleteEnabled"
-                  @click="openBulkDeleteModal"
-                >
-                  <i class="fa fa-minus-circle left" />
-                  Delete
-                </b-button>
-              </b-col>
-              <b-col cols="6">
-                <b-input-group>
-                  <template v-slot:prepend>
-                    <b-input-group-text>Filter</b-input-group-text>
-                  </template>
+              <b-button
+                variant="outline-danger"
+                :disabled="!bulkDeleteEnabled"
+                @click="openBulkDeleteModal"
+              >
+                <i class="fa fa-minus-circle left" />
+                Delete
+              </b-button>
+            </b-col>
+            <b-col cols="6">
+              <b-input-group>
+                <template v-slot:prepend>
+                  <b-input-group-text>Filter</b-input-group-text>
+                </template>
 
-                  <auto-focus-input
-                    name="index"
-                    v-model="filter"
-                    :disabled="indexes.length === 0"
-                    @submit="navigateToIndex"
-                  />
-                </b-input-group>
-              </b-col>
-            </b-row>
-          </b-col>
-        </b-row>
+                <auto-focus-input
+                  name="index"
+                  v-model="filter"
+                  :disabled="indexes.length === 0"
+                  @submit="navigateToIndex"
+                />
+              </b-input-group>
+            </b-col>
+          </b-row>
+        </b-col>
+      </b-row>
 
-        <b-table
-          class="IndexPage-table"
-          responsive
-          striped
-          outlined
-          show-empty
-          :items="indexes"
-          :fields="tableFields"
-          :filter="filter"
-          @filtered="updateFilteredIndexes"
-        >
-          <template v-slot:empty>
-            <h4 class="text-secondary text-center">There is no index.</h4>
-            <p class="text-secondary text-center" v-if="canCreateIndex">
-              You can create one by hitting the button above.
-            </p>
-          </template>
-          <template v-slot:emptyfiltered>
-            <h4 class="text-secondary text-center">
-              There is no index matching your filter.
-            </h4>
-          </template>
-          <template v-slot:cell(selected)="row">
-            <b-form-checkbox
-              class="d-inline-block align-middle"
-              type="checkbox"
-              unchecked-value="false"
-              value="true"
-              :checked="isChecked(row.item)"
-              @change="onCheckboxClick(row.item)"
-            />
-          </template>
-          <template v-slot:cell(collectionCount)="row">
-            <span>{{ row.item.collectionsCount || '--' }}</span>
-          </template>
-          <template v-slot:cell(icon)>
-            <i class="fa fa-2x fa-database mr-2"></i>
-          </template>
-          <template v-slot:cell(indexName)="row">
-            <router-link
-              :data-cy="`IndexesPage-name--${row.item.name}`"
-              :title="row.item.name"
+      <b-table
+        class="IndexPage-table"
+        responsive
+        striped
+        outlined
+        show-empty
+        :items="indexes"
+        :fields="tableFields"
+        :filter="filter"
+        @filtered="updateFilteredIndexes"
+      >
+        <template v-slot:empty>
+          <h4 class="text-secondary text-center">There is no index.</h4>
+          <p class="text-secondary text-center" v-if="canCreateIndex">
+            You can create one by hitting the button above.
+          </p>
+        </template>
+        <template v-slot:emptyfiltered>
+          <h4 class="text-secondary text-center">
+            There is no index matching your filter.
+          </h4>
+        </template>
+        <template v-slot:cell(selected)="row">
+          <b-form-checkbox
+            class="d-inline-block align-middle"
+            type="checkbox"
+            unchecked-value="false"
+            value="true"
+            :checked="isChecked(row.item)"
+            @change="onCheckboxClick(row.item)"
+          />
+        </template>
+        <template v-slot:cell(collectionCount)="row">
+          <span>{{ row.item.collectionsCount || '--' }}</span>
+        </template>
+        <template v-slot:cell(icon)>
+          <i class="fa fa-2x fa-database mr-2"></i>
+        </template>
+        <template v-slot:cell(indexName)="row">
+          <router-link
+            :data-cy="`IndexesPage-name--${row.item.name}`"
+            :title="row.item.name"
+            :to="{
+              name: 'Collections',
+              params: { indexName: row.item.name }
+            }"
+          >
+            {{ row.item.name }}
+          </router-link>
+        </template>
+        <template v-slot:cell(actions)="row">
+          <div class="IndexesPage-actions">
+            <b-button
+              class="mx-1"
+              title="browse this index"
+              variant="link"
+              :data-cy="`IndexesPage-browse--${row.item.name}`"
               :to="{
                 name: 'Collections',
-                params: { indexName: row.item.name }
+                params: { index: row.item.name }
               }"
-            >
-              {{ row.item.name }}
-            </router-link>
-          </template>
-          <template v-slot:cell(actions)="row">
-            <div class="IndexesPage-actions">
-              <b-button
-                class="mx-1"
-                title="browse this index"
-                variant="link"
-                :data-cy="`IndexesPage-browse--${row.item.name}`"
-                :to="{
-                  name: 'Collections',
-                  params: { index: row.item.name }
-                }"
-                ><i class="fa fa-eye"></i
-              ></b-button>
-              <b-button
-                class="mx-1"
-                title="Create a collection in this index"
-                variant="link"
-                :data-cy="`IndexesPage-createCollection--${row.item.name}`"
-                :to="{
-                  name: 'CreateCollection',
-                  params: { index: row.item.name }
-                }"
-                ><i class="fa fa-plus"></i
-              ></b-button>
-              <b-button
-                class="mx-1"
-                :data-cy="`IndexesPage-delete--${row.item.name}`"
-                title="Delete index"
-                variant="link"
-                @click="openDeleteModal(row.item)"
-                ><i class="fa fa-trash"></i
-              ></b-button>
-            </div>
-          </template>
-        </b-table>
-      </template>
+              ><i class="fa fa-eye"></i
+            ></b-button>
+            <b-button
+              class="mx-1"
+              title="Create a collection in this index"
+              variant="link"
+              :data-cy="`IndexesPage-createCollection--${row.item.name}`"
+              :to="{
+                name: 'CreateCollection',
+                params: { index: row.item.name }
+              }"
+              ><i class="fa fa-plus"></i
+            ></b-button>
+            <b-button
+              class="mx-1"
+              :data-cy="`IndexesPage-delete--${row.item.name}`"
+              title="Delete index"
+              variant="link"
+              @click="openDeleteModal(row.item)"
+              ><i class="fa fa-trash"></i
+            ></b-button>
+          </div>
+        </template>
+      </b-table>
     </template>
     <CreateIndexModal
       :modalId="createIndexModalId"
@@ -271,7 +268,7 @@ export default {
     },
     async refreshIndexes() {
       try {
-        await this.$store.direct.dispatch.index.fetchIndexeList()
+        await this.$store.direct.dispatch.index.fetchIndexList()
       } catch (err) {
         this.$log.error(err)
         this.$bvToast.toast(

@@ -44,121 +44,101 @@
       </b-row>
 
       <list-not-allowed v-if="!canSearchDocument(indexName, collectionName)" />
-      <template v-else>
-        <data-not-found
-          v-if="indexOrCollectionNotFound"
-          class="mt-3"
-        ></data-not-found>
-        <template v-else>
-          <template v-if="isCollectionEmpty">
-            <realtime-only-empty-state
-              v-if="isRealtimeCollection"
-              :index="indexName"
-              :collection="collectionName"
-            />
-            <empty-state
-              v-else
-              :index="indexName"
-              :collection="collectionName"
-            />
-          </template>
 
+      <template v-else-if="index && collection">
+        <template v-if="isCollectionEmpty">
+          <realtime-only-empty-state
+            v-if="isRealtimeCollection"
+            :index="indexName"
+            :collection="collectionName"
+          />
+          <empty-state v-else :index="indexName" :collection="collectionName" />
+        </template>
+
+        <template v-if="!isCollectionEmpty">
+          <filters
+            class="mb-3"
+            :available-operands="searchFilterOperands"
+            :collection="collectionName"
+            :current-filter="currentFilter"
+            :index="indexName"
+            :mapping-attributes="mappingAttributes"
+            @enter-pressed="navigateToDocument"
+            @filters-updated="onFiltersUpdated"
+            @reset="onFiltersUpdated"
+          />
+        </template>
+        <template>
           <template v-if="!isCollectionEmpty">
-            <filters
-              class="mb-3"
-              :available-operands="searchFilterOperands"
-              :collection="collectionName"
-              :current-filter="currentFilter"
-              :index="indexName"
-              :mapping-attributes="mappingAttributes"
-              @enter-pressed="navigateToDocument"
-              @filters-updated="onFiltersUpdated"
-              @reset="onFiltersUpdated"
-            />
-          </template>
-          <template v-if="loading">
-            <b-row class="text-center">
-              <b-col>
-                <b-spinner
-                  v-if="loading"
-                  variant="primary"
-                  class="mt-5"
-                ></b-spinner>
-              </b-col>
-            </b-row>
-          </template>
-          <template v-else>
-            <template v-if="!isCollectionEmpty">
-              <b-card
-                class="light-shadow"
-                :bg-variant="documents.length === 0 ? 'light' : 'default'"
-              >
-                <b-card-text class="p-0">
-                  <no-results-empty-state v-if="!documents.length" />
-                  <template v-else>
-                    <List
-                      v-if="listViewType === 'list'"
-                      :all-checked="allChecked"
-                      :collection="collectionName"
-                      :documents="documents"
-                      :index="indexName"
-                      :current-page-size="paginationSize"
-                      :selected-documents="selectedDocuments"
-                      :total-documents="totalDocuments"
-                      @bulk-delete="onBulkDeleteClicked"
-                      @change-page-size="changePaginationSize"
-                      @checkbox-click="toggleSelectDocuments"
-                      @delete="onDeleteClicked"
-                      @refresh="onRefresh"
-                      @toggle-all="onToggleAllClicked"
-                    ></List>
+            <b-card
+              class="light-shadow"
+              :bg-variant="documents.length === 0 ? 'light' : 'default'"
+            >
+              <b-card-text class="p-0">
+                <no-results-empty-state v-if="!documents.length" />
+                <template v-else>
+                  <List
+                    v-if="listViewType === 'list'"
+                    :all-checked="allChecked"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :index="indexName"
+                    :current-page-size="paginationSize"
+                    :selected-documents="selectedDocuments"
+                    :total-documents="totalDocuments"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @delete="onDeleteClicked"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  ></List>
 
-                    <Column
-                      v-if="listViewType === 'column'"
-                      :index="indexName"
-                      :collection="collectionName"
-                      :documents="documents"
-                      :mapping="collectionMapping"
-                      :selected-documents="selectedDocuments"
-                      :all-checked="allChecked"
-                      :current-page-size="paginationSize"
-                      :total-documents="totalDocuments"
-                      @edit="onEditClicked"
-                      @delete="onDeleteClicked"
-                      @bulk-delete="onBulkDeleteClicked"
-                      @change-page-size="changePaginationSize"
-                      @checkbox-click="toggleSelectDocuments"
-                      @refresh="onRefresh"
-                      @toggle-all="onToggleAllClicked"
-                    />
+                  <Column
+                    v-if="listViewType === 'column'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :selected-documents="selectedDocuments"
+                    :all-checked="allChecked"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  />
 
-                    <b-row
-                      v-show="totalDocuments > paginationSize"
-                      align-h="center"
+                  <b-row
+                    v-show="totalDocuments > paginationSize"
+                    align-h="center"
+                  >
+                    <b-pagination
+                      v-model="currentPage"
+                      aria-controls="my-table"
+                      class="m-2 mt-4"
+                      data-cy="DocumentList-pagination"
+                      :total-rows="totalDocuments"
+                      :per-page="paginationSize"
+                    ></b-pagination>
+                  </b-row>
+                  <div
+                    v-if="totalDocuments > 10000"
+                    class="text-center mt-2"
+                    data-cy="DocumentList-exceedESLimitMsg"
+                  >
+                    <small class="text-secondary"
+                      >Due to limitations imposed by Elasticsearch, you won't be
+                      able to browse documents beyond 10000.</small
                     >
-                      <b-pagination
-                        v-model="currentPage"
-                        aria-controls="my-table"
-                        class="m-2 mt-4"
-                        data-cy="DocumentList-pagination"
-                        :total-rows="totalDocuments"
-                        :per-page="paginationSize"
-                      ></b-pagination>
-                    </b-row>
-                    <div
-                      v-if="totalDocuments > 10000"
-                      class="text-center mt-2"
-                      data-cy="DocumentList-exceedESLimitMsg"
-                    >
-                      <small class="text-secondary"
-                        >Due to limitations imposed by Elasticsearch, you won't
-                        be able to browse documents beyond 10000.</small
-                      >
-                    </div>
-                  </template>
-                </b-card-text>
-              </b-card>
-            </template>
+                  </div>
+                </template>
+              </b-card-text>
+            </b-card>
           </template>
         </template>
       </template>
@@ -178,7 +158,6 @@
 import _ from 'lodash'
 
 import Column from './Views/Column'
-import DataNotFound from '../Data404'
 import List from './Views/List'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
@@ -214,8 +193,7 @@ export default {
     Filters,
     ListNotAllowed,
     NoResultsEmptyState,
-    RealtimeOnlyEmptyState,
-    DataNotFound
+    RealtimeOnlyEmptyState
   },
   props: {
     indexName: String,

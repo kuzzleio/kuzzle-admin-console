@@ -66,11 +66,10 @@ describe('Collection management', function() {
 
   it('Should be able to create a collection and access it', function() {
     cy.visit(`/#/data/${indexName}/create`)
+    cy.wait(1000)
+
     cy.get('.CollectionCreate').should('be.visible')
 
-    cy.get('[data-cy="CollectionCreateOrUpdate-realtimeOnly"]').click({
-      force: true
-    })
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').click({ force: true })
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').type(collectionName)
     cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click({

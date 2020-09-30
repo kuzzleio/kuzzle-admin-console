@@ -6,9 +6,10 @@
       </headline>
 
       <create-or-update
+        v-if="index && collection"
         :index="indexName"
         :collection="collectionName"
-        :mapping="this.collection.mapping"
+        :mapping="collection.mapping"
         @cancel="onCancel"
         @submit="onSubmit"
       />

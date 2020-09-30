@@ -1,6 +1,5 @@
 <template>
-  <data-not-found v-if="!index" class="mt-3"></data-not-found>
-  <b-container class="CollectionList" v-else>
+  <b-container class="CollectionList" v-if="index">
     <headline>
       <b-row>
         <b-col sm="9" class="text-truncate">
@@ -27,11 +26,8 @@
     </headline>
 
     <list-not-allowed v-if="!canSearchCollection(indexName)" />
-    <div class="CollectionList-content" v-else>
-      <template v-if="loading">
-        <main-spinner />
-      </template>
-      <template v-else>
+    <div class="CollectionList-content" v-else-if="collections">
+      <template>
         <b-row class="mb-3">
           <b-col sm="2" class="text-secondary">
             {{ collections.length }}
@@ -240,12 +236,10 @@
 </template>
 
 <script>
-import DataNotFound from '../Data404'
 import DeleteCollectionModal from './DeleteCollectionModal'
 import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal'
 import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import MainSpinner from '../../Common/MainSpinner'
 import AutoFocusInput from '../../Common/AutoFocusInput'
 import { truncateName } from '../../../utils'
 import { mapGetters } from 'vuex'
@@ -253,12 +247,10 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionList',
   components: {
-    DataNotFound,
     DeleteCollectionModal,
     BulkDeleteCollectionsModal,
     Headline,
     ListNotAllowed,
-    MainSpinner,
     AutoFocusInput
   },
   props: {
@@ -283,12 +275,6 @@ export default {
       'canCreateCollection',
       'canEditCollection'
     ]),
-    loading() {
-      return (
-        this.$store.direct.getters.index.loadingCollections(this.indexName) &&
-        this.collections
-      )
-    },
     index() {
       return this.$store.direct.getters.index.getOneIndex(this.indexName)
     },
@@ -368,31 +354,7 @@ export default {
       )
     },
     async onDeleteModalSuccess() {
-      await this.fetchCollectionList()
       this.updateFilteredCollections(this.collections)
-    },
-    async fetchCollectionList() {
-      if (!this.index) {
-        return
-      }
-
-      try {
-        await this.$store.direct.dispatch.index.fetchCollectionList(this.index)
-      } catch (error) {
-        this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while fetching the collections list.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
-      }
     },
     navigateToCollection() {
       const collection = this.filteredCollections[0]
@@ -415,14 +377,6 @@ export default {
   },
   async created() {
     this.updateFilteredCollections(this.collections)
-  },
-  watch: {
-    index: {
-      // async handler() {
-      //   await this.fetchCollectionList()
-      //   this.updateFilteredCollections(this.collections)
-      // }
-    }
   }
 }
 </script>

@@ -1,10 +1,8 @@
 <template>
   <b-container class="CollectionUpdate h-100">
-    <template v-if="loading">
-      <main-spinner />
-    </template>
-    <div v-else-if="hasRights" class="h-100">
+    <div v-if="hasRights" class="h-100">
       <create-or-update
+        v-if="index && collection"
         headline="Update collection"
         submit-label="Update"
         :collection="collection.name"
@@ -23,15 +21,13 @@
 <script>
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import CreateOrUpdate from './CreateOrUpdate'
-import MainSpinner from '../../Common/MainSpinner'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'CollectionUpdate',
   components: {
     CreateOrUpdate,
-    PageNotAllowed,
-    MainSpinner
+    PageNotAllowed
   },
   props: {
     indexName: { type: String, required: true },
