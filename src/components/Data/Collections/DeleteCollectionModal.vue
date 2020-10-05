@@ -72,7 +72,9 @@ export default {
   },
   computed: {
     isConfirmationValid() {
-      return this.confirmation === this.collection.name
+      return this.collection
+        ? this.confirmation === this.collection.name
+        : false
     }
   },
   methods: {
