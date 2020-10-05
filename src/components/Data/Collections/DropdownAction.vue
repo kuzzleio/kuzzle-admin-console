@@ -5,7 +5,7 @@
       no-caret
       toggle-class="collectionDropdown"
       variant="light"
-      :id="`collection-${collection.name}`"
+      :id="`collection-${collectionName}`"
     >
       <template v-slot:button-content>
         <i class="fas fa-ellipsis-v" />
@@ -13,19 +13,19 @@
 
       <b-dropdown-group header="Actions">
         <b-dropdown-item
-          :disabled="!canEditCollection(index.name, collection.name)"
+          :disabled="!canEditCollection(indexName, collectionName)"
           :title="
-            !canEditCollection(index.name, collection.name)
+            !canEditCollection(indexName, collectionName)
               ? 'Your rights do not allow you to edit this collection'
               : ''
           "
           :to="
-            canEditCollection(index.name, collection.name)
+            canEditCollection(indexName, collectionName)
               ? {
                   name: 'EditCollection',
                   params: {
-                    collectionName: collection.name,
-                    indexName: index.name
+                    collectionName: collectionName,
+                    indexName: indexName
                   }
                 }
               : ''
@@ -47,9 +47,9 @@
         <b-dropdown-item
           class="text-secondary"
           data-cy="CollectionDropdown-clear"
-          :disabled="!canTruncateCollection(index.name, collection.name)"
+          :disabled="!canTruncateCollection(indexName, collectionName)"
           :title="
-            !canTruncateCollection(index.name, collection.name)
+            !canTruncateCollection(indexName, collectionName)
               ? 'Your rights do not allow you to truncate this collection'
               : ''
           "
@@ -61,45 +61,35 @@
     </b-dropdown>
 
     <modal-clear
-      :id="'collection-clear-' + collection"
-      :index="index.name"
-      :collection="collection.name"
+      :id="'collection-clear-' + collectionName"
+      :index="indexName"
+      :collection="collectionName"
       @clear="$emit('clear')"
-    />
-    <DeleteCollectionModal
-      :index="index"
-      :collection="collection"
-      :modalId="modalDeleteId"
-      @delete-successful="afterDeleteCollection"
     />
   </span>
 </template>
 
 <script>
 import ModalClear from './ModalClear.vue'
-import DeleteCollectionModal from './DeleteCollectionModal'
-
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'CollectionDropdownAction',
   components: {
-    ModalClear,
-    DeleteCollectionModal
+    ModalClear
   },
   data: function() {
     return {
-      deleteConfirmation: '',
-      modalDeleteId: 'modal-collection-delete'
+      deleteConfirmation: ''
     }
   },
   props: {
-    collection: {
-      type: Object,
+    collectionName: {
+      type: String,
       required: true
     },
-    index: {
-      type: Object,
+    indexName: {
+      type: String,
       required: true
     }
   },
@@ -108,21 +98,15 @@ export default {
   },
   methods: {
     onDeleteCollectionClicked() {
-      this.$bvModal.show(this.modalDeleteId)
-    },
-    afterDeleteCollection() {
-      this.$router.push({
-        name: 'Collections',
-        params: { indexName: this.index.name }
-      })
+      this.$emit('delete-collection-clicked')
     },
     resetDeletePrompt() {
       this.collectionToDelete = ''
       this.deleteConfirmation = ''
     },
     openModal() {
-      if (this.canTruncateCollection(this.index.name, this.collection.name)) {
-        this.$bvModal.show(`collection-clear-${this.collection.name}`)
+      if (this.canTruncateCollection(this.indexName, this.collectionName)) {
+        this.$bvModal.show(`collection-clear-${this.collectionName}`)
       }
     }
   }

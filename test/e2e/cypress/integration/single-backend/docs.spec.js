@@ -71,8 +71,10 @@ describe('Document List', function() {
     )
     cy.get('[data-cy="CollectionDropdownView"').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
+    cy.get(`[data-cy="IndexBranch-toggle--${indexName}"]`).click()
+    cy.wait(500)
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
-
+    cy.wait(500)
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
     cy.url().should('contain', 'listViewType=column')
     cy.get('[data-cy="DocumentList-Column"]')

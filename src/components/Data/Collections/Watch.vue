@@ -30,8 +30,9 @@
             <collection-dropdown-action
               v-else
               class="icon-medium icon-black"
-              :index="index"
-              :collection="collection"
+              :indexName="indexName"
+              :collectionName="collectionName"
+              @delete-collection-clicked="showDeleteCollectionModal"
             />
           </b-col>
         </b-row>
@@ -245,6 +246,12 @@
         </div>
       </div>
     </b-container>
+    <DeleteCollectionModal
+      :index="index"
+      :collection="collection"
+      :modalId="modalDeleteId"
+      @delete-successful="afterDeleteCollection"
+    />
   </div>
 </template>
 
@@ -253,6 +260,7 @@ import Headline from '../../Materialize/Headline'
 import Notification from '../Realtime/Notification'
 import CollectionDropdownView from './DropdownView'
 import CollectionDropdownAction from './DropdownAction'
+import DeleteCollectionModal from './DeleteCollectionModal'
 import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
 import { truncateName } from '@/utils'
@@ -268,6 +276,7 @@ export default {
   components: {
     CollectionDropdownAction,
     CollectionDropdownView,
+    DeleteCollectionModal,
     Headline,
     JsonEditor,
     Notification
@@ -296,10 +305,12 @@ export default {
       return this.$store.direct.getters.index.getOneIndex(this.indexName)
     },
     collection() {
-      return this.$store.direct.getters.index.getOneCollection(
-        this.index,
-        this.collectionName
-      )
+      return this.index
+        ? this.$store.direct.getters.index.getOneCollection(
+            this.index,
+            this.collectionName
+          )
+        : null
     },
     hasFilter() {
       return (
@@ -339,11 +350,14 @@ export default {
       }
     },
     isRealtimeCollection() {
-      return this.collection.isRealtime()
+      return this.collection ? this.collection.isRealtime() : false
     }
   },
   methods: {
     truncateName,
+    showDeleteCollectionModal() {
+      this.$bvModal.show(this.modalDeleteId)
+    },
     onDeleteCollectionClicked() {
       this.$bvModal.show(this.modalDeleteId)
     },

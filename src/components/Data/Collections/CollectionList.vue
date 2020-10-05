@@ -209,7 +209,7 @@
               variant="link"
               v-if="
                 $store.direct.getters.kuzzle.currentEnvironment
-                  .backendMajorVersion !== 1
+                  .backendMajorVersion !== 1 && !row.item.isRealtime()
               "
               title="Delete collection"
               :data-cy="`CollectionList-delete--${row.item.name}`"
@@ -366,7 +366,10 @@ export default {
       const route = {
         name:
           collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
-        params: { index: this.index, collection: collection.name }
+        params: {
+          indexName: this.index.name,
+          collectionName: collection.name
+        }
       }
 
       this.$router.push(route)

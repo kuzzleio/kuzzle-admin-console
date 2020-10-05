@@ -173,6 +173,7 @@ export default {
   watch: {
     $route: {
       async handler() {
+        console.log('route change')
         await this.fetchAllTheThings()
       }
     }

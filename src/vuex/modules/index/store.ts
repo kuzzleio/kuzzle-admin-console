@@ -222,15 +222,12 @@ const actions = createActions({
 
     const { commit, rootGetters } = indexActionContext(context)
 
-    commit.setLoadingCollections({ index, loading: true })
-
     await rootGetters.kuzzle.$kuzzle.collection.delete(
       index.name,
       collection.name
     )
 
     commit.removeCollection({ index, collection })
-    commit.setLoadingCollections({ index, loading: false })
   },
   async bulkDeleteCollections(
     context,

@@ -318,7 +318,7 @@ export default {
 
       const route = {
         name: 'Collections',
-        params: { index: index.name }
+        params: { indexName: index.name }
       }
 
       this.$router.push(route)

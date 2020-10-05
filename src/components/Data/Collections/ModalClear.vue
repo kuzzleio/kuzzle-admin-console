@@ -40,6 +40,7 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ClearCollectionModal',
@@ -57,6 +58,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     confirmationOk() {
       return this.collection !== null && this.collection === this.confirmation
     }

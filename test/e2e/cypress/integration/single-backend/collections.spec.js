@@ -134,12 +134,12 @@ describe('Collection management', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/`)
-    cy.wait(500)
+    cy.wait(1000)
     cy.visit(`/#/data/${indexName}/`)
-
+    cy.wait(1000)
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
-    cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
-    cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
+    cy.get('[data-cy="DeleteCollectionModal-confirm"]').type(collectionName)
+    cy.get('[data-cy="DeleteCollectionModal-OK"]').click()
 
     cy.get('[data-cy="CollectionList-table"]').should(
       'not.contain',
@@ -157,9 +157,10 @@ describe('Collection management', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="CollectionDropdownAction"]').click()
+    cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-delete"]').click()
-    cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
-    cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
+    cy.get('[data-cy="DeleteCollectionModal-confirm"]').type(collectionName)
+    cy.get('[data-cy="DeleteCollectionModal-OK"]').click()
 
     cy.get('[data-cy="CollectionList-table"]').should(
       'not.contain',
@@ -181,43 +182,6 @@ describe('Collection management', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="CollectionDropdownAction"]').click()
     cy.get('[data-cy="CollectionDropdown-delete"]').should('not.exist')
-  })
-
-  it('Should be able to delete a realtime collection from the list', () => {
-    localStorage.setItem(
-      'realtimeCollections',
-      JSON.stringify([{ index: indexName, collection: collectionName }])
-    )
-
-    cy.waitForService(`http://localhost:7512`)
-    cy.visit(`/#/data/${indexName}/`)
-    cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
-    cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
-    cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
-
-    cy.get('[data-cy="CollectionList-table"]').should(
-      'not.contain',
-      collectionName
-    )
-  })
-
-  it('Should be able to delete a realtime collection from the Watch view', () => {
-    localStorage.setItem(
-      'realtimeCollections',
-      JSON.stringify([{ index: indexName, collection: collectionName }])
-    )
-
-    cy.waitForService(`http://localhost:7512`)
-    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
-    cy.get('[data-cy=Watch-deleteCollectionBtn]').click()
-
-    cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
-    cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
-
-    cy.get('[data-cy="CollectionList-table"]').should(
-      'not.contain',
-      collectionName
-    )
   })
 
   it('Should be able to fetch collections when index change', function() {

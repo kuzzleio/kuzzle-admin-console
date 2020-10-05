@@ -7,7 +7,7 @@
     @hide="resetForm"
   >
     <template v-slot:modal-title>
-      <template>
+      <template v-if="collection">
         Collection
         <strong>{{ truncateName(collection.name) }}</strong> deletion</template
       >
@@ -19,7 +19,7 @@
       </b-button>
       <b-button
         variant="danger"
-        data-cy="DeleteCollectionModal-deleteBtn"
+        data-cy="DeleteCollectionModal-OK"
         :disabled="!isConfirmationValid"
         @click="performDelete()"
       >
@@ -33,7 +33,7 @@
         description="This operation is NOT reversible"
       >
         <b-form-input
-          data-cy="DeleteCollectionModal-name"
+          data-cy="DeleteCollectionModal-confirm"
           id="inputConfirmation"
           v-model="confirmation"
           type="text"
@@ -105,6 +105,7 @@ export default {
 
         this.onDeleteSuccess()
       } catch (err) {
+        this.$log.error(err)
         this.error = err.message
       }
     }

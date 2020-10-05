@@ -34,18 +34,22 @@
             @column="onColumnViewClicked"
           />
           <collection-dropdown-action
-            v-if="index && collection"
             class="icon-medium icon-black ml-2"
-            :index="index"
-            :collection="collection"
+            :indexName="indexName"
+            :collectionName="collectionName"
+            @delete-collection-clicked="showDeleteCollectionModal"
             @clear="afterCollectionClear"
           />
         </b-col>
       </b-row>
 
-      <list-not-allowed v-if="!canSearchDocument(indexName, collectionName)" />
+      <list-not-allowed
+        v-if="
+          !canSearchDocument(indexName, collectionName) && index && collection
+        "
+      />
 
-      <template v-else-if="index && collection">
+      <template v-else>
         <template v-if="isCollectionEmpty">
           <realtime-only-empty-state
             v-if="isRealtimeCollection"
@@ -142,7 +146,12 @@
           </template>
         </template>
       </template>
-
+      <DeleteCollectionModal
+        :index="index"
+        :collection="collection"
+        :modalId="modalDeleteId"
+        @delete-successful="afterDeleteCollection"
+      />
       <delete-modal
         id="modal-delete"
         :candidates-for-deletion="candidatesForDeletion"
@@ -167,6 +176,7 @@ import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdownView from '../Collections/DropdownView'
 import CollectionDropdownAction from '../Collections/DropdownAction'
+import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
 import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
@@ -185,6 +195,7 @@ export default {
   components: {
     CollectionDropdownView,
     CollectionDropdownAction,
+    DeleteCollectionModal,
     DeleteModal,
     Column,
     List,
@@ -212,11 +223,12 @@ export default {
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
-      collectionMapping: {},
+      // collectionMapping: {},
       mappingGeopoints: [],
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
-      currentPage: 1
+      currentPage: 1,
+      modalDeleteId: 'modal-collection-delete'
     }
   },
   computed: {
@@ -231,16 +243,23 @@ export default {
       return this.$store.direct.getters.index.getOneIndex(this.indexName)
     },
     collection() {
-      return this.$store.direct.getters.index.getOneCollection(
-        this.index,
-        this.collectionName
-      )
+      return this.index
+        ? this.$store.direct.getters.index.getOneCollection(
+            this.index,
+            this.collectionName
+          )
+        : null
+    },
+    collectionMapping() {
+      return this.collection ? this.collection.mapping : null
     },
     indexOrCollectionNotFound() {
       return !this.index || !this.collection ? true : false
     },
     mappingAttributes() {
-      return this.extractAttributesFromMapping(this.collectionMapping)
+      return this.collectionMapping
+        ? this.extractAttributesFromMapping(this.collectionMapping)
+        : null
     },
     geoDocuments() {
       return this.documents.filter(document => {
@@ -280,7 +299,7 @@ export default {
       return parseInt(this.currentFilter.size) || 10
     },
     isRealtimeCollection() {
-      return this.collection.isRealtime()
+      return this.collection ? this.collection.isRealtime() : false
     }
   },
   watch: {
@@ -417,6 +436,18 @@ export default {
     },
     onRefresh() {
       this.fetchDocuments()
+    },
+
+    // DELETE COLLECTION
+    // =========================================================================
+    showDeleteCollectionModal() {
+      this.$bvModal.show(this.modalDeleteId)
+    },
+    afterDeleteCollection() {
+      this.$router.push({
+        name: 'Collections',
+        params: { indexName: this.indexName }
+      })
     },
     // LIST (FETCH & SEARCH)
     // =========================================================================

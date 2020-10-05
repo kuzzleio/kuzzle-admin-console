@@ -30,7 +30,7 @@
         description="This operation is NOT reversible"
       >
         <b-form-input
-          data-cy="BulkDeletesCollections-name"
+          data-cy="BulkDeletesCollections-confirm"
           id="inputConfirmation"
           v-model="confirmation"
           type="text"
