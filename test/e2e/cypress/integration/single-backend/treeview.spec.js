@@ -20,7 +20,7 @@ describe('Treeview', () => {
     cy.waitOverlay()
 
     cy.get(`[data-cy=Treeview-item-index--${indexName}]`).click()
-    cy.wait(500)
+    cy.contains(indexName)
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).should('be.visible')
   })
 

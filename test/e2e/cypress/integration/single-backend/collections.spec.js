@@ -86,6 +86,8 @@ describe('Collection management', function() {
       dynamic: 'true'
     })
     cy.visit(`/#/data/${indexName}/${collectionName}/edit`)
+    cy.contains(collectionName)
+
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
       .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
@@ -136,7 +138,8 @@ describe('Collection management', function() {
     cy.visit(`/#/data/`)
     cy.wait(1000)
     cy.visit(`/#/data/${indexName}/`)
-    cy.wait(1000)
+    cy.contains(indexName)
+
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
     cy.get('[data-cy="DeleteCollectionModal-confirm"]').type(collectionName)
     cy.get('[data-cy="DeleteCollectionModal-OK"]').click()
@@ -153,9 +156,9 @@ describe('Collection management', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/`)
-    cy.wait(500)
+    cy.wait(1000)
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-
+    cy.contains(collectionName)
     cy.get('[data-cy="CollectionDropdownAction"]').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-delete"]').click()
@@ -176,10 +179,12 @@ describe('Collection management', function() {
     cy.visit(`/#/data/`)
     cy.wait(500)
     cy.visit(`/#/data/${indexName}/`)
+    cy.contains(indexName)
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).should(
       'not.exist'
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
     cy.get('[data-cy="CollectionDropdownAction"]').click()
     cy.get('[data-cy="CollectionDropdown-delete"]').should('not.exist')
   })
@@ -191,7 +196,7 @@ describe('Collection management', function() {
     cy.visit(`/#/data/`)
     cy.wait(500)
     cy.visit(`/#/data/${indexName}/`)
-
+    cy.contains(indexName)
     cy.get('[data-cy="Treeview-item-index--anotherindex"]').click()
     cy.get('[data-cy="CollectionList-table"]').contains('foo')
   })
@@ -203,7 +208,7 @@ describe('Collection management', function() {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/`)
-    cy.wait(500)
+    cy.contains(indexName)
 
     cy.get('body').type('f{enter}')
 

@@ -46,7 +46,7 @@ describe('Document List', function() {
   it('Should be able to set and persist the listViewType param when switching the list view', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.wait(500)
+    cy.contains(collectionName)
     cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
@@ -60,6 +60,7 @@ describe('Document List', function() {
   it('Should remember the list view settings when navigating from one collection to another', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`,
@@ -121,6 +122,8 @@ describe('Document List', function() {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
+
     cy.get('[data-cy="CollectionDropdownView"').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
@@ -175,6 +178,7 @@ describe('Document List', function() {
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
 
     cy.get(
       '.card-panel > .DocumentsPage-filtersAndButtons > .col > .ListViewButtons > .ListViewButtons-btn:nth-child(4)'
@@ -241,6 +245,7 @@ describe('Document update/replace', () => {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
@@ -279,6 +284,7 @@ describe('Document update/replace', () => {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
@@ -317,6 +323,7 @@ describe('Document update/replace', () => {
   it('Should be able edit a document on column view', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
 
     cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()

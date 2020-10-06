@@ -577,6 +577,7 @@ describe('Search', function() {
     cy.contains('dummy-42')
     cy.url().should('contain', 'from=30')
   })
+
   it('should add my search in history', () => {
     const docCount = 10
     const documents = []
@@ -607,6 +608,7 @@ describe('Search', function() {
     cy.get('[data-cy=Filters-historyTab]').click()
     cy.get('[data-cy="FilterHistoryItem--0"]')
   })
+
   it('Should be able to see previous searches in the search history.', () => {
     const docCount = 10
     const documents = []
@@ -641,6 +643,7 @@ describe('Search', function() {
       cy.get('[data-cy="QuickFilter-resetBtn"]').click()
     }
   })
+
   it('should be able to add a filter to favorite', () => {
     const docCount = 10
     const documents = []
@@ -675,6 +678,7 @@ describe('Search', function() {
     cy.get('[data-cy=Filters-favoriteTab]').click()
     cy.get('[data-cy="FilterFavoriItem--0"]')
   })
+
   it('should display message for empty favorite or history', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
@@ -683,6 +687,7 @@ describe('Search', function() {
     cy.get('[data-cy=Filters-favoriteTab]').click()
     cy.contains("You don't have any favorite filters.")
   })
+
   it('should be able to remove a favorite filter', () => {
     const docCount = 10
     const documents = []
