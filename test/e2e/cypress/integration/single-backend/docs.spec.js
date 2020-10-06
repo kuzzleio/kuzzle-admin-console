@@ -122,6 +122,7 @@ describe('Document List', function() {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.wait(500)
     cy.contains(collectionName)
 
     cy.get('[data-cy="CollectionDropdownView"').click()

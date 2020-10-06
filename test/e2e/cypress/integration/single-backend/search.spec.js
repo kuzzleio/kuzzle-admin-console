@@ -130,6 +130,9 @@ describe('Search', function() {
     )
 
     cy.visit('/')
+    cy.wait(500)
+    cy.contains(collectionName)
+
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 250 })
@@ -631,6 +634,7 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.contains(collectionName)
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
       cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
@@ -666,6 +670,7 @@ describe('Search', function() {
     )
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
@@ -681,6 +686,7 @@ describe('Search', function() {
 
   it('should display message for empty favorite or history', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-historyTab]').click()
     cy.contains("You haven't performed any search yet.")
@@ -709,6 +715,7 @@ describe('Search', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
@@ -747,7 +754,7 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
-      cy.wait(500)
+      cy.contains(collectionName)
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
       cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
@@ -777,6 +784,7 @@ describe('Search', function() {
     )
 
     cy.visit('/')
+    cy.contains(indexName)
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
@@ -808,6 +816,7 @@ describe('Search', function() {
     )
 
     cy.visit('/')
+    cy.contains(indexName)
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
