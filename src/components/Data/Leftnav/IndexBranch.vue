@@ -9,8 +9,8 @@
     />
     <i v-else class="no-caret"></i>
     <router-link
-      data-cy="Treeview-item"
       class="tree-item truncate mt-2"
+      :data-cy="`Treeview-item-index-link--${index.name}`"
       :class="{ active: isIndexActive(index.name) }"
       :title="index.name"
       :to="{ name: 'Collections', params: { indexName: index.name } }"

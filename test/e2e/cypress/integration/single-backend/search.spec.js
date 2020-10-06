@@ -719,6 +719,7 @@ describe('Search', function() {
     cy.get('[data-cy="FilterFavoriItem--0"]').should('not.exist')
     cy.contains("You don't have any favorite filters.")
   })
+
   it('should be able to perform search from history', () => {
     const docCount = 10
     const documents = []
@@ -741,6 +742,7 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.wait(500)
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
       cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
