@@ -46,7 +46,7 @@ describe('Document List', function() {
   it('Should be able to set and persist the listViewType param when switching the list view', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-
+    cy.wait(500)
     cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
@@ -302,7 +302,7 @@ describe('Document update/replace', () => {
         }
       )
     cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
-
+    cy.wait(1000)
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
 
     cy.request(

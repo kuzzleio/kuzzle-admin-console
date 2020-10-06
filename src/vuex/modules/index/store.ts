@@ -262,7 +262,10 @@ const actions = createActions({
 
     const kuzzleMapping = await rootGetters.kuzzle.$kuzzle.collection.getMapping(
       index.name,
-      collection.name
+      collection.name,
+      {
+        includeKuzzleMeta: true
+      }
     )
 
     collection.mapping = kuzzleMapping.properties

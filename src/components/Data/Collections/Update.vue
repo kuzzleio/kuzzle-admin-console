@@ -8,7 +8,7 @@
         :collection="collection.name"
         :index="index.name"
         :dynamic="collection.dynamic"
-        :mapping="collection.mapping"
+        :mapping="mappingAttributes"
         :realtime-only="collection.isRealtime()"
         @submit="update"
       />
@@ -22,6 +22,7 @@
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import CreateOrUpdate from './CreateOrUpdate'
 import { mapGetters } from 'vuex'
+import { omit } from 'lodash'
 
 export default {
   name: 'CollectionUpdate',
@@ -53,6 +54,11 @@ export default {
         this.index,
         this.collectionName
       )
+    },
+    mappingAttributes() {
+      return this.collection
+        ? omit(this.collection.mapping, '_kuzzle_info')
+        : null
     },
     loading() {
       return this.$store.direct.getters.index.loadingCollections(
