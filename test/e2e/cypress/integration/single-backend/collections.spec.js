@@ -201,14 +201,14 @@ describe('Collection management', function() {
     cy.get('[data-cy="CollectionList-table"]').contains('foo')
   })
 
-  it('Should be able to autofocus collection search', () => {
+  it.only('Should be able to autofocus collection search', () => {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/foobar`)
 
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/`)
-    cy.contains(indexName)
+    cy.wait(900)
 
     cy.get('body').type('f{enter}')
 
