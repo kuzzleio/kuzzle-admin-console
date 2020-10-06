@@ -83,7 +83,6 @@
     <template v-if="advancedFiltersVisible">
       <raw-filter
         v-if="complexFiltersSelectedTab === 'raw'"
-        submit-button-label="Raw JSON Search"
         :action-buttons-visible="actionButtonsVisible"
         :current-filter="currentFilter"
         :sorting-enabled="sortingEnabled"
@@ -92,7 +91,6 @@
       />
       <basic-filter
         v-if="complexFiltersSelectedTab === 'basic'"
-        submit-button-label="Advanced Search"
         :action-buttons-visible="actionButtonsVisible"
         :available-operands="availableOperands"
         :basic-filter="basicFilter"

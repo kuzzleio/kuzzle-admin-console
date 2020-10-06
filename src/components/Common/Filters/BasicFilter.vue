@@ -161,8 +161,8 @@
     </div>
 
     <b-row align-h="center" align-v="center">
-      <b-col md="5">
-        <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sorting">
+      <b-col md="4">
+        <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sort">
           <b-form-select
             data-cy="BasicFilter-sortAttributeSelect"
             placeholder="Attribute"
@@ -178,7 +178,7 @@
           >
         </b-input-group>
       </b-col>
-      <b-col md="2"
+      <b-col md="2" class="px-0"
         ><b-select
           v-if="sortingEnabled"
           v-model="filters.sorting.order"
@@ -197,20 +197,20 @@
           <i class="fas fa-scroll"></i>&nbsp; Generate Raw JSON
         </b-button>
         <b-button
-          data-cy="BasicFilter-submitBtn"
-          class="BasicFilter-submitBtn mt-2 mb-2 mr-2"
-          variant="primary"
-          @click.prevent="submitSearch"
-        >
-          {{ submitButtonLabel }}
-        </b-button>
-        <b-button
-          class="BasicFilter-resetBtn"
+          class="BasicFilter-resetBtn mr-2"
           data-cy="BasicFilter-resetBtn"
           variant="outline-secondary"
           @click="resetSearch"
         >
           Reset
+        </b-button>
+        <b-button
+          data-cy="BasicFilter-submitBtn"
+          class="BasicFilter-submitBtn mt-2 mb-2"
+          variant="primary"
+          @click.prevent="submitSearch"
+        >
+          {{ submitButtonLabel }}
         </b-button>
       </b-col>
     </b-row>
