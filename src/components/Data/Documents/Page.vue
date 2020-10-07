@@ -64,7 +64,7 @@
               :mapping-attributes="mappingAttributes"
               @enter-pressed="navigateToDocument"
               @filters-updated="onFiltersUpdated"
-              @reset="onFiltersUpdated"
+              @submit="onFilterSubmit"
             />
           </template>
           <template v-if="loading">
@@ -308,6 +308,7 @@ export default {
             from
           })
         )
+        this.fetchDocuments()
       }
     },
     collection: {
@@ -431,9 +432,6 @@ export default {
         params: { id }
       })
     },
-    onRefresh() {
-      this.fetchDocuments()
-    },
     // LIST (FETCH & SEARCH)
     // =========================================================================
     async loadAllTheThings() {
@@ -477,34 +475,21 @@ export default {
         params: { id: document.id }
       })
     },
-    async onFiltersUpdated(newFilters, loadedFromHistory) {
+    onRefresh() {
+      this.fetchDocuments()
+    },
+    async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
-      try {
-        filterManager.save(
+    },
+    onFilterSubmit(saveToHistory = true) {
+      if (saveToHistory) {
+        filterManager.addNewHistoryItemAndSave(
           this.currentFilter,
-          this.$router,
           this.index,
           this.collection
         )
-        if (!loadedFromHistory) {
-          filterManager.addNewHistoryItemAndSave(
-            newFilters,
-            this.index,
-            this.collection
-          )
-        }
-        await this.fetchDocuments()
-      } catch (e) {
-        this.$bvToast.toast(e.message, {
-          title: 'Ooops! Something went wrong while performing the search.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        })
-        this.$log.error(e)
       }
+      this.fetchDocuments()
     },
     afterCollectionClear() {
       this.documents = []
@@ -521,6 +506,14 @@ export default {
         from: this.paginationFrom,
         size: this.paginationSize
       }
+
+      filterManager.save(
+        this.currentFilter,
+        this.$router,
+        this.index,
+        this.collection
+      )
+
       try {
         let searchQuery = null
         searchQuery = filterManager.toSearchQuery(
@@ -584,6 +577,7 @@ export default {
           size
         })
       )
+      this.fetchDocuments()
     },
 
     // SELECT ITEMS

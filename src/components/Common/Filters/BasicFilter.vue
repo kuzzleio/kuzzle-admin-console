@@ -12,10 +12,7 @@
               v-if="groupIndex === filters.basic.length - 1"
               v-slot:footer
             >
-              <b-button
-                @click="addGroupBasicFilter"
-                variant="outline-secondary"
-              >
+              <b-button @click="addOrCondition" variant="outline-secondary">
                 <i class="fa fa-plus left mr-2" />OR
               </b-button>
             </template>
@@ -164,8 +161,8 @@
     </div>
 
     <b-row align-h="center" align-v="center">
-      <b-col md="5">
-        <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sorting">
+      <b-col md="4">
+        <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sort">
           <b-form-select
             data-cy="BasicFilter-sortAttributeSelect"
             placeholder="Attribute"
@@ -181,7 +178,7 @@
           >
         </b-input-group>
       </b-col>
-      <b-col md="2"
+      <b-col md="2" class="px-0"
         ><b-select
           v-if="sortingEnabled"
           v-model="filters.sorting.order"
@@ -193,20 +190,27 @@
       /></b-col>
       <b-col v-if="actionButtonsVisible" class="text-right">
         <b-button
-          data-cy="BasicFilter-submitBtn"
-          class="BasicFilter-submitBtn mt-2 mb-2 mr-2"
-          variant="primary"
-          @click.prevent="submitSearch"
+          class="BasicFilter-generateRawBtn mt-2 mb-2 mr-2"
+          data-cy="BasicFilter-generateRawBtn"
+          @click.prevent="generateRawFilter"
         >
-          {{ submitButtonLabel }}
+          <i class="fas fa-scroll"></i>&nbsp; Generate Raw JSON
         </b-button>
         <b-button
-          class="BasicFilter-resetBtn"
+          class="BasicFilter-resetBtn mr-2"
           data-cy="BasicFilter-resetBtn"
           variant="outline-secondary"
           @click="resetSearch"
         >
           Reset
+        </b-button>
+        <b-button
+          data-cy="BasicFilter-submitBtn"
+          class="BasicFilter-submitBtn mt-2 mb-2"
+          variant="primary"
+          @click.prevent="submitSearch"
+        >
+          {{ submitButtonLabel }}
         </b-button>
       </b-col>
     </b-row>
@@ -214,6 +218,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 const emptyBasicFilter = { attribute: null, operator: 'contains', value: null }
 const emptySorting = { attribute: null, order: 'asc' }
 
@@ -244,10 +249,6 @@ export default {
     mappingAttributes: {
       type: Object,
       required: true
-    },
-    toggleAutoComplete: {
-      type: Boolean,
-      default: true
     }
   },
   data() {
@@ -260,6 +261,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     selectAttributesValues() {
       return Object.keys(this.mappingAttributes).map(a => ({
         text: a,
@@ -327,6 +329,14 @@ export default {
     selectAttribute(attribute, groupIndex, filterIndex) {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },
+    generateRawFilter() {
+      const raw = this.wrapper.basicSearchToESQuery(
+        this.filters.basic,
+        this.mappingAttributes
+      )
+      this.$log.debug(JSON.stringify(raw, null, 2))
+      this.$emit('generate-raw-filter', raw)
+    },
     submitSearch() {
       if (!this.isFilterValid) {
         return
@@ -359,7 +369,7 @@ export default {
       this.filters.sorting = { ...emptySorting }
       this.submitSearch()
     },
-    addGroupBasicFilter() {
+    addOrCondition() {
       this.filters.basic.push([{ ...emptyBasicFilter }])
     },
     addAndCondition(groupIndex) {

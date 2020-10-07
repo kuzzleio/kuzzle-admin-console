@@ -451,9 +451,7 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('bar', {
       delay: 60
     })
-    cy.get('[data-cy=BasicFilter-submitBtn]').click()
-    cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
-    cy.get('[data-cy="Filters-rawTab"]').click()
+    cy.get('[data-cy=BasicFilter-generateRawBtn]').click()
     cy.get('.ace_content')
       .should('contain', 'query')
       .and('contain', 'must')
@@ -754,7 +752,7 @@ describe('Search', function() {
     }
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-historyTab]').click()
-    cy.get('[data-cy="FilterHistoryItem-Search-Favorite--0"]').click()
+    cy.get('[data-cy="FilterHistoryItem-useBtn--4"]').click()
     cy.contains('dummy-0')
     cy.contains('dummy-10')
     cy.contains('dummy-9').should('not.exist')

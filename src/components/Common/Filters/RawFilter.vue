@@ -1,11 +1,5 @@
 <template>
   <form class="RawFilter">
-    <b-row no-gutters v-if="currentFilter.basic" class="blue lighten-3">
-      A Basic filter is currently active. This shows your basic filter as raw
-      filter. If you modify this raw filter it will not change the basic filter
-      view and will reset this raw filter to the original content of the basic
-      filter.
-    </b-row>
     <json-editor
       id="rawsearch"
       class="JsonEditor"
@@ -20,21 +14,21 @@
     <b-row no-gutters v-if="actionButtonsVisible">
       <b-col sm="12" class="text-right">
         <b-button
-          class="mt-2 mr-2 mb-2"
+          class="mr-2"
+          data-cy="RawFilter-resetBtn"
+          variant="outline-secondary"
+          @click="reset"
+        >
+          Reset
+        </b-button>
+        <b-button
+          class="mt-2 mb-2"
           data-cy="RawFilter-submitBtn"
           variant="primary"
           :disabled="!isFilterValid"
           @click.prevent="submit"
         >
           {{ submitButtonLabel }}
-        </b-button>
-        <b-button
-          class="ml-2"
-          data-cy="RawFilter-resetBtn"
-          variant="outline-secondary"
-          @click="reset"
-        >
-          Reset
         </b-button>
       </b-col>
     </b-row>
@@ -71,10 +65,6 @@ export default {
       default: () => {
         return {}
       }
-    },
-    mappingAttributes: {
-      type: Object,
-      required: true
     }
   },
   data() {
@@ -123,16 +113,6 @@ export default {
       handler(val) {
         if (!val) {
           return
-        }
-        if (val.basic) {
-          this.rawFilter = JSON.stringify(
-            this.wrapper.basicSearchToESQuery(
-              val.basic,
-              this.mappingAttributes
-            ),
-            null,
-            2
-          )
         }
         if (!val.raw) {
           return

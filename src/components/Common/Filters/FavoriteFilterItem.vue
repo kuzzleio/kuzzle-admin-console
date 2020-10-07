@@ -24,14 +24,14 @@
         </b-col>
         <b-col cols="2">
           <div class="float-right">
-            <b-button variant="link" @click="useFilter" :title="'Edit Filter'">
+            <b-button variant="link" @click="useFilter" :title="'Use Filter'">
               <i class="fa fa-search" />
             </b-button>
             <b-button
               variant="link"
               :data-cy="'FilterFavoriItem-Remove--' + id"
-              @click="deleteFavori"
-              :title="'Delete Favori'"
+              @click="deleteFavorite"
+              :title="'Delete Favorite'"
             >
               <i class="fa fa-trash" />
             </b-button>
@@ -73,7 +73,7 @@ export default {
   data() {
     return {
       expanded: false,
-      oldName: this.favorite.name,
+      oldName: this.favorite.name
     }
   },
   computed: {
@@ -86,7 +86,7 @@ export default {
     openModal() {
       this.$bvModal.show('changeNameHistoryFilter-' + this.favorite.id)
     },
-    deleteFavori() {
+    deleteFavorite() {
       this.$emit('favoris-delete', this.favorite.id)
     },
     useFilter() {
@@ -103,7 +103,10 @@ export default {
       }
     },
     getFilter() {
-      let loadedFilter = Object.assign(new filterManager.Filter(), this.favorite)
+      let loadedFilter = Object.assign(
+        new filterManager.Filter(),
+        this.favorite
+      )
       if (loadedFilter.active == 'basic') return loadedFilter.basic
       if (loadedFilter.active == 'raw') return loadedFilter.raw
     },
