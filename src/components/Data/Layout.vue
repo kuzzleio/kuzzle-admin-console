@@ -147,7 +147,6 @@ export default {
       }
     },
     handleDataNotFound() {
-      this.isFetching = false
       this.dataNotFound = true
     },
     async fetchAllTheThings() {

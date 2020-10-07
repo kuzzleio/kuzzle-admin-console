@@ -131,7 +131,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.wait(500)
-    cy.contains(collectionName)
+    cy.contains(indexName)
 
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
@@ -754,6 +754,7 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.wait(900)
       cy.contains(collectionName)
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
