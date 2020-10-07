@@ -617,7 +617,7 @@ describe('Search', function() {
     cy.get('[data-cy="FilterHistoryItem--0"]')
   })
 
-  it.only('Should be able to see previous searches in the search history.', () => {
+  it('Should be able to see previous searches in the search history.', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
