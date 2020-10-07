@@ -134,9 +134,14 @@ describe('Search', function() {
     cy.contains(indexName)
 
     cy.get('.IndexesPage').should('be.visible')
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.wait(500)
+    cy.contains(collectionName)
+
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 250 })
     cy.wait(250)
+
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('not.contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)

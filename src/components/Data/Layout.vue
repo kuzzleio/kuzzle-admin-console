@@ -22,6 +22,7 @@ import MainSpinner from '../Common/MainSpinner'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import Treeview from '@/components/Data/Leftnav/Treeview'
 import DataNotFound from './Data404'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'DataLayout',
@@ -34,21 +35,32 @@ export default {
   },
   data() {
     return {
-      isFetching: false,
+      isFetching: true,
       dataNotFound: false
     }
   },
   computed: {
+    ...mapGetters('index', ['loadingIndexes', 'loadingCollections']),
+    indexName() {
+      return this.$route.params.indexName
+    },
+    collectionName() {
+      return this.$route.params.collectionName
+    },
     loading() {
-      return (
-        this.isFetching ||
-        (this.$store.direct.getters.index.loadingIndexes ||
-        this.$route.params.collectionName
-          ? this.$store.direct.getters.index.loadingCollections(
-              this.$route.params.indexName
-            )
-          : false)
-      )
+      if (this.isFetching) {
+        return true
+      }
+
+      if (this.loadingIndexes) {
+        return true
+      }
+
+      if (this.indexName && this.loadingCollections(this.indexName)) {
+        return true
+      }
+
+      return false
     }
   },
   methods: {
@@ -78,7 +90,7 @@ export default {
 
       try {
         const index = this.$store.direct.getters.index.getOneIndex(
-          this.$route.params.indexName
+          this.indexName
         )
 
         if (!index) {
@@ -108,7 +120,7 @@ export default {
 
       try {
         const index = this.$store.direct.getters.index.getOneIndex(
-          this.$route.params.indexName
+          this.indexName
         )
 
         if (!index) {
@@ -118,7 +130,7 @@ export default {
 
         const collection = this.$store.direct.getters.index.getOneCollection(
           index,
-          this.$route.params.collectionName
+          this.collectionName
         )
 
         if (!collection) {
@@ -155,11 +167,11 @@ export default {
 
       await this.fetchIndexList()
 
-      if (this.$route.params.indexName) {
+      if (this.indexName) {
         await this.fetchCollectionList()
       }
 
-      if (this.$route.params.indexName && this.$route.params.collectionName) {
+      if (this.indexName && this.collectionName) {
         await this.fetchCollectionMapping()
       }
 

@@ -155,9 +155,8 @@ describe('Collection management', function() {
 
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
-    cy.visit(`/#/data/`)
-    cy.wait(1000)
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.wait(500)
     cy.contains(collectionName)
     cy.get('[data-cy="CollectionDropdownAction"]').click()
     cy.wait(500)
