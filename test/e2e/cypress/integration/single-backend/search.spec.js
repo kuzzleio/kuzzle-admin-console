@@ -617,7 +617,7 @@ describe('Search', function() {
     cy.get('[data-cy="FilterHistoryItem--0"]')
   })
 
-  it('Should be able to see previous searches in the search history.', () => {
+  it.only('Should be able to see previous searches in the search history.', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
@@ -639,7 +639,7 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
-      cy.wait(800)
+      cy.wait(1000)
       cy.contains(collectionName)
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
