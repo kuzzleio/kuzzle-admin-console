@@ -639,6 +639,7 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.wait(800)
       cy.contains(collectionName)
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
@@ -675,6 +676,7 @@ describe('Search', function() {
     )
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.wait(800)
     cy.contains(collectionName)
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
@@ -691,6 +693,7 @@ describe('Search', function() {
 
   it('should display message for empty favorite or history', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.wait(800)
     cy.contains(collectionName)
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-historyTab]').click()
