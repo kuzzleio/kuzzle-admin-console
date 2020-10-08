@@ -524,6 +524,7 @@ describe('Search', function() {
     cy.visit('/')
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-rawTab"]').click()
@@ -607,6 +608,8 @@ describe('Search', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
@@ -639,8 +642,8 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
-      cy.wait(1000)
-      cy.contains(collectionName)
+      cy.waitForLoading()
+
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
       cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
@@ -676,8 +679,8 @@ describe('Search', function() {
     )
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.wait(800)
-    cy.contains(collectionName)
+    cy.waitForLoading()
+
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
@@ -693,8 +696,8 @@ describe('Search', function() {
 
   it('should display message for empty favorite or history', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.wait(800)
-    cy.contains(collectionName)
+    cy.waitForLoading()
+
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-historyTab]').click()
     cy.contains("You haven't performed any search yet.")
@@ -723,7 +726,8 @@ describe('Search', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.contains(collectionName)
+    cy.waitForLoading()
+
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
@@ -762,8 +766,8 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
-      cy.wait(900)
-      cy.contains(collectionName)
+      cy.waitForLoading()
+
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
       cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
@@ -793,10 +797,11 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.contains(indexName)
+
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.contains(collectionName)
+    cy.waitForLoading()
+
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-operator"]').select('Range')
@@ -828,7 +833,8 @@ describe('Search', function() {
     cy.contains(indexName)
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.contains(collectionName)
+    cy.waitForLoading()
+
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-fullscreen]').click()
     cy.get('[data-cy="Filters"]').should('have.class', 'full-screen')
