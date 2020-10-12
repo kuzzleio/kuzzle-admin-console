@@ -223,7 +223,6 @@ export default {
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
-      // collectionMapping: {},
       mappingGeopoints: [],
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
@@ -302,6 +301,9 @@ export default {
       return this.collection ? this.collection.isRealtime() : false
     }
   },
+  async mounted() {
+    await this.loadAllTheThings()
+  },
   watch: {
     currentPage: {
       handler(value) {
@@ -314,13 +316,11 @@ export default {
       }
     },
     collectionName: {
-      immediate: true,
       handler() {
         this.loadAllTheThings()
       }
     },
     indexName: {
-      immediate: true,
       handler() {
         this.loadAllTheThings()
       }
@@ -454,7 +454,7 @@ export default {
     async loadAllTheThings() {
       try {
         this.loading = true
-        await this.loadMappingInfo()
+        // await this.loadMappingInfo()
         this.loadListView()
         this.saveListView()
 
@@ -647,19 +647,6 @@ export default {
     },
     // Collection Metadata management
     // =========================================================================
-    async loadMappingInfo() {
-      const { properties } = await this.wrapper.getMappingDocument(
-        this.collectionName,
-        this.indexName
-      )
-
-      this.collectionNameMapping = properties
-
-      this.mappingGeopoints = this.listMappingGeopoints(
-        this.collectionNameMapping
-      )
-      this.selectedGeopoint = this.mappingGeopoints[0]
-    },
     loadListView() {
       if (this.$route.query.listViewType) {
         this.listViewType = this.$route.query.listViewType

@@ -11,8 +11,10 @@
       <template v-if="loading">
         <main-spinner></main-spinner>
       </template>
-      <data-not-found v-else-if="dataNotFound" class="mt-3"></data-not-found>
-      <router-view v-else />
+      <template v-else>
+        <data-not-found v-if="dataNotFound" class="mt-3"></data-not-found>
+        <router-view v-else />
+      </template>
     </div>
   </Multipane>
 </template>
@@ -65,8 +67,6 @@ export default {
   },
   methods: {
     async fetchIndexList() {
-      console.log('---- fetch index list ----')
-
       try {
         await this.$store.direct.dispatch.index.fetchIndexList()
       } catch (error) {
@@ -86,8 +86,6 @@ export default {
       }
     },
     async fetchCollectionList() {
-      console.log('---- fetch collection list ----')
-
       try {
         const index = this.$store.direct.getters.index.getOneIndex(
           this.indexName
@@ -116,8 +114,6 @@ export default {
       }
     },
     async fetchCollectionMapping() {
-      console.log('---- fetch collection mapping ----')
-
       try {
         const index = this.$store.direct.getters.index.getOneIndex(
           this.indexName
@@ -162,20 +158,21 @@ export default {
       this.dataNotFound = true
     },
     async fetchAllTheThings() {
-      this.dataNotFound = false
       this.isFetching = true
+      this.dataNotFound = true
 
       await this.fetchIndexList()
 
-      if (this.indexName) {
+      if (this.$route.params.indexName) {
         await this.fetchCollectionList()
       }
 
-      if (this.indexName && this.collectionName) {
+      if (this.$route.params.indexName && this.$route.params.collectionName) {
         await this.fetchCollectionMapping()
       }
 
       this.isFetching = false
+      this.dataNotFound = false
     }
   },
   async mounted() {
@@ -183,9 +180,8 @@ export default {
   },
   watch: {
     $route: {
-      async handler() {
-        console.log('route change')
-        await this.fetchAllTheThings()
+      handler() {
+        this.fetchAllTheThings()
       }
     }
   }

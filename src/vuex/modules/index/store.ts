@@ -16,6 +16,7 @@ import { createMutations, createModule, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
 import _ from 'lodash'
 import { mergeMetaAttributes } from '@/services/collectionHelper'
+import { CardPlugin } from 'bootstrap-vue'
 
 const state: IndexState = {
   indexes: [],
@@ -260,12 +261,9 @@ const actions = createActions({
 
     commit.setLoadingCollections({ index, loading: true })
 
-    const kuzzleMapping = await rootGetters.kuzzle.$kuzzle.collection.getMapping(
-      index.name,
+    const kuzzleMapping = await rootGetters.kuzzle.wrapper.getMappingDocument(
       collection.name,
-      {
-        includeKuzzleMeta: true
-      }
+      index.name
     )
 
     collection.mapping = kuzzleMapping.properties
