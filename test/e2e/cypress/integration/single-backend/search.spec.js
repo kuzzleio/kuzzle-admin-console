@@ -135,7 +135,7 @@ describe('Search', function() {
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.wait(500)
+    cy.wait(800)
     cy.waitForLoading()
 
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 250 })
