@@ -159,7 +159,7 @@ export default {
     },
     async fetchAllTheThings() {
       this.isFetching = true
-      this.dataNotFound = true
+      this.dataNotFound = false
 
       await this.fetchIndexList()
 
@@ -172,7 +172,6 @@ export default {
       }
 
       this.isFetching = false
-      this.dataNotFound = false
     }
   },
   async mounted() {
