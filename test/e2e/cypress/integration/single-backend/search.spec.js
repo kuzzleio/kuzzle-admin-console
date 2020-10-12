@@ -128,6 +128,10 @@ describe('Search', function() {
         job: 'From scratch All the Things!'
       }
     )
+    localStorage.setItem(
+      `search-filter-current:${indexName}/${collectionName}`,
+      {}
+    )
 
     cy.visit('/')
     cy.waitForLoading()
@@ -135,7 +139,6 @@ describe('Search', function() {
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.wait(800)
     cy.waitForLoading()
 
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 250 })
