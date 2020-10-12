@@ -19,8 +19,10 @@ describe('Treeview', () => {
     cy.request('PUT', `http://localhost:7512/${indexName}/${collectionName}`)
     cy.waitOverlay()
 
-    cy.get(`[data-cy=Treeview-item-index--${indexName}]`).click()
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.waitForLoading()
+
+    cy.get(`[data-cy=Treeview-item-index--${indexName}]`).click()
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).should('be.visible')
   })
 
