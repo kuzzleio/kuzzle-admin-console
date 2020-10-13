@@ -150,6 +150,37 @@ describe('Collection management', function() {
     )
   })
 
+  it('Should be able to bulk delete some stored collections from the collection list', function() {
+    cy.skipOnBackendVersion(1)
+
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}1`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}2`)
+
+    cy.visit(`/#/data/`)
+    cy.waitForLoading()
+    cy.visit(`/#/data/${indexName}/`)
+    cy.waitForLoading()
+
+    cy.get(`[data-cy="CollectionList-checkbox--${collectionName}1"]`).click({
+      force: true
+    })
+
+    cy.get(`[data-cy="CollectionList-checkbox--${collectionName}2"]`).click({
+      force: true
+    })
+
+    cy.get(`[data-cy=CollectionList-bulkDelete--btn]`).click()
+
+    cy.get(
+      '[data-cy="BulkDeleteCollectionsModal-input-confirmation"'
+    ).type('DELETE', { force: true })
+
+    cy.get('[data-cy="BulkDeleteCollectionsModal-deleteBtn"]').click()
+
+    cy.get('.CollectionList').should('not.contain', `${collectionName}1`)
+    cy.get('.CollectionList').should('not.contain', `${collectionName}2`)
+  })
+
   it('Should be able to delete a stored collection from its own dropdown action', function() {
     cy.skipOnBackendVersion(1)
 

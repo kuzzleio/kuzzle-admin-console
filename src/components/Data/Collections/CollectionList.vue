@@ -56,6 +56,7 @@
 
                 <b-button
                   variant="outline-danger"
+                  :data-cy="`CollectionList-bulkDelete--btn`"
                   :disabled="!bulkDeleteEnabled"
                   v-if="
                     $store.direct.getters.kuzzle.currentEnvironment
@@ -117,6 +118,7 @@
               type="checkbox"
               unchecked-value="false"
               value="true"
+              :data-cy="`CollectionList-checkbox--${row.item.name}`"
               :checked="isChecked(row.item)"
               @change="onCheckboxClick(row.item)"
             />

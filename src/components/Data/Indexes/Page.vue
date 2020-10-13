@@ -46,6 +46,7 @@
 
               <b-button
                 variant="outline-danger"
+                data-cy="IndexesPage-bulkDelete--btn"
                 :disabled="!bulkDeleteEnabled"
                 @click="openBulkDeleteModal"
               >
@@ -99,6 +100,7 @@
             type="checkbox"
             unchecked-value="false"
             value="true"
+            :data-cy="`IndexesPage-checkbox--${row.item.name}`"
             :checked="isChecked(row.item)"
             @change="onCheckboxClick(row.item)"
           />

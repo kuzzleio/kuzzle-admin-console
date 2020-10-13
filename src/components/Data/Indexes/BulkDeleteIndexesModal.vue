@@ -1,6 +1,6 @@
 <template>
   <b-modal
-    class="DeleteIndexModal"
+    class="BulkDeleteIndexModal"
     size="lg"
     :id="modalId"
     :ref="modalId"
@@ -16,7 +16,7 @@
       </b-button>
       <b-button
         variant="danger"
-        data-cy="DeleteIndexModal-deleteBtn"
+        data-cy="BulkDeleteIndexModal-deleteBtn"
         :disabled="!isConfirmationValid"
         @click="performDelete()"
       >
@@ -30,7 +30,7 @@
         description="This operation is NOT reversible"
       >
         <b-form-input
-          data-cy="DeleteIndexModal-name"
+          data-cy="BulkDeleteIndexModal-input-confirmation"
           id="inputConfirmation"
           v-model="confirmation"
           type="text"
