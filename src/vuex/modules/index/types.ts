@@ -73,8 +73,8 @@ export class Collection {
   dynamic?: string
 
   constructor(name: string, type: CollectionType) {
+    this._type = this.findType(name, type)
     this._name = name
-    this._type = type
   }
 
   get name(): string {
@@ -87,6 +87,16 @@ export class Collection {
 
   public isRealtime(): boolean {
     return this._type === CollectionType.REALTIME
+  }
+
+  private findType(name: string, type: string) {
+    if (type !== CollectionType.STORED && type !== CollectionType.REALTIME) {
+      throw new Error(`Unknown collection type for "${name}" :  ${type}`)
+    }
+
+    return type === CollectionType.STORED
+      ? CollectionType.STORED
+      : CollectionType.REALTIME
   }
 }
 

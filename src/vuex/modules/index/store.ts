@@ -15,8 +15,6 @@ import {
 import { createMutations, createModule, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
 import _ from 'lodash'
-import { mergeMetaAttributes } from '@/services/collectionHelper'
-import { CardPlugin } from 'bootstrap-vue'
 
 const state: IndexState = {
   indexes: [],
@@ -129,12 +127,7 @@ const actions = createActions({
     const result = await rootGetters.kuzzle.$kuzzle.collection.list(index.name)
 
     const collections = result.collections.map(el => {
-      const collectionType =
-        el.type === CollectionType.STORED
-          ? CollectionType.STORED
-          : CollectionType.REALTIME
-
-      return new Collection(el.name, collectionType)
+      return new Collection(el.name, el.type)
     })
 
     commit.setCollections({
