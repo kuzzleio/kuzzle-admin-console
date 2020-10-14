@@ -28,7 +28,7 @@
         class="tree-item truncate mt-2"
         :class="{ active: isCollectionActive(index.name, collection.name) }"
         :data-cy="`Treeview-item--${collection.name}`"
-        :key="collection.name"
+        :key="`${collection.name}-${collection.type}`"
         :title="collection.name"
       >
         <template v-if="collection.isRealtime()">

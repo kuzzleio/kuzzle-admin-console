@@ -38,7 +38,7 @@ jobs:
       name: 'Linter'
       script:
         - npm install
-        - npm run lint
+        - npm run test:lint
 
     # ---------------------------------------
     # End-to-end Testing
@@ -57,7 +57,7 @@ jobs:
         - cd test/e2e/run-test; npm ci; cd -
 
       script:
-        - npm run e2e -- --backend=1
+        - npm run test:e2e -- --backend=1
       
     - stage: tests
       name: 'End to end Tests - v2'
@@ -73,7 +73,7 @@ jobs:
         - cd test/e2e/run-test; npm ci; cd -
       
       script:
-        - npm run e2e -- --backend=2
+        - npm run test:e2e -- --backend=2
       
     - stage: tests
       name: 'End to end Tests - Multi-backend'
@@ -89,7 +89,7 @@ jobs:
         - cd test/e2e/run-test; npm ci; cd -
       
       script:
-        - npm run e2e -- --backend=multi
+        - npm run test:e2e -- --backend=multi
 
     # ---------------------------------------
     # Regular Build & Deploy

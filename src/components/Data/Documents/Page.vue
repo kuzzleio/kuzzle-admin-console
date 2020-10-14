@@ -69,7 +69,7 @@
             :mapping-attributes="mappingAttributes"
             @enter-pressed="navigateToDocument"
             @filters-updated="onFiltersUpdated"
-            @reset="onFiltersUpdated"
+            @submit="onFilterSubmit"
           />
         </template>
         <template>
@@ -303,6 +303,9 @@ export default {
   },
   async mounted() {
     await this.loadAllTheThings()
+    if (this.paginationFrom) {
+      this.setCurrentPage()
+    }
   },
   watch: {
     currentPage: {
@@ -313,6 +316,7 @@ export default {
             from
           })
         )
+        this.fetchDocuments()
       }
     },
     collectionName: {
@@ -434,9 +438,6 @@ export default {
         params: { id }
       })
     },
-    onRefresh() {
-      this.fetchDocuments()
-    },
 
     // DELETE COLLECTION
     // =========================================================================
@@ -454,7 +455,6 @@ export default {
     async loadAllTheThings() {
       try {
         this.loading = true
-        // await this.loadMappingInfo()
         this.loadListView()
         this.saveListView()
 
@@ -470,6 +470,7 @@ export default {
           this.collectionName
         )
         this.loading = false
+        await this.fetchDocuments()
       } catch {
         this.$bvToast.toast('The complete error has been printed to console.', {
           title: 'Ooops! Something went wrong.',
@@ -478,7 +479,6 @@ export default {
         })
         this.loading = false
       }
-      await this.fetchDocuments()
     },
     navigateToDocument() {
       const document = this.documents[0]
@@ -492,34 +492,21 @@ export default {
         params: { id: document.id }
       })
     },
-    async onFiltersUpdated(newFilters, loadedFromHistory) {
+    onRefresh() {
+      this.fetchDocuments()
+    },
+    async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
-      try {
-        filterManager.save(
+    },
+    onFilterSubmit(saveToHistory = true) {
+      if (saveToHistory) {
+        filterManager.addNewHistoryItemAndSave(
           this.currentFilter,
-          this.$router,
           this.indexName,
           this.collectionName
         )
-        if (!loadedFromHistory) {
-          filterManager.addNewHistoryItemAndSave(
-            newFilters,
-            this.indexName,
-            this.collectionName
-          )
-        }
-        await this.fetchDocuments()
-      } catch (e) {
-        this.$bvToast.toast(e.message, {
-          title: 'Ooops! Something went wrong while performing the search.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        })
-        this.$log.error(e)
       }
+      this.fetchDocuments()
     },
     afterCollectionClear() {
       this.documents = []
@@ -536,6 +523,14 @@ export default {
         from: this.paginationFrom,
         size: this.paginationSize
       }
+
+      filterManager.save(
+        this.currentFilter,
+        this.$router,
+        this.indexName,
+        this.collectionName
+      )
+
       try {
         let searchQuery = null
         searchQuery = filterManager.toSearchQuery(
@@ -600,6 +595,10 @@ export default {
           size
         })
       )
+      this.fetchDocuments()
+    },
+    setCurrentPage() {
+      this.currentPage = parseInt(this.paginationFrom / this.paginationSize + 1)
     },
 
     // SELECT ITEMS
