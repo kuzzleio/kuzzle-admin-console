@@ -17,7 +17,7 @@ import { moduleActionContext } from '@/vuex/store'
 import _ from 'lodash'
 
 const state: IndexState = {
-  indexes: [],
+  indexes: Index[],
   loadingIndexes: false
 }
 
