@@ -128,6 +128,10 @@ describe('Search', function() {
         job: 'From scratch All the Things!'
       }
     )
+    localStorage.setItem(
+      `search-filter-current:${indexName}/${collectionName}`,
+      {}
+    )
 
     cy.visit('/')
     cy.waitForLoading()
@@ -141,6 +145,8 @@ describe('Search', function() {
     cy.wait(250)
 
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
+    cy.waitForLoading()
+
     cy.url().should('not.contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
 
