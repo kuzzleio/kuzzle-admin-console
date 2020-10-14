@@ -4,7 +4,6 @@ import { createDirectStore } from 'direct-vuex'
 import auth from './modules/auth/store'
 import kuzzle from './modules/kuzzle/store'
 import routing from './modules/common/routing/store'
-import collection from './modules/collection/store'
 import toaster from './modules/common/toaster/store'
 import index from './modules/index/store'
 import security from './modules/security/store'
@@ -15,7 +14,6 @@ const { store, rootActionContext, moduleActionContext } = createDirectStore({
   modules: {
     auth,
     kuzzle,
-    collection,
     routing,
     toaster,
     index,
