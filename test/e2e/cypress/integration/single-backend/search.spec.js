@@ -50,6 +50,11 @@ describe('Search', function() {
     )
 
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+
+    localStorage.setItem(
+      `search-filter-current:${indexName}/${collectionName}`,
+      '{}'
+    )
   })
 
   it('perists the Quick Search query in the URL', function() {
@@ -127,10 +132,6 @@ describe('Search', function() {
         lastName: 'Bouthinon',
         job: 'From scratch All the Things!'
       }
-    )
-    localStorage.setItem(
-      `search-filter-current:${indexName}/${collectionName}`,
-      {}
     )
 
     cy.visit('/')

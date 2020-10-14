@@ -472,7 +472,8 @@ export default {
         )
         this.loading = false
         await this.fetchDocuments()
-      } catch {
+      } catch (err) {
+        this.$log.error(err)
         this.$bvToast.toast('The complete error has been printed to console.', {
           title: 'Ooops! Something went wrong.',
           variant: 'warning',
