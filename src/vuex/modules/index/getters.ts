@@ -9,7 +9,7 @@ export const indexes = (state: IndexState) => state.indexes
 
 export const loadingIndexes = (state: IndexState) => state.loadingIndexes
 
-export const loadingCollections = state => (indexName: string) => {
+export const loadingCollections = (state: IndexState) => (indexName: string) => {
   const index = state.indexes.find(el => el.name === indexName)
   return index ? index.loading : false
 }
