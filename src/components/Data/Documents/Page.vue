@@ -303,6 +303,7 @@ export default {
   },
   async mounted() {
     await this.loadAllTheThings()
+
     if (this.paginationFrom) {
       this.setCurrentPage()
     }

@@ -128,10 +128,6 @@ describe('Search', function() {
         job: 'From scratch All the Things!'
       }
     )
-    localStorage.setItem(
-      `search-filter-current:${indexName}/${collectionName}`,
-      {}
-    )
 
     cy.visit('/')
     cy.waitForLoading()
