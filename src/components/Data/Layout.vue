@@ -103,7 +103,7 @@ export default {
           'The complete error has been printed to the console.',
           {
             title:
-              'Ooops! Something went wrong while fetching the collections list.',
+              'Ooops! Something went wrong while fetching the collection list.',
             variant: 'warning',
             toaster: 'b-toaster-bottom-right',
             appendToast: true,
