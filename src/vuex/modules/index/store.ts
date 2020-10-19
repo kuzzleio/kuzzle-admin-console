@@ -70,7 +70,7 @@ const mutations = createMutations<IndexState>()({
     Vue.delete(state.indexes, getIndexPosition(state.indexes, index.name))
   },
   removeIndexes(state, indexes: Index[]) {
-    const keepedIndexes = _.difference(state.indexes, indexes)
+    const keptIndexes = _.difference(state.indexes, indexes)
     Vue.set(state, 'indexes', keepedIndexes)
   },
   removeCollection(state, { index, collection }: IndexCollectionPayload): void {
