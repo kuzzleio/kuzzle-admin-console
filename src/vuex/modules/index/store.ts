@@ -148,7 +148,7 @@ const actions = createActions({
     }
 
     if (index.doesCollectionExist(name)) {
-      throw new Error(`Collection "${name}" already exist`)
+      throw new Error(`Collection "${name}" already exists`)
     }
 
     commit.setLoadingCollections({ index, loading: true })
