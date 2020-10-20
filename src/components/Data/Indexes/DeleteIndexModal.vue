@@ -7,10 +7,8 @@
     @hide="resetForm"
   >
     <template v-slot:modal-title>
-      <template>
-        Index
-        <strong>{{ truncateName(index.name) }}</strong> deletion</template
-      >
+      Index
+      <strong>{{ truncateName(index.name) }}</strong> deletion
     </template>
 
     <template v-slot:modal-footer>

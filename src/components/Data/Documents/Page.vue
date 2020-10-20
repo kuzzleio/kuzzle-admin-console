@@ -517,7 +517,7 @@ export default {
     },
     async fetchDocuments() {
       this.$forceUpdate()
-      this.indexNameOrCollectionNotFound = false
+      this.indexOrCollectionNotFound = false
 
       this.selectedDocuments = []
 
@@ -561,7 +561,7 @@ export default {
       } catch (e) {
         this.$log.error(e)
         if (e.status === 412) {
-          this.indexNameOrCollectionNotFound = true
+          this.indexOrCollectionNotFound = true
         } else if (e.message.includes('failed to create query')) {
           this.$bvToast.toast(
             'Your query is ill-formed. The complete error has been dumped to the console.',
@@ -678,7 +678,7 @@ export default {
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
     addHumanReadableDateFields() {
-      if (!this.collectionNameMapping) {
+      if (!this.collectionMapping) {
         return
       }
 

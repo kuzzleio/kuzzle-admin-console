@@ -89,7 +89,7 @@ export class Collection {
     return this._type === CollectionType.REALTIME
   }
 
-  private findType(name: string, type: string) {
+  private findType(name: string, type: CollectionType) {
     if (type !== CollectionType.STORED && type !== CollectionType.REALTIME) {
       throw new Error(`Unknown collection type for "${name}" :  ${type}`)
     }

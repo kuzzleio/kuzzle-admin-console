@@ -21,8 +21,6 @@ const state: IndexState = {
   loadingIndexes: false
 }
 
-const INTERNAL_INDEX_NAME = '%kuzzle'
-
 const mutations = createMutations<IndexState>()({
   reset(state) {
     state.indexes = []
@@ -71,7 +69,7 @@ const mutations = createMutations<IndexState>()({
   },
   removeIndexes(state, indexes: Index[]) {
     const keptIndexes = _.difference(state.indexes, indexes)
-    Vue.set(state, 'indexes', keepedIndexes)
+    Vue.set(state, 'indexes', keptIndexes)
   },
   removeCollection(state, { index, collection }: IndexCollectionPayload): void {
     state.indexes[getIndexPosition(state.indexes, index.name)].removeCollection(
@@ -109,9 +107,6 @@ const actions = createActions({
     commit.setLoadingIndexes(true)
 
     let result = await rootGetters.kuzzle.$kuzzle.index.list()
-    result = result.filter(
-      (indexName: string) => indexName !== INTERNAL_INDEX_NAME
-    )
 
     for (const indexName of result) {
       indexes.push(new Index(indexName))
