@@ -146,8 +146,6 @@ const actions = createActions({
       throw new Error(`Collection "${name}" already exists`)
     }
 
-    commit.setLoadingCollections({ index, loading: true })
-
     let collection = new Collection(name, CollectionType.STORED)
 
     collection.mapping = mapping
@@ -161,7 +159,6 @@ const actions = createActions({
     })
 
     commit.addCollection({ index, collection })
-    commit.setLoadingCollections({ index, loading: false })
   },
   async updateCollection(
     context,
@@ -247,8 +244,6 @@ const actions = createActions({
       throw new Error(`Collection "${collection.name}" doesn't exist`)
     }
 
-    commit.setLoadingCollections({ index, loading: true })
-
     const kuzzleMapping = await rootGetters.kuzzle.wrapper.getMappingDocument(
       collection.name,
       index.name
@@ -258,7 +253,6 @@ const actions = createActions({
     collection.dynamic = kuzzleMapping.dynamic
 
     commit.updateCollection({ index, collection: collection })
-    commit.setLoadingCollections({ index, loading: false })
   }
 })
 
