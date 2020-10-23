@@ -1,13 +1,11 @@
 <template>
   <div :class="{ open }" class="IndexBranch mt-2">
     <i
-      v-if="index.collectionsCount"
       aria-hidden="true"
       class="fa fa-caret-right pointer tree-toggle"
       :data-cy="`IndexBranch-toggle--${index.name}`"
-      @click="toggleBranch"
+      @click="onToggleBranchClicked"
     />
-    <i v-else class="no-caret"></i>
     <router-link
       class="tree-item truncate mt-2"
       :data-cy="`Treeview-item-index-link--${index.name}`"
@@ -22,46 +20,56 @@
         >&nbsp;({{ index.collectionsCount }})</template
       >
     </router-link>
-    <div class="collections" v-if="index.collections">
-      <div
-        v-for="collection in orderedFilteredCollections"
-        class="tree-item truncate mt-2"
-        :class="{ active: isCollectionActive(index.name, collection.name) }"
-        :data-cy="`Treeview-item--${collection.name}`"
-        :key="`${collection.name}-${collection.type}`"
-        :title="collection.name"
-      >
-        <template v-if="collection.isRealtime()">
-          <i
-            class="fa fa-bolt ml-1 mr-2"
-            aria-hidden="true"
-            title="Volatile collection"
-          />
-          <router-link
-            :to="{
-              name: 'WatchCollection',
-              params: { indexName: index.name, collectionName: collection.name }
-            }"
-          >
-            <HighlightedSpan :value="collection.name" :filter="filter" />
-          </router-link>
-        </template>
-        <template v-else>
-          <i
-            class="fa fa-th-list"
-            aria-hidden="true"
-            title="Persisted collection"
-          />
-          <router-link
-            :to="{
-              name: 'DocumentList',
-              params: { indexName: index.name, collectionName: collection.name }
-            }"
-          >
-            <HighlightedSpan :value="collection.name" :filter="filter" />
-          </router-link>
-        </template>
-      </div>
+    <b-spinner small v-if="loadingCollections(index)"></b-spinner>
+    <div class="collections" v-if="collectionsFetched">
+      <template v-if="index.collections.length">
+        <div
+          v-for="collection in orderedFilteredCollections"
+          class="tree-item truncate mt-2"
+          :class="{ active: isCollectionActive(index.name, collection.name) }"
+          :data-cy="`Treeview-item--${collection.name}`"
+          :key="`${collection.name}-${collection.type}`"
+          :title="collection.name"
+        >
+          <template v-if="collection.isRealtime()">
+            <i
+              class="fa fa-bolt ml-1 mr-2"
+              aria-hidden="true"
+              title="Volatile collection"
+            />
+            <router-link
+              :to="{
+                name: 'WatchCollection',
+                params: {
+                  indexName: index.name,
+                  collectionName: collection.name
+                }
+              }"
+            >
+              <HighlightedSpan :value="collection.name" :filter="filter" />
+            </router-link>
+          </template>
+          <template v-else>
+            <i
+              class="fa fa-th-list"
+              aria-hidden="true"
+              title="Persisted collection"
+            />
+            <router-link
+              :to="{
+                name: 'DocumentList',
+                params: {
+                  indexName: index.name,
+                  collectionName: collection.name
+                }
+              }"
+            >
+              <HighlightedSpan :value="collection.name" :filter="filter" />
+            </router-link>
+          </template>
+        </div>
+      </template>
+      <template v-else><span class="text-muted">no collections</span></template>
       <b-link
         v-if="showMoreCollectionsDisplay"
         @click="toggleShowMoreCollections"
@@ -77,6 +85,8 @@
 <script>
 import { truncateName } from '../../../utils'
 import HighlightedSpan from '../../Common/HighlightedSpan'
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
   components: {
     HighlightedSpan
@@ -95,10 +105,12 @@ export default {
   data: function() {
     return {
       open: false,
-      showMoreCollections: false
+      showMoreCollections: false,
+      collectionsFetched: false
     }
   },
   computed: {
+    ...mapGetters('index', ['loadingCollections']),
     showMoreCollectionsDisplay() {
       if (
         this.filter.length > 0 &&
@@ -147,12 +159,21 @@ export default {
     }
   },
   mounted() {
-    this.testOpen()
+    if (this.indexName) {
+      this.testOpen()
+    }
   },
   methods: {
+    ...mapActions('index', ['fetchCollectionList']),
     truncateName,
+    async onToggleBranchClicked() {
+      await this.fetchCollectionList(this.index)
+      this.collectionsFetched = true
+      this.toggleBranch()
+    },
     toggleBranch() {
       // TODO This state should be one day persistent across page refreshes
+      // NJE edit: not today...
       this.open = !this.open
     },
     // TODO get rid of this ESTEBAAAAAAAAN
