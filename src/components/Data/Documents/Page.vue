@@ -517,8 +517,6 @@ export default {
     },
     async fetchDocuments() {
       this.$forceUpdate()
-      this.indexOrCollectionNotFound = false
-
       this.selectedDocuments = []
 
       let pagination = {
@@ -560,9 +558,7 @@ export default {
         this.totalDocuments = res.total
       } catch (e) {
         this.$log.error(e)
-        if (e.status === 412) {
-          this.indexOrCollectionNotFound = true
-        } else if (e.message.includes('failed to create query')) {
+        if (e.message.includes('failed to create query')) {
           this.$bvToast.toast(
             'Your query is ill-formed. The complete error has been dumped to the console.',
             {

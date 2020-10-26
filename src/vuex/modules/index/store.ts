@@ -102,7 +102,7 @@ const actions = createActions({
     commit.removeIndexes(indexes)
   },
   async fetchIndexList(context) {
-    const { commit, rootGetters } = indexActionContext(context)
+    const { commit, rootGetters, state } = indexActionContext(context)
     const indexes: Index[] = []
     commit.setLoadingIndexes(true)
 
@@ -112,7 +112,16 @@ const actions = createActions({
       indexes.push(new Index(indexName))
     }
 
-    commit.setIndexes(indexes)
+    // remove deleted indexes
+    _.differenceBy(state.indexes, indexes, 'name').forEach(el => {
+      commit.removeIndex(el)
+    })
+
+    // add new indexes
+    _.differenceBy(indexes, state.indexes, 'name').forEach(el => {
+      commit.addIndex(el)
+    })
+
     commit.setLoadingIndexes(false)
   },
   async fetchCollectionList(context, index: Index) {
@@ -125,10 +134,22 @@ const actions = createActions({
       return new Collection(el.name, el.type)
     })
 
-    commit.setCollections({
-      index,
-      collections
-    })
+    if (!index.collections) {
+      commit.setCollections({
+        index,
+        collections
+      })
+    } else {
+      // remove deleted collections
+      _.differenceBy(index.collections, collections, 'name').forEach(el => {
+        commit.removeCollection(el)
+      })
+
+      // add new collections
+      _.differenceBy(collections, index.collections, 'name').forEach(el => {
+        commit.addCollection(el)
+      })
+    }
 
     commit.setLoadingCollections({ index, loading: false })
   },

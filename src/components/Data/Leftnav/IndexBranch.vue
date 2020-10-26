@@ -20,9 +20,9 @@
         >&nbsp;({{ index.collectionsCount }})</template
       >
     </router-link>
-    <b-spinner small v-if="loadingCollections(index)"></b-spinner>
+    <b-spinner small v-if="isLoading"></b-spinner>
     <div class="collections" v-if="collectionsFetched">
-      <template v-if="index.collections.length">
+      <template v-if="orderedFilteredCollections.length">
         <div
           v-for="collection in orderedFilteredCollections"
           class="tree-item truncate mt-2"
@@ -106,11 +106,15 @@ export default {
     return {
       open: false,
       showMoreCollections: false,
-      collectionsFetched: false
+      collectionsFetched: false,
+      isLoading: false
     }
   },
   computed: {
     ...mapGetters('index', ['loadingCollections']),
+    // isLoading() {
+    //   return this.loadingCollections(this.index.name)
+    // },
     showMoreCollectionsDisplay() {
       if (
         this.filter.length > 0 &&
@@ -167,8 +171,26 @@ export default {
     ...mapActions('index', ['fetchCollectionList']),
     truncateName,
     async onToggleBranchClicked() {
-      await this.fetchCollectionList(this.index)
-      this.collectionsFetched = true
+      if (!this.open) {
+        try {
+          this.isLoading = true
+          await this.fetchCollectionList(this.index)
+          this.collectionsFetched = true
+        } catch (error) {
+          this.$log.error(error)
+          this.$bvToast.toast(
+            'The complete error has been printed to the console.',
+            {
+              title:
+                'Ooops! Something went wrong while fetching the collections.',
+              variant: 'danger',
+              toaster: 'b-toaster-bottom-right',
+              appendToast: true
+            }
+          )
+        }
+      }
+      this.isLoading = false
       this.toggleBranch()
     },
     toggleBranch() {
