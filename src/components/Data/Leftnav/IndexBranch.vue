@@ -162,9 +162,9 @@ export default {
       }
     }
   },
-  mounted() {
-    if (this.indexName) {
-      this.testOpen()
+  async mounted() {
+    if (this.index) {
+      await this.testOpen()
     }
   },
   methods: {
@@ -172,26 +172,29 @@ export default {
     truncateName,
     async onToggleBranchClicked() {
       if (!this.open) {
-        try {
-          this.isLoading = true
-          await this.fetchCollectionList(this.index)
-          this.collectionsFetched = true
-        } catch (error) {
-          this.$log.error(error)
-          this.$bvToast.toast(
-            'The complete error has been printed to the console.',
-            {
-              title:
-                'Ooops! Something went wrong while fetching the collections.',
-              variant: 'danger',
-              toaster: 'b-toaster-bottom-right',
-              appendToast: true
-            }
-          )
-        }
+        await this.fetchCollections()
+      }
+      this.toggleBranch()
+    },
+    async fetchCollections() {
+      try {
+        this.isLoading = true
+        await this.fetchCollectionList(this.index)
+        this.collectionsFetched = true
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while fetching the collections.',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
       }
       this.isLoading = false
-      this.toggleBranch()
     },
     toggleBranch() {
       // TODO This state should be one day persistent across page refreshes
@@ -212,8 +215,9 @@ export default {
     toggleShowMoreCollections() {
       this.showMoreCollections = !this.showMoreCollections
     },
-    testOpen() {
-      if (this.browsedIndexName === this.indexName) {
+    async testOpen() {
+      if (this.browsedIndexName === this.index.name) {
+        await this.fetchCollections()
         this.open = true
       }
     },

@@ -69,12 +69,11 @@ export default {
   methods: {
     async update(payload) {
       this.error = ''
-
+      console.log(payload)
       try {
         await this.$store.direct.dispatch.index.updateCollection({
           index: this.index,
           name: payload.name,
-          isRealtime: payload.realtimeOnly,
           mapping: payload.mapping,
           dynamic: payload.dynamic
         })

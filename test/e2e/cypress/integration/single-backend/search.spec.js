@@ -86,7 +86,7 @@ describe('Search', function() {
       }
     )
     cy.visit('/')
-    // cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
+
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
@@ -145,13 +145,17 @@ describe('Search', function() {
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 250 })
     cy.wait(250)
 
-    cy.get('[data-cy=Treeview-item--anothercollection]').click()
+    cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
+    cy.get('[data-cy=CollectionList-name--anothercollection]').click()
     cy.waitForLoading()
 
     cy.url().should('not.contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
 
-    cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
+    cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
+    cy.get(`[data-cy=CollectionList-name--${collectionName}]`).click()
+    cy.waitForLoading()
+
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
   })
@@ -204,11 +208,17 @@ describe('Search', function() {
 
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
 
-    cy.get('[data-cy=Treeview-item--anothercollection]').click()
+    cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
+    cy.get(`[data-cy=CollectionList-name--anothercollection]`).click()
+    cy.waitForLoading()
+
     cy.url().should('not.contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
 
-    cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
+    cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
+    cy.get(`[data-cy=CollectionList-name--${collectionName}]`).click()
+    cy.waitForLoading()
+
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()

@@ -183,7 +183,7 @@ const actions = createActions({
   },
   async updateCollection(
     context,
-    { index, name, isRealtime, mapping, dynamic }: UpdateCollectionPayload
+    { index, name, mapping, dynamic }: UpdateCollectionPayload
   ) {
     const { commit, rootGetters } = indexActionContext(context)
 
@@ -191,19 +191,12 @@ const actions = createActions({
       throw new Error(`Collection "${name}" doesn't exist`)
     }
 
-    if (isRealtime) {
-      return Promise.resolve()
-    }
-
-    const collectionType = isRealtime
-      ? CollectionType.STORED
-      : CollectionType.REALTIME
-
-    let updatedCollection = new Collection(name, collectionType)
+    let updatedCollection = new Collection(name, CollectionType.STORED)
 
     updatedCollection.mapping = mapping
     updatedCollection.dynamic = dynamic
 
+    // TODO: use dedicated SDK method instead of query
     await rootGetters.kuzzle.$kuzzle.query({
       controller: 'collection',
       action: 'updateMapping',
