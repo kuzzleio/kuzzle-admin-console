@@ -19,8 +19,8 @@
       <create-or-update
         v-else
         :id="id"
-        :index="index"
-        :collection="collection"
+        :index="indexName"
+        :collection="collectionName"
         :document="document"
         :mapping="mapping"
         @cancel="onCancel"
@@ -39,7 +39,6 @@ import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 import { omit } from 'lodash'
 import { mapGetters } from 'vuex'
-let room
 
 export default {
   name: 'DocumentUpdate',
@@ -50,8 +49,8 @@ export default {
   },
   props: {
     id: { type: String, required: true },
-    index: { type: String, required: true },
-    collection: { type: String, required: true }
+    indexName: { type: String, required: true },
+    collectionName: { type: String, required: true }
   },
   data() {
     return {
@@ -64,24 +63,33 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
     ...mapGetters('auth', ['canEditDocument']),
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.$store.direct.getters.index.getOneCollection(
+        this.index,
+        this.collectionName
+      )
+    },
     hasRights() {
-      return this.canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.indexName, this.collectionName)
     }
   },
   async mounted() {
     this.fetch()
     this.room = await this.$kuzzle.realtime.subscribe(
-      this.index,
-      this.collection,
+      this.indexName,
+      this.collectionName,
       { ids: { values: [this.$route.params.id] } },
       () => {
         this.showAlert = true
       }
     )
   },
-  destroyed() {
-    if (room) {
-      room.unsubscribe()
+  async destroyed() {
+    if (this.room) {
+      await this.$kuzzle.realtime.unsubscribe(this.room)
     }
   },
   methods: {
@@ -101,15 +109,15 @@ export default {
           action = 'replace'
         }
         await this.$kuzzle.document[action](
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           this.id,
           document,
           { refresh: 'wait_for' }
         )
         this.$router.push({
           name: 'DocumentList',
-          params: { index: this.index, collection: this.collection }
+          params: { index: this.indexName, collection: this.collectionName }
         })
       } catch (err) {
         this.$log.error(err)
@@ -126,7 +134,7 @@ export default {
     onCancel() {
       this.$router.push({
         name: 'DocumentList',
-        params: { index: this.index, collection: this.collection }
+        params: { index: this.indexName, collection: this.collectionName }
       })
     },
     async fetch() {
@@ -134,14 +142,14 @@ export default {
       this.loading = true
       try {
         const res = await this.$kuzzle.document.get(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           this.id
         )
         this.document = omit(res._source, '_kuzzle_info')
         this.mapping = await this.wrapper.getMappingDocument(
-          this.collection,
-          this.index
+          this.collectionName,
+          this.indexName
         )
         this.loading = false
       } catch (err) {

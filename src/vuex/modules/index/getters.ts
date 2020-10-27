@@ -1,25 +1,28 @@
-import { IndexState } from './types'
+import { IndexState, Index } from './types'
 
-export const indexCollections = state => index => {
-  return state.indexesAndCollections[index] || { realtime: [], stored: [] }
+export const getOneIndex = state => (indexName: string) => {
+  return state.indexes.find(el => el.name === indexName)
 }
 
-export const indexes = (state: IndexState) =>
-  Object.keys(state.indexesAndCollections)
+export const indexes = (state: IndexState) => state.indexes
 
 export const loadingIndexes = (state: IndexState) => state.loadingIndexes
 
-export const loadingCollections = (state: IndexState) =>
-  state.loadingCollections
+export const loadingCollections = (state: IndexState) => (
+  indexName: string
+) => {
+  const index = state.indexes.find(el => el.name === indexName)
+  return index ? index.loading : false
+}
 
-export const isCollectionRealtimeOnly = (state: IndexState): Function => {
-  return (index: string, collection: string): boolean => {
-    if (!state.indexesAndCollections[index]) {
-      return false
-    }
-    const rtCollections: Array<string> =
-      state.indexesAndCollections[index].realtime
+export const collections = state => (indexName: string) => {
+  const index = state.indexes.find(el => el.name === indexName)
+  return index ? index.collections : []
+}
 
-    return rtCollections.some(c => c === collection)
-  }
+export const getOneCollection = state => (
+  index: Index,
+  collectionName: string
+) => {
+  return index.getOneCollection(collectionName)
 }

@@ -1,14 +1,13 @@
 <template>
   <b-modal
-    class="DeleteIndexModal"
+    class="BulkDeleteIndexModal"
     size="lg"
     :id="modalId"
     :ref="modalId"
     @hide="resetForm"
   >
     <template v-slot:modal-title>
-      Index
-      <strong>{{ truncateName(index.name) }}</strong> deletion
+      Are you sure you want to delete all the selected indexes?"
     </template>
 
     <template v-slot:modal-footer>
@@ -17,7 +16,7 @@
       </b-button>
       <b-button
         variant="danger"
-        data-cy="DeleteIndexModal-deleteBtn"
+        data-cy="BulkDeleteIndexModal-deleteBtn"
         :disabled="!isConfirmationValid"
         @click="performDelete()"
       >
@@ -26,12 +25,12 @@
     </template>
     <form ref="form" v-on:submit.prevent="performDelete()">
       <b-form-group
-        label="Type the name of the index to confirm deletion"
+        label="Type 'DELETE' to confirm the deletion of the selected indexes"
         label-for="inputConfirmation"
         description="This operation is NOT reversible"
       >
         <b-form-input
-          data-cy="DeleteIndexModal-name"
+          data-cy="BulkDeleteIndexModal-input-confirmation"
           id="inputConfirmation"
           v-model="confirmation"
           type="text"
@@ -44,17 +43,17 @@
 </template>
 
 <script>
-import { truncateName } from '@/utils'
+const BULK_DELETE_CONFIRMATION = 'DELETE'
 
 export default {
-  name: 'deleteIndexModal',
+  name: 'bulkDeleteIndexModal',
   props: {
     modalId: {
       type: String,
       required: true
     },
-    index: {
-      type: Object,
+    indexes: {
+      type: Array,
       required: false
     }
   },
@@ -66,11 +65,10 @@ export default {
   },
   computed: {
     isConfirmationValid() {
-      return this.confirmation === this.index.name
+      return this.confirmation === BULK_DELETE_CONFIRMATION
     }
   },
   methods: {
-    truncateName,
     resetForm() {
       this.confirmation = ''
       this.error = ''
@@ -92,7 +90,7 @@ export default {
       }
 
       try {
-        await this.$store.direct.dispatch.index.deleteIndex(this.index)
+        await this.$store.direct.dispatch.index.bulkDeleteIndexes(this.indexes)
         this.onDeleteSuccess()
       } catch (err) {
         this.error = err.message

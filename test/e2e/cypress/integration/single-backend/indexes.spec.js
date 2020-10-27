@@ -87,6 +87,33 @@ describe('Indexes', () => {
     cy.get('.IndexesPage').should('not.contain', indexName)
   })
 
+  it('Should be able to bulk delete some indexes', () => {
+    const indexName = 'testindex'
+    cy.request('POST', `http://localhost:7512/${indexName}1/_create`)
+    cy.request('POST', `http://localhost:7512/${indexName}2/_create`)
+
+    cy.visit('/')
+    cy.waitOverlay()
+
+    cy.get(`[data-cy=IndexesPage-checkbox--${indexName}1]`).click({
+      force: true
+    })
+    cy.get(`[data-cy=IndexesPage-checkbox--${indexName}2]`).click({
+      force: true
+    })
+
+    cy.get(`[data-cy=IndexesPage-bulkDelete--btn]`).click()
+
+    cy.get('[data-cy="BulkDeleteIndexModal-input-confirmation"').type(
+      'DELETE',
+      { force: true }
+    )
+    cy.get('[data-cy="BulkDeleteIndexModal-deleteBtn"]').click()
+
+    cy.get('.IndexesPage').should('not.contain', `${indexName}1`)
+    cy.get('.IndexesPage').should('not.contain', `${indexName}2`)
+  })
+
   it('Should be able to autofocus index search', () => {
     cy.request('POST', 'http://localhost:7512/nyc-open-data/_create')
     cy.request('POST', 'http://localhost:7512/iot-data/_create')

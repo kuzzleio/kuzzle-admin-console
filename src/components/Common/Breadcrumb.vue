@@ -65,20 +65,20 @@
         </router-link>
       </li>
 
-      <li v-if="$route.params.index">
+      <li v-if="$route.params.indexName">
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
         <router-link
           :to="{
             name: 'Collections',
-            params: { index: $route.params.index }
+            params: { indexName: $route.params.indexName }
           }"
         >
-          {{ $route.params.index }}
+          {{ $route.params.indexName }}
         </router-link>
       </li>
 
-      <li v-if="$route.params.collection">
+      <li v-if="$route.params.collectionName">
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
         <router-link
@@ -86,12 +86,12 @@
           :to="{
             name: 'WatchCollection',
             params: {
-              index: $route.params.index,
-              collection: $route.params.collection
+              indexName: $route.params.indexName,
+              collectionName: $route.params.collectionName
             }
           }"
         >
-          {{ $route.params.collection }}
+          {{ $route.params.collectionName }}
         </router-link>
 
         <router-link
@@ -99,12 +99,12 @@
           :to="{
             name: 'DocumentList',
             params: {
-              index: $route.params.index,
-              collection: $route.params.collection
+              indexName: $route.params.indexName,
+              collectionName: $route.params.collectionName
             }
           }"
         >
-          {{ $route.params.collection }}
+          {{ $route.params.collectionName }}
         </router-link>
       </li>
     </ul>
@@ -143,22 +143,21 @@
 export default {
   name: 'CommonBreadcrumb',
   methods: {
+    index() {
+      return this.$route.params.indexName
+        ? this.$store.direct.getters.index.getOneIndex(
+            this.$route.params.indexName
+          )
+        : undefined
+    },
     isCollectionRealtime() {
-      if (
-        !this.$store.direct.state.index.indexesAndCollections[
-          this.$route.params.index
-        ]
-      ) {
+      if (!this.index || this.$route.params.collectionName) {
         return false
       }
-
-      return (
-        // prettier-ignore
-        this.$store.direct.state.index
-          .indexesAndCollections[this.$route.params.index]
-          .realtime
-          .indexOf(this.$route.params.collection) !== -1
-      )
+      return this.$store.direct.getters.index.getOneCollection(
+        this.index,
+        this.$route.params.collectionName
+      ).isRealtime
     },
     isRouteActive(routeName) {
       if (Array.isArray(routeName)) {

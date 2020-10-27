@@ -5,8 +5,8 @@
         <b-row>
           <b-col cols="10">
             <headline>
-              <span class="code" :title="collection">{{
-                truncateName(collection, 20)
+              <span class="code" :title="collectionName">{{
+                truncateName(collectionName, 20)
               }}</span>
             </headline>
           </b-col>
@@ -14,8 +14,8 @@
             <collection-dropdown-view
               active-view="realtime"
               class="icon-medium icon-black mr-2"
-              :index="index"
-              :collection="collection"
+              :index="indexName"
+              :collection="collectionName"
               @list="$router.push({ name: 'DocumentList' })"
               @column="$router.push({ name: 'DocumentList' })"
             />
@@ -30,12 +30,13 @@
             <collection-dropdown-action
               v-else
               class="icon-medium icon-black"
-              :index="index"
-              :collection="collection"
+              :indexName="indexName"
+              :collectionName="collectionName"
+              @delete-collection-clicked="showDeleteCollectionModal"
             />
           </b-col>
         </b-row>
-        <b-card v-if="!canSubscribe(index, collection)">
+        <b-card v-if="!canSubscribe(indexName, collectionName)">
           <b-row>
             <b-col cols="2">
               <i class="fa fa-6x fa-lock text-secondary" aria-hidden="true" />
@@ -43,8 +44,8 @@
             <b-col cols="10">
               <h2>
                 You are not allowed to watch realtime messages on collection
-                <strong>{{ collection }}</strong> of index
-                <strong>{{ index }}</strong
+                <strong>{{ collectionName }}</strong> of index
+                <strong>{{ indexName }}</strong
                 ><br />
               </h2>
               <p>
@@ -138,7 +139,7 @@
               <b-col cols="6">
                 <h3>
                   You did not subscribe yet to the collection
-                  <strong>{{ collection }}</strong
+                  <strong>{{ collectionName }}</strong
                   ><br />
                 </h3>
                 <p>
@@ -245,12 +246,12 @@
         </div>
       </div>
     </b-container>
-    <modal-delete
-      :collection-to-delete="collection"
+    <DeleteCollectionModal
       :index="index"
-      :modal-id="modalDeleteId"
-      @afterDelete="afterDeleteCollection"
-    ></modal-delete>
+      :collection="collection"
+      :modalId="modalDeleteId"
+      @delete-successful="afterDeleteCollection"
+    />
   </div>
 </template>
 
@@ -259,7 +260,7 @@ import Headline from '../../Materialize/Headline'
 import Notification from '../Realtime/Notification'
 import CollectionDropdownView from './DropdownView'
 import CollectionDropdownAction from './DropdownAction'
-import ModalDelete from './ModalDelete'
+import DeleteCollectionModal from './DeleteCollectionModal'
 import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
 import { truncateName } from '@/utils'
@@ -275,14 +276,14 @@ export default {
   components: {
     CollectionDropdownAction,
     CollectionDropdownView,
+    DeleteCollectionModal,
     Headline,
     JsonEditor,
-    ModalDelete,
     Notification
   },
   props: {
-    index: String,
-    collection: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {
@@ -300,6 +301,17 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['canSubscribe']),
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.index
+        ? this.$store.direct.getters.index.getOneCollection(
+            this.index,
+            this.collectionName
+          )
+        : null
+    },
     hasFilter() {
       return (
         !!this.realtimeQuery &&
@@ -338,20 +350,23 @@ export default {
       }
     },
     isRealtimeCollection() {
-      return this.$store.direct.getters.index.isCollectionRealtimeOnly(
-        this.index,
-        this.collection
-      )
+      return this.collection ? this.collection.isRealtime() : false
     }
   },
   methods: {
+    truncateName,
+    showDeleteCollectionModal() {
+      this.$bvModal.show(this.modalDeleteId)
+    },
     onDeleteCollectionClicked() {
       this.$bvModal.show(this.modalDeleteId)
     },
     afterDeleteCollection() {
-      this.$router.push({ name: 'Collections', params: { index: this.index } })
+      this.$router.push({
+        name: 'Collections',
+        params: { indexName: this.indexName }
+      })
     },
-    truncateName,
     onFilterChanged(value) {
       this.rawFilter = value
     },
@@ -395,8 +410,8 @@ export default {
           throw new Error('Realtime filter seems to be invalid')
         }
         const room = await this.$kuzzle.realtime.subscribe(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           this.realtimeQuery,
           this.handleNotification,
           this.subscribeOptions

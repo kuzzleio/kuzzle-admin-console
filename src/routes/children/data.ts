@@ -8,7 +8,7 @@ export default [
     }
   },
   {
-    path: '/data/:index',
+    path: '/data/:indexName',
     name: 'Collections',
     meta: {
       auth: true
@@ -17,73 +17,73 @@ export default [
       require(['../../components/Data/Collections/CollectionList'], resolve)
     },
     props: route => ({
-      index: route.params.index
+      indexName: route.params.indexName
     })
   },
   {
-    path: '/data/:index/create',
+    path: '/data/:indexName/create',
     name: 'CreateCollection',
     component(resolve) {
       require(['../../components/Data/Collections/Create'], resolve)
     },
     props: route => ({
-      index: route.params.index
+      indexName: route.params.indexName
     })
   },
   {
-    path: '/data/:index/:collection/watch',
+    path: '/data/:indexName/:collectionName/watch',
     name: 'WatchCollection',
     component(resolve) {
       require(['../../components/Data/Collections/Watch'], resolve)
     },
     props: route => ({
-      index: route.params.index,
-      collection: route.params.collection
+      indexName: route.params.indexName,
+      collectionName: route.params.collectionName
     })
   },
   {
-    path: '/data/:index/:collection/edit',
+    path: '/data/:indexName/:collectionName/edit',
     name: 'EditCollection',
     component(resolve) {
       require(['../../components/Data/Collections/Update'], resolve)
     },
     props: route => ({
-      index: route.params.index,
-      collection: route.params.collection
+      indexName: route.params.indexName,
+      collectionName: route.params.collectionName
     })
   },
   {
-    path: '/data/:index/:collection',
+    path: '/data/:indexName/:collectionName',
     name: 'DocumentList',
     component(resolve) {
       require(['../../components/Data/Documents/Page'], resolve)
     },
     props: route => ({
-      index: route.params.index,
-      collection: route.params.collection
+      indexName: route.params.indexName,
+      collectionName: route.params.collectionName
     })
   },
   {
-    path: '/data/:index/:collection/create',
+    path: '/data/:indexName/:collectionName/create',
     name: 'CreateDocument',
     component(resolve) {
       require(['../../components/Data/Documents/Create'], resolve)
     },
     props: route => ({
-      index: route.params.index,
-      collection: route.params.collection
+      indexName: route.params.indexName,
+      collectionName: route.params.collectionName
     })
   },
   {
-    path: '/data/:index/:collection/update/:id',
+    path: '/data/:indexName/:collectionName/update/:id',
     name: 'UpdateDocument',
     component(resolve) {
       require(['../../components/Data/Documents/Update'], resolve)
     },
     props: route => ({
       id: route.params.id,
-      index: route.params.index,
-      collection: route.params.collection
+      indexName: route.params.indexName,
+      collectionName: route.params.collectionName
     })
   }
 ]

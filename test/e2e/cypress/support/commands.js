@@ -27,10 +27,17 @@
 import 'cypress-file-upload'
 import { antiGlitchOverlayTimeout } from '../../../../src/utils.ts'
 import axios from 'axios'
+import 'cypress-wait-until'
 
 Cypress.Commands.add('waitOverlay', () => {
   cy.visit('/')
   cy.wait(antiGlitchOverlayTimeout + 50)
+})
+
+Cypress.Commands.add('waitForLoading', () => {
+  cy.waitUntil(function() {
+    return cy.get('[data-cy="main-spinner"]').should('not.visible')
+  })
 })
 
 Cypress.Commands.add(

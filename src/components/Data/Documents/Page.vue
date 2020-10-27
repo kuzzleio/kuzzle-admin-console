@@ -1,14 +1,14 @@
 <template>
   <div class="DocumentList">
     <b-container
-      class="DocumentList--container"
       :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
+      class="DocumentList--container"
     >
       <b-row>
         <b-col>
           <headline>
-            <span class="code" :title="collection">{{
-              truncateName(collection, 20)
+            <span class="code" :title="collectionName">{{
+              truncateName(collectionName, 20)
             }}</span>
           </headline>
         </b-col>
@@ -16,144 +16,142 @@
           <b-button
             variant="primary"
             :disabled="
-              indexOrCollectionNotFound || !canCreateDocument(index, collection)
+              indexOrCollectionNotFound ||
+                !canCreateDocument(indexName, collectionName)
             "
-            :to="{ name: 'CreateDocument', params: { index, collection } }"
+            :to="{
+              name: 'CreateDocument',
+              params: { indexName, collectionName }
+            }"
             >Create New Document</b-button
           >
           <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"
-            :index="index"
-            :collection="collection"
+            :index="indexName"
+            :collection="collectionName"
             @list="onListViewClicked"
             @column="onColumnViewClicked"
           />
           <collection-dropdown-action
             class="icon-medium icon-black ml-2"
-            :index="index"
-            :collection="collection"
+            :indexName="indexName"
+            :collectionName="collectionName"
+            @delete-collection-clicked="showDeleteCollectionModal"
             @clear="afterCollectionClear"
           />
         </b-col>
       </b-row>
 
-      <list-not-allowed v-if="!canSearchDocument(index, collection)" />
+      <list-not-allowed
+        v-if="
+          !canSearchDocument(indexName, collectionName) && index && collection
+        "
+      />
+
       <template v-else>
-        <data-not-found
-          v-if="indexOrCollectionNotFound"
-          class="mt-3"
-        ></data-not-found>
-        <template v-else>
-          <template v-if="isCollectionEmpty">
-            <realtime-only-empty-state
-              v-if="isRealtimeCollection"
-              :index="index"
-              :collection="collection"
-            />
-            <empty-state v-else :index="index" :collection="collection" />
-          </template>
+        <template v-if="isCollectionEmpty">
+          <realtime-only-empty-state
+            v-if="isRealtimeCollection"
+            :index="indexName"
+            :collection="collectionName"
+          />
+          <empty-state v-else :index="indexName" :collection="collectionName" />
+        </template>
 
+        <template v-if="!isCollectionEmpty">
+          <filters
+            class="mb-3"
+            :available-operands="searchFilterOperands"
+            :collection="collectionName"
+            :current-filter="currentFilter"
+            :index="indexName"
+            :mapping-attributes="mappingAttributes"
+            @enter-pressed="navigateToDocument"
+            @filters-updated="onFiltersUpdated"
+            @submit="onFilterSubmit"
+          />
+        </template>
+        <template>
           <template v-if="!isCollectionEmpty">
-            <filters
-              class="mb-3"
-              :available-operands="searchFilterOperands"
-              :collection="collection"
-              :current-filter="currentFilter"
-              :index="index"
-              :mapping-attributes="mappingAttributes"
-              @enter-pressed="navigateToDocument"
-              @filters-updated="onFiltersUpdated"
-              @submit="onFilterSubmit"
-            />
-          </template>
-          <template v-if="loading">
-            <b-row class="text-center">
-              <b-col>
-                <b-spinner
-                  v-if="loading"
-                  variant="primary"
-                  class="mt-5"
-                ></b-spinner>
-              </b-col>
-            </b-row>
-          </template>
-          <template v-else>
-            <template v-if="!isCollectionEmpty">
-              <b-card
-                class="light-shadow"
-                :bg-variant="documents.length === 0 ? 'light' : 'default'"
-              >
-                <b-card-text class="p-0">
-                  <no-results-empty-state v-if="!documents.length" />
-                  <template v-else>
-                    <List
-                      v-if="listViewType === 'list'"
-                      :all-checked="allChecked"
-                      :collection="collection"
-                      :documents="documents"
-                      :index="index"
-                      :current-page-size="paginationSize"
-                      :selected-documents="selectedDocuments"
-                      :total-documents="totalDocuments"
-                      @bulk-delete="onBulkDeleteClicked"
-                      @change-page-size="changePaginationSize"
-                      @checkbox-click="toggleSelectDocuments"
-                      @delete="onDeleteClicked"
-                      @refresh="onRefresh"
-                      @toggle-all="onToggleAllClicked"
-                    ></List>
+            <b-card
+              class="light-shadow"
+              :bg-variant="documents.length === 0 ? 'light' : 'default'"
+            >
+              <b-card-text class="p-0">
+                <no-results-empty-state v-if="!documents.length" />
+                <template v-else>
+                  <List
+                    v-if="listViewType === 'list'"
+                    :all-checked="allChecked"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :index="indexName"
+                    :current-page-size="paginationSize"
+                    :selected-documents="selectedDocuments"
+                    :total-documents="totalDocuments"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @delete="onDeleteClicked"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  ></List>
 
-                    <Column
-                      v-if="listViewType === 'column'"
-                      :index="index"
-                      :collection="collection"
-                      :documents="documents"
-                      :mapping="collectionMapping"
-                      :selected-documents="selectedDocuments"
-                      :all-checked="allChecked"
-                      :current-page-size="paginationSize"
-                      :total-documents="totalDocuments"
-                      @edit="onEditClicked"
-                      @delete="onDeleteClicked"
-                      @bulk-delete="onBulkDeleteClicked"
-                      @change-page-size="changePaginationSize"
-                      @checkbox-click="toggleSelectDocuments"
-                      @refresh="onRefresh"
-                      @toggle-all="onToggleAllClicked"
-                    />
+                  <Column
+                    v-if="listViewType === 'column'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :selected-documents="selectedDocuments"
+                    :all-checked="allChecked"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  />
 
-                    <b-row
-                      v-show="totalDocuments > paginationSize"
-                      align-h="center"
+                  <b-row
+                    v-show="totalDocuments > paginationSize"
+                    align-h="center"
+                  >
+                    <b-pagination
+                      v-model="currentPage"
+                      aria-controls="my-table"
+                      class="m-2 mt-4"
+                      data-cy="DocumentList-pagination"
+                      :total-rows="totalDocuments"
+                      :per-page="paginationSize"
+                    ></b-pagination>
+                  </b-row>
+                  <div
+                    v-if="totalDocuments > 10000"
+                    class="text-center mt-2"
+                    data-cy="DocumentList-exceedESLimitMsg"
+                  >
+                    <small class="text-secondary"
+                      >Due to limitations imposed by Elasticsearch, you won't be
+                      able to browse documents beyond 10000.</small
                     >
-                      <b-pagination
-                        v-model="currentPage"
-                        aria-controls="my-table"
-                        class="m-2 mt-4"
-                        data-cy="DocumentList-pagination"
-                        :total-rows="totalDocuments"
-                        :per-page="paginationSize"
-                      ></b-pagination>
-                    </b-row>
-                    <div
-                      v-if="totalDocuments > 10000"
-                      class="text-center mt-2"
-                      data-cy="DocumentList-exceedESLimitMsg"
-                    >
-                      <small class="text-secondary"
-                        >Due to limitations imposed by Elasticsearch, you won't
-                        be able to browse documents beyond 10000.</small
-                      >
-                    </div>
-                  </template>
-                </b-card-text>
-              </b-card>
-            </template>
+                  </div>
+                </template>
+              </b-card-text>
+            </b-card>
           </template>
         </template>
       </template>
-
+      <DeleteCollectionModal
+        :index="index"
+        :collection="collection"
+        :modalId="modalDeleteId"
+        @delete-successful="afterDeleteCollection"
+      />
       <delete-modal
         id="modal-delete"
         :candidates-for-deletion="candidatesForDeletion"
@@ -169,7 +167,6 @@
 import _ from 'lodash'
 
 import Column from './Views/Column'
-import DataNotFound from '../Data404'
 import List from './Views/List'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
@@ -179,6 +176,7 @@ import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdownView from '../Collections/DropdownView'
 import CollectionDropdownAction from '../Collections/DropdownAction'
+import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
 import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
@@ -197,6 +195,7 @@ export default {
   components: {
     CollectionDropdownView,
     CollectionDropdownAction,
+    DeleteCollectionModal,
     DeleteModal,
     Column,
     List,
@@ -205,12 +204,11 @@ export default {
     Filters,
     ListNotAllowed,
     NoResultsEmptyState,
-    RealtimeOnlyEmptyState,
-    DataNotFound
+    RealtimeOnlyEmptyState
   },
   props: {
-    index: String,
-    collection: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {
@@ -225,12 +223,11 @@ export default {
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
-      collectionMapping: {},
       mappingGeopoints: [],
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
       currentPage: 1,
-      indexOrCollectionNotFound: false
+      modalDeleteId: 'modal-collection-delete'
     }
   },
   computed: {
@@ -241,8 +238,27 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.index
+        ? this.$store.direct.getters.index.getOneCollection(
+            this.index,
+            this.collectionName
+          )
+        : null
+    },
+    collectionMapping() {
+      return this.collection ? this.collection.mapping : null
+    },
+    indexOrCollectionNotFound() {
+      return !this.index || !this.collection ? true : false
+    },
     mappingAttributes() {
-      return this.extractAttributesFromMapping(this.collectionMapping)
+      return this.collectionMapping
+        ? this.extractAttributesFromMapping(this.collectionMapping)
+        : null
     },
     geoDocuments() {
       return this.documents.filter(document => {
@@ -282,21 +298,14 @@ export default {
       return parseInt(this.currentFilter.size) || 10
     },
     isRealtimeCollection() {
-      if (this.$store.state.index.indexesAndCollections) {
-        if (!this.$store.state.index.indexesAndCollections[this.index]) {
-          return false
-        }
-        if (
-          !this.$store.state.index.indexesAndCollections[this.index].realtime
-        ) {
-          return false
-        }
-        return (
-          // prettier-ignore
-          this.$store.state.index.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
-        )
-      }
-      return false
+      return this.collection ? this.collection.isRealtime() : false
+    }
+  },
+  async mounted() {
+    await this.loadAllTheThings()
+
+    if (this.paginationFrom) {
+      this.setCurrentPage()
     }
   },
   watch: {
@@ -311,14 +320,12 @@ export default {
         this.fetchDocuments()
       }
     },
-    collection: {
-      immediate: true,
+    collectionName: {
       handler() {
         this.loadAllTheThings()
       }
     },
-    index: {
-      immediate: true,
+    indexName: {
       handler() {
         this.loadAllTheThings()
       }
@@ -390,8 +397,8 @@ export default {
       this.deleteModalIsLoading = true
       try {
         await this.wrapper.performDeleteDocuments(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           documentsToDelete
         )
         this.$bvModal.hide('modal-delete')
@@ -432,28 +439,41 @@ export default {
         params: { id }
       })
     },
+
+    // DELETE COLLECTION
+    // =========================================================================
+    showDeleteCollectionModal() {
+      this.$bvModal.show(this.modalDeleteId)
+    },
+    afterDeleteCollection() {
+      this.$router.push({
+        name: 'Collections',
+        params: { indexName: this.indexName }
+      })
+    },
     // LIST (FETCH & SEARCH)
     // =========================================================================
     async loadAllTheThings() {
       try {
         this.loading = true
-        await this.loadMappingInfo()
         this.loadListView()
         this.saveListView()
 
         this.currentFilter = filterManager.load(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           this.$route
         )
         filterManager.save(
           this.currentFilter,
           this.$router,
-          this.index,
-          this.collection
+          this.indexName,
+          this.collectionName
         )
         this.loading = false
-      } catch {
+        await this.fetchDocuments()
+      } catch (err) {
+        this.$log.error(err)
         this.$bvToast.toast('The complete error has been printed to console.', {
           title: 'Ooops! Something went wrong.',
           variant: 'warning',
@@ -461,7 +481,6 @@ export default {
         })
         this.loading = false
       }
-      await this.fetchDocuments()
     },
     navigateToDocument() {
       const document = this.documents[0]
@@ -485,8 +504,8 @@ export default {
       if (saveToHistory) {
         filterManager.addNewHistoryItemAndSave(
           this.currentFilter,
-          this.index,
-          this.collection
+          this.indexName,
+          this.collectionName
         )
       }
       this.fetchDocuments()
@@ -498,8 +517,6 @@ export default {
     },
     async fetchDocuments() {
       this.$forceUpdate()
-      this.indexOrCollectionNotFound = false
-
       this.selectedDocuments = []
 
       let pagination = {
@@ -510,8 +527,8 @@ export default {
       filterManager.save(
         this.currentFilter,
         this.$router,
-        this.index,
-        this.collection
+        this.indexName,
+        this.collectionName
       )
 
       try {
@@ -521,6 +538,7 @@ export default {
           this.mappingAttributes,
           this.wrapper
         )
+
         if (!searchQuery) {
           searchQuery = {}
         }
@@ -530,8 +548,8 @@ export default {
         // TODO: refactor how search is done
         // Execute search with corresponding searchQuery
         const res = await this.wrapper.performSearchDocuments(
-          this.collection,
-          this.index,
+          this.collectionName,
+          this.indexName,
           searchQuery,
           pagination,
           sorting
@@ -540,9 +558,7 @@ export default {
         this.totalDocuments = res.total
       } catch (e) {
         this.$log.error(e)
-        if (e.status === 412) {
-          this.indexOrCollectionNotFound = true
-        } else if (e.message.includes('failed to create query')) {
+        if (e.message.includes('failed to create query')) {
           this.$bvToast.toast(
             'Your query is ill-formed. The complete error has been dumped to the console.',
             {
@@ -578,6 +594,9 @@ export default {
         })
       )
       this.fetchDocuments()
+    },
+    setCurrentPage() {
+      this.currentPage = parseInt(this.paginationFrom / this.paginationSize + 1)
     },
 
     // SELECT ITEMS
@@ -625,23 +644,12 @@ export default {
     },
     // Collection Metadata management
     // =========================================================================
-    async loadMappingInfo() {
-      const { properties } = await this.wrapper.getMappingDocument(
-        this.collection,
-        this.index
-      )
-
-      this.collectionMapping = properties
-
-      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
-      this.selectedGeopoint = this.mappingGeopoints[0]
-    },
     loadListView() {
       if (this.$route.query.listViewType) {
         this.listViewType = this.$route.query.listViewType
       } else {
         const typeFromLS = localStorage.getItem(
-          `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`
+          `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`
         )
         if (typeFromLS) {
           this.listViewType = typeFromLS
@@ -652,7 +660,7 @@ export default {
     },
     saveListView() {
       localStorage.setItem(
-        `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`,
+        `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`,
         this.listViewType
       )
       const otherQueryParams = _.omit(

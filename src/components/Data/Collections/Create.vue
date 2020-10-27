@@ -1,10 +1,10 @@
 <template>
-  <b-container class="CollectionCreate h-100">
+  <b-container class="CollectionCreate h-100" v-if="index">
     <create-or-update
       v-if="hasRights"
       headline="Create a new collection"
       submit-label="Create"
-      :index="index"
+      :index="index.name"
       @submit="create"
     />
     <page-not-allowed v-else />
@@ -22,31 +22,31 @@ export default {
     PageNotAllowed
   },
   props: {
-    index: String
+    indexName: String
   },
   computed: {
     ...mapGetters('auth', ['canCreateCollection']),
     hasRights() {
-      return this.canCreateCollection(this.index, this.collection)
+      return this.canCreateCollection(this.index.name)
+    },
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
     }
   },
   methods: {
     async create(payload) {
       try {
-        await this.$store.direct.dispatch.index
-          .createCollectionInIndex({
-            index: this.index,
-            collection: payload.name,
-            isRealtimeOnly: payload.realtimeOnly,
-            mapping: payload.mapping,
-            dynamic: payload.dynamic
-          })
-          .then(() => {
-            this.$router.push({
-              name: 'Collections',
-              params: { index: this.index }
-            })
-          })
+        await this.$store.direct.dispatch.index.createCollection({
+          index: this.index,
+          name: payload.name,
+          mapping: payload.mapping,
+          dynamic: payload.dynamic
+        })
+
+        this.$router.push({
+          name: 'Collections',
+          params: { indexName: this.index.name }
+        })
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(error.message, {

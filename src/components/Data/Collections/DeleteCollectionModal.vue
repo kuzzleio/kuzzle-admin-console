@@ -1,14 +1,16 @@
 <template>
   <b-modal
-    class="DeleteIndexModal"
+    class="DeleteCollectionModal"
     size="lg"
     :id="modalId"
     :ref="modalId"
     @hide="resetForm"
   >
     <template v-slot:modal-title>
-      Index
-      <strong>{{ truncateName(index.name) }}</strong> deletion
+      <template v-if="collection">
+        Collection
+        <strong>{{ truncateName(collection.name) }}</strong> deletion</template
+      >
     </template>
 
     <template v-slot:modal-footer>
@@ -17,7 +19,7 @@
       </b-button>
       <b-button
         variant="danger"
-        data-cy="DeleteIndexModal-deleteBtn"
+        data-cy="DeleteCollectionModal-OK"
         :disabled="!isConfirmationValid"
         @click="performDelete()"
       >
@@ -26,12 +28,12 @@
     </template>
     <form ref="form" v-on:submit.prevent="performDelete()">
       <b-form-group
-        label="Type the name of the index to confirm deletion"
+        label="Type the name of the collection to confirm deletion"
         label-for="inputConfirmation"
         description="This operation is NOT reversible"
       >
         <b-form-input
-          data-cy="DeleteIndexModal-name"
+          data-cy="DeleteCollectionModal-confirm"
           id="inputConfirmation"
           v-model="confirmation"
           type="text"
@@ -53,6 +55,10 @@ export default {
       type: String,
       required: true
     },
+    collection: {
+      type: Object,
+      required: false
+    },
     index: {
       type: Object,
       required: false
@@ -66,7 +72,9 @@ export default {
   },
   computed: {
     isConfirmationValid() {
-      return this.confirmation === this.index.name
+      return this.collection
+        ? this.confirmation === this.collection.name
+        : false
     }
   },
   methods: {
@@ -92,9 +100,14 @@ export default {
       }
 
       try {
-        await this.$store.direct.dispatch.index.deleteIndex(this.index)
+        await this.$store.direct.dispatch.index.deleteCollection({
+          index: this.index,
+          collection: this.collection
+        })
+
         this.onDeleteSuccess()
       } catch (err) {
+        this.$log.error(err)
         this.error = err.message
       }
     }
