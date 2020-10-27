@@ -112,9 +112,6 @@ export default {
   },
   computed: {
     ...mapGetters('index', ['loadingCollections']),
-    // isLoading() {
-    //   return this.loadingCollections(this.index.name)
-    // },
     showMoreCollectionsDisplay() {
       if (
         this.filter.length > 0 &&
