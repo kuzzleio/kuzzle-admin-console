@@ -158,7 +158,7 @@ export default {
       error: null,
       waiting: false,
       bannerV4Text:
-        'Hey! A new version of the admin console is available <a target="_blank" href="http://next-console.kuzzle.io">here</a> you should try it!'
+        '<span>Hey! A new version of the admin console is available <a target="_blank" href="http://next-console.kuzzle.io">here</a>.<br> You should try it!</span>'
     }
   },
   methods: {
