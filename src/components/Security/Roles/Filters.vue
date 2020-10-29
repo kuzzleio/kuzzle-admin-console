@@ -2,7 +2,7 @@
   <b-card no-body data-cy="RolesFilters" class="RolesFilters">
     <template v-slot:header>
       <b-row>
-        <b-col cols="10">
+        <b-col cols="8">
           <div class="RolesFilters-searchBar">
             <i class="RolesFilters-searchIcon fa fa-search" />
             <b-form-tags
@@ -12,7 +12,19 @@
             />
           </div>
         </b-col>
+        <b-col cols="2">
+          <b-dropdown text="Controllers">
+            <b-dropdown-item
+              v-for="controller of availableControllers"
+              :key="`dropdownControllers-${controller}`"
+              :disabled="controllers.includes(controller)"
+              @click="addControllerTag(controller)"
 
+            >
+              {{ controller }}
+            </b-dropdown-item>
+          </b-dropdown>
+        </b-col>
         <b-col class="text-right">
           <b-button
             class="mr-2"
@@ -29,20 +41,39 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'RolesFilters',
   components: {},
   props: {
     currentFilter: Object
   },
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle'])
+  },
   data() {
     return {
-      controllers: []
+      controllers: [],
+      availableControllers: []
     }
   },
   methods: {
     resetSearch() {
       this.controllers = []
+    },
+    addControllerTag(controller) {
+      if (this.controllers.includes(controller)) {
+        return
+      }
+      this.controllers.push(controller)
+    },
+    async getKuzzlePublicApi() {
+      const publicApi = await this.$kuzzle.query({
+        controller: 'server',
+        action: 'publicApi'
+      })
+      this.availableControllers = Object.keys(publicApi.result)
     }
   },
   mounted() {
@@ -50,6 +81,7 @@ export default {
       this.currentFilter && this.currentFilter.controllers
         ? this.currentFilter.controllers
         : []
+    this.getKuzzlePublicApi()
   },
   watch: {
     controllers: {
