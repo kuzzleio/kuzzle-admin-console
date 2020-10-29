@@ -123,7 +123,7 @@
               >
             </div>
           </template>
-          <template v-slot:cell(actions)="data">
+          <template v-slot:cell(acColumnTableActions)="data">
             <div class="inlineDisplay">
               <span class="inlineDisplay-item">
                 <b-form-checkbox
@@ -156,7 +156,7 @@
               </span>
             </div>
           </template>
-          <template v-slot:cell(id)="data">
+          <template v-slot:cell(acColumnTableId)="data">
             <span data-cy="ColumnViewCell--id" class="code">{{
               data.item.id
             }}</span>
@@ -256,9 +256,9 @@ export default {
       }))
     },
     formattedTableFields() {
-      return [
+      const fields = [
         {
-          key: 'actions',
+          key: 'acColumnTableActions',
           label: '',
           deletable: false,
           stickyColumn: true,
@@ -267,30 +267,24 @@ export default {
           thClass: 'align-middle'
         },
         {
-          key: 'id',
+          key: 'acColumnTableId',
+          label: 'Id',
           deletable: false,
           sortable: true,
           tdClass: 'align-middle',
           thClass: 'align-middle'
         }
       ]
-        .concat(
-          this.fieldList.map((field, index) => ({
-            key: field,
-            index: index,
-            sortable: true,
-            deletable: true,
-            tdClass: 'align-middle columnClass',
-            thClass: 'align-middle'
-          }))
-        )
-        .filter(field => {
-          return (
-            field.key === 'id' ||
-            field.key === 'actions' ||
-            this.selectedFields.includes(field.key)
-          )
+      for (const f of this.selectedFields) {
+        fields.push({
+          key: f,
+          sortable: true,
+          deletable: true,
+          tdClass: 'align-middle columnClass',
+          thClass: 'align-middle'
         })
+      }
+      return fields
     },
     formattedItems() {
       return this.documents.map(d => {
@@ -298,7 +292,7 @@ export default {
         doc.id = d.id
         for (const { key } of this.formattedTableFields) {
           // each columns path
-          if (key === 'id') continue // column id is always ok
+          if (key === 'acColumnTableId' || key === 'acColumnTableActions') continue // column id is always ok
           // if there is an array in the current document within the 'path'
           if (this.documentPathContainsArray(key, d)) {
             doc[key] = { array: true }
