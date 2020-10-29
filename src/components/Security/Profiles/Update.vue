@@ -4,6 +4,9 @@
       Edit profile - <span class="bold">{{ id }}</span>
     </Headline>
     <Notice />
+    <b-alert variant="warning" :show="displayWarningAlert">
+     Warning, you are editing a profile that apply to yourself!
+    </b-alert>
     <create-or-update
       v-if="!loading"
       :id="id"
@@ -42,7 +45,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle'])
+    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('auth', ['userProfiles']),
+    displayWarningAlert() {
+      return this.userProfiles.includes(id)
+    }
   },
   methods: {
     async onSubmit({ profile }) {
