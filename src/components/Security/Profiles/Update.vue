@@ -5,7 +5,7 @@
     </Headline>
     <Notice />
     <b-alert variant="warning" :show="displayWarningAlert">
-     Warning, you are editing a profile that apply to yourself!
+      Warning, you are editing a profile that apply to yourself!
     </b-alert>
     <create-or-update
       v-if="!loading"
@@ -48,7 +48,7 @@ export default {
     ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['userProfiles']),
     displayWarningAlert() {
-      return this.userProfiles.includes(id)
+      return this.userProfiles.includes(this.id)
     }
   },
   methods: {
