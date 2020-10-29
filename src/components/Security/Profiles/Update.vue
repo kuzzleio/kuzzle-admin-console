@@ -48,7 +48,8 @@ export default {
     ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['userProfiles']),
     displayWarningAlert() {
-      return this.userProfiles.includes(this.id)
+
+      return this.userProfiles && this.userProfiles.includes(this.id)
     }
   },
   methods: {
