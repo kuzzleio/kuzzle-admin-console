@@ -12,14 +12,13 @@
             />
           </div>
         </b-col>
-        <b-col cols="2">
+        <b-col cols="2" v-if="availableControllers.length !== 0">
           <b-dropdown text="Controllers">
             <b-dropdown-item
               v-for="controller of availableControllers"
               :key="`dropdownControllers-${controller}`"
               :disabled="controllers.includes(controller)"
               @click="addControllerTag(controller)"
-
             >
               {{ controller }}
             </b-dropdown-item>
@@ -69,11 +68,15 @@ export default {
       this.controllers.push(controller)
     },
     async getKuzzlePublicApi() {
-      const publicApi = await this.$kuzzle.query({
-        controller: 'server',
-        action: 'publicApi'
-      })
-      this.availableControllers = Object.keys(publicApi.result)
+      try {
+        const publicApi = await this.$kuzzle.query({
+          controller: 'server',
+          action: 'publicApi'
+        });
+        this.availableControllers = Object.keys(publicApi.result)
+      } catch (error) {
+        this.$log.error(error)
+      }
     }
   },
   mounted() {
