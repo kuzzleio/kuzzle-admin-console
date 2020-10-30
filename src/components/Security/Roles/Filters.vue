@@ -72,7 +72,7 @@ export default {
         const publicApi = await this.$kuzzle.query({
           controller: 'server',
           action: 'publicApi'
-        });
+        })
         this.availableControllers = Object.keys(publicApi.result)
       } catch (error) {
         this.$log.error(error)
