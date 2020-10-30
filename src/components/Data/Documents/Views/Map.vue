@@ -1,7 +1,7 @@
 <template>
   <div class="ViewMap">
-    <div class="row">
-      <div :class="getMapClass()">
+    <b-row class="align-self-stretch">
+      <b-col cols="8" class="viewMap-document-map">
         <l-map ref="map" @click="onMapClick">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
@@ -12,49 +12,86 @@
             @click="onMarkerClick(document)"
           />
         </l-map>
-      </div>
+      </b-col>
+      <b-col cols="4">
+        <b-card no-body v-if="currentDocument">
+          <b-card-header>
+            <b-row>
+              <b-col cols="9">
+                {{ currentDocument.id }}
+              </b-col>
+              <b-col cols="3">
+                <b-button
+                  class="DocumentMapItem-update"
+                  href=""
+                  variant="link"
+                  :data-cy="`DocumentMapItem-update--${currentDocument.id}`"
+                  :disabled="!canEdit"
+                  :title="
+                    canEdit
+                      ? 'Edit Document'
+                      : 'You are not allowed to edit this Document'
+                  "
+                  @click.prevent="editCurrentDocument"
+                >
+                  <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
+                </b-button>
 
-      <div v-if="currentDocument" class="col s2 viewMap-document-info">
-        <div class="row">
-          <div class="col s9">
-            {{ currentDocument.id }}
-          </div>
-          <b-button
-            class="DocumentMapItem-update"
-            href=""
-            variant="link"
-            :data-cy="`DocumentMapItem-update--${currentDocument.id}`"
-            :disabled="!canEdit"
-            :title="
-              canEdit
-                ? 'Edit Document'
-                : 'You are not allowed to edit this Document'
-            "
-            @click.prevent="editCurrentDocument"
-          >
-            <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
-          </b-button>
-
-          <b-button
-            class="DocumentListItem-delete"
-            href=""
-            variant="link"
-            :data-cy="`DocumentListItem-delete--${currentDocument.id}`"
-            :disabled="!canDelete"
-            :title="
-              canDelete
-                ? 'Delete Document'
-                : 'You are not allowed to delete this Document'
-            "
-            @click.prevent="deleteCurrentDocument"
-          >
-            <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
-          </b-button>
-        </div>
-        <hr />
-        <pre v-json-formatter="{ content: formattedDocument, open: true }" />
-      </div>
-    </div>
+                <b-button
+                  class="DocumentListItem-delete"
+                  href=""
+                  variant="link"
+                  :data-cy="`DocumentListItem-delete--${currentDocument.id}`"
+                  :disabled="!canDelete"
+                  :title="
+                    canDelete
+                      ? 'Delete Document'
+                      : 'You are not allowed to delete this Document'
+                  "
+                  @click.prevent="deleteCurrentDocument"
+                >
+                  <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
+                </b-button>
+              </b-col>
+            </b-row>
+          </b-card-header>
+          <b-card-body class="pt-1 pb-1">
+            <b-row class="viewMap-document-json">
+              <pre
+                class="json-formatter"
+                v-json-formatter="{ content: formattedDocument, open: true }"
+              />
+            </b-row>
+          </b-card-body>
+        </b-card>
+        <b-card
+          v-else
+          class="light-shadow viewMap-document-map"
+          bg-variant="light"
+        >
+          <b-card-text class="p-0">
+            <b-row align-h="center" class="valign-center empty-set h-100">
+              <b-col cols="2" class="text-center">
+                <i
+                  class="fa fa-3x fa-search text-secondary mt-3"
+                  aria-hidden="true"
+                />
+              </b-col>
+              <b-col md="10">
+                <h3 class="text-secondary font-weight-bold">
+                  No document selected.
+                </h3>
+                <p>
+                  <em>
+                    You can view a document content by click on a marker
+                  </em>
+                </p>
+              </b-col>
+            </b-row>
+          </b-card-text>
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -64,7 +101,7 @@ import L from 'leaflet'
 import '@/assets/leaflet.css'
 import JsonFormatter from '@/directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
-import _ from "lodash"
+import _ from 'lodash'
 
 export default {
   name: 'ViewMap',
@@ -161,16 +198,6 @@ export default {
     onMapClick() {
       this.currentDocument = null
     },
-    getMapClass() {
-      const classes = {
-        col: true,
-        'viewMap-document-map': true,
-        s12: this.currentDocument === null,
-        s10: this.currentDocument !== null
-      }
-
-      return classes
-    },
     getIcon(document) {
       if (this.currentDocument === document) {
         return this.selectedIcon
@@ -195,11 +222,14 @@ export default {
 <style scoped lang="scss">
 .ViewMap {
   .viewMap-document-map {
-    height: 500px;
+    height: 600px;
   }
-
-  .viewMap-document-info {
-    overflow-x: scroll;
+  .viewMap-document-json {
+    height: 525px;
+  }
+  .json-formatter {
+    max-height: 525px;
+    overflow-y: scroll;
   }
 }
 </style>
