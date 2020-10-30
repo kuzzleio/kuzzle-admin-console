@@ -16,8 +16,8 @@
       <b-col cols="4">
         <b-card no-body v-if="currentDocument">
           <b-card-header>
-            <b-row>
-              <b-col cols="9">
+            <b-row align-v="center">
+              <b-col cols="9" align-v="center">
                 {{ currentDocument.id }}
               </b-col>
               <b-col cols="3">
