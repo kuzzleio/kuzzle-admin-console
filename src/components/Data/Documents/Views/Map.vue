@@ -19,44 +19,40 @@
           <div class="col s9">
             {{ currentDocument.id }}
           </div>
-          <a
+          <b-button
+            class="DocumentMapItem-update"
             href=""
+            variant="link"
+            :data-cy="`DocumentMapItem-update--${currentDocument.id}`"
+            :disabled="!canEdit"
             :title="
               canEdit
                 ? 'Edit Document'
-                : 'You are not allowed to edit this document'
+                : 'You are not allowed to edit this Document'
             "
-            :class="{ unauthorized: !canEdit }"
             @click.prevent="editCurrentDocument"
           >
-            <i
-              class="fa fa-pencil-alt pointer"
-              :class="{ 'text-secondary': !canEdit }"
-            />
-          </a>
+            <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
+          </b-button>
 
-          <dropdown :id="currentDocument.id" myclass="icon-black">
-            <li>
-              <a
-                title="You are not allowed to delete this document"
-                :class="{ disabled: !canDelete }"
-                @click="deleteCurrentDocument()"
-              >
-                Delete
-              </a>
-            </li>
-          </dropdown>
+          <b-button
+            class="DocumentListItem-delete"
+            href=""
+            variant="link"
+            :data-cy="`DocumentListItem-delete--${currentDocument.id}`"
+            :disabled="!canDelete"
+            :title="
+              canDelete
+                ? 'Delete Document'
+                : 'You are not allowed to delete this Document'
+            "
+            @click.prevent="deleteCurrentDocument"
+          >
+            <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
+          </b-button>
         </div>
         <hr />
-        <p
-          v-json-formatter="{
-            content: {
-              id: currentDocument.id,
-              body: currentDocument.content
-            },
-            open: true
-          }"
-        />
+        <pre v-json-formatter="{ content: formattedDocument, open: true }" />
       </div>
     </div>
   </div>
@@ -65,18 +61,17 @@
 <script>
 import { LMap, LTileLayer, LMarker } from 'vue2-leaflet'
 import L from 'leaflet'
-import Dropdown from '../../Materialize/Dropdown'
-import '../../../../src/assets/leaflet.css'
-import JsonFormatter from '../../../directives/json-formatter.directive'
+import '@/assets/leaflet.css'
+import JsonFormatter from '@/directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
+import _ from "lodash"
 
 export default {
   name: 'ViewMap',
   components: {
     LMap,
     LTileLayer,
-    LMarker,
-    Dropdown
+    LMarker
   },
   directives: {
     JsonFormatter
@@ -136,6 +131,14 @@ export default {
         return false
       }
       return this.canDeleteDocument(this.index, this.collection)
+    },
+    formattedDocument() {
+      if (!this.currentDocument) {
+        return {}
+      }
+      const document = _.omit(this.currentDocument, ['id', '_kuzzle_info'])
+      document._kuzzle_info = this.currentDocument._kuzzle_info
+      return document
     }
   },
   watch: {},
@@ -143,7 +146,6 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.map = this.$refs.map.mapObject
-
       this.map.fitBounds(this.coordinates)
     })
   },

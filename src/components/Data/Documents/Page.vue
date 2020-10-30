@@ -31,6 +31,7 @@
             :index="indexName"
             :collection="collectionName"
             @list="onListViewClicked"
+            @map="onMapViewClicked"
             @column="onColumnViewClicked"
           />
           <collection-dropdown-action
@@ -117,6 +118,17 @@
                     @toggle-all="onToggleAllClicked"
                   />
 
+                  <Map
+                    v-if="listViewType === 'map'"
+                    :documents="geoDocuments"
+                    :get-coordinates="getCoordinates"
+                    :selected-geopoint="selectedGeopoint"
+                    :index="indexName"
+                    :collection="collectionName"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                  />
+
                   <b-row
                     v-show="totalDocuments > paginationSize"
                     align-h="center"
@@ -167,6 +179,7 @@
 import _ from 'lodash'
 
 import Column from './Views/Column'
+import Map from './Views/Map'
 import List from './Views/List'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
@@ -198,6 +211,7 @@ export default {
     DeleteCollectionModal,
     DeleteModal,
     Column,
+    Map,
     List,
     EmptyState,
     Headline,
@@ -270,10 +284,10 @@ export default {
       })
     },
     latFieldPath() {
-      return `content.${this.selectedGeopoint}.lat`
+      return `${this.selectedGeopoint}.lat`
     },
     lngFieldPath() {
-      return `content.${this.selectedGeopoint}.lon`
+      return `${this.selectedGeopoint}.lon`
     },
     isCollectionGeo() {
       return this.mappingGeopoints.length > 0
@@ -458,6 +472,7 @@ export default {
         this.loading = true
         this.loadListView()
         this.saveListView()
+        this.loadMappingInfo()
 
         this.currentFilter = filterManager.load(
           this.indexName,
@@ -672,6 +687,10 @@ export default {
         otherQueryParams
       )
       this.$router.push({ query: mergedQuery }).catch(() => {})
+    },
+    loadMappingInfo() {
+      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
+      this.selectedGeopoint = this.mappingGeopoints[0]
     },
     addHumanReadableDateFields() {
       if (!this.collectionMapping) {
