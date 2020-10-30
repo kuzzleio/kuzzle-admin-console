@@ -194,7 +194,7 @@ export default {
         })
         this.attachedProfiles = res.hits.map(p => p._id)
       } catch (error) {
-        this.$log.error(err)
+        this.$log.error(error)
       }
     },
     validateState(fieldName) {
