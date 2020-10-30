@@ -188,10 +188,14 @@ export default {
   },
   methods: {
     async searchAttachedProfiles() {
-      const res = await this.$kuzzle.security.searchProfiles({
-        roles: [this.id]
-      })
-      this.attachedProfiles = res.hits.map(p => p._id)
+      try {
+        const res = await this.$kuzzle.security.searchProfiles({
+          roles: [this.id]
+        })
+        this.attachedProfiles = res.hits.map(p => p._id)
+      } catch (error) {
+        this.$log.error(err)
+      }
     },
     validateState(fieldName) {
       const { $dirty, $error } = this.$v[fieldName]
