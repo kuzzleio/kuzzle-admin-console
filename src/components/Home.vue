@@ -11,6 +11,7 @@
         v-if="!$store.direct.getters.auth.adminAlreadyExists"
         :text="warningHeaderText"
       />
+      <warning-header v-else :text="bannerV4Text" />
       <div class="wrapper">
         <router-view />
       </div>
@@ -68,7 +69,9 @@ export default {
       port: null,
       tokenExpiredIsOpen: false,
       kuzzleDisconnectedIsOpen: false,
-      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended <a href="#/signup"> that you create one.</a><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
+      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended <a href="#/signup"> that you create one.</a><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`,
+      bannerV4Text:
+        'Hey! A new beta version of the admin console is available <a target="_blank" href="http://next-console.kuzzle.io">here</a> you should try it!'
     }
   },
   watch: {
