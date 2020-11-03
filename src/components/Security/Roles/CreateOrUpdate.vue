@@ -11,7 +11,7 @@
     </Headline>
     <Notice />
     <b-alert variant="warning" :show="displayWarningAlert">
-      Warning, you are editing a role that apply to yourself!
+      Warning, you are editing a role that applies to yourself!
     </b-alert>
     <template v-if="loading"></template>
     <template v-else>

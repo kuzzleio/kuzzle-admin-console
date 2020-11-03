@@ -5,7 +5,7 @@
     </Headline>
     <Notice />
     <b-alert variant="warning" :show="displayWarningAlert">
-      Warning, you are editing a profile that apply to yourself!
+      Warning, you are editing a profile that applies to yourself!
     </b-alert>
     <create-or-update
       v-if="!loading"
