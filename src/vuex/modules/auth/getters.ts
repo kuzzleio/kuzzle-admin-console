@@ -62,6 +62,9 @@ export const getters = createGetters<AuthState>()({
   user(state): SessionUser {
     return state.user
   },
+  userProfiles(state) {
+    return state.user.params.profileIds
+  },
   tokenValid(state): boolean {
     return state.tokenValid
   },
