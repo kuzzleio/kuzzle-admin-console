@@ -72,12 +72,15 @@ export const mappingToFormSchema = function(mapping: Object, document: Object) {
         return
       }
 
-      const type = mappingFieldValues['type']
+      const type = mappingFieldValues['properties']
+        ? 'object'
+        : mappingFieldValues['type']
 
-      if (!Object.keys(typesCorrespondance).includes(type)) {
-        schema.unavailables.push(mappingFieldName)
-        return
-      }
+      if (mappingFieldName)
+        if (!Object.keys(typesCorrespondance).includes(type)) {
+          schema.unavailables.push(mappingFieldName)
+          return
+        }
 
       if (Array.isArray(document[mappingFieldName])) {
         schema.unavailables.push(mappingFieldName)
