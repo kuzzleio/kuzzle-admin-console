@@ -67,20 +67,15 @@ export const mappingToFormSchema = function(mapping: Object, document: Object) {
   const cleanedMapping = _.omit(mapping, fieldsToRemove)
 
   Object.entries(cleanedMapping).forEach(
-    ([mappingFieldName, mappingFieldValues]) => {
-      if (!mappingFieldValues) {
+    ([mappingFieldName, mappingFieldValues]: [string, any]) => {
+      const type = mappingFieldValues['properties']
+        ? 'object'
+        : mappingFieldValues['type']
+
+      if (!Object.keys(typesCorrespondance).includes(type)) {
+        schema.unavailables.push(mappingFieldName)
         return
       }
-
-      const type: any = mappingFieldValues['properties']
-        ? 'object'
-        : <string>mappingFieldValues['type']
-
-      if (mappingFieldName)
-        if (!Object.keys(typesCorrespondance).includes(type)) {
-          schema.unavailables.push(mappingFieldName)
-          return
-        }
 
       if (Array.isArray(document[mappingFieldName])) {
         schema.unavailables.push(mappingFieldName)
