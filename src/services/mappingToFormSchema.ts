@@ -72,7 +72,7 @@ export const mappingToFormSchema = function(mapping: Object, document: Object) {
         return
       }
 
-      const type = mappingFieldValues['properties']
+      const type: string = mappingFieldValues['properties']
         ? 'object'
         : mappingFieldValues['type']
 
