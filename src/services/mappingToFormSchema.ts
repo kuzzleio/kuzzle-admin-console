@@ -72,9 +72,9 @@ export const mappingToFormSchema = function(mapping: Object, document: Object) {
         return
       }
 
-      const type: string = mappingFieldValues['properties']
+      const type: any = mappingFieldValues['properties']
         ? 'object'
-        : mappingFieldValues['type']
+        : <string>mappingFieldValues['type']
 
       if (mappingFieldName)
         if (!Object.keys(typesCorrespondance).includes(type)) {
