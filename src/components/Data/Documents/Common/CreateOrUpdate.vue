@@ -33,7 +33,7 @@
         <b-row class="full-height-row" v-if="formViewEnabled">
           <b-col lg="12" md="12" class="d-flex flex-column">
             <b-alert
-              data-cy="json-view-warning"
+              data-cy="form-view-warning"
               variant="warning"
               :show="formSchema.unavailables.length > 0"
             >
@@ -146,10 +146,7 @@
 import JsonEditor from '../../../Common/JsonEditor'
 import Focus from '../../../../directives/focus.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
-import {
-  mappingToFormSchema,
-  typesCorrespondance
-} from '@/services/mappingToFormSchema'
+import { formSchemaService, typesCorrespondance } from '@/services/formSchema'
 export default {
   name: 'DocumentCreateOrUpdate',
   components: {
@@ -181,7 +178,7 @@ export default {
   },
   computed: {
     formSchema() {
-      return mappingToFormSchema(this.mapping, this.document)
+      return formSchemaService.generate(this.mapping, this.document)
     },
     supportedTypes() {
       return Object.keys(typesCorrespondance)
