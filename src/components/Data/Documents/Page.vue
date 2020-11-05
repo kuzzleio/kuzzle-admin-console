@@ -15,6 +15,7 @@
         <b-col sm="6" class="text-right mt-3">
           <b-button
             variant="primary"
+            data-cy="CreateDocument-btn"
             :disabled="
               indexOrCollectionNotFound ||
                 !canCreateDocument(indexName, collectionName)

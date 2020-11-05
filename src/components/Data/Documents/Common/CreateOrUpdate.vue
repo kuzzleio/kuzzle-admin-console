@@ -1,45 +1,101 @@
 <template>
   <div class="DocumentCreateOrUpdate">
     <b-card class="h-100">
-      <!-- Json view -->
-      <b-row class="h-100">
-        <b-col lg="7" md="12" class="d-flex flex-column">
-          <b-form-group
-            label="Document ID"
-            label-cols="3"
-            :description="
-              !id ? 'Leave blank to let Kuzzle auto-generate the ID' : ''
-            "
-          >
-            <b-input :disabled="!!id" v-model="idValue"></b-input>
-          </b-form-group>
-          <json-editor
-            id="document"
-            ref="jsoneditor"
-            class="DocumentCreateOrUpdate-jsonEditor"
-            :content="rawDocument"
-            @change="onDocumentChange"
-          />
-        </b-col>
+      <b-card-body class="h-100 m-0 p-0">
+        <b-row>
+          <b-col lg="7" md="10" class="d-flex flex-column">
+            <b-form-group
+              label="Document ID"
+              label-cols="3"
+              :description="
+                !id ? 'Leave blank to let Kuzzle auto-generate the ID' : ''
+              "
+            >
+              <b-input
+                :disabled="!!id"
+                v-model="idValue"
+                data-cy="DocumentCreate-input--id"
+              ></b-input>
+            </b-form-group>
+          </b-col>
+          <b-col lg="4" md="2" class="d-flex flex-column mt-2">
+            <b-form-checkbox
+              data-cy="formView-switch"
+              v-model="formViewEnabled"
+              switch
+            >
+              Form view
+            </b-form-checkbox>
+          </b-col>
+        </b-row>
 
-        <!-- Mapping -->
-        <b-col lg="5" md="12" class="d-flex flex-column">
-          <h3>Mapping</h3>
+        <!-- Form view-->
+        <b-row class="full-height-row" v-if="formViewEnabled">
+          <b-col lg="12" md="12" class="d-flex flex-column">
+            <b-alert
+              data-cy="json-view-warning"
+              variant="warning"
+              :show="formSchema.unavailables.length > 0"
+            >
+              The following fields are not supported in the form view:
+              <span class="font-weight-bold">
+                {{ formSchema.unavailables.join(', ') }}</span
+              >. Please use the JSON view if you want to update these values.
+              <i
+                class="fas fa-question-circle"
+                id="supported-types-tooltip"
+                :title="
+                  `The form view only support these types: ${supportedTypes.join(
+                    ', '
+                  )}.`
+                "
+              ></i>
+            </b-alert>
+            <vue-form-generator
+              :schema="formSchema"
+              :model="document"
+              :options="formOptions"
+              @model-updated="onFormChange"
+            >
+            </vue-form-generator>
+          </b-col>
+        </b-row>
+        <!-- Json view -->
+        <b-row class="full-height-row" v-else>
+          <b-col lg="7" md="12" class="d-flex flex-column">
+            <json-editor
+              id="document"
+              ref="jsoneditor"
+              class="DocumentCreateOrUpdate-jsonEditor"
+              :content="rawDocument"
+              @change="onJsonChange"
+            />
+          </b-col>
 
-          <pre
-            v-json-formatter="{
-              content: mapping,
-              open: true
-            }"
-            class="DocumentCreateOrUpdate-mapping"
-          />
-        </b-col>
-      </b-row>
+          <!-- Mapping -->
+          <b-col lg="5" md="12" class="d-flex flex-column">
+            <h3>Mapping</h3>
 
+            <pre
+              v-json-formatter="{
+                content: mapping,
+                open: true
+              }"
+              class="DocumentCreateOrUpdate-mapping"
+            />
+          </b-col>
+        </b-row>
+      </b-card-body>
       <template v-slot:footer>
         <div class="text-right">
           <b-button @click="$emit('cancel')">Cancel</b-button>
-          <b-button v-if="!id" variant="primary" class="ml-2" @click="submit">
+          <b-button
+            v-if="!id"
+            data-cy="DocumentCreate-btn"
+            variant="primary"
+            class="ml-2"
+            @click="submit"
+          >
             <i class="fa fa-plus-circle left" />
             Create
           </b-button>
@@ -90,7 +146,10 @@
 import JsonEditor from '../../../Common/JsonEditor'
 import Focus from '../../../../directives/focus.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
-
+import {
+  mappingToFormSchema,
+  typesCorrespondance
+} from '@/services/mappingToFormSchema'
 export default {
   name: 'DocumentCreateOrUpdate',
   components: {
@@ -104,17 +163,29 @@ export default {
     index: String,
     collection: String,
     id: String,
-    document: { type: Object, default: () => ({}) },
+    document: { type: Object },
     mapping: Object
   },
   data() {
     return {
       idValue: null,
       submitting: false,
-      rawDocument: '{}'
+      rawDocument: '{}',
+      formViewEnabled: false,
+      formOptions: {
+        validateAfterLoad: true,
+        validateAfterChanged: true,
+        validateAsync: true
+      }
     }
   },
   computed: {
+    formSchema() {
+      return mappingToFormSchema(this.mapping, this.document)
+    },
+    supportedTypes() {
+      return Object.keys(typesCorrespondance)
+    },
     documentState() {
       try {
         return JSON.parse(this.rawDocument)
@@ -132,8 +203,12 @@ export default {
     }
   },
   methods: {
-    onDocumentChange(val) {
+    onJsonChange(val) {
       this.rawDocument = val
+      this.$emit('document-change', JSON.parse(val))
+    },
+    onFormChange() {
+      this.rawDocument = JSON.stringify(this.document, null, 2)
     },
     submit(replace = false) {
       if (this.submitting) {
@@ -142,7 +217,14 @@ export default {
 
       if (this.isDocumentValid) {
         this.submitting = true
-        this.$emit('submit', { ...this.documentState }, this.idValue, replace)
+        this.$emit(
+          'submit',
+          this.formViewEnabled
+            ? { ...this.document }
+            : { ...this.documentState },
+          this.idValue,
+          replace
+        )
         this.submitting = false
       } else {
         this.$bvToast.toast(
@@ -173,3 +255,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.full-height-row {
+  height: 90%;
+}
+</style>

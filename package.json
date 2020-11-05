@@ -55,6 +55,7 @@
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-color": "^2.7.0",
+    "vue-form-generator": "^2.3.4",
     "vue-google-charts": "^0.3.2",
     "vue-multipane": "^0.9.5",
     "vue-property-decorator": "^8.3.0",
