@@ -121,4 +121,24 @@ describe('Form view', function() {
 
     cy.get('input#name').should('have.value', 'PHP CEO')
   })
+
+  it('should show a warning if a field type is unsuported', function() {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/witharraydoc/_create?refresh=wait_for`,
+      {
+        name: ['PHP', 'CEO'],
+        age: 42
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy="DocumentListItem-update--witharraydoc"').click()
+    cy.waitForLoading()
+
+    cy.get('[data-cy="formView-switch"').click({ force: true })
+
+    cy.get('[data-cy="form-view-warning"').should('be.visible')
+  })
 })
