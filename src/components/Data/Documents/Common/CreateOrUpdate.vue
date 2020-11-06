@@ -45,7 +45,7 @@
                 class="fas fa-question-circle"
                 id="supported-types-tooltip"
                 :title="
-                  `The form view only support these types: ${supportedTypes.join(
+                  `The form view only supports these types: ${supportedTypes.join(
                     ', '
                   )}.`
                 "
