@@ -1,8 +1,10 @@
 import _ from 'lodash'
 
 export const typesCorrespondance = {
-  binary: 'input',
   boolean: 'checkbox',
+  text: 'textArea',
+  search_as_you_type: 'textArea',
+  binary: 'input',
   integer: 'input',
   long: 'input',
   short: 'input',
@@ -15,8 +17,7 @@ export const typesCorrespondance = {
   wildcard: 'input',
   constant_keyword: 'input',
   date: 'input',
-  text: 'textArea',
-  search_as_you_type: 'textArea',
+  ip: 'input',
   object: 'JsonFormInput',
   flattened: 'JsonFormInput',
   geo_point: 'JsonFormInput',
@@ -34,7 +35,6 @@ export const typesCorrespondance = {
   rank_features: 'JsonFormInput',
   shape: 'JsonFormInput',
   sparse_vector: 'JsonFormInput',
-  ip: 'input',
   nested: 'JsonFormInput',
   join: 'JsonFormInput'
 }
