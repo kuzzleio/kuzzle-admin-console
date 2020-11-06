@@ -54,7 +54,6 @@
             <vue-form-generator
               :schema="formSchema"
               :model="document"
-              :options="formOptions"
               @model-updated="onFormChange"
             >
             </vue-form-generator>
@@ -168,12 +167,7 @@ export default {
       idValue: null,
       submitting: false,
       rawDocument: '{}',
-      formViewEnabled: false,
-      formOptions: {
-        validateAfterLoad: true,
-        validateAfterChanged: true,
-        validateAsync: true
-      }
+      formViewEnabled: false
     }
   },
   computed: {

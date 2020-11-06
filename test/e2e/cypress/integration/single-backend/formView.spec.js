@@ -37,7 +37,7 @@ describe('Form view', function() {
           phone: 'Blackberry',
           car: 'Laguna'
         },
-        job: 'Ask Esteban to do his stuff',
+        job: 'Always asking Esteban to do his job',
         employeeOfTheMonthSince: '1996-07-10'
       }
     )

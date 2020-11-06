@@ -7,6 +7,7 @@
 </template>
 
 <script>
+// https://vue-generators.gitbook.io/vue-generators/fields/custom_fields
 import { abstractField } from 'vue-form-generator'
 import JsonEditor from '@/components/Common/JsonEditor'
 
