@@ -1,20 +1,18 @@
 <template>
   <div class="col s12 TimeSeriesView">
-    <div class="row col s10">
-      <GChart
+    <div class="row chart-container">
+      <VueApexCharts
         v-if="customNumberFields.length"
-        type="LineChart"
-        :data="chart"
+        class="w-75"
+        type="line"
+        ref="Chart"
+        :series="series"
         :options="chartOptions"
-        :resize-debounce="1"
-        :settings="{ packages: ['corechart'], language: 'en' }"
       />
-      <div v-else class="row col s12">
-        No data to display
-      </div>
+      <div v-else class="row col s12">No data to display</div>
     </div>
-    <div class="col s2">
-      <div class="col s12 bordered">
+    <div class="row">
+      <div class="col s12">
         <span>Date</span>
         <autocomplete
           placeholder="Date field"
@@ -22,7 +20,7 @@
           :value="customDateField || ''"
           :notify-change="false"
           @autocomplete::change="
-            item => {
+            (item) => {
               addDateField(item)
             }
           "
@@ -47,7 +45,7 @@
             :new-value="newCustomNumberField || ''"
             @update-color="updateColor"
             @autocomplete::change="
-              item => {
+              (item) => {
                 addNumberField(item)
               }
             "
@@ -61,8 +59,7 @@
 <script>
 import Autocomplete from '../../../Common/Autocomplete'
 import TimeSeriesItem from './TimeSeriesItem'
-import { GChart } from 'vue-google-charts'
-import _ from 'lodash'
+import VueApexCharts from 'vue-apexcharts'
 
 const ES_NUMBER_DATA_TYPE = [
   'short',
@@ -80,8 +77,8 @@ export default {
   name: 'TimeSeries',
   components: {
     Autocomplete,
-    GChart,
-    TimeSeriesItem
+    TimeSeriesItem,
+    VueApexCharts
   },
   props: {
     mapping: {
@@ -112,18 +109,15 @@ export default {
       newCustomDateField: null,
       newCustomNumberField: null,
       chartOptions: {
-        curveType: 'function',
-        colors: [],
-        height: 400,
-        legend: {
-          position: 'top',
-          alignment: 'center'
+        chart: {
+          type: 'line'
         },
-        explorer: {
-          keepInBounds: true
+        colors: [],
+        xaxis: {
+          categories: []
         }
       },
-      chart: []
+      series: []
     }
   },
   watch: {
@@ -213,25 +207,25 @@ export default {
   },
   methods: {
     updateChart() {
+      this.series = []
       this.chartOptions.colors = []
-      this.chart = []
-      const chartTitles = []
-      chartTitles.push(this.customDateField)
-
       for (const item of this.customNumberFields) {
         this.chartOptions.colors.push(item.color)
-        chartTitles.push(item.name)
       }
-      this.chart.push(chartTitles)
-
-      for (const doc of this.documents) {
-        const item = []
-        item.push(doc.content[this.customDateField])
-        for (const field of this.customNumberFields) {
-          item.push(_.get(doc.content, field.name, ''))
+      let series = []
+      for (const field of this.customNumberFields) {
+        let data = {
+          name: field.name,
+          data: []
         }
-        this.chart.push(item)
+        for (const doc of this.documents) {
+          data.data.push(doc[field.name])
+        }
+        series.push(data)
       }
+      if (this.$refs.Chart)
+        this.$refs.Chart.updateOptions(this.chartOptions)
+      this.series = series
     },
     saveToLocalStorage() {
       if (this.index && this.collection) {
@@ -309,8 +303,8 @@ export default {
 </script>
 
 <style>
-.bordered {
-  border: 0.5px solid grey;
-  margin-bottom: 10px;
+.chart-container {
+  display: flex;
+  justify-content: center;
 }
 </style>

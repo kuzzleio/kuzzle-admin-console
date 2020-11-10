@@ -26,6 +26,13 @@
           Column view
         </b-dropdown-item>
         <b-dropdown-item
+          data-cy="CollectionDropdown-TimeSeries"
+          :active="activeView === 'time-series'"
+          @click="$emit('time-series')"
+        >
+          chart view
+        </b-dropdown-item>
+        <b-dropdown-item
           :active="activeView === 'realtime'"
           :disabled="!canSubscribe(index, collection)"
           :title="

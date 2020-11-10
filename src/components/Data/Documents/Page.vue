@@ -32,6 +32,7 @@
             :collection="collectionName"
             @list="onListViewClicked"
             @column="onColumnViewClicked"
+            @time-series="onTimeSeriesClicked"
           />
           <collection-dropdown-action
             class="icon-medium icon-black ml-2"
@@ -116,6 +117,13 @@
                     @refresh="onRefresh"
                     @toggle-all="onToggleAllClicked"
                   />
+                  <TimeSeries
+                    v-if="listViewType === 'time-series'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                  />
 
                   <b-row
                     v-show="totalDocuments > paginationSize"
@@ -168,6 +176,7 @@ import _ from 'lodash'
 
 import Column from './Views/Column'
 import List from './Views/List'
+import TimeSeries from './Views/TimeSeries'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
 import NoResultsEmptyState from './NoResultsEmptyState'
@@ -199,6 +208,7 @@ export default {
     DeleteModal,
     Column,
     List,
+    TimeSeries,
     EmptyState,
     Headline,
     Filters,
