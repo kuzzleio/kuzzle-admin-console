@@ -53,7 +53,6 @@ const inputTypesCorrespondance = {
   keyword: 'text',
   wildcard: 'text',
   constant_keyword: 'text',
-  Numbers: 'number',
   date: 'date'
 }
 
