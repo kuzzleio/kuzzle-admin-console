@@ -78,11 +78,15 @@ class FormSchemaService {
           return
         }
 
+        const typeCorrespondance = this.getTypeCorrespondance(type)
+
         const field: FormField = {
-          type: this.getTypeCorrespondance(type),
+          type: typeCorrespondance,
           inputType: this.getInputTypeCorrespondance(type),
           label: mappingFieldName,
-          model: mappingFieldName
+          model: mappingFieldName,
+          mapping:
+            typeCorrespondance === 'JsonFormInput' ? mappingFieldValues : null
         }
 
         schema.fields.push(field)
@@ -123,6 +127,7 @@ interface FormField {
   inputType: string
   label: string
   model: string
+  mapping?: object
 }
 
 interface Schema {
