@@ -13,7 +13,7 @@
           </div>
         </b-col>
         <b-col cols="2" v-if="availableControllers.length !== 0">
-          <b-dropdown text="Controllers">
+          <b-dropdown text="Controllers" :disabled="disableDropdown" id="controllers-dropdown">
             <b-dropdown-item
               v-for="controller of availableControllers"
               :key="`dropdownControllers-${controller}`"
@@ -23,6 +23,9 @@
               {{ controller }}
             </b-dropdown-item>
           </b-dropdown>
+          <b-tooltip target="controllers-dropdown" triggers="hover" v-if="disableDropdown">
+            Unable to retrieve controller list
+          </b-tooltip>
         </b-col>
         <b-col class="text-right">
           <b-button
@@ -54,7 +57,8 @@ export default {
   data() {
     return {
       controllers: [],
-      availableControllers: []
+      availableControllers: [],
+      disableDropdown: false
     }
   },
   methods: {
@@ -75,6 +79,7 @@ export default {
         })
         this.availableControllers = Object.keys(publicApi.result)
       } catch (error) {
+        this.disableDropdown = true
         this.$log.error(error)
       }
     }
