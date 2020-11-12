@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import createRoutes from './routes/index'
 import './plugins/logger'
+import VueGtag from 'vue-gtag'
 
 import App from './App.vue'
 import store from './vuex/store'
@@ -11,6 +12,18 @@ Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
 const router = createRoutes(Vue.prototype.$log)
+
+console.log('GA_ID : ', process.env.GA_ID)
+
+if (process.env.GA_ID) {
+  Vue.use(
+    VueGtag,
+    {
+      config: { id: process.env.GA_ID }
+    },
+    router
+  )
+}
 
 // Vue.config.errorHandler = (err, vm, info) => {
 //   // TODO : use vue-logger instead of console.error,

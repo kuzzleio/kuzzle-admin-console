@@ -101,6 +101,10 @@ jobs:
 
       if: type != pull_request && branch = 4-dev
 
+      env: 
+        - GA_ID=G-4EDTRNC8S9
+
+
       addons:
         apt:
           packages:
