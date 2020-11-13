@@ -19,7 +19,7 @@ import DataSubRoutes from './children/data'
 
 Vue.use(VueRouter)
 
-export default function createRoutes(log) {
+export default function createRoutes(log, ga) {
   const environmentsGuard = async (from, to, next) => {
     log.debug('Router:EnvironmentsGuard')
     try {
@@ -146,8 +146,14 @@ export default function createRoutes(log) {
     ]
   })
 
-  router.beforeEach((to, from, next) => {
-    next()
+  router.afterEach(to => {
+    if (!ga) {
+      return
+    }
+
+    ga.pageview({
+      page_title: to.name
+    })
   })
 
   return router

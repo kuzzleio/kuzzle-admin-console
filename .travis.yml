@@ -104,7 +104,6 @@ jobs:
       env: 
         - GA_ID=G-4EDTRNC8S9
 
-
       addons:
         apt:
           packages:
@@ -134,3 +133,46 @@ jobs:
 
       after_deploy:
         - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/*"
+
+    # ---------------------------------------
+    # Regular Build & Deploy
+    # ---------------------------------------
+    # console.kuzzle.io
+    # ---------------------------------------
+    - stage: build & deploy
+      name: 'Build & Deploy to console.kuzzle.io'
+
+      if: type != pull_request && branch = master
+
+      env:
+        - GA_ID=G-SVNCJKRL08
+
+      addons:
+        apt:
+          packages:
+            - python
+            - python-pip
+
+      install:
+        - pip install awscli --upgrade --user
+
+      script:
+        - npm install
+        - npm run build
+
+      before_deploy:
+        - ~/.local/bin/aws s3 rm s3://$AWS_S3_BUCKET_PROD$DEPLOY_PATH --recursive --region $AWS_S3_REGION
+
+      deploy:
+        provider: s3
+        access_key_id: $AWS_ACCESS_KEY_ID
+        secret_access_key: $AWS_SECRET_ACCESS_KEY
+        bucket: $AWS_S3_BUCKET_PROD
+        skip_cleanup: true
+        local-dir: dist
+        region: $AWS_S3_REGION
+        on:
+          all_branches: true
+
+      after_deploy:
+        - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "/*"

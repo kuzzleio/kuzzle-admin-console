@@ -11,19 +11,13 @@ import { values } from 'lodash'
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
-const router = createRoutes(Vue.prototype.$log)
-
-console.log('GA_ID : ', process.env.GA_ID)
-
-if (process.env.GA_ID) {
-  Vue.use(
-    VueGtag,
-    {
-      config: { id: process.env.GA_ID }
-    },
-    router
-  )
+if (process.env.GA_ID && process.env.NODE_ENV === 'production') {
+  Vue.use(VueGtag, {
+    config: { id: process.env.GA_ID }
+  })
 }
+
+const router = createRoutes(Vue.prototype.$log, Vue.prototype.$gtag)
 
 // Vue.config.errorHandler = (err, vm, info) => {
 //   // TODO : use vue-logger instead of console.error,
