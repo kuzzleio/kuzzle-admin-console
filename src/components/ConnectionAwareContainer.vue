@@ -166,8 +166,7 @@ export default {
   watch: {
     $route: {
       immediate: false,
-      handler(value) {
-        console.log(value)
+      handler() {
         this.authenticationGuard()
       }
     },
