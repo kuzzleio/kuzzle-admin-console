@@ -212,7 +212,7 @@ export default {
       for (const item of this.customNumberFields) {
         this.chartOptions.colors.push(item.color)
       }
-      let series = []
+      const series = []
       for (const field of this.customNumberFields) {
         const data = {
           name: field.name,
