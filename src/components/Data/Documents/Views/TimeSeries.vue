@@ -215,14 +215,14 @@ export default {
       }
       const series = []
       for (const field of this.customNumberFields) {
-        const data = {
+        const serie = {
           name: field.name,
           data: []
         }
         for (const doc of this.documents) {
-          data.data.push(_.get(doc, field.name, ''))
+          serie.data.push(_.get(doc, field.name, ''))
         }
-        series.push(data)
+        series.push(serie)
       }
       if (this.$refs.Chart) {
         this.$refs.Chart.updateOptions(this.chartOptions)
