@@ -213,9 +213,9 @@ export default {
       for (const item of this.customNumberFields) {
         this.chartOptions.colors.push(item.color)
       }
-      let series = []
+      const series = []
       for (const field of this.customNumberFields) {
-        let data = {
+        const data = {
           name: field.name,
           data: []
         }
@@ -224,8 +224,9 @@ export default {
         }
         series.push(data)
       }
-      if (this.$refs.Chart)
+      if (this.$refs.Chart) {
         this.$refs.Chart.updateOptions(this.chartOptions)
+      }
       this.series = series
     },
     saveToLocalStorage() {
