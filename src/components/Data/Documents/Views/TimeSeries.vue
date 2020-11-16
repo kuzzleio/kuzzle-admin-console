@@ -60,6 +60,7 @@
 import Autocomplete from '../../../Common/Autocomplete'
 import TimeSeriesItem from './TimeSeriesItem'
 import VueApexCharts from 'vue-apexcharts'
+import _ from 'lodash'
 
 const ES_NUMBER_DATA_TYPE = [
   'short',
@@ -219,7 +220,7 @@ export default {
           data: []
         }
         for (const doc of this.documents) {
-          data.data.push(doc[field.name])
+          data.data.push(_.get(doc, field.name, ''))
         }
         series.push(data)
       }
