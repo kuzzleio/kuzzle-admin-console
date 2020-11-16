@@ -30,7 +30,7 @@
           :active="activeView === 'time-series'"
           @click="$emit('time-series')"
         >
-          chart view
+          Chart view
         </b-dropdown-item>
         <b-dropdown-item
           :active="activeView === 'realtime'"
