@@ -214,7 +214,7 @@ export default {
       }
       let series = []
       for (const field of this.customNumberFields) {
-        let data = {
+        const data = {
           name: field.name,
           data: []
         }
