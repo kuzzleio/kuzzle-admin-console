@@ -223,8 +223,9 @@ export default {
         }
         series.push(data)
       }
-      if (this.$refs.Chart)
+      if (this.$refs.Chart) {
         this.$refs.Chart.updateOptions(this.chartOptions)
+      }
       this.series = series
     },
     saveToLocalStorage() {
