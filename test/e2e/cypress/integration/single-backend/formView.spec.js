@@ -56,7 +56,6 @@ describe('Form view', function() {
     cy.get('[data-cy="DocumentCreate-input--id"').type('new-doc')
 
     cy.get('input#age').type('31')
-    cy.get('input#employeeofthemonthsince').type('2020-11-05')
     cy.get('textarea.ace_text-input')
       .type('{selectall}{backspace}', { force: true })
       .type(
