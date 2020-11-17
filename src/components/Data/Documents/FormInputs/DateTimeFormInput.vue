@@ -2,19 +2,46 @@
   <b-card class="w-100">
     <b-card-body class="m-0 p-0">
       <b-row>
-        <b-col
-          ><b-form-datepicker
-            v-model="date"
-            class="mb-2"
-            @input="onDateChange"
-          ></b-form-datepicker
-        ></b-col>
-        <b-col
-          ><b-form-timepicker
-            v-model="time"
-            class="mb-2"
-            @input="onTimeChange"
-          ></b-form-timepicker>
+        <b-col cols="6">
+          <b-input-group>
+            <b-form-input
+              v-model="date"
+              data-cy="datePickerInput"
+              type="text"
+              class="w-50"
+              placeholder="YYYY-MM-DD"
+              autocomplete="off"
+              @input="onDateChange"
+            ></b-form-input>
+            <b-input-group-append>
+              <b-form-datepicker
+                v-model="date"
+                button-only
+                locale="en-US"
+                @input="onDateChange"
+              ></b-form-datepicker>
+            </b-input-group-append>
+          </b-input-group>
+        </b-col>
+        <b-col cols="6">
+          <b-input-group>
+            <b-form-input
+              v-model="time"
+              data-cy="timePickerInput"
+              type="text"
+              class="w-50"
+              placeholder="HH:mm:ss"
+              autocomplete="off"
+              @input="onTimeChange"
+            ></b-form-input>
+            <b-input-group-append>
+              <b-form-timepicker
+                v-model="time"
+                button-only
+                @input="onTimeChange"
+              ></b-form-timepicker>
+            </b-input-group-append>
+          </b-input-group>
         </b-col>
       </b-row>
     </b-card-body>

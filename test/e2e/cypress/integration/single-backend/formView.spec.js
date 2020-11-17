@@ -68,10 +68,19 @@ describe('Form view', function() {
     cy.get('textarea#job').type('webmestre enginer')
     cy.get('input#name').type('Bombi')
 
+    cy.get('[data-cy="datePickerInput"').type('2020-01-01')
+    cy.get('[data-cy="timePickerInput"').type('23:30:00')
+
     cy.get('[data-cy="DocumentCreate-btn"').click({ force: true })
     cy.waitForLoading()
 
     cy.contains('new-doc')
+    cy.request(
+      'GET',
+      `${kuzzleUrl}/${indexName}/${collectionName}/new-doc`
+    ).then(res => {
+      expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals('1577917800000')
+    })
   })
 
   it('should be able to update a document with the form view enabled', function() {
@@ -85,6 +94,9 @@ describe('Form view', function() {
 
     cy.get('input#age').type('{selectall}{backspace}43')
 
+    cy.get('[data-cy="datePickerInput"').clear().type('2020-01-02')
+    cy.get('[data-cy="timePickerInput"').clear().type('23:30:00')
+
     cy.get('[data-cy="DocumentUpdate-btn"').click({ force: true })
 
     cy.request(
@@ -92,6 +104,7 @@ describe('Form view', function() {
       `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}`
     ).then(res => {
       expect(res.body.result._source.age).to.be.equals(43)
+      expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals('1578004200000')
     })
   })
 
