@@ -59,7 +59,7 @@ class FormSchemaService {
   public generate(mapping: Object, document: Object) {
     const schema: Schema = {
       fields: [],
-      unavailables: []
+      unavailable: []
     }
 
     const cleanedMapping = this.cleanMapping(mapping)
@@ -72,7 +72,7 @@ class FormSchemaService {
           : mappingFieldValues['type']
 
         if (this.isUnavailable(documentField, type)) {
-          schema.unavailables.push(mappingFieldName)
+          schema.unavailable.push(mappingFieldName)
           return
         }
 
@@ -129,7 +129,7 @@ interface FormField {
 
 interface Schema {
   fields: FormField[]
-  unavailables: string[]
+  unavailable: string[]
 }
 
 export const formSchemaService = new FormSchemaService()

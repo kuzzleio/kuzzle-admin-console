@@ -35,11 +35,11 @@
             <b-alert
               data-cy="form-view-warning"
               variant="warning"
-              :show="formSchema.unavailables.length > 0"
+              :show="formSchema.unavailable.length > 0"
             >
               The following fields are not supported in the form view:
               <span class="font-weight-bold">
-                {{ formSchema.unavailables.join(', ') }}</span
+                {{ formSchema.unavailable.join(', ') }}</span
               >. Please use the JSON view if you want to update these values.
               <i
                 class="fas fa-question-circle"
