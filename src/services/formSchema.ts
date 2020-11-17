@@ -16,8 +16,8 @@ export const typesCorrespondance = {
   keyword: 'input',
   wildcard: 'input',
   constant_keyword: 'input',
-  date: 'input',
   ip: 'input',
+  date: 'DateTimeFormInput',
   object: 'JsonFormInput',
   flattened: 'JsonFormInput',
   geo_point: 'JsonFormInput',
@@ -52,8 +52,7 @@ const inputTypesCorrespondance = {
   scaled_float: 'number',
   keyword: 'text',
   wildcard: 'text',
-  constant_keyword: 'text',
-  date: 'date'
+  constant_keyword: 'text'
 }
 
 class FormSchemaService {
@@ -84,8 +83,7 @@ class FormSchemaService {
           inputType: this.getInputTypeCorrespondance(type),
           label: mappingFieldName,
           model: mappingFieldName,
-          mapping:
-            typeCorrespondance === 'JsonFormInput' ? mappingFieldValues : null
+          mapping: mappingFieldValues
         }
 
         schema.fields.push(field)
@@ -126,7 +124,7 @@ interface FormField {
   inputType: string
   label: string
   model: string
-  mapping?: object
+  mapping: object
 }
 
 interface Schema {
