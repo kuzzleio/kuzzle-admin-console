@@ -1,18 +1,16 @@
 <template>
-  <div class="col s12 TimeSeriesView">
-    <div class="row chart-container">
-      <VueApexCharts
-        v-if="customNumberFields.length"
-        class="w-75"
-        type="line"
-        ref="Chart"
-        :series="series"
-        :options="chartOptions"
-      />
-      <div v-else class="row col s12">No data to display</div>
-    </div>
-    <div class="row">
-      <div class="col s12">
+  <div class="TimeSeriesView">
+    <div class="row" v-if="customNumberFields.length">
+      <b-col lg="8">
+        <VueApexCharts
+          class="w-100"
+          type="line"
+          ref="Chart"
+          :series="series"
+          :options="chartOptions"
+        />
+      </b-col>
+      <b-col lg="4" class="card p-3">
         <span>Date</span>
         <autocomplete
           placeholder="Date field"
@@ -20,14 +18,12 @@
           :value="customDateField || ''"
           :notify-change="false"
           @autocomplete::change="
-            item => {
+            (item) => {
               addDateField(item)
             }
           "
         />
-      </div>
-      <div class="col s12">
-        <form class="TimeSeriesValueSelector">
+        <form class="TimeSeriesValueSelector mt-2">
           <span>Values</span>
           <time-series-item
             v-for="(number, key) of customNumberFields"
@@ -39,20 +35,20 @@
             @update-color="updateColor"
             @timeseriesitem::remove="removeItem"
           />
-
           <time-series-item
             :items="mappingNumberArray"
             :new-value="newCustomNumberField || ''"
             @update-color="updateColor"
             @autocomplete::change="
-              item => {
+              (item) => {
                 addNumberField(item)
               }
             "
           />
         </form>
-      </div>
+      </b-col>
     </div>
+    <div v-else class="row col s12">No data to display</div>
   </div>
 </template>
 
@@ -306,8 +302,4 @@ export default {
 </script>
 
 <style>
-.chart-container {
-  display: flex;
-  justify-content: center;
-}
 </style>
