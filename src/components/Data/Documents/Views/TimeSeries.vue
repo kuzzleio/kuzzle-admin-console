@@ -18,7 +18,7 @@
           :value="customDateField || ''"
           :notify-change="false"
           @autocomplete::change="
-            (item) => {
+            item => {
               addDateField(item)
             }
           "
@@ -40,7 +40,7 @@
             :new-value="newCustomNumberField || ''"
             @update-color="updateColor"
             @autocomplete::change="
-              (item) => {
+              item => {
                 addNumberField(item)
               }
             "
@@ -300,6 +300,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>
