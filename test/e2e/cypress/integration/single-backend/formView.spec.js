@@ -74,12 +74,13 @@ describe('Form view', function() {
     cy.get('[data-cy="DocumentCreate-btn"').click({ force: true })
     cy.waitForLoading()
 
+    const date = new Date("2020-01-01 23:30:00");
     cy.contains('new-doc')
     cy.request(
       'GET',
       `${kuzzleUrl}/${indexName}/${collectionName}/new-doc`
     ).then(res => {
-      expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals('1577917800000')
+      expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals(`${date.valueOf()}`)
     })
   })
 
@@ -99,12 +100,13 @@ describe('Form view', function() {
 
     cy.get('[data-cy="DocumentUpdate-btn"').click({ force: true })
 
+    const date = new Date("2020-01-02 23:30:00");
     cy.request(
       'GET',
       `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}`
     ).then(res => {
       expect(res.body.result._source.age).to.be.equals(43)
-      expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals('1578004200000')
+      expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals(`${date.valueOf()}`)
     })
   })
 
