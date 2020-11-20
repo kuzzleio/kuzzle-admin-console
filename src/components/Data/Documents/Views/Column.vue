@@ -19,7 +19,7 @@
           </b-dropdown-item-button>
           <b-dropdown-text
             class="dropdown-text inlineDisplay pointer p-0"
-            v-for="field of formattedSelectFields"
+            v-for="field of dropdownFields"
             :key="`dropdown-${field.text}`"
           >
             <span class="inlineDisplay-item">
@@ -38,7 +38,7 @@
               >{{ field.text }}</label
             >
           </b-dropdown-text>
-          <b-dropdown-item v-if="formattedSelectFields.length === 0">
+          <b-dropdown-item v-if="dropdownFields.length === 0">
             <span class="inlineDisplay-item">
               No searchable field
             </span>
@@ -98,113 +98,103 @@
         </b-alert>
       </b-col>
     </b-row>
-    <b-row class="mt-2 mb-2" no-gutters> </b-row>
     <b-row class="mt-2 mb-2" no-gutters>
-      <b-col cols="12">
-        <b-table
-          data-cy="ColumnView-table"
-          bordered
-          hover
-          no-border-collapse
-          small
-          sort-icon-left
-          sticky-header
-          striped
-          :fields="formattedTableFields"
-          :items="formattedItems"
-        >
-          <template v-slot:head()="data">
-            <div class="inlineDisplay mx-1">
-              <span
-                class="inlineDisplay-item text-secondary m-3 text-nowrap"
-                :data-cy="`ColumnViewHead--${data.label}`"
-                :title="data.label"
-                >{{ data.label }}</span
+      <b-col cols="3">
+        <b-table-simple responsive striped hover bordered>
+          <b-thead>
+            <b-tr>
+              <b-th
+                v-for="field of tableDefaultHeaders"
+                :key="`header-col-${field.key}`"
+                :id="`header-col-${field}`"
               >
-            </div>
-          </template>
-          <template v-slot:cell(acColumnTableActions)="data">
-            <div class="inlineDisplay">
-              <span class="inlineDisplay-item">
-                <b-form-checkbox
-                  :checked="isChecked(data.item.id)"
-                  @change="toggleSelectDocument(data.item.id)"
-                />
-              </span>
-              <span class="inlineDisplay-item">
-                <b-button
-                  title="Edit document"
-                  variant="link"
-                  class="px-0 mx-1"
-                  :data-cy="`ColumnView-table-edit-btn--${data.item.id}`"
-                  :disabled="!canEdit"
-                  @click="editDocument(data.item.id)"
-                >
-                  <i class="fa fa-pen" />
-                </b-button>
-              </span>
-              <span class="inlineDisplay-item">
-                <b-button
-                  class="px-0 mx-1"
-                  title="Delete document"
-                  variant="link"
-                  :disabled="!canDelete"
-                  @click="deleteDocument(data.item.id)"
-                >
-                  <i class="fa fa-trash" />
-                </b-button>
-              </span>
-            </div>
-          </template>
-          <template v-slot:cell(acColumnTableId)="data">
-            <span data-cy="ColumnViewCell--id" class="code">{{
-              data.item.id
-            }}</span>
-          </template>
-          <template v-slot:cell()="data">
-            <div class="inlineDisplay mx-1">
-              <span
-                v-if="data.value.null === true"
-                class="inlineDisplay-item px-3 code"
+                {{ field.label }}
+              </b-th>
+            </b-tr>
+          </b-thead>
+          <b-tbody>
+            <b-tr v-for="item of formattedItems" :key="`item-row-${item.id}`">
+              <b-td
+                class="cell"
+                colspan="1"
+                v-for="field of tableDefaultHeaders"
+                :key="`item-col-${field.key}`"
+                :id="`col-${item.id}-${field}`"
               >
-                null
-              </span>
-              <span
-                v-if="data.value.undefined === true"
-                class="inlineDisplay-item px-3 code"
+                <template v-if="field.key === 'acColumnTableActions'">
+                  <div class="inlineDisplay">
+                    <span class="inlineDisplay-item">
+                      <b-form-checkbox
+                        :checked="isChecked(item.id)"
+                        @change="toggleSelectDocument(item.id)"
+                      />
+                    </span>
+                    <span class="inlineDisplay-item">
+                      <b-button
+                        title="Edit document"
+                        variant="link"
+                        class="px-0 mx-1"
+                        :cy="`ColumnView-table-edit-btn--${item.id}`"
+                        :disabled="!canEdit"
+                        @click="editDocument(item.id)"
+                      >
+                        <i class="fa fa-pen" />
+                      </b-button>
+                    </span>
+                    <span class="inlineDisplay-item">
+                      <b-button
+                        class="px-0 mx-1"
+                        title="Delete document"
+                        variant="link"
+                        :disabled="!canDelete"
+                        @click="deleteDocument(item.id)"
+                      >
+                        <i class="fa fa-trash" />
+                      </b-button>
+                    </span>
+                  </div>
+                </template>
+                <template v-else-if="field.key === 'acColumnTableId'">
+                  {{ item.id }}
+                </template>
+              </b-td>
+            </b-tr>
+          </b-tbody>
+        </b-table-simple>
+      </b-col>
+      <b-col cols="9">
+        <b-table-simple responsive striped hover bordered>
+          <b-thead>
+            <draggable
+              v-model="selectedFields"
+              tag="tr"
+              handle=".handle"
+              filter=".ignore"
+              draggable=".draggableItem"
+            >
+              <HeaderTableView
+                v-for="field of selectedFields"
+                :key="`header-col-${field}`"
+                :field="field"
+                :displayDragIcon="displayDragIcon"
+                @mouseenter="displayDragIcon = true"
+                @mouseleave="displayDragIcon = false"
+              />
+            </draggable>
+          </b-thead>
+          <b-tbody>
+            <b-tr v-for="item of formattedItems" :key="`item-row-${item.id}`">
+              <b-td
+                class="cell"
+                v-for="field of selectedFields"
+                :key="`item-col-${field}`"
+                :id="`col-${item.id}-${field}`"
               >
-                undefined
-              </span>
-              <span
-                v-if="data.value.array === true"
-                class="inlineDisplay-item px-3 code"
-              >
-                [...]
-              </span>
-              <b-badge
-                pill
-                class="mx-1"
-                variant="info"
-                :id="`tooltip-target-${data.item.id}-${data.field.key}`"
-                v-if="data.value.array === true"
-              >
-                <i class="fa fa-info" />
-              </b-badge>
-              <b-tooltip
-                placement="left"
-                :target="`tooltip-target-${data.item.id}-${data.field.key}`"
-              >
-                This value cannot be displayed because it contains or is
-                contained in an array.
-              </b-tooltip>
-              <span
-                v-if="typeof data.value !== 'object'"
-                class="inlineDisplay-item px-3 code valueDisplayer"
-                >{{ data.value }}</span
-              >
-            </div>
-          </template>
-        </b-table>
+                {{ item[field] }}
+              </b-td>
+            </b-tr>
+          </b-tbody>
+        </b-table-simple>
       </b-col>
     </b-row>
   </div>
@@ -215,11 +205,17 @@ import JsonFormatter from '../../../../directives/json-formatter.directive'
 import _ from 'lodash'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
+import draggable from 'vuedraggable'
+import HeaderTableView from '../HeaderTableView'
 
 export default {
   name: 'Column',
   directives: {
     JsonFormatter
+  },
+  components: {
+    draggable,
+    HeaderTableView
   },
   props: {
     allChecked: Boolean,
@@ -235,7 +231,21 @@ export default {
     return {
       itemsPerPage: [10, 25, 50, 100, 500],
       selectedFields: [],
-      fieldList: []
+      fieldList: [],
+      tableDefaultHeaders: [
+        {
+          key: 'acColumnTableActions',
+          label: ''
+        },
+        {
+          key: 'acColumnTableId',
+          label: 'Id'
+        }
+      ],
+      tableItems: [],
+      displayDragIcon: false,
+      tabResizing: null,
+      startOffset: null
     }
   },
   computed: {
@@ -249,50 +259,17 @@ export default {
         this.hasSelectedDocuments
       )
     },
-    formattedSelectFields() {
+    dropdownFields() {
       return this.fieldList.map(field => ({
         text: field,
         displayed: this.selectedFields.includes(field)
       }))
     },
-    formattedTableFields() {
-      const fields = [
-        {
-          key: 'acColumnTableActions',
-          label: '',
-          deletable: false,
-          stickyColumn: true,
-          sortable: false,
-          thStyle: { width: '20px' },
-          thClass: 'align-middle'
-        },
-        {
-          key: 'acColumnTableId',
-          label: 'Id',
-          deletable: false,
-          sortable: true,
-          tdClass: 'align-middle',
-          thClass: 'align-middle'
-        }
-      ]
-      for (const f of this.selectedFields) {
-        fields.push({
-          key: f,
-          sortable: true,
-          deletable: true,
-          tdClass: 'align-middle columnClass',
-          thClass: 'align-middle'
-        })
-      }
-      return fields
-    },
     formattedItems() {
       return this.documents.map(d => {
         const doc = {}
         doc.id = d.id
-        for (const { key } of this.formattedTableFields) {
-          // each columns path
-          if (key === 'acColumnTableId' || key === 'acColumnTableActions') continue // column id is always ok
+        for (const key of this.selectedFields) {
           // if there is an array in the current document within the 'path'
           if (this.documentPathContainsArray(key, d)) {
             doc[key] = { array: true }
@@ -369,10 +346,10 @@ export default {
     },
     toggleColumn(field, value) {
       this.$log.debug(`Toggling field ${field}`)
-      if (value === true && !this.selectedFields.includes(field)) {
+      if (value && !this.selectedFields.includes(field)) {
         this.selectedFields.push(field)
       }
-      if (value === false) {
+      if (!value) {
         this.$delete(this.selectedFields, this.selectedFields.indexOf(field))
       }
       this.saveSelectedFieldsToLocalStorage()
@@ -507,5 +484,10 @@ export default {
   white-space: nowrap;
   background-color: transparent;
   border: 0;
+}
+
+.cell {
+  height: 70px;
+  white-space: nowrap;
 }
 </style>
