@@ -100,7 +100,9 @@
     </b-row>
     <b-row class="mt-2 mb-2" no-gutters>
       <b-col cols="3">
-        <b-table-simple responsive striped hover bordered>
+        <b-table-simple responsive striped hover bordered
+          data-cy="ColumnView-table-id"
+        >
           <b-thead>
             <b-tr>
               <b-th
@@ -126,6 +128,7 @@
                     <span class="inlineDisplay-item">
                       <b-form-checkbox
                         :checked="isChecked(item.id)"
+                        :data-cy="`ColumnView-table-select-btn--${item.id}`"
                         @change="toggleSelectDocument(item.id)"
                       />
                     </span>
@@ -134,7 +137,7 @@
                         title="Edit document"
                         variant="link"
                         class="px-0 mx-1"
-                        :cy="`ColumnView-table-edit-btn--${item.id}`"
+                        :data-cy="`ColumnView-table-edit-btn--${item.id}`"
                         :disabled="!canEdit"
                         @click="editDocument(item.id)"
                       >
@@ -146,6 +149,7 @@
                         class="px-0 mx-1"
                         title="Delete document"
                         variant="link"
+                        :data-cy="`ColumnView-table-delete-btn--${item.id}`"
                         :disabled="!canDelete"
                         @click="deleteDocument(item.id)"
                       >
@@ -163,7 +167,9 @@
         </b-table-simple>
       </b-col>
       <b-col cols="9">
-        <b-table-simple responsive striped hover bordered>
+        <b-table-simple responsive striped hover bordered
+          data-cy="ColumnView-table-data"
+        >
           <b-thead>
             <draggable
               v-model="selectedFields"

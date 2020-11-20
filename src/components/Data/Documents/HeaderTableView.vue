@@ -2,6 +2,7 @@
   <b-th
     :id="`header-col-${field}`"
     class="draggableItem"
+    :data-cy="`ColumnViewHead--${field}`"
     @mouseenter="$emit('mouseenter')"
     @mouseleave="$emit('mouseleave')"
   >
