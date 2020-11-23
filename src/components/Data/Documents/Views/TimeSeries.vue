@@ -1,6 +1,6 @@
 <template>
   <div class="TimeSeriesView">
-    <div class="row" v-if="customNumberFields.length">
+    <div class="row" v-if="mappingDateArray.length && mappingNumberArray.length">
       <b-col lg="8">
         <VueApexCharts
           class="w-100"
@@ -185,6 +185,7 @@ export default {
       columnsConfig[this.index] &&
       columnsConfig[this.index][this.collection]
     ) {
+
       this.customNumberFields =
         columnsConfig[this.index][this.collection].numbers || []
     }
