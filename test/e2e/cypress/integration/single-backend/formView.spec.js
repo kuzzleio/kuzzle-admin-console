@@ -81,7 +81,7 @@ describe('Form view', function() {
       `${kuzzleUrl}/${indexName}/${collectionName}/new-doc`
     ).then(res => {
       expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals(
-        `${date.valueOf()}`
+        date.getTime().toString()
       )
     })
   })
