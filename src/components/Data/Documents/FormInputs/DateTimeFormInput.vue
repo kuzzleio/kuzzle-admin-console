@@ -17,7 +17,7 @@
               <b-form-datepicker
                 v-model="date"
                 button-only
-                locale="en-US"
+                locale="en-GB"
                 @input="onDateChange"
               ></b-form-datepicker>
             </b-input-group-append>
@@ -38,6 +38,9 @@
               <b-form-timepicker
                 v-model="time"
                 button-only
+                locale="en-GB"
+                :show-seconds="true"
+                :hour12="false"
                 @input="onTimeChange"
               ></b-form-timepicker>
             </b-input-group-append>
