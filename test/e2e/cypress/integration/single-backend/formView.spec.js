@@ -45,7 +45,7 @@ describe('Form view', function() {
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
-  it('should be able to create a new document with the form view enabled', function() {
+  it.only('should be able to create a new document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.waitForLoading()
 
@@ -57,7 +57,7 @@ describe('Form view', function() {
 
     cy.get('input#age').type('31')
     cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { force: true })
+      .type('{backspace}{backspace}', { force: true })
       .type(
         `{
       "desktop": "standing"`,
