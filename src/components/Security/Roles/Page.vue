@@ -6,6 +6,7 @@
       </b-col>
       <b-col class="text-right mt-3">
         <b-button
+          v-if="displayRevokeAnonymous"
           class="mr-2"
           data-cy="RolesManagement-revokeAnonymous"
           variant="primary"
@@ -117,7 +118,12 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
-    ...mapGetters('auth', ['canSearchRole', 'canCreateRole'])
+    ...mapGetters('auth', ['canSearchRole', 'canCreateRole']),
+    displayRevokeAnonymous () {
+      return (this.$store.direct.getters.auth.adminAlreadyExists &&
+      this.$store.direct.getters.auth.canEditRole &&
+      this.$store.direct.getters.auth.canManageRoles)
+    }
   }
 }
 </script>
