@@ -22,9 +22,10 @@
         :index="indexName"
         :collection="collectionName"
         :document="document"
-        :mapping="mapping"
+        :mapping="collection.mapping"
         @cancel="onCancel"
         @submit="onSubmit"
+        @document-change="onDocumentChange"
       />
     </template>
     <template v-else>
@@ -37,6 +38,7 @@
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
+
 import { omit } from 'lodash'
 import { mapGetters } from 'vuex'
 
@@ -56,7 +58,6 @@ export default {
     return {
       document: {},
       loading: false,
-      mapping: {},
       showAlert: false
     }
   },
@@ -137,6 +138,9 @@ export default {
         params: { index: this.indexName, collection: this.collectionName }
       })
     },
+    onDocumentChange(document) {
+      this.document = document
+    },
     async fetch() {
       this.showAlert = false
       this.loading = true
@@ -147,10 +151,6 @@ export default {
           this.id
         )
         this.document = omit(res._source, '_kuzzle_info')
-        this.mapping = await this.wrapper.getMappingDocument(
-          this.collectionName,
-          this.indexName
-        )
         this.loading = false
       } catch (err) {
         this.$log.error(err)
