@@ -336,27 +336,27 @@ describe('Search', function() {
 
     cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy=CollectionDropdown-column]').click()
-    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 1)
+    cy.get('[data-cy="ColumnView-table-id"] tbody tr').should('have.length', 1)
 
     cy.get('[data-cy="QuickFilter-resetBtn"]').click()
 
     cy.url().should('not.contain', 'Keylogger')
     cy.url().should('contain', 'listViewType=column')
-    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 2)
+    cy.get('[data-cy="ColumnView-table-id"] tbody tr').should('have.length', 2)
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Keylogger')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
-    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 1)
+    cy.get('[data-cy="ColumnView-table-id"] tbody tr').should('have.length', 1)
 
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-resetBtn"]').click()
     cy.url().should('not.contain', 'Keylogger')
     cy.url().should('contain', 'listViewType=column')
-    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 2)
+    cy.get('[data-cy="ColumnView-table-id"] tbody tr').should('have.length', 2)
   })
 
   it('sorts the results when sorting is selected in the basic filter', function() {
