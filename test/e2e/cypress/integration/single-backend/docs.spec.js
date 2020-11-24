@@ -143,7 +143,7 @@ describe('Document List', function() {
     cy.get('[data-cy="ColumnViewHead--value2"]').should('exist')
   })
 
-  it('Should handle the time series view properly', function() {
+  it.skip('Should handle the time series view properly', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
