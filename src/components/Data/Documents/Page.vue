@@ -15,6 +15,7 @@
         <b-col sm="6" class="text-right mt-3">
           <b-button
             variant="primary"
+            data-cy="CreateDocument-btn"
             :disabled="
               indexOrCollectionNotFound ||
                 !canCreateDocument(indexName, collectionName)
@@ -715,7 +716,7 @@ export default {
             const date = dateFromTimestamp(value)
 
             if (date) {
-              document[field] += ` (${date.toUTCString()})`
+              document[field] += ` (${date.toLocaleString('en-GB')})`
             }
           } else if (value && typeof value === 'object') {
             changeField(value)

@@ -10,8 +10,10 @@
         :index="indexName"
         :collection="collectionName"
         :mapping="collection.mapping"
+        :document="newDocument"
         @cancel="onCancel"
         @submit="onSubmit"
+        @document-change="onDocumentChange"
       />
     </template>
     <template v-else>
@@ -40,7 +42,8 @@ export default {
   data() {
     return {
       mapping: {},
-      submitting: false
+      submitting: false,
+      newDocument: {}
     }
   },
   computed: {
@@ -103,6 +106,9 @@ export default {
         name: 'DocumentList',
         params: { index: this.index, collection: this.collection }
       })
+    },
+    onDocumentChange(document) {
+      this.newDocument = document
     },
     async fetchCollectionMapping() {
       try {

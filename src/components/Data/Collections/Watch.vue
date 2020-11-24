@@ -221,7 +221,7 @@
                     <b-card-header>
                       Latest notification ({{ lastNotificationTime }})
                     </b-card-header>
-                    <b-card-body>
+                    <b-card-body class="overflow-auto">
                       <b-badge
                         pill
                         variant="info"

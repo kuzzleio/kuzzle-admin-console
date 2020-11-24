@@ -131,16 +131,16 @@ describe('Document List', function() {
 
     cy.get('[data-cy="SelectField"]').click()
     cy.get('[data-cy="SelectField--date"]').click({ force: true })
-    cy.get('[data-cy="ColumnViewHead--Date"]').should('exist')
+    cy.get('[data-cy="ColumnViewHead--date"]').should('exist')
     cy.get('[data-cy="SelectField"]').click()
     cy.get('[data-cy="SelectField--date"]').click({ force: true })
-    cy.get('[data-cy="ColumnViewHead--Date"]').should('not.exist')
+    cy.get('[data-cy="ColumnViewHead--date"]').should('not.exist')
     cy.get('[data-cy="SelectField"]').click()
     cy.get('[data-cy="SelectField--value"]').click({ force: true })
     cy.get('[data-cy="SelectField"]').click()
     cy.get('[data-cy="SelectField--value2"]').click({ force: true })
-    cy.get('[data-cy="ColumnViewHead--Value"]').should('exist')
-    cy.get('[data-cy="ColumnViewHead--Value2"]').should('exist')
+    cy.get('[data-cy="ColumnViewHead--value"]').should('exist')
+    cy.get('[data-cy="ColumnViewHead--value2"]').should('exist')
   })
 
   it('Should handle the time series view properly', function() {

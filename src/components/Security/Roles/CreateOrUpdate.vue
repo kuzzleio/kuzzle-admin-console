@@ -10,6 +10,9 @@
       Create a new role
     </Headline>
     <Notice />
+    <b-alert variant="warning" :show="displayWarningAlert">
+      Warning, you are editing a role that applies to yourself!
+    </b-alert>
     <template v-if="loading"></template>
     <template v-else>
       <b-card class="h-100">
@@ -134,7 +137,7 @@ import { startsWithSpace, isWhitespace } from '../../../validators'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
 import JsonEditor from '../../Common/JsonEditor'
-import omit from 'lodash/omit'
+import { omit, intersection } from 'lodash'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -155,7 +158,8 @@ export default {
       documentValue: '{}',
       idValue: null,
       loading: false,
-      submitting: false
+      submitting: false,
+      attachedProfiles: []
     }
   },
   validations: {
@@ -176,9 +180,23 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle'])
+    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('auth', ['userProfiles']),
+    displayWarningAlert() {
+      return intersection(this.attachedProfiles, this.userProfiles).length !== 0
+    }
   },
   methods: {
+    async searchAttachedProfiles() {
+      try {
+        const res = await this.$kuzzle.security.searchProfiles({
+          roles: [this.id]
+        })
+        this.attachedProfiles = res.hits.map(p => p._id)
+      } catch (error) {
+        this.$log.error(error)
+      }
+    },
     validateState(fieldName) {
       const { $dirty, $error } = this.$v[fieldName]
       return $dirty ? !$error : null
@@ -230,6 +248,7 @@ export default {
     }
     try {
       this.loading = true
+      this.searchAttachedProfiles()
       const fetchedRole = await this.$kuzzle.security.getRole(this.id)
       this.idValue = fetchedRole._id
       const role = omit(fetchedRole, ['_id', '_kuzzle'])

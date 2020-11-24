@@ -5,7 +5,6 @@
       <filters
         class="mb-3"
         :current-filter="currentFilter.basic"
-        
         @filters-updated="onFiltersUpdated"
         @reset="onFiltersUpdated"
       />
