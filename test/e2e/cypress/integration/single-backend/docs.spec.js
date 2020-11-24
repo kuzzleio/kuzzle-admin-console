@@ -143,7 +143,7 @@ describe('Document List', function() {
     cy.get('[data-cy="ColumnViewHead--Value2"]').should('exist')
   })
 
-  it.skip('Should handle the time series view properly', function() {
+  it('Should handle the time series view properly', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
@@ -216,6 +216,58 @@ describe('Document List', function() {
       '.col > .TimeSeriesValueSelector > .row:nth-child(2) > .col > .far'
     ).click()
     cy.get('.col > .TimeSeriesValueSelector > .row > .col > .far').click()
+  })
+
+  it('Should handle the map view properly', function() {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/mapcollectiontest`, {
+      properties: {
+        location: {
+          type: "geo_point"
+        }
+      }
+    })
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/_create?refresh=wait_for`,
+      {
+        location: {
+          lat: 1,
+          lon: 1
+        }
+      }
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/_create?refresh=wait_for`,
+      {
+        location: {
+          lat: 2,
+          lon: 2
+        }
+      }
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/_create?refresh=wait_for`,
+      {
+        location: {
+          lat: 3,
+          lon: 3
+        }
+      }
+    )
+    cy.waitOverlay()
+
+    cy.visit(`/#/data/${indexName}/mapcollectiontest`)
+    cy.wait(500)
+    cy.contains('mapcollectiontest')
+
+    cy.get('[data-cy="CollectionDropdownView"').click()
+    cy.wait(500)
+    cy.get('[data-cy="CollectionDropdown-map"]').click()
+    cy.url().should('contain', 'listViewType=map')
+    cy.get(".vue2leaflet-map").should('exist')
+    cy.get(".leaflet-marker-icon").should('have.length', 3)
   })
 })
 
