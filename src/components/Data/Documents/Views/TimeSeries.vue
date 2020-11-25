@@ -1,9 +1,15 @@
 <template>
   <div class="TimeSeriesView">
-    <div class="row" v-if="mappingDateArray.length && mappingNumberArray.length">
+    <div
+      class="row"
+      v-if="
+        (mappingDateArray.length || customDateField) &&
+        (mappingNumberArray.length || customNumberFields.length)
+      "
+    >
       <b-col lg="8">
         <VueApexCharts
-          class="w-100"
+          class="w-100 h-100"
           type="line"
           ref="Chart"
           :series="series"
@@ -18,7 +24,7 @@
           :value="customDateField || ''"
           :notify-change="false"
           @autocomplete::change="
-            item => {
+            (item) => {
               addDateField(item)
             }
           "
@@ -40,7 +46,7 @@
             :new-value="newCustomNumberField || ''"
             @update-color="updateColor"
             @autocomplete::change="
-              item => {
+              (item) => {
                 addNumberField(item)
               }
             "
@@ -195,10 +201,13 @@ export default {
 
     if (this.customNumberFields) {
       for (const attr of this.customNumberFields) {
+        console.log(this.mappingNumberArray);
         this.mappingNumberArray.splice(
           this.mappingNumberArray.indexOf(attr.name),
           1
         )
+        console.log(this.mappingNumberArray);
+
       }
       this.mappingNumberArray.sort()
     }
