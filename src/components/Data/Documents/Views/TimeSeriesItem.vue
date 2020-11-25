@@ -1,11 +1,6 @@
 <template>
-  <div class="row m-1">
-    <div class="col s12 relative">
-      <i
-        v-if="isUpdatable"
-        class="far fa-times-circle TimeSeriesColorPickerRemoveBtn"
-        @click.prevent="$emit('timeseriesitem::remove', index)"
-      />
+  <div class="row mr-1 no-gutters mb-2">
+    <div class="col relative m-1">
       <button
         class="TimeSeriesColorPickerBtn btn btn-small"
         :style="{ 'background-color': newColor }"
@@ -18,7 +13,7 @@
         @input="updateColor"
       />
     </div>
-    <div class="col s12">
+    <div class="col mr-1 ml-1">
       <autocomplete
         v-if="!isUpdatable"
         placeholder="Add a value"
@@ -28,6 +23,13 @@
         @autocomplete::change="attribute => addItem(attribute)"
       />
       <input v-else :value="value" :disabled="true" class="form-control"/>
+    </div>
+    <div class="col-1 ml-1 TimeSeriesColorPickerRemoveContanainer">
+      <i
+        v-if="isUpdatable"
+        class="far fa-times-circle TimeSeriesColorPickerRemoveBtn"
+        @click.prevent="$emit('timeseriesitem::remove', index)"
+      />
     </div>
   </div>
 </template>
@@ -122,19 +124,23 @@ export default {
   margin-top: 10px;
 }
 .TimeSeriesColorPickerBtn {
-  width: 90%;
-  height: 20px;
-  margin-top: 10px;
+  width: 100%;
+  height: 70%;
+  margin-top: 5px;
 }
 
 .TimeSeriesColorPicker {
   position: absolute;
   z-index: 999;
 }
+
+.TimeSeriesColorPickerRemoveContanainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .TimeSeriesColorPickerRemoveBtn {
-  position: absolute;
-  right: 5px;
-  top: 5px;
   cursor: pointer;
 }
 
