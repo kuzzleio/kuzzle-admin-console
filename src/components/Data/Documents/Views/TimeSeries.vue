@@ -201,13 +201,10 @@ export default {
 
     if (this.customNumberFields) {
       for (const attr of this.customNumberFields) {
-        console.log(this.mappingNumberArray);
         this.mappingNumberArray.splice(
           this.mappingNumberArray.indexOf(attr.name),
           1
         )
-        console.log(this.mappingNumberArray);
-
       }
       this.mappingNumberArray.sort()
     }
