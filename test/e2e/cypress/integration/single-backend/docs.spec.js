@@ -228,7 +228,7 @@ describe('Document List', function() {
     })
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc1/_create?refresh=wait_for`,
       {
         location: {
           lat: 1,
@@ -238,7 +238,7 @@ describe('Document List', function() {
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc2/_create?refresh=wait_for`,
       {
         location: {
           lat: 2,
@@ -248,7 +248,7 @@ describe('Document List', function() {
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc3/_create?refresh=wait_for`,
       {
         location: {
           lat: 3,
@@ -266,8 +266,23 @@ describe('Document List', function() {
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-map"]').click()
     cy.url().should('contain', 'listViewType=map')
-    cy.get(".vue2leaflet-map").should('exist')
-    cy.get(".leaflet-marker-icon").should('have.length', 3)
+
+    cy.get('[data-cy="mapView-map"').should('exist')
+
+    cy.get('.leaflet-marker-pane .mapView-marker-default').should("have.length", 3)
+    cy.get('.leaflet-marker-pane .mapView-marker-selected').should("not.exist")
+
+    cy.get('[data-cy="mapView-no-document-card"').should("exist")
+    cy.get('[data-cy="mapView-current-document-card"').should("not.exist")
+
+
+    cy.get(".leaflet-marker-icon.documentId-mapViewTestDoc1").click({force: true})
+
+    cy.get('[data-cy="mapView-no-document-card"').should("not.exist")
+    cy.get('[data-cy="mapView-current-document-card"').should("exist")
+    cy.get('[data-cy="mapView-current-document-id"').contains("mapViewTestDoc1");
+    cy.get('.leaflet-marker-pane .mapView-marker-default').should("have.length", 2)
+    cy.get('.leaflet-marker-pane .mapView-marker-selected').should("exist")
   })
 })
 

@@ -124,8 +124,10 @@
                     :documents="geoDocuments"
                     :get-coordinates="getCoordinates"
                     :selected-geopoint="selectedGeopoint"
+                    :current-page-size="paginationSize"
                     :index="indexName"
                     :collection="collectionName"
+                    @change-page-size="changePaginationSize"
                     @edit="onEditClicked"
                     @delete="onDeleteClicked"
                   />

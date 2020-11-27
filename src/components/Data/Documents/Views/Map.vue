@@ -1,8 +1,24 @@
 <template>
   <div class="ViewMap">
+    <b-row class="pb-2">
+      <b-col cols="12" class="text-right"
+        >Show
+        <b-form-select
+          class="mx-2"
+          style="width: unset"
+          :options="itemsPerPage"
+          :value="currentPageSize"
+          @change="$emit('change-page-size', $event)"
+        >
+        </b-form-select>
+        <span v-if="totalDocuments"
+          >of {{ totalDocuments }} total items.</span
+        ></b-col
+      >
+    </b-row>
     <b-row class="align-self-stretch">
       <b-col cols="8" class="viewMap-document-map">
-        <l-map ref="map" @click="onMapClick">
+        <l-map ref="map" @click="onMapClick" data-cy="mapView-map">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
             v-for="document in documents"
@@ -14,11 +30,15 @@
         </l-map>
       </b-col>
       <b-col cols="4">
-        <b-card no-body v-if="currentDocument">
+        <b-card
+          no-body
+          v-if="currentDocument"
+          data-cy="mapView-current-document-card"
+        >
           <b-card-header>
             <b-row align-v="center">
               <b-col cols="9" align-v="center">
-                {{ currentDocument.id }}
+                <span data-cy="mapView-current-document-id">{{ currentDocument.id }}</span>
               </b-col>
               <b-col cols="3">
                 <b-button
@@ -67,6 +87,7 @@
         <b-card
           v-else
           class="light-shadow viewMap-document-map"
+          data-cy="mapView-no-document-card"
           bg-variant="light"
         >
           <b-card-text class="p-0">
@@ -114,6 +135,10 @@ export default {
     JsonFormatter
   },
   props: {
+    currentPageSize: {
+      type: Number,
+      default: 10
+    },
     documents: {
       type: Array,
       required: true
@@ -127,6 +152,7 @@ export default {
   },
   data() {
     return {
+      itemsPerPage: [10, 25, 50, 100, 500],
       latField: null,
       lngField: null,
       map: null,
@@ -134,13 +160,34 @@ export default {
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       currentDocument: null,
+      LeafDefaultIcon: L.Icon.extend({
+        options: {
+          iconUrl: '/images/marker-icon-2x-blue.png',
+          shadowUrl: '/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        }
+      }),
       defaultIcon: new L.Icon({
         iconUrl: '/images/marker-icon-2x-blue.png',
         shadowUrl: '/images/marker-shadow.png',
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
-        shadowSize: [41, 41]
+        shadowSize: [41, 41],
+        className: 'mapView-marker-default'
+      }),
+      LeafSelectedIcon: L.Icon.extend({
+        options: {
+          iconUrl: '/images/marker-icon-2x-green.png',
+          shadowUrl: '/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        }
       }),
       selectedIcon: new L.Icon({
         iconUrl: '/images/marker-icon-2x-green.png',
@@ -148,11 +195,15 @@ export default {
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
-        shadowSize: [41, 41]
+        shadowSize: [41, 41],
+        className: 'mapView-marker-selected'
       })
     }
   },
   computed: {
+    totalDocuments() {
+      return this.documents.length;
+    },
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     coordinates() {
       return this.documents.map(this.getCoordinates)
@@ -200,10 +251,14 @@ export default {
     },
     getIcon(document) {
       if (this.currentDocument === document) {
-        return this.selectedIcon
+        return new this.LeafSelectedIcon({
+          className: `mapView-marker-selected documentId-${document.id}`
+        })
       }
 
-      return this.defaultIcon
+      return new this.LeafDefaultIcon({
+        className: `mapView-marker-default documentId-${document.id}`
+      })
     },
     deleteCurrentDocument() {
       if (this.canDelete) {
