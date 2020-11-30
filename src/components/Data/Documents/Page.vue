@@ -123,6 +123,9 @@
                     :collection="collectionName"
                     :documents="documents"
                     :mapping="collectionMapping"
+                    :current-page-size="paginationSize"
+                    @change-page-size="changePaginationSize"
+                    :total-documents="totalDocuments"
                   />
 
                   <b-row

@@ -17,6 +17,18 @@
         />
       </b-col>
       <b-col lg="4" class="card p-3">
+        <div class="mt-2">
+          Show
+          <b-form-select
+            class="mx-2"
+            style="width: unset"
+            :options="itemsPerPage"
+            :value="currentPageSize"
+            @change="$emit('change-page-size', $event)"
+          >
+          </b-form-select>
+          <span v-if="totalDocuments">of {{ totalDocuments }} total items.</span>
+        </div>
         <span>Date</span>
         <autocomplete
           placeholder="Date field"
@@ -101,10 +113,18 @@ export default {
     documents: {
       type: Array,
       required: true
+    },
+    currentPageSize: {
+      type: Number,
+      default: 10
+    },
+    totalDocuments: {
+      type: Number
     }
   },
   data() {
     return {
+      itemsPerPage: [10, 25, 50, 100, 500],
       customDateField: null,
       customNumberFields: [],
       mappingDateArray: [],
