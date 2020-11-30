@@ -6,7 +6,8 @@
       </b-col>
       <b-col class="text-right mt-3">
         <b-button
-          v-if="displayRevokeAnonymous"
+          :disabled="!displayRevokeAnonymous"
+          :title="displayRevokeAnonymous ? 'Reduce anonymous rights to the minimum' : 'You cannot revoke anonymous rights either because you don\'t have the permissions to do it or because there is no administrator user yet in the system.'
           class="mr-2"
           data-cy="RolesManagement-revokeAnonymous"
           variant="primary"
