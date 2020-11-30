@@ -46,7 +46,7 @@
       @ok="revokeAnonymous"
     >
       <p class="my-4">
-        Do you want to revoke the rights of the annonymous role ?
+        The anonymous users will only be able to perform some basic authentication actions, like logging-in, see their rights and see their user ID. You will still be able to add more rights if needed.
       </p>
     </b-modal>
   </b-container>
