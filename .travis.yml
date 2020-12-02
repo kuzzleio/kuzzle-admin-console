@@ -36,6 +36,10 @@ jobs:
     # ---------------------------------------
     - stage: lint
       name: 'Linter'
+      if: (type IN (pull_request))
+        AND (branch IN (master, 4-dev, 3-dev, 2-dev, 2-stable))
+        AND commit_message !~ /(skip-ci|wip)/
+
       script:
         - npm install
         - npm run test:lint
@@ -45,49 +49,58 @@ jobs:
     # ---------------------------------------
     - stage: tests
       name: 'End to end Tests - v1'
+      if: (type IN (pull_request))
+        AND (branch IN (master, 4-dev, 3-dev, 2-dev, 2-stable))
+        AND commit_message !~ /(skip-ci|wip)/
 
       services:
         - docker
 
       before_install:
         - sudo sysctl -w vm.max_map_count=262144
-      
+
       install:
         - npm ci
         - cd test/e2e/run-test; npm ci; cd -
 
       script:
         - npm run test:e2e -- --backend=1
-      
+
     - stage: tests
       name: 'End to end Tests - v2'
+      if: (type IN (pull_request))
+        AND (branch IN (master, 4-dev, 3-dev, 2-dev, 2-stable))
+        AND commit_message !~ /(skip-ci|wip)/
 
       services:
         - docker
 
       before_install:
         - sudo sysctl -w vm.max_map_count=262144
-      
+
       install:
         - npm ci
         - cd test/e2e/run-test; npm ci; cd -
-      
+
       script:
         - npm run test:e2e -- --backend=2
-      
+
     - stage: tests
       name: 'End to end Tests - Multi-backend'
+      if: (type IN (pull_request))
+        AND (branch IN (master, 4-dev, 3-dev, 2-dev, 2-stable))
+        AND commit_message !~ /(skip-ci|wip)/
 
       services:
         - docker
 
       before_install:
         - sudo sysctl -w vm.max_map_count=262144
-      
+
       install:
         - npm ci
         - cd test/e2e/run-test; npm ci; cd -
-      
+
       script:
         - npm run test:e2e -- --backend=multi
 
@@ -101,7 +114,7 @@ jobs:
 
       if: type != pull_request && branch = 4-dev
 
-      env: 
+      env:
         - GA_ID=G-4EDTRNC8S9
 
       addons:
