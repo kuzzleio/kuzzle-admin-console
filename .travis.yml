@@ -25,9 +25,13 @@ env:
     - AWS_S3_REGION=us-west-2
 
 stages:
-  - lint
-  - tests
-  - build & deploy
+  - name: lint
+    if: type =~ /(cron|pull_request)/ OR (type = push AND branch =~ /^master|[0-9]+-(dev|stable)$/)
+  - name: tests
+    if: type =~ /(cron|pull_request)/ OR (type = push AND branch =~ /^master|[0-9]+-(dev|stable)$/)
+  - name: build & deploy
+    if: type = push AND branch =~ /^master|[0-9]+-(dev|stable|beta)$/
+
 
 jobs:
   include:
@@ -49,9 +53,6 @@ jobs:
     # ---------------------------------------
     - stage: tests
       name: 'End to end Tests - v1'
-      if: (type IN (pull_request))
-        AND (branch IN (master, 4-dev, 3-dev, 2-dev, 2-stable))
-        AND commit_message !~ /(skip-ci|wip)/
 
       services:
         - docker
@@ -68,9 +69,6 @@ jobs:
 
     - stage: tests
       name: 'End to end Tests - v2'
-      if: (type IN (pull_request))
-        AND (branch IN (master, 4-dev, 3-dev, 2-dev, 2-stable))
-        AND commit_message !~ /(skip-ci|wip)/
 
       services:
         - docker
@@ -87,9 +85,6 @@ jobs:
 
     - stage: tests
       name: 'End to end Tests - Multi-backend'
-      if: (type IN (pull_request))
-        AND (branch IN (master, 4-dev, 3-dev, 2-dev, 2-stable))
-        AND commit_message !~ /(skip-ci|wip)/
 
       services:
         - docker
