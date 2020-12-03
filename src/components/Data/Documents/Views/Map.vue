@@ -1,8 +1,19 @@
 <template>
   <div class="ViewMap">
     <b-row class="pb-2">
-      <b-col cols="12" class="text-right"
-        >Show
+      <b-col cols="6" class="text-left">
+        GeoPoint field
+        <b-form-select
+          class="mx-2"
+          style="width: unset"
+          :options="mappingGeopoints"
+          :value="selectedGeopoint"
+          @change="$emit('on-select-geopoint', $event)"
+        >
+        </b-form-select>
+      </b-col>
+      <b-col cols="6" class="text-right">
+        Show
         <b-form-select
           class="mx-2"
           style="width: unset"
@@ -11,21 +22,21 @@
           @change="$emit('change-page-size', $event)"
         >
         </b-form-select>
-        <span v-if="totalDocuments"
-          >of {{ totalDocuments }} total items.</span
-        ></b-col
-      >
+        <span v-if="totalDocuments">
+          of {{ totalDocuments }} total items.
+        </span>
+      </b-col>
     </b-row>
     <b-row class="align-self-stretch">
       <b-col cols="8" class="viewMap-document-map">
         <l-map ref="map" @click="onMapClick" data-cy="mapView-map">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
-            v-for="document in documents"
-            :key="document.id"
-            :lat-lng="getCoordinates(document)"
-            :icon="getIcon(document)"
-            @click="onMarkerClick(document)"
+            v-for="document in geoDocuments"
+            :key="document.source.id"
+            :lat-lng="document.coordinates"
+            :icon="getIcon(document.source)"
+            @click="onMarkerClick(document.source)"
           />
         </l-map>
       </b-col>
@@ -38,7 +49,9 @@
           <b-card-header>
             <b-row align-v="center">
               <b-col cols="9" align-v="center">
-                <span data-cy="mapView-current-document-id">{{ currentDocument.id }}</span>
+                <span data-cy="mapView-current-document-id">{{
+                  currentDocument.id
+                }}</span>
               </b-col>
               <b-col cols="3">
                 <b-button
@@ -139,12 +152,16 @@ export default {
       type: Number,
       default: 10
     },
-    documents: {
+    selectedGeopoint: {
+      type: String,
+      required: true
+    },
+    mappingGeopoints: {
       type: Array,
       required: true
     },
-    getCoordinates: {
-      type: Function,
+    geoDocuments: {
+      type: Array,
       required: true
     },
     index: String,
@@ -202,11 +219,11 @@ export default {
   },
   computed: {
     totalDocuments() {
-      return this.documents.length;
+      return this.geoDocuments.length
     },
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     coordinates() {
-      return this.documents.map(this.getCoordinates)
+      return this.geoDocuments.map(d => d.coordinates)
     },
     canEdit() {
       if (!this.index || !this.collection) {
@@ -229,7 +246,13 @@ export default {
       return document
     }
   },
-  watch: {},
+  watch: {
+    selectedGeopoint: {
+      handler() {
+        this.map.fitBounds(this.coordinates)
+      }
+    }
+  },
   created() {},
   mounted() {
     this.$nextTick(() => {
@@ -284,7 +307,7 @@ export default {
   }
   .json-formatter {
     max-height: 525px;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 }
 </style>

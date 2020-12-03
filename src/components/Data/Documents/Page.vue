@@ -58,6 +58,9 @@
             :index="indexName"
             :collection="collectionName"
           />
+          <no-geopoint-field-state
+            v-else-if="hasGeopoints"
+          />
           <empty-state v-else :index="indexName" :collection="collectionName" />
         </template>
 
@@ -121,13 +124,14 @@
 
                   <Map
                     v-if="listViewType === 'map'"
-                    :documents="geoDocuments"
-                    :get-coordinates="getCoordinates"
                     :selected-geopoint="selectedGeopoint"
                     :current-page-size="paginationSize"
                     :index="indexName"
+                    :geoDocuments="geoDocuments"
                     :collection="collectionName"
+                    :mappingGeopoints="mappingGeopoints"
                     @change-page-size="changePaginationSize"
+                    @on-select-geopoint="onSelectGeopoint"
                     @edit="onEditClicked"
                     @delete="onDeleteClicked"
                   />
@@ -187,6 +191,7 @@ import List from './Views/List'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
 import NoResultsEmptyState from './NoResultsEmptyState'
+import NoGeopointFieldState from './NoGeopointFieldState.vue'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
@@ -221,7 +226,8 @@ export default {
     Filters,
     ListNotAllowed,
     NoResultsEmptyState,
-    RealtimeOnlyEmptyState
+    RealtimeOnlyEmptyState,
+    NoGeopointFieldState
   },
   props: {
     indexName: String,
@@ -255,6 +261,26 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    hasGeopoints() {
+      return this.listViewType === 'map' && this.mappingGeopoints.length === 0
+    },
+    geoDocuments() {
+      return this.documents
+        .filter(document => {
+          const [lat, lng] = this.getCoordinates(document)
+          const latFloat = parseFloat(lat)
+          const lngFloat = parseFloat(lng)
+
+          return !isNaN(latFloat) && !isNaN(lngFloat)
+        })
+        .map(d => ({
+          coordinates: [
+            this.getProperty(d, this.latFieldPath),
+            this.getProperty(d, this.lngFieldPath)
+          ],
+          source: d
+        }))
+    },
     index() {
       return this.$store.direct.getters.index.getOneIndex(this.indexName)
     },
@@ -276,15 +302,6 @@ export default {
       return this.collectionMapping
         ? this.extractAttributesFromMapping(this.collectionMapping)
         : null
-    },
-    geoDocuments() {
-      return this.documents.filter(document => {
-        const [lat, lng] = this.getCoordinates(document)
-        const latFloat = parseFloat(lat)
-        const lngFloat = parseFloat(lng)
-
-        return !isNaN(latFloat) && !isNaN(lngFloat)
-      })
     },
     latFieldPath() {
       return `${this.selectedGeopoint}.lat`
