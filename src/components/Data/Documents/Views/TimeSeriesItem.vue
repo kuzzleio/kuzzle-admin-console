@@ -22,7 +22,7 @@
         :notify-change="false"
         @autocomplete::change="attribute => addItem(attribute)"
       />
-      <input v-else :value="value" :disabled="true" class="form-control"/>
+      <input v-else :value="value" :disabled="true" class="form-control" />
     </div>
     <div class="col-1 ml-1 TimeSeriesColorPickerRemoveContanainer">
       <i
@@ -125,7 +125,7 @@ export default {
 }
 .TimeSeriesColorPickerBtn {
   width: 100%;
-  height: 70%;
+  height: 20px;
   margin-top: 5px;
 }
 

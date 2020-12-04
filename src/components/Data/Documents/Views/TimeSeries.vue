@@ -4,20 +4,11 @@
       class="row"
       v-if="
         (mappingDateArray.length || customDateField) &&
-        (mappingNumberArray.length || customNumberFields.length)
+          (mappingNumberArray.length || customNumberFields.length)
       "
     >
-      <b-col lg="8">
-        <VueApexCharts
-          class="w-100 h-100"
-          type="line"
-          ref="Chart"
-          :series="series"
-          :options="chartOptions"
-        />
-      </b-col>
-      <b-col lg="4" class="card p-3">
-        <div class="mt-2">
+      <b-col lg="3" class="card p-3">
+        <div class="mt-2 mb-3">
           Show
           <b-form-select
             class="mx-2"
@@ -27,21 +18,21 @@
             @change="$emit('change-page-size', $event)"
           >
           </b-form-select>
-          <span v-if="totalDocuments">of {{ totalDocuments }} total items.</span>
+          <span v-if="totalDocuments"
+            >of {{ totalDocuments }} total items.</span
+          >
         </div>
         <span>Date</span>
-        <autocomplete
-          placeholder="Date field"
-          :items="mappingDateArray"
-          :value="customDateField || ''"
-          :notify-change="false"
-          @autocomplete::change="
-            (item) => {
-              addDateField(item)
+        <b-form-select
+          v-model="customDateField"
+          :options="mappingDateArray"
+          @input="
+            value => {
+              addDateField(value)
             }
           "
-        />
-        <form class="TimeSeriesValueSelector mt-2">
+        ></b-form-select>
+        <form class="TimeSeriesValueSelector mt-4">
           <span>Values</span>
           <time-series-item
             v-for="(number, key) of customNumberFields"
@@ -58,12 +49,21 @@
             :new-value="newCustomNumberField || ''"
             @update-color="updateColor"
             @autocomplete::change="
-              (item) => {
+              item => {
                 addNumberField(item)
               }
             "
           />
         </form>
+      </b-col>
+      <b-col lg="9">
+        <VueApexCharts
+          class="w-100 h-100"
+          type="line"
+          ref="Chart"
+          :series="series"
+          :options="chartOptions"
+        />
       </b-col>
     </div>
     <div v-else class="row col s12">No data to display</div>
@@ -71,10 +71,10 @@
 </template>
 
 <script>
-import Autocomplete from '../../../Common/Autocomplete'
 import TimeSeriesItem from './TimeSeriesItem'
 import VueApexCharts from 'vue-apexcharts'
 import _ from 'lodash'
+import moment from 'moment'
 
 const ES_NUMBER_DATA_TYPE = [
   'short',
@@ -91,7 +91,6 @@ const ES_NUMBER_DATA_TYPE = [
 export default {
   name: 'TimeSeries',
   components: {
-    Autocomplete,
     TimeSeriesItem,
     VueApexCharts
   },
@@ -211,7 +210,6 @@ export default {
       columnsConfig[this.index] &&
       columnsConfig[this.index][this.collection]
     ) {
-
       this.customNumberFields =
         columnsConfig[this.index][this.collection].numbers || []
     }
@@ -244,7 +242,14 @@ export default {
           data: []
         }
         for (const doc of this.documents) {
+          const date = _.get(doc, this.customDateField, null)
+
+          if (!date) {
+            continue
+          }
+
           serie.data.push(_.get(doc, field.name, ''))
+          this.chartOptions.xaxis.categories.push(date)
         }
         series.push(serie)
       }
