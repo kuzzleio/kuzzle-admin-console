@@ -253,7 +253,6 @@ export default {
       }
     }
   },
-  created() {},
   mounted() {
     this.$nextTick(() => {
       this.map = this.$refs.map.mapObject
