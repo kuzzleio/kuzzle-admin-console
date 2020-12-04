@@ -259,7 +259,6 @@ export default {
       this.map.fitBounds(this.coordinates)
     })
   },
-  updated() {},
   methods: {
     onMarkerClick(document) {
       if (this.currentDocument === document) {
