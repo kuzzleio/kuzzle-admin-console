@@ -74,7 +74,6 @@
 import TimeSeriesItem from './TimeSeriesItem'
 import VueApexCharts from 'vue-apexcharts'
 import _ from 'lodash'
-import moment from 'moment'
 
 const ES_NUMBER_DATA_TYPE = [
   'short',
