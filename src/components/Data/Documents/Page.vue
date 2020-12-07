@@ -193,7 +193,7 @@ import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
 import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
-import { truncateName } from '@/utils'
+import { truncateName, dateFromTimestamp } from '@/utils'
 import { mapGetters } from 'vuex'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
@@ -728,35 +728,6 @@ export default {
       this.formatedDocuments = formatedDocuments
     }
   }
-}
-
-function dateFromTimestamp(value) {
-  let timestamp
-
-  if (typeof value === 'string') {
-    timestamp = parseInt(value, 10)
-
-    if (isNaN(timestamp)) {
-      return null
-    }
-  } else if (Number.isInteger(value)) {
-    timestamp = value
-  } else {
-    return null
-  }
-
-  const length = `${timestamp}`.length
-
-  let date
-  if (length === 10) {
-    date = new Date(timestamp * 1000)
-  } else if (length === 13) {
-    date = new Date(timestamp)
-  } else {
-    return null
-  }
-
-  return date
 }
 </script>
 

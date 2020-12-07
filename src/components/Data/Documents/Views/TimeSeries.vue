@@ -74,6 +74,7 @@
 import TimeSeriesItem from './TimeSeriesItem'
 import VueApexCharts from 'vue-apexcharts'
 import _ from 'lodash'
+import { dateFromTimestamp } from '@/utils'
 // import moment from 'moment'
 
 const ES_NUMBER_DATA_TYPE = [
@@ -242,15 +243,15 @@ export default {
           data: []
         }
         for (const doc of this.documents) {
-          const date = _.get(doc, this.customDateField, null)
-          const formatedDate = new Date(date).toLocaleString('en-GB')
+          const timestamp = _.get(doc, this.customDateField, null)
+          const date = dateFromTimestamp(timestamp)
 
           if (!date) {
             continue
           }
 
           serie.data.push(_.get(doc, field.name, ''))
-          this.chartOptions.xaxis.categories.push(formatedDate)
+          this.chartOptions.xaxis.categories.push(date.toLocaleString('en-GB'))
         }
         series.push(serie)
       }
