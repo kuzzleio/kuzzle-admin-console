@@ -117,7 +117,7 @@
                 </h3>
                 <p>
                   <em>
-                    You can view a document content by click on a marker
+                    You can view a document content by clicking on a marker
                   </em>
                 </p>
               </b-col>
