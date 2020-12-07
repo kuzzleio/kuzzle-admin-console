@@ -87,7 +87,7 @@
                     v-if="listViewType === 'list'"
                     :all-checked="allChecked"
                     :collection="collectionName"
-                    :documents="formatedDocuments"
+                    :documents="formattedDocuments"
                     :index="indexName"
                     :current-page-size="paginationSize"
                     :selected-documents="selectedDocuments"
@@ -230,7 +230,7 @@ export default {
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
-      formatedDocuments: [],
+      formattedDocuments: [],
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
@@ -696,7 +696,7 @@ export default {
       }
 
       const dateFields = []
-      const formatedDocuments = _.cloneDeep(this.documents)
+      const formattedDocuments = _.cloneDeep(this.documents)
 
       const findDateFields = (mapping, previousKey) => {
         for (const [field, value] of Object.entries(mapping)) {
@@ -724,8 +724,8 @@ export default {
 
       findDateFields(this.collectionMapping, null)
 
-      formatedDocuments.forEach(changeField)
-      this.formatedDocuments = formatedDocuments
+      formattedDocuments.forEach(changeField)
+      this.formattedDocuments = formattedDocuments
     }
   }
 }
