@@ -87,7 +87,7 @@
                     v-if="listViewType === 'list'"
                     :all-checked="allChecked"
                     :collection="collectionName"
-                    :documents="documents"
+                    :documents="formatedDocuments"
                     :index="indexName"
                     :current-page-size="paginationSize"
                     :selected-documents="selectedDocuments"
@@ -230,6 +230,7 @@ export default {
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
+      formatedDocuments: [],
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
@@ -687,12 +688,15 @@ export default {
       )
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
+    // TODO: Refactor this method to avoid
+    // cloning document list (computed property??)
     addHumanReadableDateFields() {
       if (!this.collectionMapping) {
         return
       }
 
       const dateFields = []
+      const formatedDocuments = _.cloneDeep(this.documents)
 
       const findDateFields = (mapping, previousKey) => {
         for (const [field, value] of Object.entries(mapping)) {
@@ -720,7 +724,8 @@ export default {
 
       findDateFields(this.collectionMapping, null)
 
-      this.documents.forEach(changeField)
+      formatedDocuments.forEach(changeField)
+      this.formatedDocuments = formatedDocuments
     }
   }
 }
