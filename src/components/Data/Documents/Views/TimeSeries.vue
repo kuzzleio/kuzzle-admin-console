@@ -1,5 +1,5 @@
 <template>
-  <div class="TimeSeriesView">
+  <div class="TimeSeriesView" data-cy="TimeSeriesView-container">
     <div
       class="row"
       v-if="
@@ -24,6 +24,7 @@
         </div>
         <span>Date</span>
         <b-form-select
+          data-cy="timeseriesView-dateSelector"
           v-model="customDateField"
           :options="mappingDateArray"
           @input="
@@ -36,6 +37,7 @@
           <span>Values</span>
           <time-series-item
             v-for="(number, key) of customNumberFields"
+            :data-cy="`timeSeries-item--${customNumberFields[key].name}`"
             :key="key"
             :value="customNumberFields[key].name"
             :color="customNumberFields[key].color"
@@ -45,6 +47,7 @@
             @timeseriesitem::remove="removeItem"
           />
           <time-series-item
+            data-cy="timeSeries-item"
             :items="mappingNumberArray"
             :new-value="newCustomNumberField || ''"
             @update-color="updateColor"
@@ -59,6 +62,7 @@
       <b-col lg="9">
         <VueApexCharts
           class="w-100 h-100"
+          data-cy="timeSeries-chart"
           type="line"
           ref="Chart"
           :series="series"
