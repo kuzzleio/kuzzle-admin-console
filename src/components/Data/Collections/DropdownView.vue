@@ -33,6 +33,13 @@
           Chart view
         </b-dropdown-item>
         <b-dropdown-item
+          data-cy="CollectionDropdown-map"
+          :active="activeView === 'map'"
+          @click="$emit('map')"
+        >
+          Map view
+        </b-dropdown-item>
+        <b-dropdown-item
           :active="activeView === 'realtime'"
           :disabled="!canSubscribe(index, collection)"
           :title="
