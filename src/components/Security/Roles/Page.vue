@@ -76,53 +76,61 @@ export default {
   methods: {
     async revokeAnonymous() {
       try {
-        await this.$kuzzle.security.updateRole('anonymous', {
-          controllers: {
-            '*': {
-              actions: {
-                '*': false
-              }
-            },
-            auth: {
-              actions: {
-                checkToken: true,
-                getCurrentUser: true,
-                getMyRights: true,
-                login: true
-              }
-            },
-            server: {
-              actions: {
-                publicApi: true,
-                openapi: true
+        await this.$kuzzle.security.updateRole(
+          'anonymous',
+          {
+            controllers: {
+              '*': {
+                actions: {
+                  '*': false
+                }
+              },
+              auth: {
+                actions: {
+                  checkToken: true,
+                  getCurrentUser: true,
+                  getMyRights: true,
+                  login: true
+                }
+              },
+              server: {
+                actions: {
+                  publicApi: true,
+                  openapi: true
+                }
               }
             }
-          }
-        })
+          },
+          { refresh: 'wait_for' }
+        )
 
-        await this.$kuzzle.security.updateRole('default', {
-          controllers: {
-            '*': {
-              actions: {
-                '*': false
-              }
-            },
-            auth: {
-              actions: {
-                checkToken: true,
-                getCurrentUser: true,
-                getMyRights: true,
-                logout: true,
-                updateSelf: true
-              }
-            },
-            server: {
-              actions: {
-                publicApi: true
+        await this.$kuzzle.security.updateRole(
+          'default',
+          {
+            controllers: {
+              '*': {
+                actions: {
+                  '*': false
+                }
+              },
+              auth: {
+                actions: {
+                  checkToken: true,
+                  getCurrentUser: true,
+                  getMyRights: true,
+                  logout: true,
+                  updateSelf: true
+                }
+              },
+              server: {
+                actions: {
+                  publicApi: true
+                }
               }
             }
-          }
-        })
+          },
+          { refresh: 'wait_for' }
+        )
         this.$router.go(this.$router.currentRoute)
       } catch (err) {
         this.$log.error(err)

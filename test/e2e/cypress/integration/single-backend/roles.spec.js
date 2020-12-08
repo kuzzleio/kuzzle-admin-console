@@ -2,7 +2,43 @@ describe('Roles', () => {
   const kuzzleUrl = 'http://localhost:7512'
   beforeEach(function() {
     cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
+
+    cy.request('POST', `${kuzzleUrl}/_createFirstAdmin`, {
+      content: {},
+      credentials: {
+        local: {
+          username: 'admin',
+          password: 'pass'
+        }
+      }
+    })
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+  })
+
+  afterEach(() => {
+    cy.request('POST', `${kuzzleUrl}/_login/local`, {
+      username: 'admin',
+      password: 'pass'
+    }).then(response => {
+      const token = response.body.result.jwt
+
+      cy.request({
+        method: 'PUT',
+        url: `${kuzzleUrl}/roles/anonymous/_update`,
+        body: {
+          controllers: {
+            '*': {
+              actions: {
+                '*': true
+              }
+            }
+          }
+        },
+        headers: {
+          authorization: `bearer ${token}`
+        }
+      })
+    })
   })
 
   it('Should render a visual feedback and prevent submitting when input is not valid', () => {
@@ -264,44 +300,13 @@ describe('Roles', () => {
     cy.get('[data-cy="RoleItem"]').should('have.length', 7)
   })
 
-  it('Should be able to paginate the roles', () => {
-    const rolePrefix = 'dummy'
-    for (let i = 0; i < 14; i++) {
-      cy.request('POST', `${kuzzleUrl}/roles/${rolePrefix}_${i}/_create`, {
-        controllers: {
-          security: {
-            actions: {
-              createUser: true
-            }
-          }
-        }
-      })
-    }
-    cy.visit('#/security/roles')
-    cy.contains('Roles')
-    cy.get('[data-cy="RoleItem"]').should('have.length', 10)
-    cy.get(
-      '[data-cy="RolesManagement-pagination"] .page-link[aria-posinset="2"]'
-    ).click({ force: true })
-    cy.get('[data-cy="RoleItem"]').should('have.length', 7)
-  })
-
-  it.only('Should be able to revoke anonymous role', () => {
-    cy.request('POST', `${kuzzleUrl}/_createFirstAdmin`, {
-      content: {},
-      credentials: {
-        local: {
-          username: 'admin',
-          password: 'pass'
-        }
-      }
-    })
-
+  it('Should be able to revoke anonymous rights', () => {
     cy.request('POST', `${kuzzleUrl}/_login/local`, {
       username: 'admin',
       password: 'pass'
     }).then(response => {
-      expect(response.body.result).to.have.property('jwt')
+      const token = response.body.result.jwt
+
       localStorage.setItem(
         'environments',
         JSON.stringify({
@@ -312,7 +317,7 @@ describe('Roles', () => {
             ssl: false,
             port: 7512,
             backendMajorVersion: Cypress.env('BACKEND_VERSION') || '2',
-            token: response.body.result.jwt
+            token: token
           }
         })
       )
@@ -326,11 +331,16 @@ describe('Roles', () => {
         .contains('OK')
         .click()
 
-      cy.waitForLoading()
+      cy.wait(2000)
 
-      cy.request('GET', `${kuzzleUrl}/roles/anonymous`).should(response => {
-        console.log(response.body.result._source)
-        expect(response.body.result._source.controllers).to.deep.include({
+      cy.request({
+        method: 'GET',
+        url: `${kuzzleUrl}/roles/anonymous`,
+        headers: {
+          authorization: `bearer ${token}`
+        }
+      }).should(response => {
+        expect(response.body.result._source.controllers).to.eql({
           '*': {
             actions: {
               '*': false
