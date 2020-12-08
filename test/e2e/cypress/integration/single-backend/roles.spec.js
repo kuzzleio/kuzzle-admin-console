@@ -263,4 +263,95 @@ describe('Roles', () => {
     ).click({ force: true })
     cy.get('[data-cy="RoleItem"]').should('have.length', 7)
   })
+
+  it('Should be able to paginate the roles', () => {
+    const rolePrefix = 'dummy'
+    for (let i = 0; i < 14; i++) {
+      cy.request('POST', `${kuzzleUrl}/roles/${rolePrefix}_${i}/_create`, {
+        controllers: {
+          security: {
+            actions: {
+              createUser: true
+            }
+          }
+        }
+      })
+    }
+    cy.visit('#/security/roles')
+    cy.contains('Roles')
+    cy.get('[data-cy="RoleItem"]').should('have.length', 10)
+    cy.get(
+      '[data-cy="RolesManagement-pagination"] .page-link[aria-posinset="2"]'
+    ).click({ force: true })
+    cy.get('[data-cy="RoleItem"]').should('have.length', 7)
+  })
+
+  it.only('Should be able to revoke anonymous role', () => {
+    cy.request('POST', `${kuzzleUrl}/_createFirstAdmin`, {
+      content: {},
+      credentials: {
+        local: {
+          username: 'admin',
+          password: 'pass'
+        }
+      }
+    })
+
+    cy.request('POST', `${kuzzleUrl}/_login/local`, {
+      username: 'admin',
+      password: 'pass'
+    }).then(response => {
+      expect(response.body.result).to.have.property('jwt')
+      localStorage.setItem(
+        'environments',
+        JSON.stringify({
+          testEnv: {
+            name: 'testEnv',
+            color: 'darkblue',
+            host: 'localhost',
+            ssl: false,
+            port: 7512,
+            backendMajorVersion: Cypress.env('BACKEND_VERSION') || '2',
+            token: response.body.result.jwt
+          }
+        })
+      )
+
+      localStorage.setItem('currentEnv', 'testEnv')
+
+      cy.visit('#/security/roles')
+
+      cy.get('[data-cy="RolesManagement-revokeAnonymous"').click()
+      cy.get('[data-cy="revokeAnonymous-modal"]  button')
+        .contains('OK')
+        .click()
+
+      cy.waitForLoading()
+
+      cy.request('GET', `${kuzzleUrl}/roles/anonymous`).should(response => {
+        console.log(response.body.result._source)
+        expect(response.body.result._source.controllers).to.deep.include({
+          '*': {
+            actions: {
+              '*': false
+            }
+          },
+          auth: {
+            actions: {
+              checkToken: true,
+              getCurrentUser: true,
+              getMyRights: true,
+              login: true
+            }
+          },
+          server: {
+            actions: {
+              publicApi: true,
+              openapi: true
+            }
+          }
+        })
+      })
+    })
+  })
 })

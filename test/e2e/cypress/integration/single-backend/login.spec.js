@@ -98,7 +98,7 @@ describe('Login', function() {
       cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
       cy.get('[data-cy=CreateIndexModal-createBtn]').click()
       cy.get('[data-cy=IndexesPage-name--newindex]').should('be.visible')
-    })
+    
   })
 
   it('Should be redirected to login when attempting to access the app without authentication', () => {

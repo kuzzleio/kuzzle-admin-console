@@ -4,7 +4,7 @@
       <b-col cols="8">
         <headline>Roles</headline>
       </b-col>
-      <b-col class="text-right mt-3">
+      <b-col class="text-right">
         <b-button
           :disabled="!displayRevokeAnonymous"
           :title="
@@ -15,7 +15,7 @@
           class="mr-2"
           data-cy="RolesManagement-revokeAnonymous"
           variant="primary"
-          v-b-modal.modal-revokeAnonymous
+          v-b-modal.revokeAnonymous-modal
           >Revoke anonymous rights</b-button
         >
         <b-button
@@ -46,8 +46,9 @@
       </b-card>
     </role-list>
     <b-modal
-      id="modal-revokeAnonymous"
+      id="revokeAnonymous-modal"
       title="Revoke anonymous rights"
+      data-cy="revokeAnonymous-modal"
       @ok="revokeAnonymous"
     >
       <p class="my-4">
