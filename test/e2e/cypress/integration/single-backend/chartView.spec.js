@@ -1,4 +1,4 @@
-describe('Form view', function() {
+describe('Chart view', function() {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
