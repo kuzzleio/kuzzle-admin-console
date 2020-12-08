@@ -53,14 +53,6 @@ describe('Chart view', function() {
     cy.get('[data-cy="CollectionDropdown-TimeSeries"').click()
     cy.waitForLoading()
 
-    cy.get('[data-cy="timeseriesView-dateSelector"').select(
-      '_kuzzle_info.createdAt'
-    )
-
-    cy.get('[data-cy="timeseriesView-dateSelector"').select(
-      '_kuzzle_info.updatedAt'
-    )
-
     cy.get('[data-cy="timeseriesView-dateSelector"').select('payloadDate')
   })
 
@@ -72,9 +64,7 @@ describe('Chart view', function() {
     cy.get('[data-cy="CollectionDropdown-TimeSeries"').click()
     cy.waitForLoading()
 
-    cy.get('[data-cy="timeseriesView-dateSelector"').select(
-      '_kuzzle_info.createdAt'
-    )
+    cy.get('[data-cy="timeseriesView-dateSelector"').select('payloadDate')
 
     cy.get('[data-cy="timeSeries-item"').click()
 
