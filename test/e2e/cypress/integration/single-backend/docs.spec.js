@@ -217,6 +217,73 @@ describe('Document List', function() {
     ).click()
     cy.get('.col > .TimeSeriesValueSelector > .row > .col > .far').click()
   })
+
+  it('Should handle the map view properly', function() {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/mapcollectiontest`, {
+      properties: {
+        location: {
+          type: "geo_point"
+        }
+      }
+    })
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc1/_create?refresh=wait_for`,
+      {
+        location: {
+          lat: 1,
+          lon: 1
+        }
+      }
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc2/_create?refresh=wait_for`,
+      {
+        location: {
+          lat: 2,
+          lon: 2
+        }
+      }
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc3/_create?refresh=wait_for`,
+      {
+        location: {
+          lat: 3,
+          lon: 3
+        }
+      }
+    )
+    cy.waitOverlay()
+
+    cy.visit(`/#/data/${indexName}/mapcollectiontest`)
+    cy.wait(500)
+    cy.contains('mapcollectiontest')
+
+    cy.get('[data-cy="CollectionDropdownView"').click()
+    cy.wait(500)
+    cy.get('[data-cy="CollectionDropdown-map"]').click()
+    cy.url().should('contain', 'listViewType=map')
+
+    cy.get('[data-cy="mapView-map"').should('exist')
+
+    cy.get('.leaflet-marker-pane .mapView-marker-default').should("have.length", 3)
+    cy.get('.leaflet-marker-pane .mapView-marker-selected').should("not.exist")
+
+    cy.get('[data-cy="mapView-no-document-card"').should("exist")
+    cy.get('[data-cy="mapView-current-document-card"').should("not.exist")
+
+
+    cy.get(".leaflet-marker-icon.documentId-mapViewTestDoc1").click({force: true})
+
+    cy.get('[data-cy="mapView-no-document-card"').should("not.exist")
+    cy.get('[data-cy="mapView-current-document-card"').should("exist")
+    cy.get('[data-cy="mapView-current-document-id"').contains("mapViewTestDoc1");
+    cy.get('.leaflet-marker-pane .mapView-marker-default').should("have.length", 2)
+    cy.get('.leaflet-marker-pane .mapView-marker-selected').should("exist")
+  })
 })
 
 describe('Document update/replace', () => {
