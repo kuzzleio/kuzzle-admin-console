@@ -130,9 +130,22 @@ const actions = createActions({
 
     const result = await rootGetters.kuzzle.$kuzzle.collection.list(index.name)
 
-    const collections = result.collections.map(el => {
-      return new Collection(el.name, el.type)
-    })
+    const collections = result.collections
+      .filter(el => {
+        if (
+          el.type === CollectionType.REALTIME &&
+          result.collections.find(
+            findEl =>
+              findEl.name === el.name && findEl.type === CollectionType.STORED
+          )
+        ) {
+          return false
+        }
+        return true
+      })
+      .map(el => {
+        return new Collection(el.name, el.type)
+      })
 
     if (!index.collections) {
       commit.setCollections({
