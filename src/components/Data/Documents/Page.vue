@@ -127,8 +127,9 @@
                     :documents="documents"
                     :mapping="collectionMapping"
                     :current-page-size="paginationSize"
-                    @change-page-size="changePaginationSize"
                     :total-documents="totalDocuments"
+                    @change-page-size="changePaginationSize"
+                    @changeDisplayPagination="changeDisplayPagination"
                   />
 
                   <Map
@@ -146,7 +147,7 @@
                   />
 
                   <b-row
-                    v-show="totalDocuments > paginationSize"
+                    v-show="totalDocuments > paginationSize && displayPagination"
                     align-h="center"
                   >
                     <b-pagination
@@ -262,7 +263,8 @@ export default {
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
       currentPage: 1,
-      modalDeleteId: 'modal-collection-delete'
+      modalDeleteId: 'modal-collection-delete',
+      displayPagination: true
     }
   },
   computed: {
@@ -517,6 +519,7 @@ export default {
           this.indexName,
           this.collectionName
         )
+        this.displayPagination = true;
         this.loading = false
         await this.fetchDocuments()
       } catch (err) {
@@ -763,6 +766,9 @@ export default {
 
       formattedDocuments.forEach(changeField)
       this.formattedDocuments = formattedDocuments
+    },
+    changeDisplayPagination(value) {
+      this.displayPagination = value;
     }
   }
 }

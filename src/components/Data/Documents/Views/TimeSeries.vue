@@ -1,12 +1,6 @@
 <template>
   <div class="TimeSeriesView" data-cy="TimeSeriesView-container">
-    <div
-      class="row"
-      v-if="
-        (mappingDateArray.length || customDateField) &&
-          (mappingNumberArray.length || customNumberFields.length)
-      "
-    >
+    <b-row v-if="isChartViewAvailable">
       <b-col lg="3" class="card p-3">
         <div class="mt-2 mb-3">
           Show
@@ -59,8 +53,9 @@
           />
         </form>
       </b-col>
-      <b-col lg="9">
+      <b-col lg="9" class="h-100">
         <VueApexCharts
+          v-show="customNumberFields.length"
           class="w-100 h-100"
           data-cy="timeSeries-chart"
           type="line"
@@ -68,9 +63,35 @@
           :series="series"
           :options="chartOptions"
         />
+        <b-card
+          class="EmptyState h-100 text-center"
+          bg-variant="light"
+          v-if="!customNumberFields.length"
+        >
+          <i class="text-secondary fas fa-file-alt fa-6x mb-3"></i>
+          <h2 class="text-secondary font-weight-bold">
+            You must select at least one field
+          </h2>
+        </b-card>
       </b-col>
-    </div>
-    <div v-else class="row col s12">No data to display</div>
+    </b-row>
+    <b-row v-else>
+      <b-col cols="12">
+        <b-card
+          class="EmptyState h-100 text-center"
+          bg-variant="light"
+          v-if="!customNumberFields.length"
+        >
+          <i class="text-secondary fas fa-file-alt fa-6x mb-3"></i>
+          <h2 class="text-secondary font-weight-bold">
+            No data to display
+          </h2>
+          <p>
+            You can only use chart view on collection that has mapping with fields of date and numeric fields...
+          </p>
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -147,6 +168,14 @@ export default {
       series: []
     }
   },
+  computed: {
+    isChartViewAvailable() {
+      return Boolean(
+        (this.mappingDateArray.length || this.customDateField) &&
+          (this.mappingNumberArray.length || this.customNumberFields.length)
+      )
+    }
+  },
   watch: {
     $route() {
       const columnsConfig = JSON.parse(
@@ -188,11 +217,27 @@ export default {
         this.mappingNumberArray.sort()
       }
     },
-    customNumberFields() {
-      this.updateChart()
+    customNumberFields(value) {
+      if (value.length) {
+        this.$emit('changeDisplayPagination', true)
+        this.updateChart()
+      } else {
+        this.$emit('changeDisplayPagination', false)
+      }
     },
     documents() {
       this.updateChart()
+    },
+    isChartViewAvailable(value) {
+      if (!value) {
+        this.$emit('changeDisplayPagination', false)
+        return
+      }
+      if (!this.customNumberFields.length) {
+        this.$emit('changeDisplayPagination', false)
+        return
+      }
+      this.$emit('changeDisplayPagination', true)
     }
   },
   mounted() {
@@ -222,7 +267,7 @@ export default {
       ES_NUMBER_DATA_TYPE.includes(type)
     )
 
-    if (this.customNumberFields) {
+    if (this.customNumberFields.length) {
       for (const attr of this.customNumberFields) {
         this.mappingNumberArray.splice(
           this.mappingNumberArray.indexOf(attr.name),
@@ -230,10 +275,15 @@ export default {
         )
       }
       this.mappingNumberArray.sort()
+    } else {
+      this.$emit('changeDisplayPagination', false)
     }
   },
   methods: {
     updateChart() {
+      if (!this.customNumberFields.length) {
+        return
+      }
       this.series = []
       this.chartOptions.colors = []
       for (const item of this.customNumberFields) {
@@ -333,7 +383,9 @@ export default {
       this.mappingNumberArray.push(this.customNumberFields[index].name)
       this.customNumberFields.splice(index, 1)
       this.saveToLocalStorage()
-      this.updateChart()
+      if (this.customNumberFields.length) {
+        this.updateChart()
+      }
     }
   }
 }

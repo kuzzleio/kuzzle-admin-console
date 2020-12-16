@@ -25,7 +25,11 @@ module.exports = {
     let timestamp
 
     if (typeof value === 'string') {
-      timestamp = parseInt(value, 10)
+      if (!isNaN(Date.parse(value))) {
+        timestamp = Date.parse(value)
+      } else {
+        timestamp = parseInt(value, 10)
+      }
 
       if (isNaN(timestamp)) {
         return null
