@@ -2,15 +2,30 @@ import Vue from 'vue'
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import createRoutes from './routes/index'
 import './plugins/logger'
+import VueGtag from 'vue-gtag'
+
+import VueFormGenerator from 'vue-form-generator'
+import 'vue-form-generator/dist/vfg.css'
+import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue'
+import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue'
 
 import App from './App.vue'
 import store from './vuex/store'
-import { values } from 'lodash'
 
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
-const router = createRoutes(Vue.prototype.$log)
+if (process.env.GA_ID && process.env.NODE_ENV === 'production') {
+  Vue.use(VueGtag, {
+    config: { id: process.env.GA_ID }
+  })
+}
+
+const router = createRoutes(Vue.prototype.$log, Vue.prototype.$gtag)
+
+Vue.component('fieldJsonFormInput', JsonFormInput)
+Vue.component('fieldDateTimeFormInput', DateTimeFormInput)
+Vue.use(VueFormGenerator)
 
 // Vue.config.errorHandler = (err, vm, info) => {
 //   // TODO : use vue-logger instead of console.error,

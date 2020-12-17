@@ -15,6 +15,7 @@
         <b-col sm="6" class="text-right mt-3">
           <b-button
             variant="primary"
+            data-cy="CreateDocument-btn"
             :disabled="
               indexOrCollectionNotFound ||
                 !canCreateDocument(indexName, collectionName)
@@ -31,6 +32,7 @@
             :index="indexName"
             :collection="collectionName"
             @list="onListViewClicked"
+            @map="onMapViewClicked"
             @column="onColumnViewClicked"
           />
           <collection-dropdown-action
@@ -55,6 +57,9 @@
             v-if="isRealtimeCollection"
             :index="indexName"
             :collection="collectionName"
+          />
+          <no-geopoint-field-state
+            v-else-if="hasGeopoints"
           />
           <empty-state v-else :index="indexName" :collection="collectionName" />
         </template>
@@ -117,6 +122,20 @@
                     @toggle-all="onToggleAllClicked"
                   />
 
+                  <Map
+                    v-if="listViewType === 'map'"
+                    :selected-geopoint="selectedGeopoint"
+                    :current-page-size="paginationSize"
+                    :index="indexName"
+                    :geoDocuments="geoDocuments"
+                    :collection="collectionName"
+                    :mappingGeopoints="mappingGeopoints"
+                    @change-page-size="changePaginationSize"
+                    @on-select-geopoint="onSelectGeopoint"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                  />
+
                   <b-row
                     v-show="totalDocuments > paginationSize"
                     align-h="center"
@@ -167,10 +186,12 @@
 import _ from 'lodash'
 
 import Column from './Views/Column'
+import Map from './Views/Map'
 import List from './Views/List'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
 import NoResultsEmptyState from './NoResultsEmptyState'
+import NoGeopointFieldState from './NoGeopointFieldState.vue'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
@@ -198,13 +219,15 @@ export default {
     DeleteCollectionModal,
     DeleteModal,
     Column,
+    Map,
     List,
     EmptyState,
     Headline,
     Filters,
     ListNotAllowed,
     NoResultsEmptyState,
-    RealtimeOnlyEmptyState
+    RealtimeOnlyEmptyState,
+    NoGeopointFieldState
   },
   props: {
     indexName: String,
@@ -238,6 +261,26 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    hasGeopoints() {
+      return this.listViewType === 'map' && this.mappingGeopoints.length === 0
+    },
+    geoDocuments() {
+      return this.documents
+        .filter(document => {
+          const [lat, lng] = this.getCoordinates(document)
+          const latFloat = parseFloat(lat)
+          const lngFloat = parseFloat(lng)
+
+          return !isNaN(latFloat) && !isNaN(lngFloat)
+        })
+        .map(d => ({
+          coordinates: [
+            this.getProperty(d, this.latFieldPath),
+            this.getProperty(d, this.lngFieldPath)
+          ],
+          source: d
+        }))
+    },
     index() {
       return this.$store.direct.getters.index.getOneIndex(this.indexName)
     },
@@ -260,20 +303,11 @@ export default {
         ? this.extractAttributesFromMapping(this.collectionMapping)
         : null
     },
-    geoDocuments() {
-      return this.documents.filter(document => {
-        const [lat, lng] = this.getCoordinates(document)
-        const latFloat = parseFloat(lat)
-        const lngFloat = parseFloat(lng)
-
-        return !isNaN(latFloat) && !isNaN(lngFloat)
-      })
-    },
     latFieldPath() {
-      return `content.${this.selectedGeopoint}.lat`
+      return `${this.selectedGeopoint}.lat`
     },
     lngFieldPath() {
-      return `content.${this.selectedGeopoint}.lon`
+      return `${this.selectedGeopoint}.lon`
     },
     isCollectionGeo() {
       return this.mappingGeopoints.length > 0
@@ -458,6 +492,7 @@ export default {
         this.loading = true
         this.loadListView()
         this.saveListView()
+        this.loadMappingInfo()
 
         this.currentFilter = filterManager.load(
           this.indexName,
@@ -673,6 +708,10 @@ export default {
       )
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
+    loadMappingInfo() {
+      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
+      this.selectedGeopoint = this.mappingGeopoints[0]
+    },
     addHumanReadableDateFields() {
       if (!this.collectionMapping) {
         return
@@ -696,7 +735,7 @@ export default {
             const date = dateFromTimestamp(value)
 
             if (date) {
-              document[field] += ` (${date.toUTCString()})`
+              document[field] += ` (${date.toLocaleString('en-GB')})`
             }
           } else if (value && typeof value === 'object') {
             changeField(value)
