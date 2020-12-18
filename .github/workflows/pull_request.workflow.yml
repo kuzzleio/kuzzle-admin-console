@@ -1,0 +1,57 @@
+name: Main branches push checks
+
+on: [pull_request]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            **/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "10"
+      - uses: ./.github/actions/lint
+
+  e2e-tests:
+    name: E2E Cypress tests - Kuzzle ${{ matrix.backend_config}}
+    needs: ['lint']
+    strategy:
+      matrix:
+        backend_config: ['1', '2', 'multi']
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            **/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - uses: ./.github/actions/e2e-tests
+        with:
+          backend_config: ${{ matrix.backend_config }}
+
