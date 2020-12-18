@@ -3,7 +3,6 @@ name: Main branches push checks
 on:
   push:
     branches:
-      - master
       - 4-dev
 
 jobs:
@@ -59,41 +58,8 @@ jobs:
         with:
           backend_config: ${{ matrix.backend_config }}
 
-
-  deploy-production:
-    name: Deploy Admin Consoleto production - console.kuzzle.io
-    if: github.ref == 'ref/head/master'
-    needs: ['e2e-tests']
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: |
-            ~/.cache/pip
-            ~/.npm
-            **/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - uses: ./.github/actions/deploy-to-s3
-        with:
-          REGION: us-west-2
-          S3_BUCKET: console.kuzzle.io
-          CLOUDFRONT_ID: E2GPBJ9T0QR37G
-          GA_ID: G-SVNCJKRL08
-
   deploy-staging:
     name: Deploy Admin Console to staging - next-console.kuzzle.io
-    if: github.ref == 'ref/head/4-dev'
     needs: ['e2e-tests']
     runs-on: ubuntu-latest
     steps:
