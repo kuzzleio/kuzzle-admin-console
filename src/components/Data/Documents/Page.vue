@@ -58,9 +58,7 @@
             :index="indexName"
             :collection="collectionName"
           />
-          <no-geopoint-field-state
-            v-else-if="hasGeopoints"
-          />
+          <no-geopoint-field-state v-else-if="hasGeopoints" />
           <empty-state v-else :index="indexName" :collection="collectionName" />
         </template>
 

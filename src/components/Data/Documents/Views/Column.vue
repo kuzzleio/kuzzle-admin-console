@@ -100,7 +100,11 @@
     </b-row>
     <b-row class="mt-2 mb-2" no-gutters>
       <b-col cols="3">
-        <b-table-simple responsive striped hover bordered
+        <b-table-simple
+          responsive
+          striped
+          hover
+          bordered
           data-cy="ColumnView-table-id"
         >
           <b-thead>
@@ -167,7 +171,11 @@
         </b-table-simple>
       </b-col>
       <b-col cols="9">
-        <b-table-simple responsive striped hover bordered
+        <b-table-simple
+          responsive
+          striped
+          hover
+          bordered
           data-cy="ColumnView-table-data"
         >
           <b-thead>

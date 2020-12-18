@@ -7,7 +7,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --dest dist$DEPLOY_PATH --modern",
     "test": "npm run test:e2e",
-    "test:lint": "vue-cli-service lint",
+    "test:lint": "vue-cli-service lint --no-fix",
+    "test:lint:fix": "vue-cli-service lint",
     "test:e2e": "./test/e2e/run-test/bin/run",
     "test:e2e:local": "npm run test:e2e -- --local"
   },
