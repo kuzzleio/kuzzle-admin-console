@@ -53,5 +53,6 @@ jobs:
           node-version: 10
       - uses: ./.github/actions/e2e-tests
         with:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           backend_config: ${{ matrix.backend_config }}
 
