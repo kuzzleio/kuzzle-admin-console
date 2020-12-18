@@ -35,7 +35,7 @@ describe('Roles', () => {
           }
         },
         headers: {
-          authorization: `bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       })
     })
@@ -304,9 +304,8 @@ describe('Roles', () => {
     cy.request('POST', `${kuzzleUrl}/_login/local`, {
       username: 'admin',
       password: 'pass'
-    }).then(response => {
-      const token = response.body.result.jwt
-
+    }).then(loginResponse => {
+      const token = loginResponse.body.result.jwt
       localStorage.setItem(
         'environments',
         JSON.stringify({
@@ -332,15 +331,15 @@ describe('Roles', () => {
         .click()
 
       cy.wait(2000)
-
       cy.request({
         method: 'GET',
         url: `${kuzzleUrl}/roles/anonymous`,
         headers: {
-          authorization: `bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
-      }).should(response => {
-        expect(response.body.result._source.controllers).to.eql({
+      })
+      .should(getRoleResponse => {
+        expect(getRoleResponse.body.result._source.controllers).to.eql({
           '*': {
             actions: {
               '*': false
