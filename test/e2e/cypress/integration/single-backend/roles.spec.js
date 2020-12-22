@@ -24,7 +24,7 @@ describe('Roles', () => {
 
       cy.request({
         method: 'PUT',
-        url: `${kuzzleUrl}/roles/anonymous/_update`,
+        url: `${kuzzleUrl}/roles/anonymous`,
         body: {
           controllers: {
             '*': {
@@ -337,8 +337,7 @@ describe('Roles', () => {
         headers: {
           Authorization: `Bearer ${token}`
         }
-      })
-      .should(getRoleResponse => {
+      }).should(getRoleResponse => {
         expect(getRoleResponse.body.result._source.controllers).to.eql({
           '*': {
             actions: {
