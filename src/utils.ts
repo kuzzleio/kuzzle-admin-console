@@ -21,6 +21,38 @@ module.exports = {
       return `${name.substring(0, maxLength)}...`
     }
   },
+  dateFromTimestamp(value) {
+    let timestamp
+
+    if (typeof value === 'string') {
+      if (!isNaN(Date.parse(value))) {
+        timestamp = Date.parse(value)
+      } else {
+        timestamp = parseInt(value, 10)
+      }
+
+      if (isNaN(timestamp)) {
+        return null
+      }
+    } else if (Number.isInteger(value)) {
+      timestamp = value
+    } else {
+      return null
+    }
+
+    const length = `${timestamp}`.length
+
+    let date
+    if (length === 10) {
+      date = new Date(timestamp * 1000)
+    } else if (length === 13) {
+      date = new Date(timestamp)
+    } else {
+      return null
+    }
+
+    return date
+  },
   wait: async ms =>
     new Promise(resolve => {
       setTimeout(() => {

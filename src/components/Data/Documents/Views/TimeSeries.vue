@@ -1,38 +1,37 @@
 <template>
-  <div class="col s12 TimeSeriesView">
-    <div class="row col s10">
-      <GChart
-        v-if="customNumberFields.length"
-        type="LineChart"
-        :data="chart"
-        :options="chartOptions"
-        :resize-debounce="1"
-        :settings="{ packages: ['corechart'], language: 'en' }"
-      />
-      <div v-else class="row col s12">
-        No data to display
-      </div>
-    </div>
-    <div class="col s2">
-      <div class="col s12 bordered">
+  <div class="TimeSeriesView" data-cy="TimeSeriesView-container">
+    <b-row v-if="isChartViewAvailable">
+      <b-col lg="3" class="card p-3">
+        <div class="mt-2 mb-3">
+          Show
+          <b-form-select
+            class="mx-2"
+            style="width: unset"
+            :options="itemsPerPage"
+            :value="currentPageSize"
+            @change="$emit('change-page-size', $event)"
+          >
+          </b-form-select>
+          <span v-if="totalDocuments"
+            >of {{ totalDocuments }} total items.</span
+          >
+        </div>
         <span>Date</span>
-        <autocomplete
-          placeholder="Date field"
-          :items="mappingDateArray"
-          :value="customDateField || ''"
-          :notify-change="false"
-          @autocomplete::change="
-            item => {
-              addDateField(item)
+        <b-form-select
+          data-cy="timeseriesView-dateSelector"
+          v-model="customDateField"
+          :options="mappingDateArray"
+          @input="
+            value => {
+              addDateField(value)
             }
           "
-        />
-      </div>
-      <div class="col s12">
-        <form class="TimeSeriesValueSelector">
+        ></b-form-select>
+        <form class="TimeSeriesValueSelector mt-4">
           <span>Values</span>
           <time-series-item
             v-for="(number, key) of customNumberFields"
+            :data-cy="`timeSeries-item--${customNumberFields[key].name}`"
             :key="key"
             :value="customNumberFields[key].name"
             :color="customNumberFields[key].color"
@@ -41,8 +40,8 @@
             @update-color="updateColor"
             @timeseriesitem::remove="removeItem"
           />
-
           <time-series-item
+            data-cy="timeSeries-item"
             :items="mappingNumberArray"
             :new-value="newCustomNumberField || ''"
             @update-color="updateColor"
@@ -53,16 +52,54 @@
             "
           />
         </form>
-      </div>
-    </div>
+      </b-col>
+      <b-col lg="9" class="h-100">
+        <VueApexCharts
+          v-show="customNumberFields.length"
+          class="w-100 h-100"
+          data-cy="timeSeries-chart"
+          type="line"
+          ref="Chart"
+          :series="series"
+          :options="chartOptions"
+        />
+        <b-card
+          class="EmptyState h-100 text-center"
+          bg-variant="light"
+          v-if="!customNumberFields.length"
+        >
+          <i class="text-secondary fas fa-file-alt fa-6x mb-3"></i>
+          <h2 class="text-secondary font-weight-bold">
+            You must select at least one field
+          </h2>
+        </b-card>
+      </b-col>
+    </b-row>
+    <b-row v-else>
+      <b-col cols="12">
+        <b-card
+          class="EmptyState h-100 text-center"
+          bg-variant="light"
+          v-if="!customNumberFields.length"
+        >
+          <i class="text-secondary fas fa-file-alt fa-6x mb-3"></i>
+          <h2 class="text-secondary font-weight-bold">
+            No data to display
+          </h2>
+          <p>
+            You can only use chart view on collection that has mapping with fields of date and numeric fields...
+          </p>
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script>
-import Autocomplete from '../../../Common/Autocomplete'
 import TimeSeriesItem from './TimeSeriesItem'
-import { GChart } from 'vue-google-charts'
+import VueApexCharts from 'vue-apexcharts'
 import _ from 'lodash'
+import { dateFromTimestamp } from '@/utils'
 
 const ES_NUMBER_DATA_TYPE = [
   'short',
@@ -79,9 +116,8 @@ const ES_NUMBER_DATA_TYPE = [
 export default {
   name: 'TimeSeries',
   components: {
-    Autocomplete,
-    GChart,
-    TimeSeriesItem
+    TimeSeriesItem,
+    VueApexCharts
   },
   props: {
     mapping: {
@@ -101,10 +137,18 @@ export default {
     documents: {
       type: Array,
       required: true
+    },
+    currentPageSize: {
+      type: Number,
+      default: 10
+    },
+    totalDocuments: {
+      type: Number
     }
   },
   data() {
     return {
+      itemsPerPage: [10, 25, 50, 100, 500],
       customDateField: null,
       customNumberFields: [],
       mappingDateArray: [],
@@ -112,18 +156,23 @@ export default {
       newCustomDateField: null,
       newCustomNumberField: null,
       chartOptions: {
-        curveType: 'function',
-        colors: [],
-        height: 400,
-        legend: {
-          position: 'top',
-          alignment: 'center'
+        chart: {
+          type: 'line'
         },
-        explorer: {
-          keepInBounds: true
+        colors: [],
+        xaxis: {
+          categories: []
         }
       },
-      chart: []
+      series: []
+    }
+  },
+  computed: {
+    isChartViewAvailable() {
+      return Boolean(
+        (this.mappingDateArray.length || this.customDateField) &&
+          (this.mappingNumberArray.length || this.customNumberFields.length)
+      )
     }
   },
   watch: {
@@ -167,11 +216,27 @@ export default {
         this.mappingNumberArray.sort()
       }
     },
-    customNumberFields() {
-      this.updateChart()
+    customNumberFields(value) {
+      if (value.length) {
+        this.$emit('changeDisplayPagination', true)
+        this.updateChart()
+      } else {
+        this.$emit('changeDisplayPagination', false)
+      }
     },
     documents() {
       this.updateChart()
+    },
+    isChartViewAvailable(value) {
+      if (!value) {
+        this.$emit('changeDisplayPagination', false)
+        return
+      }
+      if (!this.customNumberFields.length) {
+        this.$emit('changeDisplayPagination', false)
+        return
+      }
+      this.$emit('changeDisplayPagination', true)
     }
   },
   mounted() {
@@ -201,7 +266,7 @@ export default {
       ES_NUMBER_DATA_TYPE.includes(type)
     )
 
-    if (this.customNumberFields) {
+    if (this.customNumberFields.length) {
       for (const attr of this.customNumberFields) {
         this.mappingNumberArray.splice(
           this.mappingNumberArray.indexOf(attr.name),
@@ -209,29 +274,44 @@ export default {
         )
       }
       this.mappingNumberArray.sort()
+    } else {
+      this.$emit('changeDisplayPagination', false)
     }
   },
   methods: {
     updateChart() {
+      if (!this.customNumberFields.length) {
+        return
+      }
+      this.series = []
       this.chartOptions.colors = []
-      this.chart = []
-      const chartTitles = []
-      chartTitles.push(this.customDateField)
-
       for (const item of this.customNumberFields) {
         this.chartOptions.colors.push(item.color)
-        chartTitles.push(item.name)
       }
-      this.chart.push(chartTitles)
 
-      for (const doc of this.documents) {
-        const item = []
-        item.push(doc.content[this.customDateField])
-        for (const field of this.customNumberFields) {
-          item.push(_.get(doc.content, field.name, ''))
+      const series = []
+      for (const field of this.customNumberFields) {
+        const serie = {
+          name: field.name,
+          data: []
         }
-        this.chart.push(item)
+        for (const doc of this.documents) {
+          const timestamp = _.get(doc, this.customDateField, null)
+          const date = dateFromTimestamp(timestamp)
+
+          if (!date) {
+            continue
+          }
+
+          serie.data.push(_.get(doc, field.name, ''))
+          this.chartOptions.xaxis.categories.push(date.toLocaleString('en-GB'))
+        }
+        series.push(serie)
       }
+      if (this.$refs.Chart) {
+        this.$refs.Chart.updateOptions(this.chartOptions)
+      }
+      this.series = series
     },
     saveToLocalStorage() {
       if (this.index && this.collection) {
@@ -302,15 +382,10 @@ export default {
       this.mappingNumberArray.push(this.customNumberFields[index].name)
       this.customNumberFields.splice(index, 1)
       this.saveToLocalStorage()
-      this.updateChart()
+      if (this.customNumberFields.length) {
+        this.updateChart()
+      }
     }
   }
 }
 </script>
-
-<style>
-.bordered {
-  border: 0.5px solid grey;
-  margin-bottom: 10px;
-}
-</style>

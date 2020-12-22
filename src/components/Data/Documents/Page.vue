@@ -34,6 +34,7 @@
             @list="onListViewClicked"
             @map="onMapViewClicked"
             @column="onColumnViewClicked"
+            @time-series="onTimeSeriesClicked"
           />
           <collection-dropdown-action
             class="icon-medium icon-black ml-2"
@@ -88,7 +89,7 @@
                     v-if="listViewType === 'list'"
                     :all-checked="allChecked"
                     :collection="collectionName"
-                    :documents="documents"
+                    :documents="formattedDocuments"
                     :index="indexName"
                     :current-page-size="paginationSize"
                     :selected-documents="selectedDocuments"
@@ -119,6 +120,17 @@
                     @refresh="onRefresh"
                     @toggle-all="onToggleAllClicked"
                   />
+                  <TimeSeries
+                    v-if="listViewType === 'time-series'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @change-page-size="changePaginationSize"
+                    @changeDisplayPagination="changeDisplayPagination"
+                  />
 
                   <Map
                     v-if="listViewType === 'map'"
@@ -135,7 +147,7 @@
                   />
 
                   <b-row
-                    v-show="totalDocuments > paginationSize"
+                    v-show="totalDocuments > paginationSize && displayPagination"
                     align-h="center"
                   >
                     <b-pagination
@@ -186,6 +198,7 @@ import _ from 'lodash'
 import Column from './Views/Column'
 import Map from './Views/Map'
 import List from './Views/List'
+import TimeSeries from './Views/TimeSeries'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
 import NoResultsEmptyState from './NoResultsEmptyState'
@@ -199,7 +212,7 @@ import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
 import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
-import { truncateName } from '@/utils'
+import { truncateName, dateFromTimestamp } from '@/utils'
 import { mapGetters } from 'vuex'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
@@ -219,6 +232,7 @@ export default {
     Column,
     Map,
     List,
+    TimeSeries,
     EmptyState,
     Headline,
     Filters,
@@ -237,6 +251,7 @@ export default {
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
+      formattedDocuments: [],
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
@@ -248,7 +263,8 @@ export default {
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
       currentPage: 1,
-      modalDeleteId: 'modal-collection-delete'
+      modalDeleteId: 'modal-collection-delete',
+      displayPagination: true
     }
   },
   computed: {
@@ -503,6 +519,7 @@ export default {
           this.indexName,
           this.collectionName
         )
+        this.displayPagination = true;
         this.loading = false
         await this.fetchDocuments()
       } catch (err) {
@@ -706,16 +723,20 @@ export default {
       )
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
+
     loadMappingInfo() {
       this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
       this.selectedGeopoint = this.mappingGeopoints[0]
     },
+    // TODO: Refactor this method to avoid
+    // cloning document list (computed property??)
     addHumanReadableDateFields() {
       if (!this.collectionMapping) {
         return
       }
 
       const dateFields = []
+      const formattedDocuments = _.cloneDeep(this.documents)
 
       const findDateFields = (mapping, previousKey) => {
         for (const [field, value] of Object.entries(mapping)) {
@@ -743,38 +764,13 @@ export default {
 
       findDateFields(this.collectionMapping, null)
 
-      this.documents.forEach(changeField)
+      formattedDocuments.forEach(changeField)
+      this.formattedDocuments = formattedDocuments
+    },
+    changeDisplayPagination(value) {
+      this.displayPagination = value;
     }
   }
-}
-
-function dateFromTimestamp(value) {
-  let timestamp
-
-  if (typeof value === 'string') {
-    timestamp = parseInt(value, 10)
-
-    if (isNaN(timestamp)) {
-      return null
-    }
-  } else if (Number.isInteger(value)) {
-    timestamp = value
-  } else {
-    return null
-  }
-
-  const length = `${timestamp}`.length
-
-  let date
-  if (length === 10) {
-    date = new Date(timestamp * 1000)
-  } else if (length === 13) {
-    date = new Date(timestamp)
-  } else {
-    return null
-  }
-
-  return date
 }
 </script>
 

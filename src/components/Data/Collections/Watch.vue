@@ -18,6 +18,7 @@
               :collection="collectionName"
               @list="$router.push({ name: 'DocumentList' })"
               @column="$router.push({ name: 'DocumentList' })"
+              @time-series="$router.push({ name: 'DocumentList' })"
             />
             <b-button
               v-if="isRealtimeCollection"

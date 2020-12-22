@@ -26,6 +26,13 @@
           Column view
         </b-dropdown-item>
         <b-dropdown-item
+          data-cy="CollectionDropdown-TimeSeries"
+          :active="activeView === 'time-series'"
+          @click="$emit('time-series')"
+        >
+          Chart view
+        </b-dropdown-item>
+        <b-dropdown-item
           data-cy="CollectionDropdown-map"
           :active="activeView === 'map'"
           @click="$emit('map')"

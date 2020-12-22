@@ -45,7 +45,7 @@ describe('Form view', function() {
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
-  it.only('should be able to create a new document with the form view enabled', function() {
+  it('should be able to create a new document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.waitForLoading()
 
