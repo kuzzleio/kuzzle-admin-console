@@ -338,6 +338,7 @@ export default {
       this.$emit('generate-raw-filter', raw)
     },
     submitSearch() {
+      console.log("test lint ci")
       if (!this.isFilterValid) {
         return
       }
