@@ -345,6 +345,7 @@ export default {
       this.$emit('generate-raw-filter', raw)
     },
     submitSearch() {
+      console.log("test ci !")
       if (!this.isFilterValid) {
         return
       }
