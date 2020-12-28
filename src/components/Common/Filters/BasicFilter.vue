@@ -168,7 +168,7 @@
             placeholder="Attribute"
             :value="filters.sorting.attribute || ''"
             @change="attribute => setSortAttr(attribute)"
-            :options="selectAttributesValues"
+            :options="sortAttributesValues"
           >
             <template v-slot:first>
               <b-form-select-option :value="''" disabled
@@ -263,6 +263,12 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     selectAttributesValues() {
+      return Object.keys(this.mappingAttributes).map(a => ({
+        text: a,
+        value: a
+      }))
+    },
+    sortAttributesValues() {
       return Object.keys(this.mappingAttributes)
         .filter(a => this.mappingAttributes[a].type !== 'text')
         .map(a => ({
