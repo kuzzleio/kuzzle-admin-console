@@ -263,7 +263,11 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     selectAttributesValues() {
-      return Object.keys(this.mappingAttributes).map(a => ({
+      return Object.keys(this.mappingAttributes)
+      .filter(a =>
+        this.mappingAttributes[a].type !== "text"
+      )
+      .map(a => ({
         text: a,
         value: a
       }))
