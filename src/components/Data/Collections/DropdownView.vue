@@ -28,6 +28,7 @@
         <b-dropdown-item
           data-cy="CollectionDropdown-TimeSeries"
           :active="activeView === 'time-series'"
+          :disabled="!mappingHasIntegerField"
           @click="$emit('time-series')"
         >
           Chart view
@@ -35,6 +36,7 @@
         <b-dropdown-item
           data-cy="CollectionDropdown-map"
           :active="activeView === 'map'"
+          :disabled="!mappingHasGeoField"
           @click="$emit('map')"
         >
           Map view
@@ -66,12 +68,23 @@ export default {
   name: 'CollectionDropdown',
   components: {},
   props: {
+    mappingAttributes: Object,
     activeView: String,
     collection: String,
     index: String
   },
   computed: {
-    ...mapGetters('auth', ['canSubscribe'])
+    ...mapGetters('auth', ['canSubscribe']),
+    mappingHasIntegerField() {
+      return Object.keys(this.mappingAttributes).filter(a =>
+        this.mappingAttributes[a].type === "integer"
+      ).length > 0
+    },
+    mappingHasGeoField() {
+      return Object.keys(this.mappingAttributes).filter(a =>
+        this.mappingAttributes[a].type === "geo_point"
+      ).length > 0
+    }
   }
 }
 </script>
