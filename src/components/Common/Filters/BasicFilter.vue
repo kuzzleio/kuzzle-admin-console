@@ -264,13 +264,11 @@ export default {
     ...mapGetters('kuzzle', ['wrapper']),
     selectAttributesValues() {
       return Object.keys(this.mappingAttributes)
-      .filter(a =>
-        this.mappingAttributes[a].type !== "text"
-      )
-      .map(a => ({
-        text: a,
-        value: a
-      }))
+        .filter(a => this.mappingAttributes[a].type !== 'text')
+        .map(a => ({
+          text: a,
+          value: a
+        }))
     },
     availableOperandsFormatted() {
       return Object.keys(this.availableOperands).map(e => ({

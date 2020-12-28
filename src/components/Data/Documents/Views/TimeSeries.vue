@@ -87,7 +87,8 @@
             No data to display
           </h2>
           <p>
-            You can only use chart view on collection that has mapping with fields of date and numeric fields...
+            You can only use chart view on collection that has mapping with
+            fields of date and numeric fields...
           </p>
         </b-card>
       </b-col>
