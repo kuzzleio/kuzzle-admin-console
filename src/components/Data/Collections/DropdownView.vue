@@ -76,14 +76,18 @@ export default {
   computed: {
     ...mapGetters('auth', ['canSubscribe']),
     mappingHasIntegerField() {
-      return Object.keys(this.mappingAttributes).filter(a =>
-        this.mappingAttributes[a].type === "integer"
-      ).length > 0
+      return (
+        Object.keys(this.mappingAttributes).filter(
+          a => this.mappingAttributes[a].type === 'integer'
+        ).length > 0
+      )
     },
     mappingHasGeoField() {
-      return Object.keys(this.mappingAttributes).filter(a =>
-        this.mappingAttributes[a].type === "geo_point"
-      ).length > 0
+      return (
+        Object.keys(this.mappingAttributes).filter(
+          a => this.mappingAttributes[a].type === 'geo_point'
+        ).length > 0
+      )
     }
   }
 }

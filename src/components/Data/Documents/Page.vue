@@ -149,7 +149,9 @@
                   />
 
                   <b-row
-                    v-show="totalDocuments > paginationSize && displayPagination"
+                    v-show="
+                      totalDocuments > paginationSize && displayPagination
+                    "
                     align-h="center"
                   >
                     <b-pagination
@@ -521,7 +523,7 @@ export default {
           this.indexName,
           this.collectionName
         )
-        this.displayPagination = true;
+        this.displayPagination = true
         this.loading = false
         await this.fetchDocuments()
       } catch (err) {
@@ -739,7 +741,6 @@ export default {
 
       const dateFields = []
       const formattedDocuments = _.cloneDeep(this.documents)
-      console.log(this.documents);
       const findDateFields = (mapping, previousKey) => {
         for (const [field, value] of Object.entries(mapping)) {
           if (typeof value === 'object') {
@@ -770,7 +771,7 @@ export default {
       this.formattedDocuments = formattedDocuments
     },
     changeDisplayPagination(value) {
-      this.displayPagination = value;
+      this.displayPagination = value
     }
   }
 }
