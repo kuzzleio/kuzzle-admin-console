@@ -162,13 +162,6 @@
 
     <b-row align-h="center" align-v="center">
       <b-col md="4">
-
-
-
-
-
-
-
         <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sort">
           <b-form-select
             data-cy="BasicFilter-sortAttributeSelect"
@@ -345,7 +338,6 @@ export default {
       this.$emit('generate-raw-filter', raw)
     },
     submitSearch() {
-      console.log("test ci !")
       if (!this.isFilterValid) {
         return
       }
