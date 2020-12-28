@@ -119,21 +119,21 @@
             </b-tr>
           </b-thead>
           <b-tbody>
-            <b-tr v-for="item of formattedItems" :key="`item-row-${item.id}`">
+            <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`">
               <b-td
                 class="cell"
                 colspan="1"
                 v-for="field of tableDefaultHeaders"
                 :key="`item-col-${field.key}`"
-                :id="`col-${item.id}-${field}`"
+                :id="`col-${item._id}-${field}`"
               >
                 <template v-if="field.key === 'acColumnTableActions'">
                   <div class="inlineDisplay">
                     <span class="inlineDisplay-item">
                       <b-form-checkbox
-                        :checked="isChecked(item.id)"
-                        :data-cy="`ColumnView-table-select-btn--${item.id}`"
-                        @change="toggleSelectDocument(item.id)"
+                        :checked="isChecked(item._id)"
+                        :data-cy="`ColumnView-table-select-btn--${item._id}`"
+                        @change="toggleSelectDocument(item._id)"
                       />
                     </span>
                     <span class="inlineDisplay-item">
@@ -141,9 +141,9 @@
                         title="Edit document"
                         variant="link"
                         class="px-0 mx-1"
-                        :data-cy="`ColumnView-table-edit-btn--${item.id}`"
+                        :data-cy="`ColumnView-table-edit-btn--${item._id}`"
                         :disabled="!canEdit"
-                        @click="editDocument(item.id)"
+                        @click="editDocument(item._id)"
                       >
                         <i class="fa fa-pen" />
                       </b-button>
@@ -153,9 +153,9 @@
                         class="px-0 mx-1"
                         title="Delete document"
                         variant="link"
-                        :data-cy="`ColumnView-table-delete-btn--${item.id}`"
+                        :data-cy="`ColumnView-table-delete-btn--${item._id}`"
                         :disabled="!canDelete"
-                        @click="deleteDocument(item.id)"
+                        @click="deleteDocument(item._id)"
                       >
                         <i class="fa fa-trash" />
                       </b-button>
@@ -163,7 +163,7 @@
                   </div>
                 </template>
                 <template v-else-if="field.key === 'acColumnTableId'">
-                  {{ item.id }}
+                  {{ item._id }}
                 </template>
               </b-td>
             </b-tr>
@@ -202,7 +202,7 @@
                 class="cell"
                 v-for="field of selectedFields"
                 :key="`item-col-${field}`"
-                :id="`col-${item.id}-${field}`"
+                :id="`col-${item._id}-${field}`"
               >
                 {{ item[field] }}
               </b-td>
@@ -282,7 +282,7 @@ export default {
     formattedItems() {
       return this.documents.map(d => {
         const doc = {}
-        doc.id = d.id
+        doc._id = d._id
         for (const key of this.selectedFields) {
           // if there is an array in the current document within the 'path'
           if (this.documentPathContainsArray(key, d)) {
@@ -314,7 +314,7 @@ export default {
       return this.canDeleteDocument(this.index, this.collection)
     },
     checkboxId() {
-      return `checkbox-${this.document.id}`
+      return `checkbox-${this.document._id}`
     }
   },
   methods: {

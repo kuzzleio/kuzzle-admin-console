@@ -375,7 +375,7 @@ export class KuzzleWrapperV1 {
     )
 
     const documents = result.hits.map(d => ({
-      id: d._id,
+      _id: d._id,
       ...d._source,
       _kuzzle_info: d._source._kuzzle_info
         ? this.formatMeta(d._source._kuzzle_info)
