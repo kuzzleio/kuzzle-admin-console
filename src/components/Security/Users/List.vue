@@ -2,20 +2,16 @@
   <div class="UserList">
     <slot v-if="isCollectionEmpty && !loading" name="emptySet" />
     <template v-else>
-      <b-row class="justify-content-md-center" no-gutters>
-        <b-col cols="12">
-          <template v-if="!isCollectionEmpty">
-            <filters
-              class="mb-3"
-              :available-operands="searchFilterOperands"
-              :current-filter="currentFilter"
-              :collection-mapping="collectionMapping"
-              @filters-updated="onFiltersUpdated"
-              @reset="onFiltersUpdated"
-            />
-          </template>
-        </b-col>
-      </b-row>
+      <filters
+        class="mb-3"
+        :available-operands="searchFilterOperands"
+        :current-filter="currentFilter"
+        :mapping-attributes="mappingAttributes"
+        :index="index"
+        :collection="collection"
+        @filters-updated="onFiltersUpdated"
+        @reset="onFiltersUpdated"
+      />
       <template v-if="loading">
         <b-row class="text-center">
           <b-col>
@@ -181,14 +177,14 @@ export default {
       type: Boolean,
       default: false
     },
+    mappingAttributes: {
+      type: Object,
+      required: true
+    },
     performSearch: Function,
     performDelete: Function,
     routeCreate: String,
-    routeUpdate: String,
-    collectionMapping: {
-      type: Object,
-      required: true
-    }
+    routeUpdate: String
   },
 
   data() {
@@ -253,7 +249,7 @@ export default {
 
       this.selectedDocuments.splice(index, 1)
     },
-    onFiltersUpdated(newFilters) {
+    onFiltersUpdated(newFilters, loadedFromHistory) {
       this.currentFilter = newFilters
       try {
         filterManager.save(
@@ -262,6 +258,13 @@ export default {
           this.index,
           this.collection
         )
+        if (!loadedFromHistory) {
+          filterManager.addNewHistoryItemAndSave(
+            newFilters,
+            this.index,
+            this.collection
+          )
+        }
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast('The complete error has been printed to console', {
@@ -288,7 +291,7 @@ export default {
       let searchQuery = null
       searchQuery = filterManager.toSearchQuery(
         this.currentFilter,
-        this.collectionMapping,
+        this.mappingAttributes,
         this.wrapper
       )
       if (!searchQuery) {
@@ -309,6 +312,14 @@ export default {
         )
         this.documents = res.documents
         this.totalDocuments = res.total
+        if (res.documents.length === 0 && res.total !== 0) {
+          this.onFiltersUpdated(
+            Object.assign(this.currentFilter, {
+              from: 0
+            })
+          )
+          return
+        }
       } catch (error) {
         this.$log.error(error)
         this.$log.debug(error.stack)

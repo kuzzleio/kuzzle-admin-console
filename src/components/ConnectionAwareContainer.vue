@@ -164,6 +164,12 @@ export default {
     this.removeListeners()
   },
   watch: {
+    $route: {
+      immediate: false,
+      handler() {
+        this.authenticationGuard()
+      }
+    },
     $kuzzle: {
       immediate: true,
       handler(instance) {

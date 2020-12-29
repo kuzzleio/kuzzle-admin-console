@@ -43,7 +43,7 @@ export default {
       this.$emit('environment::importEnv')
     },
     submit() {
-      const submitted = this.$refs.createEnvironmentComponent.createEnvironment()
+      const submitted = this.$refs.createEnvironmentComponent.submit()
       this.$nextTick(() => {
         if (submitted) {
           this.$bvModal.hide(this.id)

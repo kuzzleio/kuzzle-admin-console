@@ -4,6 +4,8 @@
     <template v-else>
       <filters
         :current-filter="currentFilter"
+        :index="index"
+        :collection="collection"
         @filters-updated="onFiltersUpdated"
       />
       <b-card

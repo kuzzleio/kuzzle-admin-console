@@ -1,81 +1,83 @@
 <template>
   <div :class="{ open }" class="IndexBranch mt-2">
     <i
-      v-if="collectionCount"
       aria-hidden="true"
       class="fa fa-caret-right pointer tree-toggle"
-      :data-cy="`IndexBranch-toggle--${indexName}`"
-      @click="toggleBranch"
+      :data-cy="`IndexBranch-toggle--${index.name}`"
+      @click="onToggleBranchClicked"
     />
-    <i v-else class="no-caret"></i>
     <router-link
-      data-cy="Treeview-item"
       class="tree-item truncate mt-2"
-      :class="{ active: isIndexActive(indexName) }"
-      :title="indexName"
-      :to="{ name: 'Collections', params: { index: indexName } }"
+      :data-cy="`Treeview-item-index-link--${index.name}`"
+      :class="{ active: isIndexActive(index.name) }"
+      :title="index.name"
+      :to="{ name: 'Collections', params: { indexName: index.name } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
-      <HighlightedSpan :value="indexName" :filter="filter" />
-      ({{ collectionCount }})
-    </router-link>
-    <div class="collections">
-      <div
-        v-for="collectionName in orderedFilteredStoredCollections"
-        class="tree-item truncate mt-2"
-        :class="{ active: isCollectionActive(indexName, collectionName) }"
-        :data-cy="`Treeview-item--${collectionName}`"
-        :key="collectionName"
-        :title="collectionName"
+      <HighlightedSpan :value="index.name" :filter="filter" />
+
+      <template v-if="index.collectionsCount !== undefined"
+        >&nbsp;({{ index.collectionsCount }})</template
       >
-        <router-link
-          :to="{
-            name: 'DocumentList',
-            params: { index: indexName, collection: collectionName }
-          }"
+    </router-link>
+    <b-spinner small v-if="isLoading"></b-spinner>
+    <div class="collections" v-if="collectionsFetched">
+      <template v-if="orderedFilteredCollections.length">
+        <div
+          v-for="collection in orderedFilteredCollections"
+          class="tree-item truncate mt-2"
+          :class="{ active: isCollectionActive(index.name, collection.name) }"
+          :data-cy="`Treeview-item--${collection.name}`"
+          :key="`${collection.name}-${collection.type}`"
+          :title="collection.name"
         >
-          <i
-            class="fa fa-th-list"
-            aria-hidden="true"
-            title="Persisted collection"
-          />
-          <HighlightedSpan :value="collectionName" :filter="filter" />
-        </router-link>
-      </div>
-      <div
+          <template v-if="collection.isRealtime()">
+            <i
+              class="fa fa-bolt ml-1 mr-2"
+              aria-hidden="true"
+              title="Volatile collection"
+            />
+            <router-link
+              :to="{
+                name: 'WatchCollection',
+                params: {
+                  indexName: index.name,
+                  collectionName: collection.name
+                }
+              }"
+            >
+              <HighlightedSpan :value="collection.name" :filter="filter" />
+            </router-link>
+          </template>
+          <template v-else>
+            <i
+              class="fa fa-th-list"
+              aria-hidden="true"
+              title="Persisted collection"
+            />
+            <router-link
+              :to="{
+                name: 'DocumentList',
+                params: {
+                  indexName: index.name,
+                  collectionName: collection.name
+                }
+              }"
+            >
+              <HighlightedSpan :value="collection.name" :filter="filter" />
+            </router-link>
+          </template>
+        </div>
+      </template>
+      <template v-else><span class="text-muted">no collections</span></template>
+      <b-link
         v-if="showMoreCollectionsDisplay"
         @click="toggleShowMoreCollections"
-        class="tree-item truncate pointer"
+        class="tree-item truncate"
       >
         <u v-if="!showMoreCollections">Show More</u>
         <u v-else>Show only results</u>
-      </div>
-
-      <div
-        v-for="collectionName in orderedFilteredRealtimeCollections"
-        class="tree-item"
-        data-cy="Treeview-item"
-        :class="{ active: isCollectionActive(indexName, collectionName) }"
-        :key="collectionName"
-        :to="{
-          name: 'WatchCollection',
-          params: { index: indexName, collection: collectionName }
-        }"
-      >
-        <i
-          class="fa fa-bolt ml-1 mr-2"
-          aria-hidden="true"
-          title="Volatile collection"
-        />
-        <router-link
-          :to="{
-            name: 'WatchCollection',
-            params: { index: indexName, collection: collectionName }
-          }"
-        >
-          <HighlightedSpan :value="collectionName" :filter="filter" />
-        </router-link>
-      </div>
+      </b-link>
     </div>
   </div>
 </template>
@@ -83,6 +85,8 @@
 <script>
 import { truncateName } from '../../../utils'
 import HighlightedSpan from '../../Common/HighlightedSpan'
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
   components: {
     HighlightedSpan
@@ -92,89 +96,106 @@ export default {
       type: Boolean,
       default: false
     },
-    indexName: String,
-    currentIndex: String,
+    index: Object,
+    browsedIndexName: String,
+    browsedCollectionName: String,
     filter: String,
-    currentCollection: String,
-    routeName: String,
-    collections: Object
+    routeName: String
   },
   data: function() {
     return {
       open: false,
-      showMoreCollections: false
+      showMoreCollections: false,
+      collectionsFetched: false,
+      isLoading: false
     }
   },
   computed: {
-    collectionCount() {
-      if (!this.collections) {
-        return 0
-      }
-
-      return this.collections.realtime.length + this.collections.stored.length
-    },
+    ...mapGetters('index', ['loadingCollections']),
     showMoreCollectionsDisplay() {
       if (
         this.filter.length > 0 &&
-        (this.collections.stored.filter(col => col.indexOf(this.filter) !== -1)
-          .length !== this.collections.stored.length ||
-          this.collections.realtime.filter(
-            col => col.indexOf(this.filter) !== -1
-          ).length !== this.collections.realtime.length)
+        this.index.collections &&
+        this.index.collections.filter(
+          col => col.name.indexOf(this.filter) !== -1
+        ).length !== this.index.collections.length
       ) {
         return 1
       }
       return 0
     },
-    orderedFilteredStoredCollections() {
-      if (this.collections) {
-        return this.collections.stored
-          .filter(
-            col => col.indexOf(this.filter) !== -1 || this.showMoreCollections
-          )
-          .sort()
+    orderedFilteredCollections() {
+      if (!this.index.collections) {
+        return []
       }
-      return []
-    },
-    orderedFilteredRealtimeCollections() {
-      if (this.collections) {
-        return this.collections.realtime
-          .filter(
-            col => col.indexOf(this.filter) !== -1 || this.showMoreCollections
-          )
-          .sort()
-      }
-      return []
+
+      return this.index.collections
+        .filter(
+          col =>
+            col.name.indexOf(this.filter) !== -1 || this.showMoreCollections
+        )
+        .sort()
     }
   },
   watch: {
-    currentIndex() {
+    browsedIndexName() {
       this.testOpen()
     },
-    currentCollection() {
+    browsedCollectionName() {
       this.testOpen()
     },
     filter() {
       if (
-        this.collections.realtime.filter(col => col.indexOf(this.filter) !== -1)
-          .length > 0 ||
-        this.collections.stored.filter(col => col.indexOf(this.filter) !== -1)
-          .length > 0
+        this.index.collections &&
+        this.index.collections.filter(
+          col => col.name.indexOf(this.filter) !== -1
+        ).length > 0
       ) {
         this.open = true
       }
+
       if (this.filter == '') {
         this.open = false
       }
     }
   },
-  mounted() {
-    this.testOpen()
+  async mounted() {
+    if (this.index) {
+      await this.testOpen()
+    }
   },
   methods: {
+    ...mapActions('index', ['fetchCollectionList']),
     truncateName,
+    async onToggleBranchClicked() {
+      if (!this.open) {
+        await this.fetchCollections()
+      }
+      this.toggleBranch()
+    },
+    async fetchCollections() {
+      try {
+        this.isLoading = true
+        await this.fetchCollectionList(this.index)
+        this.collectionsFetched = true
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while fetching the collections.',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+      }
+      this.isLoading = false
+    },
     toggleBranch() {
       // TODO This state should be one day persistent across page refreshes
+      // NJE edit: not today...
       this.open = !this.open
     },
     // TODO get rid of this ESTEBAAAAAAAAN
@@ -191,18 +212,19 @@ export default {
     toggleShowMoreCollections() {
       this.showMoreCollections = !this.showMoreCollections
     },
-    testOpen() {
-      if (this.currentIndex === this.indexName) {
+    async testOpen() {
+      if (this.browsedIndexName === this.index.name) {
+        await this.fetchCollections()
         this.open = true
       }
     },
     isIndexActive(indexName) {
-      return this.currentIndex === indexName && !this.currentCollection
+      return this.browsedIndexName === indexName && !this.browsedCollectionName
     },
     isCollectionActive(indexName, collectionName) {
       return (
-        this.currentIndex === indexName &&
-        this.currentCollection === collectionName
+        this.browsedIndexName === indexName &&
+        this.browsedCollectionName === collectionName
       )
     },
     removeRealtimeCollection(indexName, collectionName) {

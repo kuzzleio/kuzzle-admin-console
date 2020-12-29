@@ -20,7 +20,7 @@ import DataSubRoutes from './children/data'
 
 Vue.use(VueRouter)
 
-export default function createRoutes(log) {
+export default function createRoutes(log, ga) {
   const environmentsGuard = async (from, to, next) => {
     log.debug('Router:EnvironmentsGuard')
     try {
@@ -35,13 +35,21 @@ export default function createRoutes(log) {
       log.debug('Has environments')
 
       if (!store.getters.kuzzle.currentEnvironment) {
-        next({ name: 'SelectEnvironment' })
+        log.debug('No environment selected')
+        return next({ name: 'SelectEnvironment' })
       }
-      next()
+      if (!store.getters.kuzzle.isCurrentEnvironmentValid) {
+        log.debug('Current environment is not valid')
+        return next({
+          name: 'EditEnvironment',
+          params: { id: store.state.kuzzle.currentId }
+        })
+      }
+      return next()
     } else {
       log.debug('No environments')
 
-      next({ name: 'CreateEnvironment' })
+      return next({ name: 'CreateEnvironment' })
     }
   }
 
@@ -54,6 +62,19 @@ export default function createRoutes(log) {
           await store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
           next()
         },
+        props: true,
+        component: CreateEnvironmentPage
+      },
+      {
+        path: '/edit-connection/:id',
+        name: 'EditEnvironment',
+        beforeEnter: async (from, to, next) => {
+          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+          next()
+        },
+        props: route => ({
+          id: route.params.id
+        }),
         component: CreateEnvironmentPage
       },
       {
@@ -131,8 +152,14 @@ export default function createRoutes(log) {
     ]
   })
 
-  router.beforeEach((to, from, next) => {
-    next()
+  router.afterEach(to => {
+    if (!ga) {
+      return
+    }
+
+    ga.pageview({
+      page_title: to.name
+    })
   })
 
   return router

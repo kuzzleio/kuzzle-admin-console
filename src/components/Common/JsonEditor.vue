@@ -39,11 +39,7 @@ export default {
     },
     readonly: Boolean,
     id: String,
-    height: { type: Number, default: 250 },
-    refreshAce: {
-      type: Boolean,
-      default: false
-    }
+    height: { type: Number, default: 250 }
   },
   computed: {
     classes() {
@@ -69,19 +65,13 @@ export default {
       editor.getSession().setValue(value)
     }
   },
-  watch: {
-    refreshAce() {
-      setTimeout(() => {
-        editor.focus()
-      }, 500)
-    }
-  },
   mounted() {
     Vue.nextTick(() => {
       /* eslint no-undef: 0 */
-      editor = ace.edit(this.$refs.jsoneditor)
+      editor = ace.edit(this.$refs.jsoneditor, {
+        mode: 'ace/mode/json'
+      })
       editor.setTheme('ace/theme/tomorrow')
-      editor.getSession().setMode('ace/mode/json')
       editor.setFontSize(15)
       editor.getSession().setTabSize(2)
       editor.setReadOnly(this.readonly)

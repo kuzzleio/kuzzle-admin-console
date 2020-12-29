@@ -19,105 +19,160 @@
 
     <list-not-allowed v-if="!canSearchIndex" />
     <template v-else>
-      <template v-if="loading"></template>
-      <template v-else>
-        <b-row class="mb-3">
-          <b-col sm="8" class="text-secondary pt-2">
-            {{ tableItems.length }}
-            {{ tableItems.length === 1 ? 'index' : 'indexes' }}
-          </b-col>
-          <b-col sm="4">
-            <b-input-group>
-              <template v-slot:prepend>
-                <b-input-group-text>Filter</b-input-group-text>
-              </template>
+      <b-row class="mb-3">
+        <b-col class="text-secondary pt-2">
+          {{ indexes.length }}
+          {{ indexes.length === 1 ? 'index' : 'indexes' }}
+        </b-col>
+        <b-col sm="10">
+          <b-row>
+            <b-col cols="6" class="text-right">
+              <b-button
+                variant="outline-dark"
+                class="mr-2"
+                @click="onToggleAllClicked"
+              >
+                <i
+                  :class="
+                    `far ${
+                      selectedIndexes.length === filteredIndexes.length
+                        ? 'fa-check-square'
+                        : 'fa-square'
+                    } left`
+                  "
+                />
+                Toggle all
+              </b-button>
 
-              <auto-focus-input
-                name="index"
-                v-model="filter"
-                :disabled="tableItems.length === 0"
-                @submit="navigateToIndex"
-              />
-            </b-input-group>
-          </b-col>
-        </b-row>
+              <b-button
+                variant="outline-danger"
+                data-cy="IndexesPage-bulkDelete--btn"
+                :disabled="!bulkDeleteEnabled"
+                @click="openBulkDeleteModal"
+              >
+                <i class="fa fa-minus-circle left" />
+                Delete
+              </b-button>
+            </b-col>
+            <b-col cols="6">
+              <b-input-group>
+                <template v-slot:prepend>
+                  <b-input-group-text>Filter</b-input-group-text>
+                </template>
 
-        <b-table
-          class="IndexPage-table"
-          responsive
-          striped
-          outlined
-          show-empty
-          :items="tableItems"
-          :fields="tableFields"
-          :filter="filter"
-          @filtered="updateFilteredIndexes"
-        >
-          <template v-slot:empty>
-            <h4 class="text-secondary text-center">There is no index.</h4>
-            <p class="text-secondary text-center" v-if="canCreateIndex">
-              You can create one by hitting the button above.
-            </p>
-          </template>
-          <template v-slot:emptyfiltered>
-            <h4 class="text-secondary text-center">
-              There is no index matching your filter.
-            </h4>
-          </template>
-          <template v-slot:cell(icon)>
-            <i class="fa fa-2x fa-database mr-2"></i>
-          </template>
-          <template v-slot:cell(indexName)="indexName">
-            <router-link
-              :data-cy="`IndexesPage-name--${indexName.value}`"
-              :title="indexName.value"
+                <auto-focus-input
+                  name="index"
+                  v-model="filter"
+                  :disabled="indexes.length === 0"
+                  @submit="navigateToIndex"
+                />
+              </b-input-group>
+            </b-col>
+          </b-row>
+        </b-col>
+      </b-row>
+
+      <b-table
+        class="IndexPage-table"
+        responsive
+        striped
+        outlined
+        show-empty
+        :items="indexes"
+        :fields="tableFields"
+        :filter="filter"
+        @filtered="updateFilteredIndexes"
+      >
+        <template v-slot:empty>
+          <h4 class="text-secondary text-center">There is no index.</h4>
+          <p class="text-secondary text-center" v-if="canCreateIndex">
+            You can create one by hitting the button above.
+          </p>
+        </template>
+        <template v-slot:emptyfiltered>
+          <h4 class="text-secondary text-center">
+            There is no index matching your filter.
+          </h4>
+        </template>
+        <template v-slot:cell(selected)="row">
+          <b-form-checkbox
+            class="d-inline-block align-middle"
+            type="checkbox"
+            unchecked-value="false"
+            value="true"
+            :data-cy="`IndexesPage-checkbox--${row.item.name}`"
+            :checked="isChecked(row.item)"
+            @change="onCheckboxClick(row.item)"
+          />
+        </template>
+        <template v-slot:cell(collectionCount)="row">
+          <span>{{ row.item.collectionsCount || '--' }}</span>
+        </template>
+        <template v-slot:cell(icon)>
+          <i class="fa fa-2x fa-database mr-2"></i>
+        </template>
+        <template v-slot:cell(indexName)="row">
+          <router-link
+            :data-cy="`IndexesPage-name--${row.item.name}`"
+            :title="row.item.name"
+            :to="{
+              name: 'Collections',
+              params: { indexName: row.item.name }
+            }"
+          >
+            {{ row.item.name }}
+          </router-link>
+        </template>
+        <template v-slot:cell(actions)="row">
+          <div class="IndexesPage-actions">
+            <b-button
+              class="mx-1"
+              title="browse this index"
+              variant="link"
+              :data-cy="`IndexesPage-browse--${row.item.name}`"
               :to="{
                 name: 'Collections',
-                params: { index: indexName.value }
+                params: { index: row.item.name }
               }"
-            >
-              {{ indexName.value }}
-            </router-link>
-          </template>
-          <template v-slot:cell(actions)="row">
-            <div class="IndexesPage-actions">
-              <b-button
-                class="mx-1"
-                title="browse this index"
-                variant="link"
-                :data-cy="`IndexesPage-browse--${row.item.indexName}`"
-                :to="{
-                  name: 'Collections',
-                  params: { index: row.item.indexName }
-                }"
-                ><i class="fa fa-eye"></i
-              ></b-button>
-              <b-button
-                class="mx-1"
-                title="Create a collection in this index"
-                variant="link"
-                :data-cy="`IndexesPage-createCollection--${row.item.indexName}`"
-                :to="{
-                  name: 'CreateCollection',
-                  params: { index: row.item.indexName }
-                }"
-                ><i class="fa fa-plus"></i
-              ></b-button>
-              <b-button
-                class="mx-1"
-                :data-cy="`IndexesPage-delete--${row.item.indexName}`"
-                title="Delete index"
-                variant="link"
-                @click="openDeleteModal(row.item.indexName)"
-                ><i class="fa fa-trash"></i
-              ></b-button>
-            </div>
-          </template>
-        </b-table>
-      </template>
+              ><i class="fa fa-eye"></i
+            ></b-button>
+            <b-button
+              class="mx-1"
+              title="Create a collection in this index"
+              variant="link"
+              :data-cy="`IndexesPage-createCollection--${row.item.name}`"
+              :to="{
+                name: 'CreateCollection',
+                params: { index: row.item.name }
+              }"
+              ><i class="fa fa-plus"></i
+            ></b-button>
+            <b-button
+              class="mx-1"
+              :data-cy="`IndexesPage-delete--${row.item.name}`"
+              title="Delete index"
+              variant="link"
+              @click="openDeleteModal(row.item)"
+              ><i class="fa fa-trash"></i
+            ></b-button>
+          </div>
+        </template>
+      </b-table>
     </template>
-    <CreateIndexModal :id="createIndexModalId" />
-    <DeleteIndexModal :id="deleteIndexModalId" :index="indexToDelete" />
+    <CreateIndexModal
+      :modalId="createIndexModalId"
+      @create-successful="onCreateModalSuccess"
+    />
+    <DeleteIndexModal
+      :index="indexToDelete"
+      :modalId="deleteIndexModalId"
+      @delete-successful="onDeleteModalSuccess"
+    />
+    <BulkDeleteIndexesModal
+      :indexes="selectedIndexes"
+      :modalId="bulkDeleteIndexesModalId"
+      @delete-successful="onDeleteModalSuccess"
+    />
   </b-container>
 </template>
 
@@ -125,6 +180,7 @@
 import Headline from '../../Materialize/Headline'
 import CreateIndexModal from './CreateIndexModal'
 import DeleteIndexModal from './DeleteIndexModal'
+import BulkDeleteIndexesModal from './BulkDeleteIndexesModal'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import AutoFocusInput from '../../Common/AutoFocusInput'
 import { mapGetters } from 'vuex'
@@ -135,6 +191,7 @@ export default {
     Headline,
     CreateIndexModal,
     DeleteIndexModal,
+    BulkDeleteIndexesModal,
     ListNotAllowed,
     AutoFocusInput
   },
@@ -142,9 +199,15 @@ export default {
     return {
       createIndexModalId: 'createIndexModal',
       deleteIndexModalId: 'deleteIndexModal',
+      bulkDeleteIndexesModalId: 'bulkDeleteIndexesModal',
       filter: '',
       indexToDelete: null,
       tableFields: [
+        {
+          class: 'CollectionList-type align-middle',
+          key: 'selected',
+          label: ''
+        },
         {
           key: 'icon',
           label: '',
@@ -168,28 +231,24 @@ export default {
           class: 'text-right align-middle'
         }
       ],
-      filteredIndexes: []
+      filteredIndexes: [],
+      selectedIndexes: []
     }
+  },
+  mounted() {
+    this.updateFilteredIndexes(this.indexes)
   },
   computed: {
     ...mapGetters('auth', ['canSearchIndex', 'canCreateIndex']),
-    loading() {
-      return this.$store.direct.state.index.loadingIndexes
+    ...mapGetters('index', ['indexes', 'loadingIndexes']),
+    bulkDeleteEnabled() {
+      return this.selectedIndexes.length > 0
     },
-    indexes() {
-      return this.$store.state.index.indexesAndCollections
-    },
-    tableItems() {
-      return Object.keys(this.indexes).map(i => ({
-        indexName: i,
-        collectionCount:
-          this.indexes[i].realtime.length + this.indexes[i].stored.length
-      }))
-    },
-    orderedFilteredIndices() {
-      return this.$store.state.index.indexes
-        .filter(indexName => indexName.indexOf(this.filter) !== -1)
-        .sort()
+    allChecked() {
+      if (!this.selectedIndexes || !this.filteredIndexes) {
+        return false
+      }
+      return this.selectedIndexes.length === this.filteredIndexes.length
     }
   },
   methods: {
@@ -200,6 +259,58 @@ export default {
       this.indexToDelete = index
       this.$bvModal.show(this.deleteIndexModalId)
     },
+    openBulkDeleteModal() {
+      this.$bvModal.show(this.bulkDeleteIndexesModalId)
+    },
+    async onDeleteModalSuccess() {
+      await this.refreshIndexes()
+    },
+    async onCreateModalSuccess() {
+      await this.refreshIndexes()
+    },
+    async refreshIndexes() {
+      try {
+        await this.$store.direct.dispatch.index.fetchIndexList()
+      } catch (err) {
+        this.$log.error(err)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title: err.message,
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+      }
+    },
+    onToggleAllClicked() {
+      if (this.allChecked) {
+        this.selectedIndexes = []
+        return
+      }
+      this.selectedIndexes = []
+      this.selectedIndexes = this.filteredIndexes
+    },
+    isChecked(index) {
+      return this.selectedIndexes.find(el => el.name === index.name)
+        ? true
+        : false
+    },
+    onCheckboxClick(index) {
+      const indexAlreadySelected = this.selectedIndexes.find(
+        el => el.name === index.name
+      )
+
+      if (!indexAlreadySelected) {
+        this.selectedIndexes.push(index)
+        return
+      }
+
+      this.selectedIndexes = this.selectedIndexes.filter(
+        el => el.name !== index.name
+      )
+    },
     navigateToIndex() {
       const index = this.filteredIndexes[0]
 
@@ -209,7 +320,7 @@ export default {
 
       const route = {
         name: 'Collections',
-        params: { index: index.indexName }
+        params: { indexName: index.name }
       }
 
       this.$router.push(route)

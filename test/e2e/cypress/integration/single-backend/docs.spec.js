@@ -46,12 +46,12 @@ describe('Document List', function() {
   it('Should be able to set and persist the listViewType param when switching the list view', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.contains(collectionName)
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-list"]').click()
     cy.url().should('contain', 'listViewType=list')
@@ -60,6 +60,7 @@ describe('Document List', function() {
   it('Should remember the list view settings when navigating from one collection to another', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`,
@@ -69,11 +70,12 @@ describe('Document List', function() {
         job: 'Blockchain Keylogger as a Service'
       }
     )
-    cy.get('[data-cy="CollectionDropdown"').click()
+    cy.get('[data-cy="CollectionDropdownView"').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
-
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
+    cy.waitForLoading()
+
     cy.url().should('contain', 'listViewType=column')
     cy.get('[data-cy="DocumentList-Column"]')
 
@@ -119,23 +121,26 @@ describe('Document List', function() {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy="CollectionDropdown"').click()
+    cy.wait(500)
+    cy.contains(collectionName)
+
+    cy.get('[data-cy="CollectionDropdownView"').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
 
     cy.get('[data-cy="SelectField"]').click()
     cy.get('[data-cy="SelectField--date"]').click({ force: true })
-    cy.get('[data-cy="ColumnViewHead--Date"]').should('exist')
+    cy.get('[data-cy="ColumnViewHead--date"]').should('exist')
     cy.get('[data-cy="SelectField"]').click()
     cy.get('[data-cy="SelectField--date"]').click({ force: true })
-    cy.get('[data-cy="ColumnViewHead--Date"]').should('not.exist')
+    cy.get('[data-cy="ColumnViewHead--date"]').should('not.exist')
     cy.get('[data-cy="SelectField"]').click()
     cy.get('[data-cy="SelectField--value"]').click({ force: true })
     cy.get('[data-cy="SelectField"]').click()
     cy.get('[data-cy="SelectField--value2"]').click({ force: true })
-    cy.get('[data-cy="ColumnViewHead--Value"]').should('exist')
-    cy.get('[data-cy="ColumnViewHead--Value2"]').should('exist')
+    cy.get('[data-cy="ColumnViewHead--value"]').should('exist')
+    cy.get('[data-cy="ColumnViewHead--value2"]').should('exist')
   })
 
   it.skip('Should handle the time series view properly', function() {
@@ -173,6 +178,7 @@ describe('Document List', function() {
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
 
     cy.get(
       '.card-panel > .DocumentsPage-filtersAndButtons > .col > .ListViewButtons > .ListViewButtons-btn:nth-child(4)'
@@ -211,12 +217,80 @@ describe('Document List', function() {
     ).click()
     cy.get('.col > .TimeSeriesValueSelector > .row > .col > .far').click()
   })
+
+  it('Should handle the map view properly', function() {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/mapcollectiontest`, {
+      properties: {
+        location: {
+          type: "geo_point"
+        }
+      }
+    })
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc1/_create?refresh=wait_for`,
+      {
+        location: {
+          lat: 1,
+          lon: 1
+        }
+      }
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc2/_create?refresh=wait_for`,
+      {
+        location: {
+          lat: 2,
+          lon: 2
+        }
+      }
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc3/_create?refresh=wait_for`,
+      {
+        location: {
+          lat: 3,
+          lon: 3
+        }
+      }
+    )
+    cy.waitOverlay()
+
+    cy.visit(`/#/data/${indexName}/mapcollectiontest`)
+    cy.wait(500)
+    cy.contains('mapcollectiontest')
+
+    cy.get('[data-cy="CollectionDropdownView"').click()
+    cy.wait(500)
+    cy.get('[data-cy="CollectionDropdown-map"]').click()
+    cy.url().should('contain', 'listViewType=map')
+
+    cy.get('[data-cy="mapView-map"').should('exist')
+
+    cy.get('.leaflet-marker-pane .mapView-marker-default').should("have.length", 3)
+    cy.get('.leaflet-marker-pane .mapView-marker-selected').should("not.exist")
+
+    cy.get('[data-cy="mapView-no-document-card"').should("exist")
+    cy.get('[data-cy="mapView-current-document-card"').should("not.exist")
+
+
+    cy.get(".leaflet-marker-icon.documentId-mapViewTestDoc1").click({force: true})
+
+    cy.get('[data-cy="mapView-no-document-card"').should("not.exist")
+    cy.get('[data-cy="mapView-current-document-card"').should("exist")
+    cy.get('[data-cy="mapView-current-document-id"').contains("mapViewTestDoc1");
+    cy.get('.leaflet-marker-pane .mapView-marker-default').should("have.length", 2)
+    cy.get('.leaflet-marker-pane .mapView-marker-selected').should("exist")
+  })
 })
 
 describe('Document update/replace', () => {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
+  const documentId = 'myId'
 
   beforeEach(() => {
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
@@ -224,7 +298,7 @@ describe('Document update/replace', () => {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_create`,
       {
         foo: 'bar',
         more: 'moar'
@@ -238,9 +312,10 @@ describe('Document update/replace', () => {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
+    cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
@@ -263,21 +338,23 @@ describe('Document update/replace', () => {
       )
     cy.get('[data-cy="DocumentUpdate-btn"]').click({ force: true })
 
-    cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
-      res => {
-        expect(res.body.result._source.foo).to.be.equals('changed')
-        expect(res.body.result._source.more).to.be.equals('moar')
-      }
-    )
+    cy.request(
+      'GET',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}`
+    ).then(res => {
+      expect(res.body.result._source.foo).to.be.equals('changed')
+      expect(res.body.result._source.more).to.be.equals('moar')
+    })
   })
 
   it('should replace a document', () => {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
+    cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
@@ -298,25 +375,27 @@ describe('Document update/replace', () => {
         }
       )
     cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
-
+    cy.wait(1000)
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
 
-    cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
-      res => {
-        expect(res.body.result._source.foo).to.be.equals('changed')
-        expect(res.body.result._source.more).to.be.undefined // eslint-disable-line no-unused-expressions
-      }
-    )
+    cy.request(
+      'GET',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}`
+    ).then(res => {
+      expect(res.body.result._source.foo).to.be.equals('changed')
+      expect(res.body.result._source.more).to.be.undefined // eslint-disable-line no-unused-expressions
+    })
   })
 
   it('Should be able edit a document on column view', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
 
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.wait(500)
-    cy.get('[data-cy="ColumnView-table-edit-btn--myId"]').click()
+    cy.get(`[data-cy="ColumnView-table-edit-btn--${documentId}"]`).click()
     cy.wait(500)
     cy.contains('Edit document')
   })

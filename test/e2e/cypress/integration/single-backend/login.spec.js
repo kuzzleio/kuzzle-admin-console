@@ -1,3 +1,5 @@
+const { waitForDebugger } = require('inspector')
+
 const admin = {
   username: 'admin',
   password: 'pass'
@@ -96,6 +98,26 @@ describe('Login', function() {
       cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
       cy.get('[data-cy=CreateIndexModal-createBtn]').click()
       cy.get('[data-cy=IndexesPage-name--newindex]').should('be.visible')
-    })
+    
+  })
+
+  it('Should be redirected to login when attempting to access the app without authentication', () => {
+    cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
+    cy.visit('/')
+    cy.url().should('contain', '/#/login')
+    cy.visit('/#/data')
+    cy.url().should('contain', '/#/login')
+  })
+
+  it('Should stay on the login page after selecting the same environment', () => {
+    cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
+    const envName = 'local'
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'), null, 7512, envName)
+    cy.visit('/')
+    cy.url().should('contain', '/#/login')
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${envName}"]`).click()
+    cy.wait(700)
+    cy.url().should('contain', '/#/login')
   })
 })

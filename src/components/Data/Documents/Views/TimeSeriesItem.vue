@@ -1,11 +1,6 @@
 <template>
-  <div class="row bordered">
-    <div class="col s12 relative">
-      <i
-        v-if="isUpdatable"
-        class="far fa-times-circle TimeSeriesColorPickerRemoveBtn"
-        @click.prevent="$emit('timeseriesitem::remove', index)"
-      />
+  <div class="row mr-1 no-gutters mb-2">
+    <div class="col relative m-1">
       <button
         class="TimeSeriesColorPickerBtn btn btn-small"
         :style="{ 'background-color': newColor }"
@@ -18,7 +13,7 @@
         @input="updateColor"
       />
     </div>
-    <div class="col s12">
+    <div class="col mr-1 ml-1">
       <autocomplete
         v-if="!isUpdatable"
         placeholder="Add a value"
@@ -27,7 +22,14 @@
         :notify-change="false"
         @autocomplete::change="attribute => addItem(attribute)"
       />
-      <input v-else :value="value" :disabled="true" />
+      <input v-else :value="value" :disabled="true" class="form-control" />
+    </div>
+    <div class="col-1 ml-1 TimeSeriesColorPickerRemoveContanainer">
+      <i
+        v-if="isUpdatable"
+        class="far fa-times-circle TimeSeriesColorPickerRemoveBtn"
+        @click.prevent="$emit('timeseriesitem::remove', index)"
+      />
     </div>
   </div>
 </template>
@@ -108,7 +110,6 @@ export default {
       if (this.isUpdatable) {
         this.$emit('update-color', { color: this.newColor, index: this.index })
       }
-      this.newColor = this.getColor()
     },
     addItem(attr) {
       this.$emit('autocomplete::change', { name: attr, color: this.newColor })
@@ -123,21 +124,23 @@ export default {
   margin-top: 10px;
 }
 .TimeSeriesColorPickerBtn {
-  width: 90%;
+  width: 100%;
   height: 20px;
-  margin-top: 10px;
+  margin-top: 5px;
 }
-.bordered {
-  border: 0.5px solid grey;
-}
+
 .TimeSeriesColorPicker {
   position: absolute;
   z-index: 999;
 }
+
+.TimeSeriesColorPickerRemoveContanainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .TimeSeriesColorPickerRemoveBtn {
-  position: absolute;
-  right: 5px;
-  top: 5px;
   cursor: pointer;
 }
 

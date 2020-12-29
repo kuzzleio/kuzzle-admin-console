@@ -13,7 +13,7 @@
         <div class="text-right">
           <b-button
             class="mr-2"
-            :to="{ name: 'Collections', params: { index } }"
+            :to="{ name: 'Collections', params: { indexName: index } }"
             >Cancel</b-button
           >
           <b-button
@@ -25,17 +25,22 @@
         </div>
       </template>
       <b-form-group
+        data-cy="CollectionCreateOrUpdate-name"
         id="collection-name"
         label="Collection name"
         label-for="collection-name-input"
         label-cols-sm="3"
-        :state="nameInputState"
       >
         <template v-slot:description>
           <span v-if="collection">This field cannot be updated</span>
           <span v-else>This field is mandatory</span>
         </template>
-        <template v-slot:invalid-feedback
+        <template v-if="!$v.name.required" v-slot:invalid-feedback
+          >Please fill-in a valid collection name.
+        </template>
+        <template
+          v-else-if="!$v.name.isValidCollectionName"
+          v-slot:invalid-feedback
           >The name you entered is invalid.
           <a
             target="_blank"
@@ -43,43 +48,19 @@
             >Read more about how to choose a valid name</a
           >
         </template>
+
         <b-input
-          data-cy="CollectionCreateOrUpdate-name"
           id="collection-name-input"
           type="text"
           name="collection"
-          required
           tabindex="1"
-          v-model="name"
+          v-model="$v.name.$model"
           :disabled="!!collection"
           :state="nameInputState"
         />
       </b-form-group>
 
-      <b-form-group
-        id="collection-is-realtime"
-        label="Collection is realtime only"
-        label-cols-sm="3"
-      >
-        <template v-slot:description>
-          <span v-if="collection">This field cannot be updated</span>
-          <span v-else
-            >Check this if you want this collection to be realtime only.
-            Realtime collections are useful to subscribe to realtime messages
-            and not physically stored into Kuzzle, only the Admin Console keeps
-            track of them.</span
-          >
-        </template>
-        <b-form-checkbox
-          data-cy="CollectionCreateOrUpdate-realtimeOnly"
-          id="collection-is-realtime-checkbox"
-          tabindex="1"
-          v-model="realtimeOnlyState"
-          :disabled="!!collection"
-        />
-      </b-form-group>
-
-      <template v-if="!realtimeOnlyState">
+      <template>
         <b-form-group label="Dynamic mapping" label-cols-sm="3">
           <template v-slot:description
             >Set the type of dynamic policy for this collection.
@@ -150,11 +131,24 @@
 </style>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { requiredUnless } from 'vuelidate/lib/validators'
+
 import Headline from '../../Materialize/Headline'
 import Focus from '../../../directives/focus.directive'
 import JsonEditor from '../../Common/JsonEditor'
 
+function isValidCollectionName(value) {
+  const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(
+    value
+  )
+  const containsUpperCase = /[A-Z]/.test(value)
+  const isTooLong = new TextEncoder().encode(value).length > 128
+  return !containsDisallowed && !containsUpperCase && !isTooLong
+}
+
 export default {
+  mixins: [validationMixin],
   name: 'CollectionCreateOrUpdate',
   components: {
     Headline,
@@ -168,7 +162,6 @@ export default {
     collection: String,
     headline: String,
     submitLabel: { type: String, default: 'OK' },
-    realtimeOnly: Boolean,
     mapping: {
       type: Object,
       default: () => ({})
@@ -179,21 +172,32 @@ export default {
     return {
       dynamicState: this.dynamic || 'false',
       name: this.collection || '',
-      rawMapping: '{}',
-      realtimeOnlyState: this.realtimeOnly || false
+      rawMapping: '{}'
+    }
+  },
+  validations() {
+    return {
+      name: {
+        required: requiredUnless('collection'),
+        isValidCollectionName
+      },
+      rawMapping: {
+        syntaxOK: function(value) {
+          try {
+            JSON.parse(value)
+          } catch (e) {
+            return false
+          }
+          return true
+        }
+      }
     }
   },
   computed: {
     nameInputState() {
-      if (this.name === '' || this.collection !== null) {
-        return null
-      }
-      const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(
-        this.name
-      )
-      const containsUpperCase = /[A-Z]/.test(this.name)
-      const isTooLong = new TextEncoder().encode(this.name).length > 128
-      return !containsDisallowed && !containsUpperCase && !isTooLong
+      const { $dirty, $error } = this.$v.name
+      const state = $dirty ? !$error : null
+      return state
     },
     mappingState() {
       try {
@@ -226,23 +230,12 @@ export default {
       }
     },
     onSubmit() {
-      if (this.isMappingValid) {
-        if (this.name) {
-          this.$emit('submit', {
-            dynamic: this.dynamicState,
-            name: this.name,
-            mapping: this.mappingState,
-            realtimeOnly: this.realtimeOnlyState
-          })
-        } else {
-          this.$bvToast.toast('You must specify a collection name', {
-            title: 'You cannot proceed',
-            variant: 'info',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true
-          })
-        }
-      } else {
+      this.$v.$touch()
+      if (this.$v.$anyError) {
+        return
+      }
+
+      if (!this.isMappingValid) {
         this.$bvToast.toast(
           'The JSON specification of the mapping contains syntax errors',
           {
@@ -253,6 +246,12 @@ export default {
           }
         )
       }
+
+      this.$emit('submit', {
+        dynamic: this.dynamicState,
+        name: this.name,
+        mapping: this.mappingState
+      })
     }
   },
   watch: {
@@ -270,12 +269,6 @@ export default {
         } catch (error) {
           this.$log.error(error)
         }
-      }
-    },
-    realtimeOnly: {
-      immediate: true,
-      handler(v) {
-        this.realtimeOnlyState = v
       }
     },
     collection: {

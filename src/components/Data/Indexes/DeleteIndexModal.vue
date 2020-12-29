@@ -1,40 +1,45 @@
 <template>
   <b-modal
     class="DeleteIndexModal"
-    ref="deleteIndexModal"
     size="lg"
-    :id="id"
+    :id="modalId"
+    :ref="modalId"
     @hide="resetForm"
   >
     <template v-slot:modal-title>
-      Index <strong>{{ truncateName(index) }}</strong> deletion
+      Index
+      <strong>{{ truncateName(index.name) }}</strong> deletion
     </template>
 
     <template v-slot:modal-footer>
-      <b-button variant="secondary" @click="hideModal">
+      <b-button variant="secondary" @click="onCancel()">
         Cancel
       </b-button>
       <b-button
-        data-cy="DeleteIndexModal-deleteBtn"
         variant="danger"
-        :disabled="index !== indexConfirmation"
-        @click="tryDeleteIndex"
+        data-cy="DeleteIndexModal-deleteBtn"
+        :disabled="!isConfirmationValid"
+        @click="performDelete()"
       >
         OK
       </b-button>
     </template>
-    <b-form>
-      <b-form-group label="Index name confirmation" label-for="indexName">
+    <form ref="form" v-on:submit.prevent="performDelete()">
+      <b-form-group
+        label="Type the name of the index to confirm deletion"
+        label-for="inputConfirmation"
+        description="This operation is NOT reversible"
+      >
         <b-form-input
           data-cy="DeleteIndexModal-name"
-          id="indexName"
-          v-model="indexConfirmation"
+          id="inputConfirmation"
+          v-model="confirmation"
           type="text"
           required
         ></b-form-input>
       </b-form-group>
       <b-alert :show="error.length" variant="danger">{{ error }}</b-alert>
-    </b-form>
+    </form>
   </b-modal>
 </template>
 
@@ -44,39 +49,51 @@ import { truncateName } from '@/utils'
 export default {
   name: 'deleteIndexModal',
   props: {
-    id: {
+    modalId: {
       type: String,
       required: true
     },
     index: {
-      required: true,
-      validator: prop => typeof prop === 'string' || prop === null
+      type: Object,
+      required: false
     }
   },
   data() {
     return {
       error: '',
-      indexConfirmation: ''
+      confirmation: ''
+    }
+  },
+  computed: {
+    isConfirmationValid() {
+      return this.confirmation === this.index.name
     }
   },
   methods: {
     truncateName,
     resetForm() {
-      this.indexConfirmation = ''
+      this.confirmation = ''
       this.error = ''
     },
-    hideModal() {
+    onDeleteSuccess() {
       this.resetForm()
-      this.$bvModal.hide(this.id)
+      this.$bvModal.hide(this.modalId)
+      this.$emit('delete-successful')
     },
-    async tryDeleteIndex() {
-      if (!this.index.trim()) {
+    onCancel() {
+      this.resetForm()
+      this.$bvModal.hide(this.modalId)
+      this.$emit('cancel')
+    },
+
+    async performDelete() {
+      if (!this.isConfirmationValid) {
         return
       }
 
       try {
         await this.$store.direct.dispatch.index.deleteIndex(this.index)
-        this.hideModal()
+        this.onDeleteSuccess()
       } catch (err) {
         this.error = err.message
       }

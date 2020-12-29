@@ -27,21 +27,27 @@
 import 'cypress-file-upload'
 import { antiGlitchOverlayTimeout } from '../../../../src/utils.ts'
 import axios from 'axios'
+import 'cypress-wait-until'
 
 Cypress.Commands.add('waitOverlay', () => {
   cy.visit('/')
   cy.wait(antiGlitchOverlayTimeout + 50)
 })
 
+Cypress.Commands.add('waitForLoading', () => {
+  cy.waitUntil(function() {
+    return cy.get('[data-cy="main-spinner"]').should('not.visible')
+  })
+})
+
 Cypress.Commands.add(
   'initLocalEnv',
-  (backendVersion = 2, token = 'anonymous', port = 7512) => {
-    const validEnvName = 'valid'
+  (backendVersion = 2, token = 'anonymous', port = 7512, envName = 'valid') => {
     localStorage.setItem(
       'environments',
       JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
+        [envName]: {
+          name: envName,
           color: 'darkblue',
           host: 'localhost',
           ssl: false,
@@ -51,7 +57,7 @@ Cypress.Commands.add(
         }
       })
     )
-    localStorage.setItem('currentEnv', validEnvName)
+    localStorage.setItem('currentEnv', envName)
   }
 )
 
@@ -97,6 +103,18 @@ Cypress.Commands.add('skipOnBackendVersion', version => {
   ]
 
   if (currentEnv.backendMajorVersion === version) {
+    const ctx = cy.state('runnable').ctx
+    ctx.skip()
+  }
+})
+
+Cypress.Commands.add('skipUnlessBackendVersion', version => {
+  const currentEnvName = localStorage.getItem('currentEnv')
+  const currentEnv = JSON.parse(localStorage.getItem('environments'))[
+    currentEnvName
+  ]
+
+  if (currentEnv.backendMajorVersion !== version) {
     const ctx = cy.state('runnable').ctx
     ctx.skip()
   }

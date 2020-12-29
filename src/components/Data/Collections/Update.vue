@@ -2,14 +2,14 @@
   <b-container class="CollectionUpdate h-100">
     <div v-if="hasRights" class="h-100">
       <create-or-update
-        v-if="!loading"
+        v-if="index && collection"
         headline="Update collection"
         submit-label="Update"
-        :collection="collection"
-        :index="index"
-        :dynamic="dynamic"
-        :mapping="mapping"
-        :realtime-only="realtimeOnly"
+        :collection="collection.name"
+        :index="index.name"
+        :dynamic="collection.dynamic"
+        :mapping="mappingAttributes"
+        :realtime-only="collection.isRealtime()"
         @submit="update"
       />
     </div>
@@ -22,6 +22,7 @@
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import CreateOrUpdate from './CreateOrUpdate'
 import { mapGetters } from 'vuex'
+import { omit } from 'lodash'
 
 export default {
   name: 'CollectionUpdate',
@@ -30,65 +31,54 @@ export default {
     PageNotAllowed
   },
   props: {
-    index: { type: String, required: true },
-    collection: { type: String, required: true }
+    indexName: { type: String, required: true },
+    collectionName: { type: String, required: true }
   },
   data() {
     return {
       dynamic: 'false',
       mapping: {},
-      realtimeOnly: false,
-      loading: true
+      realtimeOnly: false
     }
   },
   computed: {
     ...mapGetters('auth', ['canEditCollection']),
     hasRights() {
-      return this.canEditCollection(this.index, this.collection)
-    }
-  },
-  async mounted() {
-    this.loading = true
-    try {
-      const details = await this.$store.direct.dispatch.collection.fetchCollectionDetail(
-        {
-          index: this.index,
-          collection: this.collection
-        }
+      return this.canEditCollection(this.indexName, this.collectionName)
+    },
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.$store.direct.getters.index.getOneCollection(
+        this.index,
+        this.collectionName
       )
-
-      this.dynamic = details.dynamic
-      this.mapping = details.mapping
-      this.realtimeOnly = details.realtimeOnly
-      this.loading = false
-    } catch (e) {
-      this.$log.error(e)
-      this.$bvToast.toast(e.message, {
-        title:
-          'Ooops! Something went wrong while fetching the details of the collection.',
-        variant: 'warning',
-        toaster: 'b-toaster-bottom-right',
-        appendToast: true,
-        dismissible: true,
-        noAutoHide: true
-      })
+    },
+    mappingAttributes() {
+      return this.collection
+        ? omit(this.collection.mapping, '_kuzzle_info')
+        : null
+    },
+    loading() {
+      return this.$store.direct.getters.index.loadingCollections(
+        this.index.name
+      )
     }
   },
   methods: {
     async update(payload) {
       this.error = ''
-
       try {
-        await this.$store.direct.dispatch.collection.updateCollection({
+        await this.$store.direct.dispatch.index.updateCollection({
           index: this.index,
           name: payload.name,
           mapping: payload.mapping,
-          realtimeOnly: payload.realtimeOnly,
           dynamic: payload.dynamic
         })
         this.$router.push({
           name: 'Collections',
-          params: { index: this.index }
+          params: { indexName: this.index.name }
         })
       } catch (e) {
         this.$log.error(e)

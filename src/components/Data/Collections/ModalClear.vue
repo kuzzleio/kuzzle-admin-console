@@ -40,6 +40,7 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ClearCollectionModal',
@@ -57,6 +58,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     confirmationOk() {
       return this.collection !== null && this.collection === this.confirmation
     }
@@ -71,9 +73,12 @@ export default {
       }
 
       try {
-        await this.$store.direct.dispatch.collection.clearCollection({
+        await this.$kuzzle.query({
+          controller: 'collection',
+          action: 'truncate',
           index: this.index,
-          collection: this.collection
+          collection: this.collection,
+          refresh: 'wait_for'
         })
         this.$emit('clear')
         this.reset()

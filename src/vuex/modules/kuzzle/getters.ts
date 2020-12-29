@@ -1,5 +1,6 @@
 import { KuzzleState } from './types'
 import { createGetters } from 'direct-vuex'
+import { isValidEnvironment } from '../../../validators'
 import * as kuzzleV1 from '../../../services/kuzzleWrapper-v1'
 import * as kuzzleV2 from '../../../services/kuzzleWrapper-v2'
 
@@ -44,6 +45,9 @@ export const getters = createGetters<KuzzleState>()({
     }
 
     return state.environments[state.currentId]
+  },
+  isCurrentEnvironmentValid(state, getters) {
+    return isValidEnvironment(getters.currentEnvironment)
   },
   hasEnvironment(state) {
     return Object.keys(state.environments).length !== 0

@@ -2,7 +2,94 @@ describe('Roles', () => {
   const kuzzleUrl = 'http://localhost:7512'
   beforeEach(function() {
     cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
+
+    cy.request('POST', `${kuzzleUrl}/_createFirstAdmin`, {
+      content: {},
+      credentials: {
+        local: {
+          username: 'admin',
+          password: 'pass'
+        }
+      }
+    })
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+  })
+
+  afterEach(() => {
+    cy.request('POST', `${kuzzleUrl}/_login/local`, {
+      username: 'admin',
+      password: 'pass'
+    }).then(response => {
+      const token = response.body.result.jwt
+
+      cy.request({
+        method: 'PUT',
+        url: `${kuzzleUrl}/roles/anonymous`,
+        body: {
+          controllers: {
+            '*': {
+              actions: {
+                '*': true
+              }
+            }
+          }
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    })
+  })
+
+  it('Should render a visual feedback and prevent submitting when input is not valid', () => {
+    cy.waitOverlay()
+    cy.visit('/#/security/roles/create')
+    cy.contains('Create a new role')
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] input').type(' ', {
+      force: true
+    })
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+      'contain',
+      'This field cannot contain just whitespaces'
+    )
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] input').type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+      'contain',
+      'This field cannot be empty'
+    )
+
+    cy.get('[data-cy=RoleCreateOrUpdate-createBtn]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal('#/security/roles/create')
+    })
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] input').type('{selectall}valid', {
+      force: true
+    })
+
+    cy.get('[data-cy="RoleCreateOrUpdate-jsonEditor"] .ace_line')
+      .contains('{')
+      .click({ force: true })
+
+    cy.get('textarea.ace_text-input')
+      .clear({ force: true })
+      .type(`SuM UNV4L1d jayZON Kood`)
+
+    cy.get('[data-cy=RoleCreateOrUpdate-createBtn]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal('#/security/roles/create')
+    })
   })
 
   it('Should be able to create a new role', () => {
@@ -211,5 +298,68 @@ describe('Roles', () => {
       '[data-cy="RolesManagement-pagination"] .page-link[aria-posinset="2"]'
     ).click({ force: true })
     cy.get('[data-cy="RoleItem"]').should('have.length', 7)
+  })
+
+  it('Should be able to revoke anonymous rights', () => {
+    cy.request('POST', `${kuzzleUrl}/_login/local`, {
+      username: 'admin',
+      password: 'pass'
+    }).then(loginResponse => {
+      const token = loginResponse.body.result.jwt
+      localStorage.setItem(
+        'environments',
+        JSON.stringify({
+          testEnv: {
+            name: 'testEnv',
+            color: 'darkblue',
+            host: 'localhost',
+            ssl: false,
+            port: 7512,
+            backendMajorVersion: Cypress.env('BACKEND_VERSION') || 2,
+            token: token
+          }
+        })
+      )
+
+      localStorage.setItem('currentEnv', 'testEnv')
+
+      cy.visit('#/security/roles')
+
+      cy.get('[data-cy="RolesManagement-revokeAnonymous"').click()
+      cy.get('[data-cy="revokeAnonymous-modal"]  button')
+        .contains('OK')
+        .click()
+
+      cy.wait(2000)
+      cy.request({
+        method: 'GET',
+        url: `${kuzzleUrl}/roles/anonymous`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).should(getRoleResponse => {
+        expect(getRoleResponse.body.result._source.controllers).to.eql({
+          '*': {
+            actions: {
+              '*': false
+            }
+          },
+          auth: {
+            actions: {
+              checkToken: true,
+              getCurrentUser: true,
+              getMyRights: true,
+              login: true
+            }
+          },
+          server: {
+            actions: {
+              publicApi: true,
+              openapi: true
+            }
+          }
+        })
+      })
+    })
   })
 })

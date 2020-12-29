@@ -1,155 +1,186 @@
 <template>
   <div class="DocumentList">
     <b-container
-      class="DocumentList--container"
       :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
+      class="DocumentList--container"
     >
       <b-row>
-        <b-col sm="8">
+        <b-col>
           <headline>
-            <span class="code" :title="collection">{{
-              truncateName(collection, 20)
+            <span class="code" :title="collectionName">{{
+              truncateName(collectionName, 20)
             }}</span>
           </headline>
         </b-col>
-        <b-col class="text-right mt-3">
+        <b-col sm="6" class="text-right mt-3">
           <b-button
             variant="primary"
+            data-cy="CreateDocument-btn"
             :disabled="
-              indexOrCollectionNotFound || !canCreateDocument(index, collection)
+              indexOrCollectionNotFound ||
+                !canCreateDocument(indexName, collectionName)
             "
-            :to="{ name: 'CreateDocument', params: { index, collection } }"
+            :to="{
+              name: 'CreateDocument',
+              params: { indexName, collectionName }
+            }"
             >Create New Document</b-button
-          ><collection-dropdown
+          >
+          <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"
-            :index="index"
-            :collection="collection"
+            :index="indexName"
+            :collection="collectionName"
             @list="onListViewClicked"
+            @map="onMapViewClicked"
             @column="onColumnViewClicked"
-            @clear="onCollectionClear"
+            @time-series="onTimeSeriesClicked"
+          />
+          <collection-dropdown-action
+            class="icon-medium icon-black ml-2"
+            :indexName="indexName"
+            :collectionName="collectionName"
+            @delete-collection-clicked="showDeleteCollectionModal"
+            @clear="afterCollectionClear"
           />
         </b-col>
       </b-row>
 
-      <list-not-allowed v-if="!canSearchDocument(index, collection)" />
+      <list-not-allowed
+        v-if="
+          !canSearchDocument(indexName, collectionName) && index && collection
+        "
+      />
+
       <template v-else>
-        <data-not-found
-          v-if="indexOrCollectionNotFound"
-          class="mt-3"
-        ></data-not-found>
-        <template v-else>
-          <b-row class="justify-content-md-center" no-gutters>
-            <b-col cols="12">
-              <template v-if="isCollectionEmpty">
-                <realtime-only-empty-state
-                  v-if="isRealtimeCollection"
-                  :index="index"
-                  :collection="collection"
-                />
-                <empty-state v-else :index="index" :collection="collection" />
-              </template>
+        <template v-if="isCollectionEmpty">
+          <realtime-only-empty-state
+            v-if="isRealtimeCollection"
+            :index="indexName"
+            :collection="collectionName"
+          />
+          <no-geopoint-field-state v-else-if="hasGeopoints" />
+          <empty-state v-else :index="indexName" :collection="collectionName" />
+        </template>
 
-              <template v-if="!isCollectionEmpty">
-                <filters
-                  class="mb-3"
-                  :available-operands="searchFilterOperands"
-                  :current-filter="currentFilter"
-                  :collection-mapping="collectionMapping"
-                  @filters-updated="onFiltersUpdated"
-                  @reset="onFiltersUpdated"
-                  @enter-pressed="navigateToDocument"
-                />
-              </template>
-            </b-col>
-          </b-row>
-          <template v-if="loading">
-            <b-row class="text-center">
-              <b-col>
-                <b-spinner
-                  v-if="loading"
-                  variant="primary"
-                  class="mt-5"
-                ></b-spinner>
-              </b-col>
-            </b-row>
-          </template>
-          <template v-else>
-            <template v-if="!isCollectionEmpty">
-              <b-card
-                class="light-shadow"
-                :bg-variant="documents.length === 0 ? 'light' : 'default'"
-              >
-                <b-card-text class="p-0">
-                  <no-results-empty-state v-if="!documents.length" />
-                  <template v-else>
-                    <List
-                      v-if="listViewType === 'list'"
-                      :all-checked="allChecked"
-                      :collection="collection"
-                      :documents="documents"
-                      :index="index"
-                      :current-page-size="paginationSize"
-                      :selected-documents="selectedDocuments"
-                      :total-documents="totalDocuments"
-                      @bulk-delete="onBulkDeleteClicked"
-                      @change-page-size="changePaginationSize"
-                      @checkbox-click="toggleSelectDocuments"
-                      @delete="onDeleteClicked"
-                      @refresh="onRefresh"
-                      @toggle-all="onToggleAllClicked"
-                    ></List>
+        <template v-if="!isCollectionEmpty">
+          <filters
+            class="mb-3"
+            :available-operands="searchFilterOperands"
+            :collection="collectionName"
+            :current-filter="currentFilter"
+            :index="indexName"
+            :mapping-attributes="mappingAttributes"
+            @enter-pressed="navigateToDocument"
+            @filters-updated="onFiltersUpdated"
+            @submit="onFilterSubmit"
+          />
+        </template>
+        <template>
+          <template v-if="!isCollectionEmpty">
+            <b-card
+              class="light-shadow"
+              :bg-variant="documents.length === 0 ? 'light' : 'default'"
+            >
+              <b-card-text class="p-0">
+                <no-results-empty-state v-if="!documents.length" />
+                <template v-else>
+                  <List
+                    v-if="listViewType === 'list'"
+                    :all-checked="allChecked"
+                    :collection="collectionName"
+                    :documents="formattedDocuments"
+                    :index="indexName"
+                    :current-page-size="paginationSize"
+                    :selected-documents="selectedDocuments"
+                    :total-documents="totalDocuments"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @delete="onDeleteClicked"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  ></List>
 
-                    <Column
-                      v-if="listViewType === 'column'"
-                      :index="index"
-                      :collection="collection"
-                      :documents="documents"
-                      :mapping="collectionMapping"
-                      :selected-documents="selectedDocuments"
-                      :all-checked="allChecked"
-                      :current-page-size="paginationSize"
-                      :total-documents="totalDocuments"
-                      @edit="onEditClicked"
-                      @delete="onDeleteClicked"
-                      @bulk-delete="onBulkDeleteClicked"
-                      @change-page-size="changePaginationSize"
-                      @checkbox-click="toggleSelectDocuments"
-                      @refresh="onRefresh"
-                      @toggle-all="onToggleAllClicked"
-                    />
+                  <Column
+                    v-if="listViewType === 'column'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :selected-documents="selectedDocuments"
+                    :all-checked="allChecked"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  />
+                  <TimeSeries
+                    v-if="listViewType === 'time-series'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @change-page-size="changePaginationSize"
+                    @changeDisplayPagination="changeDisplayPagination"
+                  />
 
-                    <b-row
-                      v-show="totalDocuments > paginationSize"
-                      align-h="center"
+                  <Map
+                    v-if="listViewType === 'map'"
+                    :selected-geopoint="selectedGeopoint"
+                    :current-page-size="paginationSize"
+                    :index="indexName"
+                    :geoDocuments="geoDocuments"
+                    :collection="collectionName"
+                    :mappingGeopoints="mappingGeopoints"
+                    @change-page-size="changePaginationSize"
+                    @on-select-geopoint="onSelectGeopoint"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                  />
+
+                  <b-row
+                    v-show="totalDocuments > paginationSize && displayPagination"
+                    align-h="center"
+                  >
+                    <b-pagination
+                      v-model="currentPage"
+                      aria-controls="my-table"
+                      class="m-2 mt-4"
+                      data-cy="DocumentList-pagination"
+                      :total-rows="totalDocuments"
+                      :per-page="paginationSize"
+                    ></b-pagination>
+                  </b-row>
+                  <div
+                    v-if="totalDocuments > 10000"
+                    class="text-center mt-2"
+                    data-cy="DocumentList-exceedESLimitMsg"
+                  >
+                    <small class="text-secondary"
+                      >Due to limitations imposed by Elasticsearch, you won't be
+                      able to browse documents beyond 10000.</small
                     >
-                      <b-pagination
-                        v-model="currentPage"
-                        aria-controls="my-table"
-                        class="m-2 mt-4"
-                        data-cy="DocumentList-pagination"
-                        :total-rows="totalDocuments"
-                        :per-page="paginationSize"
-                      ></b-pagination>
-                    </b-row>
-                    <div
-                      v-if="totalDocuments > 10000"
-                      class="text-center mt-2"
-                      data-cy="DocumentList-exceedESLimitMsg"
-                    >
-                      <small class="text-secondary"
-                        >Due to limitations imposed by Elasticsearch, you won't
-                        be able to browse documents beyond 10000.</small
-                      >
-                    </div>
-                  </template>
-                </b-card-text>
-              </b-card>
-            </template>
+                  </div>
+                </template>
+              </b-card-text>
+            </b-card>
           </template>
         </template>
       </template>
-
+      <DeleteCollectionModal
+        :index="index"
+        :collection="collection"
+        :modalId="modalDeleteId"
+        @delete-successful="afterDeleteCollection"
+      />
       <delete-modal
         id="modal-delete"
         :candidates-for-deletion="candidatesForDeletion"
@@ -165,18 +196,23 @@
 import _ from 'lodash'
 
 import Column from './Views/Column'
-import DataNotFound from '../Data404'
+import Map from './Views/Map'
 import List from './Views/List'
+import TimeSeries from './Views/TimeSeries'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
 import NoResultsEmptyState from './NoResultsEmptyState'
+import NoGeopointFieldState from './NoGeopointFieldState.vue'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import CollectionDropdown from '../Collections/Dropdown'
+import CollectionDropdownView from '../Collections/DropdownView'
+import CollectionDropdownAction from '../Collections/DropdownAction'
+import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
-import { truncateName } from '@/utils'
+import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
+import { truncateName, dateFromTimestamp } from '@/utils'
 import { mapGetters } from 'vuex'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
@@ -189,21 +225,25 @@ const LIST_VIEW_TIME_SERIES = 'time-series'
 export default {
   name: 'DocumentsPage',
   components: {
-    CollectionDropdown,
+    CollectionDropdownView,
+    CollectionDropdownAction,
+    DeleteCollectionModal,
     DeleteModal,
     Column,
+    Map,
     List,
+    TimeSeries,
     EmptyState,
     Headline,
     Filters,
     ListNotAllowed,
     NoResultsEmptyState,
     RealtimeOnlyEmptyState,
-    DataNotFound
+    NoGeopointFieldState
   },
   props: {
-    index: String,
-    collection: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {
@@ -211,6 +251,7 @@ export default {
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
+      formattedDocuments: [],
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
@@ -218,12 +259,12 @@ export default {
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
-      collectionMapping: {},
       mappingGeopoints: [],
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
       currentPage: 1,
-      indexOrCollectionNotFound: false
+      modalDeleteId: 'modal-collection-delete',
+      displayPagination: true
     }
   },
   computed: {
@@ -234,20 +275,53 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    hasGeopoints() {
+      return this.listViewType === 'map' && this.mappingGeopoints.length === 0
+    },
     geoDocuments() {
-      return this.documents.filter(document => {
-        const [lat, lng] = this.getCoordinates(document)
-        const latFloat = parseFloat(lat)
-        const lngFloat = parseFloat(lng)
+      return this.documents
+        .filter(document => {
+          const [lat, lng] = this.getCoordinates(document)
+          const latFloat = parseFloat(lat)
+          const lngFloat = parseFloat(lng)
 
-        return !isNaN(latFloat) && !isNaN(lngFloat)
-      })
+          return !isNaN(latFloat) && !isNaN(lngFloat)
+        })
+        .map(d => ({
+          coordinates: [
+            this.getProperty(d, this.latFieldPath),
+            this.getProperty(d, this.lngFieldPath)
+          ],
+          source: d
+        }))
+    },
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.index
+        ? this.$store.direct.getters.index.getOneCollection(
+            this.index,
+            this.collectionName
+          )
+        : null
+    },
+    collectionMapping() {
+      return this.collection ? this.collection.mapping : null
+    },
+    indexOrCollectionNotFound() {
+      return !this.index || !this.collection ? true : false
+    },
+    mappingAttributes() {
+      return this.collectionMapping
+        ? this.extractAttributesFromMapping(this.collectionMapping)
+        : null
     },
     latFieldPath() {
-      return `content.${this.selectedGeopoint}.lat`
+      return `${this.selectedGeopoint}.lat`
     },
     lngFieldPath() {
-      return `content.${this.selectedGeopoint}.lon`
+      return `${this.selectedGeopoint}.lon`
     },
     isCollectionGeo() {
       return this.mappingGeopoints.length > 0
@@ -272,21 +346,14 @@ export default {
       return parseInt(this.currentFilter.size) || 10
     },
     isRealtimeCollection() {
-      if (this.$store.state.index.indexesAndCollections) {
-        if (!this.$store.state.index.indexesAndCollections[this.index]) {
-          return false
-        }
-        if (
-          !this.$store.state.index.indexesAndCollections[this.index].realtime
-        ) {
-          return false
-        }
-        return (
-          // prettier-ignore
-          this.$store.state.index.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
-        )
-      }
-      return false
+      return this.collection ? this.collection.isRealtime() : false
+    }
+  },
+  async mounted() {
+    await this.loadAllTheThings()
+
+    if (this.paginationFrom) {
+      this.setCurrentPage()
     }
   },
   watch: {
@@ -298,16 +365,15 @@ export default {
             from
           })
         )
+        this.fetchDocuments()
       }
     },
-    collection: {
-      immediate: true,
+    collectionName: {
       handler() {
         this.loadAllTheThings()
       }
     },
-    index: {
-      immediate: true,
+    indexName: {
       handler() {
         this.loadAllTheThings()
       }
@@ -320,6 +386,7 @@ export default {
     }
   },
   methods: {
+    extractAttributesFromMapping,
     truncateName,
     // VIEW MAP - GEOPOINTS
     // =========================================================================
@@ -378,8 +445,8 @@ export default {
       this.deleteModalIsLoading = true
       try {
         await this.wrapper.performDeleteDocuments(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           documentsToDelete
         )
         this.$bvModal.hide('modal-delete')
@@ -420,31 +487,43 @@ export default {
         params: { id }
       })
     },
-    onRefresh() {
-      this.fetchDocuments()
+
+    // DELETE COLLECTION
+    // =========================================================================
+    showDeleteCollectionModal() {
+      this.$bvModal.show(this.modalDeleteId)
+    },
+    afterDeleteCollection() {
+      this.$router.push({
+        name: 'Collections',
+        params: { indexName: this.indexName }
+      })
     },
     // LIST (FETCH & SEARCH)
     // =========================================================================
     async loadAllTheThings() {
       try {
         this.loading = true
-        await this.loadMappingInfo()
         this.loadListView()
         this.saveListView()
+        this.loadMappingInfo()
 
         this.currentFilter = filterManager.load(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           this.$route
         )
         filterManager.save(
           this.currentFilter,
           this.$router,
-          this.index,
-          this.collection
+          this.indexName,
+          this.collectionName
         )
+        this.displayPagination = true;
         this.loading = false
-      } catch {
+        await this.fetchDocuments()
+      } catch (err) {
+        this.$log.error(err)
         this.$bvToast.toast('The complete error has been printed to console.', {
           title: 'Ooops! Something went wrong.',
           variant: 'warning',
@@ -452,7 +531,6 @@ export default {
         })
         this.loading = false
       }
-      await this.fetchDocuments()
     },
     navigateToDocument() {
       const document = this.documents[0]
@@ -466,50 +544,51 @@ export default {
         params: { id: document.id }
       })
     },
+    onRefresh() {
+      this.fetchDocuments()
+    },
     async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
-      try {
-        filterManager.save(
-          this.currentFilter,
-          this.$router,
-          this.index,
-          this.collection
-        )
-        await this.fetchDocuments()
-      } catch (e) {
-        this.$bvToast.toast(e.message, {
-          title: 'Ooops! Something went wrong while performing the search.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        })
-        this.$log.error(e)
-      }
     },
-    onCollectionClear() {
+    onFilterSubmit(saveToHistory = true) {
+      if (saveToHistory) {
+        filterManager.addNewHistoryItemAndSave(
+          this.currentFilter,
+          this.indexName,
+          this.collectionName
+        )
+      }
+      this.fetchDocuments()
+    },
+    afterCollectionClear() {
       this.documents = []
       this.totalDocuments = 0
       this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
       this.$forceUpdate()
-      this.indexOrCollectionNotFound = false
-
       this.selectedDocuments = []
 
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
       }
+
+      filterManager.save(
+        this.currentFilter,
+        this.$router,
+        this.indexName,
+        this.collectionName
+      )
+
       try {
         let searchQuery = null
         searchQuery = filterManager.toSearchQuery(
           this.currentFilter,
-          this.collectionMapping,
+          this.mappingAttributes,
           this.wrapper
         )
+
         if (!searchQuery) {
           searchQuery = {}
         }
@@ -519,8 +598,8 @@ export default {
         // TODO: refactor how search is done
         // Execute search with corresponding searchQuery
         const res = await this.wrapper.performSearchDocuments(
-          this.collection,
-          this.index,
+          this.collectionName,
+          this.indexName,
           searchQuery,
           pagination,
           sorting
@@ -529,9 +608,7 @@ export default {
         this.totalDocuments = res.total
       } catch (e) {
         this.$log.error(e)
-        if (e.status === 412) {
-          this.indexOrCollectionNotFound = true
-        } else if (e.message.includes('failed to create query')) {
+        if (e.message.includes('failed to create query')) {
           this.$bvToast.toast(
             'Your query is ill-formed. The complete error has been dumped to the console.',
             {
@@ -566,6 +643,10 @@ export default {
           size
         })
       )
+      this.fetchDocuments()
+    },
+    setCurrentPage() {
+      this.currentPage = parseInt(this.paginationFrom / this.paginationSize + 1)
     },
 
     // SELECT ITEMS
@@ -613,23 +694,12 @@ export default {
     },
     // Collection Metadata management
     // =========================================================================
-    async loadMappingInfo() {
-      const { properties } = await this.wrapper.getMappingDocument(
-        this.collection,
-        this.index
-      )
-
-      this.collectionMapping = properties
-
-      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
-      this.selectedGeopoint = this.mappingGeopoints[0]
-    },
     loadListView() {
       if (this.$route.query.listViewType) {
         this.listViewType = this.$route.query.listViewType
       } else {
         const typeFromLS = localStorage.getItem(
-          `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`
+          `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`
         )
         if (typeFromLS) {
           this.listViewType = typeFromLS
@@ -640,7 +710,7 @@ export default {
     },
     saveListView() {
       localStorage.setItem(
-        `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`,
+        `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`,
         this.listViewType
       )
       const otherQueryParams = _.omit(
@@ -653,12 +723,20 @@ export default {
       )
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
+
+    loadMappingInfo() {
+      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
+      this.selectedGeopoint = this.mappingGeopoints[0]
+    },
+    // TODO: Refactor this method to avoid
+    // cloning document list (computed property??)
     addHumanReadableDateFields() {
       if (!this.collectionMapping) {
         return
       }
 
       const dateFields = []
+      const formattedDocuments = _.cloneDeep(this.documents)
 
       const findDateFields = (mapping, previousKey) => {
         for (const [field, value] of Object.entries(mapping)) {
@@ -676,7 +754,7 @@ export default {
             const date = dateFromTimestamp(value)
 
             if (date) {
-              document[field] += ` (${date.toUTCString()})`
+              document[field] += ` (${date.toLocaleString('en-GB')})`
             }
           } else if (value && typeof value === 'object') {
             changeField(value)
@@ -686,38 +764,13 @@ export default {
 
       findDateFields(this.collectionMapping, null)
 
-      this.documents.forEach(changeField)
+      formattedDocuments.forEach(changeField)
+      this.formattedDocuments = formattedDocuments
+    },
+    changeDisplayPagination(value) {
+      this.displayPagination = value;
     }
   }
-}
-
-function dateFromTimestamp(value) {
-  let timestamp
-
-  if (typeof value === 'string') {
-    timestamp = parseInt(value, 10)
-
-    if (isNaN(timestamp)) {
-      return null
-    }
-  } else if (Number.isInteger(value)) {
-    timestamp = value
-  } else {
-    return null
-  }
-
-  const length = `${timestamp}`.length
-
-  let date
-  if (length === 10) {
-    date = new Date(timestamp * 1000)
-  } else if (length === 13) {
-    date = new Date(timestamp)
-  } else {
-    return null
-  }
-
-  return date
 }
 </script>
 

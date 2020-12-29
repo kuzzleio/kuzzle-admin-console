@@ -7,17 +7,18 @@
             <b-input-group-prepend is-text>
               <i class="fa fa-search search" />
             </b-input-group-prepend>
-
-            <auto-focus-input
-              name="quick-filter"
-              data-cy="QuickFilter-input"
-              debounce="300"
-              :placeholder="placeholder"
-              :initialValue="this.initialValue"
-              type="search"
-              v-model="value"
-              @submit="inputSubmit"
-            />
+            <div class="QuickFilter-searchBar-input-wrapper">
+              <auto-focus-input
+                name="quick-filter"
+                data-cy="QuickFilter-input"
+                debounce="300"
+                type="search"
+                v-model="value"
+                :initialValue="this.initialValue"
+                :placeholder="placeholder"
+                @submit="inputSubmit"
+              />
+            </div>
           </b-input-group>
         </div>
       </b-col>
@@ -175,12 +176,16 @@ export default {
   height: 48px;
   border-bottom: solid 1px #e4e1e1;
 
-  input {
-    height: 48px;
-    margin-bottom: 0;
-    width: 100%;
-    box-sizing: border-box;
-    border-bottom: solid 1px #e4e1e1;
+  &-input-wrapper {
+    width: 90%;
+
+    input {
+      height: 48px;
+      margin-bottom: 0;
+      width: 100%;
+      box-sizing: border-box;
+      border-bottom: solid 1px #e4e1e1;
+    }
   }
 }
 

@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { MappingAttributes } from './mappingHelpers'
 
 export const NO_ACTIVE = null
 export const ACTIVE_QUICK = 'quick'
@@ -23,6 +24,8 @@ export function Filter(this: any) {
 }
 
 const LOCALSTORAGE_PREFIX = 'search-filter-current'
+const HISTORY_LOCALSTORAGE_PREFIX = 'history-filter'
+const FAVORIS_LOCALSTORAGE_PREFIX = 'favoris-filter'
 
 export const load = (index, collection, route) => {
   if (!index || !collection) {
@@ -128,7 +131,85 @@ export const saveToLocalStorage = (filter, index, collection) => {
   )
 }
 
-export const toSearchQuery = (filter, mappings, kuzzleWrapper) => {
+export const saveFavoritesToLocalStorage = (filters, index, collection) => {
+  localStorage.setItem(
+    `${FAVORIS_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
+    JSON.stringify(filters)
+  )
+}
+
+export const loadFavoritesFromLocalStorage = (index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot load filters from localstorage if no index or collection are specified'
+    )
+  }
+  const filterStr = localStorage.getItem(
+    `${FAVORIS_LOCALSTORAGE_PREFIX}:${index}/${collection}`
+  )
+  if (filterStr) {
+    return JSON.parse(filterStr)
+  }
+  return []
+}
+
+export const saveHistoyToLocalStorage = (filters, index, collection) => {
+  localStorage.setItem(
+    `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
+    JSON.stringify(filters)
+  )
+}
+
+export const addNewHistoryItemAndSave = (filter, index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot save filters to localstorage if no index or collection are specified'
+    )
+  }
+  if (filter.active === null) {
+    return
+  }
+  const filters = loadHistoyFromLocalStorage(index, collection)
+  const date = new Date(Date.now())
+  filter.name =
+    date.getDate() +
+    '/' +
+    date.getMonth() +
+    '/' +
+    date.getFullYear() +
+    ' ' +
+    date.getHours() +
+    ':' +
+    date.getMinutes()
+  filter.id = Date.now()
+  if (filters.length >= 10) {
+    filters.shift()
+  }
+  filters.push(filter)
+  saveHistoyToLocalStorage(filters, index, collection)
+}
+
+export const loadHistoyFromLocalStorage = (index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot load filters from localstorage if no index or collection are specified'
+    )
+  }
+  const filterStr = localStorage.getItem(
+    `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`
+  )
+  if (filterStr) {
+    return JSON.parse(filterStr)
+  }
+
+  return []
+}
+
+export const toSearchQuery = (
+  filter,
+  mappingAttributes: MappingAttributes,
+  kuzzleWrapper
+) => {
   if (!filter) {
     throw new Error('No filter specified')
   }
@@ -144,7 +225,7 @@ export const toSearchQuery = (filter, mappings, kuzzleWrapper) => {
         : {}
     case ACTIVE_BASIC:
       return filter.basic
-        ? kuzzleWrapper.basicSearchToESQuery(filter.basic, mappings)
+        ? kuzzleWrapper.basicSearchToESQuery(filter.basic, mappingAttributes)
         : {}
     case ACTIVE_RAW:
       return filter.raw ? rawFilterToSearchQuery(filter.raw) : {}

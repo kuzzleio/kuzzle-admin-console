@@ -5,23 +5,39 @@
         <b-row>
           <b-col cols="10">
             <headline>
-              <span class="code" :title="collection">{{
-                truncateName(collection, 20)
+              <span class="code" :title="collectionName">{{
+                truncateName(collectionName, 20)
               }}</span>
             </headline>
           </b-col>
           <b-col class="text-right">
-            <collection-dropdown
+            <collection-dropdown-view
               active-view="realtime"
-              class="icon-medium icon-black"
-              :index="index"
-              :collection="collection"
+              class="icon-medium icon-black mr-2"
+              :index="indexName"
+              :collection="collectionName"
               @list="$router.push({ name: 'DocumentList' })"
               @column="$router.push({ name: 'DocumentList' })"
+              @time-series="$router.push({ name: 'DocumentList' })"
+            />
+            <b-button
+              v-if="isRealtimeCollection"
+              data-cy="Watch-deleteCollectionBtn"
+              title="Delete this collection"
+              @click="onDeleteCollectionClicked"
+            >
+              <i class="fa fa-trash"></i>
+            </b-button>
+            <collection-dropdown-action
+              v-else
+              class="icon-medium icon-black"
+              :indexName="indexName"
+              :collectionName="collectionName"
+              @delete-collection-clicked="showDeleteCollectionModal"
             />
           </b-col>
         </b-row>
-        <b-card v-if="!canSubscribe(index, collection)">
+        <b-card v-if="!canSubscribe(indexName, collectionName)">
           <b-row>
             <b-col cols="2">
               <i class="fa fa-6x fa-lock text-secondary" aria-hidden="true" />
@@ -29,8 +45,8 @@
             <b-col cols="10">
               <h2>
                 You are not allowed to watch realtime messages on collection
-                <strong>{{ collection }}</strong> of index
-                <strong>{{ index }}</strong
+                <strong>{{ collectionName }}</strong> of index
+                <strong>{{ indexName }}</strong
                 ><br />
               </h2>
               <p>
@@ -124,7 +140,7 @@
               <b-col cols="6">
                 <h3>
                   You did not subscribe yet to the collection
-                  <strong>{{ collection }}</strong
+                  <strong>{{ collectionName }}</strong
                   ><br />
                 </h3>
                 <p>
@@ -206,7 +222,7 @@
                     <b-card-header>
                       Latest notification ({{ lastNotificationTime }})
                     </b-card-header>
-                    <b-card-body>
+                    <b-card-body class="overflow-auto">
                       <b-badge
                         pill
                         variant="info"
@@ -231,13 +247,21 @@
         </div>
       </div>
     </b-container>
+    <DeleteCollectionModal
+      :index="index"
+      :collection="collection"
+      :modalId="modalDeleteId"
+      @delete-successful="afterDeleteCollection"
+    />
   </div>
 </template>
 
 <script>
 import Headline from '../../Materialize/Headline'
 import Notification from '../Realtime/Notification'
-import CollectionDropdown from '../Collections/Dropdown'
+import CollectionDropdownView from './DropdownView'
+import CollectionDropdownAction from './DropdownAction'
+import DeleteCollectionModal from './DeleteCollectionModal'
 import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
 import { truncateName } from '@/utils'
@@ -251,30 +275,44 @@ export default {
     JsonFormatter
   },
   components: {
-    Notification,
-    CollectionDropdown,
+    CollectionDropdownAction,
+    CollectionDropdownView,
+    DeleteCollectionModal,
+    Headline,
     JsonEditor,
-    Headline
+    Notification
   },
   props: {
-    index: String,
-    collection: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {
       advancedFiltersVisible: false,
-      subscribed: false,
-      room: null,
+      modalDeleteId: 'modal-collection-delete',
       rawFilter: '{}',
-      subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
+      room: null,
       notifications: [],
       notificationsLengthLimit: 50,
+      subscribed: false,
+      subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
       warning: { message: '', count: 0, lastTime: null, info: false }
     }
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['canSubscribe']),
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.index
+        ? this.$store.direct.getters.index.getOneCollection(
+            this.index,
+            this.collectionName
+          )
+        : null
+    },
     hasFilter() {
       return (
         !!this.realtimeQuery &&
@@ -311,10 +349,25 @@ export default {
       } catch (error) {
         return false
       }
+    },
+    isRealtimeCollection() {
+      return this.collection ? this.collection.isRealtime() : false
     }
   },
   methods: {
     truncateName,
+    showDeleteCollectionModal() {
+      this.$bvModal.show(this.modalDeleteId)
+    },
+    onDeleteCollectionClicked() {
+      this.$bvModal.show(this.modalDeleteId)
+    },
+    afterDeleteCollection() {
+      this.$router.push({
+        name: 'Collections',
+        params: { indexName: this.indexName }
+      })
+    },
     onFilterChanged(value) {
       this.rawFilter = value
     },
@@ -358,8 +411,8 @@ export default {
           throw new Error('Realtime filter seems to be invalid')
         }
         const room = await this.$kuzzle.realtime.subscribe(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           this.realtimeQuery,
           this.handleNotification,
           this.subscribeOptions

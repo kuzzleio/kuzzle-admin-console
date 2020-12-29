@@ -1,3 +1,4 @@
+// import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7'
 import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7'
 import { KuzzleWrapperV1 } from './kuzzleWrapper-v1'
 

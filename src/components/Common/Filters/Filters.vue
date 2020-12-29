@@ -1,10 +1,12 @@
 <template>
   <b-card
+    data-cy="Filters"
+    :class="{ 'full-screen': isFullscreen && advancedFiltersVisible }"
+    :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
+    :no-body="!advancedFiltersVisible"
     :text-variant="
       complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'
     "
-    :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
-    :no-body="!advancedFiltersVisible"
   >
     <template v-slot:header>
       <b-nav card-header tabs>
@@ -12,19 +14,19 @@
           v-if="!advancedFiltersVisible"
           style="flex-grow: 1"
           v-model="quickFilter"
-          :initialValue="quickFilter"
+          submit-button-label="Quick Search"
           :action-buttons-visible="actionButtonsVisible"
           :advanced-filters-visible="advancedFiltersVisible"
           :advanced-query-label="advancedQueryLabel"
           :complex-filter-active="complexFilterActive"
           :enabled="quickFilterEnabled"
+          :initialValue="quickFilter"
           :placeholder="quickFilterPlaceholder"
-          :submit-button-label="submitButtonLabel"
           :submit-on-type="quickFilterSubmitOnType"
           @display-advanced-filters="
             advancedFiltersVisible = !advancedFiltersVisible
           "
-          @filter-submitted="onQuickFilterUpdated"
+          @filter-submitted="onQuickFilterSubmitted"
           @refresh="onRefresh"
           @reset="onReset"
           @enter-pressed="onEnterPressed"
@@ -34,64 +36,101 @@
             data-cy="Filters-basicTab"
             :active="complexFiltersSelectedTab === 'basic'"
             @click="complexFiltersSelectedTab = 'basic'"
-            >Advanced Filter</b-nav-item
+            ><i class="fas fa-filter"></i>&nbsp;Advanced</b-nav-item
           >
           <b-nav-item
             data-cy="Filters-rawTab"
             :active="complexFiltersSelectedTab === 'raw'"
             @click="complexFiltersSelectedTab = 'raw'"
-            >Raw JSON Filter</b-nav-item
+            ><i class="fas fa-scroll"></i>&nbsp;Raw JSON</b-nav-item
           >
-          <i
-            class="Filters-btnClose fa fa-times close"
-            @click="advancedFiltersVisible = false"
-          />
+          <b-nav-item
+            data-cy="Filters-historyTab"
+            :active="complexFiltersSelectedTab === 'history'"
+            @click="complexFiltersSelectedTab = 'history'"
+            ><i class="fas fa-history"></i>&nbsp;History</b-nav-item
+          >
+          <b-nav-item
+            data-cy="Filters-favoriteTab"
+            :active="complexFiltersSelectedTab === 'favorite'"
+            @click="complexFiltersSelectedTab = 'favorite'"
+            ><i class="fas fa-star"></i>&nbsp;Saved</b-nav-item
+          >
+          <div class="Filters-headerActions">
+            <i
+              v-if="!isFullscreen"
+              class="Filters-headerBtn ml-3 fas fa-expand-arrows-alt"
+              data-cy="Filters-fullscreen"
+              title="Toggle fullscreen"
+              @click="toggleFullscreen"
+            ></i>
+            <i
+              v-else
+              class="Filters-headerBtn ml-3 fas fa-compress-arrows-alt"
+              data-cy="Filters-fullscreen"
+              title="Toggle fullscreen"
+              @click="toggleFullscreen"
+            ></i>
+            <i
+              data-cy="Filters-close"
+              class="Filters-headerBtn ml-3 fas fa-times-circle"
+              @click="close"
+            />
+          </div>
         </template>
       </b-nav>
     </template>
     <template v-if="advancedFiltersVisible">
       <raw-filter
         v-if="complexFiltersSelectedTab === 'raw'"
-        :raw-filter="rawFilter"
-        :format-from-basic-search="formatFromBasicSearch"
-        :sorting-enabled="sortingEnabled"
         :action-buttons-visible="actionButtonsVisible"
-        :submit-button-label="submitButtonLabel"
         :current-filter="currentFilter"
-        :refresh-ace="refreshace"
-        :collectionMapping="collectionMapping"
-        @filter-submitted="onRawFilterUpdated"
+        :sorting-enabled="sortingEnabled"
+        @filter-submitted="onRawFilterSubmitted"
         @reset="onReset"
       />
       <basic-filter
         v-if="complexFiltersSelectedTab === 'basic'"
-        :toggle-auto-complete="toggleAutoComplete"
-        :basic-filter="basicFilter"
-        :sorting-enabled="sortingEnabled"
-        :available-operands="availableOperands"
-        :submit-button-label="submitButtonLabel"
         :action-buttons-visible="actionButtonsVisible"
+        :available-operands="availableOperands"
+        :basic-filter="basicFilter"
+        :mapping-attributes="mappingAttributes"
         :sorting="sorting"
-        :collection-mapping="collectionMapping"
-        @filter-submitted="onBasicFilterUpdated"
+        :sorting-enabled="sortingEnabled"
+        @filter-submitted="onBasicFilterSubmitted"
+        @generate-raw-filter="onGenerateRawFilter"
         @reset="onReset"
+      />
+      <history-filter
+        v-if="complexFiltersSelectedTab === 'history'"
+        :index="index"
+        :collection="collection"
+        @submit="onSubmitFromHistory"
+      />
+      <favorite-filters
+        v-if="complexFiltersSelectedTab === 'favorite'"
+        :index="index"
+        :collection="collection"
+        @filter-basic-submitted="onBasicFilterSubmitted"
+        @filter-raw-submitted="onRawFilterSubmitted"
       />
     </template>
   </b-card>
 </template>
 
 <style lang="scss" scoped>
-.Filters-btnClose {
-  cursor: pointer;
-  color: grey;
+.Filters-headerActions {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 17px;
+  right: 17px;
+}
+.Filters-headerBtn {
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.5;
 
   &:hover {
-    color: #555;
-    background: #eee;
-    border-radius: 3px;
+    opacity: 0.9;
   }
 }
 .Filters-advanced {
@@ -113,6 +152,8 @@
 import QuickFilter from './QuickFilter'
 import BasicFilter from './BasicFilter'
 import RawFilter from './RawFilter'
+import HistoryFilter from './HistoryFilter'
+import FavoriteFilters from './FavoriteFilters'
 
 import {
   NO_ACTIVE,
@@ -127,9 +168,19 @@ export default {
   components: {
     QuickFilter,
     BasicFilter,
-    RawFilter
+    RawFilter,
+    HistoryFilter,
+    FavoriteFilters
   },
   props: {
+    index: {
+      type: String,
+      required: true
+    },
+    collection: {
+      type: String,
+      required: true
+    },
     actionButtonsVisible: {
       type: Boolean,
       required: false,
@@ -144,7 +195,7 @@ export default {
       type: Object,
       required: true
     },
-    collectionMapping: {
+    mappingAttributes: {
       type: Object,
       required: true
     },
@@ -181,6 +232,7 @@ export default {
     return {
       advancedFiltersVisible: false,
       complexFiltersSelectedTab: ACTIVE_BASIC,
+      isFullscreen: false,
       jsonInvalid: false,
       objectTabActive: null,
       refreshace: false
@@ -224,53 +276,79 @@ export default {
     }
   },
   methods: {
-    onQuickFilterUpdated(term) {
-      this.onFiltersUpdated(
+    setObjectTabActive(tab) {
+      this.objectTabActive = tab
+      this.refreshace = !this.refreshace
+    },
+    onQuickFilterSubmitted(term) {
+      this.onSubmit(
         Object.assign(this.currentFilter, {
           active: term ? ACTIVE_QUICK : NO_ACTIVE,
-          quick: term,
-          from: 0
+          quick: term
         })
       )
     },
-    onBasicFilterUpdated(filter, sorting) {
+    onBasicFilterSubmitted(filter, sorting) {
       const newFilter = new Filter()
       newFilter.basic = filter
       newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE
       newFilter.sorting = sorting
-      newFilter.from = 0
-      this.onFiltersUpdated(newFilter)
+      this.onSubmit(newFilter)
     },
-    onRawFilterUpdated(filter) {
+
+    onRawFilterSubmitted(filter) {
       this.advancedFiltersVisible = false
-      this.onFiltersUpdated(
+      this.onSubmit(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
-          raw: filter,
-          from: 0
+          raw: filter
         })
       )
     },
-    onRefresh() {
+    onSubmitFromHistory(filter) {
+      this.advancedFiltersVisible = false
+      this.onSubmit(Object.assign(this.currentFilter, filter), false)
+    },
+    onGenerateRawFilter(filter) {
       this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          active: filter ? ACTIVE_RAW : NO_ACTIVE,
+          raw: filter
+        })
+      )
+      this.complexFiltersSelectedTab = 'raw'
+    },
+    onRefresh() {
+      this.submit(
         Object.assign(this.currentFilter, {
           from: 0
         })
       )
     },
     onReset() {
-      this.$emit('reset', new Filter())
-    },
-    setObjectTabActive(tab) {
-      this.objectTabActive = tab
-      this.refreshace = !this.refreshace
+      this.onSubmit(new Filter())
     },
     onFiltersUpdated(newFilters) {
-      this.advancedFiltersVisible = false
       this.$emit('filters-updated', newFilters)
+    },
+    onSubmit(filter, saveToHistory = true) {
+      this.onFiltersUpdated(
+        Object.assign(filter, {
+          from: 0
+        })
+      )
+      this.$emit('submit', saveToHistory)
+      this.close()
     },
     onEnterPressed() {
       this.$emit('enter-pressed')
+    },
+    toggleFullscreen() {
+      this.isFullscreen = !this.isFullscreen
+    },
+    close() {
+      this.advancedFiltersVisible = false
+      this.isFullscreen = false
     }
   }
 }

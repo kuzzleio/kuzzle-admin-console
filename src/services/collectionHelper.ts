@@ -172,8 +172,6 @@ export const formatSchema = schema => {
 /**
  * Returns the merge of mapping, schema and allowForm in order to be stored in Kuzzle
  * @param mapping {Object}
- * @param schema {Object}
- * @param allowForm {Boolean}
  * @returns {{properties: {}, _meta: {schema: *, allowForm: *}}}
  */
 export const mergeMetaAttributes = ({ mapping, schema, dynamic }) => {

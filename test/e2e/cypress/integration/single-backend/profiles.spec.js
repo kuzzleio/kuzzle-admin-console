@@ -96,6 +96,60 @@ describe('Profiles', () => {
     cy.url().should('contain', `security/profiles/${profileId}`)
   })
 
+  it('Should render a visual feedback and prevent submitting when input is not valid', () => {
+    cy.waitOverlay()
+    cy.visit('/#/security/profiles/create')
+    cy.contains('Create a new profile')
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').type(' ', {
+      force: true
+    })
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"] .invalid-feedback').should(
+      'contain',
+      'This field cannot contain just whitespaces'
+    )
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"] .invalid-feedback').should(
+      'contain',
+      'This field cannot be empty'
+    )
+
+    cy.get('[data-cy=ProfileCreateOrUpdate-createBtn]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal('#/security/profiles/create')
+    })
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').type(
+      '{selectall}validprofile',
+      {
+        force: true
+      }
+    )
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line')
+      .contains('{')
+      .click({ force: true })
+
+    cy.get('textarea.ace_text-input')
+      .clear({ force: true })
+      .type(`SuM UNV4L1d jayZON Kood`)
+
+    cy.get('[data-cy=ProfileCreateOrUpdate-createBtn]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal('#/security/profiles/create')
+    })
+  })
+
   it('Should be able to create a new profile', () => {
     const profileId = 'dummy'
     cy.visit('/#/security/profiles/create')
@@ -148,7 +202,7 @@ describe('Profiles', () => {
     cy.get('textarea.ace_text-input')
       .clear({ force: true })
       .type(
-        `{
+        `{selectall}{
 "policies": [{
 "roleId": "admin"`,
         {

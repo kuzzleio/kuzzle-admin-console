@@ -110,12 +110,12 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"query": { 
-"bool": {
-"must": {
-"match_phrase_prefix": {
-"name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
-}`,
+  "query": {
+  "bool": {
+  "must": {
+  "match_phrase_prefix": {
+  "name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
+  `,
         {
           force: true
         }
@@ -284,9 +284,90 @@ describe('Users', function() {
 
     cy.get(
       '[data-cy="UserManagement-pagination"] .page-link[aria-posinset="2"]'
-    ).click({force: true})
+    ).click({ force: true })
     cy.get('[data-cy=UserItem]').should('have.length', 4)
     cy.url().should('contain', 'from=10')
+  })
+
+  it('Should render a visual feedback and prevent submitting when input is not valid', () => {
+    cy.visit(`/#/security/users/create`)
+    cy.get('[data-cy=UserBasic-kuid] input').type(' ')
+    cy.get('[data-cy=UserBasic-kuid] .invalid-feedback').should(
+      'contain',
+      'The KUID cannot contain just whitespaces'
+    )
+
+    cy.get('[data-cy=UserBasic-kuid] input').type(' someKuid')
+    cy.get('[data-cy=UserBasic-kuid] .invalid-feedback').should(
+      'contain',
+      'The KUID cannot start with a whitespace'
+    )
+
+    cy.get('[data-cy=UserBasic-kuid] input').type('{selectall}valid')
+
+    cy.get('[data-cy=UserUpdate-submit]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal(`#/security/users/create`)
+    })
+    cy.get('[data-cy="UserProfileList-invalidFeedback"]').should(
+      'contain',
+      'Please add at least one profile'
+    )
+    cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should(
+      'be',
+      'visible'
+    )
+
+    cy.get('[data-cy=UserProfileList-select]').select('default')
+    cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should(
+      'not.be',
+      'visible'
+    )
+    cy.get('[data-cy="UserProfileList-invalidFeedback"]').should(
+      'not.be',
+      'visible'
+    )
+
+    cy.get('[data-cy="UserUpdate-customTab"]').click()
+    cy.get('[data-cy=UserCustomContent-jsonEditor] .ace_content')
+      .click()
+      .type('{selectall}SuM UNnv4L33d JZOOOOO000n K0d')
+
+    cy.get('[data-cy="UserUpdate-customTab--dangerIcon"]').should(
+      'be',
+      'visible'
+    )
+
+    cy.get('[data-cy=UserUpdate-submit]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal(`#/security/users/create`)
+    })
+  })
+  
+  it('Should be able to list the users with a wrong from url parameter', () => {
+    cy.skipOnBackendVersion(1)
+    for (let i = 0; i < 5; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/users/user-${i}/_create?refresh=wait_for`,
+        {
+          content: {
+            profileIds: ['default'],
+            name: `Dummy User (user-${i})`
+          },
+          credentials: {
+            local: {
+              username: `user-${i}`,
+              password: 'test'
+            }
+          }
+        }
+      )
+    }
+    cy.visit('/#/security/users?from=10')
+    cy.get('[data-cy=UserItem]').should('have.length', 5)
   })
 
   it('Should be able to create a new user with custom KUID', () => {
@@ -321,13 +402,13 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"super_important_field": "LOL"`,
+  "super_important_field": "LOL"`,
         {
           force: true
         }
       )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click({force: true})
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
     cy.get('[data-cy=UserItem]').should('contain', '"admin"')
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
@@ -357,7 +438,7 @@ describe('Users', function() {
       `{selectall}${credentials.password}`
     )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click({force: true})
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get('[data-cy=UserItem]').should('have.length', 1)
   })
 
@@ -422,13 +503,13 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"super_important_field": "LOL"`,
+  "super_important_field": "LOL"`,
         {
           force: true
         }
       )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click({force: true})
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
     cy.get('[data-cy=UserItem]').should('contain', '"admin"')
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
@@ -456,9 +537,9 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"address": {
-"type": "text"
-`,
+  "address": {
+  "type": "text"
+  `,
         {
           force: true
         }

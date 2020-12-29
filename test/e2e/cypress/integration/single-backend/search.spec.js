@@ -50,6 +50,11 @@ describe('Search', function() {
     )
 
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+
+    localStorage.setItem(
+      `search-filter-current:${indexName}/${collectionName}`,
+      '{}'
+    )
   })
 
   it('perists the Quick Search query in the URL', function() {
@@ -81,7 +86,7 @@ describe('Search', function() {
       }
     )
     cy.visit('/')
-    // cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
+
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
@@ -130,15 +135,27 @@ describe('Search', function() {
     )
 
     cy.visit('/')
+    cy.waitForLoading()
+
     cy.get('.IndexesPage').should('be.visible')
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 250 })
     cy.wait(250)
-    cy.get('[data-cy=Treeview-item--anothercollection]').click()
+
+    cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
+    cy.get('[data-cy=CollectionList-name--anothercollection]').click()
+    cy.waitForLoading()
+
     cy.url().should('not.contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
 
-    cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
+    cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
+    cy.get(`[data-cy=CollectionList-name--${collectionName}]`).click()
+    cy.waitForLoading()
+
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
   })
@@ -175,8 +192,11 @@ describe('Search', function() {
     )
 
     cy.visit('/')
+    cy.waitForLoading()
+
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -188,11 +208,17 @@ describe('Search', function() {
 
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
 
-    cy.get('[data-cy=Treeview-item--anothercollection]').click()
+    cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
+    cy.get(`[data-cy=CollectionList-name--anothercollection]`).click()
+    cy.waitForLoading()
+
     cy.url().should('not.contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
 
-    cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
+    cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
+    cy.get(`[data-cy=CollectionList-name--${collectionName}]`).click()
+    cy.waitForLoading()
+
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
@@ -207,11 +233,59 @@ describe('Search', function() {
     )
   })
 
+  it('Should be able to perform a Basic Search on a _kuzzle_info field', function() {
+    cy.skipOnBackendVersion(1)
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'Adrien',
+        lastName: 'Maret',
+        job: 'Blockchain Keylogger as a Service'
+      }
+    )
+
+    cy.visit('/')
+    cy.waitForLoading()
+
+    cy.get('.IndexesPage').should('be.visible')
+
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select(
+      '_kuzzle_info.author'
+    )
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Luca', {
+      delay: 60
+    })
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 0)
+
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select(
+      '_kuzzle_info.author'
+    )
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('{selectall}-1', {
+      delay: 60
+    })
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
+  })
+
   it('refreshes search when the Search button is hit twice', function() {
     cy.visit('/')
     cy.get('.IndexesPage').should('be.visible')
+    cy.waitForLoading()
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.contains(`${collectionName}`)
+    cy.waitForLoading()
+
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
@@ -249,36 +323,40 @@ describe('Search', function() {
     )
 
     cy.visit('/')
+    cy.waitForLoading()
     cy.get('.IndexesPage').should('be.visible')
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 60 })
 
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
 
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy=CollectionDropdown-column]').click()
-    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 1)
+    cy.get('[data-cy="ColumnView-table-id"] tbody tr').should('have.length', 1)
 
     cy.get('[data-cy="QuickFilter-resetBtn"]').click()
 
     cy.url().should('not.contain', 'Keylogger')
     cy.url().should('contain', 'listViewType=column')
-    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 2)
+    cy.get('[data-cy="ColumnView-table-id"] tbody tr').should('have.length', 2)
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Keylogger')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
-    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 1)
+    cy.get('[data-cy="ColumnView-table-id"] tbody tr').should('have.length', 1)
 
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-resetBtn"]').click()
     cy.url().should('not.contain', 'Keylogger')
     cy.url().should('contain', 'listViewType=column')
-    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 2)
+    cy.get('[data-cy="ColumnView-table-id"] tbody tr').should('have.length', 2)
   })
 
   it('sorts the results when sorting is selected in the basic filter', function() {
@@ -311,8 +389,12 @@ describe('Search', function() {
     )
 
     cy.visit('/')
+    cy.waitForLoading()
+
     cy.get('.IndexesPage').should('be.visible')
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -364,8 +446,12 @@ describe('Search', function() {
     )
 
     cy.visit('/')
+    cy.waitForLoading()
+
     cy.get('.IndexesPage').should('be.visible')
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-rawTab"]').click()
@@ -378,14 +464,13 @@ describe('Search', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-      "query": { 
-      "bool": {
-      "must": {
-      "match_phrase_prefix": {
-      "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
-      "sort": {
-      "lastName": "desc"
-      }`,
+"query": {
+"bool": {
+"must": {
+"match_phrase_prefix": {
+"job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+"sort": {
+"lastName": "desc"`,
         {
           force: true
         }
@@ -401,8 +486,12 @@ describe('Search', function() {
 
   it('transforms a search query from basic filter to raw filter', function() {
     cy.visit('/')
+    cy.waitForLoading()
+
     cy.get('.IndexesPage').should('be.visible')
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -411,9 +500,7 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('bar', {
       delay: 60
     })
-    cy.get('[data-cy=BasicFilter-submitBtn]').click()
-    cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
-    cy.get('[data-cy="Filters-rawTab"]').click()
+    cy.get('[data-cy=BasicFilter-generateRawBtn]').click()
     cy.get('.ace_content')
       .should('contain', 'query')
       .and('contain', 'must')
@@ -431,8 +518,12 @@ describe('Search', function() {
     )
 
     cy.visit('/')
+    cy.waitForLoading()
+
     cy.get('.IndexesPage').should('be.visible')
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-rawTab"]').click()
@@ -446,12 +537,12 @@ describe('Search', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-      "query": {},
-      "aggregations": {
-        "my_aggs": {
-          "terms": {
-            "field": "firstName"
-          `,
+        "query": {},
+        "aggregations": {
+          "my_aggs": {
+            "terms": {
+              "field": "firstName"
+            `,
         {
           force: true
         }
@@ -476,6 +567,7 @@ describe('Search', function() {
     cy.visit('/')
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-rawTab"]').click()
@@ -489,7 +581,7 @@ describe('Search', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-        "query": {}`,
+          "query": {}`,
         {
           force: true
         }
@@ -536,5 +628,274 @@ describe('Search', function() {
     cy.contains('dummy-41')
     cy.contains('dummy-42')
     cy.url().should('contain', 'from=30')
+  })
+
+  it('should add my search in history', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('4')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+  })
+
+  it('Should be able to see previous searches in the search history.', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    for (let i = 0, item = 0; i < 10; i += 2, item++) {
+      cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.waitForLoading()
+
+      cy.get('[data-cy=QuickFilter-optionBtn]').click()
+      cy.get('[data-cy=Filters-basicTab]').click()
+      cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+      cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(i)
+      cy.get('[data-cy=BasicFilter-submitBtn]').click()
+      cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+      cy.get('[data-cy=Filters-historyTab]').click()
+      cy.get('[data-cy="FilterHistoryItem--' + item + '"]')
+      cy.get('[data-cy="Filters-close"]').click()
+      cy.get('[data-cy="QuickFilter-resetBtn"]').click()
+    }
+  })
+
+  it('should be able to add a filter to favorite', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('1')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+    cy.get('[data-cy="FilterHistoryItem-Add-Favorite--0"]').click()
+    cy.get('[data-cy=Filters-favoriteTab]').click()
+    cy.get('[data-cy="FilterFavoriItem--0"]')
+  })
+
+  it('should display message for empty favorite or history', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.contains("You haven't performed any search yet.")
+    cy.get('[data-cy=Filters-favoriteTab]').click()
+    cy.contains("You don't have any favorite filters.")
+  })
+
+  it('should be able to remove a favorite filter', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('1')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+    cy.get('[data-cy="FilterHistoryItem-Add-Favorite--0"]').click()
+    cy.get('[data-cy=Filters-favoriteTab]').click()
+    cy.get('[data-cy="FilterFavoriItem--0"]')
+    cy.get('[data-cy="FilterFavoriItem-Remove--0"]').click()
+    cy.get('[data-cy="FilterFavoriItem--0"]').should('not.exist')
+    cy.contains("You don't have any favorite filters.")
+  })
+
+  it('should be able to perform search from history', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    for (let i = 0, item = 0; i < 10; i += 2, item++) {
+      cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.waitForLoading()
+
+      cy.get('[data-cy=QuickFilter-optionBtn]').click()
+      cy.get('[data-cy=Filters-basicTab]').click()
+      cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+      cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(i)
+      cy.get('[data-cy=BasicFilter-submitBtn]').click()
+      cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+      cy.get('[data-cy=Filters-historyTab]').click()
+      cy.get('[data-cy="FilterHistoryItem--' + item + '"]')
+      cy.get('[data-cy="Filters-close"]').click()
+      cy.get('[data-cy="QuickFilter-resetBtn"]').click()
+    }
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem-useBtn--4"]').click()
+    cy.contains('dummy-0')
+    cy.contains('dummy-10')
+    cy.contains('dummy-9').should('not.exist')
+  })
+
+  it('should be able to display the range field correctly', function() {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'bar'
+      }
+    )
+
+    cy.visit('/')
+
+    cy.get('.IndexesPage').should('be.visible')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-operator"]').select('Range')
+    cy.get(`[data-cy="BasicFilter-operator-Range-Value1"]`)
+      .invoke('innerWidth')
+      .should('be.gt', 100)
+    cy.get(`[data-cy="BasicFilter-operator-Range-Value2"]`)
+      .invoke('innerWidth')
+      .should('be.gt', 100)
+  })
+
+  it('should be able to toggle fullscreen filters', () => {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'bar'
+      }
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'bar'
+      }
+    )
+
+    cy.visit('/')
+    cy.contains(indexName)
+    cy.get('.IndexesPage').should('be.visible')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-fullscreen]').click()
+    cy.get('[data-cy="Filters"]').should('have.class', 'full-screen')
+    cy.get('.BasicFilter-predicates').should('be.visible')
+    cy.get('[data-cy=Filters-rawTab]').click()
+    cy.get('.RawFilter').should('be.visible')
+
+    cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
+    cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
+
+    cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
+    cy.get('[data-cy=Filters-close]').click({ force: true })
+
+    cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
+    cy.get('[data-cy=RawFilter-submitBtn]').click()
+    cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
   })
 })
