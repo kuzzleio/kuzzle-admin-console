@@ -185,7 +185,12 @@ export default {
       this.$v.kuid.$model = value
     },
     onCredentialsChanged(payload) {
-      this.credentials[payload.strategy] = { ...payload.credentials }
+      const notEmptyFields = Object.keys(payload.credentials).filter(c => payload.credentials[c] !== "").length > 0
+      if (notEmptyFields) {
+        this.credentials[payload.strategy] = { ...payload.credentials }
+      } else {
+        delete this.credentials[payload.strategy]
+      }
     },
     onCustomContentChanged(value) {
       this.$v.customContentValue.$model = value
@@ -202,7 +207,6 @@ export default {
         return
       }
       this.submitting = true
-
       try {
         if (this.id) {
           await this.wrapper.performReplaceUser(this.kuid, {

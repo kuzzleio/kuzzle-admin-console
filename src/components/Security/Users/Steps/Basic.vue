@@ -12,7 +12,6 @@
         >
       </template>
       <b-input
-        v-if="editKuid"
         class="validate"
         id="custom-kuid"
         placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
