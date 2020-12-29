@@ -10,7 +10,7 @@
       <b-col>
         <b-button
           class="float-right"
-          download="mappring.json"
+          :download="`${this.currentEnvironment.name}-user-mapping.json`"
           :href="downloadMappingValue"
         >
           Export Mapping
@@ -105,7 +105,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
     isMappingValid() {
       if (!this.mappingValue) {
         return true
@@ -118,7 +118,7 @@ export default {
       }
     },
     downloadMappingValue() {
-      const blob = new Blob([JSON.stringify(this.mappingValue)], {
+      const blob = new Blob([JSON.stringify(JSON.parse(this.mappingValue))], {
         type: 'application/json'
       })
       return window.URL.createObjectURL(blob)
