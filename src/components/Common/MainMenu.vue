@@ -43,7 +43,7 @@
           "
           :to="{ name: 'Query' }"
         >
-          Query
+          API Action
         </b-nav-item>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
