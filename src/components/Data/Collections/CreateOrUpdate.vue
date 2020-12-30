@@ -66,7 +66,7 @@
             >Set the type of dynamic policy for this collection.
             <a
               target="_blank"
-              href="https://docs.kuzzle.io/core/2/guides/essentials/database-mappings/#dynamic-mapping-policy"
+              href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
               >Read more about Dynamic Mappings</a
             >.
           </template>
@@ -99,7 +99,7 @@
                 document in the collection (and its fields) are stored and
                 indexed.
                 <a
-                  href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
+                  href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
                   target="_blank"
                   >Read more about mapping</a
                 >
