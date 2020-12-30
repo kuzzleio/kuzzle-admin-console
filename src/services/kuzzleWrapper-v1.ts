@@ -414,8 +414,12 @@ export class KuzzleWrapperV1 {
     })
   }
 
-  async query(query) {
-    return this.kuzzle.query(query)
+  async query(payload) {
+    try {
+      return await this.kuzzle.query(payload)
+    } catch (error) {
+      return error
+    }
   }
 }
 
