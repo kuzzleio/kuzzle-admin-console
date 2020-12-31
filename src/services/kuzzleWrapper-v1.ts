@@ -414,11 +414,8 @@ export class KuzzleWrapperV1 {
     })
   }
 
-  async query(payload) {
-    try {
-      return await this.kuzzle.query(payload)
-    } catch (error) {
-      return error
+  query(payload) {
+      return this.kuzzle.query(payload)
     }
   }
 }

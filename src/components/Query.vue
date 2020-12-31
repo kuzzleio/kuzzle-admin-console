@@ -70,7 +70,7 @@
           <b-col cols="7">
             <b-card no-body>
               <b-card-header>
-                <b-card-title >
+                <b-card-title>
                   Query
                 </b-card-title>
               </b-card-header>
@@ -240,8 +240,8 @@ export default {
       try {
         document.execCommand('copy')
         this.$bvToast.toast(`${type} successfully copied.`, {
-          title: 'Success',
-          variant: 'success',
+          title: 'Info',
+          variant: 'info',
           toaster: 'b-toaster-bottom-right',
           appendToast: true
         })
@@ -321,8 +321,8 @@ export default {
       storedQueries[this.currentEnvironment] = this.savedQueries
       localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
       this.$bvToast.toast('Query successfully saved.', {
-        title: 'Success',
-        variant: 'success',
+        title: 'Info',
+        variant: 'info',
         toaster: 'b-toaster-bottom-right',
         appendToast: true
       })
@@ -347,25 +347,32 @@ export default {
       })
     },
     async performQuery() {
-      const response = await this.wrapper.query(JSON.parse(this.currentQuery))
-      this.currentResponse = JSON.stringify(response, null, ' ')
-      this.currentStatus = response.status
-      this.$refs.responseEditorWrapper.setContent(this.currentResponse)
-      if (this.statusBarVariant === 'danger') {
-        this.$bvToast.toast('An error occured while playing query.', {
-          title: 'Error',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
-      } else {
+      let response
+      try {
+        response = await this.wrapper.query(JSON.parse(this.currentQuery))
         this.$bvToast.toast('Query successfully played.', {
           title: 'Success',
           variant: 'success',
           toaster: 'b-toaster-bottom-right',
           appendToast: true
         })
+      } catch (error) {
+        const response = {
+          ...error,
+          message: error.message,
+          stack: error.stack,
+          kuzzleStack: error.kuzzleStack
+        }
+        this.$bvToast.toast('An error occured while playing query.', {
+          title: 'Error',
+          variant: 'danger',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true
+        })
       }
+      this.currentResponse = JSON.stringify(response, null, ' ')
+      this.currentStatus = response.status
+      this.$refs.responseEditorWrapper.setContent(this.currentResponse)
     },
     jsonQueryChanged(val) {
       this.currentQuery = val
