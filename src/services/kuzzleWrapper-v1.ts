@@ -416,7 +416,6 @@ export class KuzzleWrapperV1 {
 
   query(payload) {
       return this.kuzzle.query(payload)
-    }
   }
 }
 

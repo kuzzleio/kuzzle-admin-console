@@ -67,7 +67,7 @@
               .
             </b-alert>
           </b-col>
-          <b-col cols="7">
+          <b-col cols="6">
             <b-card no-body>
               <b-card-header>
                 <b-card-title>
@@ -127,7 +127,7 @@
               </b-card-footer>
             </b-card>
           </b-col>
-          <b-col cols="5">
+          <b-col cols="6">
             <b-card no-body class="h-100">
               <b-card-header>
                 <b-card-title>
@@ -138,7 +138,10 @@
                 <b-row class="m-2" no-gutters>
                   <b-col cols="12">
                     <b-alert show :variant="statusBarVariant" class="mb-0">
-                      Status: {{ currentStatus }}
+                      <p>Status: {{ currentStatus }}</p>
+                      <b-card-text>
+                        {{ currentErrorStack }}
+                      </b-card-text>
                     </b-alert>
                   </b-col>
                 </b-row>
@@ -147,7 +150,7 @@
                   ref="responseEditorWrapper"
                   reference="responseEditor"
                   tabindex="4"
-                  :height="603"
+                  :height="this.currentErrorStack ? 153 : 603"
                   readonly
                   :content="currentResponse"
                 />
@@ -190,7 +193,8 @@ export default {
       loading: true,
       currentQueryIndex: null,
       queryPerPage: 10,
-      currentPage: 1
+      currentPage: 1,
+      currentErrorStack: null
     }
   },
   computed: {
@@ -347,6 +351,7 @@ export default {
       })
     },
     async performQuery() {
+      this.currentErrorStack = null
       let response
       try {
         response = await this.wrapper.query(JSON.parse(this.currentQuery))
@@ -357,12 +362,12 @@ export default {
           appendToast: true
         })
       } catch (error) {
-        const response = {
+        response = {
           ...error,
           message: error.message,
-          stack: error.stack,
-          kuzzleStack: error.kuzzleStack
+          stack: error.stack
         }
+        this.currentErrorStack = error.kuzzleStack
         this.$bvToast.toast('An error occured while playing query.', {
           title: 'Error',
           variant: 'danger',
@@ -391,6 +396,7 @@ export default {
       this.currentResponse = ''
       this.currentStatus = null
       this.currentQueryIndex = null
+      this.currentErrorStack = null
     },
     loadSavedQuery(index) {
       this.currentQueryIndex = index
