@@ -1,228 +1,242 @@
 <template>
   <Multipane class="DataLayout Custom-resizer" layout="vertical">
     <div class="DataLayout-sidebarWrapper" data-cy="DataLayout-sidebarWrapper">
-      <b-row class="h-100 text-center mx-0" align-v="center" align-h="center">
-        <b-col cols="12" class="h-100 px-0">
-          <b-card class="h-100 backgroundCard" no-body>
-            <b-card-body class="d-flex flex-column text-center m-0 p-0">
-              <b-row class="mx-0">
-                <b-col class="my-3">
-                  <b-button @click="resetFields" variant="primary">
-                    <i class="fas fa-plus mr-2" />
-                    New Query
-                  </b-button>
-                </b-col>
-              </b-row>
-              <b-card-text class="px-1">
-                <b-list-group>
-                  <b-list-group-item
-                    v-for="query of paginedQueries"
-                    class="d-flex justify-content-between align-items-center"
-                    :key="`saved-query-${query.idx}`"
-                    :active="query.idx === currentQueryIndex"
-                  >
-                    <span @click="loadSavedQuery(query.idx)">{{
-                      query.name
-                    }}</span>
-                    <i
-                      :class="`fas fa-trash`"
-                      @click="deleteSavedQuery(query.idx)"
-                    />
-                  </b-list-group-item>
-                </b-list-group>
-              </b-card-text>
-              <b-row class="mt-auto mx-0" align-h="center">
-                <b-pagination
-                  v-model="currentPage"
-                  :total-rows="savedQueries.length"
-                  :per-page="queryPerPage"
-                  aria-controls="my-table"
-                ></b-pagination>
-              </b-row>
-            </b-card-body>
-          </b-card>
-        </b-col>
-      </b-row>
+      <QueryList
+        :savedQueries="savedQueries"
+        :currentQueryName="currentQueryName"
+        @loadSavedQuery="loadSavedQuery"
+      />
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
       <b-container fluid class="queryContainer">
         <b-row align-v="stretch">
           <b-col cols="12">
-            <b-alert show variant="info">
-              Here, you'll be able to perform custom
-              <a
-                href="https://docs.kuzzle.io/sdk/js/7/core-classes/kuzzle/query/"
-                target="_blank"
-                >query
-                <i class="fa fa-external-link-alt" />
-              </a>
-              to Kuzzle following the
-              <a
-                href="https://docs.kuzzle.io/core/2/api/payloads/request/"
-                target="_blank"
-                >API Documentation
-                <i class="fa fa-external-link-alt" />
-              </a>
-              .
-            </b-alert>
+            <InfoAlert />
           </b-col>
-          <b-col cols="6">
+          <b-col cols="12" v-if="loading"> </b-col>
+          <b-col cols="12" v-else>
             <b-card no-body>
-              <b-card-header>
-                <b-card-title>
-                  Query
-                </b-card-title>
-              </b-card-header>
-              <b-card-text v-if="!loading" class="mb-0">
-                <b-row class="m-3">
-                  <b-form-input
-                    placeholder="Query name"
-                    v-model="currentQueryName"
-                  ></b-form-input>
-                </b-row>
-                <json-editor
-                  id="query"
-                  ref="queryEditorWrapper"
-                  reference="queryEditor"
-                  tabindex="4"
-                  myclass="h-100"
-                  :height="600"
-                  :content="currentQuery"
-                  @change="jsonQueryChanged"
-                />
-              </b-card-text>
-              <b-card-footer>
-                <b-row>
-                  <b-col class="text-left">
-                    <b-button
-                      @click="performQuery"
-                      :disabled="!isQueryValid"
-                      variant="success"
-                    >
-                      <i class="fas fa-rocket mr-2" />
-                      RUN
-                    </b-button>
-                  </b-col>
-                  <b-col class="text-right">
-                    <b-button
-                      @click="saveCurrentQuery"
-                      :disabled="!isQueryValid"
-                      variant="outline-primary"
-                      class="mr-3"
-                    >
-                      <i class="fas fa-save mr-2" />
-                      SAVE
-                    </b-button>
-
-                    <b-button
-                      @click="copyToClipBoard('Query')"
-                      variant="outline-secondary"
-                    >
-                      <i class="fas fa-copy mr-2" />
-                      COPY
-                    </b-button>
-                  </b-col>
-                </b-row>
-              </b-card-footer>
-            </b-card>
-          </b-col>
-          <b-col cols="6">
-            <b-card no-body class="h-100">
-              <b-card-header>
-                <b-card-title>
-                  Response
-                </b-card-title>
-              </b-card-header>
-              <b-card-body class="p-0" v-if="!loading">
-                <b-row class="m-2" no-gutters>
-                  <b-col cols="12">
-                    <b-alert show :variant="statusBarVariant" class="mb-0">
-                      <p>Status: {{ currentStatus }}</p>
-                      <b-card-text>
-                        {{ currentErrorStack }}
-                      </b-card-text>
-                    </b-alert>
-                  </b-col>
-                </b-row>
-                <json-editor
-                  id="response"
-                  ref="responseEditorWrapper"
-                  reference="responseEditor"
-                  tabindex="4"
-                  :height="this.currentErrorStack ? 153 : 603"
-                  readonly
-                  :content="currentResponse"
-                />
-              </b-card-body>
-              <b-card-footer class="text-right">
-                <b-button
-                  @click="copyToClipBoard('Response')"
-                  variant="outline-secondary"
+              <b-tabs card content-class="mt-3">
+                <b-tab
+                  v-for="(query, queryIndex) of tabs"
+                  :key="`query-${queryIndex}-${query.name}`"
+                  class="p-0"
+                  :active="currentTab === queryIndex"
+                  @click.prevent=""
                 >
-                  <i class="fas fa-copy mr-2" />
-                  COPY
-                </b-button>
-              </b-card-footer>
+                  <template #title>
+                    <strong @click="currentTab = queryIndex"
+                      >{{ query.name ? query.name : 'New query' }}
+                      {{ queryHasChangesNotSaved(queryIndex) ? ' *' : '' }}
+                    </strong>
+                    <i
+                      class="fas fa-times ml-5"
+                      @click="closeTab(queryIndex)"
+                    />
+                  </template>
+                  <b-card-text class="mb-0">
+                    <b-row class="my-3 px-3">
+                      <b-col>
+                        <b-form-input
+                          v-model="query.controller"
+                          placeholder="Controller"
+                          list="controllersList"
+                        ></b-form-input>
+                        <datalist id="controllersList">
+                          <option
+                            v-for="controller of controllers"
+                            :key="`${queryIndex}-${controller}`"
+                            >{{ controller }}</option
+                          >
+                        </datalist>
+                      </b-col>
+                      <b-col>
+                        <b-form-input
+                          v-model="query.action"
+                          placeholder="Action"
+                          list="actionsList"
+                        ></b-form-input>
+                        <datalist id="actionsList">
+                          <option
+                            v-for="action of actions"
+                            :key="`${queryIndex}-${action}`"
+                            >{{ action }}</option
+                          >
+                        </datalist>
+                      </b-col>
+                      <b-col>
+                        <b-form-input
+                          v-model="query.index"
+                          placeholder="Index"
+                          list="indexList"
+                        ></b-form-input>
+                        <datalist id="indexList">
+                          <option
+                            v-for="i of indexes"
+                            :key="`${queryIndex}-${i}`"
+                            >{{ i }}</option
+                          >
+                        </datalist>
+                      </b-col>
+                      <b-col>
+                        <b-form-input
+                          v-model="query.collection"
+                          placeholder="Collection"
+                          list="collectionList"
+                        ></b-form-input>
+                        <datalist id="collectionList">
+                          <option
+                            v-for="collection of collections"
+                            :key="`${queryIndex}-${collection}`"
+                            >{{ collection }}</option
+                          >
+                        </datalist>
+                      </b-col>
+                      <b-col class="text-right">
+                        <b-button
+                          @click="performQuery(queryIndex)"
+                          :disabled="!isQueryValid"
+                          variant="success"
+                          class="mr-3"
+                        >
+                          <i class="fas fa-rocket mr-2" />
+                          RUN
+                        </b-button>
+                        <b-button
+                          @click="saveQuery(queryIndex)"
+                          :disabled="!isQueryValid"
+                          variant="outline-primary"
+                        >
+                          <i class="fas fa-save mr-2" />
+                          SAVE
+                        </b-button>
+                        <!-- <b-button
+                          @click="copyToClipBoard('Query')"
+                          variant="outline-secondary"
+                        >
+                          <i class="fas fa-copy mr-2" />
+                          COPY
+                        </b-button> -->
+                      </b-col>
+                    </b-row>
+                    <json-editor
+                      id="query"
+                      :ref="`queryEditorWrapper-${query.name}`"
+                      reference="queryEditor"
+                      tabindex="4"
+                      myclass="h-100"
+                      :height="300"
+                      :content="query.body"
+                      @change="queryBodyChange($event, queryIndex)"
+                    />
+                  </b-card-text>
+                  <ResponseCard :response="query.response" />
+                </b-tab>
+                <template #tabs-end>
+                  <b-nav-item
+                    role="presentation"
+                    @click.prevent="newTab"
+                    href="#"
+                    ><b>+</b></b-nav-item
+                  >
+                </template>
+              </b-tabs>
             </b-card>
           </b-col>
         </b-row>
       </b-container>
     </div>
+    <SaveQueryModal
+      :isQueryNameValid="isQueryNameValid"
+      @queryNameValidated="queryNameValidated"
+    />
   </Multipane>
 </template>
 
 <script>
-import { Multipane, MultipaneResizer } from 'vue-multipane'
 import jsonEditor from '@/components/Common/JsonEditor'
+import InfoAlert from '@/components/ApiAction/InfoAlert'
+import ResponseCard from '@/components/ApiAction/ResponseCard'
+import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
+import QueryList from '@/components/ApiAction/QueryList'
+
+import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { mapGetters } from 'vuex'
+import _ from 'lodash'
 
 export default {
   components: {
     Multipane,
     jsonEditor,
-    MultipaneResizer
+    MultipaneResizer,
+    ResponseCard,
+    InfoAlert,
+    SaveQueryModal,
+    QueryList
   },
   data() {
     return {
-      currentQuery: '{}',
-      currentQueryName: '',
-      currentResponse: '',
-      currentStatus: null,
-      savedQueries: [],
+      tabs: [],
+      currentTab: 0,
+      api: null,
       loading: true,
-      currentQueryIndex: null,
-      queryPerPage: 10,
-      currentPage: 1,
-      currentErrorStack: null
+      savedQueries: []
     }
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
-    paginedQueries() {
-      return this.savedQueries
-        .map((q, index) => {
-          q.idx = index
-          return q
-        })
-        .filter(q => {
-          return (
-            q.idx >= this.currentPage * this.queryPerPage - this.queryPerPage &&
-            q.idx < this.currentPage * this.queryPerPage
-          )
-        })
+    storage() {
+      return this.$store.direct.getters.index.indexes
     },
-    statusBarVariant() {
-      if (this.currentStatus === null) return 'secondary'
-      if (this.currentStatus.toString().match(/20[0-9]/)) return 'success'
-      return 'danger'
+    indexes() {
+      return this.storage.map(i => i.name)
+    },
+    collections() {
+      if (!this.currentQueryIndex) {
+        return []
+      }
+      const index = this.storage.find(i => i.name === this.currentQueryIndex)
+      return index && index.collections
+        ? index.collections.map(c => c.name)
+        : []
+    },
+    controllers() {
+      return this.api ? Object.keys(this.api) : []
+    },
+    actions() {
+      if (!this.tabs[this.currentTab]) {
+        return []
+      }
+      const currentController = this.tabs[this.currentTab].controller
+      return currentController && this.api[currentController]
+        ? Object.keys(this.api[currentController])
+        : []
+    },
+    currentQueryIndex() {
+      if (!this.tabs[this.currentTab]) {
+        return null
+      }
+      return this.tabs[this.currentTab].index
+    },
+    currentQueryBody() {
+      if (!this.tabs[this.currentTab]) {
+        return null
+      }
+      return this.tabs[this.currentTab].body
+    },
+    currentQueryName() {
+      if (!this.tabs[this.currentTab]) {
+        return null
+      }
+      return this.tabs[this.currentTab].name
     },
     isQueryValid() {
-      if (!this.currentQuery) {
+      if (!this.currentQueryBody) {
         return false
       }
       try {
-        JSON.parse(this.currentQuery)
+        JSON.parse(this.currentQueryBody)
         return true
       } catch (error) {
         return false
@@ -230,50 +244,133 @@ export default {
     }
   },
   methods: {
-    copyToClipBoard(type) {
-      const textarea = document.createElement('textarea')
-      if (type === 'Response') {
-        textarea.value = this.currentResponse
-      } else if (type === 'Query') {
-        textarea.value = this.currentQuery
-      }
-      textarea.setAttribute('readonly', '')
-      document.body.appendChild(textarea)
-
-      textarea.select()
-      try {
-        document.execCommand('copy')
-        this.$bvToast.toast(`${type} successfully copied.`, {
-          title: 'Info',
-          variant: 'info',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
-      } catch (err) {
-        this.$bvToast.toast(`Failed to copy ${type}.`, {
-          title: 'Error',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
-      }
-      document.body.removeChild(textarea)
+    queryHasChangesNotSaved(index) {
+      const savedQuery = this.savedQueries.find(
+        q => q.name === this.currentQueryName
+      )
+      return !_.isEqual(savedQuery, this.tabs[index])
     },
-    isQueryNameValid() {
-      if (!this.currentQueryName) {
-        this.$bvToast.toast('Empty query name.', {
-          title: 'Error',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
-        return false
+    closeTab(index) {
+      if (this.currentTab === index) {
+        if (this.currentTab > 0) {
+          this.currentTab = index - 1
+        } else {
+          this.currentTab = 0
+        }
+      } else if (this.currentTab > index) {
+        this.currentTab = this.currentTab - 1
       }
+      console.log(this.currentTab)
+      this.tabs.splice(index, 1)
+    },
+    async fetchIndexList() {
+      try {
+        await this.$store.direct.dispatch.index.fetchIndexList()
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while fetching the indexes list.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
+    },
+    // deleteSavedQuery(index) {
+    //   if (index === this.currentQueryIndex) {
+    //     this.resetFields()
+    //   }
+    //   this.savedQueries.splice(index, 1)
+    //   let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
+    //   if (!storedQueries) {
+    //     storedQueries = {}
+    //   }
+    //   storedQueries[this.currentEnvironment] = this.savedQueries
+    //   localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
+    //   this.$bvToast.toast(`Query successfully deleted.`, {
+    //     title: 'Success',
+    //     variant: 'success',
+    //     toaster: 'b-toaster-bottom-right',
+    //     appendToast: true
+    //   })
+    // },
+    loadStoredQueries() {
+      const storedQueries = localStorage.getItem('savedQueries')
+      if (storedQueries) {
+        this.savedQueries = JSON.parse(storedQueries)[
+          this.currentEnvironment.name
+        ]
+      }
+    },
+    // resetFields() {
+    //   this.currentQuery = `{
+    //   "controller": "",
+    //   "action": "",
+    //   "index": "",
+    //   "collection": "",
+    //   "_id": "",
+    //   "body": {}
+    // }`
+    //   this.$refs.queryEditorWrapper.setContent(this.currentQuery)
+    //   this.currentQueryName = ''
+    //   this.currentResponse = ''
+    //   this.currentStatus = null
+    //   this.currentQueryIndex = null
+    //   this.currentErrorStack = null
+    // },
+    loadSavedQuery(index) {
+      const query = this.savedQueries[index]
+      if (!query) return
+
+      const idx = this.tabs.findIndex(t => t.name === query.name)
+      if (idx !== -1) {
+        this.currentTab = idx
+        return
+      }
+      this.tabs.push(query)
+      this.$refs[`queryEditorWrapper-${query.name}`].setContent(JSON.parse(query.body))
+      this.currentTab = this.tabs.length - 1
+    },
+    // copyToClipBoard(type) {
+    //   const textarea = document.createElement('textarea')
+    //   if (type === 'Response') {
+    //     textarea.value = this.currentResponse
+    //   } else if (type === 'Query') {
+    //     textarea.value = this.currentQuery
+    //   }
+    //   textarea.setAttribute('readonly', '')
+    //   document.body.appendChild(textarea)
+    //   textarea.select()
+    //   try {
+    //     document.execCommand('copy')
+    //     this.$bvToast.toast(`${type} successfully copied.`, {
+    //       title: 'Info',
+    //       variant: 'info',
+    //       toaster: 'b-toaster-bottom-right',
+    //       appendToast: true
+    //     })
+    //   } catch (err) {
+    //     this.$bvToast.toast(`Failed to copy ${type}.`, {
+    //       title: 'Error',
+    //       variant: 'danger',
+    //       toaster: 'b-toaster-bottom-right',
+    //       appendToast: true
+    //     })
+    //   }
+    //   document.body.removeChild(textarea)
+    // },
+    isQueryNameValid(name) {
       const nameSearch = this.savedQueries.find((q, index) => {
         if (this.currentQueryIndex === index) {
           return false
         }
-        return q.name === this.currentQueryName
+        return q.name === name
       })
       const nameAlreadyUsed = nameSearch !== undefined
       if (nameAlreadyUsed) {
@@ -286,43 +383,31 @@ export default {
       }
       return !nameAlreadyUsed
     },
-    loadStoredQueries() {
-      const storedQueries = localStorage.getItem('savedQueries')
-      if (storedQueries) {
-        this.savedQueries = JSON.parse(storedQueries)[this.currentEnvironment]
-      }
-    },
-    saveCurrentQuery() {
-      if (!this.isQueryValid) {
-        this.$bvToast.toast('Invalid query.', {
-          title: 'Error',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
-      }
-      if (!this.isQueryNameValid()) {
-        return
-      }
-
-      const query = {
-        name: this.currentQueryName,
-        query: JSON.stringify(this.currentQuery, null, ' ')
-      }
-
-      if (this.currentQueryIndex === null) {
-        this.savedQueries.push(query)
+    queryNameValidated(name) {
+      const oldName = this.tabs[this.currentTab].name
+      this.tabs[this.currentTab].name = name
+      if (oldName === '') {
+        this.savedQueries.push(this.tabs[this.currentTab])
       } else {
-        //todo use lodash
-        let tmpSavedQueries = JSON.parse(JSON.stringify(this.savedQueries))
-        tmpSavedQueries[this.currentQueryIndex] = query
-        this.$set(this, 'savedQueries', tmpSavedQueries)
+        const savedQueryIndex = this.savedQueries.findIndex(
+          q => q.name === oldName
+        )
+        if (!savedQueryIndex) {
+          this.$bvToast.toast('An error occured whiled saving query.', {
+            title: 'Error',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          })
+          return
+        }
+        this.savedQueries[savedQueryIndex] = this.tabs[this.currentTab]
       }
       let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
       if (!storedQueries) {
         storedQueries = {}
       }
-      storedQueries[this.currentEnvironment] = this.savedQueries
+      storedQueries[this.currentEnvironment.name] = this.savedQueries
       localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
       this.$bvToast.toast('Query successfully saved.', {
         title: 'Info',
@@ -331,30 +416,25 @@ export default {
         appendToast: true
       })
     },
-    deleteSavedQuery(index) {
-      //todo toast confirm
-      if (index === this.currentQueryIndex) {
-        this.resetFields()
+    saveQuery() {
+      if (this.currentQueryName === "") {
+        return this.$bvModal.show('modal-save-query')
       }
-      this.savedQueries.splice(index, 1)
-      let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
-      if (!storedQueries) {
-        storedQueries = {}
-      }
-      storedQueries[this.currentEnvironment] = this.savedQueries
-      localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
-      this.$bvToast.toast(`Query successfully deleted.`, {
-        title: 'Success',
-        variant: 'success',
-        toaster: 'b-toaster-bottom-right',
-        appendToast: true
-      })
+
     },
-    async performQuery() {
-      this.currentErrorStack = null
+    async performQuery(index) {
+      const tab = this.tabs[index]
+      const query = {
+        body: JSON.parse(tab.body),
+        _id: tab._id,
+        controller: tab.controller,
+        action: tab.action,
+        index: tab.index,
+        collection: tab.collection
+      }
       let response
       try {
-        response = await this.wrapper.query(JSON.parse(this.currentQuery))
+        response = await this.wrapper.query(query)
         this.$bvToast.toast('Query successfully played.', {
           title: 'Success',
           variant: 'success',
@@ -365,9 +445,9 @@ export default {
         response = {
           ...error,
           message: error.message,
-          stack: error.stack
+          stack: error.stack,
+          kuzzleStack: error.kuzzleStack
         }
-        this.currentErrorStack = error.kuzzleStack
         this.$bvToast.toast('An error occured while playing query.', {
           title: 'Error',
           variant: 'danger',
@@ -375,47 +455,65 @@ export default {
           appendToast: true
         })
       }
-      this.currentResponse = JSON.stringify(response, null, ' ')
-      this.currentStatus = response.status
-      this.$refs.responseEditorWrapper.setContent(this.currentResponse)
+      this.tabs[index].response = response
     },
-    jsonQueryChanged(val) {
-      this.currentQuery = val
+    queryBodyChange(payload, index) {
+      this.tabs[index].body = payload
     },
-    resetFields() {
-      this.currentQuery = `{
-  "controller": "",
-  "action": "",
-  "index": "",
-  "collection": "",
-  "_id": "",
-  "body": {}
-}`
-      this.$refs.queryEditorWrapper.setContent(this.currentQuery)
-      this.currentQueryName = ''
-      this.currentResponse = ''
-      this.currentStatus = null
-      this.currentQueryIndex = null
-      this.currentErrorStack = null
+    newTab() {
+      this.tabs.push({
+        body: '{}',
+        _id: null,
+        controller: null,
+        action: null,
+        index: null,
+        collection: null,
+        name: '',
+        response: ''
+      })
+      this.currentTab = this.tabs.length - 1
     },
-    loadSavedQuery(index) {
-      this.currentQueryIndex = index
-      this.currentQuery = this.savedQueries[index].query
-      this.$refs.queryEditorWrapper.setContent(JSON.parse(this.currentQuery))
-      this.currentQueryName = this.savedQueries[index].name
+    async getKuzzlePublicApi() {
+      try {
+        const publicApi = await this.wrapper.query({
+          controller: 'server',
+          action: 'publicApi'
+        })
+        this.api = publicApi.result
+      } catch (error) {
+        this.$log.error(error)
+      }
     }
   },
-  mounted() {
+  watch: {
+    currentQueryIndex: {
+      async handler(value) {
+        if (!value) {
+          return
+        }
+        if (this.storage.find(i => i.name === value && !i.collections)) {
+          const index = this.$store.direct.getters.index.getOneIndex(value)
+          await this.$store.direct.dispatch.index.fetchCollectionList(index)
+        }
+      },
+      deep: true
+    }
+  },
+  async mounted() {
     this.loading = true
     this.loadStoredQueries()
-    this.currentQuery = `{
-  "controller": "",
-  "action": "",
-  "index": "",
-  "collection": "",
-  "_id": "",
-  "body": {}
-}`
+    this.tabs.push({
+      body: '{}',
+      _id: null,
+      controller: null,
+      action: null,
+      index: null,
+      collection: null,
+      name: '',
+      response: ''
+    })
+    await this.getKuzzlePublicApi()
+    await this.fetchIndexList()
     this.loading = false
   }
 }
