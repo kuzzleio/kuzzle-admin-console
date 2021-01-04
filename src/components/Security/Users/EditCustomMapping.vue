@@ -53,8 +53,8 @@
             You should omit the root "properties" field in this form.
             <pre>
 {
-"age": { "type": "integer" },
-"name": { "type": "string" }
+  "age": { "type": "integer" },
+  "name": { "type": "text" }
 }
         </pre
             >
