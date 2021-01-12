@@ -12,6 +12,7 @@
           class="float-right"
           :download="`${this.currentEnvironment.name}-user-mapping.json`"
           :href="downloadMappingValue"
+          :disabled="!isMappingValid"
         >
           Export Mapping
         </b-button>
@@ -118,10 +119,13 @@ export default {
       }
     },
     downloadMappingValue() {
-      const blob = new Blob([JSON.stringify(JSON.parse(this.mappingValue))], {
-        type: 'application/json'
-      })
-      return window.URL.createObjectURL(blob)
+      if (this.isMappingValid) {
+        const blob = new Blob([JSON.stringify(JSON.parse(this.mappingValue))], {
+          type: 'application/json'
+        })
+        return window.URL.createObjectURL(blob)
+      }
+      return null
     }
   },
   async mounted() {
@@ -156,6 +160,7 @@ export default {
       reader.readAsText(file)
     },
     onMappingChange(value) {
+      console.log('mapping changed')
       this.mappingValue = value
     },
     onCancel() {
