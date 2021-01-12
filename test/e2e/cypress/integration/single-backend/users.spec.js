@@ -345,7 +345,6 @@ describe('Users', function() {
       expect(location.hash).to.equal(`#/security/users/create`)
     })
   })
-
   it('Should be able to list the users with a wrong from url parameter', () => {
     cy.skipOnBackendVersion(1)
     for (let i = 0; i < 5; i++) {
