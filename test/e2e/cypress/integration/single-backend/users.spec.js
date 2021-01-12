@@ -582,7 +582,7 @@ describe('Users', function() {
     })
   })
 
-  it.only('Should be able to create an user without strategy', () => {
+  it('Should be able to create an user without strategy', () => {
     cy.visit(`/#/security/users/create`)
 
     cy.get('[data-cy=UserBasic-kuid]').type("without-credentials")
