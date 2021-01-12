@@ -10,6 +10,7 @@
       <b-col>
         <b-button
           class="float-right"
+          data-cy="export-user-mapping"
           :download="`${this.currentEnvironment.name}-user-mapping.json`"
           :href="downloadMappingValue"
           :disabled="!isMappingValid"
@@ -108,9 +109,6 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
     isMappingValid() {
-      if (!this.mappingValue) {
-        return true
-      }
       try {
         JSON.parse(this.mappingValue)
         return true
@@ -160,7 +158,6 @@ export default {
       reader.readAsText(file)
     },
     onMappingChange(value) {
-      console.log('mapping changed')
       this.mappingValue = value
     },
     onCancel() {
