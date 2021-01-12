@@ -87,8 +87,10 @@
             />
             <b-button
               class="float-left"
+              data-cy="export-collection-mapping"
               :download="mappingFileName"
               :href="downloadMappingValue"
+              :disabled="!isMappingValid"
             >
               Export Mapping
             </b-button>
@@ -220,7 +222,7 @@ export default {
       return this.$route.params.collectionName
     },
     mappingFileName() {
-      return `${this.currentEnvironment.name}-${this.indexName}-${this.collectionName}-mapping.json`
+      return `${this.currentEnvironment.name}-${this.indexName}-${this.name}-mapping.json`
     },
     nameInputState() {
       const { $dirty, $error } = this.$v.name
@@ -243,10 +245,13 @@ export default {
       }
     },
     downloadMappingValue() {
-      const blob = new Blob([JSON.stringify(JSON.parse(this.rawMapping))], {
-        type: 'application/json'
-      })
-      return window.URL.createObjectURL(blob)
+      if (this.isMappingValid) {
+        const blob = new Blob([JSON.stringify(JSON.parse(this.rawMapping))], {
+          type: 'application/json'
+        })
+        return window.URL.createObjectURL(blob)
+      }
+      return null
     }
   },
   methods: {
