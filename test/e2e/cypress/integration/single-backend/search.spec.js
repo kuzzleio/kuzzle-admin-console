@@ -28,6 +28,9 @@ describe('Search', function() {
             }
           }
         },
+        fullName: {
+          type: 'text'
+        },
         lastName: {
           type: 'keyword',
           fields: {
@@ -897,5 +900,62 @@ describe('Search', function() {
     cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
     cy.get('[data-cy=RawFilter-submitBtn]').click()
     cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
+  })
+
+  it('Should not be able to perform a Basic Search sort by a text field', function() {
+    cy.skipOnBackendVersion(1)
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'Adrien',
+        lastName: 'Maret',
+        job: 'Blockchain Keylogger as a Service',
+        fullName: 'Adrien Maret'
+      }
+    )
+
+    cy.visit('/')
+    cy.waitForLoading()
+
+    cy.get('.IndexesPage').should('be.visible')
+
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]')
+      .get('[value="fullName"]')
+      .should('not', 'exists')
+  })
+
+  it('Should be able to perform a Basic Search sort by a text field with keyword as sub type', function() {
+    cy.skipOnBackendVersion(1)
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'Adrien',
+        lastName: 'Maret',
+        job: 'Blockchain Keylogger as a Service',
+        fullName: 'Adrien Maret'
+      }
+    )
+
+    cy.visit('/')
+    cy.waitForLoading()
+
+    cy.get('.IndexesPage').should('be.visible')
+
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.waitForLoading()
+
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]')
+      .get('[value="lastName"]')
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]')
+      .get('[value="lastName.keyword"]')
   })
 })
