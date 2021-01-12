@@ -247,7 +247,7 @@ describe('Collection management', function() {
     cy.contains('This collection is empty')
   })
 
-  it.only('Should be able to export a collection mapping', function() {
+  it('Should be able to export a collection mapping', function() {
     cy.visit(`/#/data/${indexName}/create`)
     cy.wait(1000)
 
