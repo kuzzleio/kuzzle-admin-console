@@ -345,7 +345,7 @@ describe('Users', function() {
       expect(location.hash).to.equal(`#/security/users/create`)
     })
   })
-  
+
   it('Should be able to list the users with a wrong from url parameter', () => {
     cy.skipOnBackendVersion(1)
     for (let i = 0; i < 5; i++) {
@@ -581,5 +581,19 @@ describe('Users', function() {
     profileIds.forEach(profileId => {
       cy.contains(profileId)
     })
+  })
+
+  it.only('Should be able to create an user without strategy', () => {
+    cy.visit(`/#/security/users/create`)
+
+    cy.get('[data-cy=UserBasic-kuid]').type("without-credentials")
+    cy.get('[data-cy="UserProfileList-select"]').select('admin')
+    cy.get('[data-cy=CredentialsSelector-local-username]').clear()
+    cy.get('[data-cy=CredentialsSelector-local-password]').clear()
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
+    cy.get('[id="collapse-without-credentials"]')
+    .contains("local:")
+    .next()
+    .should("have.class", "json-formatter-empty")
   })
 })
