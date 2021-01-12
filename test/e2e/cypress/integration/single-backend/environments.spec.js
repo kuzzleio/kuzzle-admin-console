@@ -509,7 +509,7 @@ describe('Environments', function() {
           xhr.send()
         })
     )
-    .should('equal', `{"${newEnvName}":{"name":"${newEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":2},"${secondEnvName}":{"name":"${secondEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":2}}`)
+    .should('equal', `{"${newEnvName}":{"name":"${newEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}},"${secondEnvName}":{"name":"${secondEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}}}`)
 
   })
 })
