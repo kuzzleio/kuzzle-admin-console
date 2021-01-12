@@ -47,7 +47,7 @@ describe('Document List', function() {
     cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
 
-  it.only('Should show the the _id even if collection has id field', function() {
+  it('Should show the the _id even if collection has id field', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/documentId/_create?refresh=wait_for`,
