@@ -4,6 +4,7 @@
       <QueryList
         :savedQueries="savedQueries"
         :currentQueryName="currentQueryName"
+        @deleteSavedQuery="deleteSavedQuery"
         @loadSavedQuery="loadSavedQuery"
       />
     </div>
@@ -282,24 +283,25 @@ export default {
         )
       }
     },
-    // deleteSavedQuery(index) {
-    //   if (index === this.currentQueryIndex) {
-    //     this.resetFields()
-    //   }
-    //   this.savedQueries.splice(index, 1)
-    //   let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
-    //   if (!storedQueries) {
-    //     storedQueries = {}
-    //   }
-    //   storedQueries[this.currentEnvironment] = this.savedQueries
-    //   localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
-    //   this.$bvToast.toast(`Query successfully deleted.`, {
-    //     title: 'Success',
-    //     variant: 'success',
-    //     toaster: 'b-toaster-bottom-right',
-    //     appendToast: true
-    //   })
-    // },
+    deleteSavedQuery(index) {
+      console.log(index)
+      // if (index === this.currentQueryIndex) {
+      //   this.resetFields()
+      // }
+      // this.savedQueries.splice(index, 1)
+      // let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
+      // if (!storedQueries) {
+      //   storedQueries = {}
+      // }
+      // storedQueries[this.currentEnvironment] = this.savedQueries
+      // localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
+      // this.$bvToast.toast(`Query successfully deleted.`, {
+      //   title: 'Success',
+      //   variant: 'success',
+      //   toaster: 'b-toaster-bottom-right',
+      //   appendToast: true
+      // })
+    },
     loadStoredQueries() {
       const storedQueries = localStorage.getItem('savedQueries')
       if (storedQueries) {

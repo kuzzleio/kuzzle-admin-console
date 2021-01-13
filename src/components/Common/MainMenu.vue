@@ -37,11 +37,11 @@
         </b-nav-item>
         <b-nav-item
           :active="
-            $route.path.match('/query')
-              ? $route.path.match('/query').length > 0
+            $route.path.match('/api-action')
+              ? $route.path.match('/api-action').length > 0
               : false
           "
-          :to="{ name: 'Query' }"
+          :to="{ name: 'ApiAction' }"
         >
           API Action
         </b-nav-item>

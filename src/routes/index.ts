@@ -13,7 +13,7 @@ import DataLayout from '../components/Data/Layout.vue'
 import ResetPassword from '../components/ResetPassword.vue'
 import SecurityLayout from '../components/Security/Layout.vue'
 import PageNotFound from '../components/404.vue'
-import Query from '../components/Query.vue'
+import ApiAction from '../components/ApiAction.vue'
 
 import SecuritySubRoutes from './children/security'
 import DataSubRoutes from './children/data'
@@ -135,9 +135,9 @@ export default function createRoutes(log, ga) {
                 children: SecuritySubRoutes
               },
               {
-                path: '/query',
-                name: 'Query',
-                component: Query
+                path: '/api-action',
+                name: 'ApiAction',
+                component: ApiAction
               }
             ]
           }
