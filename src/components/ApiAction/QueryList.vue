@@ -36,12 +36,8 @@
 <script>
 export default {
   props: {
-    currentQueryName: {
-
-    },
-    savedQueries: {
-
-    }
+    currentQueryName: {},
+    savedQueries: {}
   },
   data() {
     return {

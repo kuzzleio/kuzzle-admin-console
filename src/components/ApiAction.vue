@@ -1,12 +1,12 @@
 <template>
   <Multipane class="DataLayout Custom-resizer" layout="vertical">
     <div class="DataLayout-sidebarWrapper" data-cy="DataLayout-sidebarWrapper">
-      <QueryList
+      <!-- <QueryList
         :savedQueries="savedQueries"
         :currentQueryName="currentQueryName"
         @deleteSavedQuery="deleteSavedQuery"
         @loadSavedQuery="loadSavedQuery"
-      />
+      /> -->
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
@@ -20,119 +20,35 @@
             <b-card no-body>
               <b-tabs card content-class="mt-3">
                 <b-tab
-                  v-for="(query, queryIndex) of tabs"
-                  :key="`query-${queryIndex}-${query.name}`"
-                  class="p-0"
-                  :active="currentTab === queryIndex"
+                  v-for="(tabContent, tabIdx) of tabs"
+                  :key="`query-${tabIdx}-${tabContent.name}`"
+                  :active="currentTabIdx === tabIdx"
                   @click.prevent=""
+                  title-link-class="px-0 py-1"
                 >
                   <template #title>
-                    <strong @click="currentTab = queryIndex"
-                      >{{ query.name ? query.name : 'New query' }}
-                      {{ queryHasChangesNotSaved(queryIndex) ? ' *' : '' }}
+                    <strong
+                      class="py-2 pl-3 pr-4"
+                      @click="setCurrentTab(tabIdx)"
+                      >{{ tabContent.name ? tabContent.name : 'New query' }}
+                      {{ tabContent.saved ? '' : ' *' }}
                     </strong>
                     <i
-                      class="fas fa-times ml-5"
-                      @click="closeTab(queryIndex)"
+                      class="fas fa-times pl-2 py-2 pr-3"
+                      @click="closeTab(tabIdx)"
                     />
                   </template>
-                  <b-card-text class="mb-0">
-                    <b-row class="my-3 px-3">
-                      <b-col>
-                        <b-form-input
-                          v-model="query.controller"
-                          placeholder="Controller"
-                          list="controllersList"
-                        ></b-form-input>
-                        <datalist id="controllersList">
-                          <option
-                            v-for="controller of controllers"
-                            :key="`${queryIndex}-${controller}`"
-                            >{{ controller }}</option
-                          >
-                        </datalist>
-                      </b-col>
-                      <b-col>
-                        <b-form-input
-                          v-model="query.action"
-                          placeholder="Action"
-                          list="actionsList"
-                        ></b-form-input>
-                        <datalist id="actionsList">
-                          <option
-                            v-for="action of actions"
-                            :key="`${queryIndex}-${action}`"
-                            >{{ action }}</option
-                          >
-                        </datalist>
-                      </b-col>
-                      <b-col>
-                        <b-form-input
-                          v-model="query.index"
-                          placeholder="Index"
-                          list="indexList"
-                        ></b-form-input>
-                        <datalist id="indexList">
-                          <option
-                            v-for="i of indexes"
-                            :key="`${queryIndex}-${i}`"
-                            >{{ i }}</option
-                          >
-                        </datalist>
-                      </b-col>
-                      <b-col>
-                        <b-form-input
-                          v-model="query.collection"
-                          placeholder="Collection"
-                          list="collectionList"
-                        ></b-form-input>
-                        <datalist id="collectionList">
-                          <option
-                            v-for="collection of collections"
-                            :key="`${queryIndex}-${collection}`"
-                            >{{ collection }}</option
-                          >
-                        </datalist>
-                      </b-col>
-                      <b-col class="text-right">
-                        <b-button
-                          @click="performQuery(queryIndex)"
-                          :disabled="!isQueryValid"
-                          variant="success"
-                          class="mr-3"
-                        >
-                          <i class="fas fa-rocket mr-2" />
-                          RUN
-                        </b-button>
-                        <b-button
-                          @click="saveQuery(queryIndex)"
-                          :disabled="!isQueryValid"
-                          variant="outline-primary"
-                        >
-                          <i class="fas fa-save mr-2" />
-                          SAVE
-                        </b-button>
-                        <!-- <b-button
-                          @click="copyToClipBoard('Query')"
-                          variant="outline-secondary"
-                        >
-                          <i class="fas fa-copy mr-2" />
-                          COPY
-                        </b-button> -->
-                      </b-col>
-                    </b-row>
-                    <json-editor
-                      id="query"
-                      :ref="`queryEditorWrapper-${query.name}`"
-                      reference="queryEditor"
-                      tabindex="4"
-                      myclass="h-100"
-                      :height="300"
-                      :content="query.body"
-                      @change="queryBodyChange($event, queryIndex)"
-                    />
-                  </b-card-text>
-                  <ResponseCard :response="query.response" />
+                  <QueryCard
+                    :query="tabContent.query"
+                    :tabIdx="tabIdx"
+                    :controllers="controllers"
+                    :actions="actions"
+                    :indexes="indexes"
+                    :collections="collections"
+                    @queryChanged="queryChanged"
+                    @perfomQuery="performQuery"
+                  />
+                  <ResponseCard :response="tabContent.response" />
                 </b-tab>
                 <template #tabs-end>
                   <b-nav-item
@@ -148,19 +64,19 @@
         </b-row>
       </b-container>
     </div>
-    <SaveQueryModal
+    <!-- <SaveQueryModal
       :isQueryNameValid="isQueryNameValid"
       @queryNameValidated="queryNameValidated"
-    />
+    /> -->
   </Multipane>
 </template>
 
 <script>
-import jsonEditor from '@/components/Common/JsonEditor'
 import InfoAlert from '@/components/ApiAction/InfoAlert'
 import ResponseCard from '@/components/ApiAction/ResponseCard'
-import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
-import QueryList from '@/components/ApiAction/QueryList'
+// import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
+// import QueryList from '@/components/ApiAction/QueryList'
+import QueryCard from '@/components/ApiAction/QueryCard'
 
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { mapGetters } from 'vuex'
@@ -169,23 +85,24 @@ import _ from 'lodash'
 export default {
   components: {
     Multipane,
-    jsonEditor,
     MultipaneResizer,
     ResponseCard,
     InfoAlert,
-    SaveQueryModal,
-    QueryList
+    QueryCard
+    // SaveQueryModal,
+    // QueryList
   },
   data() {
     return {
       tabs: [],
-      currentTab: 0,
+      currentTabIdx: 0,
       api: null,
       loading: true,
       savedQueries: []
     }
   },
   computed: {
+    // computed kuzzle api
     ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
     storage() {
       return this.$store.direct.getters.index.indexes
@@ -194,10 +111,12 @@ export default {
       return this.storage.map(i => i.name)
     },
     collections() {
-      if (!this.currentQueryIndex) {
+      if (!this.currentQueryIndexName) {
         return []
       }
-      const index = this.storage.find(i => i.name === this.currentQueryIndex)
+      const index = this.storage.find(
+        i => i.name === this.currentQueryIndexName
+      )
       return index && index.collections
         ? index.collections.map(c => c.name)
         : []
@@ -206,63 +125,74 @@ export default {
       return this.api ? Object.keys(this.api) : []
     },
     actions() {
-      if (!this.tabs[this.currentTab]) {
+      if (!this.tabs[this.currentTabIdx]) {
         return []
       }
-      const currentController = this.tabs[this.currentTab].controller
+      const currentController = this.tabs[this.currentTabIdx].query.controller
       return currentController && this.api[currentController]
         ? Object.keys(this.api[currentController])
         : []
     },
-    currentQueryIndex() {
-      if (!this.tabs[this.currentTab]) {
+
+    // computed component
+    emptyTab() {
+      return {
+        query: {
+          controller: null,
+          action: null,
+          _id: null,
+          index: null,
+          collection: null,
+          body: '{}'
+        },
+        saved: false,
+        name: '',
+        response: ''
+      }
+    },
+    currentQueryIndexName() {
+      if (!this.tabs[this.currentTabIdx]) {
         return null
       }
-      return this.tabs[this.currentTab].index
+      return this.tabs[this.currentTabIdx].query.index
     },
+    // currentQueryIdx() {
+    //   if (!this.tabs[this.currentTabIdx]) {
+    //     return null
+    //   }
+    //   return this.tabs[this.currentTabIdx].idx
+    // },
     currentQueryBody() {
-      if (!this.tabs[this.currentTab]) {
+      if (!this.tabs[this.currentTabIdx]) {
         return null
       }
-      return this.tabs[this.currentTab].body
-    },
-    currentQueryName() {
-      if (!this.tabs[this.currentTab]) {
-        return null
-      }
-      return this.tabs[this.currentTab].name
-    },
-    isQueryValid() {
-      if (!this.currentQueryBody) {
-        return false
-      }
-      try {
-        JSON.parse(this.currentQueryBody)
-        return true
-      } catch (error) {
-        return false
-      }
+      return this.tabs[this.currentTabIdx].body
     }
+    // currentQueryName() {
+    //   if (!this.tabs[this.currentTabIdx]) {
+    //     return null
+    //   }
+    //   return this.tabs[this.currentTabIdx].name
+    // },
   },
   methods: {
-    queryHasChangesNotSaved(index) {
-      const savedQuery = this.savedQueries.find(
-        q => q.name === this.currentQueryName
-      )
-      return !_.isEqual(savedQuery, this.tabs[index])
+    queryChanged({ query, tabIdx }) {
+      this.tabs[tabIdx].query = _.clone(query)
     },
-    closeTab(index) {
-      if (this.currentTab === index) {
-        if (this.currentTab > 0) {
-          this.currentTab = index - 1
+    setCurrentTab(tabIdx) {
+      this.currentTabIdx = tabIdx
+    },
+    closeTab(tabIdx) {
+      if (this.currentTabIdx === tabIdx) {
+        if (this.currentTabIdx > 0) {
+          this.currentTabIdx = tabIdx - 1
         } else {
-          this.currentTab = 0
+          this.currentTabIdx = 0
         }
-      } else if (this.currentTab > index) {
-        this.currentTab = this.currentTab - 1
+      } else if (this.currentTabIdx > tabIdx) {
+        this.currentTabIdx = this.currentTabIdx - 1
       }
-      console.log(this.currentTab)
-      this.tabs.splice(index, 1)
+      this.tabs.splice(tabIdx, 1)
     },
     async fetchIndexList() {
       try {
@@ -283,33 +213,58 @@ export default {
         )
       }
     },
-    deleteSavedQuery(index) {
-      console.log(index)
-      // if (index === this.currentQueryIndex) {
-      //   this.resetFields()
-      // }
-      // this.savedQueries.splice(index, 1)
-      // let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
-      // if (!storedQueries) {
-      //   storedQueries = {}
-      // }
-      // storedQueries[this.currentEnvironment] = this.savedQueries
-      // localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
-      // this.$bvToast.toast(`Query successfully deleted.`, {
-      //   title: 'Success',
-      //   variant: 'success',
-      //   toaster: 'b-toaster-bottom-right',
-      //   appendToast: true
-      // })
-    },
-    loadStoredQueries() {
-      const storedQueries = localStorage.getItem('savedQueries')
-      if (storedQueries) {
-        this.savedQueries = JSON.parse(storedQueries)[
-          this.currentEnvironment.name
-        ]
-      }
-    },
+    // deleteSavedQuery(index) {
+    /*
+  delete:
+    deleting tab is not opened
+      just delete it
+
+    deleting tab is opened
+      deleting tab is actual opened tab
+        - deleting tab is the only opened tab
+        - deleting tab is the last of opened tabs
+        - deleting tab is the first of opened tabs
+        - else
+
+      deleting tab is not actual opened tab
+        - actual tab is last tab
+
+*/
+    // console.log(index)
+    // const tabLength = this.tabs.length
+    // if (tabLength === 1) {
+    //   console.log('deleting only opened tab')
+    //   this.currentTabIdx = -1
+    // }
+    // if (index === this.currentQueryIdx) {
+    //   console.log('deleting current tab')
+    //   if (this.currentTabIdx === tabLength - 1) {
+    //     console.log('last tab')
+    //     this.currentTabIdx = tabLength - 2
+    //   } else {
+    //     console.log('balec')
+    //   }
+    // } else {
+    //   console.log('NOT deleting current tab')
+    // }
+    // this.savedQueries.splice(index, 1)
+    // let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
+    // if (!storedQueries) {
+    //   storedQueries = {}
+    // }
+    // storedQueries[this.currentEnvironment] = this.savedQueries
+    // localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
+    // this.$bvToast.toast(`Query successfully deleted.`, {
+    //   title: 'Success',
+    //   variant: 'success',
+    //   toaster: 'b-toaster-bottom-right',
+    //   appendToast: true
+    // })
+    // },
+    // loadStoredQueries() {
+    //   const storedQueries = localStorage.getItem('savedQueries')
+    //   if (storedQuer      console.log(newTab, this.tabs);
+
     // resetFields() {
     //   this.currentQuery = `{
     //   "controller": "",
@@ -323,22 +278,26 @@ export default {
     //   this.currentQueryName = ''
     //   this.currentResponse = ''
     //   this.currentStatus = null
-    //   this.currentQueryIndex = null
+    //   this.currentQueryIndexName = null
     //   this.currentErrorStack = null
     // },
-    loadSavedQuery(index) {
-      const query = this.savedQueries[index]
-      if (!query) return
+    // loadSavedQuery(index) {
+    //   const query = this.savedQueries[index]
+    //   if (!query) return
 
-      const idx = this.tabs.findIndex(t => t.name === query.name)
-      if (idx !== -1) {
-        this.currentTab = idx
-        return
-      }
-      this.tabs.push(query)
-      this.$refs[`queryEditorWrapper-${query.name}`].setContent(JSON.parse(query.body))
-      this.currentTab = this.tabs.length - 1
-    },
+    //   const idx = this.tabs.findIndex(t => t.name === query.name)
+    //   if (idx !== -1) {
+    //     this.currentTabIdx = idx
+    //     return
+    //   }
+    //   this.tabs.push(query)
+    //   this.$nextTick(() => {
+    //     const refName = `queryEditorWrapper-${query.name}`
+    //     const ref = this.$refs[refName]
+    //     ref[0].setContent(query.body)
+    //   })
+    //   this.currentTabIdx = this.tabs.length - 1
+    // },
     // copyToClipBoard(type) {
     //   const textarea = document.createElement('textarea')
     //   if (type === 'Response') {
@@ -367,74 +326,82 @@ export default {
     //   }
     //   document.body.removeChild(textarea)
     // },
-    isQueryNameValid(name) {
-      const nameSearch = this.savedQueries.find((q, index) => {
-        if (this.currentQueryIndex === index) {
-          return false
-        }
-        return q.name === name
-      })
-      const nameAlreadyUsed = nameSearch !== undefined
-      if (nameAlreadyUsed) {
-        this.$bvToast.toast('Query name already used.', {
-          title: 'Error',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
-      }
-      return !nameAlreadyUsed
-    },
-    queryNameValidated(name) {
-      const oldName = this.tabs[this.currentTab].name
-      this.tabs[this.currentTab].name = name
-      if (oldName === '') {
-        this.savedQueries.push(this.tabs[this.currentTab])
-      } else {
-        const savedQueryIndex = this.savedQueries.findIndex(
-          q => q.name === oldName
-        )
-        if (!savedQueryIndex) {
-          this.$bvToast.toast('An error occured whiled saving query.', {
-            title: 'Error',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true
-          })
-          return
-        }
-        this.savedQueries[savedQueryIndex] = this.tabs[this.currentTab]
-      }
-      let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
-      if (!storedQueries) {
-        storedQueries = {}
-      }
-      storedQueries[this.currentEnvironment.name] = this.savedQueries
-      localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
-      this.$bvToast.toast('Query successfully saved.', {
-        title: 'Info',
-        variant: 'info',
-        toaster: 'b-toaster-bottom-right',
-        appendToast: true
-      })
-    },
-    saveQuery() {
-      if (this.currentQueryName === "") {
-        return this.$bvModal.show('modal-save-query')
-      }
+    // isQueryNameValid(name) {
+    //   const nameSearch = this.savedQueries.find((q, index) => {
+    //     if (this.currentQueryIndexName === index) {
+    //       return false
+    //     }
+    //     return q.name === name
+    //   })
+    //   const nameAlreadyUsed = nameSearch !== undefined
+    //   if (nameAlreadyUsed) {
+    //     this.$bvToast.toast('Query name already used.', {
+    //       title: 'Error',
+    //       variant: 'danger',
+    //       toaster: 'b-toaster-bottom-right',
+    //       appendToast: true
+    //     })
+    //   }
+    //   return !nameAlreadyUsed
+    // },
+    // queryNameValidated(name) {
+    //   this.tabs[this.currentTabIdx].name = name
+    //   this.tabs[this.currentTabIdx].saved = true
+    //   this.savedQueries.push(this.tabs[this.currentTabIdx])
+    //   let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
+    //   if (!storedQueries) {
+    //     storedQueries = {}
+    //   }
+    //   storedQueries[this.currentEnvironment.name] = this.savedQueries
+    //   localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
+    //   this.$bvToast.toast('Query successfully saved.', {
+    //     title: 'Info',
+    //     variant: 'info',
+    //     toaster: 'b-toaster-bottom-right',
+    //     appendToast: true
+    //   })
+    // },
+    // saveQuery() {
+    //   if (this.currentQueryName === '') {
+    //     return this.$bvModal.show('modal-save-query')
+    //   } else {
+    //     console.log('save query stored')
+    //     const name = this.tabs[this.currentTabIdx].name
+    //     const savedQueryIndex = this.savedQueries.findIndex(
+    //       q => q.name === name
+    //     )
+    //     if (!savedQueryIndex) {
+    //       this.$bvToast.toast('An error occured whiled saving query.', {
+    //         title: 'Error',
+    //         variant: 'danger',
+    //         toaster: 'b-toaster-bottom-right',
+    //         appendToast: true
+    //       })
+    //       return
+    //     }
+    //     const tabs = this.tabs;
+    //     tabs[this.currentTabIdx].saved = true
+    //     this.$set(this, 'tabs, tabs');
+    //     this.savedQueries[savedQueryIndex] = this.tabs[this.currentTabIdx]
+    //     let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
+    //     if (!storedQueries) {
+    //       storedQueries = {}
+    //     }
+    //     storedQueries[this.currentEnvironment.name] = this.savedQueries
+    //     localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
+    //     this.$bvToast.toast('Query successfully saved.', {
+    //       title: 'Info',
+    //       variant: 'info',
+    //       toaster: 'b-toaster-bottom-right',
+    //       appendToast: true
+    //     })
+    //   }
+    // },
+    async performQuery(tabIdx) {
+      const query = _.clone(this.tabs[tabIdx].query)
+      let response = {}
 
-    },
-    async performQuery(index) {
-      const tab = this.tabs[index]
-      const query = {
-        body: JSON.parse(tab.body),
-        _id: tab._id,
-        controller: tab.controller,
-        action: tab.action,
-        index: tab.index,
-        collection: tab.collection
-      }
-      let response
+      query.body = JSON.parse(query.body)
       try {
         response = await this.wrapper.query(query)
         this.$bvToast.toast('Query successfully played.', {
@@ -457,23 +424,13 @@ export default {
           appendToast: true
         })
       }
-      this.tabs[index].response = response
-    },
-    queryBodyChange(payload, index) {
-      this.tabs[index].body = payload
+      this.tabs[tabIdx].response = response
     },
     newTab() {
-      this.tabs.push({
-        body: '{}',
-        _id: null,
-        controller: null,
-        action: null,
-        index: null,
-        collection: null,
-        name: '',
-        response: ''
-      })
-      this.currentTab = this.tabs.length - 1
+      let newTab = _.clone(this.emptyTab)
+
+      this.tabs.push(newTab)
+      this.currentTabIdx = this.tabs.length - 1
     },
     async getKuzzlePublicApi() {
       try {
@@ -488,7 +445,7 @@ export default {
     }
   },
   watch: {
-    currentQueryIndex: {
+    currentQueryIndexName: {
       async handler(value) {
         if (!value) {
           return
@@ -503,17 +460,8 @@ export default {
   },
   async mounted() {
     this.loading = true
-    this.loadStoredQueries()
-    this.tabs.push({
-      body: '{}',
-      _id: null,
-      controller: null,
-      action: null,
-      index: null,
-      collection: null,
-      name: '',
-      response: ''
-    })
+    // this.loadStoredQueries()
+    this.newTab()
     await this.getKuzzlePublicApi()
     await this.fetchIndexList()
     this.loading = false
