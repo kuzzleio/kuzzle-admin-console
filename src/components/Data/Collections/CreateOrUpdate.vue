@@ -77,6 +77,25 @@
           ></b-form-radio-group>
         </b-form-group>
         <hr />
+        <b-row class="mb-3">
+          <b-col cols="12">
+            <b-form-file
+              class="float-left mr-3 w-50"
+              ref="file-input"
+              @change="loadMappingValue($event)"
+              placeholder="Import mapping"
+            />
+            <b-button
+              class="float-left"
+              data-cy="export-collection-mapping"
+              :download="mappingFileName"
+              :href="downloadMappingValue"
+              :disabled="!isMappingValid"
+            >
+              Export Mapping
+            </b-button>
+          </b-col>
+        </b-row>
         <b-row class="flex-grow">
           <b-col cols="8">
             <json-editor
@@ -133,6 +152,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { requiredUnless } from 'vuelidate/lib/validators'
+import { mapGetters } from 'vuex'
 
 import Headline from '../../Materialize/Headline'
 import Focus from '../../../directives/focus.directive'
@@ -194,6 +214,16 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['currentEnvironment']),
+    indexName() {
+      return this.$route.params.indexName
+    },
+    collectionName() {
+      return this.$route.params.collectionName
+    },
+    mappingFileName() {
+      return `${this.currentEnvironment.name}-${this.indexName}-${this.name}-mapping.json`
+    },
     nameInputState() {
       const { $dirty, $error } = this.$v.name
       const state = $dirty ? !$error : null
@@ -213,9 +243,38 @@ export default {
       } catch (error) {
         return false
       }
+    },
+    downloadMappingValue() {
+      if (this.isMappingValid) {
+        const blob = new Blob([JSON.stringify(JSON.parse(this.rawMapping))], {
+          type: 'application/json'
+        })
+        return window.URL.createObjectURL(blob)
+      }
+      return null
     }
   },
   methods: {
+    loadMappingValue(event) {
+      let file = event.target.files[0]
+      let reader = new FileReader()
+      reader.onload = async e => {
+        this.rawMapping = e.target.result
+        this.$refs.jsoneditor.setContent(this.rawMapping)
+        this.$bvToast.toast(
+          'The file has been written in the json editor. You can still edit it before saving if necessary.',
+          {
+            title: 'Import successfully',
+            variant: 'success',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
+      reader.readAsText(file)
+    },
     onMappingChanged(value) {
       this.rawMapping = value
     },
