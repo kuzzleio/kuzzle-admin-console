@@ -6,7 +6,6 @@ import kuzzle from './modules/kuzzle/store'
 import routing from './modules/common/routing/store'
 import toaster from './modules/common/toaster/store'
 import index from './modules/index/store'
-import security from './modules/security/store'
 
 Vue.use(Vuex)
 
@@ -17,7 +16,6 @@ const { store, rootActionContext, moduleActionContext } = createDirectStore({
     routing,
     toaster,
     index,
-    security
   },
   strict: process.env.NODE_ENV !== 'production'
 })
