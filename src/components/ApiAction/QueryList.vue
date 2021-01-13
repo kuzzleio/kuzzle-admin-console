@@ -7,15 +7,22 @@
             <b-list-group>
               <b-list-group-item
                 v-for="query of paginedQueries"
-                class="d-flex justify-content-between align-items-center"
+                class="p-0"
                 :key="`saved-query-${query.idx}`"
                 :active="query.idx === currentQueryIndex"
               >
-                <span @click="loadSavedQuery(query.idx)">{{ query.name }}</span>
-                <i
-                  :class="`fas fa-trash`"
-                  @click="deleteSavedQuery(query.idx)"
-                />
+                <b-row align-v="center">
+                  <b-col
+                    cols="9"
+                    class="text-left py-3 pointer"
+                    @click="loadSavedQuery(query.idx)"
+                  >
+                    <span class="ml-4">{{ query.name }}</span>
+                  </b-col>
+                  <b-col cols="3" class="py-3">
+                    <i class="fas fa-trash pointer" @click="deleteSavedQuery(query.idx)"/>
+                  </b-col>
+                </b-row>
               </b-list-group-item>
             </b-list-group>
           </b-card-text>
@@ -64,14 +71,20 @@ export default {
     }
   },
   methods: {
-    deleteSavedQuery(index) {
-      this.$emit("deleteSavedQuery", index)
+    deleteSavedQuery(savedQueryIdx) {
+      this.$emit('deleteSavedQuery', savedQueryIdx)
     },
-    loadSavedQuery(index) {
-      this.$emit("loadSavedQuery", index)
+    loadSavedQuery(savedQueryIdx) {
+      this.$emit('loadSavedQuery', savedQueryIdx)
     }
   }
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.list-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+</style>

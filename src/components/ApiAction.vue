@@ -1,12 +1,12 @@
 <template>
   <Multipane class="DataLayout Custom-resizer" layout="vertical">
     <div class="DataLayout-sidebarWrapper" data-cy="DataLayout-sidebarWrapper">
-      <!-- <QueryList
+      <QueryList
         :savedQueries="savedQueries"
         :currentQueryName="currentQueryName"
         @deleteSavedQuery="deleteSavedQuery"
         @loadSavedQuery="loadSavedQuery"
-      /> -->
+      />
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
@@ -24,19 +24,27 @@
                   :key="`query-${tabIdx}-${tabContent.name}`"
                   :active="currentTabIdx === tabIdx"
                   @click.prevent=""
-                  title-link-class="px-0 py-1"
+                  title-link-class="px-3 py-0 h-100 titleItem"
                 >
                   <template #title>
-                    <strong
-                      class="py-2 pl-3 pr-4"
-                      @click="setCurrentTab(tabIdx)"
-                      >{{ tabContent.name ? tabContent.name : 'New query' }}
-                      {{ tabContent.saved ? '' : ' *' }}
-                    </strong>
-                    <i
-                      class="fas fa-times pl-2 py-2 pr-3"
-                      @click="closeTab(tabIdx)"
-                    />
+                    <b-row align-v="center" class="">
+                      <b-col
+                        cols="9"
+                        class="text-left my-3 pointer"
+                        @click="setCurrentTab(tabIdx)"
+                      >
+                        <span>
+                          {{ tabContent.name ? tabContent.name : 'New query' }}
+                          {{ tabContent.saved ? '' : ' *' }}
+                        </span>
+                      </b-col>
+                      <b-col cols="3" class="my-3">
+                        <i
+                          class="fas fa-times pointer"
+                          @click="closeTab(tabIdx)"
+                        />
+                      </b-col>
+                    </b-row>
                   </template>
                   <QueryCard
                     :query="tabContent.query"
@@ -45,18 +53,18 @@
                     :actions="actions"
                     :indexes="indexes"
                     :collections="collections"
+                    @saveQuery="saveQuery"
                     @queryChanged="queryChanged"
                     @perfomQuery="performQuery"
                   />
                   <ResponseCard :response="tabContent.response" />
                 </b-tab>
                 <template #tabs-end>
-                  <b-nav-item
-                    role="presentation"
-                    @click.prevent="newTab"
-                    href="#"
-                    ><b>+</b></b-nav-item
-                  >
+                  <b-row align-v="center" class="px-3" @click.prevent="newTab">
+                    <b-col cols="12" class="text-center my-3 pointer">
+                      <b>+</b>
+                    </b-col>
+                  </b-row>
                 </template>
               </b-tabs>
             </b-card>
@@ -64,18 +72,18 @@
         </b-row>
       </b-container>
     </div>
-    <!-- <SaveQueryModal
+    <SaveQueryModal
       :isQueryNameValid="isQueryNameValid"
-      @queryNameValidated="queryNameValidated"
-    /> -->
+      @storeNewQuery="storeNewQuery"
+    />
   </Multipane>
 </template>
 
 <script>
 import InfoAlert from '@/components/ApiAction/InfoAlert'
 import ResponseCard from '@/components/ApiAction/ResponseCard'
-// import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
-// import QueryList from '@/components/ApiAction/QueryList'
+import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
+import QueryList from '@/components/ApiAction/QueryList'
 import QueryCard from '@/components/ApiAction/QueryCard'
 
 import { Multipane, MultipaneResizer } from 'vue-multipane'
@@ -88,9 +96,9 @@ export default {
     MultipaneResizer,
     ResponseCard,
     InfoAlert,
-    QueryCard
-    // SaveQueryModal,
-    // QueryList
+    QueryCard,
+    SaveQueryModal,
+    QueryList
   },
   data() {
     return {
@@ -98,7 +106,8 @@ export default {
       currentTabIdx: 0,
       api: null,
       loading: true,
-      savedQueries: []
+      savedQueries: [],
+      newSaveTabIdx: null
     }
   },
   computed: {
@@ -147,14 +156,9 @@ export default {
         },
         saved: false,
         name: '',
-        response: ''
+        response: '',
+        savedIdx: null
       }
-    },
-    currentQueryIndexName() {
-      if (!this.tabs[this.currentTabIdx]) {
-        return null
-      }
-      return this.tabs[this.currentTabIdx].query.index
     },
     // currentQueryIdx() {
     //   if (!this.tabs[this.currentTabIdx]) {
@@ -167,16 +171,26 @@ export default {
         return null
       }
       return this.tabs[this.currentTabIdx].body
+    },
+    currentQueryName() {
+      if (!this.tabs[this.currentTabIdx]) {
+        return null
+      }
+      return this.tabs[this.currentTabIdx].name
     }
-    // currentQueryName() {
-    //   if (!this.tabs[this.currentTabIdx]) {
-    //     return null
-    //   }
-    //   return this.tabs[this.currentTabIdx].name
-    // },
   },
   methods: {
     queryChanged({ query, tabIdx }) {
+      if (this.tabs[tabIdx].query.index !== query.index) {
+        this.lazyFetchCollections(query.index)
+      }
+      const savedIdx = this.tabs[tabIdx].savedIdx
+      if (savedIdx !== null) {
+        this.tabs[tabIdx].saved = _.isEqual(
+          this.savedQueries[savedIdx].query,
+          query
+        )
+      }
       this.tabs[tabIdx].query = _.clone(query)
     },
     setCurrentTab(tabIdx) {
@@ -213,8 +227,8 @@ export default {
         )
       }
     },
-    // deleteSavedQuery(index) {
-    /*
+    deleteSavedQuery(savedQueryIdx) {
+      /*
   delete:
     deleting tab is not opened
       just delete it
@@ -230,40 +244,37 @@ export default {
         - actual tab is last tab
 
 */
-    // console.log(index)
-    // const tabLength = this.tabs.length
-    // if (tabLength === 1) {
-    //   console.log('deleting only opened tab')
-    //   this.currentTabIdx = -1
-    // }
-    // if (index === this.currentQueryIdx) {
-    //   console.log('deleting current tab')
-    //   if (this.currentTabIdx === tabLength - 1) {
-    //     console.log('last tab')
-    //     this.currentTabIdx = tabLength - 2
-    //   } else {
-    //     console.log('balec')
-    //   }
-    // } else {
-    //   console.log('NOT deleting current tab')
-    // }
-    // this.savedQueries.splice(index, 1)
-    // let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
-    // if (!storedQueries) {
-    //   storedQueries = {}
-    // }
-    // storedQueries[this.currentEnvironment] = this.savedQueries
-    // localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
-    // this.$bvToast.toast(`Query successfully deleted.`, {
-    //   title: 'Success',
-    //   variant: 'success',
-    //   toaster: 'b-toaster-bottom-right',
-    //   appendToast: true
-    // })
-    // },
-    // loadStoredQueries() {
-    //   const storedQueries = localStorage.getItem('savedQueries')
-    //   if (storedQuer      console.log(newTab, this.tabs);
+      console.log(savedQueryIdx)
+      // const tabLength = this.tabs.length
+      // if (tabLength === 1) {
+      //   console.log('deleting only opened tab')
+      //   this.currentTabIdx = -1
+      // }
+      // if (index === this.currentQueryIdx) {
+      //   console.log('deleting current tab')
+      //   if (this.currentTabIdx === tabLength - 1) {
+      //     console.log('last tab')
+      //     this.currentTabIdx = tabLength - 2
+      //   } else {
+      //     console.log('balec')
+      //   }
+      // } else {
+      //   console.log('NOT deleting current tab')
+      // }
+      // this.savedQueries.splice(index, 1)
+      // let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
+      // if (!storedQueries) {
+      //   storedQueries = {}
+      // }
+      // storedQueries[this.currentEnvironment] = this.savedQueries
+      // localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
+      // this.$bvToast.toast(`Query successfully deleted.`, {
+      //   title: 'Success',
+      //   variant: 'success',
+      //   toaster: 'b-toaster-bottom-right',
+      //   appendToast: true
+      // })
+    },
 
     // resetFields() {
     //   this.currentQuery = `{
@@ -281,23 +292,21 @@ export default {
     //   this.currentQueryIndexName = null
     //   this.currentErrorStack = null
     // },
-    // loadSavedQuery(index) {
-    //   const query = this.savedQueries[index]
-    //   if (!query) return
+    loadSavedQuery(savedQueryIdx) {
+      if (!this.savedQueries[savedQueryIdx]) return
+      const query = _.clone(this.savedQueries[savedQueryIdx])
 
-    //   const idx = this.tabs.findIndex(t => t.name === query.name)
-    //   if (idx !== -1) {
-    //     this.currentTabIdx = idx
-    //     return
-    //   }
-    //   this.tabs.push(query)
-    //   this.$nextTick(() => {
-    //     const refName = `queryEditorWrapper-${query.name}`
-    //     const ref = this.$refs[refName]
-    //     ref[0].setContent(query.body)
-    //   })
-    //   this.currentTabIdx = this.tabs.length - 1
-    // },
+      const tabIdx = this.tabs.findIndex(t => t.name === query.name)
+      if (tabIdx !== -1) {
+        this.currentTabIdx = tabIdx
+        return
+      }
+      this.tabs.push(query)
+      this.$nextTick(() => {
+        this.$refs[`queryEditorWrapper-${query.name}`][0].setContent(query.body)
+      })
+      this.currentTabIdx = this.tabs.length - 1
+    },
     // copyToClipBoard(type) {
     //   const textarea = document.createElement('textarea')
     //   if (type === 'Response') {
@@ -326,77 +335,83 @@ export default {
     //   }
     //   document.body.removeChild(textarea)
     // },
-    // isQueryNameValid(name) {
-    //   const nameSearch = this.savedQueries.find((q, index) => {
-    //     if (this.currentQueryIndexName === index) {
-    //       return false
-    //     }
-    //     return q.name === name
-    //   })
-    //   const nameAlreadyUsed = nameSearch !== undefined
-    //   if (nameAlreadyUsed) {
-    //     this.$bvToast.toast('Query name already used.', {
-    //       title: 'Error',
-    //       variant: 'danger',
-    //       toaster: 'b-toaster-bottom-right',
-    //       appendToast: true
-    //     })
-    //   }
-    //   return !nameAlreadyUsed
-    // },
-    // queryNameValidated(name) {
-    //   this.tabs[this.currentTabIdx].name = name
-    //   this.tabs[this.currentTabIdx].saved = true
-    //   this.savedQueries.push(this.tabs[this.currentTabIdx])
-    //   let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
-    //   if (!storedQueries) {
-    //     storedQueries = {}
-    //   }
-    //   storedQueries[this.currentEnvironment.name] = this.savedQueries
-    //   localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
-    //   this.$bvToast.toast('Query successfully saved.', {
-    //     title: 'Info',
-    //     variant: 'info',
-    //     toaster: 'b-toaster-bottom-right',
-    //     appendToast: true
-    //   })
-    // },
-    // saveQuery() {
-    //   if (this.currentQueryName === '') {
-    //     return this.$bvModal.show('modal-save-query')
-    //   } else {
-    //     console.log('save query stored')
-    //     const name = this.tabs[this.currentTabIdx].name
-    //     const savedQueryIndex = this.savedQueries.findIndex(
-    //       q => q.name === name
-    //     )
-    //     if (!savedQueryIndex) {
-    //       this.$bvToast.toast('An error occured whiled saving query.', {
-    //         title: 'Error',
-    //         variant: 'danger',
-    //         toaster: 'b-toaster-bottom-right',
-    //         appendToast: true
-    //       })
-    //       return
-    //     }
-    //     const tabs = this.tabs;
-    //     tabs[this.currentTabIdx].saved = true
-    //     this.$set(this, 'tabs, tabs');
-    //     this.savedQueries[savedQueryIndex] = this.tabs[this.currentTabIdx]
-    //     let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
-    //     if (!storedQueries) {
-    //       storedQueries = {}
-    //     }
-    //     storedQueries[this.currentEnvironment.name] = this.savedQueries
-    //     localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
-    //     this.$bvToast.toast('Query successfully saved.', {
-    //       title: 'Info',
-    //       variant: 'info',
-    //       toaster: 'b-toaster-bottom-right',
-    //       appendToast: true
-    //     })
-    //   }
-    // },
+    isQueryNameValid(name) {
+      if (name === '' || name === 'New Query') {
+        return false
+      }
+      const nameSearch = this.savedQueries.find((q, index) => {
+        if (this.currentQueryIndexName === index) {
+          return false
+        }
+        return q.name === name
+      })
+      const nameAlreadyUsed = nameSearch !== undefined
+      if (nameAlreadyUsed) {
+        this.$bvToast.toast('Query name already used.', {
+          title: 'Error',
+          variant: 'danger',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true
+        })
+      }
+      return !nameAlreadyUsed
+    },
+    storeNewQuery(name) {
+      this.tabs[this.newSaveTabIdx].name = name
+      this.tabs[this.newSaveTabIdx].saved = true
+      const tab = _.clone(this.tabs[this.newSaveTabIdx])
+      this.savedQueries.push(tab)
+      this.newSaveTabIdx = null
+      this.storeQueriesToLocalStorage()
+    },
+    saveQuery(tabIdx) {
+      const tab = this.tabs[tabIdx]
+      const storedQueryIdx = this.savedQueries.findIndex(
+        q => q.name === tab.name
+      )
+      if (storedQueryIdx !== -1) {
+        this.savedQueries[storedQueryIdx].query = _.clone(tab.query)
+        this.tabs[storedQueryIdx].saved = true
+        this.storeQueriesToLocalStorage()
+      } else {
+        this.newSaveTabIdx = tabIdx
+        this.$bvModal.show('modal-save-query')
+      }
+    },
+    loadStoredQueriesFromLocalStorage() {
+      const storedQueries = localStorage.getItem('storedQueries')
+      if (!storedQueries) {
+        return
+      }
+      this.savedQueries = JSON.parse(storedQueries)[
+        this.currentEnvironment.name
+      ].map((q, idx) => {
+        q.response = ''
+        q.saved = true
+        q.savedIdx = idx
+        return q
+      })
+    },
+    storeQueriesToLocalStorage() {
+      let storedQueries = JSON.parse(localStorage.getItem('storedQueries'))
+      if (!storedQueries) {
+        storedQueries = {}
+      }
+      const queriesToStore = _.clone(this.savedQueries)
+      storedQueries[this.currentEnvironment.name] = queriesToStore.map(q => {
+        delete q.response
+        delete q.saved
+        delete q.savedIdx
+        return q
+      })
+      localStorage.setItem('storedQueries', JSON.stringify(storedQueries))
+      this.$bvToast.toast('Query successfully saved.', {
+        title: 'Info',
+        variant: 'info',
+        toaster: 'b-toaster-bottom-right',
+        appendToast: true
+      })
+    },
     async performQuery(tabIdx) {
       const query = _.clone(this.tabs[tabIdx].query)
       let response = {}
@@ -428,7 +443,6 @@ export default {
     },
     newTab() {
       let newTab = _.clone(this.emptyTab)
-
       this.tabs.push(newTab)
       this.currentTabIdx = this.tabs.length - 1
     },
@@ -442,25 +456,20 @@ export default {
       } catch (error) {
         this.$log.error(error)
       }
-    }
-  },
-  watch: {
-    currentQueryIndexName: {
-      async handler(value) {
-        if (!value) {
-          return
-        }
-        if (this.storage.find(i => i.name === value && !i.collections)) {
-          const index = this.$store.direct.getters.index.getOneIndex(value)
-          await this.$store.direct.dispatch.index.fetchCollectionList(index)
-        }
-      },
-      deep: true
+    },
+    async lazyFetchCollections(indexName) {
+      if (!indexName) {
+        return
+      }
+      if (this.storage.find(i => i.name === indexName && !i.collections)) {
+        const index = this.$store.direct.getters.index.getOneIndex(indexName)
+        await this.$store.direct.dispatch.index.fetchCollectionList(index)
+      }
     }
   },
   async mounted() {
     this.loading = true
-    // this.loadStoredQueries()
+    this.loadStoredQueriesFromLocalStorage()
     this.newTab()
     await this.getKuzzlePublicApi()
     await this.fetchIndexList()
@@ -473,7 +482,9 @@ export default {
 ::v-deep .card-title {
   margin-bottom: 0px;
 }
-
+::v-deep .titleItem {
+  min-width: 160px;
+}
 .DataLayout {
   height: 100%;
   display: flex;

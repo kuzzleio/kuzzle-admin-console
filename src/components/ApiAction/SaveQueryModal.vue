@@ -46,6 +46,11 @@
         }
         return this.nameState
       },
+      reset() {
+        this.name = ''
+        this.nameState = null
+        this.feedback = ''
+      },
       handleOk(bvModalEvt) {
         bvModalEvt.preventDefault()
         if (!this.checkFormValidity()) {
@@ -54,7 +59,8 @@
         this.$nextTick(() => {
           this.$bvModal.hide('modal-save-query')
         })
-        this.$emit("queryNameValidated", this.name)
+        this.$emit("storeNewQuery", this.name)
+        this.reset();
       }
     }
   }

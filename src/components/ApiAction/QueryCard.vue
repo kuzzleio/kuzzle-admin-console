@@ -61,14 +61,14 @@
           <i class="fas fa-rocket mr-2" />
           RUN
         </b-button>
-        <!-- <b-button
-                          @click="saveQuery(tabIdx)"
-                          :disabled="!isQueryValid"
-                          variant="outline-primary"
-                        >
-                          <i class="fas fa-save mr-2" />
-                          SAVE
-                        </b-button> -->
+        <b-button
+          @click="saveQuery"
+          :disabled="!isQueryValid"
+          variant="outline-primary"
+        >
+          <i class="fas fa-save mr-2" />
+          SAVE
+        </b-button>
         <!-- <b-button
                           @click="copyToClipBoard('Query')"
                           variant="outline-secondary"
@@ -125,6 +125,9 @@ export default {
     this.editedQuery = _.clone(this.query)
   },
   methods: {
+    saveQuery() {
+      this.$emit('saveQuery', this.tabIdx)
+    },
     performQuery() {
       this.$emit('perfomQuery', this.tabIdx)
     },
@@ -147,7 +150,7 @@ export default {
     editedQuery: {
       deep: true,
       handler(value) {
-        this.$emit('queryChanged', {query: value, tabIdx: this.tabIdx})
+        this.$emit('queryChanged', { query: value, tabIdx: this.tabIdx })
       }
     }
   }
