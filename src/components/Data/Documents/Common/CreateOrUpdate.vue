@@ -51,6 +51,11 @@
                 "
               ></i>
             </b-alert>
+            <!--
+              TODO - WARNING: We're passing a prop here, while the form generator
+              mutates the value of the model. We should instead pass a local state
+              to avoid the anti-pattern of mutating props.
+            -->
             <vue-form-generator
               :schema="formSchema"
               :model="document"

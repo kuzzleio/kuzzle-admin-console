@@ -10,8 +10,10 @@
       <b-col>
         <b-button
           class="float-right"
-          download="mappring.json"
+          data-cy="export-user-mapping"
+          :download="`${this.currentEnvironment.name}-user-mapping.json`"
           :href="downloadMappingValue"
+          :disabled="!isMappingValid"
         >
           Export Mapping
         </b-button>
@@ -53,8 +55,8 @@
             You should omit the root "properties" field in this form.
             <pre>
 {
-"age": { "type": "integer" },
-"name": { "type": "string" }
+  "age": { "type": "integer" },
+  "name": { "type": "text" }
 }
         </pre
             >
@@ -105,11 +107,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
     isMappingValid() {
-      if (!this.mappingValue) {
-        return true
-      }
       try {
         JSON.parse(this.mappingValue)
         return true
@@ -118,10 +117,13 @@ export default {
       }
     },
     downloadMappingValue() {
-      const blob = new Blob([JSON.stringify(this.mappingValue)], {
-        type: 'application/json'
-      })
-      return window.URL.createObjectURL(blob)
+      if (this.isMappingValid) {
+        const blob = new Blob([JSON.stringify(JSON.parse(this.mappingValue))], {
+          type: 'application/json'
+        })
+        return window.URL.createObjectURL(blob)
+      }
+      return null
     }
   },
   async mounted() {

@@ -345,6 +345,7 @@ describe('Users', function() {
       expect(location.hash).to.equal(`#/security/users/create`)
     })
   })
+
   it('Should be able to list the users with a wrong from url parameter', () => {
     cy.skipOnBackendVersion(1)
     for (let i = 0; i < 5; i++) {
@@ -546,6 +547,57 @@ describe('Users', function() {
 
     cy.get('[data-cy="EditUserMapping-submitBtn"]').click()
     cy.contains('Users')
+  })
+
+  it('Should export the user mapping successfully', function() {
+    cy.visit('/#/security/users/custom-mapping')
+
+    cy.get('[data-cy="EditUserMapping-JSONEditor"] .ace_line').should(
+      'be.visible'
+    )
+
+    cy.get('[data-cy="EditUserMapping-JSONEditor"] .ace_line')
+      .contains('{')
+      .click({ force: true })
+    cy.get('textarea.ace_text-input')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"address": {
+"type": "text"`,
+        {
+          force: true
+        }
+      )
+    // test filename
+    cy.get('[data-cy="export-user-mapping"]').should(
+      'have.attr',
+      'download',
+      `valid-user-mapping.json`
+    )
+
+    // test file content
+    cy.get('[data-cy="export-user-mapping"]')
+      .then(
+        anchor =>
+          new Cypress.Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+            xhr.open('GET', anchor.prop('href'), true)
+            xhr.responseType = 'blob'
+            xhr.onload = () => {
+              if (xhr.status === 200) {
+                const blob = xhr.response
+                const reader = new FileReader()
+                reader.onload = () => {
+                  resolve(reader.result)
+                }
+                reader.readAsText(blob)
+              }
+            }
+            xhr.send()
+          })
+      )
+      .should('equal', `{"address":{"type":"text"}}`)
   })
 
   it('Should display a user with a lot of profiles', () => {
