@@ -246,4 +246,54 @@ describe('Collection management', function() {
     cy.contains('foobar')
     cy.contains('This collection is empty')
   })
+
+  it('Should be able to export a collection mapping', function() {
+    cy.visit(`/#/data/${indexName}/create`)
+    cy.wait(1000)
+
+    cy.get('.CollectionCreate').should('be.visible')
+    cy.get('[data-cy="CollectionCreateOrUpdate-name"]').click({ force: true })
+    cy.get('[data-cy="CollectionCreateOrUpdate-name"]').type('testexport')
+    cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"firstName": {
+"type": "keyword"`,
+        {
+          force: true
+        }
+      )
+
+    // test filename
+    cy.get('[data-cy="export-collection-mapping"]').should(
+      'have.attr',
+      'download',
+      `valid-${indexName}-testexport-mapping.json`
+    )
+
+    // test file content
+    cy.get('[data-cy="export-collection-mapping"]')
+      .then(
+        anchor =>
+          new Cypress.Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+            xhr.open('GET', anchor.prop('href'), true)
+            xhr.responseType = 'blob'
+            xhr.onload = () => {
+              if (xhr.status === 200) {
+                const blob = xhr.response
+                const reader = new FileReader()
+                reader.onload = () => {
+                  resolve(reader.result)
+                }
+                reader.readAsText(blob)
+              }
+            }
+            xhr.send()
+          })
+      )
+      .should('equal', `{"firstName":{"type":"keyword"}}`)
+  })
 })
