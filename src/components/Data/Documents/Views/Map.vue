@@ -33,7 +33,7 @@
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
             v-for="document in geoDocuments"
-            :key="document.source.id"
+            :key="document.source._id"
             :lat-lng="document.coordinates"
             :icon="getIcon(document.source)"
             @click="onMarkerClick(document.source)"
@@ -50,7 +50,7 @@
             <b-row align-v="center">
               <b-col cols="9" align-v="center">
                 <span data-cy="mapView-current-document-id">{{
-                  currentDocument.id
+                  currentDocument._id
                 }}</span>
               </b-col>
               <b-col cols="3">
@@ -58,7 +58,7 @@
                   class="DocumentMapItem-update"
                   href=""
                   variant="link"
-                  :data-cy="`DocumentMapItem-update--${currentDocument.id}`"
+                  :data-cy="`DocumentMapItem-update--${currentDocument._id}`"
                   :disabled="!canEdit"
                   :title="
                     canEdit
@@ -74,7 +74,7 @@
                   class="DocumentListItem-delete"
                   href=""
                   variant="link"
-                  :data-cy="`DocumentListItem-delete--${currentDocument.id}`"
+                  :data-cy="`DocumentListItem-delete--${currentDocument._id}`"
                   :disabled="!canDelete"
                   :title="
                     canDelete
@@ -241,7 +241,7 @@ export default {
       if (!this.currentDocument) {
         return {}
       }
-      const document = _.omit(this.currentDocument, ['id', '_kuzzle_info'])
+      const document = _.omit(this.currentDocument, ['_id', '_kuzzle_info'])
       document._kuzzle_info = this.currentDocument._kuzzle_info
       return document
     }
@@ -273,22 +273,22 @@ export default {
     getIcon(document) {
       if (this.currentDocument === document) {
         return new this.LeafSelectedIcon({
-          className: `mapView-marker-selected documentId-${document.id}`
+          className: `mapView-marker-selected documentId-${document._id}`
         })
       }
 
       return new this.LeafDefaultIcon({
-        className: `mapView-marker-default documentId-${document.id}`
+        className: `mapView-marker-default documentId-${document._id}`
       })
     },
     deleteCurrentDocument() {
       if (this.canDelete) {
-        this.$emit('delete', this.currentDocument.id)
+        this.$emit('delete', this.currentDocument._id)
       }
     },
     editCurrentDocument() {
       if (this.canEdit) {
-        this.$emit('edit', this.currentDocument.id)
+        this.$emit('edit', this.currentDocument._id)
       }
     }
   }

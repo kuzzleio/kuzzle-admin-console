@@ -17,6 +17,9 @@ describe('Document List', function() {
         },
         value2: {
           type: 'integer'
+        },
+        id: {
+          type: 'keyword'
         }
       }
     })
@@ -26,7 +29,8 @@ describe('Document List', function() {
       {
         firstName: 'Luca',
         lastName: 'Marchesini',
-        job: 'Blockchain as a Service'
+        job: 'Blockchain as a Service',
+        id: 'Luca Marchesini'
       }
     )
 
@@ -42,6 +46,26 @@ describe('Document List', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
+
+  it('Should show the the _id even if collection has id field', function() {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/documentId/_create?refresh=wait_for`,
+      {
+        firstName: 'Luca',
+        lastName: 'Marchesini',
+        job: 'Blockchain as a Service',
+        id: 'Luca Marchesini'
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy="DocumentList-item"]')
+    .within(() => {
+      cy.get("a").contains("documentId")
+      cy.get("a").not().contains('Luca Marchesini')
+    })
+  })
+
 
   it('Should be able to set and persist the listViewType param when switching the list view', function() {
     cy.waitOverlay()

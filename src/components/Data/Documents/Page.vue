@@ -31,6 +31,7 @@
             :active-view="listViewType"
             :index="indexName"
             :collection="collectionName"
+            :mappingAttributes="mappingAttributes"
             @list="onListViewClicked"
             @map="onMapViewClicked"
             @column="onColumnViewClicked"
@@ -100,7 +101,7 @@
                     @delete="onDeleteClicked"
                     @refresh="onRefresh"
                     @toggle-all="onToggleAllClicked"
-                  ></List>
+                  />
 
                   <Column
                     v-if="listViewType === 'column'"
@@ -120,6 +121,7 @@
                     @refresh="onRefresh"
                     @toggle-all="onToggleAllClicked"
                   />
+
                   <TimeSeries
                     v-if="listViewType === 'time-series'"
                     :index="indexName"
@@ -543,7 +545,7 @@ export default {
 
       this.$router.push({
         name: 'UpdateDocument',
-        params: { id: document.id }
+        params: { id: document._id }
       })
     },
     onRefresh() {
@@ -659,7 +661,7 @@ export default {
         return
       }
       this.selectedDocuments = []
-      this.selectedDocuments = this.documents.map(document => document.id)
+      this.selectedDocuments = this.documents.map(document => document._id)
     },
     toggleSelectDocuments(id) {
       let index = this.selectedDocuments.indexOf(id)
@@ -739,7 +741,6 @@ export default {
 
       const dateFields = []
       const formattedDocuments = _.cloneDeep(this.documents)
-
       const findDateFields = (mapping, previousKey) => {
         for (const [field, value] of Object.entries(mapping)) {
           if (typeof value === 'object') {

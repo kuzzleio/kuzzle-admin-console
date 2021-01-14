@@ -23,7 +23,7 @@
         <a
           class="d-inline-block align-middle code pointer"
           @click="toggleCollapse"
-          >{{ document.id }}</a
+          >{{ document._id }}</a
         >
       </b-col>
       <b-col cols="2">
@@ -32,7 +32,7 @@
             class="DocumentListItem-update"
             href=""
             variant="link"
-            :data-cy="`DocumentListItem-update--${document.id}`"
+            :data-cy="`DocumentListItem-update--${document._id}`"
             :disabled="!canEdit"
             :title="
               canEdit
@@ -47,7 +47,7 @@
             class="DocumentListItem-delete"
             href=""
             variant="link"
-            :data-cy="`DocumentListItem-delete--${document.id}`"
+            :data-cy="`DocumentListItem-delete--${document._id}`"
             :disabled="!canDelete"
             :title="
               canDelete
@@ -63,7 +63,7 @@
     </b-row>
     <b-row>
       <b-collapse
-        :id="`collapse-${document.id}`"
+        :id="`collapse-${document._id}`"
         v-model="expanded"
         class="ml-3 DocumentListItem-content w-100"
       >
@@ -117,14 +117,14 @@ export default {
       return this.canDeleteDocument(this.index, this.collection)
     },
     checkboxId() {
-      return `checkbox-${this.document.id}`
+      return `checkbox-${this.document._id}`
     },
     /**
      * Deletes the "id" who should not be displayed in the document body.
      * Also put the "_kuzzle_info" field in last position
      */
     formattedDocument() {
-      const document = _.omit(this.document, ['id', '_kuzzle_info'])
+      const document = _.omit(this.document, ['_id', '_kuzzle_info'])
       document._kuzzle_info = this.document._kuzzle_info
       return document
     }
@@ -134,18 +134,18 @@ export default {
       this.expanded = !this.expanded
     },
     notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document.id)
+      this.$emit('checkbox-click', this.document._id)
     },
     deleteDocument() {
       if (this.canDelete) {
-        this.$emit('delete', this.document.id)
+        this.$emit('delete', this.document._id)
       }
     },
     editDocument() {
       if (this.canEdit) {
         this.$router.push({
           name: 'UpdateDocument',
-          params: { id: this.document.id }
+          params: { id: this.document._id }
         })
       }
     }

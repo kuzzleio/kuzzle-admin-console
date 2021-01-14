@@ -98,6 +98,7 @@
             data-cy="DocumentCreate-btn"
             variant="primary"
             class="ml-2"
+            :disabled="submitting || !isDocumentValid"
             @click="submit"
           >
             <i class="fa fa-plus-circle left" />
@@ -201,7 +202,13 @@ export default {
   methods: {
     onJsonChange(val) {
       this.rawDocument = val
-      this.$emit('document-change', JSON.parse(val))
+      let parsed = {}
+      try {
+        parsed = JSON.parse(val)
+        this.$emit('document-change', parsed)
+      } catch (error) {
+        // Fail silently
+      }
     },
     onFormChange() {
       this.rawDocument = JSON.stringify(this.document, null, 2)
