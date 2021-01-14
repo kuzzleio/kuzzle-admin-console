@@ -449,6 +449,39 @@ describe('Environments', function() {
     cy.url().should('contain', 'login')
   })
 
+  it('Should be able to set the tab title of an environment', function() {
+    const envName = 'localEnvTestTabTitle'
+    cy.visit('/')
+    cy.get('[data-cy="CreateEnvironment-name"]').type(envName, {
+      force: true
+    })
+    cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
+      force: true
+    })
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
+    cy.get('[data-cy="EnvColor--green"]')
+      .as('colorEl')
+      .click()
+
+    cy.get('[data-cy="Environment-SubmitButton"]').click()
+    cy.wait(500)
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+
+    cy.get(
+      `[data-cy=EnvironmentSwitch-env_localEnvTestTabTitle] > .EnvironmentSwitch-env-name`
+    ).click({
+      force: true
+    })
+    cy.wait(1000)
+    localStorage.setItem('currentEnv', 'localEnvTestTabTitle')
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+
+    cy.title().should('eq', 'localEnvTestTabTitle')
+  })
+
   it('Should be able to export environments', function() {
     const newEnvName = 'exportedEnv'
     const secondEnvName = 'secondExportedEnv'
@@ -481,35 +514,37 @@ describe('Environments', function() {
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(secondEnvName)}"]`)
 
-  // test filename
-  cy.get('[data-cy="export-environments"]').should(
-    'have.attr',
-    'download',
-    `connections.json`
-  )
-
-  // test file content
-  cy.get('[data-cy="export-environments"]')
-    .then(
-      anchor =>
-        new Cypress.Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest()
-          xhr.open('GET', anchor.prop('href'), true)
-          xhr.responseType = 'blob'
-          xhr.onload = () => {
-            if (xhr.status === 200) {
-              const blob = xhr.response
-              const reader = new FileReader()
-              reader.onload = () => {
-                resolve(reader.result)
-              }
-              reader.readAsText(blob)
-            }
-          }
-          xhr.send()
-        })
+    // test filename
+    cy.get('[data-cy="export-environments"]').should(
+      'have.attr',
+      'download',
+      `connections.json`
     )
-    .should('equal', `{"${newEnvName}":{"name":"${newEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}},"${secondEnvName}":{"name":"${secondEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}}}`)
 
+    // test file content
+    cy.get('[data-cy="export-environments"]')
+      .then(
+        anchor =>
+          new Cypress.Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+            xhr.open('GET', anchor.prop('href'), true)
+            xhr.responseType = 'blob'
+            xhr.onload = () => {
+              if (xhr.status === 200) {
+                const blob = xhr.response
+                const reader = new FileReader()
+                reader.onload = () => {
+                  resolve(reader.result)
+                }
+                reader.readAsText(blob)
+              }
+            }
+            xhr.send()
+          })
+      )
+      .should(
+        'equal',
+        `{"${newEnvName}":{"name":"${newEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}},"${secondEnvName}":{"name":"${secondEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}}}`
+      )
   })
 })
