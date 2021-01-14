@@ -27,12 +27,14 @@ export const extractAttributesFromMapping = (
       }
       // Other attribute types are listed in the "fields" property
       if (value.fields) {
-        extractAttributesFromMapping(
-          value.properties,
-          attributes,
-          `${prefix}${name}.`,
-          path.concat(name, 'fields')
-        )
+        for(const type of Object.keys(value.fields))  {
+          extractAttributesFromMapping(
+            value.fields,
+            attributes,
+            `${prefix}${name}.`,
+            path.concat(name, '')
+          )
+        }
       }
     }
   }
