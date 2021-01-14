@@ -41,7 +41,7 @@ describe('Environments', function() {
     cy.get('.row > .col > .EnvironmentsSwitch > .btn-flat > .fa').click()
 
     cy.get(
-      '.col > .EnvironmentsSwitch > #environment-dropdown-5 > .EnvironmentsSwitch-env:nth-child(1) > .delete'
+      '.col > .EnvironmentsSwitch > [id^="environment-dropdown-"] > .EnvironmentsSwitch-env:nth-child(1) > .delete'
     ).click({ force: true })
 
     cy.get('.EnvironmentDeleteModal-envName').type(envToDeleteName)

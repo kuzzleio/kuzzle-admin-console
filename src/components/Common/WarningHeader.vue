@@ -18,11 +18,11 @@ export default {
 
 <style lang="scss">
 .WarningHeader {
-  line-height: 2.5em;
+  line-height: 1.5em;
   background-color: $blue-color;
   color: #fff;
   text-align: center;
-
+  padding: 1em;
   a {
     color: #fff;
     text-decoration: underline;
