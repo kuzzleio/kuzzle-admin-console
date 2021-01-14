@@ -202,7 +202,7 @@ export default {
         parsed = JSON.parse(val)
         this.$emit('document-change', parsed)
       } catch (error) {
-        // invalid json
+        // Fail silently
       }
     },
     onFormChange() {
