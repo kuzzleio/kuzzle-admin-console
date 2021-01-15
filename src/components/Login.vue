@@ -70,7 +70,7 @@ export default {
     return {
       environmentId: null,
       bannerV4Text:
-        'Hey! A new version of the admin console will be available soon. You can test the beta version <a target="_blank" href="http://next-console.kuzzle.io">here</a> now.'
+        'Hey! A new version of the Admin Console will be available soon. You can test the new version <a target="_blank" href="http://next-console.kuzzle.io">here</a> now.'
     }
   },
   methods: {
