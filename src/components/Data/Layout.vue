@@ -43,6 +43,7 @@ export default {
   },
   computed: {
     ...mapGetters('index', ['loadingIndexes', 'loadingCollections']),
+    ...mapGetters('auth', ['isAuthenticated']),
     indexName() {
       return this.$route.params.indexName
     },
@@ -158,6 +159,10 @@ export default {
       this.dataNotFound = true
     },
     async fetchAllTheThings() {
+      if (!this.isAuthenticated) {
+        return
+      }
+
       this.isFetching = true
       this.dataNotFound = false
 
