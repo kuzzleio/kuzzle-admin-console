@@ -1,8 +1,5 @@
 <template>
-  <form
-    class="Mapping wrapper"
-    @submit.prevent="next"
-  >
+  <form class="Mapping wrapper" @submit.prevent="next">
     <!-- Required fields -->
     <div v-if="!$route.params.collection">
       <div class="row">
@@ -19,7 +16,7 @@
               tabindex="1"
               :value="$store.state.collection.name"
               @input="setName"
-            >
+            />
             <label for="collection-name">Collection name</label>
           </div>
         </div>
@@ -43,7 +40,7 @@
                 tabindex="3"
                 :checked="collectionIsRealtimeOnly"
                 @change="setRealtimeOnly"
-              >
+              />
               <span>
                 Real-time only
               </span>
@@ -52,10 +49,7 @@
         </div>
       </div>
 
-      <div
-        v-show="!collectionIsRealtimeOnly"
-        class="col s8"
-      >
+      <div v-show="!collectionIsRealtimeOnly" class="col s8">
         <div class="row">
           <p>Mapping:</p>
           <json-editor
@@ -68,19 +62,17 @@
         </div>
       </div>
 
-      <div
-        v-show="!collectionIsRealtimeOnly"
-        class="col s4"
-      >
+      <div v-show="!collectionIsRealtimeOnly" class="col s4">
         <div class="row">
-          <p class="help">
-            Mapping is the process of defining how a document,
-            and the fields it contains, are stored and indexed.
+          <div class="help">
+            Mapping is the process of defining how a document, and the fields it
+            contains, are stored and indexed.
             <a
               href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
               target="_blank"
-            >Read more about mapping</a>
-            <br>
+              >Read more about mapping</a
+            >
+            <br />
             You should omit the root "properties" field in this form.
             <pre>
 {
@@ -88,7 +80,7 @@
   "name": { "type": "text" }
 }
             </pre>
-          </p>
+          </div>
         </div>
       </div>
     </div>
@@ -100,11 +92,9 @@
     <!-- Actions -->
     <div class="row">
       <div class="col s12">
-        <a
-          tabindex="6"
-          class="btn-flat waves-effect"
-          @click.prevent="cancel"
-        >Cancel</a>
+        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel"
+          >Cancel</a
+        >
         <button
           type="submit"
           class="Mapping-submitBtn btn primary waves-effect waves-light"

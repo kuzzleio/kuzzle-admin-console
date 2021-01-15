@@ -5,7 +5,7 @@ $ npm install
 $ npm run dev
 ```
 
-The Kuzzle Admin Console will then be accessible at the following URL: http://localhost:3000
+The Kuzzle Admin Console will then be accessible at the following URL: http://localhost:8080
 
 # Coding organization
 

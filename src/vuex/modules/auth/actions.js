@@ -1,3 +1,4 @@
+/* eslint-disable require-atomic-updates */
 import SessionUser from '../../../models/SessionUser'
 import * as types from './mutation-types'
 import * as kuzzleTypes from '../common/kuzzle/mutation-types'
@@ -8,23 +9,15 @@ export default {
   async [types.DO_LOGIN]({ dispatch }, data) {
     Vue.prototype.$kuzzle.jwt = null
 
-    const jwt = await Vue.prototype.$kuzzle
-      .auth
-      .login(
-        'local',
-        data,
-        '2h'
-      )
+    const jwt = await Vue.prototype.$kuzzle.auth.login('local', data, '2h')
     return dispatch(types.PREPARE_SESSION, jwt)
   },
   async [types.PREPARE_SESSION]({ commit, dispatch }, token) {
     const sessionUser = SessionUser()
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, token)
     dispatch(LIST_INDEXES_AND_COLLECTION)
-    const user = await Vue.prototype.$kuzzle
-      .auth
-      .getCurrentUser()
-    
+    const user = await Vue.prototype.$kuzzle.auth.getCurrentUser()
+
     sessionUser.id = user._id
     sessionUser.token = token
     sessionUser.params = user.content
@@ -63,7 +56,7 @@ export default {
   },
   async [types.CHECK_FIRST_ADMIN]({ commit }) {
     try {
-      if (!await Vue.prototype.$kuzzle.server.adminExists()) {
+      if (!(await Vue.prototype.$kuzzle.server.adminExists())) {
         return commit(types.SET_ADMIN_EXISTS, false)
       }
 
@@ -78,9 +71,7 @@ export default {
   },
   async [types.DO_LOGOUT]({ commit, dispatch }) {
     if (Vue.prototype.$kuzzle.jwt) {
-      await Vue.prototype.$kuzzle
-        .auth
-        .logout()
+      await Vue.prototype.$kuzzle.auth.logout()
     }
     Vue.prototype.$kuzzle.jwt = null
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)

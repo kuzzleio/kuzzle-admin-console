@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { castByElementId } from 'services/collectionHelper'
+import { castByElementId } from '../../../services/collectionHelper'
 import Multiselect from 'vue-multiselect'
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
 

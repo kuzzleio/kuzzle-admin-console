@@ -14,16 +14,10 @@
       >
         {{ labelSearchButton }}
       </button>
-      <button
-        class="btn-flat waves-effect waves-light"
-        @click="resetRawSearch"
-      >
+      <button class="btn-flat waves-effect waves-light" @click="resetRawSearch">
         Reset
       </button>
-      <span
-        v-if="jsonInvalid"
-        class="error"
-      >Your JSON is not valid</span>
+      <span v-if="jsonInvalid" class="error">Your JSON is not valid</span>
     </div>
   </form>
 </template>

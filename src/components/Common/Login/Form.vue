@@ -16,11 +16,8 @@
           required
           tabindex="1"
           class="validate"
-        >
-        <label
-          for="username"
-          :class="{'active': username}"
-        >Login</label>
+        />
+        <label for="username" :class="{ active: username }">Login</label>
       </div>
     </div>
     <div class="row">
@@ -33,27 +30,18 @@
           required
           tabindex="2"
           class="validate"
-        >
-        <label
-          for="pass"
-          :class="{'active': password}"
-        >Password</label>
+        />
+        <label for="pass" :class="{ active: password }">Password</label>
       </div>
     </div>
     <div class="row">
       <div class="col s4">
-        <p
-          v-if="error"
-          class="error card red-color white-text"
-        >
-          <i
-            class="fa fa-times dismiss-error"
-            @click="dismissError()"
-          />
-          Login failed: <br>{{ error }}
+        <p v-if="error" class="error card red-color white-text">
+          <i class="fa fa-times dismiss-error" @click="dismissError()" />
+          Login failed: <br />{{ error }}
         </p>
         <p v-if="!error">
-&nbsp;
+          &nbsp;
         </p>
       </div>
       <div class="col s8">
@@ -61,7 +49,8 @@
           <a
             class="LoginAsAnonymous-Btn btn-flat waves-effect waves-teal"
             @click="loginAsGuest"
-          >Login as Anonymous</a>
+            >Login as Anonymous</a
+          >
           <button
             class="btn waves-effect waves-light"
             type="submit"
@@ -130,11 +119,10 @@ export default {
     async login() {
       this.error = ''
       try {
-        await this.$store
-          .dispatch(DO_LOGIN, {
-            username: this.username,
-            password: this.password
-          })
+        await this.$store.dispatch(DO_LOGIN, {
+          username: this.username,
+          password: this.password
+        })
         this.onLogin()
       } catch (err) {
         this.error = err.message

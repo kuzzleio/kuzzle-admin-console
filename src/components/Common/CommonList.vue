@@ -1,9 +1,6 @@
 <template>
   <div class="CommonList">
-    <slot
-      v-if="isCollectionEmpty"
-      name="emptySet"
-    />
+    <slot v-if="isCollectionEmpty" name="emptySet" />
     <crudl-document
       v-else
       :search-filter-operands="searchFilterOperands"
@@ -123,7 +120,7 @@ export default {
   watch: {
     $route: {
       immediate: false,
-      handler(newValue, oldValue) {
+      handler(newValue) {
         this.currentFilter = filterManager.load(
           this.index,
           this.collection,
@@ -241,7 +238,7 @@ export default {
     deleteDocument(id) {
       this.documentToDelete = id
     },
-    create(route) {
+    create() {
       this.$router.push({ name: this.routeCreate })
     }
   }

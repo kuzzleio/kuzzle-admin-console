@@ -6,7 +6,7 @@
       name="name"
       :checked="value"
       @change="update"
-    >
+    />
     <span>{{ name }}</span>
   </label>
 </template>

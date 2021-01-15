@@ -1,8 +1,5 @@
 <template>
-  <form
-    class="IndexDeleteModal"
-    @submit.prevent="tryDeleteIndex(index)"
-  >
+  <form class="IndexDeleteModal" @submit.prevent="tryDeleteIndex(index)">
     <modal
       :id="id"
       additional-class="left-align"
@@ -11,7 +8,9 @@
     >
       <div class="row">
         <div class="col s12">
-          <h4>Index <strong>{{ index }}</strong> deletion</h4>
+          <h4>
+            Index <strong>{{ index }}</strong> deletion
+          </h4>
           <div class="divider" />
         </div>
       </div>
@@ -26,19 +25,16 @@
               v-focus
               class="IndexDeleteModal-name"
               type="text"
-              :class="{'invalid': error}"
-            >
+              :class="{ invalid: error }"
+            />
           </div>
         </div>
 
-        <div
-          v-if="error"
-          class="col s5 error"
-        >
+        <div v-if="error" class="col s5 error">
           <div class="red-text">
             An error has occurred during index deletion:
           </div>
-          <span :class="{'truncate': errorTruncated}">
+          <span :class="{ truncate: errorTruncated }">
             {{ error }}
           </span>
           <a @click.prevent="toggleTruncatedError()">
@@ -50,10 +46,14 @@
 
       <span slot="footer">
         <button
-          v-title="{active: index === indexConfirmation, position: 'left', title: 'Be careful. This action can not be undone'}"
+          v-title="{
+            active: index === indexConfirmation,
+            position: 'left',
+            title: 'Be careful. This action can not be undone'
+          }"
           type="submit"
           :disabled="index !== indexConfirmation"
-          :class="{unauthorized: index !== indexConfirmation}"
+          :class="{ unauthorized: index !== indexConfirmation }"
           class="IndexDeleteModal-deleteBtn waves-effect btn"
         >
           Delete

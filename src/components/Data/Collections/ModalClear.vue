@@ -8,7 +8,9 @@
     >
       <div class="row">
         <div class="col s12">
-          <h4>Clear <strong>{{ collection }}</strong> collection</h4>
+          <h4>
+            Clear <strong>{{ collection }}</strong> collection
+          </h4>
           <div class="divider" />
         </div>
       </div>
@@ -22,19 +24,16 @@
               v-model="collectionConfirmation"
               v-focus
               type="text"
-              :class="{'invalid': error}"
-            >
+              :class="{ invalid: error }"
+            />
           </div>
         </div>
 
-        <div
-          v-if="error"
-          class="col s5 error"
-        >
+        <div v-if="error" class="col s5 error">
           <div class="red-text">
             An error has occurred while deleting documents:
           </div>
-          <span :class="{'truncate': errorTruncated}">
+          <span :class="{ truncate: errorTruncated }">
             {{ error }}
           </span>
           <a @click.prevent="toggleTruncatedError()">
@@ -46,10 +45,14 @@
 
       <span slot="footer">
         <button
-          v-title="{active: collection === collectionConfirmation, position: 'left', title: 'Be careful. This action cannot be undone'}"
+          v-title="{
+            active: collection === collectionConfirmation,
+            position: 'left',
+            title: 'Be careful. This action cannot be undone'
+          }"
           type="submit"
           :disabled="collection !== collectionConfirmation"
-          :class="{unauthorized: collection !== collectionConfirmation}"
+          :class="{ unauthorized: collection !== collectionConfirmation }"
           class="waves-effect btn"
         >
           Delete
@@ -134,11 +137,10 @@ export default {
       }
 
       try {
-        await this.$store
-          .dispatch(CLEAR_COLLECTION, {
-            index: this.index,
-            collection: this.collection
-          })
+        await this.$store.dispatch(CLEAR_COLLECTION, {
+          index: this.index,
+          collection: this.collection
+        })
         this.collectionConfirmation = ''
         this.error = ''
         this.close()

@@ -5,32 +5,32 @@ import Vue from 'vue'
 
 export default {
   [types.CREATE_COLLECTION]({ state }, { index }) {
-    return Vue.prototype.$kuzzle
-      .collection
-      .create(index, state.name, mergeMetaAttributes({
+    return Vue.prototype.$kuzzle.collection.create(
+      index,
+      state.name,
+      mergeMetaAttributes({
         mapping: state.mapping,
         schema: state.schema,
         allowForm: state.allowForm
-      }))
+      })
+    )
   },
   [types.UPDATE_COLLECTION]({ state }, { index }) {
     if (state.isRealtimeOnly) {
       return Promise.resolve()
     }
 
-    return Vue.prototype.$kuzzle.query(
-      {
-        controller: 'collection',
-        action: 'updateMapping',
-        collection: state.name,
-        index,
-        body: mergeMetaAttributes({
-          mapping: state.mapping,
-          schema: state.schema,
-          allowForm: state.allowForm
-        })
-      }
-    )
+    return Vue.prototype.$kuzzle.query({
+      controller: 'collection',
+      action: 'updateMapping',
+      collection: state.name,
+      index,
+      body: mergeMetaAttributes({
+        mapping: state.mapping,
+        schema: state.schema,
+        allowForm: state.allowForm
+      })
+    })
   },
   async [types.FETCH_COLLECTION_DETAIL](
     { commit, getters, dispatch },
@@ -42,7 +42,10 @@ export default {
     }
 
     if (getters.indexCollections(index).stored.indexOf(collection) !== -1) {
-      const response = await Vue.prototype.$kuzzle.collection.getMapping(index, collection)
+      const response = await Vue.prototype.$kuzzle.collection.getMapping(
+        index,
+        collection
+      )
       let result = response[index].mappings[collection]
       let schema = {}
       let allowForm = false
@@ -110,15 +113,12 @@ export default {
     return commit(types.SET_COLLECTION_DEFAULT_VIEW_JSON, { jsonView })
   },
   async [types.CLEAR_COLLECTION]({ state }, { index }) {
-    await Vue.prototype.$kuzzle
-      .query(
-        {
-          controller: 'collection',
-          action: 'truncate',
-          index,
-          collection: state.name,
-          refresh: 'wait_for'
-        }
-      )
+    await Vue.prototype.$kuzzle.query({
+      controller: 'collection',
+      action: 'truncate',
+      index,
+      collection: state.name,
+      refresh: 'wait_for'
+    })
   }
 }

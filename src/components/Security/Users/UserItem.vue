@@ -1,14 +1,11 @@
 <template>
-  <div
-    class="UserItem"
-    :class="{ 'collapsed': collapsed }"
-  >
+  <div class="UserItem" :class="{ collapsed: collapsed }">
     <i
       class="UserItem-toggle fa fa-caret-down item-toggle"
       aria-hidden="true"
       @click="toggleCollapse()"
     />
-    
+
     <label>
       <input
         :id="checkboxId"
@@ -17,8 +14,8 @@
         :value="document.id"
         :checked="isChecked"
         @click="notifyCheckboxClick"
-      >
-      
+      />
+
       <span />
     </label>
     <!-- The following anchor will go to the user details page -->
@@ -31,58 +28,62 @@
           class="profileChip chip"
         >
           <router-link
-            :to="{name: 'SecurityProfilesUpdate', params: { id: profile }}"
+            :to="{ name: 'SecurityProfilesUpdate', params: { id: profile } }"
             class="truncate"
-          >{{ profile }}</router-link>
+            >{{ profile }}</router-link
+          >
         </div>
-        <div
-          v-if="showAllProfiles"
-          class="chip show-all-profiles"
-        >
+        <div v-if="showAllProfiles" class="chip show-all-profiles">
           <router-link
-            :to="{ name: 'SecurityProfilesList', params: { userId: document.id }}"
-          >Show all...</router-link>
+            :to="{
+              name: 'SecurityProfilesList',
+              params: { userId: document.id }
+            }"
+            >Show all...</router-link
+          >
         </div>
       </div>
     </label>
-    
+
     <label
       v-if="document.additionalAttribute && document.additionalAttribute.value"
       class="UserItem-additionalAttribute"
-    >({{ document.additionalAttribute.name }}: {{ document.additionalAttribute.value }})</label>
+      >({{ document.additionalAttribute.name }}:
+      {{ document.additionalAttribute.value }})</label
+    >
 
     <div class="UserItem-actions right">
       <a
         href="#"
-        :title="canEditUser ? 'Edit User' : 'You are not allowed to edit this user'"
+        :title="
+          canEditUser ? 'Edit User' : 'You are not allowed to edit this user'
+        "
         @click.prevent="update"
       >
-        <i
-          class="fa fa-pencil-alt"
-          :class="{'disabled': !canEditUser()}"
-        />
+        <i class="fa fa-pencil-alt" :class="{ disabled: !canEditUser() }" />
       </a>
-      <dropdown
-        :id="document.id"
-        myclass="UserItem-dropdown icon-black"
-      >
+      <dropdown :id="document.id" myclass="UserItem-dropdown icon-black">
         <li>
           <a
-            v-title="{active: !canDeleteUser(), title: 'You are not allowed to delete this user'}"
-            :class="{'disabled': !canDeleteUser()}"
+            v-title="{
+              active: !canDeleteUser(),
+              title: 'You are not allowed to delete this user'
+            }"
+            :class="{ disabled: !canDeleteUser() }"
             @click="deleteDocument(document.id)"
-          >Delete</a>
+            >Delete</a
+          >
         </li>
       </dropdown>
     </div>
 
     <div class="UserItem-content item-content">
-      <pre v-json-formatter="{content: document.content, open: true}" />
-      <pre v-json-formatter="{content: document.meta, open: true}" />
-      <pre v-json-formatter="{content: document.credentials, open: true}" />
+      <pre v-json-formatter="{ content: document.content, open: true }" />
+      <pre v-json-formatter="{ content: document.meta, open: true }" />
+      <pre v-json-formatter="{ content: document.credentials, open: true }" />
       <pre
         v-if="document.aggregations"
-        v-json-formatter="{content: document.aggregations, open: true}"
+        v-json-formatter="{ content: document.aggregations, open: true }"
       />
     </div>
   </div>

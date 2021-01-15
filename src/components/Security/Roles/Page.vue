@@ -14,10 +14,7 @@
       route-update="SecurityRolesUpdate"
       @create-clicked="createRole"
     >
-      <div
-        slot="emptySet"
-        class="card-panel"
-      >
+      <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
           <div class="col s1 offset-s1">
             <i
@@ -27,15 +24,26 @@
           </div>
           <div class="col s10">
             <p>
-              In this page, you'll be able to manage the <a href="https://docs.kuzzle.io/guide/1/essentials/security/#defining-roles">Security Roles</a>
-              defined in your Kuzzle server.<br>
-              <em>Currently, no Security Role is defined. You can create one by pushing the "Create" button above.</em>
+              In this page, you'll be able to manage the
+              <a
+                href="https://docs.kuzzle.io/guide/1/essentials/security/#defining-roles"
+                >Security Roles</a
+              >
+              defined in your Kuzzle server.<br />
+              <em
+                >Currently, no Security Role is defined. You can create one by
+                pushing the "Create" button above.</em
+              >
             </p>
             <router-link
               :disabled="!canCreateRole()"
               :class="!canCreateRole() ? 'disabled' : ''"
-              :title="!canCreateRole() ? 'You are not allowed to create new roles' : ''"
-              :to="{name: 'SecurityRolesCreate'}"
+              :title="
+                !canCreateRole()
+                  ? 'You are not allowed to create new roles'
+                  : ''
+              "
+              :to="{ name: 'SecurityRolesCreate' }"
               class="btn primary waves-effect waves-light"
             >
               <i class="fa fa-plus-circle left" />

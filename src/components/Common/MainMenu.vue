@@ -3,7 +3,7 @@
     <div class="navbar-fixed">
       <nav
         id="mainnav"
-        :style="{backgroundColor: currentEnvironmentColor}"
+        :style="{ backgroundColor: currentEnvironmentColor }"
         class="MainMenu-nav"
       >
         <ul>
@@ -11,19 +11,13 @@
             <div class="logo-container">
               <div
                 class="version-container right-align"
-                :style="{color: versionColor}"
+                :style="{ color: versionColor }"
               >
                 {{ adminConsoleVersion }}
               </div>
               <div>
-                <a
-                  href="#"
-                  class=""
-                >
-                  <img
-                    src="../../assets/logo-white.svg"
-                    alt="Kuzzle.io"
-                  >
+                <a href="#" class="">
+                  <img src="~../../assets/logo-white.svg" alt="Kuzzle.io" />
                 </a>
               </div>
             </div>
@@ -31,7 +25,7 @@
           <router-link
             tag="li"
             class="nav"
-            :to="{name: 'Data'}"
+            :to="{ name: 'Data' }"
             active-class="active"
           >
             <a>Data</a>
@@ -40,7 +34,7 @@
             v-if="hasSecurityRights()"
             tag="li"
             class="nav"
-            :to="{name: 'Security'}"
+            :to="{ name: 'Security' }"
             active-class="active"
           >
             <a>Security</a>
@@ -61,10 +55,9 @@
             />
           </li>
           <li>
-            <a
-              title="Logout"
-              @click="doLogout"
-            ><i class="logout fa fa-power-off" /></a>
+            <a title="Logout" @click="doLogout"
+              ><i class="logout fas fa-power-off"
+            /></a>
           </li>
         </ul>
       </nav>

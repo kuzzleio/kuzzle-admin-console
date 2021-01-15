@@ -4,7 +4,7 @@
       <button
         class="btn btn-small waves-effect waves-light tertiary"
         :disabled="!displayToggleAll"
-        :class="{disabled: !displayToggleAll}"
+        :class="{ disabled: !displayToggleAll }"
         @click="$emit('toggle-all')"
       >
         <i
@@ -17,7 +17,7 @@
       <button
         class="btn btn-small waves-effect waves-light margin-right-5 primary"
         :disabled="!displayCreate"
-        :class="{disabled: !displayCreate}"
+        :class="{ disabled: !displayCreate }"
         @click.prevent="$emit('create')"
       >
         <i class="fa fa-plus-circle left" />
@@ -27,7 +27,7 @@
       <button
         class="btn btn-small waves-effect waves-light red-color"
         :disabled="!displayBulkDelete"
-        :class="{disabled: !displayBulkDelete}"
+        :class="{ disabled: !displayBulkDelete }"
         @click="$emit('bulk-delete')"
       >
         <i class="fa fa-minus-circle left" />
@@ -49,7 +49,9 @@
       <div class="col s2">
         <m-select
           v-model="selectedGeopoint"
-          @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)"
+          @input="
+            selectedGeopoint => $emit('select-geopoint', selectedGeopoint)
+          "
         >
           <option
             v-for="geopoint in geopointList"
