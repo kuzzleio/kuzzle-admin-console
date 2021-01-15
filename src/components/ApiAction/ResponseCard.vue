@@ -1,41 +1,33 @@
 <template>
-    <b-card no-body class="h-100">
-      <b-card-header>
-        <b-card-title>
-          Response
-        </b-card-title>
-      </b-card-header>
-      <b-card-body class="p-0">
-        <b-row class="m-2" no-gutters>
-          <b-col cols="12">
-            <b-alert show :variant="statusBarVariant" class="mb-0">
-              <p class="mb-0">Status: {{ currentStatus }}</p>
-              <b-card-text v-if="currentErrorMessage">
-                {{ currentErrorMessage }}
-              </b-card-text>
-            </b-alert>
-          </b-col>
-        </b-row>
-        <json-editor
-          id="response"
-          ref="responseEditorWrapper"
-          reference="responseEditor"
-          tabindex="4"
-          :height="250"
-          readonly
-          content="{}"
-        />
-      </b-card-body>
-      <b-card-footer class="text-right">
-        <!-- <b-button
-          @click="copyToClipBoard('Response')"
-          variant="outline-secondary"
-        >
-          <i class="fas fa-copy mr-2" />
-          COPY
-        </b-button> -->
-      </b-card-footer>
-    </b-card>
+  <b-card no-body>
+    <b-card-header>
+      <b-card-title>
+        Response
+      </b-card-title>
+    </b-card-header>
+    <b-card-body class="p-0">
+      <b-row class="m-2" no-gutters>
+        <b-col cols="12">
+          <b-alert show :variant="statusBarVariant" class="mb-0">
+            <p class="mb-0">Status: {{ currentStatus }}</p>
+            <b-card-text v-if="currentErrorMessage">
+              {{ currentErrorMessage }}
+            </b-card-text>
+          </b-alert>
+        </b-col>
+      </b-row>
+      <json-editor
+        id="response"
+        ref="responseEditorWrapper"
+        reference="responseEditor"
+        tabindex="4"
+        readonly
+        myclass="pre_ace"
+        content="{}"
+      />
+    </b-card-body>
+    <b-card-footer class="text-right"> </b-card-footer>
+  </b-card>
 </template>
 
 <script>
@@ -43,17 +35,24 @@ import jsonEditor from '@/components/Common/JsonEditor'
 
 export default {
   components: {
-    jsonEditor,
+    jsonEditor
   },
   props: {
-   response: {
-     default: ""
-   }
+    response: {
+      default: ''
+    }
+  },
+  data() {
+    return {
+      isFullScreen: false
+    }
   },
   watch: {
     response: {
       handler(value) {
-        this.$refs.responseEditorWrapper.setContent(JSON.stringify(value, null, ' '))
+        this.$refs.responseEditorWrapper.setContent(
+          JSON.stringify(value, null, ' ')
+        )
       }
     }
   },
@@ -71,9 +70,11 @@ export default {
     }
   },
   methods: {
-    // copyToClipBoard() {}
+    toggleFullscreen() {
+      this.isFullScreen = !this.isFullScreen
+    }
   }
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped></style>

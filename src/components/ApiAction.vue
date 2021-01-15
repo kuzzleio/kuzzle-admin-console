@@ -1,6 +1,12 @@
 <template>
-  <Multipane class="DataLayout Custom-resizer" layout="vertical">
-    <div class="DataLayout-sidebarWrapper" data-cy="DataLayout-sidebarWrapper">
+  <Multipane
+    class="DataLayout-vertical Custom-resizer-vertical"
+    layout="vertical"
+  >
+    <div
+      class="DataLayout-sidebarWrapper-vertical"
+      data-cy="DataLayout-sidebarWrapper"
+    >
       <QueryList
         :savedQueries="savedQueries"
         :currentQueryName="currentQueryName"
@@ -9,8 +15,8 @@
       />
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
-    <div class="DataLayout-contentWrapper">
-      <b-container fluid class="queryContainer">
+    <div class="DataLayout-contentWrapper-vertical">
+      <b-container fluid>
         <b-row align-v="stretch">
           <b-col cols="12">
             <InfoAlert />
@@ -27,18 +33,22 @@
                   title-link-class="px-3 py-0 h-100 titleItem"
                 >
                   <template #title>
-                    <b-row align-v="center" class="">
+                    <b-row
+                      align-v="center"
+                      class="tabTitle"
+                      v-b-tooltip.hover
+                      :title="tabContent.name"
+                    >
                       <b-col
                         cols="9"
-                        class="text-left my-3 pointer"
+                        class=" text-left py-3 pointer"
                         @click="setCurrentTab(tabIdx)"
                       >
                         <span>
-                          {{ tabContent.name ? tabContent.name : 'New query' }}
-                          {{ tabContent.saved ? '' : ' *' }}
+                          {{ formatTabName(tabContent) }}
                         </span>
                       </b-col>
-                      <b-col cols="3" class="my-3">
+                      <b-col cols="3" class="py-3">
                         <i
                           class="fas fa-times pointer"
                           @click="closeTab(tabIdx)"
@@ -53,9 +63,11 @@
                     :actions="actions"
                     :indexes="indexes"
                     :collections="collections"
+                    :api="api"
+                    :openapi="openapi"
                     @saveQuery="saveQuery"
                     @queryChanged="queryChanged"
-                    @perfomQuery="performQuery"
+                    @performQuery="performQuery"
                   />
                   <ResponseCard :response="tabContent.response" />
                 </b-tab>
@@ -89,6 +101,7 @@ import QueryCard from '@/components/ApiAction/QueryCard'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
+import { truncateName } from '@/utils'
 
 export default {
   components: {
@@ -105,13 +118,13 @@ export default {
       tabs: [],
       currentTabIdx: 0,
       api: null,
+      openapi: null,
       loading: true,
       savedQueries: [],
       newSaveTabIdx: null
     }
   },
   computed: {
-    // computed kuzzle api
     ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
     storage() {
       return this.$store.direct.getters.index.indexes
@@ -143,16 +156,12 @@ export default {
         : []
     },
 
-    // computed component
     emptyTab() {
       return {
         query: {
           controller: null,
           action: null,
-          _id: null,
-          index: null,
-          collection: null,
-          body: '{}'
+          body: {}
         },
         saved: false,
         name: '',
@@ -160,12 +169,6 @@ export default {
         savedIdx: null
       }
     },
-    // currentQueryIdx() {
-    //   if (!this.tabs[this.currentTabIdx]) {
-    //     return null
-    //   }
-    //   return this.tabs[this.currentTabIdx].idx
-    // },
     currentQueryBody() {
       if (!this.tabs[this.currentTabIdx]) {
         return null
@@ -180,6 +183,12 @@ export default {
     }
   },
   methods: {
+    formatTabName(tabContent) {
+      let name = tabContent.name ? tabContent.name : 'New query'
+      name = truncateName(name, 11)
+      name += tabContent.saved ? '' : ' *'
+      return name
+    },
     queryChanged({ query, tabIdx }) {
       if (this.tabs[tabIdx].query.index !== query.index) {
         this.lazyFetchCollections(query.index)
@@ -228,70 +237,15 @@ export default {
       }
     },
     deleteSavedQuery(savedQueryIdx) {
-      /*
-  delete:
-    deleting tab is not opened
-      just delete it
-
-    deleting tab is opened
-      deleting tab is actual opened tab
-        - deleting tab is the only opened tab
-        - deleting tab is the last of opened tabs
-        - deleting tab is the first of opened tabs
-        - else
-
-      deleting tab is not actual opened tab
-        - actual tab is last tab
-
-*/
-      console.log(savedQueryIdx)
-      // const tabLength = this.tabs.length
-      // if (tabLength === 1) {
-      //   console.log('deleting only opened tab')
-      //   this.currentTabIdx = -1
-      // }
-      // if (index === this.currentQueryIdx) {
-      //   console.log('deleting current tab')
-      //   if (this.currentTabIdx === tabLength - 1) {
-      //     console.log('last tab')
-      //     this.currentTabIdx = tabLength - 2
-      //   } else {
-      //     console.log('balec')
-      //   }
-      // } else {
-      //   console.log('NOT deleting current tab')
-      // }
-      // this.savedQueries.splice(index, 1)
-      // let storedQueries = JSON.parse(localStorage.getItem('savedQueries'))
-      // if (!storedQueries) {
-      //   storedQueries = {}
-      // }
-      // storedQueries[this.currentEnvironment] = this.savedQueries
-      // localStorage.setItem('savedQueries', JSON.stringify(storedQueries))
-      // this.$bvToast.toast(`Query successfully deleted.`, {
-      //   title: 'Success',
-      //   variant: 'success',
-      //   toaster: 'b-toaster-bottom-right',
-      //   appendToast: true
-      // })
+      const tabIdx = this.tabs.findIndex(t => t.savedIdx === savedQueryIdx)
+      if (tabIdx !== -1) {
+        this.tabs[tabIdx].name = ''
+        this.tabs[tabIdx].savedIdx = null
+        this.tabs[tabIdx].saved = false
+      }
+      this.savedQueries.splice(savedQueryIdx, 1)
+      this.storeQueriesToLocalStorage()
     },
-
-    // resetFields() {
-    //   this.currentQuery = `{
-    //   "controller": "",
-    //   "action": "",
-    //   "index": "",
-    //   "collection": "",
-    //   "_id": "",
-    //   "body": {}
-    // }`
-    //   this.$refs.queryEditorWrapper.setContent(this.currentQuery)
-    //   this.currentQueryName = ''
-    //   this.currentResponse = ''
-    //   this.currentStatus = null
-    //   this.currentQueryIndexName = null
-    //   this.currentErrorStack = null
-    // },
     loadSavedQuery(savedQueryIdx) {
       if (!this.savedQueries[savedQueryIdx]) return
       const query = _.clone(this.savedQueries[savedQueryIdx])
@@ -303,38 +257,11 @@ export default {
       }
       this.tabs.push(query)
       this.$nextTick(() => {
-        this.$refs[`queryEditorWrapper-${query.name}`][0].setContent(query.body)
+        const tabIdx = this.tabs.findIndex(t => t.name === query.name)
+        this.$refs[`queryEditorWrapper-${tabIdx}`][0].setContent(query.body)
       })
       this.currentTabIdx = this.tabs.length - 1
     },
-    // copyToClipBoard(type) {
-    //   const textarea = document.createElement('textarea')
-    //   if (type === 'Response') {
-    //     textarea.value = this.currentResponse
-    //   } else if (type === 'Query') {
-    //     textarea.value = this.currentQuery
-    //   }
-    //   textarea.setAttribute('readonly', '')
-    //   document.body.appendChild(textarea)
-    //   textarea.select()
-    //   try {
-    //     document.execCommand('copy')
-    //     this.$bvToast.toast(`${type} successfully copied.`, {
-    //       title: 'Info',
-    //       variant: 'info',
-    //       toaster: 'b-toaster-bottom-right',
-    //       appendToast: true
-    //     })
-    //   } catch (err) {
-    //     this.$bvToast.toast(`Failed to copy ${type}.`, {
-    //       title: 'Error',
-    //       variant: 'danger',
-    //       toaster: 'b-toaster-bottom-right',
-    //       appendToast: true
-    //     })
-    //   }
-    //   document.body.removeChild(textarea)
-    // },
     isQueryNameValid(name) {
       if (name === '' || name === 'New Query') {
         return false
@@ -361,8 +288,15 @@ export default {
       this.tabs[this.newSaveTabIdx].saved = true
       const tab = _.clone(this.tabs[this.newSaveTabIdx])
       this.savedQueries.push(tab)
+      this.tabs[this.newSaveTabIdx].savedIdx = this.savedQueries.length - 1
       this.newSaveTabIdx = null
       this.storeQueriesToLocalStorage()
+      this.$bvToast.toast('Query successfully saved.', {
+        title: 'Info',
+        variant: 'info',
+        toaster: 'b-toaster-bottom-right',
+        appendToast: true
+      })
     },
     saveQuery(tabIdx) {
       const tab = this.tabs[tabIdx]
@@ -371,8 +305,14 @@ export default {
       )
       if (storedQueryIdx !== -1) {
         this.savedQueries[storedQueryIdx].query = _.clone(tab.query)
-        this.tabs[storedQueryIdx].saved = true
+        this.tabs[tabIdx].saved = true
         this.storeQueriesToLocalStorage()
+        this.$bvToast.toast('Query successfully saved.', {
+          title: 'Info',
+          variant: 'info',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true
+        })
       } else {
         this.newSaveTabIdx = tabIdx
         this.$bvModal.show('modal-save-query')
@@ -405,18 +345,11 @@ export default {
         return q
       })
       localStorage.setItem('storedQueries', JSON.stringify(storedQueries))
-      this.$bvToast.toast('Query successfully saved.', {
-        title: 'Info',
-        variant: 'info',
-        toaster: 'b-toaster-bottom-right',
-        appendToast: true
-      })
     },
     async performQuery(tabIdx) {
       const query = _.clone(this.tabs[tabIdx].query)
       let response = {}
 
-      query.body = JSON.parse(query.body)
       try {
         response = await this.wrapper.query(query)
         this.$bvToast.toast('Query successfully played.', {
@@ -425,6 +358,7 @@ export default {
           toaster: 'b-toaster-bottom-right',
           appendToast: true
         })
+        await this.fetchApi()
       } catch (error) {
         response = {
           ...error,
@@ -446,6 +380,17 @@ export default {
       this.tabs.push(newTab)
       this.currentTabIdx = this.tabs.length - 1
     },
+    async getKuzzleOpenApi() {
+      try {
+        const openApi = await this.wrapper.query({
+          controller: 'server',
+          action: 'openapi'
+        })
+        this.openapi = openApi.paths
+      } catch (error) {
+        this.$log.error(error)
+      }
+    },
     async getKuzzlePublicApi() {
       try {
         const publicApi = await this.wrapper.query({
@@ -465,14 +410,18 @@ export default {
         const index = this.$store.direct.getters.index.getOneIndex(indexName)
         await this.$store.direct.dispatch.index.fetchCollectionList(index)
       }
+    },
+    async fetchApi() {
+      await this.getKuzzlePublicApi()
+      await this.fetchIndexList()
     }
   },
   async mounted() {
+    await this.fetchApi()
+    await this.getKuzzleOpenApi()
     this.loading = true
     this.loadStoredQueriesFromLocalStorage()
     this.newTab()
-    await this.getKuzzlePublicApi()
-    await this.fetchIndexList()
     this.loading = false
   }
 }
@@ -483,35 +432,36 @@ export default {
   margin-bottom: 0px;
 }
 ::v-deep .titleItem {
-  min-width: 160px;
-}
-.DataLayout {
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  min-width: 200px;
+  border: 1px solid #d5d5d5 !important;
 }
 
 .backgroundCard {
   background-color: $light-grey-color;
 }
 
-.DataLayout-sidebarWrapper {
+.DataLayout-vertical {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.DataLayout-sidebarWrapper-vertical {
   min-width: $sidebar-width;
   width: $sidebar-width;
   height: 100%;
-  overflow: auto;
   z-index: 1;
 }
 
-.DataLayout-contentWrapper {
+.DataLayout-contentWrapper-vertical {
   flex-grow: 1;
   height: 100%;
   overflow: auto;
   padding: $content-gutter;
 }
 
-.Custom-resizer > .multipane-resizer {
+.Custom-resizer-vertical > .multipane-resizer {
   margin: 0;
   left: 0;
   position: relative;
