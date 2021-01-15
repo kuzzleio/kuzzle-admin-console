@@ -15,6 +15,11 @@
             </div>
           </div>
           <div class="row">
+            <div class="col offset-s1 s10">
+              <warning-header :text="bannerV4Text" />
+            </div>
+          </div>
+          <div class="row">
             <div class="col offset-s4 s2">
               <environment-switch
                 @environment::create="editEnvironment"
@@ -52,16 +57,20 @@
 import LoginForm from './Common/Login/Form'
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
 import * as types from '../vuex/modules/common/routing/mutation-types'
+import WarningHeader from './Common/WarningHeader'
 
 export default {
   name: 'Login',
   components: {
     LoginForm,
-    EnvironmentSwitch
+    EnvironmentSwitch,
+    WarningHeader
   },
   data() {
     return {
-      environmentId: null
+      environmentId: null,
+      bannerV4Text:
+        'Hey! A new version of the admin console will be available soon. You can test the beta version <a target="_blank" href="http://next-console.kuzzle.io">here</a> now.'
     }
   },
   methods: {

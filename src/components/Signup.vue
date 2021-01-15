@@ -13,6 +13,11 @@
             />
           </h2>
           <div class="row">
+            <div class="col offset-s1 s10">
+              <warning-header :text="bannerV4Text" />
+            </div>
+          </div>
+          <div class="row">
             <div class="col offset-s4 s2">
               <environment-switch
                 @environment::create="editEnvironment"
@@ -138,11 +143,13 @@
 import * as types from '../vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
+import WarningHeader from './Common/WarningHeader'
 
 export default {
   name: 'Signup',
   components: {
-    EnvironmentSwitch
+    EnvironmentSwitch,
+    WarningHeader
   },
   data() {
     return {
@@ -151,7 +158,9 @@ export default {
       password2: '',
       reset: false,
       error: null,
-      waiting: false
+      waiting: false,
+      bannerV4Text:
+        'Hey! A new version of the admin console will be available soon. You can test the beta version <a target="_blank" href="http://next-console.kuzzle.io">here</a> now.'
     }
   },
   methods: {
