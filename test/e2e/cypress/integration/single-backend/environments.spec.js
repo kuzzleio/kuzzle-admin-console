@@ -10,6 +10,22 @@ describe('Environments', function() {
     localStorage.removeItem('environments')
   })
 
+  this.afterEach(() => {
+    cy.request({
+      method: 'PUT',
+      url: 'http://localhost:7512/roles/anonymous',
+      body: {
+        controllers: {
+          index: {
+            actions: {
+              list: true
+            }
+          }
+        }
+      }
+    })
+  })
+
   it('Should be able to create a new environment', function() {
     const newEnvName = 'local'
     cy.visit('/')
