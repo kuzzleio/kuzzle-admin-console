@@ -10,8 +10,20 @@ describe('Environments', function() {
     localStorage.removeItem('environments')
   })
 
-  this.afterAll(() => {
-    cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
+  this.afterEach(() => {
+    cy.request({
+      method: 'PUT',
+      url: 'http://localhost:7512/roles/anonymous',
+      body: {
+        controllers: {
+          '*': {
+            actions: {
+              '*': true
+            }
+          }
+        }
+      }
+    })
   })
 
   it('Should be able to create a new environment', function() {
@@ -574,14 +586,14 @@ describe('Environments', function() {
       url: 'http://localhost:7512/roles/anonymous',
       body: {
         controllers: {
-          index: {
-            actions: {
-              list: false
-            }
-          },
           '*': {
             actions: {
               '*': true
+            }
+          },
+          index: {
+            actions: {
+              list: false
             }
           }
         }
