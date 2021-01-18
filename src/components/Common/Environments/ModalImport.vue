@@ -22,11 +22,22 @@
       </b-button>
     </template>
 
-    <b-form-file ref="file-input" @change="upload($event)" />
+    <b-form-group
+      label="Upload a file"
+      description="You can drag and drop your file in this input field"
+    >
+      <b-form-file
+        data-cy="EnvironmentImport-fileInput"
+        ref="file-input"
+        v-model="file"
+    /></b-form-group>
 
-    <p class="mt-3" data-cy="Environment-found">
-      Found {{ envNames.length }} connections
-    </p>
+    <b-alert
+      :show="file !== null && errors.length === 0 && !loading"
+      data-cy="Environment-found"
+    >
+      ✅ Uploaded file is valid. Found {{ envNames.length }} connections.
+    </b-alert>
 
     <b-alert
       v-for="(err, k) in errors"
@@ -47,8 +58,10 @@ export default {
   components: {},
   data() {
     return {
+      file: null,
       env: {},
-      errors: []
+      errors: [],
+      loading: false
     }
   },
   computed: {
@@ -64,6 +77,7 @@ export default {
       this.clearFiles()
       this.errors = []
       this.env = {}
+      this.loading = false
     },
     async importEnv() {
       let mustSwitch = false
@@ -92,28 +106,39 @@ export default {
         this.$bvModal.hide(this.id)
       }
     },
-    upload(event) {
+    upload() {
+      if (!this.file || this.loading) {
+        return
+      }
+      this.$log.debug('Uploading!')
+
       this.errors = []
       this.env = {}
-      var reader = new FileReader()
+      this.loading = true
+      const reader = new FileReader()
 
       reader.onload = (() => {
         return e => {
           try {
             this.env = JSON.parse(e.target.result)
-
-            this.canSubmit = true
           } catch (error) {
             this.$log.error(error)
             this.$log.debug(e.target)
-
             this.errors.push(error)
           }
+          this.loading = false
         }
-      })(event.target.files[0])
-      this.$log.debug(event)
+      })(this.file)
 
-      reader.readAsText(event.target.files[0])
+      reader.readAsText(this.file)
+    }
+  },
+  watch: {
+    file: {
+      handler() {
+        this.$log.debug('File has changed')
+        this.upload()
+      }
     }
   }
 }

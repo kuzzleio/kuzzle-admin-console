@@ -93,7 +93,7 @@
     "axios": "^0.19.2",
     "babel-plugin-istanbul": "^5.2.0",
     "cypress": "^4.5.0",
-    "cypress-file-upload": "^4.0.4",
+    "cypress-file-upload": "^5.0.0",
     "cypress-plugin-retries": "^1.5.2",
     "cypress-wait-until": "^1.7.1",
     "eslint-plugin-cypress": "^2.7.0",

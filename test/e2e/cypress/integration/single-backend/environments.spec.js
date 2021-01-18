@@ -482,6 +482,16 @@ describe('Environments', function() {
     cy.title().should('eq', 'localEnvTestTabTitle')
   })
 
+  it.skip('Should be able to import environments', function() {
+    cy.visit('/')
+    cy.contains('Create a Connection')
+    cy.get('[data-cy="CreateEnvironment-import"]').click()
+    cy.contains('Import Connection')
+
+    // Never get this shit to work
+    cy.get('[data-cy="EnvironmentImport-fileInput"]').attachFile('img.jpg')
+  })
+
   it('Should be able to export environments', function() {
     const newEnvName = 'exportedEnv'
     const secondEnvName = 'secondExportedEnv'
@@ -525,7 +535,7 @@ describe('Environments', function() {
     cy.get('[data-cy="export-environments"]')
       .then(
         anchor =>
-          new Cypress.Promise((resolve, reject) => {
+          new Cypress.Promise(resolve => {
             const xhr = new XMLHttpRequest()
             xhr.open('GET', anchor.prop('href'), true)
             xhr.responseType = 'blob'
