@@ -87,7 +87,6 @@ const actions = createActions({
 
     localStorage.setItem(LS_CURRENT_ENV, payload)
     commit.setCurrentEnvironment(payload)
-    document.title = payload
   },
   createEnvironment(context, payload) {
     const { dispatch, commit, state } = kuzzleActionContext(context)
@@ -210,7 +209,6 @@ const actions = createActions({
 
     currentId = localStorage.getItem(LS_CURRENT_ENV)
     commit.setCurrentEnvironment(currentId)
-    document.title = currentId
   }
 })
 
