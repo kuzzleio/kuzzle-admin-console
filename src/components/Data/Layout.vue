@@ -158,8 +158,12 @@ export default {
     handleDataNotFound() {
       this.dataNotFound = true
     },
-    async fetchAllTheThings() {
+    // @todo : handle lazy loading sequence only on the authenticated routes
+    async lazyLoadingSequence() {
       if (!this.isAuthenticated) {
+        this.$log.warn(
+          'Lazy loading sequence started with a non-authenticated user.'
+        )
         return
       }
 
@@ -180,12 +184,12 @@ export default {
     }
   },
   async mounted() {
-    await this.fetchAllTheThings()
+    await this.lazyLoadingSequence()
   },
   watch: {
     $route: {
       handler() {
-        this.fetchAllTheThings()
+        this.lazyLoadingSequence()
       }
     }
   }
