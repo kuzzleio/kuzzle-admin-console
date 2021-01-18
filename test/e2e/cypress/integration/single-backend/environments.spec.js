@@ -20,6 +20,11 @@ describe('Environments', function() {
             actions: {
               list: true
             }
+          },
+          '*': {
+            actions: {
+              '*': true
+            }
           }
         }
       }
