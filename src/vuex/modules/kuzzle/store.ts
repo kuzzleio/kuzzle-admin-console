@@ -147,6 +147,7 @@ const actions = createActions({
     if (mustReconnect) {
       dispatch.switchEnvironment(payload.id)
     }
+    return payload.id
   },
   async connectToCurrentEnvironment(context) {
     const { dispatch, state, getters, commit } = kuzzleActionContext(context)
