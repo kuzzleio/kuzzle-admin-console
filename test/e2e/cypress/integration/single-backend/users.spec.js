@@ -574,7 +574,7 @@ describe('Users', function() {
     cy.get('[data-cy="export-user-mapping"]')
       .then(
         anchor =>
-          new Cypress.Promise((resolve, reject) => {
+          new Cypress.Promise(resolve => {
             const xhr = new XMLHttpRequest()
             xhr.open('GET', anchor.prop('href'), true)
             xhr.responseType = 'blob'
