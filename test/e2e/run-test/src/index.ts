@@ -16,8 +16,7 @@ class RunTest extends Command {
     version: flags.version({ char: 'v' }),
     help: flags.help({ char: 'h' }),
     backend: flags.enum({ options: ['1', '2', 'multi'], default: '2' }),
-    local: flags.boolean({ default: false }),
-    staticBuild: flags.boolean({ default: false })
+    local: flags.boolean({ default: false })
   }
 
   async run() {
@@ -32,20 +31,16 @@ class RunTest extends Command {
     switch (flags.backend) {
       case '1':
       case '2':
-        await this.singleBackend(flags.backend, flags.local, flags.staticBuild)
+        await this.singleBackend(flags.backend, flags.local)
         break
       case 'multi':
       default:
-        await this.multiBackend(flags.local, flags.staticBuild)
+        await this.multiBackend(flags.local)
         break
     }
   }
 
-  async singleBackend(
-    version: string,
-    local: boolean = false,
-    staticBuild: boolean = false
-  ) {
+  async singleBackend(version: string, local: boolean = false) {
     this.log(
       chalk.blueBright(
         ` Preparing single-backend stack with Kuzzle v${version}`
@@ -59,6 +54,7 @@ class RunTest extends Command {
           if (local) {
             return 'Using local Kuzzle'
           }
+          return 'Using local Kuzzle'
         },
         task: () => {
           const docoFile = join(
@@ -90,13 +86,13 @@ class RunTest extends Command {
         }
       },
       {
-        title: `Launch the Admin Console`,
+        title: `Build and serve the Admin Console`,
         skip: () => {
           if (local) {
             return 'Using local Admin Console'
           }
         },
-        task: () => this.serveAdminConsole(staticBuild)
+        task: () => this.buildAndServeAdminConsole()
       },
       {
         title: 'Wait for the Admin Console to be up',
@@ -135,18 +131,18 @@ class RunTest extends Command {
     }
   }
 
-  async multiBackend(local: boolean = false, staticBuild: boolean = false) {
+  async multiBackend(local: boolean = false) {
     this.log(chalk.blueBright(` Preparing multi-backend stack`))
 
     const tasks = new Listr([
       {
-        title: `Launch the Admin Console`,
+        title: `Build and serve the Admin Console`,
         skip: () => {
           if (local) {
             return 'Using local Admin Console'
           }
         },
-        task: () => this.serveAdminConsole(staticBuild)
+        task: () => this.buildAndServeAdminConsole()
       },
       {
         title: 'Wait for the Admin Console to be up',
@@ -184,13 +180,9 @@ class RunTest extends Command {
     }
   }
 
-  async serveAdminConsole(staticBuild: boolean = false) {
-    if (!staticBuild) {
-      execa('npm', ['run', 'serve'])
-      return
-    }
+  async buildAndServeAdminConsole() {
     await execa('npm', ['run', 'build'])
-    const file = new nodeStatic.Server('../../../dist')
+    const file = new nodeStatic.Server('./dist')
     http
       .createServer((request, response) => {
         request
