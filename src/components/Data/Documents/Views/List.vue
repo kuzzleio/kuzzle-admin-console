@@ -52,13 +52,13 @@
         v-for="document in documents"
         class="p-2"
         data-cy="DocumentList-item"
-        :key="document.id"
+        :key="document._id"
       >
         <document-list-item
           :document="document"
           :collection="collection"
           :index="index"
-          :is-checked="isChecked(document.id)"
+          :is-checked="isChecked(document._id)"
           @checkbox-click="$emit('checkbox-click', $event)"
           @delete="$emit('delete', $event)"
         />

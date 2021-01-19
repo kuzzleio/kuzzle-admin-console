@@ -112,32 +112,6 @@ export default {
       'canManageRoles',
       'canManageProfiles'
     ])
-  },
-  watch: {
-    $route(v) {
-      this.fetchMapping(v)
-    }
-  },
-  mounted() {
-    this.fetchMapping(this.$route)
-  },
-  methods: {
-    fetchMapping(v) {
-      if (!v.meta) {
-        return
-      }
-      switch (v.meta.section) {
-        case 'users':
-          this.$store.direct.dispatch.security.fetchUserMapping()
-          break
-        case 'profiles':
-          this.$store.direct.dispatch.security.fetchProfileMapping()
-          break
-        case 'roles':
-          this.$store.direct.dispatch.security.fetchRoleMapping()
-          break
-      }
-    }
   }
 }
 </script>
