@@ -1,4 +1,4 @@
-name: Main branches push checks
+name: Pull request checks
 
 on: [pull_request]
 
