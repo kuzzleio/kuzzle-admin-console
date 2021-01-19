@@ -176,19 +176,7 @@ export default {
     queryBodyChange($event) {
       this.jsonQuery = $event
       if (this.isQueryValid($event)) {
-        const json = JSON.parse($event)
-        if (json.controller !== this.editedQuery.controller) {
-          this.editedQuery.controller = json.controller
-        }
-        if (json.action !== this.editedQuery.action) {
-          this.editedQuery.action = json.action
-        }
-        if (json.index !== this.editedQuery.index) {
-          this.editedQuery.index = json.index
-        }
-        if (json.collection !== this.editedQuery.collection) {
-          this.editedQuery.collection = json.collection
-        }
+        this.editedQuery = JSON.parse($event);
       }
     },
     isQueryValid(query) {
