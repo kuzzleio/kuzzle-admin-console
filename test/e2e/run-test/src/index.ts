@@ -5,6 +5,8 @@ import Listr from 'listr'
 import emoji from 'node-emoji'
 import { join } from 'path'
 import rp from 'request-promise'
+import http from 'http'
+import nodeStatic from 'node-static'
 
 class RunTest extends Command {
   static description = 'describe the command here'
@@ -14,7 +16,8 @@ class RunTest extends Command {
     version: flags.version({ char: 'v' }),
     help: flags.help({ char: 'h' }),
     backend: flags.enum({ options: ['1', '2', 'multi'], default: '2' }),
-    local: flags.boolean({ default: false })
+    local: flags.boolean({ default: false }),
+    staticBuild: flags.boolean({ default: false })
   }
 
   async run() {
@@ -29,16 +32,20 @@ class RunTest extends Command {
     switch (flags.backend) {
       case '1':
       case '2':
-        await this.singleBackend(flags.backend, flags.local)
+        await this.singleBackend(flags.backend, flags.local, flags.staticBuild)
         break
       case 'multi':
       default:
-        await this.multiBackend()
+        await this.multiBackend(flags.local, flags.staticBuild)
         break
     }
   }
 
-  async singleBackend(version: string, local: boolean = false) {
+  async singleBackend(
+    version: string,
+    local: boolean = false,
+    staticBuild: boolean = false
+  ) {
     this.log(
       chalk.blueBright(
         ` Preparing single-backend stack with Kuzzle v${version}`
@@ -89,9 +96,7 @@ class RunTest extends Command {
             return 'Using local Admin Console'
           }
         },
-        task: () => {
-          execa('npm', ['run', 'serve'])
-        }
+        task: () => this.serveAdminConsole(staticBuild)
       },
       {
         title: 'Wait for the Admin Console to be up',
@@ -130,7 +135,7 @@ class RunTest extends Command {
     }
   }
 
-  async multiBackend(local: boolean = false) {
+  async multiBackend(local: boolean = false, staticBuild: boolean = false) {
     this.log(chalk.blueBright(` Preparing multi-backend stack`))
 
     const tasks = new Listr([
@@ -141,9 +146,7 @@ class RunTest extends Command {
             return 'Using local Admin Console'
           }
         },
-        task: () => {
-          execa('npm', ['run', 'serve'])
-        }
+        task: () => this.serveAdminConsole(staticBuild)
       },
       {
         title: 'Wait for the Admin Console to be up',
@@ -179,6 +182,24 @@ class RunTest extends Command {
       this.log(`\n ${emoji.get('red_circle')} Sorry, tests are red.`)
       process.exit(1)
     }
+  }
+
+  async serveAdminConsole(staticBuild: boolean = false) {
+    if (!staticBuild) {
+      execa('npm', ['run', 'serve'])
+      return
+    }
+    await execa('npm', ['run', 'build'])
+    const file = new nodeStatic.Server('../../../dist')
+    http
+      .createServer((request, response) => {
+        request
+          .addListener('end', () => {
+            file.serve(request, response)
+          })
+          .resume()
+      })
+      .listen(8080)
   }
 
   buildCypressArgs(
@@ -226,7 +247,7 @@ class RunTest extends Command {
 
 const wait = (ms: number) =>
   new Promise(resolve => {
-    setTimeout(() => resolve(), ms)
+    setTimeout(() => resolve(true), ms)
   })
 
 export = RunTest
