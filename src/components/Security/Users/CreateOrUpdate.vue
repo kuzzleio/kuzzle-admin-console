@@ -185,12 +185,7 @@ export default {
       this.$v.kuid.$model = value
     },
     onCredentialsChanged(payload) {
-      const notEmptyFields = Object.keys(payload.credentials).filter(c => payload.credentials[c] !== "").length > 0
-      if (notEmptyFields) {
-        this.credentials[payload.strategy] = { ...payload.credentials }
-      } else {
-        delete this.credentials[payload.strategy]
-      }
+      this.credentials[payload.strategy] = { ...payload.credentials }
     },
     onCustomContentChanged(value) {
       this.$v.customContentValue.$model = value
@@ -205,6 +200,15 @@ export default {
       this.$v.$touch()
       if (this.$v.$anyError) {
         return
+      }
+      for (const strategy of Object.keys(this.credentials)) {
+        const credentials = this.credentials[strategy]
+        const notEmptyFields = Object.keys(credentials).filter(
+          field => credentials[field] !== ''
+        )
+        if (notEmptyFields.length === 0) {
+          delete this.credentials[strategy]
+        }
       }
       this.submitting = true
       try {
