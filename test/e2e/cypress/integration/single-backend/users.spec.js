@@ -101,12 +101,12 @@ describe('Users', function() {
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-rawTab]').click()
 
-    cy.get('#rawsearch .ace_line').should('be.visible')
+    cy.get('#rawsearch .ace_line').should('exist')
     cy.wait(1000)
 
     cy.get('#rawsearch .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
-      .should('be.visible')
+      .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -150,7 +150,6 @@ describe('Users', function() {
     cy.get('[data-cy=ModalDeleteUsers-submitBtn]').click()
 
     cy.wait(2000)
-    cy.get('[data-cy="UserList-items"]').should('not.contain', kuid)
     cy.contains('No user is defined')
   })
 
@@ -189,8 +188,6 @@ describe('Users', function() {
     cy.get('[data-cy=ModalDeleteUsers-submitBtn]').click()
 
     cy.wait(2000)
-    cy.get('[data-cy="UserList-items"]').should('not.contain', kuids[0])
-    cy.get('[data-cy="UserList-items"]').should('not.contain', kuids[1])
     cy.contains('No user is defined')
   })
 
@@ -314,10 +311,7 @@ describe('Users', function() {
       'contain',
       'Please add at least one profile'
     )
-    cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should(
-      'be',
-      'visible'
-    )
+    cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should('be.visible')
 
     cy.get('[data-cy=UserProfileList-select]').select('default')
     cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should(
@@ -398,7 +392,7 @@ describe('Users', function() {
       force: true
     })
     cy.get('[data-cy="UserCustomContent-jsonEditor"] textarea.ace_text-input')
-      .should('be.visible')
+      .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -499,7 +493,7 @@ describe('Users', function() {
       force: true
     })
     cy.get('[data-cy="UserCustomContent-jsonEditor"] textarea.ace_text-input')
-      .should('be.visible')
+      .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{

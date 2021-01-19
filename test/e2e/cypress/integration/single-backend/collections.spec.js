@@ -53,7 +53,7 @@ describe('Collection management', function() {
       .click({ force: true })
 
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
-      .should('be.visible')
+      .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(`SuM UNV4L1d jayZON Kood`)
 
@@ -89,7 +89,7 @@ describe('Collection management', function() {
     cy.contains(collectionName)
 
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
-      .should('be.visible')
+      .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -255,7 +255,7 @@ describe('Collection management', function() {
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').click({ force: true })
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').type('testexport')
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
-      .should('be.visible')
+      .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{

@@ -59,13 +59,13 @@ describe('Document List', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy="DocumentList-item"]')
-    .within(() => {
-      cy.get("a").contains("documentId")
-      cy.get("a").not().contains('Luca Marchesini')
+    cy.get('[data-cy="DocumentList-item"]').within(() => {
+      cy.get('a').contains('documentId')
+      cy.get('a')
+        .not()
+        .contains('Luca Marchesini')
     })
   })
-
 
   it('Should be able to set and persist the listViewType param when switching the list view', function() {
     cy.waitOverlay()
@@ -246,7 +246,7 @@ describe('Document List', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/mapcollectiontest`, {
       properties: {
         location: {
-          type: "geo_point"
+          type: 'geo_point'
         }
       }
     })
@@ -293,20 +293,27 @@ describe('Document List', function() {
 
     cy.get('[data-cy="mapView-map"').should('exist')
 
-    cy.get('.leaflet-marker-pane .mapView-marker-default').should("have.length", 3)
-    cy.get('.leaflet-marker-pane .mapView-marker-selected').should("not.exist")
+    cy.get('.leaflet-marker-pane .mapView-marker-default').should(
+      'have.length',
+      3
+    )
+    cy.get('.leaflet-marker-pane .mapView-marker-selected').should('not.exist')
 
-    cy.get('[data-cy="mapView-no-document-card"').should("exist")
-    cy.get('[data-cy="mapView-current-document-card"').should("not.exist")
+    cy.get('[data-cy="mapView-no-document-card"').should('exist')
+    cy.get('[data-cy="mapView-current-document-card"').should('not.exist')
 
+    cy.get('.leaflet-marker-icon.documentId-mapViewTestDoc1').click({
+      force: true
+    })
 
-    cy.get(".leaflet-marker-icon.documentId-mapViewTestDoc1").click({force: true})
-
-    cy.get('[data-cy="mapView-no-document-card"').should("not.exist")
-    cy.get('[data-cy="mapView-current-document-card"').should("exist")
-    cy.get('[data-cy="mapView-current-document-id"').contains("mapViewTestDoc1");
-    cy.get('.leaflet-marker-pane .mapView-marker-default').should("have.length", 2)
-    cy.get('.leaflet-marker-pane .mapView-marker-selected').should("exist")
+    cy.get('[data-cy="mapView-no-document-card"').should('not.exist')
+    cy.get('[data-cy="mapView-current-document-card"').should('exist')
+    cy.get('[data-cy="mapView-current-document-id"').contains('mapViewTestDoc1')
+    cy.get('.leaflet-marker-pane .mapView-marker-default').should(
+      'have.length',
+      2
+    )
+    cy.get('.leaflet-marker-pane .mapView-marker-selected').should('exist')
   })
 })
 
@@ -341,7 +348,7 @@ describe('Document update/replace', () => {
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
-    cy.get('.ace_text-input').should('be.visible')
+    cy.get('.ace_text-input').should('exist')
     cy.wait(2000)
 
     cy.get('[data-cy="JSONEditor"] .ace_line')
@@ -380,7 +387,7 @@ describe('Document update/replace', () => {
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
-    cy.get('.ace_text-input').should('be.visible')
+    cy.get('.ace_text-input').should('exist')
     cy.wait(2000)
 
     cy.get('.ace_line')

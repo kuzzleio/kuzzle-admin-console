@@ -354,7 +354,7 @@ describe('Environments', function() {
       .should('contain', 'Offline')
     cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
     cy.waitForService('http://localhost:7512')
-    cy.get('.toast-header').should('not.be.visible')
+    cy.get('.toast-header').should('not.exist')
   })
 
   it('Should see an error when specifying the wrong backend version and should be able to fix it', () => {

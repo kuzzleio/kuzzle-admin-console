@@ -35,9 +35,7 @@ Cypress.Commands.add('waitOverlay', () => {
 })
 
 Cypress.Commands.add('waitForLoading', () => {
-  cy.waitUntil(function() {
-    return cy.get('[data-cy="main-spinner"]').should('not.visible')
-  })
+  // This command is just useless
 })
 
 Cypress.Commands.add(

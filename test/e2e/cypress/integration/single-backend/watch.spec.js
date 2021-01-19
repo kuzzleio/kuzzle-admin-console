@@ -94,7 +94,6 @@ describe('Watch', () => {
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
     cy.get('.ace_content .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
-      .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -130,7 +129,6 @@ describe('Watch', () => {
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
     cy.get('.ace_content .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
-      .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -168,7 +166,6 @@ describe('Watch', () => {
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
     cy.get('.ace_content .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
-      .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -216,7 +213,6 @@ describe('Watch', () => {
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
     cy.get('.ace_content .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
-      .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -237,7 +233,6 @@ describe('Watch', () => {
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
     cy.get('.ace_content .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
-      .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
