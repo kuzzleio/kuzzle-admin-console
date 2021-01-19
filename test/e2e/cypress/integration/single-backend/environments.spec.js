@@ -5,7 +5,24 @@ const fmt = word => {
 const backendVersion = Cypress.env('BACKEND_VERSION') || 2
 describe('Environments', function() {
   this.beforeEach(() => {
+    cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     localStorage.removeItem('environments')
+  })
+
+  this.afterEach(() => {
+    cy.request({
+      method: 'PUT',
+      url: 'http://localhost:7512/roles/anonymous',
+      body: {
+        controllers: {
+          '*': {
+            actions: {
+              '*': true
+            }
+          }
+        }
+      }
+    })
   })
 
   it('Should be able to create a new environment', function() {
@@ -550,5 +567,50 @@ describe('Import and export environments', () => {
         'equal',
         `{"${newEnvName}":{"name":"${newEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}},"${secondEnvName}":{"name":"${secondEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}}}`
       )
+  })
+
+  it('Should be able to switch to a reachable environment without lazy loading sequence error', function() {
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        ['env1']: {
+          name: 'env1',
+          color: 'darkblue',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          backendMajorVersion: backendVersion,
+          token: null
+        }
+      })
+    )
+
+    cy.request({
+      method: 'PUT',
+      url: 'http://localhost:7512/roles/anonymous',
+      body: {
+        controllers: {
+          '*': {
+            actions: {
+              '*': true
+            }
+          },
+          index: {
+            actions: {
+              list: false
+            }
+          }
+        }
+      }
+    })
+
+    cy.visit('/')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy="EnvironmentSwitch-env_env1"]').click()
+    cy.wait(1000)
+    cy.get('body')
+      .contains('Something went wrong while fetching the indexes list.')
+      .should('not.visible')
   })
 })
