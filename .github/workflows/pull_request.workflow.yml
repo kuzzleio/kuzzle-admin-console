@@ -32,6 +32,7 @@ jobs:
     strategy:
       matrix:
         backend_config: ['1', '2', 'multi']
+      fail-fast: false
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
