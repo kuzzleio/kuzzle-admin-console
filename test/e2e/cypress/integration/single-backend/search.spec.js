@@ -463,7 +463,6 @@ describe('Search', function() {
 
     cy.get('#rawsearch .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
-      .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -927,7 +926,7 @@ describe('Search', function() {
     cy.get('[data-cy="Filters-basicTab"]').click()
     cy.get('[data-cy="BasicFilter-sortAttributeSelect"]')
       .get('[value="fullName"]')
-      .should('not', 'exists')
+      .should('not.exist')
   })
 
   it('Should be able to perform a Basic Search sort by a text field with keyword as sub type', function() {
@@ -953,9 +952,11 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]')
-      .get('[value="lastName"]')
-    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]')
-      .get('[value="lastName.keyword"]')
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').get(
+      '[value="lastName"]'
+    )
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').get(
+      '[value="lastName.keyword"]'
+    )
   })
 })

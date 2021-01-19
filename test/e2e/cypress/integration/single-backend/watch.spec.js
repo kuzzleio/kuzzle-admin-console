@@ -185,7 +185,7 @@ describe('Watch', () => {
     cy.get('[data-cy="Notification"]').should('have.length', 1)
     cy.get('[data-cy="Watch-resetBtn"]').click()
     cy.get('[data-cy="Notification"]').should('have.length', 1)
-    cy.get('[data-cy=Watch-filtersPill]').should('not.be.visible')
+    cy.get('[data-cy=Watch-filtersPill]').should('not.exist')
   })
 
   it('Should limit the number of displayed notifications', () => {

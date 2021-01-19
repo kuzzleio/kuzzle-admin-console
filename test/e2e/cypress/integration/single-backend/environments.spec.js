@@ -477,9 +477,10 @@ describe('Environments', function() {
     cy.get('[data-cy="EnvironmentSwitch"]').click()
     cy.get('[data-cy="EnvironmentSwitch-env_env1"]').click()
     cy.wait(1000)
-    cy.get('body')
-      .contains('Something went wrong while fetching the indexes list.')
-      .should('not.visible')
+    cy.get('body').should(
+      'not.contain',
+      'Something went wrong while fetching the indexes list.'
+    )
   })
 })
 

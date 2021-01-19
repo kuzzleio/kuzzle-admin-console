@@ -221,8 +221,6 @@ describe('Users', function() {
     cy.get('[data-cy=ModalDeleteUsers-submitBtn]').click()
 
     cy.wait(2000)
-    cy.get('[data-cy="UserList-items"]').should('not.contain', kuids[0])
-    cy.get('[data-cy="UserList-items"]').should('not.contain', kuids[1])
     cy.contains('No user is defined')
   })
 
@@ -328,10 +326,7 @@ describe('Users', function() {
       .click()
       .type('{selectall}SuM UNnv4L33d JZOOOOO000n K0d')
 
-    cy.get('[data-cy="UserUpdate-customTab--dangerIcon"]').should(
-      'be',
-      'visible'
-    )
+    cy.get('[data-cy="UserUpdate-customTab--dangerIcon"]').should('be.visible')
 
     cy.get('[data-cy=UserUpdate-submit]').click()
     cy.wait(1000)
