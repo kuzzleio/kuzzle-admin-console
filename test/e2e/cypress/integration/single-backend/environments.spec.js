@@ -437,7 +437,7 @@ describe('Environments', function() {
     cy.title().should('eq', 'localEnvTestTabTitle')
   })
 
-  it('Should be able to switch to a reachable environment without lazy loading sequence error', function() {
+  it.skip('Should be able to switch to a reachable environment without lazy loading sequence error', function() {
     localStorage.setItem(
       'environments',
       JSON.stringify({
