@@ -924,9 +924,10 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]')
-      .get('[value="fullName"]')
-      .should('not.exist')
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"] option').should(
+      'not.contain',
+      'fullName'
+    )
   })
 
   it('Should be able to perform a Basic Search sort by a text field with keyword as sub type', function() {

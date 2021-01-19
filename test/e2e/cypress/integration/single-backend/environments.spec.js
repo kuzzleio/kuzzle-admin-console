@@ -484,7 +484,7 @@ describe('Environments', function() {
   })
 })
 
-describe('Import and export environments', () => {
+describe('Import and export environments', function() {
   this.beforeEach(() => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     localStorage.removeItem('environments')
