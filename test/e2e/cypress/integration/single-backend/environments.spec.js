@@ -2,9 +2,8 @@ const fmt = word => {
   return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
 }
 
+const backendVersion = Cypress.env('BACKEND_VERSION') || 2
 describe('Environments', function() {
-  const backendVersion = Cypress.env('BACKEND_VERSION') || 2
-
   this.beforeEach(() => {
     localStorage.removeItem('environments')
   })
@@ -92,14 +91,14 @@ describe('Environments', function() {
     cy.get('[data-cy=CreateEnvironment-port]').type('{selectall} tralala')
     cy.get(
       '[data-cy="CreateEnvironment-port--group"] .invalid-feedback'
-    ).should('not.be.visible')
+    ).should('not.exist')
 
     cy.get('[data-cy=Environment-SubmitButton]').click()
     cy.get('[data-cy="CreateEnvironment-backendVersion--group"]').should(
       'contain',
       'You must select a backend version'
     )
-    cy.url().should('be', '/create-connection/')
+    cy.url().should('contain', '/create-connection/')
   })
 
   it('Should be able to delete environments', function() {
@@ -304,51 +303,6 @@ describe('Environments', function() {
     cy.contains('Connected to')
   })
 
-  it('Should be able to import environments', () => {
-    cy.visit('/')
-    cy.contains('Create a Connection')
-    cy.get('[data-cy="CreateEnvironment-import"]').click({
-      force: true
-    })
-
-    cy.fixture('environment.json').then(fileJson => {
-      const blob = JSON.stringify(fileJson)
-
-      // WTF insane logic to upload a JSON file LOL
-      cy.get('input[type=file]').then(subject => {
-        const el = subject[0]
-        const testFile = new File([blob], 'environment.json', {
-          type: 'application/json'
-        })
-        const dataTransfer = new DataTransfer()
-        dataTransfer.items.add(testFile)
-        el.files = dataTransfer.files
-
-        const events = ['change']
-        const eventPayload = {
-          bubbles: true,
-          cancelable: true,
-          detail: dataTransfer
-        }
-
-        events.forEach(e => {
-          const event = new CustomEvent(e, eventPayload)
-          Object.assign(event, { dataTransfer })
-
-          subject[0].dispatchEvent(event)
-        })
-      })
-
-      cy.get('[data-cy="Environment-found"]').should(
-        'contain',
-        'Found 2 connections'
-      )
-      cy.wait(200)
-      cy.get('[data-cy="EnvironmentImport-submitBtn"]').click()
-      cy.contains('Select Kuzzle')
-    })
-  })
-
   it('Should open edit modal when an environment is malformed', () => {
     localStorage.setItem(
       'environments',
@@ -481,15 +435,55 @@ describe('Environments', function() {
 
     cy.title().should('eq', 'localEnvTestTabTitle')
   })
+})
 
-  it.skip('Should be able to import environments', function() {
+describe('Import and export environments', () => {
+  it('Should be able to import environments', function() {
     cy.visit('/')
     cy.contains('Create a Connection')
     cy.get('[data-cy="CreateEnvironment-import"]').click()
     cy.contains('Import Connection')
 
-    // Never get this shit to work
-    cy.get('[data-cy="EnvironmentImport-fileInput"]').attachFile('img.jpg')
+    cy.get('[data-cy="EnvironmentImport-fileInput"]')
+      .attachFile(
+        {
+          filePath: 'environment.json',
+          mimeType: 'application/json'
+        },
+        { subjectType: 'input', force: true }
+      )
+      .trigger('change')
+    cy.get('[data-cy=EnvironmentImport-ok]')
+      .should('exist')
+      .should('contain', 'Found 2 connections')
+    cy.get('[data-cy=EnvironmentImport-submitBtn]').click()
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy=EnvironmentSwitch-env_localhost]').should('exist')
+    cy.get('[data-cy=EnvironmentSwitch-env_uat]').should('exist')
+    cy.get(
+      '[data-cy=EnvironmentSwitch-env_uat] .fa-exclamation-triangle'
+    ).should('exist')
+  })
+
+  it('Should display an error when trying to import a file with the wrong extension', () => {
+    cy.visit('/')
+    cy.contains('Create a Connection')
+    cy.get('[data-cy="CreateEnvironment-import"]').click()
+    cy.contains('Import Connection')
+
+    cy.get('[data-cy="EnvironmentImport-fileInput"]')
+      .attachFile(
+        {
+          filePath: 'image.jpg',
+          mimeType: 'image/jpeg'
+        },
+        { subjectType: 'input', force: true }
+      )
+      .trigger('change')
+    cy.get('[data-cy=EnvironmentImport-err]')
+      .should('exist')
+      .should('contain', 'Uploaded file type (image/jpeg) is not supported.')
   })
 
   it('Should be able to export environments', function() {

@@ -27,19 +27,22 @@
       description="You can drag and drop your file in this input field"
     >
       <b-form-file
+        accept=".json"
         data-cy="EnvironmentImport-fileInput"
         ref="file-input"
         v-model="file"
-    /></b-form-group>
+      />
+    </b-form-group>
 
     <b-alert
       :show="file !== null && errors.length === 0 && !loading"
-      data-cy="Environment-found"
+      data-cy="EnvironmentImport-ok"
     >
       ✅ Uploaded file is valid. Found {{ envNames.length }} connections.
     </b-alert>
 
     <b-alert
+    data-cy="EnvironmentImport-err"
       v-for="(err, k) in errors"
       class="mt-3"
       dismissible
@@ -116,6 +119,14 @@ export default {
       this.env = {}
       this.loading = true
       const reader = new FileReader()
+
+      if (this.file.type !== 'application/json') {
+        this.errors.push(
+          `⛔️ Uploaded file type (${this.file.type}) is not supported. Please import .json files only`
+        )
+        this.loading = false
+        return
+      }
 
       reader.onload = (() => {
         return e => {
