@@ -48,8 +48,14 @@ const isActionAllowed = (
   if (
     filteredRights.some(function(item) {
       return item.value === 'allowed'
+    }) &&     filteredRights.some(function(item) {
+      return item.value === 'denied'
     })
   ) {
+    return false
+  } else if ( filteredRights.some(function(item) {
+    return item.value === 'allowed'
+  })) {
     return true
   }
   return false
@@ -252,5 +258,13 @@ export const getters = createGetters<AuthState>()({
       getters.canManageProfiles ||
       getters.canManageUsers
     )
+  },
+
+  // Server
+  canGetPublicApi(state) {
+    return isActionAllowed(state.user, 'server', 'publicApi')
+  },
+  canGetOpenApi(state) {
+    return isActionAllowed(state.user, 'server', 'openapi')
   }
 })
