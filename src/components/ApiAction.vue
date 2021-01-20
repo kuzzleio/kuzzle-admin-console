@@ -61,8 +61,6 @@
                     :tabIdx="tabIdx"
                     :controllers="controllers"
                     :actions="actions"
-                    :indexes="indexes"
-                    :collections="collections"
                     :api="api"
                     :openapi="openapi"
                     @saveQuery="saveQuery"
@@ -126,28 +124,12 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
-    storage() {
-      return this.$store.direct.getters.index.indexes
-    },
-    indexes() {
-      return this.storage.map(i => i.name)
-    },
-    collections() {
-      if (!this.currentQueryIndexName) {
-        return []
-      }
-      const index = this.storage.find(
-        i => i.name === this.currentQueryIndexName
-      )
-      return index && index.collections
-        ? index.collections.map(c => c.name)
-        : []
-    },
+    ...mapGetters('auth', ['canGetPublicApi', 'canGetOpenApi']),
     controllers() {
       return this.api ? Object.keys(this.api) : []
     },
     actions() {
-      if (!this.tabs[this.currentTabIdx]) {
+      if (!this.tabs[this.currentTabIdx] || !this.api) {
         return []
       }
       const currentController = this.tabs[this.currentTabIdx].query.controller
@@ -190,9 +172,6 @@ export default {
       return name
     },
     queryChanged({ query, tabIdx }) {
-      if (this.tabs[tabIdx].query.index !== query.index) {
-        this.lazyFetchCollections(query.index)
-      }
       const savedIdx = this.tabs[tabIdx].savedIdx
       if (savedIdx !== null) {
         this.tabs[tabIdx].saved = _.isEqual(
@@ -216,25 +195,6 @@ export default {
         this.currentTabIdx = this.currentTabIdx - 1
       }
       this.tabs.splice(tabIdx, 1)
-    },
-    async fetchIndexList() {
-      try {
-        await this.$store.direct.dispatch.index.fetchIndexList()
-      } catch (error) {
-        this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while fetching the indexes list.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
-      }
     },
     deleteSavedQuery(savedQueryIdx) {
       const tabIdx = this.tabs.findIndex(t => t.savedIdx === savedQueryIdx)
@@ -323,7 +283,11 @@ export default {
       if (!storedQueries) {
         return
       }
-      this.savedQueries = JSON.parse(storedQueries)[
+      const jsonStoreQueries = JSON.parse(storedQueries);
+      if (!jsonStoreQueries[this.currentEnvironment.name]) {
+        return
+      }
+      this.savedQueries = jsonStoreQueries[
         this.currentEnvironment.name
       ].map((q, idx) => {
         q.response = ''
@@ -358,7 +322,6 @@ export default {
           toaster: 'b-toaster-bottom-right',
           appendToast: true
         })
-        await this.fetchApi()
       } catch (error) {
         response = {
           ...error,
@@ -388,7 +351,7 @@ export default {
         })
         this.openapi = openApi.paths
       } catch (error) {
-        this.$log.error(error)
+       this.$log.error(error)
       }
     },
     async getKuzzlePublicApi() {
@@ -402,23 +365,14 @@ export default {
         this.$log.error(error)
       }
     },
-    async lazyFetchCollections(indexName) {
-      if (!indexName) {
-        return
-      }
-      if (this.storage.find(i => i.name === indexName && !i.collections)) {
-        const index = this.$store.direct.getters.index.getOneIndex(indexName)
-        await this.$store.direct.dispatch.index.fetchCollectionList(index)
-      }
-    },
-    async fetchApi() {
-      await this.getKuzzlePublicApi()
-      await this.fetchIndexList()
-    }
   },
   async mounted() {
-    await this.fetchApi()
-    await this.getKuzzleOpenApi()
+    if (this.canGetPublicApi) {
+      await this.getKuzzlePublicApi()
+    }
+    if (this.currentEnvironment.backendMajorVersion > 1 && this.canGetOpenApi) {
+      await this.getKuzzleOpenApi()
+    }
     this.loading = true
     this.loadStoredQueriesFromLocalStorage()
     this.newTab()

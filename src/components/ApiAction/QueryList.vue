@@ -76,7 +76,14 @@ export default {
   watch: {
     currentQueryIndex: {
       handler(value) {
-        const elem = this.$refs[`saved-query-${value}`][0]
+        const ref = this.$refs[`saved-query-${value}`]
+        if (!ref) {
+          return
+        }
+        const elem = ref[0]
+        if (!elem) {
+          return
+        }
         this.$refs['leftNav-container'].scrollTo(
           0,
           elem.offsetTop - elem.offsetHeight

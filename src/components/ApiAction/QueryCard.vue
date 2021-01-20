@@ -100,8 +100,6 @@ export default {
     tabIdx: {},
     controllers: {},
     actions: {},
-    indexes: {},
-    collections: {},
     api: {},
     openapi: {}
   },
@@ -136,6 +134,7 @@ export default {
     loadQueryParams() {
       const query = _.clone(this.editedQuery)
       if (
+        !this.api ||
         !this.api[query.controller] ||
         !this.api[query.controller][query.action]
       ) {
@@ -152,7 +151,7 @@ export default {
         return
       }
       const api = this.api[query.controller][query.action]
-      let path = api.http[0].path
+      let path = api.http[0].url
       let verb = api.http[0].verb.toLowerCase()
       let tmpPath = path
       let idx = tmpPath.search(/\/:/)
@@ -167,8 +166,15 @@ export default {
         }
         idx = tmpPath.search(/\/:/)
       }
-      for (let param of this.openapi[tmpPath][verb].parameters) {
-        query[param.name] = null
+      if (
+        this.openapi &&
+        this.openapi[tmpPath] &&
+        this.openapi[tmpPath][verb] &&
+        this.openapi[tmpPath][verb].parameters
+      ) {
+        for (let param of this.openapi[tmpPath][verb].parameters) {
+          query[param.name] = null
+        }
       }
       this.jsonQuery = JSON.stringify(query, null, 2)
       this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery)
@@ -176,7 +182,7 @@ export default {
     queryBodyChange($event) {
       this.jsonQuery = $event
       if (this.isQueryValid($event)) {
-        this.editedQuery = JSON.parse($event);
+        this.editedQuery = JSON.parse($event)
       }
     },
     isQueryValid(query) {
