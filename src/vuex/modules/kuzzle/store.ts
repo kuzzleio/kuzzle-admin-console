@@ -87,7 +87,6 @@ const actions = createActions({
 
     localStorage.setItem(LS_CURRENT_ENV, payload)
     commit.setCurrentEnvironment(payload)
-    document.title = payload
   },
   createEnvironment(context, payload) {
     const { dispatch, commit, state } = kuzzleActionContext(context)
@@ -148,6 +147,7 @@ const actions = createActions({
     if (mustReconnect) {
       dispatch.switchEnvironment(payload.id)
     }
+    return payload.id
   },
   async connectToCurrentEnvironment(context) {
     const { dispatch, state, getters, commit } = kuzzleActionContext(context)
@@ -210,7 +210,6 @@ const actions = createActions({
 
     currentId = localStorage.getItem(LS_CURRENT_ENV)
     commit.setCurrentEnvironment(currentId)
-    document.title = currentId
   }
 })
 

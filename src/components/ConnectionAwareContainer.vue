@@ -62,8 +62,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
-    currentEnvironment() {
+    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
+    currentEnvironmentId() {
       return this.$store.state.kuzzle.currentId
     },
     kuzzleError() {
@@ -133,9 +133,15 @@ export default {
         this.$bvToast.hide('offline-toast')
       }
     },
+    updatePageTitle() {
+      document.title = this.currentEnvironment
+        ? `[${this.currentEnvironment.name}] Kuzzle Admin Console`
+        : 'Kuzzle Admin Console'
+    },
     async onEnvironmentSwitch() {
       this.$log.debug('ConnectionAwareContainer::environmentSwitched')
       this.$store.direct.commit.auth.setTokenValid(false)
+      this.updatePageTitle()
       this.removeListeners()
       this.initListeners()
       try {
@@ -180,7 +186,7 @@ export default {
         this.initListeners()
       }
     },
-    currentEnvironment: {
+    currentEnvironmentId: {
       immediate: true,
       async handler() {
         try {

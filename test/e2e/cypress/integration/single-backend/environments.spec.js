@@ -109,14 +109,14 @@ describe('Environments', function() {
     cy.get('[data-cy=CreateEnvironment-port]').type('{selectall} tralala')
     cy.get(
       '[data-cy="CreateEnvironment-port--group"] .invalid-feedback'
-    ).should('not.be.visible')
+    ).should('not.exist')
 
     cy.get('[data-cy=Environment-SubmitButton]').click()
     cy.get('[data-cy="CreateEnvironment-backendVersion--group"]').should(
       'contain',
       'You must select a backend version'
     )
-    cy.url().should('be', '/create-connection/')
+    cy.url().should('contain', '/create-connection/')
   })
 
   it('Should be able to delete environments', function() {
@@ -496,7 +496,7 @@ describe('Environments', function() {
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
-    cy.title().should('eq', 'localEnvTestTabTitle')
+    cy.title().should('contain', 'localEnvTestTabTitle')
   })
 
   it('Should be able to export environments', function() {
@@ -516,6 +516,7 @@ describe('Environments', function() {
     cy.get('[data-cy="Environment-SubmitButton"]').click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
 
+    cy.url().should('contain', 'login')
     cy.get(`[data-cy="EnvironmentSwitch"]`).click()
     cy.get(`[data-cy="EnvironmentSwitch-newConnectionBtn"]`).click()
 
@@ -542,7 +543,7 @@ describe('Environments', function() {
     cy.get('[data-cy="export-environments"]')
       .then(
         anchor =>
-          new Cypress.Promise((resolve, reject) => {
+          new Cypress.Promise(resolve => {
             const xhr = new XMLHttpRequest()
             xhr.open('GET', anchor.prop('href'), true)
             xhr.responseType = 'blob'

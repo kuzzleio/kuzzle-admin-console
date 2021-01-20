@@ -1,6 +1,6 @@
 <template functional>
   <b-alert show>
-    For more information about securities policies please visit
+    For more information about security policies please visit
     <a
       class="blue-text lighten-2"
       href="https://docs.kuzzle.io/core/2/guides/essentials/security/"

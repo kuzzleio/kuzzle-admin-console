@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import moment from 'moment'
 import { MappingAttributes } from './mappingHelpers'
 
 export const NO_ACTIVE = null
@@ -170,17 +171,8 @@ export const addNewHistoryItemAndSave = (filter, index, collection) => {
     return
   }
   const filters = loadHistoyFromLocalStorage(index, collection)
-  const date = new Date(Date.now())
-  filter.name =
-    date.getDate() +
-    '/' +
-    date.getMonth() +
-    '/' +
-    date.getFullYear() +
-    ' ' +
-    date.getHours() +
-    ':' +
-    date.getMinutes()
+  const date = moment()
+  filter.name = date.format('YY/MM/DD k:mm')
   filter.id = Date.now()
   if (filters.length >= 10) {
     filters.shift()
