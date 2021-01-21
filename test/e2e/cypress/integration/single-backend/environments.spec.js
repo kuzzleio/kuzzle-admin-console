@@ -434,7 +434,7 @@ describe('Environments', function() {
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
-    cy.title().should('eq', 'localEnvTestTabTitle')
+    cy.title().should('contain', 'localEnvTestTabTitle')
   })
 
   it.skip('Should be able to switch to a reachable environment without lazy loading sequence error', function() {
@@ -555,6 +555,7 @@ describe('Import and export environments', function() {
     cy.get('[data-cy="Environment-SubmitButton"]').click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
 
+    cy.url().should('contain', 'login')
     cy.get(`[data-cy="EnvironmentSwitch"]`).click()
     cy.get(`[data-cy="EnvironmentSwitch-newConnectionBtn"]`).click()
 

@@ -1,11 +1,5 @@
 <template>
   <div class="CreateEnvironment environment">
-    <b-alert :show="useHttps && !environment.ssl">
-      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are
-      using the HTTPS/SSL version of the Admin Console. Please ensure that your
-      Kuzzle supports HTTPS/SSL connections.
-    </b-alert>
-
     <b-form>
       <b-form-group
         data-cy="CreateEnvironment-name--group"
@@ -63,7 +57,13 @@
           :state="validateState('port')"
         ></b-form-input>
       </b-form-group>
-      <b-form-group label="Use SSL" label-cols-sm="4" label-cols-lg="3">
+      <b-form-group
+        label="Use SSL"
+        label-for="env-ssl"
+        label-cols-sm="4"
+        label-cols-lg="3"
+        :description="sslFeedback"
+      >
         <b-form-checkbox
           id="env-ssl"
           v-model="environment.ssl"
@@ -71,6 +71,9 @@
           :value="true"
           :unchecked-value="false"
         ></b-form-checkbox>
+        <b-form-invalid-feedback id="env-ssl-feedback">
+          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group
         data-cy="CreateEnvironment-backendVersion--group"
@@ -229,6 +232,19 @@ export default {
         return 'You must enter a non-empty port'
       }
       return null
+    },
+    sslFeedback() {
+      if (this.useHttps && !this.environment.ssl) {
+        return `You are
+          using an Admin Console served via HTTPs. Your browser might refuse to
+          open an unsecure connection to Kuzzle`
+      }
+
+      if (this.environment.ssl) {
+        return `Please ensure your Kuzzle instance supports secure Websocket connections`
+      }
+
+      return ''
     },
     versionFeedback() {
       if (!this.$v.environment.backendMajorVersion.required) {

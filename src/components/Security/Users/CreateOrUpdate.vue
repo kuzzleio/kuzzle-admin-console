@@ -201,8 +201,16 @@ export default {
       if (this.$v.$anyError) {
         return
       }
+      for (const strategy of Object.keys(this.credentials)) {
+        const credentials = this.credentials[strategy]
+        const notEmptyFields = Object.keys(credentials).filter(
+          field => credentials[field] !== ''
+        )
+        if (notEmptyFields.length === 0) {
+          delete this.credentials[strategy]
+        }
+      }
       this.submitting = true
-
       try {
         if (this.id) {
           await this.wrapper.performReplaceUser(this.kuid, {
