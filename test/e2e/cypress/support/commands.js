@@ -34,10 +34,6 @@ Cypress.Commands.add('waitOverlay', () => {
   cy.wait(antiGlitchOverlayTimeout + 50)
 })
 
-Cypress.Commands.add('waitForLoading', () => {
-  // This command is just useless
-})
-
 Cypress.Commands.add(
   'initLocalEnv',
   (backendVersion = 2, token = 'anonymous', port = 7512, envName = 'valid') => {

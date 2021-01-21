@@ -157,9 +157,9 @@ describe('Collection management', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}2`)
 
     cy.visit(`/#/data/`)
-    cy.waitForLoading()
+
     cy.visit(`/#/data/${indexName}/`)
-    cy.waitForLoading()
+
 
     cy.get(`[data-cy="CollectionList-checkbox--${collectionName}1"]`).click({
       force: true

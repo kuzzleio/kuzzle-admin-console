@@ -138,26 +138,26 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.waitForLoading()
+
 
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 250 })
     cy.wait(250)
 
     cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
     cy.get('[data-cy=CollectionList-name--anothercollection]').click()
-    cy.waitForLoading()
+
 
     cy.url().should('not.contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
 
     cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
     cy.get(`[data-cy=CollectionList-name--${collectionName}]`).click()
-    cy.waitForLoading()
+
 
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
@@ -195,11 +195,11 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.waitForLoading()
+
 
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -213,14 +213,14 @@ describe('Search', function() {
 
     cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
     cy.get(`[data-cy=CollectionList-name--anothercollection]`).click()
-    cy.waitForLoading()
+
 
     cy.url().should('not.contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
 
     cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
     cy.get(`[data-cy=CollectionList-name--${collectionName}]`).click()
-    cy.waitForLoading()
+
 
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
@@ -249,12 +249,12 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.waitForLoading()
+
 
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -284,10 +284,10 @@ describe('Search', function() {
   it('refreshes search when the Search button is hit twice', function() {
     cy.visit('/')
     cy.get('.IndexesPage').should('be.visible')
-    cy.waitForLoading()
+
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -326,11 +326,11 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.waitForLoading()
+
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 60 })
 
@@ -392,12 +392,12 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.waitForLoading()
+
 
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -449,12 +449,12 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.waitForLoading()
+
 
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-rawTab"]').click()
@@ -488,12 +488,12 @@ describe('Search', function() {
 
   it('transforms a search query from basic filter to raw filter', function() {
     cy.visit('/')
-    cy.waitForLoading()
+
 
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -520,12 +520,12 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.waitForLoading()
+
 
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-rawTab"]').click()
@@ -569,7 +569,7 @@ describe('Search', function() {
     cy.visit('/')
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-rawTab"]').click()
@@ -653,7 +653,7 @@ describe('Search', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
@@ -687,7 +687,7 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
-      cy.waitForLoading()
+
 
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
@@ -724,7 +724,7 @@ describe('Search', function() {
     )
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
@@ -741,7 +741,7 @@ describe('Search', function() {
 
   it('should display message for empty favorite or history', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-historyTab]').click()
@@ -771,7 +771,7 @@ describe('Search', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
@@ -811,7 +811,7 @@ describe('Search', function() {
     )
     for (let i = 0, item = 0; i < 10; i += 2, item++) {
       cy.visit(`/#/data/${indexName}/${collectionName}`)
-      cy.waitForLoading()
+
 
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
@@ -845,7 +845,7 @@ describe('Search', function() {
 
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
@@ -878,7 +878,7 @@ describe('Search', function() {
     cy.contains(indexName)
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-fullscreen]').click()
@@ -915,12 +915,12 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.waitForLoading()
+
 
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -944,12 +944,12 @@ describe('Search', function() {
     )
 
     cy.visit('/')
-    cy.waitForLoading()
+
 
     cy.get('.IndexesPage').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()

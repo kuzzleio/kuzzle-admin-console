@@ -20,7 +20,7 @@ describe('Treeview', () => {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get(`[data-cy=Treeview-item-index--${indexName}]`).click()
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).should('be.visible')
