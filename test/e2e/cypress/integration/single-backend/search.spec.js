@@ -953,11 +953,13 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').get(
-      '[value="lastName"]'
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"] option').should(
+    'contain',
+    'lastName'
     )
-    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').get(
-      '[value="lastName.keyword"]'
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"] option').should(
+      'contain',
+      'lastName.keyword'
     )
   })
 })
