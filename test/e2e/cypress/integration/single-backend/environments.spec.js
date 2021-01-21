@@ -78,7 +78,7 @@ describe('Environments', function() {
   })
 
   it('Should render a visual feedback and prevent submitting when input is not valid', () => {
-    cy.visit('/create-connection/')
+    cy.visit('/#/create-connection/')
     cy.get('[data-cy="CreateEnvironment-name"]').type(' ', {
       force: true
     })
