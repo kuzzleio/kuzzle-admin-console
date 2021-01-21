@@ -54,7 +54,6 @@ class RunTest extends Command {
           if (local) {
             return 'Using local Kuzzle'
           }
-          return 'Using local Kuzzle'
         },
         task: () => {
           const docoFile = join(
