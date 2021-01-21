@@ -4,6 +4,7 @@ describe('JSON Editor', function() {
 
   beforeEach(() => {
     // reset database and setup
+    cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
     cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
 

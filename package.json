@@ -14,8 +14,7 @@
   },
   "peerDependencies": {
     "@vue/cli-plugin-e2e-cypress": "^4.1.0",
-    "cypress-file-upload": "^3.1.1",
-    "cypress-plugin-retries": "^1.4.0"
+    "cypress-file-upload": "^3.1.1"
   },
   "dependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.7.5",
@@ -92,9 +91,8 @@
   "devDependencies": {
     "axios": "^0.19.2",
     "babel-plugin-istanbul": "^5.2.0",
-    "cypress": "^4.5.0",
-    "cypress-file-upload": "^4.0.4",
-    "cypress-plugin-retries": "^1.5.2",
+    "cypress": "^6.2.1",
+    "cypress-file-upload": "^5.0.0",
     "cypress-wait-until": "^1.7.1",
     "eslint-plugin-cypress": "^2.7.0",
     "prettier-eslint": "^9.0.1"

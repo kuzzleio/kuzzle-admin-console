@@ -36,33 +36,33 @@ describe('Chart view', function() {
 
   it('should be able to switch to the chart view', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="CollectionDropdownView"').click()
     cy.get('[data-cy="CollectionDropdown-TimeSeries"').click()
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="TimeSeriesView-container"')
   })
 
   it('should be able to let user select a date field', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="CollectionDropdownView"').click()
     cy.get('[data-cy="CollectionDropdown-TimeSeries"').click()
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="timeseriesView-dateSelector"').select('payloadDate')
   })
 
   it('should be able to let user select a value field and show the chart', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="CollectionDropdownView"').click()
     cy.get('[data-cy="CollectionDropdown-TimeSeries"').click()
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="timeseriesView-dateSelector"').select('payloadDate')
 

@@ -45,9 +45,7 @@ describe('Profiles', () => {
     cy.get('[data-cy="ProfileList-items"]').should('not.contain', 'anonymous')
 
     cy.get('[data-cy="ProfileFilters-resetBtn"]').click()
-    cy.get('[data-cy=ProfileFilters-filterAppliedPill]').should(
-      'not.be.visible'
-    )
+    cy.get('[data-cy=ProfileFilters-filterAppliedPill]').should('not.exist')
 
     cy.get('[data-cy="ProfileFilters-roleSelect"] > button').click({
       force: true
