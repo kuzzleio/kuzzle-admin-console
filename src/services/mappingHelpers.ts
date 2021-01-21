@@ -27,7 +27,7 @@ export const extractAttributesFromMapping = (
       }
       // Other attribute types are listed in the "fields" property
       if (value.fields) {
-        for(const type of Object.keys(value.fields))  {
+        for (const type of Object.keys(value.fields)) {
           extractAttributesFromMapping(
             value.fields,
             attributes,
