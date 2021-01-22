@@ -61,7 +61,11 @@
         Create new connection
       </a>
     </b-dropdown-item>
-    <b-dropdown-item data-cy="export-environments" download="connections.json" :href="exportUrl">
+    <b-dropdown-item
+      data-cy="export-environments"
+      download="connections.json"
+      :href="exportUrl"
+    >
       Export all
     </b-dropdown-item>
     <b-dropdown-item @click.prevent="$emit('environment::importEnv')">

@@ -34,12 +34,6 @@ Cypress.Commands.add('waitOverlay', () => {
   cy.wait(antiGlitchOverlayTimeout + 50)
 })
 
-Cypress.Commands.add('waitForLoading', () => {
-  cy.waitUntil(function() {
-    return cy.get('[data-cy="main-spinner"]').should('not.visible')
-  })
-})
-
 Cypress.Commands.add(
   'initLocalEnv',
   (backendVersion = 2, token = 'anonymous', port = 7512, envName = 'valid') => {

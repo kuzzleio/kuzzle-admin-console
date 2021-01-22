@@ -70,10 +70,11 @@ export default {
   },
   methods: {
     async submit() {
-      await this.$refs.createEnvironmentComponent.submit()
-      if (this.environments.length > 1) {
+      const id = await this.$refs.createEnvironmentComponent.submit()
+      if (Object.keys(this.environments).length > 1) {
         this.$router.push({ name: 'SelectEnvironment' })
       } else {
+        await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id)
         this.$router.push('/')
       }
     },

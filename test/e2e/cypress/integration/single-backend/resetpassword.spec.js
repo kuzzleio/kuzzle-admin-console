@@ -21,6 +21,6 @@ describe('Reset Password', () => {
     )
 
     cy.get('[data-cy=ResetPassword-submitBtn]').click()
-    cy.url().should('be', '/#/reset-password/anonymous')
+    cy.url().should('contain', '/#/reset-password/anonymous')
   })
 })

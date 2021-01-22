@@ -6,8 +6,8 @@ describe('Form view', function() {
 
   beforeEach(() => {
     // reset database and setup
-    cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
     cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
+    cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
     cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
       properties: {
@@ -48,10 +48,10 @@ describe('Form view', function() {
 
   it('should be able to create a new document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="CreateDocument-btn"').click()
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
     cy.get('[data-cy="DocumentCreate-input--id"').type('new-doc')
@@ -73,7 +73,7 @@ describe('Form view', function() {
     cy.get('[data-cy="timePickerInput"').type('23:30:00')
 
     cy.get('[data-cy="DocumentCreate-btn"').click({ force: true })
-    cy.waitForLoading()
+
 
     cy.contains('new-doc')
     cy.request(
@@ -91,10 +91,10 @@ describe('Form view', function() {
 
   it('should be able to update a document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
 
@@ -124,10 +124,10 @@ describe('Form view', function() {
 
   it('should be able to keep synchronized the form view and the JSON view', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
-    cy.waitForLoading()
+
 
     cy.get('textarea.ace_text-input')
       .type(`{selectall}{backspace}`, {
@@ -158,10 +158,10 @@ describe('Form view', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="DocumentListItem-update--witharraydoc"').click()
-    cy.waitForLoading()
+
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
 

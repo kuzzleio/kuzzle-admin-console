@@ -53,7 +53,7 @@ describe('Collection management', function() {
       .click({ force: true })
 
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
-      .should('be.visible')
+      .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(`SuM UNV4L1d jayZON Kood`)
 
@@ -89,7 +89,7 @@ describe('Collection management', function() {
     cy.contains(collectionName)
 
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
-      .should('be.visible')
+      .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -157,9 +157,9 @@ describe('Collection management', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}2`)
 
     cy.visit(`/#/data/`)
-    cy.waitForLoading()
+
     cy.visit(`/#/data/${indexName}/`)
-    cy.waitForLoading()
+
 
     cy.get(`[data-cy="CollectionList-checkbox--${collectionName}1"]`).click({
       force: true
@@ -255,7 +255,7 @@ describe('Collection management', function() {
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').click({ force: true })
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').type('testexport')
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
-      .should('be.visible')
+      .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
@@ -277,7 +277,7 @@ describe('Collection management', function() {
     cy.get('[data-cy="export-collection-mapping"]')
       .then(
         anchor =>
-          new Cypress.Promise((resolve, reject) => {
+          new Cypress.Promise(resolve => {
             const xhr = new XMLHttpRequest()
             xhr.open('GET', anchor.prop('href'), true)
             xhr.responseType = 'blob'
