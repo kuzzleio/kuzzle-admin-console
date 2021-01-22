@@ -19,7 +19,7 @@
         .
       </b-col>
       <b-col class="text-right">
-        <i class="fas fa-times" @click="show = false" />
+        <i class="fas fa-times" @click="closeAlert" />
       </b-col>
     </b-row>
   </b-alert>
@@ -31,7 +31,13 @@ export default {
     return {
       show: true
     }
-  }
+  },
+  methods: {
+    closeAlert() {
+      this.show = false;
+      this.$emit("closeAlert");
+    }
+  },
 }
 </script>
 

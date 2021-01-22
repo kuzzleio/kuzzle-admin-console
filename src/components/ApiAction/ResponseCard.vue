@@ -1,5 +1,5 @@
 <template>
-  <b-card no-body>
+  <b-card no-body class="h-100">
     <b-card-header>
       <b-card-title>
         Response
@@ -22,11 +22,11 @@
         reference="responseEditor"
         tabindex="4"
         readonly
-        myclass="pre_ace"
+        class="responseJsonEditor"
+        myclass="m-2"
         content="{}"
       />
     </b-card-body>
-    <b-card-footer class="text-right"> </b-card-footer>
   </b-card>
 </template>
 
@@ -77,4 +77,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.responseJsonEditor {
+  height: calc(100% - 74px) !important;
+}
+</style>

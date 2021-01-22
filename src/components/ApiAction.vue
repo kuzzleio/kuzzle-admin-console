@@ -16,21 +16,21 @@
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper-vertical">
-      <b-container fluid>
-        <b-row align-v="stretch">
-          <b-col cols="12">
-            <InfoAlert />
+      <b-container fluid class="h-100">
+        <b-row align-v="stretch" class="h-100">
+          <b-col cols="12" v-if="showAlert">
+            <InfoAlert @closeAlert="closeAlert" />
           </b-col>
           <b-col cols="12" v-if="loading"> </b-col>
           <b-col cols="12" v-else>
-            <b-card no-body>
-              <b-tabs card content-class="mt-3">
+            <b-card no-body class="h-100">
+              <b-tabs card content-class="mt-3 tabsHeight">
                 <b-tab
                   v-for="(tabContent, tabIdx) of tabs"
                   :key="`query-${tabIdx}-${tabContent.name}`"
                   :active="currentTabIdx === tabIdx"
                   @click.prevent=""
-                  title-link-class="px-3 py-0 h-100 titleItem"
+                  title-link-class="px-3 py-0 titleItem"
                 >
                   <template #title>
                     <b-row
@@ -56,6 +56,14 @@
                       </b-col>
                     </b-row>
                   </template>
+                  <!-- <Multipane
+                    class="QueryLayout-vertical Query-Custom-resizer-vertical"
+                    layout="vertical"
+                  >
+                    <div
+                      class="QueryLayout-sidebarWrapper-vertical"
+                      data-cy="QueryLayout-sidebarWrapper"
+                    > -->
                   <QueryCard
                     :query="tabContent.query"
                     :tabIdx="tabIdx"
@@ -63,11 +71,18 @@
                     :actions="actions"
                     :api="api"
                     :openapi="openapi"
+                    :response="tabContent.response"
                     @saveQuery="saveQuery"
                     @queryChanged="queryChanged"
                     @performQuery="performQuery"
                   />
-                  <ResponseCard :response="tabContent.response" />
+                  <!-- </div>
+
+                    <MultipaneResizer data-cy="sidebarResizer" />
+                    <div class="QueryLayout-contentWrapper-vertical"> -->
+                  <!-- <ResponseCard :response="tabContent.response" /> -->
+                  <!-- </div>
+                  </Multipane> -->
                 </b-tab>
                 <template #tabs-end>
                   <b-row align-v="center" class="px-3" @click.prevent="newTab">
@@ -91,7 +106,6 @@
 
 <script>
 import InfoAlert from '@/components/ApiAction/InfoAlert'
-import ResponseCard from '@/components/ApiAction/ResponseCard'
 import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
 import QueryList from '@/components/ApiAction/QueryList'
 import QueryCard from '@/components/ApiAction/QueryCard'
@@ -105,7 +119,6 @@ export default {
   components: {
     Multipane,
     MultipaneResizer,
-    ResponseCard,
     InfoAlert,
     QueryCard,
     SaveQueryModal,
@@ -115,6 +128,7 @@ export default {
     return {
       tabs: [],
       currentTabIdx: 0,
+      showAlert: true,
       api: null,
       openapi: null,
       loading: true,
@@ -165,6 +179,9 @@ export default {
     }
   },
   methods: {
+    closeAlert() {
+      this.showAlert = false
+    },
     formatTabName(tabContent) {
       let name = tabContent.name ? tabContent.name : 'New query'
       name = truncateName(name, 11)
@@ -283,18 +300,18 @@ export default {
       if (!storedQueries) {
         return
       }
-      const jsonStoreQueries = JSON.parse(storedQueries);
+      const jsonStoreQueries = JSON.parse(storedQueries)
       if (!jsonStoreQueries[this.currentEnvironment.name]) {
         return
       }
-      this.savedQueries = jsonStoreQueries[
-        this.currentEnvironment.name
-      ].map((q, idx) => {
-        q.response = ''
-        q.saved = true
-        q.savedIdx = idx
-        return q
-      })
+      this.savedQueries = jsonStoreQueries[this.currentEnvironment.name].map(
+        (q, idx) => {
+          q.response = ''
+          q.saved = true
+          q.savedIdx = idx
+          return q
+        }
+      )
     },
     storeQueriesToLocalStorage() {
       let storedQueries = JSON.parse(localStorage.getItem('storedQueries'))
@@ -351,7 +368,7 @@ export default {
         })
         this.openapi = openApi.paths
       } catch (error) {
-       this.$log.error(error)
+        this.$log.error(error)
       }
     },
     async getKuzzlePublicApi() {
@@ -364,16 +381,16 @@ export default {
       } catch (error) {
         this.$log.error(error)
       }
-    },
+    }
   },
   async mounted() {
+    this.loading = true
     if (this.canGetPublicApi) {
       await this.getKuzzlePublicApi()
     }
     if (this.currentEnvironment.backendMajorVersion > 1 && this.canGetOpenApi) {
       await this.getKuzzleOpenApi()
     }
-    this.loading = true
     this.loadStoredQueriesFromLocalStorage()
     this.newTab()
     this.loading = false
@@ -382,6 +399,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .tabsHeight {
+  height: calc(100% - 100px) !important;
+}
+
 ::v-deep .card-title {
   margin-bottom: 0px;
 }
@@ -389,7 +410,12 @@ export default {
   min-width: 200px;
   border: 1px solid #d5d5d5 !important;
 }
-
+::v-deep .tab-pane {
+  height: 100%;
+}
+::v-deep .tabs {
+  height: 100%;
+}
 .backgroundCard {
   background-color: $light-grey-color;
 }

@@ -1,96 +1,125 @@
 <template>
-  <b-card-text :class="`mb-0`">
-    <b-row class="my-3 px-3" align-h="between">
-      <b-col cols="6">
-        <b-row>
-          <b-col>
-            <b-form-group description="Controller" id="query-input-controller">
-              <b-tooltip
-                v-if="!isQueryValid(jsonQuery)"
-                target="query-input-controller"
-                placement="bottom"
-              >
-                The query is invalid.
-              </b-tooltip>
-              <b-form-input
-                v-model="editedQuery.controller"
-                :disabled="!isQueryValid(jsonQuery)"
-                list="controllersList"
-              ></b-form-input>
-            </b-form-group>
-            <datalist id="controllersList">
-              <option
-                v-for="controller of controllers"
-                :key="`${tabIdx}-${controller}`"
-                >{{ controller }}</option
-              >
-            </datalist>
+  <b-card-body class="h-100">
+    <b-card-text :class="`mb-0 h-100`">
+      <b-container fluid class="h-100">
+        <b-row class="my-3 px-3" align-h="between">
+          <b-col cols="6">
+            <b-row>
+              <b-col>
+                <b-form-group
+                  description="Controller"
+                  id="query-input-controller"
+                >
+                  <b-tooltip
+                    v-if="!isQueryValid(jsonQuery)"
+                    target="query-input-controller"
+                    placement="bottom"
+                  >
+                    The query is invalid.
+                  </b-tooltip>
+                  <b-form-input
+                    v-model="editedQuery.controller"
+                    :disabled="!isQueryValid(jsonQuery)"
+                    list="controllersList"
+                  ></b-form-input>
+                </b-form-group>
+                <datalist id="controllersList">
+                  <option
+                    v-for="controller of controllers"
+                    :key="`${tabIdx}-${controller}`"
+                    >{{ controller }}</option
+                  >
+                </datalist>
+              </b-col>
+              <b-col>
+                <b-form-group description="Action" id="query-input-action">
+                  <b-tooltip
+                    v-if="!isQueryValid(jsonQuery)"
+                    target="query-input-action"
+                    placement="bottom"
+                  >
+                    The query is invalid.
+                  </b-tooltip>
+                  <b-form-input
+                    v-model="editedQuery.action"
+                    list="actionsList"
+                    :disabled="!isQueryValid(jsonQuery)"
+                  ></b-form-input>
+                </b-form-group>
+                <datalist id="actionsList">
+                  <option
+                    v-for="action of actions"
+                    :key="`${tabIdx}-${action}`"
+                    >{{ action }}</option
+                  >
+                </datalist>
+              </b-col>
+            </b-row>
           </b-col>
-          <b-col>
-            <b-form-group description="Action" id="query-input-action">
-              <b-tooltip
-                v-if="!isQueryValid(jsonQuery)"
-                target="query-input-action"
-                placement="bottom"
-              >
-                The query is invalid.
-              </b-tooltip>
-              <b-form-input
-                v-model="editedQuery.action"
-                list="actionsList"
-                :disabled="!isQueryValid(jsonQuery)"
-              ></b-form-input>
-            </b-form-group>
-            <datalist id="actionsList">
-              <option v-for="action of actions" :key="`${tabIdx}-${action}`">{{
-                action
-              }}</option>
-            </datalist>
+          <b-col class="text-right" id="query-button-actions" cols="2">
+            <b-tooltip
+              v-if="!isQueryValid(jsonQuery)"
+              target="query-button-actions"
+              placement="bottom"
+            >
+              The query is invalid.
+            </b-tooltip>
+
+            <b-button
+              @click="performQuery"
+              :disabled="!isQueryValid(jsonQuery)"
+              variant="success"
+              class="mr-3"
+            >
+              <i class="fas fa-rocket mr-2" />
+              RUN
+            </b-button>
+            <b-button
+              @click="saveQuery"
+              :disabled="!isQueryValid(jsonQuery)"
+              variant="outline-primary"
+            >
+              <i class="fas fa-save mr-2" />
+              SAVE
+            </b-button>
           </b-col>
         </b-row>
-      </b-col>
-      <b-col class="text-right" id="query-button-actions" cols="2">
-        <b-tooltip
-          v-if="!isQueryValid(jsonQuery)"
-          target="query-button-actions"
-          placement="bottom"
-        >
-          The query is invalid.
-        </b-tooltip>
-
-        <b-button
-          @click="performQuery"
-          :disabled="!isQueryValid(jsonQuery)"
-          variant="success"
-          class="mr-3"
-        >
-          <i class="fas fa-rocket mr-2" />
-          RUN
-        </b-button>
-        <b-button
-          @click="saveQuery"
-          :disabled="!isQueryValid(jsonQuery)"
-          variant="outline-primary"
-        >
-          <i class="fas fa-save mr-2" />
-          SAVE
-        </b-button>
-      </b-col>
-    </b-row>
-    <json-editor
-      id="query"
-      :ref="`queryEditorWrapper-${tabIdx}`"
-      reference="queryEditor"
-      tabindex="4"
-      :content="jsonQuery"
-      @change="queryBodyChange"
-    />
-  </b-card-text>
+        <b-row align-v="stretch" class="multipaneRow">
+          <Multipane
+            class="QueryLayout-vertical Query-Custom-resizer-vertical"
+            layout="vertical"
+          >
+            <div
+              class="QueryLayout-sidebarWrapper-vertical"
+              data-cy="QueryLayout-sidebarWrapper"
+            >
+              <b-card no-body class="h-100">
+                <json-editor
+                  id="query"
+                  :ref="`queryEditorWrapper-${tabIdx}`"
+                  reference="queryEditor"
+                  tabindex="4"
+                  class="m-2 h-100"
+                  :content="jsonQuery"
+                  @change="queryBodyChange"
+                />
+              </b-card>
+            </div>
+            <MultipaneResizer data-cy="sidebarResizer" />
+            <div class="QueryLayout-contentWrapper-vertical">
+              <ResponseCard :response="response" />
+            </div>
+          </Multipane>
+        </b-row>
+      </b-container>
+    </b-card-text>
+  </b-card-body>
 </template>
 
 <script>
 import jsonEditor from '@/components/Common/JsonEditor'
-
+import ResponseCard from '@/components/ApiAction/ResponseCard'
+import { Multipane, MultipaneResizer } from 'vue-multipane'
 import _ from 'lodash'
 
 export default {
@@ -101,10 +130,14 @@ export default {
     controllers: {},
     actions: {},
     api: {},
-    openapi: {}
+    openapi: {},
+    response: {}
   },
   components: {
-    jsonEditor
+    jsonEditor,
+    ResponseCard,
+    Multipane,
+    MultipaneResizer
   },
   data() {
     return {
@@ -235,4 +268,55 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.QueryLayout-vertical {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.QueryLayout-sidebarWrapper-vertical {
+  min-width: 300px;
+  width: 1000px;
+  height: 100%;
+  z-index: 1;
+}
+
+.QueryLayout-contentWrapper-vertical {
+  flex-grow: 1;
+  height: 100%;
+  min-width: 300px;
+  overflow: auto;
+}
+
+.Query-Custom-resizer-vertical > .multipane-resizer {
+  margin: 0;
+  left: 0;
+  height: 100%;
+  position: relative;
+  padding: 3px;
+  border: 1px solid #ccc;
+  box-shadow: 2px 0px 5px -2px rgba(112, 112, 112, 1);
+  &:before {
+    display: block;
+    content: '';
+    width: 1px;
+    height: 50px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-left: 1px solid #aaa;
+  }
+  &:hover {
+    &:before {
+      border-color: #777;
+      background-color: #f5f5f5;
+    }
+  }
+}
+.multipaneRow {
+  height: calc(100% - 100px);
+}
+</style>
