@@ -34,10 +34,10 @@ export default {
   },
   methods: {
     closeAlert() {
-      this.show = false;
-      this.$emit("closeAlert");
+      this.show = false
+      this.$emit('closeAlert')
     }
-  },
+  }
 }
 </script>
 
