@@ -3,7 +3,7 @@ description: Run ESLint
 runs:
   using: "composite"
   steps:
-    - run: npm ci --silent
+    - run: npm ci
       shell: bash
-    - run: npm run --silent test:lint
+    - run: npm run test:lint
       shell: bash
