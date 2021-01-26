@@ -11,6 +11,7 @@
                 :key="`saved-query-${query.idx}`"
                 :active="query.idx === currentQueryIndex"
                 :ref="`saved-query-${query.idx}`"
+                :data-cy="`api-actions-saved-query-${query.name}`"
               >
                 <b-row align-v="center">
                   <b-col

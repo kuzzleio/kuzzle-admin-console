@@ -37,6 +37,7 @@
                       align-v="center"
                       class="tabTitle"
                       v-b-tooltip.hover
+                      :data-cy="`api-actions-tab-${tabIdx}`"
                       :title="tabContent.name"
                     >
                       <b-col
@@ -56,14 +57,6 @@
                       </b-col>
                     </b-row>
                   </template>
-                  <!-- <Multipane
-                    class="QueryLayout-vertical Query-Custom-resizer-vertical"
-                    layout="vertical"
-                  >
-                    <div
-                      class="QueryLayout-sidebarWrapper-vertical"
-                      data-cy="QueryLayout-sidebarWrapper"
-                    > -->
                   <QueryCard
                     :query="tabContent.query"
                     :tabIdx="tabIdx"
@@ -76,18 +69,11 @@
                     @queryChanged="queryChanged"
                     @performQuery="performQuery"
                   />
-                  <!-- </div>
-
-                    <MultipaneResizer data-cy="sidebarResizer" />
-                    <div class="QueryLayout-contentWrapper-vertical"> -->
-                  <!-- <ResponseCard :response="tabContent.response" /> -->
-                  <!-- </div>
-                  </Multipane> -->
                 </b-tab>
                 <template #tabs-end>
                   <b-row align-v="center" class="px-3" @click.prevent="newTab">
                     <b-col cols="12" class="text-center my-3 pointer">
-                      <b>+</b>
+                      <b data-cy="api-actions-tab-plus">+</b>
                     </b-col>
                   </b-row>
                 </template>
@@ -334,6 +320,7 @@ export default {
       try {
         response = await this.wrapper.query(query)
         this.$bvToast.toast('Query successfully played.', {
+          headerClass: "data-cy-api-actions-toast-header",
           title: 'Success',
           variant: 'success',
           toaster: 'b-toaster-bottom-right',
@@ -347,6 +334,7 @@ export default {
           kuzzleStack: error.kuzzleStack
         }
         this.$bvToast.toast('An error occured while playing query.', {
+          headerClass: "data-cy-api-actions-toast-header",
           title: 'Error',
           variant: 'danger',
           toaster: 'b-toaster-bottom-right',

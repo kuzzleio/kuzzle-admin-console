@@ -3,6 +3,7 @@
     id="modal-save-query"
     title="Choose a name for that query"
     @ok="handleOk"
+    ok-title-html='<span data-cy="api-actions-modal-ok-button">OK</span>'
   >
     <form ref="form" @submit.stop.prevent="handleSubmit">
       <b-form-group
@@ -14,6 +15,7 @@
         <b-form-input
           id="name-input"
           v-model="name"
+          data-cy="api-actions-modal-name-input"
           autofocus
           :state="nameState"
           required

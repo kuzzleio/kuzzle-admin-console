@@ -18,6 +18,7 @@
                     The query is invalid.
                   </b-tooltip>
                   <b-form-input
+                    :data-cy="`api-actions-controller-input-${tabIdx}`"
                     v-model="editedQuery.controller"
                     :disabled="!isQueryValid(jsonQuery)"
                     list="controllersList"
@@ -41,6 +42,7 @@
                     The query is invalid.
                   </b-tooltip>
                   <b-form-input
+                    :data-cy="`api-actions-action-input-${tabIdx}`"
                     v-model="editedQuery.action"
                     list="actionsList"
                     :disabled="!isQueryValid(jsonQuery)"
@@ -69,6 +71,7 @@
               @click="performQuery"
               :disabled="!isQueryValid(jsonQuery)"
               variant="success"
+              :data-cy="`api-actions-run-button-${tabIdx}`"
               class="mr-3"
             >
               <i class="fas fa-rocket mr-2" />
@@ -77,6 +80,7 @@
             <b-button
               @click="saveQuery"
               :disabled="!isQueryValid(jsonQuery)"
+              :data-cy="`api-actions-save-button-${tabIdx}`"
               variant="outline-primary"
             >
               <i class="fas fa-save mr-2" />
@@ -100,6 +104,7 @@
                   reference="queryEditor"
                   tabindex="4"
                   class="m-2 h-100"
+                  :data-cy="`api-actions-query-JSONEditor-${tabIdx}`"
                   :content="jsonQuery"
                   @change="queryBodyChange"
                 />
@@ -107,7 +112,7 @@
             </div>
             <MultipaneResizer data-cy="sidebarResizer" />
             <div class="QueryLayout-contentWrapper-vertical">
-              <ResponseCard :response="response" />
+              <ResponseCard :tabIdx="tabIdx" :response="response" />
             </div>
           </Multipane>
         </b-row>

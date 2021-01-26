@@ -9,7 +9,9 @@
       <b-row class="m-2" no-gutters>
         <b-col cols="12">
           <b-alert show :variant="statusBarVariant" class="mb-0">
-            <p class="mb-0">Status: {{ currentStatus }}</p>
+            <p class="mb-0" :data-cy="`api-actions-response-status-${tabIdx}`">
+              Status: {{ currentStatus }}
+            </p>
             <b-card-text v-if="currentErrorMessage">
               {{ currentErrorMessage }}
             </b-card-text>
@@ -21,6 +23,7 @@
         ref="responseEditorWrapper"
         reference="responseEditor"
         tabindex="4"
+        :data-cy="`api-actions-response-JSONEditor-${tabIdx}`"
         readonly
         class="responseJsonEditor"
         myclass="m-2"
@@ -40,7 +43,8 @@ export default {
   props: {
     response: {
       default: ''
-    }
+    },
+    tabIdx: {}
   },
   data() {
     return {
