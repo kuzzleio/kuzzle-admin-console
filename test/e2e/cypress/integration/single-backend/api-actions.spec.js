@@ -196,7 +196,7 @@ describe('API Actions - tabs and save', function() {
 "controller": "index",
 "action": "create",
 "index": "toto"`, {
-      delay: 10,
+      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-save-button-0"]').click()
@@ -281,7 +281,7 @@ describe('API Actions - tabs and save', function() {
 "controller": "index",
 "action": "create",
 "index": "${indexName2}"`, {
-      delay: 10,
+      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-save-button-1"]').click()
