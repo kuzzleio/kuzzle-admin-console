@@ -131,6 +131,7 @@ describe('Form view', function() {
       .type('23:30:00')
 
     cy.get('[name="skill"] > textarea.ace_text-input').clear({ force: true })
+    cy.wait(2000)
     cy.get('[name="skill"] > textarea.ace_text-input').type(
       `{
     "name": "management", "level": 0}`,
