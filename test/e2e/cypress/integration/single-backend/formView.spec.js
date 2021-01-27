@@ -59,9 +59,7 @@ describe('Form view', function() {
   it('should be able to create a new document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-
     cy.get('[data-cy="CreateDocument-btn"').click()
-
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
     cy.get('[data-cy="DocumentCreate-input--id"').type('new-doc')
@@ -96,7 +94,6 @@ describe('Form view', function() {
 
     cy.get('[data-cy="DocumentCreate-btn"').click({ force: true })
 
-
     cy.contains('new-doc')
     cy.request(
       'GET',
@@ -116,9 +113,7 @@ describe('Form view', function() {
   it('should be able to update a document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-
     cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
-
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
 
@@ -131,12 +126,12 @@ describe('Form view', function() {
       .clear()
       .type('23:30:00')
 
-    cy.get('[name="skill"] > textarea.ace_text-input').clear({ force: true })
-    cy.wait(2000)
     cy.get('[name="skill"] > textarea.ace_text-input').type(
-      `{
-    "name": "management", "level": 0}`,
+      `{selectall}{backspace}
       {
+        "name": "management", "level": 0`,
+      {
+        delay: 400,
         force: true
       }
     )
@@ -160,9 +155,7 @@ describe('Form view', function() {
   it('should be able to keep synchronized the form view and the JSON view', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-
     cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
-
 
     cy.get('textarea.ace_text-input')
       .type(`{selectall}{backspace}`, {
@@ -194,9 +187,7 @@ describe('Form view', function() {
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-
     cy.get('[data-cy="DocumentListItem-update--witharraydoc"').click()
-
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
 
