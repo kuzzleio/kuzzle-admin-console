@@ -19,6 +19,12 @@ describe('Form view', function() {
         items: {
           type: 'object'
         },
+        skill: {
+          properties: {
+            name: { type: 'keyword' },
+            level: { type: 'integer' }
+          }
+        },
         job: {
           type: 'text'
         },
@@ -36,6 +42,10 @@ describe('Form view', function() {
         items: {
           phone: 'Blackberry',
           car: 'Laguna'
+        },
+        skill: {
+          name: 'managment',
+          level: '1'
         },
         job: 'Always asking Esteban to do his job',
         employeeOfTheMonthSince: '1996-07-10'
@@ -56,7 +66,8 @@ describe('Form view', function() {
     cy.get('[data-cy="DocumentCreate-input--id"').type('new-doc')
 
     cy.get('input#age').type('31')
-    cy.get('textarea.ace_text-input')
+
+    cy.get('[name="items"] > textarea.ace_text-input')
       .type('{backspace}{backspace}', { force: true })
       .type(
         `{
@@ -65,6 +76,17 @@ describe('Form view', function() {
           force: true
         }
       )
+
+    cy.get('[name="skill"] > textarea.ace_text-input')
+      .type('{backspace}{backspace}', { force: true })
+      .type(
+        `{
+      "name": "CSS", "level": 60`,
+        {
+          force: true
+        }
+      )
+
     cy.get('textarea#job').type('webmestre enginer')
     cy.get('input#name').type('Bombi')
 
@@ -85,6 +107,8 @@ describe('Form view', function() {
         date.getTime().toString()
       )
       expect(res.body.result._source.items.desktop).to.be.equals('standing')
+      expect(res.body.result._source.skill.name).to.be.equals('CSS')
+      expect(res.body.result._source.skill.level).to.be.equals(60)
     })
   })
 
@@ -106,6 +130,15 @@ describe('Form view', function() {
       .clear()
       .type('23:30:00')
 
+    cy.get('[name="skill"] > textarea.ace_text-input').clear({ force: true })
+    cy.get('[name="skill"] > textarea.ace_text-input').type(
+      `{
+    "name": "management", "level": 0}`,
+      {
+        force: true
+      }
+    )
+
     cy.get('[data-cy="DocumentUpdate-btn"').click({ force: true })
 
     cy.request(
@@ -118,6 +151,7 @@ describe('Form view', function() {
       expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals(
         date.getTime().toString()
       )
+      expect(res.body.result._source.skill.level).to.be.equals(0)
     })
   })
 
