@@ -13,13 +13,8 @@ describe('API Actions - query', function() {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
+    .click({ force: true })
     .clear({ force: true })
-    .type(
-      '{selectall}{backspace}',
-      {
-        force: true
-      }
-    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -36,19 +31,14 @@ describe('API Actions - query', function() {
     })
   })
 
-  it('Should dispay the query status and response', () => {
+  it('Should display the query status and response', () => {
     const indexName = "testindex"
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
     cy.wait(500)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
+    .click({ force: true })
     .clear({ force: true })
-    .type(
-      '{selectall}{backspace}',
-      {
-        force: true
-      }
-    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -73,13 +63,8 @@ describe('API Actions - query', function() {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
+    .click({ force: true })
     .clear({ force: true })
-    .type(
-      '{selectall}{backspace}',
-      {
-        force: true
-      }
-    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -96,13 +81,8 @@ describe('API Actions - query', function() {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
+    .click({ force: true })
     .clear({ force: true })
-    .type(
-      '{selectall}{backspace}',
-      {
-        force: true
-      }
-    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -195,13 +175,8 @@ describe('API Actions - tabs and save', function() {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
+    .click({ force: true })
     .clear({ force: true })
-    .type(
-      '{selectall}{backspace}',
-      {
-        force: true
-      }
-    )
     .type(`tab0`, {
       delay: 200,
       force: true
@@ -221,13 +196,8 @@ describe('API Actions - tabs and save', function() {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
+    .click({ force: true })
     .clear({ force: true })
-    .type(
-      '{selectall}{backspace}',
-      {
-        force: true
-      }
-    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -237,6 +207,7 @@ describe('API Actions - tabs and save', function() {
     })
     cy.get('[data-cy="api-actions-save-button-0"]').click()
     cy.get('[data-cy="api-actions-modal-name-input"]')
+    .click({force: true})
     .clear({ force: true })
     .type(queryName)
     cy.get('[data-cy="api-actions-modal-ok-button"]').click()
@@ -312,13 +283,8 @@ describe('API Actions - tabs and save', function() {
     cy.get(`[data-cy="api-actions-saved-query-${queryName}"]`).click()
 
     cy.get('[data-cy="api-actions-query-JSONEditor-1"] textarea.ace_text-input')
+    .click({ force: true })
     .clear({ force: true })
-    .type(
-      '{selectall}{backspace}',
-      {
-        force: true
-      }
-    )
     .type(`{
 "controller": "index",
 "action": "create",
