@@ -12,6 +12,12 @@ import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFo
 import App from './App.vue'
 import store from './vuex/store'
 
+Reflect.defineProperty(window, 'kuzzle', {
+  get () {
+    return store.getters.kuzzle.$kuzzle
+  }
+})
+
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 

@@ -2,10 +2,10 @@ const fmt = word => {
   return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
 }
 
+const backendVersion = Cypress.env('BACKEND_VERSION') || 2
 describe('Environments', function() {
-  const backendVersion = Cypress.env('BACKEND_VERSION') || 2
-
   this.beforeEach(() => {
+    cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     localStorage.removeItem('environments')
   })
 
@@ -61,7 +61,7 @@ describe('Environments', function() {
   })
 
   it('Should render a visual feedback and prevent submitting when input is not valid', () => {
-    cy.visit('/create-connection/')
+    cy.visit('/#/create-connection/')
     cy.get('[data-cy="CreateEnvironment-name"]').type(' ', {
       force: true
     })
@@ -92,14 +92,14 @@ describe('Environments', function() {
     cy.get('[data-cy=CreateEnvironment-port]').type('{selectall} tralala')
     cy.get(
       '[data-cy="CreateEnvironment-port--group"] .invalid-feedback'
-    ).should('not.be.visible')
+    ).should('not.exist')
 
     cy.get('[data-cy=Environment-SubmitButton]').click()
     cy.get('[data-cy="CreateEnvironment-backendVersion--group"]').should(
       'contain',
       'You must select a backend version'
     )
-    cy.url().should('be', '/create-connection/')
+    cy.url().should('contain', '/create-connection/')
   })
 
   it('Should be able to delete environments', function() {
@@ -304,51 +304,6 @@ describe('Environments', function() {
     cy.contains('Connected to')
   })
 
-  it('Should be able to import environments', () => {
-    cy.visit('/')
-    cy.contains('Create a Connection')
-    cy.get('[data-cy="CreateEnvironment-import"]').click({
-      force: true
-    })
-
-    cy.fixture('environment.json').then(fileJson => {
-      const blob = JSON.stringify(fileJson)
-
-      // WTF insane logic to upload a JSON file LOL
-      cy.get('input[type=file]').then(subject => {
-        const el = subject[0]
-        const testFile = new File([blob], 'environment.json', {
-          type: 'application/json'
-        })
-        const dataTransfer = new DataTransfer()
-        dataTransfer.items.add(testFile)
-        el.files = dataTransfer.files
-
-        const events = ['change']
-        const eventPayload = {
-          bubbles: true,
-          cancelable: true,
-          detail: dataTransfer
-        }
-
-        events.forEach(e => {
-          const event = new CustomEvent(e, eventPayload)
-          Object.assign(event, { dataTransfer })
-
-          subject[0].dispatchEvent(event)
-        })
-      })
-
-      cy.get('[data-cy="Environment-found"]').should(
-        'contain',
-        'Found 2 connections'
-      )
-      cy.wait(200)
-      cy.get('[data-cy="EnvironmentImport-submitBtn"]').click()
-      cy.contains('Select Kuzzle')
-    })
-  })
-
   it('Should open edit modal when an environment is malformed', () => {
     localStorage.setItem(
       'environments',
@@ -400,7 +355,7 @@ describe('Environments', function() {
       .should('contain', 'Offline')
     cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
     cy.waitForService('http://localhost:7512')
-    cy.get('.toast-header').should('not.be.visible')
+    cy.get('.toast-header').should('not.exist')
   })
 
   it('Should see an error when specifying the wrong backend version and should be able to fix it', () => {
@@ -479,7 +434,108 @@ describe('Environments', function() {
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
-    cy.title().should('eq', 'localEnvTestTabTitle')
+    cy.title().should('contain', 'localEnvTestTabTitle')
+  })
+
+  it.skip('Should be able to switch to a reachable environment without lazy loading sequence error', function() {
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        ['env1']: {
+          name: 'env1',
+          color: 'darkblue',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          backendMajorVersion: backendVersion,
+          token: null
+        }
+      })
+    )
+
+    cy.request({
+      method: 'PUT',
+      url: 'http://localhost:7512/roles/anonymous',
+      body: {
+        controllers: {
+          '*': {
+            actions: {
+              '*': true
+            }
+          },
+          index: {
+            actions: {
+              list: false
+            }
+          }
+        }
+      }
+    })
+
+    cy.visit('/')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy="EnvironmentSwitch-env_env1"]').click()
+    cy.wait(1000)
+    cy.get('body').should(
+      'not.contain',
+      'Something went wrong while fetching the indexes list.'
+    )
+  })
+})
+
+describe('Import and export environments', function() {
+  this.beforeEach(() => {
+    cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
+    localStorage.removeItem('environments')
+  })
+
+  it('Should be able to import environments', function() {
+    cy.visit('/')
+    cy.contains('Create a Connection')
+    cy.get('[data-cy="CreateEnvironment-import"]').click()
+    cy.contains('Import Connection')
+
+    cy.get('[data-cy="EnvironmentImport-fileInput"]')
+      .attachFile(
+        {
+          filePath: 'environment.json',
+          mimeType: 'application/json'
+        },
+        { subjectType: 'input', force: true }
+      )
+      .trigger('change')
+    cy.get('[data-cy=EnvironmentImport-ok]')
+      .should('exist')
+      .should('contain', 'Found 2 connections')
+    cy.get('[data-cy=EnvironmentImport-submitBtn]').click()
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy=EnvironmentSwitch-env_localhost]').should('exist')
+    cy.get('[data-cy=EnvironmentSwitch-env_uat]').should('exist')
+    cy.get(
+      '[data-cy=EnvironmentSwitch-env_uat] .fa-exclamation-triangle'
+    ).should('exist')
+  })
+
+  it('Should display an error when trying to import a file with the wrong extension', () => {
+    cy.visit('/')
+    cy.contains('Create a Connection')
+    cy.get('[data-cy="CreateEnvironment-import"]').click()
+    cy.contains('Import Connection')
+
+    cy.get('[data-cy="EnvironmentImport-fileInput"]')
+      .attachFile(
+        {
+          filePath: 'image.jpg',
+          mimeType: 'image/jpeg'
+        },
+        { subjectType: 'input', force: true }
+      )
+      .trigger('change')
+    cy.get('[data-cy=EnvironmentImport-err]')
+      .should('exist')
+      .should('contain', 'Uploaded file type (image/jpeg) is not supported.')
   })
 
   it('Should be able to export environments', function() {
@@ -499,6 +555,7 @@ describe('Environments', function() {
     cy.get('[data-cy="Environment-SubmitButton"]').click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
 
+    cy.url().should('contain', 'login')
     cy.get(`[data-cy="EnvironmentSwitch"]`).click()
     cy.get(`[data-cy="EnvironmentSwitch-newConnectionBtn"]`).click()
 
@@ -525,7 +582,7 @@ describe('Environments', function() {
     cy.get('[data-cy="export-environments"]')
       .then(
         anchor =>
-          new Cypress.Promise((resolve, reject) => {
+          new Cypress.Promise(resolve => {
             const xhr = new XMLHttpRequest()
             xhr.open('GET', anchor.prop('href'), true)
             xhr.responseType = 'blob'

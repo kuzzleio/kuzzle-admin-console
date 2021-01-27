@@ -43,6 +43,7 @@ export default {
   },
   computed: {
     ...mapGetters('index', ['loadingIndexes', 'loadingCollections']),
+    ...mapGetters('auth', ['isAuthenticated']),
     indexName() {
       return this.$route.params.indexName
     },
@@ -157,7 +158,15 @@ export default {
     handleDataNotFound() {
       this.dataNotFound = true
     },
-    async fetchAllTheThings() {
+    // @todo : handle lazy loading sequence only on the authenticated routes
+    async lazyLoadingSequence() {
+      if (!this.isAuthenticated) {
+        this.$log.warn(
+          'Lazy loading sequence started with a non-authenticated user.'
+        )
+        return
+      }
+
       this.isFetching = true
       this.dataNotFound = false
 
@@ -175,12 +184,12 @@ export default {
     }
   },
   async mounted() {
-    await this.fetchAllTheThings()
+    await this.lazyLoadingSequence()
   },
   watch: {
     $route: {
       handler() {
-        this.fetchAllTheThings()
+        this.lazyLoadingSequence()
       }
     }
   }
