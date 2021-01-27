@@ -14,6 +14,12 @@ describe('API Actions - query', function() {
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
     .clear({ force: true })
+    .type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -37,6 +43,12 @@ describe('API Actions - query', function() {
     cy.wait(500)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
     .clear({ force: true })
+    .type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -62,6 +74,12 @@ describe('API Actions - query', function() {
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
     .clear({ force: true })
+    .type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -79,6 +97,12 @@ describe('API Actions - query', function() {
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
     .clear({ force: true })
+    .type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -172,6 +196,12 @@ describe('API Actions - tabs and save', function() {
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
     .clear({ force: true })
+    .type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
     .type(`tab0`, {
       delay: 200,
       force: true
@@ -192,6 +222,12 @@ describe('API Actions - tabs and save', function() {
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
     .clear({ force: true })
+    .type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
     .type(`{
 "controller": "index",
 "action": "create",
@@ -277,6 +313,12 @@ describe('API Actions - tabs and save', function() {
 
     cy.get('[data-cy="api-actions-query-JSONEditor-1"] textarea.ace_text-input')
     .clear({ force: true })
+    .type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
     .type(`{
 "controller": "index",
 "action": "create",
