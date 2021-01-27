@@ -15,7 +15,7 @@ const { store, rootActionContext, moduleActionContext } = createDirectStore({
     kuzzle,
     routing,
     toaster,
-    index,
+    index
   },
   strict: process.env.NODE_ENV !== 'production'
 })

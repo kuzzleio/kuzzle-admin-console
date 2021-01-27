@@ -5,6 +5,8 @@ import Listr from 'listr'
 import emoji from 'node-emoji'
 import { join } from 'path'
 import rp from 'request-promise'
+import http from 'http'
+import nodeStatic from 'node-static'
 
 class RunTest extends Command {
   static description = 'describe the command here'
@@ -33,7 +35,7 @@ class RunTest extends Command {
         break
       case 'multi':
       default:
-        await this.multiBackend()
+        await this.multiBackend(flags.local)
         break
     }
   }
@@ -83,15 +85,13 @@ class RunTest extends Command {
         }
       },
       {
-        title: `Launch the Admin Console`,
+        title: `Build and serve the Admin Console`,
         skip: () => {
           if (local) {
             return 'Using local Admin Console'
           }
         },
-        task: () => {
-          execa('npm', ['run', 'serve'])
-        }
+        task: () => this.buildAndServeAdminConsole()
       },
       {
         title: 'Wait for the Admin Console to be up',
@@ -135,15 +135,13 @@ class RunTest extends Command {
 
     const tasks = new Listr([
       {
-        title: `Launch the Admin Console`,
+        title: `Build and serve the Admin Console`,
         skip: () => {
           if (local) {
             return 'Using local Admin Console'
           }
         },
-        task: () => {
-          execa('npm', ['run', 'serve'])
-        }
+        task: () => this.buildAndServeAdminConsole()
       },
       {
         title: 'Wait for the Admin Console to be up',
@@ -179,6 +177,20 @@ class RunTest extends Command {
       this.log(`\n ${emoji.get('red_circle')} Sorry, tests are red.`)
       process.exit(1)
     }
+  }
+
+  async buildAndServeAdminConsole() {
+    await execa('npm', ['run', 'build'])
+    const file = new nodeStatic.Server('./dist')
+    http
+      .createServer((request, response) => {
+        request
+          .addListener('end', () => {
+            file.serve(request, response)
+          })
+          .resume()
+      })
+      .listen(8080)
   }
 
   buildCypressArgs(
@@ -226,7 +238,7 @@ class RunTest extends Command {
 
 const wait = (ms: number) =>
   new Promise(resolve => {
-    setTimeout(() => resolve(), ms)
+    setTimeout(() => resolve(true), ms)
   })
 
 export = RunTest
