@@ -5,6 +5,7 @@
         <b-col lg="8">
           <json-editor
             class="h-100"
+            :id="schema.label"
             :content="JSON.stringify(value, null, 2) || '{}'"
             @change="onChange"
           />

@@ -20,6 +20,12 @@ describe('Form view', function() {
         items: {
           type: 'object'
         },
+        skill: {
+          properties: {
+            name: { type: 'keyword' },
+            level: { type: 'integer' }
+          }
+        },
         job: {
           type: 'text'
         },
@@ -38,6 +44,10 @@ describe('Form view', function() {
           phone: 'Blackberry',
           car: 'Laguna'
         },
+        skill: {
+          name: 'managment',
+          level: '1'
+        },
         job: 'Always asking Esteban to do his job',
         employeeOfTheMonthSince: '1996-07-10'
       }
@@ -49,15 +59,14 @@ describe('Form view', function() {
   it('should be able to create a new document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-
     cy.get('[data-cy="CreateDocument-btn"').click()
-
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
     cy.get('[data-cy="DocumentCreate-input--id"').type('new-doc')
 
     cy.get('input#age').type('31')
-    cy.get('textarea.ace_text-input')
+
+    cy.get('[name="items"] > textarea.ace_text-input')
       .type('{backspace}{backspace}', { force: true })
       .type(
         `{
@@ -66,6 +75,17 @@ describe('Form view', function() {
           force: true
         }
       )
+
+    cy.get('[name="skill"] > textarea.ace_text-input')
+      .type('{backspace}{backspace}', { force: true })
+      .type(
+        `{
+      "name": "CSS", "level": 60`,
+        {
+          force: true
+        }
+      )
+
     cy.get('textarea#job').type('webmestre enginer')
     cy.get('input#name').type('Bombi')
 
@@ -73,7 +93,6 @@ describe('Form view', function() {
     cy.get('[data-cy="timePickerInput"').type('23:30:00')
 
     cy.get('[data-cy="DocumentCreate-btn"').click({ force: true })
-
 
     cy.contains('new-doc')
     cy.request(
@@ -86,15 +105,15 @@ describe('Form view', function() {
         date.getTime().toString()
       )
       expect(res.body.result._source.items.desktop).to.be.equals('standing')
+      expect(res.body.result._source.skill.name).to.be.equals('CSS')
+      expect(res.body.result._source.skill.level).to.be.equals(60)
     })
   })
 
   it('should be able to update a document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-
     cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
-
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
 
@@ -106,6 +125,16 @@ describe('Form view', function() {
     cy.get('[data-cy="timePickerInput"')
       .clear()
       .type('23:30:00')
+
+    cy.get('[name="skill"] > textarea.ace_text-input').type(
+      `{selectall}{backspace}
+      {
+        "name": "management", "level": 0`,
+      {
+        delay: 400,
+        force: true
+      }
+    )
 
     cy.get('[data-cy="DocumentUpdate-btn"').click({ force: true })
 
@@ -119,15 +148,14 @@ describe('Form view', function() {
       expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals(
         date.getTime().toString()
       )
+      expect(res.body.result._source.skill.level).to.be.equals(0)
     })
   })
 
   it('should be able to keep synchronized the form view and the JSON view', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-
     cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
-
 
     cy.get('textarea.ace_text-input')
       .type(`{selectall}{backspace}`, {
@@ -159,9 +187,7 @@ describe('Form view', function() {
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-
     cy.get('[data-cy="DocumentListItem-update--witharraydoc"').click()
-
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
 
