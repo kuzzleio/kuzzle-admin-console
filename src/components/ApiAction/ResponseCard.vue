@@ -19,9 +19,7 @@
         </b-col>
       </b-row>
       <json-editor
-        id="response"
-        ref="responseEditorWrapper"
-        reference="responseEditor"
+        id="responseEditorWrapper"
         tabindex="4"
         :data-cy="`api-actions-response-JSONEditor-${tabIdx}`"
         readonly

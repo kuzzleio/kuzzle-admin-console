@@ -99,9 +99,7 @@
             >
               <b-card no-body class="h-100">
                 <json-editor
-                  id="query"
-                  :ref="`queryEditorWrapper-${tabIdx}`"
-                  reference="queryEditor"
+                  :id="`queryEditorWrapper-${tabIdx}`"
                   tabindex="4"
                   class="m-2 h-100"
                   :data-cy="`api-actions-query-JSONEditor-${tabIdx}`"
