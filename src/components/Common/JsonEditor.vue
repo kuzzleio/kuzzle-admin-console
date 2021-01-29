@@ -27,7 +27,7 @@
 </style>
 
 <script>
-import Vue from 'vue';
+import Vue from 'vue'
 
 export default {
   name: 'JsonEditor',
@@ -47,30 +47,30 @@ export default {
   data() {
     return {
       editor: null
-    };
+    }
   },
   computed: {
     classes() {
-      return (this.readonly ? 'readonly ' : '') + this.myclass;
+      return (this.readonly ? 'readonly ' : '') + this.myclass
     },
     style() {
       if (this.height === undefined) {
-        return { 'min-height': '250px' };
+        return { 'min-height': '250px' }
       } else {
-        return { 'min-height': this.height + 'px!important' };
+        return { 'min-height': this.height + 'px!important' }
       }
     }
   },
   methods: {
     getRawValue() {
-      return this.editor.getValue();
+      return this.editor.getValue()
     },
     getEditor() {
-      return this.editor;
+      return this.editor
     },
     setContent(value) {
-      this.$log.debug('Setting content', value);
-      this.editor.getSession().setValue(value);
+      this.$log.debug('Setting content', value)
+      this.editor.getSession().setValue(value)
     }
   },
   mounted() {
@@ -78,26 +78,26 @@ export default {
       /* eslint no-undef: 0 */
       this.editor = ace.edit(this.$refs[this.id], {
         mode: 'ace/mode/json'
-      });
-      this.editor.setTheme('ace/theme/tomorrow');
-      this.editor.setFontSize(15);
-      this.editor.getSession().setTabSize(2);
-      this.editor.setReadOnly(this.readonly);
-      this.editor.$blockScrolling = Infinity;
-      this.setContent(this.content);
+      })
+      this.editor.setTheme('ace/theme/tomorrow')
+      this.editor.setFontSize(15)
+      this.editor.getSession().setTabSize(2)
+      this.editor.setReadOnly(this.readonly)
+      this.editor.$blockScrolling = Infinity
+      this.setContent(this.content)
 
       // WARNING - Beware of update loops!
       // This event is triggered both when the content changes after
       // user interaction and when it is set programmatically.
       this.editor.on('change', () => {
-        this.$emit('change', this.getRawValue());
-      });
-    });
+        this.$emit('change', this.getRawValue())
+      })
+    })
   },
   beforeDestroy() {
     if (this.editor) {
-      this.editor.removeAllListeners('change');
+      this.editor.removeAllListeners('change')
     }
   }
-};
+}
 </script>
