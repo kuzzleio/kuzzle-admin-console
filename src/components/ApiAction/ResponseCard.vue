@@ -19,12 +19,11 @@
         </b-col>
       </b-row>
       <json-editor
-        id="responseEditorWrapper"
-        tabindex="4"
+        :ref="`responseEditorWrapper-${tabIdx}`"
+        :id="`responseEditorWrapper-${tabIdx}`"
         :data-cy="`api-actions-response-JSONEditor-${tabIdx}`"
         readonly
-        class="responseJsonEditor"
-        myclass="m-2"
+        class="m-2 responseJsonEditor"
         content="{}"
       />
     </b-card-body>
@@ -52,10 +51,10 @@ export default {
   watch: {
     response: {
       handler(value) {
-        this.$refs.responseEditorWrapper.setContent(
-          JSON.stringify(value, null, ' ')
-        )
-      }
+      this.$refs[`responseEditorWrapper-${this.tabIdx}`].setContent(
+        JSON.stringify(value, null, ' ')
+      )
+    }
     }
   },
   computed: {

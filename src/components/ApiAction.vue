@@ -219,10 +219,6 @@ export default {
         return
       }
       this.tabs.push(query)
-      this.$nextTick(() => {
-        const tabIdx = this.tabs.findIndex(t => t.name === query.name)
-        this.$refs[`queryEditorWrapper-${tabIdx}`][0].setContent(query.body)
-      })
       this.currentTabIdx = this.tabs.length - 1
     },
     isQueryNameValid(name) {
