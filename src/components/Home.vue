@@ -71,7 +71,7 @@ export default {
       kuzzleDisconnectedIsOpen: false,
       warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended <a href="#/signup"> that you create one.</a><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`,
       bannerV4Text:
-        'Hey! A new version of the Admin Console will be available soon. You can test the new version <a target="_blank" href="http://next-console.kuzzle.io">here</a> now.'
+        'Hey! A new version of the Admin Console will be available on Feb 4th 2021. You can test the new version <a target="_blank" href="http://next-console.kuzzle.io">here</a> now.'
     }
   },
   watch: {

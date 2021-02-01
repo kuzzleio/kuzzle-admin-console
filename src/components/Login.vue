@@ -68,7 +68,7 @@ export default {
   data() {
     return {
       bannerV4Text:
-        '<span>Hey! A new version of the Admin Console will be available soon. You can test the new version <a target="_blank" href="http://next-console.kuzzle.io">here</a> now.</span>',
+        '<span>Hey! A new version of the Admin Console will be available on Feb 4th 2021. You can test the new version <a target="_blank" href="http://next-console.kuzzle.io">here</a> now.</span>',
       environmentId: null
     }
   },
