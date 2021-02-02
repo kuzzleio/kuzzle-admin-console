@@ -100,6 +100,7 @@
               <b-card no-body class="h-100">
                 <json-editor
                   :id="`queryEditorWrapper-${tabIdx}`"
+                  :ref="`queryEditorWrapper-${tabIdx}`"
                   class="m-2 h-100"
                   :data-cy="`api-actions-query-JSONEditor-${tabIdx}`"
                   :content="jsonQuery"
@@ -246,6 +247,7 @@ export default {
         if (value !== tmp.controller) {
           tmp.controller = value
           this.jsonQuery = JSON.stringify(tmp, null, 2)
+          this.$log.info(this.$refs);
           this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
             this.jsonQuery
           )
