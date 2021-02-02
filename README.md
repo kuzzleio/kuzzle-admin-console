@@ -14,7 +14,7 @@ Kuzzle provides a secure API which can be accessed through a large selection of 
 
 The Kuzzle Admin Console is a static front-end client which runs in your web browser and connects to Kuzzle. This means that your Kuzzle installation must be accessible from the computer running the Kuzzle Admin Console. To connect to Kuzzle you will need to provide your Kuzzle installation host (name or IP) and the port (default: 7512).
 
-You can get the latest version of the Kuzzle Admin Console [here](http://console.kuzzle.io) (or if you're using Kuzzle through SSL, you can use the [https](https://console.kuzzle.io) version)
+You can get the latest version of the Kuzzle Admin Console [here](http://console.kuzzle.io) (or if you're using Kuzzle through SSL, you can use the [https](https://console.kuzzle.io) version).
 
 To get a working copy of the Admin Console on your computer, you can download it here: https://dl.kuzzle.io/admin-console/kuzzle-admin-console.tar.gz
 
