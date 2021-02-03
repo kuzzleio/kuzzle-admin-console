@@ -6,7 +6,10 @@ inputs:
     description: Kuzzle setup configuration (1 or 2 or multi)
     required: true
   CYPRESS_RECORD_KEY:
-    description: Kuzzle setup configuration (1 or 2 or multi)
+    description: Cypress token to record the tests on cypress dashboard
+    required: true
+  branch_name:
+    description: Name of the branch to add a tag on cypress dashboard
     required: true
 
 runs:
