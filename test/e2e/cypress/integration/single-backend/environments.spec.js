@@ -504,7 +504,7 @@ describe('Import and export environments', function() {
         },
         { subjectType: 'input', force: true }
       )
-      .trigger('change')
+      // .trigger('change')
     cy.get('[data-cy=EnvironmentImport-ok]')
       .should('exist')
       .should('contain', 'Found 2 connections')
@@ -532,7 +532,7 @@ describe('Import and export environments', function() {
         },
         { subjectType: 'input', force: true }
       )
-      .trigger('change')
+      // .trigger('change')
     cy.get('[data-cy=EnvironmentImport-err]')
       .should('exist')
       .should('contain', 'Uploaded file type (image/jpeg) is not supported.')
