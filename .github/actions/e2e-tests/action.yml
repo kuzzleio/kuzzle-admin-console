@@ -16,7 +16,7 @@ runs:
       shell: bash
     - run: cd test/e2e/run-test && npm ci && cd -
       shell: bash
-    - run: npm run test:e2e -- --backend=${{ inputs.backend_config}}
+    - run: npm run test:e2e -- --backend=${{ inputs.backend_config}} --tag ${{ inputs.branch_name }}
       env:
         CYPRESS_RECORD_KEY: ${{ inputs.CYPRESS_RECORD_KEY }}
       shell: bash
