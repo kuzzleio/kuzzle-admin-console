@@ -1,7 +1,8 @@
 <template>
   <div
+    :name="id"
     data-cy="JSONEditor"
-    ref="jsoneditor"
+    :ref="id"
     :class="classes"
     :id="id"
     :style="style"
@@ -27,19 +28,26 @@
 
 <script>
 import Vue from 'vue'
-let editor
 
 export default {
   name: 'JsonEditor',
   props: {
     content: String,
+    id: {
+      type: String,
+      default: Date.now().toString() + Math.random().toString()
+    },
     myclass: {
       type: String,
       default: ''
     },
     readonly: Boolean,
-    id: String,
     height: { type: Number, default: 250 }
+  },
+  data() {
+    return {
+      editor: null
+    }
   },
   computed: {
     classes() {
@@ -55,40 +63,40 @@ export default {
   },
   methods: {
     getRawValue() {
-      return editor.getValue()
+      return this.editor.getValue()
     },
     getEditor() {
-      return editor
+      return this.editor
     },
     setContent(value) {
       this.$log.debug('Setting content', value)
-      editor.getSession().setValue(value)
+      this.editor.getSession().setValue(value)
     }
   },
   mounted() {
     Vue.nextTick(() => {
       /* eslint no-undef: 0 */
-      editor = ace.edit(this.$refs.jsoneditor, {
+      this.editor = ace.edit(this.$refs[this.id], {
         mode: 'ace/mode/json'
       })
-      editor.setTheme('ace/theme/tomorrow')
-      editor.setFontSize(15)
-      editor.getSession().setTabSize(2)
-      editor.setReadOnly(this.readonly)
-      editor.$blockScrolling = Infinity
+      this.editor.setTheme('ace/theme/tomorrow')
+      this.editor.setFontSize(15)
+      this.editor.getSession().setTabSize(2)
+      this.editor.setReadOnly(this.readonly)
+      this.editor.$blockScrolling = Infinity
       this.setContent(this.content)
 
       // WARNING - Beware of update loops!
       // This event is triggered both when the content changes after
       // user interaction and when it is set programmatically.
-      editor.on('change', () => {
+      this.editor.on('change', () => {
         this.$emit('change', this.getRawValue())
       })
     })
   },
   beforeDestroy() {
-    if (editor) {
-      editor.removeAllListeners('change')
+    if (this.editor) {
+      this.editor.removeAllListeners('change')
     }
   }
 }
