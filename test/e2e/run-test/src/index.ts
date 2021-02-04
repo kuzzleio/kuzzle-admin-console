@@ -13,10 +13,11 @@ class RunTest extends Command {
 
   static flags = {
     // add --version flag to show CLI version
-    version: flags.version({ char: 'v' }),
     help: flags.help({ char: 'h' }),
     backend: flags.enum({ options: ['1', '2', 'multi'], default: '2' }),
-    local: flags.boolean({ default: false })
+    local: flags.boolean({ default: false }),
+    spec: flags.string({ char: 's', multiple: true, default: [] }),
+    tag: flags.string({ multiple: true, default: []})
   }
 
   async run() {
@@ -31,25 +32,25 @@ class RunTest extends Command {
     switch (flags.backend) {
       case '1':
       case '2':
-        await this.singleBackend(flags.backend, flags.local)
+        await this.singleBackend(flags.backend, flags.local, flags.spec, flags.tag)
         break
       case 'multi':
       default:
-        await this.multiBackend(flags.local)
+        await this.multiBackend(flags.local, flags.tag)
         break
     }
   }
 
-  async singleBackend(version: string, local: boolean = false) {
+  async singleBackend(backend: string, local: boolean = false, specs: String[], tags: String[]) {
     this.log(
       chalk.blueBright(
-        ` Preparing single-backend stack with Kuzzle v${version}`
+        ` Preparing single-backend stack with Kuzzle v${backend}`
       )
     )
 
     const tasks = new Listr([
       {
-        title: `Launch Kuzzle version ${version}`,
+        title: `Launch Kuzzle version ${backend}`,
         skip: () => {
           if (local) {
             return 'Using local Kuzzle'
@@ -60,13 +61,13 @@ class RunTest extends Command {
             process.cwd(),
             'test',
             'e2e',
-            `stack-v${version}.yml`
+            `stack-v${backend}.yml`
           )
           const doco = execa('docker-compose', [
             '-f',
             docoFile,
             '-p',
-            `stack-${version}`,
+            `stack-${backend}`,
             'up',
             '-d'
           ])
@@ -109,14 +110,17 @@ class RunTest extends Command {
 
     const npmArgs = this.buildCypressArgs(
       local,
-      version,
+      backend,
       process.env.CYPRESS_RECORD_KEY,
-      false
+      false,
+      specs,
+      tags
     )
+    this.log(npmArgs.join())
     try {
       const cy = execa('cypress', npmArgs, {
         env: {
-          CYPRESS_BACKEND_VERSION: version
+          CYPRESS_BACKEND_VERSION: backend
         }
       })
       cy.stdout.pipe(process.stdout)
@@ -130,7 +134,7 @@ class RunTest extends Command {
     }
   }
 
-  async multiBackend(local: boolean = false) {
+  async multiBackend(local: boolean = false, tags: String[]) {
     this.log(chalk.blueBright(` Preparing multi-backend stack`))
 
     const tasks = new Listr([
@@ -160,7 +164,9 @@ class RunTest extends Command {
       local,
       'multi-backend',
       process.env.CYPRESS_RECORD_KEY,
-      true
+      true,
+      [],
+      tags
     )
     try {
       const cy = execa('cypress', npmArgs, {
@@ -195,22 +201,41 @@ class RunTest extends Command {
 
   buildCypressArgs(
     local: boolean,
-    version: String,
+    backend: string,
     recordKey: String | undefined,
-    multi: boolean
+    multi: boolean,
+    specs: String[],
+    tags: String[]
   ) {
-    return local
-      ? ['open']
-      : [
-          'run',
-          recordKey ? '--record' : '',
-          '--spec',
-          `test/e2e/cypress/integration/${
-            multi ? 'multi-backend' : 'single-backend'
-          }/*.spec.js`,
-          recordKey ? '--group' : '',
-          recordKey ? `kuzzle-v${version}` : ''
-        ]
+    if (local) {
+      return ['open']
+    }
+
+    const cypressArgs: string[] = ['run'];
+    if (recordKey) {
+      cypressArgs.push('--record')
+
+      cypressArgs.push('--group')
+      const group: string = backend === 'multi-backend' ? backend : `kuzzle-v${backend}`
+      cypressArgs.push(group)
+      if (tags.length !== 0) {
+        cypressArgs.push('--tag')
+        cypressArgs.push(tags.join())
+      }
+    }
+    let specsArg = ''
+    if (specs.length !== 0 && backend !== 'multi-backend') {
+      specsArg = specs.map(s => `test/e2e/cypress/integration/single-backend/${s}.spec.js`).join()
+    } else {
+      specsArg =
+        `test/e2e/cypress/integration/${
+          multi ? 'multi-backend' : 'single-backend'
+        }/*.spec.js`
+    }
+    cypressArgs.push("--spec")
+    cypressArgs.push(specsArg)
+
+    return cypressArgs
   }
 
   async waitFor(name: string, uri: string) {
