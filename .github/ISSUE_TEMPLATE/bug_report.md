@@ -38,7 +38,7 @@ assignees: ''
 ## Context (Environment)
 <!--- How has this issue affected you? What are you trying to accomplish? -->
 <!--- Providing context helps us come up with a solution that is most useful in the real world -->
-<!--- Include NodeJS version, Kuzzle version, Admin Console, ... -->
+<!--- Include NodeJS version, Kuzzle version, Admin Console version, ... -->
 Kuzzle version:
 Node.js version:
 Admin Console version:
