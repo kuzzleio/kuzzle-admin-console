@@ -35,6 +35,16 @@
         >
           Security
         </b-nav-item>
+        <b-nav-text
+          class="ml-2"
+          title="Give us your feedback on our GitHub page"
+        >
+          <a
+            href="https://github.com/kuzzleio/kuzzle-admin-console"
+            target="_blank"
+            ><i class="logout fab fa-github fa-lg"
+          /></a>
+        </b-nav-text>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
         <b-nav-text
