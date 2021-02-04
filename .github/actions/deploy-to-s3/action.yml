@@ -1,0 +1,54 @@
+name: Deploy to AWS S3
+description: Build admin console, upload it to S3 and invalidate Cloudfront cache
+
+inputs:
+  AWS_ACCESS_KEY_ID:
+    description: AWS Access key ID
+    required: true
+  AWS_SECRET_ACCESS_KEY:
+    description: AWS secret key
+    required: true
+  S3_BUCKET:
+    description: S3 bucket name
+    required: true
+  CLOUDFRONT_ID:
+    description: Cloudfront distribution ID
+    required: true
+  REGION:
+    description: AWS default region
+    required: true
+    default: 'us-west-2'
+  GA_ID:
+    description: Google Analytics ID
+    required: true
+  TARGET_DIST:
+    description: Build artifact folder to deploy
+    required: true
+    default: dist
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install AWS CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install python python-pip
+        pip install awscli --upgrade --user
+      shell: bash
+    - name: Build
+      run: |
+        npm ci
+        npm run build
+      env:
+        NODE_ENV: production
+        GA_ID: ${{ inputs.GA_ID }}
+      shell: bash
+    - name: Deploy
+      run: |
+        aws s3 rm s3://${{ inputs.S3_BUCKET }} --recursive --region ${{ inputs.REGION }}
+        aws s3 sync ${{ inputs.TARGET_DIST }} s3://${{ inputs.S3_BUCKET }}
+        aws cloudfront create-invalidation --distribution-id ${{ inputs.CLOUDFRONT_ID }} --paths "/*"
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+      shell: bash

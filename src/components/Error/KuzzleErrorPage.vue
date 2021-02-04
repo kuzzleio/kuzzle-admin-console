@@ -1,38 +1,34 @@
 <template>
-  <div>
-    <div class="row">
-      <div class="col offset-s4 s2">
-        <environment-switch
-          @environment::create="editEnvironment"
-          @environment::delete="deleteEnvironment"
-          @environment::importEnv="importEnv"
-        />
-      </div>
-    </div>
-    <div class="row message-warning">
-      <h5>{{ $store.state.kuzzle.errorFromKuzzle }}</h5>
-    </div>
-    <div class="row kuzzle-disconnected">
-      <div class="col s12">
-        <p>Trying to connect to Kuzzle...</p>
-      </div>
+  <div class="KuzzleErrorPage">
+    <b-container>
+      <b-jumbotron>
+        <template v-slot:header>
+          <img
+            alt="Welcome to the Kuzzle Admin Console"
+            class="mb-3"
+            height="60"
+            src="../../assets/logo.svg"
+          />
+          <h2>Something went wrong while connecting to Kuzzle</h2>
+        </template>
 
-      <div class="col s1 offset-s5">
-        <div class="preloader-wrapper active valign-wrapper">
-          <div class="spinner-layer">
-            <div class="circle-clipper left">
-              <div class="circle" />
-            </div>
-            <div class="gap-patch">
-              <div class="circle" />
-            </div>
-            <div class="circle-clipper right">
-              <div class="circle" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        <hr class="my-4" />
+
+        <b-row align-v="center">
+          <b-col sm="7" class="align-middle code">{{ kuzzleError }}</b-col>
+          <b-col sm="2" class="text-right">
+            <span class="text-muted align-middle">Connecting to</span>
+          </b-col>
+          <b-col sm="2" class="text-right">
+            <environment-switch
+              @environment::create="editEnvironment"
+              @environment::delete="deleteEnvironment"
+              @environment::importEnv="importEnv"
+            />
+          </b-col>
+        </b-row>
+      </b-jumbotron>
+    </b-container>
   </div>
 </template>
 
@@ -51,7 +47,7 @@ export default {
     }
   },
   computed: {
-    errorInternalMessage() {
+    kuzzleError() {
       return this.$store.state.kuzzle.errorFromKuzzle
     }
   },
@@ -70,27 +66,10 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.message-warning {
-  h5 {
-    font-size: 1.2rem;
-  }
-}
-.kuzzle-disconnected {
-  margin-top: 30px;
-
-  .card {
-    padding-bottom: 20px;
-  }
-
-  p {
-    font-family: 'Roboto', 'Arial', sans-serif;
-    font-size: 1.3em;
-    font-weight: 300;
-
-    .host {
-      font-weight: bold;
-    }
-    margin-bottom: 0;
-  }
+.KuzzleErrorPage {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -131,6 +131,11 @@ export default {
           this.index,
           this.collection
         )
+        filterManager.addNewHistoryItemAndSave(
+          newValue,
+          this.index,
+          this.collection
+        )
       }
     },
     currentFilter() {
@@ -180,6 +185,11 @@ export default {
           this.index,
           this.collection
         )
+        filterManager.addNewHistoryItemAndSave(
+          newFilters,
+          this.index,
+          this.collection
+        )
       } catch (error) {
         this.$store.direct.commit.toaster.setToast({
           text:
@@ -198,7 +208,10 @@ export default {
       }
 
       let searchQuery = null
-      searchQuery = filterManager.toSearchQuery(this.currentFilter)
+      searchQuery = filterManager.toSearchQuery(
+        this.currentFilter,
+        this.collectionMapping
+      )
       if (!searchQuery) {
         searchQuery = {}
       }

@@ -1,153 +1,144 @@
 <template>
   <div class="Signup">
-    <div class="container">
-      <div class="row">
-        <div
-          class="col card wrapper s10 offset-s1 m8 offset-m2 l8 offset-l2 xl6 offset-xl3"
-        >
-          <h2 class="center-align logo">
+    <b-container class="Signup-flexContainer">
+      <b-card class="my-3">
+        <b-jumbotron class="p-5">
+          <template v-slot:header>
             <img
               src="../assets/logo.svg"
               alt="Welcome to the Kuzzle Admin Console"
-              style="width: 60%"
+              height="60"
             />
-          </h2>
-          <div class="row">
-            <div class="col offset-s1 s10">
-              <warning-header :text="bannerV4Text" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col offset-s4 s2">
+            <h2>Create an Admin Account</h2>
+          </template>
+          Your Kuzzle instance does not seem to have an administrator user. To
+          continue using an insecure installation and skip the Admin Account
+          creation, click the "Login as Anonymous" button below.
+
+          <hr class="my-4" />
+
+          <b-row align-v="center">
+            <b-col sm="10" class="text-right">
+              <span class="text-muted align-middle">Connected to</span>
+            </b-col>
+            <b-col sm="2" class="text-right">
               <environment-switch
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
                 @environment::importEnv="importEnv"
               />
-            </div>
-          </div>
-          <div class="row message-warning">
-            <h5>Create an Admin Account</h5>
-            <div class="divider" />
-            <div class="message">
-              <i class="fa fa-warning" />
-              To secure your Kuzzle installation we recommend you select the
-              “Remove anonymous user credentials” checkbox below.<br />
-              To continue using an insecure installation and skip the Admin
-              Account creation, click the “LOGIN AS ANONYMOUS” button below.
-            </div>
-          </div>
-          <div class="row">
-            <form
-              id="loginForm"
-              class="col s10 offset-s1"
-              method="post"
-              @submit.prevent="Signup"
+            </b-col>
+          </b-row>
+        </b-jumbotron>
+        <div class="text-center"></div>
+        <b-alert variant="danger" :show="error">{{ error }}</b-alert>
+
+        <b-form-group
+          description="The name of the user that will administrate this instance"
+          label="Username"
+          label-cols-sm="4"
+          label-cols-lg="3"
+          label-for="username"
+        >
+          <b-input
+            data-cy="Signup-username"
+            id="username"
+            v-model="username"
+            type="text"
+            name="username"
+            required
+          />
+        </b-form-group>
+        <b-form-group
+          description="Manage to choose a strong one"
+          label="Password"
+          label-cols-sm="4"
+          label-cols-lg="3"
+          label-for="pass1"
+        >
+          <b-input
+            data-cy="Signup-password1"
+            id="pass1"
+            v-model="password1"
+            type="password"
+            name="password1"
+            required
+          />
+        </b-form-group>
+        <b-form-group
+          description="Re-type the password for confirmation"
+          label="Confirm password"
+          label-cols-sm="4"
+          label-cols-lg="3"
+          label-for="pass2"
+        >
+          <b-input
+            data-cy="Signup-password2"
+            id="pass2"
+            v-model="password2"
+            type="password"
+            name="password2"
+            required
+          />
+        </b-form-group>
+        <b-alert show variant="info"
+          ><i class="fa fa-exclamation-triangle"></i> To secure your Kuzzle
+          installation we recommend you select the “Remove anonymous user
+          credentials” checkbox below.</b-alert
+        >
+        <b-form-group
+          label="Remove anonymous user credentials."
+          description="This will avoid non-authenticated users to perform operations on this instance."
+          label-cols-sm="4"
+          label-cols-lg="3"
+        >
+          <b-form-checkbox
+            id="reset"
+            v-model="reset"
+            :value="true"
+            :unchecked-value="false"
+          ></b-form-checkbox>
+        </b-form-group>
+
+        <template v-slot:footer>
+          <div class="text-right">
+            <b-button
+              class="mr-3"
+              data-cy="LoginAsAnonymous-Btn"
+              variant="link"
+              @click="$router.push({ name: 'Login' })"
+              >Go to Login Page</b-button
             >
-              <div class="row">
-                <div class="input-field col s12">
-                  <input
-                    id="username"
-                    v-model="username"
-                    type="text"
-                    name="username"
-                    required
-                    class="validate"
-                  />
-                  <label for="username">Username</label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="input-field col s12">
-                  <input
-                    id="pass1"
-                    v-model="password1"
-                    type="password"
-                    name="password1"
-                    required
-                    class="validate"
-                  />
-                  <label for="pass1">Password</label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="input-field col s12">
-                  <input
-                    id="pass2"
-                    v-model="password2"
-                    type="password"
-                    name="password2"
-                    required
-                    class="validate"
-                  />
-                  <label for="pass2">Confirm password</label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="input-field col s12 reset">
-                  <label>
-                    <input
-                      id="reset"
-                      v-model="reset"
-                      type="checkbox"
-                      class="filled-in"
-                    />
-                    <span>Remove anonymous user credentials.</span>
-                  </label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col s2">
-                  <p class="message error">
-                    {{ error }}
-                  </p>
-                </div>
-                <div class="col s10">
-                  <div v-if="waiting" class="preloader-wrapper active right">
-                    <div class="spinner-layer">
-                      <div class="circle-clipper left">
-                        <div class="circle" />
-                      </div>
-                      <div class="gap-patch">
-                        <div class="circle" />
-                      </div>
-                      <div class="circle-clipper right">
-                        <div class="circle" />
-                      </div>
-                    </div>
-                  </div>
-                  <a
-                    class="LoginAsAnonymous-Btn btn-flat waves-effect waves-teal"
-                    @click="loginAsGuest"
-                    >Login as Anonymous</a
-                  >
-                  <button
-                    v-show="!waiting"
-                    class="btn waves-effect waves-light right"
-                    type="submit"
-                    name="action"
-                  >
-                    CREATE ADMIN ACCOUNT
-                  </button>
-                </div>
-              </div>
-            </form>
+            <b-button
+              class="mr-3"
+              data-cy="LoginAsAnonymous-Btn"
+              variant="link"
+              @click="loginAsGuest"
+              >Login as Anonymous</b-button
+            >
+            <b-button
+              data-cy="Signup-submitBtn"
+              type="submit"
+              variant="primary"
+              :disabled="waiting"
+              @click="signup"
+            >
+              Create Admin Account
+            </b-button>
           </div>
-        </div>
-      </div>
-    </div>
+        </template>
+      </b-card>
+    </b-container>
   </div>
 </template>
 
 <script>
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
-import WarningHeader from './Common/WarningHeader'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'Signup',
   components: {
-    EnvironmentSwitch,
-    WarningHeader
+    EnvironmentSwitch
   },
   data() {
     return {
@@ -156,13 +147,14 @@ export default {
       password2: '',
       reset: false,
       error: null,
-      waiting: false,
-      bannerV4Text:
-        '<span>Hey! A new version of the Admin Console will be available on Feb 4th 2021. You can <a target="_blank" href="http://next-console.kuzzle.io">preview it here</a>, or <a target="_blank" href="https://blog.kuzzle.io/kuzzle-admin-console-v4">read about what\'s new</a>.</span>'
+      waiting: false
     }
   },
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle'])
+  },
   methods: {
-    async Signup() {
+    async signup() {
       if (
         this.username === '' ||
         this.password1 === '' ||
@@ -173,7 +165,7 @@ export default {
       }
 
       if (this.password1 !== this.password2) {
-        this.error = 'Password does not match'
+        this.error = 'Confirmation does not match password'
         return
       }
 
@@ -197,16 +189,35 @@ export default {
           }
         })
         this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
-        this.$store.direct.commit.auth.setAdminExits(true)
-        this.$router.push({ name: 'Login' }).catch(() => {})
+        this.$store.direct.commit.auth.setAdminExists(true)
+        this.$router.push({ name: 'Login' })
       } catch (err) {
-        this.$router.push({ name: 'Login' }).catch(() => {})
+        if (
+          [
+            'plugin.kuzzle-plugin-auth-passport-local.login_in_password',
+            'plugin.kuzzle-plugin-auth-passport-local.weak_password'
+          ].includes(err.id)
+        ) {
+          this.error = err.message
+        } else {
+          this.$log.error(err)
+          this.$bvToast.toast(
+            'The complete error has been printed to the console.',
+            {
+              title: err.message,
+              variant: 'danger',
+              toaster: 'b-toaster-bottom-right',
+              appendToast: true
+            }
+          )
+        }
       }
+      this.waiting = false
     },
     loginAsGuest() {
-      this.error = ''
+      this.error = null
       this.$store.direct.dispatch.auth
-        .prepareSession('anonymous')
+        .setSession('anonymous')
         .then(() => {
           this.$router.go({ name: 'Data' })
         })
@@ -226,3 +237,15 @@ export default {
   }
 }
 </script>
+
+<style type="text/css" scoped>
+.Signup {
+  overflow-y: auto;
+  height: 100vh;
+}
+.Signup-flexContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

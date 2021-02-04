@@ -1,50 +1,49 @@
 <template>
   <form class="wrapper">
-    <div class="row">
-      <div class="col s3">
-        <strong>KUID</strong>
-      </div>
+    <b-form-group label-cols="2" data-cy="UserBasic-kuid">
+      <template v-slot:label><strong>KUID</strong></template>
 
-      <div class="col s6">
-        <input
-          v-if="editKuid"
-          id="custom-kuid"
-          type="text"
-          class="validate"
-          placeholder="Custom KUID"
-          :value="kuid"
-          :disabled="autoGenerateKuid"
-          @change="setCustomKuid"
-        />
-        <span v-if="!editKuid">{{ kuid }}</span>
-      </div>
-      <div v-if="editKuid" class="col s3">
-        <label>
-          <input
-            id="user-auto-generate-kuid"
-            type="checkbox"
-            class="filled-in"
-            :checked="autoGenerateKuid"
-            @change="setAutoGenerateKuid"
-          />
-          <span>
-            Auto-generate
-          </span>
-        </label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col s3">
+      <template v-slot:invalid-feedback>
+        <span v-if="!validations.kuid.notEmpty"
+          >The KUID cannot contain just whitespaces</span
+        >
+        <span v-else-if="!validations.kuid.notStartsWithSpace"
+          >The KUID cannot start with a whitespace</span
+        >
+      </template>
+      <b-input
+        class="validate"
+        id="custom-kuid"
+        placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
+        type="text"
+        :disabled="!editKuid"
+        :state="validateState('kuid')"
+        :value="kuid"
+        @input="setCustomKuid"
+      />
+    </b-form-group>
+    <b-row class="mt-2">
+      <b-col cols="2">
         <strong>Profiles</strong>
-      </div>
-      <div class="col s9">
+      </b-col>
+      <b-col cols="10">
         <user-profile-list
           :added-profiles="addedProfiles"
           @selected-profile="onProfileSelected"
           @remove-profile="removeProfile"
         />
-      </div>
-    </div>
+        <b-row>
+          <b-col offset="6">
+            <div class="text-danger" data-cy="UserProfileList-invalidFeedback">
+              <small v-if="validations.addedProfiles.$error"
+                >Please add at least one profile</small
+              >
+              <small v-else><br /></small>
+            </div>
+          </b-col>
+        </b-row>
+      </b-col>
+    </b-row>
   </form>
 </template>
 
@@ -63,10 +62,6 @@ export default {
         return []
       }
     },
-    autoGenerateKuid: {
-      type: Boolean,
-      default: false
-    },
     kuid: {
       type: String,
       default: null
@@ -74,14 +69,18 @@ export default {
     editKuid: {
       type: Boolean,
       default: false
+    },
+    validations: {
+      type: Object
     }
   },
   methods: {
-    setAutoGenerateKuid(event) {
-      this.$emit('set-auto-generate-kuid', event.target.checked)
+    validateState(fieldName) {
+      const { $dirty, $error } = this.validations[fieldName]
+      return $dirty ? !$error : null
     },
-    setCustomKuid(event) {
-      this.$emit('set-custom-kuid', event.target.value)
+    setCustomKuid(value) {
+      this.$emit('set-custom-kuid', value)
     },
     onProfileSelected(profile) {
       this.$emit('profile-add', profile)

@@ -1,6 +1,12 @@
 <template>
   <div>
-    <div v-if="isOpen" :id="id" class="modal" :class="computedClasses">
+    <div
+      v-if="isOpen"
+      :id="id"
+      class="modal"
+      :class="computedClasses"
+      data-modal="true"
+    >
       <slot name="content">
         <div class="modal-content">
           <slot />

@@ -1,14 +1,14 @@
 <template>
-  <div class="nav CollectionTabs">
-    <ul>
+  <div class="nav CollectionTabs text-right">
+    <ul class="pl-0">
       <li
         v-if="!$store.state.collection.isRealtimeOnly"
-        :class="{ active: isRouteActive('DataDocumentsList') }"
+        :class="{ active: isRouteActive('DocumentList') }"
       >
         <router-link
           class="CollectionTabs--browse"
           :to="{
-            name: 'DataDocumentsList',
+            name: 'DocumentList',
             params: {
               index: $route.params.index,
               collection: $route.params.collection
@@ -18,7 +18,7 @@
           Browse
         </router-link>
       </li>
-      <li :class="{ active: isRouteActive('DataCollectionWatch') }">
+      <li :class="{ active: isRouteActive('WatchCollection') }">
         <router-link
           href="#!"
           class="CollectionTabs--watch"
@@ -36,7 +36,7 @@
           :to="
             canSubscribe($route.params.index, $route.params.collection)
               ? {
-                  name: 'DataCollectionWatch',
+                  name: 'WatchCollection',
                   params: {
                     index: $route.params.index,
                     collection: $route.params.collection
@@ -50,36 +50,8 @@
       </li>
       <li
         v-if="!$store.state.collection.isRealtimeOnly"
-        :class="{ active: isRouteActive('DataCreateDocument') }"
-      >
-        <router-link
-          class="CollectionTabs--createDocument"
-          :title="
-            canCreateDocument($route.params.index, $route.params.collection)
-              ? ''
-              : 'You are not allowed to create a document in this collection'
-          "
-          :class="{
-            disabled: !canCreateDocument(
-              $route.params.index,
-              $route.params.collection
-            )
-          }"
-          :to="
-            canCreateDocument($route.params.index, $route.params.collection)
-              ? {
-                  name: 'DataCreateDocument',
-                  params: {
-                    index: $route.params.index,
-                    collection: $route.params.collection
-                  }
-                }
-              : ''
-          "
-        >
-          Create a document
-        </router-link>
-      </li>
+        :class="{ active: isRouteActive('CreateDocument') }"
+      ></li>
     </ul>
   </div>
 </template>
@@ -111,13 +83,12 @@
 </style>
 
 <script>
-import {
-  canCreateDocument,
-  canSubscribe
-} from '../../../services/userAuthorization'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionTabs',
+  computed: {
+    ...mapGetters('auth', ['canCreateDocument', 'canSubscribe'])
+  },
   methods: {
     isRouteActive(routeName) {
       if (Array.isArray(routeName)) {
@@ -125,9 +96,7 @@ export default {
       }
 
       return this.$route.name === routeName
-    },
-    canCreateDocument,
-    canSubscribe
+    }
   }
 }
 </script>

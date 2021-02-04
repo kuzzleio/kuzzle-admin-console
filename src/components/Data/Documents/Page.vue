@@ -1,288 +1,223 @@
 <template>
-  <div class="DocumentsPage">
-    <headline>
-      {{ collection }}
-      <collection-dropdown
-        class="icon-medium icon-black"
+  <div class="DocumentList">
+    <b-container
+      :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
+      class="DocumentList--container"
+    >
+      <b-row>
+        <b-col>
+          <headline>
+            <span class="code" :title="collectionName">{{
+              truncateName(collectionName, 20)
+            }}</span>
+          </headline>
+        </b-col>
+        <b-col sm="6" class="text-right mt-3">
+          <b-button
+            variant="primary"
+            data-cy="CreateDocument-btn"
+            :disabled="
+              indexOrCollectionNotFound ||
+                !canCreateDocument(indexName, collectionName)
+            "
+            :to="{
+              name: 'CreateDocument',
+              params: { indexName, collectionName }
+            }"
+            >Create New Document</b-button
+          >
+          <collection-dropdown-view
+            class="icon-medium icon-black ml-2"
+            :active-view="listViewType"
+            :index="indexName"
+            :collection="collectionName"
+            :mappingAttributes="mappingAttributes"
+            @list="onListViewClicked"
+            @map="onMapViewClicked"
+            @column="onColumnViewClicked"
+            @time-series="onTimeSeriesClicked"
+          />
+          <collection-dropdown-action
+            class="icon-medium icon-black ml-2"
+            :indexName="indexName"
+            :collectionName="collectionName"
+            @delete-collection-clicked="showDeleteCollectionModal"
+            @clear="afterCollectionClear"
+          />
+        </b-col>
+      </b-row>
+
+      <list-not-allowed
+        v-if="
+          !canSearchDocument(indexName, collectionName) && index && collection
+        "
+      />
+
+      <template v-else>
+        <template v-if="isCollectionEmpty">
+          <realtime-only-empty-state
+            v-if="isRealtimeCollection"
+            :index="indexName"
+            :collection="collectionName"
+          />
+          <no-geopoint-field-state v-else-if="hasGeopoints" />
+          <empty-state v-else :index="indexName" :collection="collectionName" />
+        </template>
+
+        <template v-if="!isCollectionEmpty">
+          <filters
+            class="mb-3"
+            :available-operands="searchFilterOperands"
+            :collection="collectionName"
+            :current-filter="currentFilter"
+            :index="indexName"
+            :mapping-attributes="mappingAttributes"
+            @enter-pressed="navigateToDocument"
+            @filters-updated="onFiltersUpdated"
+            @submit="onFilterSubmit"
+          />
+        </template>
+        <template>
+          <template v-if="!isCollectionEmpty">
+            <b-card
+              class="light-shadow"
+              :bg-variant="documents.length === 0 ? 'light' : 'default'"
+            >
+              <b-card-text class="p-0">
+                <no-results-empty-state v-if="!documents.length" />
+                <template v-else>
+                  <List
+                    v-if="listViewType === 'list'"
+                    :all-checked="allChecked"
+                    :collection="collectionName"
+                    :documents="formattedDocuments"
+                    :index="indexName"
+                    :current-page-size="paginationSize"
+                    :selected-documents="selectedDocuments"
+                    :total-documents="totalDocuments"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @delete="onDeleteClicked"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  />
+
+                  <Column
+                    v-if="listViewType === 'column'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :selected-documents="selectedDocuments"
+                    :all-checked="allChecked"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  />
+
+                  <TimeSeries
+                    v-if="listViewType === 'time-series'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @change-page-size="changePaginationSize"
+                    @changeDisplayPagination="changeDisplayPagination"
+                  />
+
+                  <Map
+                    v-if="listViewType === 'map'"
+                    :selected-geopoint="selectedGeopoint"
+                    :current-page-size="paginationSize"
+                    :index="indexName"
+                    :geoDocuments="geoDocuments"
+                    :collection="collectionName"
+                    :mappingGeopoints="mappingGeopoints"
+                    @change-page-size="changePaginationSize"
+                    @on-select-geopoint="onSelectGeopoint"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                  />
+
+                  <b-row
+                    v-show="
+                      totalDocuments > paginationSize && displayPagination
+                    "
+                    align-h="center"
+                  >
+                    <b-pagination
+                      v-model="currentPage"
+                      aria-controls="my-table"
+                      class="m-2 mt-4"
+                      data-cy="DocumentList-pagination"
+                      :total-rows="totalDocuments"
+                      :per-page="paginationSize"
+                    ></b-pagination>
+                  </b-row>
+                  <div
+                    v-if="totalDocuments > 10000"
+                    class="text-center mt-2"
+                    data-cy="DocumentList-exceedESLimitMsg"
+                  >
+                    <small class="text-secondary"
+                      >Due to limitations imposed by Elasticsearch, you won't be
+                      able to browse documents beyond 10000.</small
+                    >
+                  </div>
+                </template>
+              </b-card-text>
+            </b-card>
+          </template>
+        </template>
+      </template>
+      <DeleteCollectionModal
         :index="index"
         :collection="collection"
+        :modalId="modalDeleteId"
+        @delete-successful="afterDeleteCollection"
       />
-    </headline>
-
-    <collection-tabs />
-
-    <list-not-allowed v-if="!canSearchDocument(index, collection)" />
-
-    <div class="DocumentsPage-container">
-      <div v-if="isCollectionEmpty" class="card-panel">
-        <realtime-only-empty-state
-          v-if="isRealtimeCollection"
-          :index="index"
-          :collection="collection"
-        />
-        <empty-state v-else :index="index" :collection="collection" />
-      </div>
-
-      <div v-if="!isCollectionEmpty">
-        <div class="card-panel card-header">
-          <div class="DocumentsPage-filtersAndButtons row">
-            <div class="col s9 xl9">
-              <filters
-                :available-operands="searchFilterOperands"
-                :current-filter="currentFilter"
-                :collection-mapping="collectionMapping"
-                @filters-updated="onFiltersUpdated"
-                @reset="onFiltersUpdated"
-              />
-            </div>
-            <div class="col s3 xl3">
-              <list-view-buttons
-                :active-view="listViewType"
-                :boxes-enabled="true"
-                :map-enabled="isCollectionGeo"
-                @list="onListViewClicked"
-                @boxes="onBoxesViewClicked"
-                @map="onMapViewClicked"
-                @column="onColumnViewClicked"
-                @time-series="onTimeSeriesClicked"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="!isCollectionEmpty" class="card-panel card-body">
-        <div class="row">
-          <div class="col s12">
-            Result per page:
-            <span v-for="(v, i) in resultPerPage" :key="i"
-              ><a
-                href="#"
-                :class="{ active: v === paginationSize }"
-                @click.prevent="changePaginationSize(v)"
-                >{{ v }}</a
-              >{{ i === resultPerPage.length - 1 ? '' : ' / ' }}</span
-            >
-          </div>
-        </div>
-
-        <no-results-empty-state v-show="!documents.length" />
-
-        <list-actions
-          v-if="documents.length && listViewType !== 'time-series'"
-          :all-checked="allChecked"
-          :display-bulk-delete="
-            hasSelectedDocuments &&
-              canDeleteDocument(index, collection) &&
-              listViewType !== 'map'
-          "
-          :geopoint-list="mappingGeopoints"
-          :view-type="listViewType"
-          :display-create="canCreateDocument(index, collection)"
-          :display-geopoint-select="listViewType === 'map'"
-          :display-toggle-all="
-            (listViewType !== 'map' && canCreateDocument(index, collection)) ||
-              canDeleteDocument(index, collection)
-          "
-          @create="onCreateClicked"
-          @bulk-delete="onBulkDeleteClicked"
-          @toggle-all="onToggleAllClicked"
-          @select-geopoint="onSelectGeopoint"
-          @refresh="onRefreshClicked"
-        />
-
-        <div v-show="documents.length" class="row">
-          <div
-            v-show="listViewType === 'list'"
-            class="DocumentList-list col s12"
-          >
-            <div class="DocumentList-materializeCollection collection">
-              <div
-                v-for="document in documents"
-                :key="document.id"
-                class="collection-item collection-transition"
-              >
-                <document-list-item
-                  :document="document"
-                  :collection="collection"
-                  :index="index"
-                  :is-checked="isChecked(document.id)"
-                  @checkbox-click="toggleSelectDocuments"
-                  @edit="onEditDocumentClicked"
-                  @delete="onDeleteClicked"
-                />
-              </div>
-            </div>
-
-            <div v-show="documents.length" class="row">
-              <div class="col s12">
-                <pagination
-                  :from="paginationFrom"
-                  :max-page="1000"
-                  :number-in-page="documents.length"
-                  :size="paginationSize"
-                  :total="totalDocuments"
-                  @change-page="changePage"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div
-            v-show="listViewType === 'column'"
-            class="DocumentList-column col s12"
-          >
-            <div class="DocumentList-materializeCollection h-scroll">
-              <Column
-                :documents="documents"
-                :mapping="collectionMapping"
-                :index="index"
-                :collection="collection"
-                @edit="onEditDocumentClicked"
-                @delete="onDeleteClicked"
-              />
-            </div>
-
-            <div v-show="documents.length" class="row">
-              <div class="col s12">
-                <pagination
-                  :from="paginationFrom"
-                  :max-page="1000"
-                  :number-in-page="documents.length"
-                  :size="paginationSize"
-                  :total="totalDocuments"
-                  @change-page="changePage"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div v-show="listViewType === 'boxes'" class="col s12">
-            <div class="DocumentList-boxes">
-              <document-box-item
-                v-for="document in documents"
-                :key="document.id"
-                :collection="collection"
-                :index="index"
-                :document="document"
-                @edit="onEditDocumentClicked"
-                @delete="onDeleteClicked"
-              />
-            </div>
-
-            <div v-show="documents.length" class="row">
-              <div class="col s12">
-                <pagination
-                  :from="paginationFrom"
-                  :max-page="1000"
-                  :number-in-page="documents.length"
-                  :size="paginationSize"
-                  :total="totalDocuments"
-                  @change-page="changePage"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div
-            v-show="listViewType === 'time-series'"
-            class="DocumentList-timeseries col s12"
-          >
-            <div class="DocumentList-materializeCollection h-scroll">
-              <TimeSeries
-                :documents="documents"
-                :mapping="collectionMapping"
-                :index="index"
-                :collection="collection"
-                @edit="onEditDocumentClicked"
-                @delete="onDeleteClicked"
-              />
-            </div>
-
-            <div v-show="documents.length" class="row">
-              <div class="col s12">
-                <pagination
-                  :from="paginationFrom"
-                  :max-page="1000"
-                  :number-in-page="documents.length"
-                  :size="paginationSize"
-                  :total="totalDocuments"
-                  @change-page="changePage"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div v-if="listViewType === 'map'" class="DocumentList-map col s12">
-            <view-map
-              :documents="geoDocuments"
-              :get-coordinates="getCoordinates"
-              :selected-geopoint="selectedGeopoint"
-              :index="index"
-              :collection="collection"
-              @edit="onEditDocumentClicked"
-              @delete="onDeleteClicked"
-            />
-          </div>
-          <div v-show="documents.length" class="row">
-            <div v-if="listViewType === 'map'" class="col s12">
-              <pagination
-                :from="paginationFrom"
-                :max-page="1000"
-                :number-in-page="documents.length"
-                :size="paginationSize"
-                :total="totalDocuments"
-                @change-page="changePage"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <delete-modal
-      :candidates-for-deletion="candidatesForDeletion"
-      :is-loading="deleteModalIsLoading"
-      :is-open="deleteModalIsOpen"
-      @close="closeDeleteModal"
-      @confirm="onDeleteConfirmed"
-    />
+      <delete-modal
+        id="modal-delete"
+        :candidates-for-deletion="candidatesForDeletion"
+        :is-loading="deleteModalIsLoading"
+        @confirm="onDeleteConfirmed"
+        @hide="resetCandidatesForDeletion"
+      />
+    </b-container>
   </div>
 </template>
 
 <script>
 import _ from 'lodash'
 
-import DocumentListItem from './DocumentListItem'
-import DocumentBoxItem from './DocumentBoxItem'
 import Column from './Views/Column'
+import Map from './Views/Map'
+import List from './Views/List'
 import TimeSeries from './Views/TimeSeries'
 import DeleteModal from './DeleteModal'
-import ListViewButtons from './ListViewButtons'
 import EmptyState from './EmptyState'
-import ListActions from './ListActions'
 import NoResultsEmptyState from './NoResultsEmptyState'
+import NoGeopointFieldState from './NoGeopointFieldState.vue'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
-import CollectionTabs from '../Collections/Tabs'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import CollectionDropdown from '../Collections/Dropdown'
+import CollectionDropdownView from '../Collections/DropdownView'
+import CollectionDropdownAction from '../Collections/DropdownAction'
+import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
-import Pagination from '../../Materialize/Pagination'
-import ViewMap from './ViewMap'
 import * as filterManager from '../../../services/filterManager'
-import {
-  canSearchIndex,
-  canSearchDocument,
-  canCreateDocument,
-  canDeleteDocument,
-  canEditDocument
-} from '../../../services/userAuthorization'
-import {
-  performSearchDocuments,
-  performDeleteDocuments,
-  getMappingDocument,
-  waitForConnected
-} from '../../../services/kuzzleWrapper'
+import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
+import { truncateName, dateFromTimestamp } from '@/utils'
+import { mapGetters } from 'vuex'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
 const LIST_VIEW_LIST = 'list'
@@ -294,33 +229,33 @@ const LIST_VIEW_TIME_SERIES = 'time-series'
 export default {
   name: 'DocumentsPage',
   components: {
-    CollectionTabs,
-    CollectionDropdown,
+    CollectionDropdownView,
+    CollectionDropdownAction,
+    DeleteCollectionModal,
     DeleteModal,
-    DocumentBoxItem,
-    DocumentListItem,
     Column,
+    Map,
+    List,
     TimeSeries,
     EmptyState,
     Headline,
     Filters,
-    ListActions,
     ListNotAllowed,
-    ListViewButtons,
     NoResultsEmptyState,
-    Pagination,
     RealtimeOnlyEmptyState,
-    ViewMap
+    NoGeopointFieldState
   },
   props: {
-    index: String,
-    collection: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {
+      loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
+      formattedDocuments: [],
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
@@ -328,27 +263,69 @@ export default {
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
-      collectionMapping: {},
       mappingGeopoints: [],
       selectedGeopoint: null,
-      resultPerPage: [10, 25, 50, 100, 500]
+      resultPerPage: [10, 25, 50, 100, 500],
+      currentPage: 1,
+      modalDeleteId: 'modal-collection-delete',
+      displayPagination: true
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapGetters('auth', [
+      'canSearchDocument',
+      'canCreateDocument',
+      'canDeleteDocument',
+      'canEditDocument'
+    ]),
+    hasGeopoints() {
+      return this.listViewType === 'map' && this.mappingGeopoints.length === 0
+    },
     geoDocuments() {
-      return this.documents.filter(document => {
-        const [lat, lng] = this.getCoordinates(document)
-        const latFloat = parseFloat(lat)
-        const lngFloat = parseFloat(lng)
+      return this.documents
+        .filter(document => {
+          const [lat, lng] = this.getCoordinates(document)
+          const latFloat = parseFloat(lat)
+          const lngFloat = parseFloat(lng)
 
-        return !isNaN(latFloat) && !isNaN(lngFloat)
-      })
+          return !isNaN(latFloat) && !isNaN(lngFloat)
+        })
+        .map(d => ({
+          coordinates: [
+            this.getProperty(d, this.latFieldPath),
+            this.getProperty(d, this.lngFieldPath)
+          ],
+          source: d
+        }))
+    },
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.index
+        ? this.$store.direct.getters.index.getOneCollection(
+            this.index,
+            this.collectionName
+          )
+        : null
+    },
+    collectionMapping() {
+      return this.collection ? this.collection.mapping : null
+    },
+    indexOrCollectionNotFound() {
+      return !this.index || !this.collection ? true : false
+    },
+    mappingAttributes() {
+      return this.collectionMapping
+        ? this.extractAttributesFromMapping(this.collectionMapping)
+        : null
     },
     latFieldPath() {
-      return `content.${this.selectedGeopoint}.lat`
+      return `${this.selectedGeopoint}.lat`
     },
     lngFieldPath() {
-      return `content.${this.selectedGeopoint}.lon`
+      return `${this.selectedGeopoint}.lon`
     },
     isCollectionGeo() {
       return this.mappingGeopoints.length > 0
@@ -358,9 +335,6 @@ export default {
     },
     isCollectionEmpty() {
       return !this.isDocumentListFiltered && this.totalDocuments === 0
-    },
-    hasSelectedDocuments() {
-      return this.selectedDocuments.length > 0
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
@@ -376,46 +350,36 @@ export default {
       return parseInt(this.currentFilter.size) || 10
     },
     isRealtimeCollection() {
-      if (this.$store.state.index.indexesAndCollections) {
-        if (!this.$store.state.index.indexesAndCollections[this.index]) {
-          return false
-        }
-        if (
-          !this.$store.state.index.indexesAndCollections[this.index].realtime
-        ) {
-          return false
-        }
-        return (
-          // prettier-ignore
-          this.$store.state.index.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
-        )
-      }
-      return false
+      return this.collection ? this.collection.isRealtime() : false
+    }
+  },
+  async mounted() {
+    await this.loadAllTheThings()
+
+    if (this.paginationFrom) {
+      this.setCurrentPage()
     }
   },
   watch: {
-    collection: {
-      immediate: true,
-      async handler() {
-        this.loadMappingInfo()
-        this.loadListView()
-        this.saveListView()
-
-        this.currentFilter = filterManager.load(
-          this.index,
-          this.collection,
-          this.$route
+    currentPage: {
+      handler(value) {
+        const from = (value - 1) * this.paginationSize
+        this.onFiltersUpdated(
+          Object.assign(this.currentFilter, {
+            from
+          })
         )
-        filterManager.save(
-          this.currentFilter,
-          this.$router,
-          this.index,
-          this.collection
-        )
-        await waitForConnected(1000)
-        if (this.$kuzzle.protocol.state === 'connected') {
-          this.fetchDocuments()
-        }
+        this.fetchDocuments()
+      }
+    },
+    collectionName: {
+      handler() {
+        this.loadAllTheThings()
+      }
+    },
+    indexName: {
+      handler() {
+        this.loadAllTheThings()
       }
     },
     documents: {
@@ -426,6 +390,8 @@ export default {
     }
   },
   methods: {
+    extractAttributesFromMapping,
+    truncateName,
     // VIEW MAP - GEOPOINTS
     // =========================================================================
     getCoordinates(document) {
@@ -474,77 +440,137 @@ export default {
     // CREATE
     // =========================================================================
     onCreateClicked() {
-      this.$router.push({ name: 'DataCreateDocument' })
-    },
-
-    // UPDATE
-    // =========================================================================
-    onEditDocumentClicked(id) {
-      this.$router.push({
-        name: 'DataUpdateDocument',
-        params: { id }
-      })
+      this.$router.push({ name: 'CreateDocument' })
     },
 
     // DELETE
     // =========================================================================
-    performDeleteDocuments,
     async onDeleteConfirmed(documentsToDelete) {
       this.deleteModalIsLoading = true
       try {
-        await this.performDeleteDocuments(
-          this.index,
-          this.collection,
+        await this.wrapper.performDeleteDocuments(
+          this.indexName,
+          this.collectionName,
           documentsToDelete
         )
-        this.closeDeleteModal()
+        this.$bvModal.hide('modal-delete')
+        this.resetCandidatesForDeletion()
         this.fetchDocuments()
         this.deleteModalIsLoading = false
+        this.$bvModal.hide('documentsDeleteModal')
       } catch (e) {
-        this.$store.direct.commit.toaster.setToast({ text: e.message })
         this.$log.error(e)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while deleting the document(s).',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
       }
     },
-    closeDeleteModal() {
-      this.deleteModalIsOpen = false
+    resetCandidatesForDeletion() {
       this.candidatesForDeletion.splice(0, this.candidatesForDeletion.length)
     },
     onBulkDeleteClicked() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(
         this.selectedDocuments
       )
-      this.deleteModalIsOpen = true
+      this.$bvModal.show('modal-delete')
     },
     onDeleteClicked(id) {
       this.candidatesForDeletion.push(id)
-      this.deleteModalIsOpen = true
+      this.$bvModal.show('modal-delete')
     },
-    onRefreshClicked() {
-      this.fetchDocuments()
+    onEditClicked(id) {
+      this.$router.push({
+        name: 'UpdateDocument',
+        params: { id }
+      })
+    },
+
+    // DELETE COLLECTION
+    // =========================================================================
+    showDeleteCollectionModal() {
+      this.$bvModal.show(this.modalDeleteId)
+    },
+    afterDeleteCollection() {
+      this.$router.push({
+        name: 'Collections',
+        params: { indexName: this.indexName }
+      })
     },
     // LIST (FETCH & SEARCH)
     // =========================================================================
-    performSearchDocuments,
-    async onFiltersUpdated(newFilters) {
-      this.currentFilter = newFilters
+    async loadAllTheThings() {
       try {
+        this.loading = true
+        this.loadListView()
+        this.saveListView()
+        this.loadMappingInfo()
+
+        this.currentFilter = filterManager.load(
+          this.indexName,
+          this.collectionName,
+          this.$route
+        )
         filterManager.save(
           this.currentFilter,
           this.$router,
-          this.index,
-          this.collection
+          this.indexName,
+          this.collectionName
         )
+        this.displayPagination = true
+        this.loading = false
         await this.fetchDocuments()
-      } catch (e) {
-        this.$store.direct.commit.toaster.setToast({
-          text: 'An error occurred while updating filters: <br />' + e.message
+      } catch (err) {
+        this.$log.error(err)
+        this.$bvToast.toast('The complete error has been printed to console.', {
+          title: 'Ooops! Something went wrong.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right'
         })
-        this.$log.error(e)
+        this.loading = false
       }
+    },
+    navigateToDocument() {
+      const document = this.documents[0]
+
+      if (!document) {
+        return
+      }
+
+      this.$router.push({
+        name: 'UpdateDocument',
+        params: { id: document._id }
+      })
+    },
+    onRefresh() {
+      this.fetchDocuments()
+    },
+    async onFiltersUpdated(newFilters) {
+      this.currentFilter = newFilters
+    },
+    onFilterSubmit(saveToHistory = true) {
+      if (saveToHistory) {
+        filterManager.addNewHistoryItemAndSave(
+          this.currentFilter,
+          this.indexName,
+          this.collectionName
+        )
+      }
+      this.fetchDocuments()
+    },
+    afterCollectionClear() {
+      this.documents = []
+      this.totalDocuments = 0
+      this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
       this.$forceUpdate()
-
       this.selectedDocuments = []
 
       let pagination = {
@@ -552,20 +578,32 @@ export default {
         size: this.paginationSize
       }
 
-      let searchQuery = null
-      searchQuery = filterManager.toSearchQuery(this.currentFilter)
-      if (!searchQuery) {
-        searchQuery = {}
-      }
+      filterManager.save(
+        this.currentFilter,
+        this.$router,
+        this.indexName,
+        this.collectionName
+      )
 
-      const sorting = filterManager.toSort(this.currentFilter)
-
-      // TODO: refactor how search is done
-      // Execute search with corresponding searchQuery
       try {
-        const res = await this.performSearchDocuments(
-          this.collection,
-          this.index,
+        let searchQuery = null
+        searchQuery = filterManager.toSearchQuery(
+          this.currentFilter,
+          this.mappingAttributes,
+          this.wrapper
+        )
+
+        if (!searchQuery) {
+          searchQuery = {}
+        }
+
+        const sorting = filterManager.toSort(this.currentFilter)
+
+        // TODO: refactor how search is done
+        // Execute search with corresponding searchQuery
+        const res = await this.wrapper.performSearchDocuments(
+          this.collectionName,
+          this.indexName,
           searchQuery,
           pagination,
           sorting
@@ -573,37 +611,47 @@ export default {
         this.documents = res.documents
         this.totalDocuments = res.total
       } catch (e) {
-        this.$store.direct.commit.toaster.setToast({
-          text: 'An error occurred while performing search: <br />' + e.message
-        })
         this.$log.error(e)
+        if (e.message.includes('failed to create query')) {
+          this.$bvToast.toast(
+            'Your query is ill-formed. The complete error has been dumped to the console.',
+            {
+              title:
+                'Ooops! Something went wrong while fetching the documents.',
+              variant: 'warning',
+              toaster: 'b-toaster-bottom-right',
+              appendTouast: true,
+              dismissible: true,
+              noAutoHide: true
+            }
+          )
+        } else {
+          this.$bvToast.toast(e.message, {
+            title: 'Ooops! Something went wrong while fetching the documents.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          })
+        }
       }
     },
 
     // PAGINATION
     // =========================================================================
-    changePage(from) {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          from
-        })
-      )
-    },
     changePaginationSize(size) {
+      this.$log.debug(`changing pagination to ${size}`)
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           size
         })
       )
+      this.fetchDocuments()
     },
-
-    // PERMISSIONS
-    // =========================================================================
-    canSearchIndex,
-    canSearchDocument,
-    canCreateDocument,
-    canDeleteDocument,
-    canEditDocument,
+    setCurrentPage() {
+      this.currentPage = parseInt(this.paginationFrom / this.paginationSize + 1)
+    },
 
     // SELECT ITEMS
     // =========================================================================
@@ -613,7 +661,7 @@ export default {
         return
       }
       this.selectedDocuments = []
-      this.selectedDocuments = this.documents.map(document => document.id)
+      this.selectedDocuments = this.documents.map(document => document._id)
     },
     toggleSelectDocuments(id) {
       let index = this.selectedDocuments.indexOf(id)
@@ -624,9 +672,6 @@ export default {
       }
 
       this.selectedDocuments.splice(index, 1)
-    },
-    isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1
     },
 
     // LIST VIEW TYPES
@@ -653,22 +698,12 @@ export default {
     },
     // Collection Metadata management
     // =========================================================================
-    async loadMappingInfo() {
-      const { properties } = await getMappingDocument(
-        this.collection,
-        this.index
-      )
-      this.collectionMapping = properties
-
-      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
-      this.selectedGeopoint = this.mappingGeopoints[0]
-    },
     loadListView() {
       if (this.$route.query.listViewType) {
         this.listViewType = this.$route.query.listViewType
       } else {
         const typeFromLS = localStorage.getItem(
-          `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`
+          `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`
         )
         if (typeFromLS) {
           this.listViewType = typeFromLS
@@ -679,7 +714,7 @@ export default {
     },
     saveListView() {
       localStorage.setItem(
-        `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`,
+        `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`,
         this.listViewType
       )
       const otherQueryParams = _.omit(
@@ -692,9 +727,20 @@ export default {
       )
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
-    addHumanReadableDateFields() {
-      const dateFields = []
 
+    loadMappingInfo() {
+      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
+      this.selectedGeopoint = this.mappingGeopoints[0]
+    },
+    // TODO: Refactor this method to avoid
+    // cloning document list (computed property??)
+    addHumanReadableDateFields() {
+      if (!this.collectionMapping) {
+        return
+      }
+
+      const dateFields = []
+      const formattedDocuments = _.cloneDeep(this.documents)
       const findDateFields = (mapping, previousKey) => {
         for (const [field, value] of Object.entries(mapping)) {
           if (typeof value === 'object') {
@@ -707,13 +753,12 @@ export default {
 
       const changeField = document => {
         for (const [field, value] of Object.entries(document)) {
-          if (dateFields.includes(field) && Number.isInteger(value)) {
-            const date =
-              `${value}`.length === 13
-                ? new Date(value)
-                : new Date(value * 1000)
+          if (dateFields.includes(field)) {
+            const date = dateFromTimestamp(value)
 
-            document[field] += ` (${date.toUTCString()})`
+            if (date) {
+              document[field] += ` (${date.toLocaleString('en-GB')})`
+            }
           } else if (value && typeof value === 'object') {
             changeField(value)
           }
@@ -722,52 +767,32 @@ export default {
 
       findDateFields(this.collectionMapping, null)
 
-      this.documents.forEach(changeField)
+      formattedDocuments.forEach(changeField)
+      this.formattedDocuments = formattedDocuments
+    },
+    changeDisplayPagination(value) {
+      this.displayPagination = value
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.DocumentsPage {
-  // @TODO Temporarily reverted
-  // max-width: 1080px;
-  // margin: auto;
-  .ViewMap {
-    height: 500px;
+.DocumentList {
+  margin-bottom: 5em;
+}
+.DocumentList--container {
+  transition: max-width 0.6s;
+}
+.DocumentList--containerFluid {
+  max-width: 100%;
+}
+.ResultPerPage {
+  &--active {
+    color: 'primary';
   }
-}
-
-.DocumentsPage-filtersAndButtons {
-  margin-bottom: 0;
-}
-
-.DocumentList-list {
-  .DocumentList-materializeCollection {
-    overflow: visible;
+  &--link {
+    color: grey;
   }
-}
-
-.DocumentList-boxes {
-  padding: 30px 10px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: safe;
-}
-
-.active {
-  color: $blue-color;
-}
-
-.h-scroll {
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-
-.DocumentColumnItem {
-  padding: 3px 5px;
-  white-space: pre;
-  word-wrap: break-word;
-  font-size: 0.9rem;
 }
 </style>

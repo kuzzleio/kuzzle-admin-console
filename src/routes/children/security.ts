@@ -1,12 +1,4 @@
 /* istanbul ignore next */
-import {
-  canCreateUser,
-  canEditUser,
-  canCreateRole,
-  canEditRole,
-  canCreateProfile,
-  canEditProfile
-} from '../../services/userAuthorization'
 
 export default [
   {
@@ -36,11 +28,7 @@ export default [
       section: 'users'
     },
     component(resolve) {
-      if (!canCreateUser()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Security/Users/Create'], resolve)
-      }
+      require(['../../components/Security/Users/CreateOrUpdate'], resolve)
     }
   },
   {
@@ -50,12 +38,9 @@ export default [
       section: 'users'
     },
     component(resolve) {
-      if (!canEditUser()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Security/Users/Update'], resolve)
-      }
-    }
+      require(['../../components/Security/Users/CreateOrUpdate'], resolve)
+    },
+    props: route => ({ id: route.params.id })
   },
   {
     path: '/security/profiles',
@@ -74,11 +59,7 @@ export default [
       section: 'profiles'
     },
     component(resolve) {
-      if (!canCreateProfile()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Security/Profiles/Create'], resolve)
-      }
+      require(['../../components/Security/Profiles/Create'], resolve)
     }
   },
   {
@@ -88,12 +69,9 @@ export default [
       section: 'profiles'
     },
     component(resolve) {
-      if (!canEditProfile()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Security/Profiles/Update'], resolve)
-      }
-    }
+      require(['../../components/Security/Profiles/Update'], resolve)
+    },
+    props: route => ({ id: route.params.id })
   },
   {
     path: '/security/roles',
@@ -112,11 +90,7 @@ export default [
       section: 'roles'
     },
     component(resolve) {
-      if (!canCreateRole()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Security/Roles/Create'], resolve)
-      }
+      require(['../../components/Security/Roles/CreateOrUpdate'], resolve)
     }
   },
   {
@@ -126,11 +100,8 @@ export default [
       section: 'roles'
     },
     component(resolve) {
-      if (!canEditRole()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Security/Roles/Update'], resolve)
-      }
-    }
+      require(['../../components/Security/Roles/CreateOrUpdate'], resolve)
+    },
+    props: route => ({ id: route.params.id })
   }
 ]

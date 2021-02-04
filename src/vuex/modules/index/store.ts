@@ -1,166 +1,285 @@
 import * as getters from './getters'
-import {
-  dedupeRealtimeCollections,
-  splitRealtimeStoredCollections,
-  getRealtimeCollectionFromStorage
-} from '../../../services/data'
-import { removeIndex } from '../../../services/localStore'
-import Promise from 'bluebird'
+import { getIndexPosition } from '@/services/indexHelpers'
 import Vue from 'vue'
-import { IndexState } from './types'
+import {
+  IndexState,
+  Index,
+  Collection,
+  CollectionType,
+  IndexCollectionPayload,
+  IndexCollectionsPayload,
+  IndexLoadingCollectionsPayload,
+  CreateCollectionPayload,
+  UpdateCollectionPayload
+} from './types'
 import { createMutations, createModule, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
+import _ from 'lodash'
 
 const state: IndexState = {
   indexes: [],
-  indexesAndCollections: {}
+  loadingIndexes: false
 }
 
 const mutations = createMutations<IndexState>()({
-  receiveIndexesCollections(state, indexesAndCollections) {
-    state.indexes = Object.keys(indexesAndCollections)
-    for (const index of state.indexes) {
-      Vue.set(state.indexesAndCollections, index, indexesAndCollections[index])
-    }
+  reset(state) {
+    state.indexes = []
+    state.loadingIndexes = false
   },
-  addStoredCollection(state, payload) {
-    if (!state.indexesAndCollections[payload.index]) {
-      state.indexes.push(payload.index)
-      Vue.set(state.indexesAndCollections, payload.index, {
-        realtime: [],
-        stored: []
-      })
-    }
-
-    state.indexesAndCollections[payload.index].stored.push(payload.name)
+  setLoadingIndexes(state, value: boolean) {
+    Vue.set(state, 'loadingIndexes', value)
   },
-  addRealtimeCollection(state, payload) {
-    if (!state.indexesAndCollections[payload.index]) {
-      state.indexes.push(payload.index)
-      Vue.set(state.indexesAndCollections, payload.index, {
-        realtime: [],
-        stored: []
-      })
-    }
-
-    state.indexesAndCollections[payload.index].realtime.push(payload.name)
+  setLoadingCollections(
+    state,
+    { index, loading }: IndexLoadingCollectionsPayload
+  ) {
+    Vue.set(
+      state.indexes[getIndexPosition(state.indexes, index.name)],
+      'loading',
+      loading
+    )
   },
-  addIndex(state, index) {
-    state.indexes.push(index)
-    Vue.set(state.indexesAndCollections, index, { realtime: [], stored: [] })
+  setIndexes(state, indexes: Index[]) {
+    Vue.set(state, 'indexes', indexes)
   },
-  deleteIndex(state, index) {
-    state.indexes.splice(state.indexes.indexOf(index), 1)
-    delete state.indexesAndCollections[index]
+  setCollections(state, { index, collections }: IndexCollectionsPayload) {
+    Vue.set(index, 'collections', collections)
   },
-  removeRealtimeCollection(state, { index, collection }) {
-    if (
-      !state.indexesAndCollections[index] ||
-      !state.indexesAndCollections[index].realtime
-    ) {
+  addCollection(state, { index, collection }: IndexCollectionPayload) {
+    state.indexes[getIndexPosition(state.indexes, index.name)].addCollection(
+      collection
+    )
+  },
+  updateCollection(state, { index, collection }: IndexCollectionPayload) {
+    if (!index.collections) {
       return
     }
 
-    // prettier-ignore
-    state.indexesAndCollections[index].realtime =
-      state
-        .indexesAndCollections[index]
-        .realtime
-        .filter(realtimeCollection => realtimeCollection !== collection)
+    const collectionPosition = index.collections.findIndex(
+      el => el.name === collection.name
+    )
+
+    Vue.set(index.collections, collectionPosition, collection)
+  },
+  addIndex(state, index: Index) {
+    state.indexes.push(index)
+  },
+  removeIndex(state, index: Index) {
+    Vue.delete(state.indexes, getIndexPosition(state.indexes, index.name))
+  },
+  removeIndexes(state, indexes: Index[]) {
+    const keptIndexes = _.difference(state.indexes, indexes)
+    Vue.set(state, 'indexes', keptIndexes)
+  },
+  removeCollection(state, { index, collection }: IndexCollectionPayload): void {
+    state.indexes[getIndexPosition(state.indexes, index.name)].removeCollection(
+      collection
+    )
   }
 })
 
 const actions = createActions({
-  async createIndex(context, index: string) {
-    const { commit } = indexActionContext(context)
+  async createIndex(context, name: string) {
+    const { commit, rootGetters } = indexActionContext(context)
 
-    await Vue.prototype.$kuzzle.index.create(index)
+    await rootGetters.kuzzle.$kuzzle.index.create(name)
+    const index = new Index(name)
+
     commit.addIndex(index)
   },
-  async deleteIndex(context, index) {
-    const { commit } = indexActionContext(context)
+  async deleteIndex(context, index: Index) {
+    const { commit, rootGetters } = indexActionContext(context)
 
-    await Vue.prototype.$kuzzle.index.delete(index)
-    removeIndex(index)
-    commit.deleteIndex(index)
+    await rootGetters.kuzzle.$kuzzle.index.delete(index.name)
+
+    commit.removeIndex(index)
   },
-  async listIndexesAndCollections(context) {
-    const { commit } = indexActionContext(context)
-    let result = await Vue.prototype.$kuzzle.index.list()
+  async bulkDeleteIndexes(context, indexes: Index[]) {
+    const { commit, rootGetters } = indexActionContext(context)
+    const indexesNames = indexes.map(el => el.name)
 
-    let indexesAndCollections = {}
-    result = result.filter(index => index !== '%kuzzle')
-    for (const index of result) {
-      try {
-        const res = await Vue.prototype.$kuzzle.collection.list(index, {
-          // disable size options to fetch all collections
-          size: 0
-        })
+    await rootGetters.kuzzle.$kuzzle.index.mDelete(indexesNames)
+    commit.removeIndexes(indexes)
+  },
+  async fetchIndexList(context) {
+    const { commit, rootGetters, state } = indexActionContext(context)
+    const indexes: Index[] = []
+    commit.setLoadingIndexes(true)
 
-        let collections = splitRealtimeStoredCollections(res.collections)
+    let result = await rootGetters.kuzzle.$kuzzle.index.list()
 
-        if (!collections.realtime) {
-          collections.realtime = []
+    for (const indexName of result) {
+      indexes.push(new Index(indexName))
+    }
+
+    // remove deleted indexes
+    _.differenceBy(state.indexes, indexes, 'name').forEach(el => {
+      commit.removeIndex(el)
+    })
+
+    // add new indexes
+    _.differenceBy(indexes, state.indexes, 'name').forEach(el => {
+      commit.addIndex(el)
+    })
+
+    commit.setLoadingIndexes(false)
+  },
+  async fetchCollectionList(context, index: Index) {
+    const { commit, rootGetters } = indexActionContext(context)
+    commit.setLoadingCollections({ index, loading: true })
+
+    const result = await rootGetters.kuzzle.$kuzzle.collection.list(index.name)
+
+    const collections = result.collections
+      .filter(el => {
+        if (
+          el.type === CollectionType.REALTIME &&
+          result.collections.find(
+            findEl =>
+              findEl.name === el.name && findEl.type === CollectionType.STORED
+          )
+        ) {
+          return false
         }
+        return true
+      })
+      .map(el => {
+        return new Collection(el.name, el.type)
+      })
 
-        collections.realtime = collections.realtime.concat(
-          getRealtimeCollectionFromStorage(index)
-        )
-        collections = dedupeRealtimeCollections(collections)
-        indexesAndCollections[index] = collections
-        commit.receiveIndexesCollections(indexesAndCollections || {})
-      } catch (error) {
-        if (error.message.indexOf('Forbidden') === -1) {
-          throw error
+    if (!index.collections) {
+      commit.setCollections({
+        index,
+        collections
+      })
+    } else {
+      // remove deleted collections
+      _.differenceBy(index.collections, collections, 'name').forEach(el => {
+        commit.removeCollection(el)
+      })
+
+      // add new collections
+      _.differenceBy(collections, index.collections, 'name').forEach(el => {
+        commit.addCollection(el)
+      })
+    }
+
+    commit.setLoadingCollections({ index, loading: false })
+  },
+  async createCollection(
+    context,
+    { index, name, mapping, dynamic }: CreateCollectionPayload
+  ) {
+    const { commit, rootGetters } = indexActionContext(context)
+
+    if (!name) {
+      throw new Error('Invalid collection name')
+    }
+
+    if (index.doesCollectionExist(name)) {
+      throw new Error(`Collection "${name}" already exists`)
+    }
+
+    let collection = new Collection(name, CollectionType.STORED)
+
+    collection.mapping = mapping
+    collection.dynamic = dynamic
+
+    await rootGetters.kuzzle.$kuzzle.collection.create(index.name, name, {
+      dynamic,
+      properties: {
+        ...mapping
+      }
+    })
+
+    commit.addCollection({ index, collection })
+  },
+  async updateCollection(
+    context,
+    { index, name, mapping, dynamic }: UpdateCollectionPayload
+  ) {
+    const { commit, rootGetters } = indexActionContext(context)
+
+    if (!index.doesCollectionExist(name)) {
+      throw new Error(`Collection "${name}" doesn't exist`)
+    }
+
+    let updatedCollection = new Collection(name, CollectionType.STORED)
+
+    updatedCollection.mapping = mapping
+    updatedCollection.dynamic = dynamic
+
+    // TODO: use dedicated SDK method instead of query
+    await rootGetters.kuzzle.$kuzzle.query({
+      controller: 'collection',
+      action: 'updateMapping',
+      collection: name,
+      index: index.name,
+      body: {
+        dynamic,
+        properties: {
+          ...mapping
         }
       }
-    }
+    })
+
+    commit.updateCollection({ index, collection: updatedCollection })
   },
-  createCollectionInIndex(context, { index, collection, isRealtimeOnly }) {
-    const { rootDispatch, commit, getters } = indexActionContext(context)
-
-    if (!collection) {
-      return Promise.reject(new Error('Invalid collection name'))
+  async deleteCollection(
+    context,
+    { index, collection }: IndexCollectionPayload
+  ) {
+    if (!index.doesCollectionExist(collection.name)) {
+      throw new Error(`Collection "${collection.name}" doesn't exist`)
     }
 
-    if (
-      getters.indexCollections(index).stored.indexOf(collection) !== -1 ||
-      getters.indexCollections(index).realtime.indexOf(collection) !== -1
-    ) {
-      return Promise.reject(
-        new Error(`Collection "${collection}" already exist`)
-      )
-    }
+    const { commit, rootGetters } = indexActionContext(context)
 
-    if (isRealtimeOnly) {
-      let collections = JSON.parse(
-        localStorage.getItem('realtimeCollections') || '[]'
-      )
-      collections.push({ index: index, collection: collection })
-      localStorage.setItem('realtimeCollections', JSON.stringify(collections))
-      commit.addRealtimeCollection({ index: index, name: collection })
-      return Promise.resolve()
-    }
+    await rootGetters.kuzzle.$kuzzle.collection.delete(
+      index.name,
+      collection.name
+    )
 
-    return rootDispatch.collection
-      .createCollection({ index })
-      .then(() => {
-        commit.addStoredCollection({ index: index, name: collection })
-      })
-      .catch(error => Promise.reject(new Error(error.message)))
+    commit.removeCollection({ index, collection })
   },
-  removeRealtimeCollection(context, { index, collection }) {
-    const { commit } = indexActionContext(context)
+  async bulkDeleteCollections(
+    context,
+    { index, collections }: IndexCollectionsPayload
+  ) {
+    const { commit, rootGetters } = indexActionContext(context)
 
-    let collections = JSON.parse(
-      localStorage.getItem('realtimeCollections') || '[]'
-    )
-    collections = collections.filter(
-      o => o.index !== index && o.collection !== collection
-    )
-    localStorage.setItem('realtimeCollections', JSON.stringify(collections))
+    commit.setLoadingCollections({ index, loading: true })
 
-    commit.removeRealtimeCollection({ index, collection })
+    for (let collection of collections) {
+      await rootGetters.kuzzle.$kuzzle.collection.delete(
+        index.name,
+        collection.name
+      )
+
+      commit.removeCollection({ index, collection })
+    }
+
+    commit.setLoadingCollections({ index, loading: false })
+  },
+  async fetchCollectionMapping(
+    context,
+    { index, collection }: IndexCollectionPayload
+  ) {
+    const { commit, rootGetters } = indexActionContext(context)
+
+    if (!index.doesCollectionExist(collection.name)) {
+      throw new Error(`Collection "${collection.name}" doesn't exist`)
+    }
+
+    const kuzzleMapping = await rootGetters.kuzzle.wrapper.getMappingDocument(
+      collection.name,
+      index.name
+    )
+
+    collection.mapping = kuzzleMapping.properties
+    collection.dynamic = kuzzleMapping.dynamic
+
+    commit.updateCollection({ index, collection: collection })
   }
 })
 
@@ -173,5 +292,6 @@ const index = createModule({
 })
 
 export default index
+
 export const indexActionContext = (context: any) =>
   moduleActionContext(context, index)

@@ -2,7 +2,7 @@ To start the Kuzzle Admin Console in development-mode with hot-reload run the fo
 
 ```
 $ npm install
-$ npm run dev
+$ npm run serve
 ```
 
 The Kuzzle Admin Console will then be accessible at the following URL: http://localhost:8080
@@ -425,21 +425,7 @@ $mq-large: mq-build(1100px, null);
 }
 ```
 
-## Testing
-
-To run all the tests, just type
-
-```
-npm test
-```
-
-This executes both unit and end-to-end tests. To run only the unit-tests, run
-
-```
-npm run test:unit
-```
-
-### End-to-end
+## End-to-end tests
 
 To run the end-to-end tests in headless mode, run
 
@@ -460,6 +446,10 @@ We use Cypress.io to e2e test the UI. You can use it locally (via the local dash
 - https://docs.cypress.io/guides/core-concepts/writing-and-organizing-tests.html
 
 If you enjoy reading this extremely well-written documentation, we guarantee it's 100% worth reading.
+
+### Writing tests
+
+The one and only guideline for writing tests, beyond the Cypress best-practices, is to use the `data-cy` attribute to select DOM elements, rather than CSS classes or other selecting methods. We add the `data-cy` to all the elements we want to accesss in our tests and try to follow some BEM-ish convention for the values of these attributes.
 
 #### Make your application testable rather than hacking your tests
 

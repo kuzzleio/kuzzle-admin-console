@@ -1,137 +1,341 @@
 <template>
-  <div class="CollectionCreateOrUpdate wrapper">
+  <div class="CollectionCreateOrUpdate d-flex flex-column h-100">
     <headline>
-      <span class="CollectionCreateOrUpdate-index">
+      <span class="CollectionCreateOrUpdate-index code text-secondary">
         {{ index }}
         <i class="fa fa-angle-right" />
       </span>
       {{ headline }}
     </headline>
 
-    <stepper
-      :current-step="editionStep"
-      :disabled-steps="
-        $store.direct.getters.collection.isRealtimeOnly ? [1] : []
-      "
-      :steps="['Mapping', 'Form']"
-      class="card-panel card-header"
-      @changed-step="setEditionStep"
-    />
-
-    <div class="row card-panel card-body">
-      <div class="col s12">
-        <mapping
-          v-show="editionStep === 0"
-          :step="editionStep"
-          @collection-create::create="create"
-          @collection-create::next-step="setEditionStep(1)"
-          @collection-create::error="showError"
-          @cancel="cancel"
-        />
-        <collection-form
-          v-show="editionStep === 1"
-          :mapping="$store.state.collection.mapping"
-          :step="editionStep"
-          @collection-create::create="create"
-          @cancel="cancel"
-        />
-
-        <div v-if="error || mappingError" class="col s7 m8 l8">
-          <div class="card error red-color white-text">
-            <i class="fa fa-times dismiss-error" @click="dismissError()" />
-            An error occurred while
-            {{ $route.params.collection ? 'updating' : 'creating' }} collection:
-            <br />{{ error ? error : mappingError }}
-          </div>
+    <b-card class="flex-grow" body-class="d-flex flex-column">
+      <template v-slot:footer>
+        <div class="text-right">
+          <b-button
+            class="mr-2"
+            :to="{ name: 'Collections', params: { indexName: index } }"
+            >Cancel</b-button
+          >
+          <b-button
+            data-cy="CollectionCreateOrUpdate-submit"
+            variant="primary"
+            @click="onSubmit"
+            >{{ submitLabel }}</b-button
+          >
         </div>
-      </div>
-    </div>
+      </template>
+      <b-form-group
+        data-cy="CollectionCreateOrUpdate-name"
+        id="collection-name"
+        label="Collection name"
+        label-for="collection-name-input"
+        label-cols-sm="3"
+      >
+        <template v-slot:description>
+          <span v-if="collection">This field cannot be updated</span>
+          <span v-else>This field is mandatory</span>
+        </template>
+        <template v-if="!$v.name.required" v-slot:invalid-feedback
+          >Please fill-in a valid collection name.
+        </template>
+        <template
+          v-else-if="!$v.name.isValidCollectionName"
+          v-slot:invalid-feedback
+          >The name you entered is invalid.
+          <a
+            target="_blank"
+            href="https://docs.kuzzle.io/core/2/api/controllers/collection/create/"
+            >Read more about how to choose a valid name</a
+          >
+        </template>
+
+        <b-input
+          id="collection-name-input"
+          type="text"
+          name="collection"
+          tabindex="1"
+          v-model="$v.name.$model"
+          :disabled="!!collection"
+          :state="nameInputState"
+        />
+      </b-form-group>
+
+      <template>
+        <b-form-group label="Dynamic mapping" label-cols-sm="3">
+          <template v-slot:description
+            >Set the type of dynamic policy for this collection.
+            <a
+              target="_blank"
+              href="https://docs.kuzzle.io/core/2/guides/essentials/database-mappings/#dynamic-mapping-policy"
+              >Read more about Dynamic Mappings</a
+            >.
+          </template>
+          <b-form-radio-group
+            class="pt-2"
+            v-model="dynamicState"
+            :options="['true', 'false', 'strict']"
+          ></b-form-radio-group>
+        </b-form-group>
+        <hr />
+        <b-row class="mb-3">
+          <b-col cols="12">
+            <b-form-file
+              class="float-left mr-3 w-50"
+              ref="file-input"
+              @change="loadMappingValue($event)"
+              placeholder="Import mapping"
+            />
+            <b-button
+              class="float-left"
+              data-cy="export-collection-mapping"
+              :download="mappingFileName"
+              :href="downloadMappingValue"
+              :disabled="!isMappingValid"
+            >
+              Export Mapping
+            </b-button>
+          </b-col>
+        </b-row>
+        <b-row class="flex-grow">
+          <b-col cols="8">
+            <json-editor
+              id="collection"
+              ref="jsoneditor"
+              tabindex="4"
+              myclass="h-100"
+              :content="rawMapping"
+              @change="onMappingChanged"
+            />
+          </b-col>
+
+          <b-col cols="4">
+            <div class="d-flex flex-column h-100 text-secondary">
+              <div class="CollectionCreateOrUpdate-help">
+                You can (optionally) use this editor to define the mapping for
+                this collection.
+                <br />
+                The mapping of a collection is the definition of how each
+                document in the collection (and its fields) are stored and
+                indexed.
+                <a
+                  href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
+                  target="_blank"
+                  >Read more about mapping</a
+                >
+                <br /><br />
+                For example:
+                <pre>
+{
+  "age": { "type": "integer" },
+  "name": { "type": "text" }
+}
+              </pre
+                >
+              </div>
+            </div>
+          </b-col>
+        </b-row>
+      </template>
+    </b-card>
   </div>
 </template>
 
+<style lang="scss" scoped>
+.CollectionCreateOrUpdate {
+  &-help {
+    flex: 1 1 1px;
+    overflow: auto;
+  }
+}
+</style>
+
 <script>
+import { validationMixin } from 'vuelidate'
+import { requiredUnless } from 'vuelidate/lib/validators'
+import { mapGetters } from 'vuex'
+
 import Headline from '../../Materialize/Headline'
 import Focus from '../../../directives/focus.directive'
-import Stepper from '../../Common/Stepper'
-import Mapping from './Steps/Mapping'
-import CollectionForm from './Steps/CollectionForm'
+import JsonEditor from '../../Common/JsonEditor'
+
+function isValidCollectionName(value) {
+  const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(
+    value
+  )
+  const containsUpperCase = /[A-Z]/.test(value)
+  const isTooLong = new TextEncoder().encode(value).length > 128
+  return !containsDisallowed && !containsUpperCase && !isTooLong
+}
 
 export default {
+  mixins: [validationMixin],
   name: 'CollectionCreateOrUpdate',
   components: {
     Headline,
-    Stepper,
-    Mapping,
-    CollectionForm
+    JsonEditor
   },
   directives: {
     Focus
   },
   props: {
-    error: String,
-    index: String,
-    headline: String
+    index: { type: String, required: true },
+    collection: String,
+    headline: String,
+    submitLabel: { type: String, default: 'OK' },
+    mapping: {
+      type: Object,
+      default: () => ({})
+    },
+    dynamic: { type: String, default: 'false' }
   },
   data() {
     return {
-      editionStep: 0,
-      mappingError: null
+      dynamicState: this.dynamic || 'false',
+      name: this.collection || '',
+      rawMapping: '{}'
     }
   },
-  watch: {
-    '$store.state.collection.isRealtimeOnly'(value) {
-      this.isRealtimeOnly = value
+  validations() {
+    return {
+      name: {
+        required: requiredUnless('collection'),
+        isValidCollectionName
+      },
+      rawMapping: {
+        syntaxOK: function(value) {
+          try {
+            JSON.parse(value)
+          } catch (e) {
+            return false
+          }
+          return true
+        }
+      }
+    }
+  },
+  computed: {
+    ...mapGetters('kuzzle', ['currentEnvironment']),
+    indexName() {
+      return this.$route.params.indexName
+    },
+    collectionName() {
+      return this.$route.params.collectionName
+    },
+    mappingFileName() {
+      return `${this.currentEnvironment.name}-${this.indexName}-${this.name}-mapping.json`
+    },
+    nameInputState() {
+      const { $dirty, $error } = this.$v.name
+      const state = $dirty ? !$error : null
+      return state
+    },
+    mappingState() {
+      try {
+        return JSON.parse(this.rawMapping)
+      } catch (error) {
+        return {}
+      }
+    },
+    isMappingValid() {
+      try {
+        JSON.parse(this.rawMapping)
+        return true
+      } catch (error) {
+        return false
+      }
+    },
+    downloadMappingValue() {
+      if (this.isMappingValid) {
+        const blob = new Blob([JSON.stringify(JSON.parse(this.rawMapping))], {
+          type: 'application/json'
+        })
+        return window.URL.createObjectURL(blob)
+      }
+      return null
     }
   },
   methods: {
-    create() {
-      this.$emit('collection-create::create')
+    loadMappingValue(event) {
+      let file = event.target.files[0]
+      let reader = new FileReader()
+      reader.onload = async e => {
+        this.rawMapping = e.target.result
+        this.$refs.jsoneditor.setContent(this.rawMapping)
+        this.$bvToast.toast(
+          'The file has been written in the json editor. You can still edit it before saving if necessary.',
+          {
+            title: 'Import successfully',
+            variant: 'success',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
+      reader.readAsText(file)
     },
-    dismissError() {
-      this.$emit('collection-create::reset-error')
+    onMappingChanged(value) {
+      this.rawMapping = value
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
         this.$router.push(this.$router._prevTransition.to)
       } else {
         this.$router.push({
-          name: 'DataIndexSummary',
+          name: 'Indexes',
           params: { index: this.index }
         })
       }
     },
-    setEditionStep(stepNumber) {
-      this.mappingError = false
-      this.editionStep = stepNumber
+    onSubmit() {
+      this.$v.$touch()
+      if (this.$v.$anyError) {
+        return
+      }
+
+      if (!this.isMappingValid) {
+        this.$bvToast.toast(
+          'The JSON specification of the mapping contains syntax errors',
+          {
+            title: 'You cannot proceed',
+            variant: 'info',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+      }
+
+      this.$emit('submit', {
+        dynamic: this.dynamicState,
+        name: this.name,
+        mapping: this.mappingState
+      })
+    }
+  },
+  watch: {
+    dynamic: {
+      immediate: true,
+      handler(v) {
+        this.dynamicState = v
+      }
     },
-    showError(e) {
-      this.mappingError = e
+    mapping: {
+      immediate: true,
+      handler(val) {
+        try {
+          this.rawMapping = JSON.stringify(val, null, 2)
+        } catch (error) {
+          this.$log.error(error)
+        }
+      }
+    },
+    collection: {
+      immediate: true,
+      handler(v) {
+        this.name = v
+      }
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-// @TODO pass this code to BEM
-.CollectionCreateOrUpdate {
-  .CollectionCreateOrUpdate-index {
-    color: $grey-color;
-  }
-  .error {
-    position: relative;
-    padding: 8px 12px;
-    margin: 0;
-  }
-  .dismiss-error {
-    position: absolute;
-    right: 10px;
-    cursor: pointer;
-    padding: 3px;
-    border-radius: 2px;
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-  }
-}
-</style>

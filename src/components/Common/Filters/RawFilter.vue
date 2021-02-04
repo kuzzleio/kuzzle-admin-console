@@ -1,60 +1,53 @@
 <template>
   <form class="RawFilter">
-    <div v-if="currentFilter.basic" class="card-panel blue lighten-3">
-      A Basic filter is currently active. This shows your basic filter as raw
-      filter. If you modify this raw filter it will not change the basic filter
-      view and will reset this raw filter to the original content of the basic
-      filter.
-    </div>
     <json-editor
       id="rawsearch"
+      class="JsonEditor"
       ref="jsoneditor"
       myclass="pre_ace"
-      :content="filters.raw"
-      :refresh-ace="refreshAce"
+      :content="rawFilter"
+      @change="onFilterChange"
     />
-    <div class="row card-action">
-      <button
-        v-if="actionButtonsVisible"
-        type="submit"
-        class="RawFilter-submitBtn btn primary waves-effect waves-light"
-        @click.prevent="submitSearch"
-      >
-        {{ submitButtonLabel }}
-      </button>
-      <button
-        v-if="actionButtonsVisible"
-        class="btn-flat waves-effect waves-light"
-        @click="resetSearch"
-      >
-        Reset
-      </button>
-      <span v-if="jsonInvalid" class="error">Your JSON is not valid</span>
-    </div>
+    <b-alert :show="!isFilterValid && showError" variant="danger" class="mt-2"
+      >Your JSON filter contains errors.</b-alert
+    >
+    <b-row no-gutters v-if="actionButtonsVisible">
+      <b-col sm="12" class="text-right">
+        <b-button
+          class="mr-2"
+          data-cy="RawFilter-resetBtn"
+          variant="outline-secondary"
+          @click="reset"
+        >
+          Reset
+        </b-button>
+        <b-button
+          class="mt-2 mb-2"
+          data-cy="RawFilter-submitBtn"
+          variant="primary"
+          :disabled="!isFilterValid"
+          @click.prevent="submit"
+        >
+          {{ submitButtonLabel }}
+        </b-button>
+      </b-col>
+    </b-row>
   </form>
 </template>
 
 <script>
 import JsonEditor from '../../Common/JsonEditor'
-import * as filterManager from '../../../services/filterManager'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
     JsonEditor
   },
   props: {
-    rawFilter: {
-      type: Object,
-      default() {
-        return {}
-      }
-    },
-    // TODO
-    formatFromBasicSearch: Function,
     submitButtonLabel: {
       type: String,
       required: false,
-      default: 'search'
+      default: 'Search'
     },
     actionButtonsVisible: {
       type: Boolean,
@@ -72,75 +65,72 @@ export default {
       default: () => {
         return {}
       }
-    },
-    refreshAce: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
     return {
-      filters: {
-        raw: {}
-      },
-      jsonInvalid: false
+      rawFilter: '{}',
+      showError: false
     }
   },
-  watch: {
-    rawFilter: {
-      immediate: true,
-      handler(newValue) {
-        if (newValue) {
-          this.filters.raw = newValue
-        } else {
-          this.filters.raw = {}
-        }
+  computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
+    filterState() {
+      try {
+        return JSON.parse(this.rawFilter)
+      } catch (error) {
+        return {}
       }
     },
-    currentFilter: {
-      immediate: true,
-      handler() {
-        this.$set(
-          this.filters,
-          'raw',
-          filterManager.toSearchQuery(this.currentFilter)
-        )
-        if (this.currentFilter.raw && this.currentFilter.raw.sort) {
-          this.$set(this.filters.raw, 'sort', this.currentFilter.raw.sort)
-        }
+    isFilterValid() {
+      try {
+        JSON.parse(this.rawFilter)
+        return true
+      } catch (error) {
+        return false
       }
-    }
-  },
-  mounted() {
-    this.filters.raw = filterManager.toSearchQuery(this.currentFilter)
-    if (this.currentFilter.raw && this.currentFilter.raw.sort) {
-      this.$set(this.filters.raw, 'sort', this.currentFilter.raw.sort)
     }
   },
   methods: {
-    submitSearch() {
-      let json = this.$refs.jsoneditor.getJson()
-
-      if (json === null) {
-        this.jsonInvalid = true
-        return
-      }
-
-      this.jsonInvalid = false
-      this.filters.raw = json
-
-      this.$emit('update-filter', this.filters.raw)
+    onFilterChange(val) {
+      this.rawFilter = val
     },
-    resetSearch() {
-      this.filters.raw = null
-      this.$emit('update-filter', this.filters.raw)
+    submit() {
+      if (this.isFilterValid) {
+        this.showError = false
+        this.$emit('filter-submitted', this.filterState)
+      } else {
+        this.showError = true
+      }
+    },
+    reset() {
+      this.$emit('reset')
+    }
+  },
+  watch: {
+    currentFilter: {
+      immediate: true,
+      handler(val) {
+        if (!val) {
+          return
+        }
+        if (!val.raw) {
+          return
+        }
+        this.rawFilter = JSON.stringify(val.raw, null, 2)
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-#rawsearch.pre_ace {
-  height: 100px;
+.RawFilter {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.JsonEditor {
+  flex-grow: 1;
 }
 </style>

@@ -1,139 +1,166 @@
 <template>
-  <div class="QuickFilter row">
-    <form>
-      <div class="col s8 l8 xl8">
+  <div class="QuickFilter">
+    <b-row no-gutters v-if="!complexFilterActive">
+      <b-col cols="6">
         <div class="QuickFilter-searchBar">
-          <i class="QuickFilter-searchIcon fa fa-search search" />
-          <div
-            v-if="complexFilterActive || !enabled"
-            class="QuickFilter-chip chip"
-          >
-            <span
-              class="QuickFilter-chipLabel"
-              @click.prevent="displayAdvancedFilters"
-              >{{ advancedQueryLabel }}</span
-            >
-          </div>
-          <input
-            v-else
-            v-model="inputSearchTerm"
-            v-focus
-            type="text"
-            placeholder="Search..."
-            @input="submitSearch"
-          />
-          <a
-            v-if="!advancedFiltersVisible"
-            class="QuickFilter-optionBtn fluid-hover"
-            href="#"
-            @click.prevent="displayAdvancedFilters"
-            >More query options</a
-          >
-          <a
-            v-else
-            class="QuickFilter-optionBtn fluid-hover"
-            href="#"
-            @click.prevent="displayAdvancedFilters"
-            >Less query options</a
-          >
+          <b-input-group>
+            <b-input-group-prepend is-text>
+              <i class="fa fa-search search" />
+            </b-input-group-prepend>
+            <div class="QuickFilter-searchBar-input-wrapper">
+              <auto-focus-input
+                name="quick-filter"
+                data-cy="QuickFilter-input"
+                debounce="300"
+                type="search"
+                v-model="value"
+                :initialValue="this.initialValue"
+                :placeholder="placeholder"
+                @submit="inputSubmit"
+              />
+            </div>
+          </b-input-group>
         </div>
-      </div>
-      <div
-        v-if="actionButtonsVisible"
-        class="QuickFilter-actions col s4 l4 xl4"
-      >
-        <button
+      </b-col>
+      <b-col cols="2">
+        <a
+          v-if="!advancedFiltersVisible"
+          data-cy="QuickFilter-optionBtn"
+          class="QuickFilter-optionBtn"
+          href="#"
+          @click.prevent="displayAdvancedFilters"
+          >{{ advancedQueryLabel }}</a
+        >
+        <a
+          v-else
+          class="QuickFilter-optionBtn"
+          href="#"
+          @click.prevent="displayAdvancedFilters"
+          >Less query options</a
+        >
+      </b-col>
+
+      <b-col v-if="actionButtonsVisible" class="text-right" cols="4">
+        <b-button
           type="submit"
-          class="QuickFilter-submitBtn btn btn-small waves-effect waves-light"
+          class="m-2"
+          variant="primary"
           @click.prevent="submitSearch"
         >
           {{ submitButtonLabel }}
-        </button>
-        <button
-          class="QuickFilter-resetBtn btn-flat btn-small waves-effect waves-light"
+        </b-button>
+        <b-button
+          class="m-2"
+          data-cy="QuickFilter-resetBtn"
+          variant="outline-secondary"
           @click="resetSearch"
         >
-          reset
-        </button>
+          Reset
+        </b-button>
+      </b-col>
+    </b-row>
+    <div v-else class="QuickFilter-warning mx-4 mb-3">
+      <div class="align-middle QuickFilter-warning-message">
+        <b-row align-v="center">
+          <b-button
+            data-cy="QuickFilter-displayActiveFilters"
+            variant="outline-info"
+            @click.prevent="displayAdvancedFilters"
+          >
+            <i class="fa left fa-filter mr-2" />{{
+              advancedFiltersVisible ? 'Hide filters' : 'Show filters'
+            }}</b-button
+          >
+          <b-badge
+            v-if="!advancedFiltersVisible"
+            pill
+            variant="info"
+            class="ml-2 py-2 px-3"
+            align-v
+            >Filters are being applied</b-badge
+          >
+        </b-row>
       </div>
-    </form>
+      <b-row>
+        <b-button
+          class="align-right d-inline ml-3"
+          data-cy="QuickFilter-resetBtn"
+          variant="outline-secondary"
+          @click="resetSearch"
+        >
+          Reset
+        </b-button>
+      </b-row>
+    </div>
   </div>
 </template>
 
 <script>
-import Focus from '../../../directives/focus.directive'
+import AutoFocusInput from '../AutoFocusInput'
 
 export default {
   name: 'QuickFilter',
-  directives: {
-    Focus
+  components: {
+    AutoFocusInput
   },
   props: {
-    searchTerm: String,
+    advancedFiltersVisible: Boolean,
     advancedQueryLabel: {
       type: String,
       required: false,
       default: 'Advanced query...'
     },
+    complexFilterActive: Boolean,
+    enabled: Boolean,
     submitButtonLabel: {
       type: String,
       required: false,
-      default: 'search'
+      default: 'Search'
     },
     actionButtonsVisible: {
       type: Boolean,
       required: false,
       default: true
     },
-    complexFilterActive: Boolean,
-    advancedFiltersVisible: Boolean,
-    enabled: Boolean
+    placeholder: {
+      type: String,
+      default: 'Search everywhere...'
+    },
+    submitOnType: {
+      type: Boolean,
+      default: true
+    },
+    initialValue: {
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {
-      inputSearchTerm: this.searchTerm,
-      throttleSearch: false,
-      lastThrottledSearch: null
-    }
-  },
-  watch: {
-    searchTerm: {
-      immediate: true,
-      handler(value) {
-        this.inputSearchTerm = value
-      }
+      value: this.initialValue
     }
   },
   methods: {
     submitSearch() {
-      if (this.throttleSearch) {
-        // Keep the last throttled search to replay it when user stop typing
-        this.lastThrottledSearch = this.inputSearchTerm
-        return
-      }
-
-      this.throttleSearch = true
-      setTimeout(() => {
-        this.throttleSearch = false
-
-        if (this.lastThrottledSearch) {
-          this.submitSearch()
-        }
-      }, 300)
-
-      if (this.complexFilterActive) {
-        this.$emit('refresh')
-      } else {
-        this.$emit('update-filter', this.inputSearchTerm)
-      }
-
-      this.lastThrottledSearch = null
+      this.$emit('filter-submitted', this.value)
     },
     resetSearch() {
       this.$emit('reset')
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
+    },
+    inputSubmit() {
+      this.$emit('enter-pressed')
+    }
+  },
+  watch: {
+    value() {
+      this.$emit('input', this.value)
+
+      if (this.submitOnType) {
+        this.submitSearch()
+      }
     }
   }
 }
@@ -142,20 +169,23 @@ export default {
 <style lang="scss" scoped>
 .QuickFilter {
   margin-bottom: 0;
+  color: #002835;
 }
 .QuickFilter-searchBar {
   position: relative;
   height: 48px;
   border-bottom: solid 1px #e4e1e1;
 
-  input {
-    height: 48px;
-    padding-left: 34px;
-    margin-bottom: 0;
-    width: 100%;
-    padding-right: 215px;
-    box-sizing: border-box;
-    border-bottom: solid 1px #e4e1e1;
+  &-input-wrapper {
+    width: 90%;
+
+    input {
+      height: 48px;
+      margin-bottom: 0;
+      width: 100%;
+      box-sizing: border-box;
+      border-bottom: solid 1px #e4e1e1;
+    }
   }
 }
 
@@ -185,10 +215,33 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   text-decoration: underline;
+  color: $primary-color;
 }
 
 .QuickFilter-actions {
   height: 48px;
   line-height: 48px;
+}
+
+.QuickFilter-warning {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  justify-content: space-between;
+}
+
+.QuickFilter-warning-message {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+}
+
+.QuickFilter-warning-icon {
+  color: #ffc107;
+}
+
+.QuickFilter-displayActiveFilters {
+  color: #002835;
+  border-width: 2px;
 }
 </style>

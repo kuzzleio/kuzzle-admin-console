@@ -1,24 +1,28 @@
 <template>
-  <div v-if="hasRights">
-    <create-or-update
-      :headline="headline"
-      :error="error"
-      :index="index"
-      @collection-create::create="update"
-      @collection-create::reset-error="error = ''"
-      @document-create::error="setError"
-    />
-  </div>
-  <div v-else>
-    <page-not-allowed />
-  </div>
+  <b-container class="CollectionUpdate h-100">
+    <div v-if="hasRights" class="h-100">
+      <create-or-update
+        v-if="index && collection"
+        headline="Update collection"
+        submit-label="Update"
+        :collection="collection.name"
+        :index="index.name"
+        :dynamic="collection.dynamic"
+        :mapping="mappingAttributes"
+        :realtime-only="collection.isRealtime()"
+        @submit="update"
+      />
+    </div>
+    <div v-else>
+      <page-not-allowed />
+    </div>
+  </b-container>
 </template>
-
 <script>
-import { canEditCollection } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
-
 import CreateOrUpdate from './CreateOrUpdate'
+import { mapGetters } from 'vuex'
+import { omit } from 'lodash'
 
 export default {
   name: 'CollectionUpdate',
@@ -27,50 +31,65 @@ export default {
     PageNotAllowed
   },
   props: {
-    index: String
+    indexName: { type: String, required: true },
+    collectionName: { type: String, required: true }
   },
   data() {
     return {
-      error: ''
+      dynamic: 'false',
+      mapping: {},
+      realtimeOnly: false
     }
   },
   computed: {
-    headline() {
-      return 'Update ' + this.$route.params.collection
-    },
+    ...mapGetters('auth', ['canEditCollection']),
     hasRights() {
-      return canEditCollection(this.index, this.collection)
-    }
-  },
-  async mounted() {
-    try {
-      await this.$store.direct.dispatch.index.listIndexesAndCollections()
-      await this.$store.direct.dispatch.collection.fetchCollectionDetail({
-        index: this.index,
-        collection: this.$route.params.collection
-      })
-    } catch (e) {
-      this.$store.direct.commit.toaster.setToast({ text: e.message })
-      this.$router.push({
-        name: 'DataIndexSummary',
-        params: { index: this.index }
-      })
+      return this.canEditCollection(this.indexName, this.collectionName)
+    },
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.$store.direct.getters.index.getOneCollection(
+        this.index,
+        this.collectionName
+      )
+    },
+    mappingAttributes() {
+      return this.collection
+        ? omit(this.collection.mapping, '_kuzzle_info')
+        : null
+    },
+    loading() {
+      return this.$store.direct.getters.index.loadingCollections(
+        this.index.name
+      )
     }
   },
   methods: {
-    async update() {
+    async update(payload) {
       this.error = ''
-
       try {
-        await this.$store.direct.dispatch.collection.updateCollection({
-          index: this.index
+        await this.$store.direct.dispatch.index.updateCollection({
+          index: this.index,
+          name: payload.name,
+          mapping: payload.mapping,
+          dynamic: payload.dynamic
         })
         this.$router.push({
-          name: 'DataIndexSummary',
-          params: { index: this.index }
+          name: 'Collections',
+          params: { indexName: this.index.name }
         })
       } catch (e) {
-        this.error = e.message
+        this.$log.error(e)
+        this.$bvToast.toast(e.message, {
+          title: 'Ooops! Something went wrong while updating the collection.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
       }
     },
     setError(payload) {

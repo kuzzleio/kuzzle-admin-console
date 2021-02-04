@@ -1,268 +1,367 @@
 <template>
   <div class="CreateEnvironment environment">
-    <warning-header
-      v-if="useHttps && !environment.ssl"
-      :text="warningHeaderText"
-    />
+    <b-form>
+      <b-form-group
+        data-cy="CreateEnvironment-name--group"
+        description="A friendly name for the connection"
+        id="env-name"
+        label="Connection name"
+        label-cols-sm="4"
+        label-cols-lg="3"
+        label-for="input-env-name"
+      >
+        <b-form-input
+          id="input-env-name"
+          v-model="$v.environment.name.$model"
+          data-cy="CreateEnvironment-name"
+          :state="validateState('name')"
+        ></b-form-input>
+        <b-form-invalid-feedback id="input-env-name-feedback">{{
+          nameFeedback
+        }}</b-form-invalid-feedback>
+      </b-form-group>
 
-    <div class="row">
-      <div class="col s12">
-        <a v-if="environmentId" ref="export" class="btn">Export</a>
-        <button
-          v-else
-          class="CreateEnvironment-import btn"
-          @click.prevent="$emit('environment::importEnv')"
-        >
-          Import a connection
-        </button>
-      </div>
-    </div>
+      <b-form-group
+        data-cy="CreateEnvironment-host--group"
+        description="The host where your Kuzzle is running"
+        id="env-host"
+        label="Hostname"
+        label-cols-sm="4"
+        label-cols-lg="3"
+        label-for="input-env-host"
+        :invalid-feedback="hostFeedback"
+      >
+        <b-form-input
+          data-cy="CreateEnvironment-host"
+          id="input-env-host"
+          v-model="$v.environment.host.$model"
+          :state="validateState('host')"
+        ></b-form-input>
+      </b-form-group>
 
-    <div class="row">
-      <div class="col s12">
-        <div class="input-field left-align">
-          <input
-            id="env-name"
-            v-model="environment.name"
-            v-focus
-            class="CreateEnvironment-name"
-            type="text"
-            required
-            :class="{ invalid: errors.name || errors.environmentAlreadyExists }"
-          />
-          <label
-            for="env-name"
-            :class="{ active: environment.name }"
-            data-error="Name is required and must be unique"
-            >Name</label
+      <b-form-group
+        data-cy="CreateEnvironment-port--group"
+        id="env-port"
+        label="Port"
+        description="The port where your Kuzzle is listening for connections"
+        label-cols-sm="4"
+        label-cols-lg="3"
+        label-for="input-env-port"
+        :invalid-feedback="portFeedback"
+      >
+        <b-form-input
+          data-cy="CreateEnvironment-port"
+          id="input-env-port"
+          v-model="$v.environment.port.$model"
+          type="number"
+          :state="validateState('port')"
+        ></b-form-input>
+      </b-form-group>
+      <b-form-group
+        label="Use SSL"
+        label-for="env-ssl"
+        label-cols-sm="4"
+        label-cols-lg="3"
+        :description="sslFeedback"
+      >
+        <b-form-checkbox
+          id="env-ssl"
+          v-model="environment.ssl"
+          name="env-use-ssl"
+          :value="true"
+          :unchecked-value="false"
+        ></b-form-checkbox>
+        <b-form-invalid-feedback id="env-ssl-feedback">
+          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        </b-form-invalid-feedback>
+      </b-form-group>
+      <b-form-group
+        data-cy="CreateEnvironment-backendVersion--group"
+        label="Kuzzle version"
+        label-cols-sm="4"
+        label-cols-lg="3"
+        :invalid-feedback="versionFeedback"
+      >
+        <b-form-select
+          data-cy="CreateEnvironment-backendVersion"
+          v-model="$v.environment.backendMajorVersion.$model"
+          :state="validateState('backendMajorVersion')"
+          :options="majorVersions"
+        ></b-form-select>
+      </b-form-group>
+
+      <b-row>
+        <b-col sm="4" lg="3">
+          <div>Pick a color</div>
+          <small class="text-secondary"
+            >It will be applied to the header navbar so you can distinguish this
+            connection from other ones.</small
           >
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col s12">
-        <div class="input-field left-align">
-          <input
-            id="host"
-            v-model="environment.host"
-            class="CreateEnvironment-host"
-            type="text"
-            required
-            :class="{ invalid: errors.host }"
-          />
-          <label
-            for="host"
-            :class="{ active: environment.host }"
-            data-error="The host must be something like 'mydomain.com'"
-            >Host</label
-          >
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col s6">
-        <div class="input-field left-align">
-          <input
-            id="port"
-            v-model="environment.port"
-            class="CreateEnvironment-port"
-            type="number"
-            required
-            :class="{ invalid: errors.port }"
-          />
-          <label
-            for="port"
-            :class="{ active: environment.port }"
-            data-error="port number must be an integer"
-            >Port</label
-          >
-        </div>
-      </div>
-      <div class="col s6">
-        <label>
-          <input
-            id="usessl"
-            v-model="environment.ssl"
-            class="CreateEnvironment-ssl"
-            type="checkbox"
-            :checked="environment.ssl"
-          />
-          <span>use SSL</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col s12" />
-    </div>
-
-    <div class="row color-picker">
-      <div class="col s12">
-        <div class="input-field left-align">
-          <p>Color</p>
-        </div>
-      </div>
-      <div class="col s12">
-        <div class="CreateEnvironment-colorBtns row">
-          <div v-for="(color, index) in colors" :key="color" class="col s6 m3">
-            <div
-              class="color card valign-wrapper"
-              :style="{ backgroundColor: color }"
-              @click="selectColor(index)"
-            >
-              <span
-                v-if="environment.color === color"
-                class="selected valign center-align"
-                >Selected</span
+        </b-col>
+        <b-col>
+          <b-row>
+            <b-col sm="6" md="3" v-for="(color, index) in colors" :key="color">
+              <div
+                :class="`CreateEnvironment-box EnvColor--${color}`"
+                :data-cy="`EnvColor--${color}`"
+                @click="selectColor(index)"
               >
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                <span v-if="environment.color === color">Selected</span>
+              </div>
+            </b-col>
+            <span
+              class="CreateEnvironment-box-feedback text-danger ml-2"
+              v-if="colorState === false"
+            >
+              <small>You must select a color for this connection</small></span
+            >
+          </b-row>
+        </b-col>
+      </b-row>
+    </b-form>
   </div>
 </template>
 
 <script>
-import WarningHeader from '../WarningHeader'
+import { validationMixin } from 'vuelidate'
+import { numeric, required } from 'vuelidate/lib/validators'
+import { isValidHostname, notIncludeScheme } from '../../../validators'
 
-import Focus from '../../../directives/focus.directive'
-import { DEFAULT_COLOR } from '../../../services/environment'
-
+import { envColors, DEFAULT_COLOR } from '../../../vuex/modules/kuzzle/store'
 const useHttps = window.location.protocol === 'https:'
 
+/**
+ * Vuelidate validator.
+ * The validator framework injects the execution context (`this`
+ * is the current component).
+ */
+function nameIsUnique(value) {
+  if (this.environmentId) {
+    return true
+  }
+
+  return Object.keys(this.environments).indexOf(value) === -1
+}
+// function isValidColor(color) {
+//   return envColors.includes(color)
+// }
+
 export default {
+  mixins: [validationMixin],
   name: 'CreateEnvironment',
-  components: {
-    WarningHeader
-  },
-  directives: {
-    Focus
-  },
+  components: {},
   props: ['environmentId'],
   data() {
     return {
-      errors: {
-        name: false,
-        host: false,
-        environmentAlreadyExists: false
-      },
-      environment: {
-        name: null,
-        host: null,
-        port: 7512,
-        color: DEFAULT_COLOR,
-        ssl: useHttps
-      },
-      colors: [
-        DEFAULT_COLOR,
-        '#0277bd',
-        '#8e24aa',
-        '#689f38',
-        '#f57c00',
-        '#e53935',
-        '#546e7a',
-        '#d81b60'
+      majorVersions: [
+        { value: null, text: 'Select version' },
+        { value: 1, text: 'v1.x' },
+        {
+          value: 2,
+          text: 'v2.x'
+        }
       ],
-      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are using the HTTPS/SSL version of the Admin Console.<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> </br>Please ensure that your Kuzzle supports HTTPS/SSL connections.`
+      environment: {
+        name: '',
+        host: '',
+        port: 7512,
+        color: null,
+        ssl: useHttps,
+        backendMajorVersion: null
+      },
+      submitting: false
+    }
+  },
+  validations: {
+    environment: {
+      name: {
+        required,
+        nameIsUnique
+      },
+      host: {
+        required,
+        notIncludeScheme,
+        isValidHostname
+      },
+      port: {
+        required,
+        numeric
+      },
+      color: {
+        required,
+        isValidColor: color => envColors.includes(color)
+      },
+      backendMajorVersion: {
+        required
+      }
     }
   },
   computed: {
+    colors() {
+      return envColors
+    },
     environments() {
       return this.$store.direct.state.kuzzle.environments
     },
     useHttps() {
       return useHttps
+    },
+    nameFeedback() {
+      if (!this.$v.environment.name.required) {
+        return 'You must enter a non-empty environment name'
+      }
+      if (!this.$v.environment.name.nameIsUnique) {
+        return 'An environment with the same name already exists'
+      }
+      return null
+    },
+    hostFeedback() {
+      if (!this.$v.environment.host.required) {
+        return 'You must enter a non-empty host name'
+      }
+      if (!this.$v.environment.host.notIncludeScheme) {
+        return 'Do not include the protocol in your host name'
+      }
+      if (!this.$v.environment.host.isValidHostname) {
+        return 'Must be a valid host name'
+      }
+      return null
+    },
+    portFeedback() {
+      if (!this.$v.environment.port.required) {
+        return 'You must enter a non-empty port'
+      }
+      return null
+    },
+    sslFeedback() {
+      if (this.useHttps && !this.environment.ssl) {
+        return `You are
+          using an Admin Console served via HTTPs. Your browser might refuse to
+          open an unsecure connection to Kuzzle`
+      }
+
+      if (this.environment.ssl) {
+        return `Please ensure your Kuzzle instance supports secure Websocket connections`
+      }
+
+      return ''
+    },
+    versionFeedback() {
+      if (!this.$v.environment.backendMajorVersion.required) {
+        return 'You must select a backend version'
+      }
+      return null
+    },
+    colorState() {
+      const { $dirty, $error } = this.$v.environment.color
+      const state = $dirty ? !$error : null
+      return state
     }
   },
   mounted() {
-    if (this.environmentId) {
-      const env = {}
-
-      env[
-        this.$store.direct.getters.kuzzle.currentEnvironment.name
-      ] = Object.assign(
-        {},
-        this.$store.direct.getters.kuzzle.currentEnvironment
-      )
-
-      delete env[this.$store.direct.getters.currentEnvironment.name].token
-      const blob = new Blob([JSON.stringify(env)], { type: 'application/json' })
-
-      this.$refs.export.href = URL.createObjectURL(blob)
-      this.$refs.export.download = `${this.$store.direct.getters.currentEnvironment.name}.json`
-    }
-  },
-  created() {
     if (this.environmentId && this.environments[this.environmentId]) {
       this.environment.name = this.environments[this.environmentId].name
       this.environment.host = this.environments[this.environmentId].host
       this.environment.port = this.environments[this.environmentId].port
       this.environment.color = this.environments[this.environmentId].color
       this.environment.ssl = this.environments[this.environmentId].ssl
+      this.environment.backendMajorVersion = this.environments[
+        this.environmentId
+      ].backendMajorVersion
+      this.$nextTick(() => this.showValidationErrors())
     } else {
       this.environment.name = null
       this.environment.host = null
       this.environment.port = 7512
       this.environment.color = DEFAULT_COLOR
       this.environment.ssl = useHttps
+      this.environment.backendMajorVersion = null
     }
   },
   methods: {
-    createEnvironment() {
-      this.errors.name = !this.environment.name
-      // this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
-      // Host is required and must be something like 'mydomain.com/toto'
-      this.errors.host =
-        !this.environment.host || /^(http|ws):\/\//.test(this.environment.host)
-
-      let _host = this.environment.host.trim()
-      let _name = this.environment.name.trim()
-
-      if (!this.environmentId || this.environmentId !== _name) {
-        this.errors.environmentAlreadyExists =
-          this.$store.direct.state.kuzzle.environments[_name] !== undefined
-      } else {
-        this.errors.environmentAlreadyExists = false
-      }
-
-      if (
-        this.errors.name ||
-        this.errors.host ||
-        this.errors.environmentAlreadyExists
-      ) {
-        throw new Error('Name or host invalid')
-      }
-
-      if (this.environmentId) {
-        return this.$store.direct.dispatch.kuzzle.updateEnvironment({
-          id: this.environmentId,
-          environment: {
-            name: _name,
-            color: this.environment.color,
-            host: _host,
-            port: this.environment.port,
-            ssl: this.environment.ssl
-          }
-        })
-      } else {
-        return this.$store.direct.dispatch.kuzzle.createEnvironment({
-          id: _name,
-          environment: {
-            name: _name,
-            color: this.environment.color,
-            host: _host,
-            port: this.environment.port,
-            ssl: this.environment.ssl
-          }
-        })
+    validateState(fieldName) {
+      const { $dirty, $error } = this.$v.environment[fieldName]
+      const state = $dirty ? !$error : null
+      return state
+    },
+    showValidationErrors() {
+      this.$v.environment.$touch()
+      Object.keys(this.$v.environment).forEach(field => {
+        if (/^\$/.test(field)) {
+          return
+        }
+        if (this.$v.environment[field].$anyError === false) {
+          this.$v.environment[field].$reset()
+        }
+      })
+    },
+    checkSSL() {
+      if (this.environment.port === 443) {
+        this.environment.ssl = true
       }
     },
+    submit() {
+      this.$v.environment.$touch()
+      if (this.$v.environment.$anyError) {
+        return
+      }
+      this.submitting = true
+      try {
+        if (this.environmentId) {
+          return this.$store.direct.dispatch.kuzzle.updateEnvironment({
+            id: this.environmentId,
+            environment: {
+              name: this.environment.name,
+              color: this.environment.color,
+              host: this.environment.host,
+              port: parseInt(this.environment.port),
+              ssl: this.environment.ssl,
+              backendMajorVersion: this.environment.backendMajorVersion
+            }
+          })
+        } else {
+          return this.$store.direct.dispatch.kuzzle.createEnvironment({
+            id: this.environment.name,
+            environment: {
+              name: this.environment.name,
+              color: this.environment.color,
+              host: this.environment.host,
+              port: parseInt(this.environment.port),
+              ssl: this.environment.ssl,
+              backendMajorVersion: this.environment.backendMajorVersion
+            }
+          })
+        }
+      } catch (error) {
+        this.$log.error(error.message)
+        this.$bvToast.toast(error.message, {
+          title:
+            'Ooops! Something went wrong while creating the new environment.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
+      }
+      this.submitting = false
+    },
     selectColor(index) {
-      this.environment.color = this.colors[index]
+      this.$v.environment.color.$model = this.colors[index]
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.CreateEnvironment-box {
+  margin-bottom: 10px;
+  color: #fff;
+  border-radius: 5px;
+  line-height: 40px;
+  min-height: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+</style>

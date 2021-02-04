@@ -1,58 +1,94 @@
 <template>
-  <form class="EnvironmentsImportModal" @submit.prevent="importEnv">
-    <modal
-      id="create-env"
-      :footer-fixed="true"
-      :is-open="isOpen"
-      :close="close"
+  <b-modal
+    data-cy="EnvironmentImport"
+    ref="modal-import-env"
+    title="Import Connection"
+    :id="id"
+    @cancel="reset"
+    @close="reset"
+    @hide="reset"
+  >
+    <template v-slot:modal-footer>
+      <b-button variant="secondary" @click="$bvModal.hide(id)">
+        Cancel
+      </b-button>
+      <b-button
+        data-cy="EnvironmentImport-submitBtn"
+        variant="primary"
+        :disabled="envNames.length === 0"
+        @click="importEnv"
+      >
+        OK
+      </b-button>
+    </template>
+
+    <b-form-group
+      label="Upload a file"
+      description="You can drag and drop your file in this input field"
     >
-      <div class="row">
-        <div class="col s12">
-          <h4>Import Connection</h4>
-          <div class="divider" />
-        </div>
-      </div>
+      <b-form-file
+        accept=".json"
+        data-cy="EnvironmentImport-fileInput"
+        ref="file-input"
+        v-model="file"
+      />
+    </b-form-group>
 
-      <input type="file" @change="upload($event)" />
+    <b-alert
+      :show="file !== null && errors.length === 0 && !loading"
+      data-cy="EnvironmentImport-ok"
+    >
+      ✅ Uploaded file is valid. Found {{ envNames.length }} connections.
+    </b-alert>
 
-      <div v-for="(err, k) in errors" :key="k" class="card-panel red lighten-3">
-        <span>Error: {{ err }}</span>
-      </div>
-
-      <span slot="footer">
-        <button
-          :class="{ disabled: !canSubmit }"
-          type="submit"
-          class="EnvironmentsCreateModal-import Environment-SubmitButton waves-effect btn"
-        >
-          Import
-        </button>
-        <button class="btn-flat waves-effect waves-grey" @click.prevent="close">
-          Cancel
-        </button>
-      </span>
-    </modal>
-  </form>
+    <b-alert
+    data-cy="EnvironmentImport-err"
+      v-for="(err, k) in errors"
+      class="mt-3"
+      dismissible
+      show
+      variant="danger"
+      :key="k"
+      >{{ err }}</b-alert
+    >
+  </b-modal>
 </template>
 
 <script>
-import Modal from '../../Materialize/Modal'
-
 export default {
   name: 'ModalImport',
-  components: {
-    Modal
-  },
-  props: ['environmentId', 'isOpen', 'close'],
+  props: ['id'],
+  components: {},
   data() {
     return {
+      file: null,
       env: {},
-      canSubmit: false,
-      errors: []
+      errors: [],
+      loading: false
+    }
+  },
+  computed: {
+    envNames() {
+      return Object.keys(this.env)
     }
   },
   methods: {
-    importEnv() {
+    clearFiles() {
+      this.$refs['file-input'].reset()
+    },
+    reset() {
+      this.clearFiles()
+      this.errors = []
+      this.env = {}
+      this.loading = false
+    },
+    async importEnv() {
+      let mustSwitch = false
+      if (
+        Object.keys(this.$store.direct.state.kuzzle.environments).length === 0
+      ) {
+        mustSwitch = true
+      }
       for (const name in this.env) {
         try {
           this.$store.direct.dispatch.kuzzle.createEnvironment({
@@ -60,25 +96,60 @@ export default {
             environment: this.env[name]
           })
         } catch (e) {
+          this.$log.error(e)
           this.errors.push(e)
         }
-        if (!this.errors.length) {
-          this.close()
+      }
+      if (!this.errors.length) {
+        this.$log.debug(`Finished import must switch: ${mustSwitch}, env:`)
+        this.$log.debug(this.$store.direct.state.kuzzle.environments)
+        if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
+          this.$router.push({ name: 'SelectEnvironment' })
         }
+        this.$bvModal.hide(this.id)
       }
     },
-    upload(event) {
-      var reader = new FileReader()
+    upload() {
+      if (!this.file || this.loading) {
+        return
+      }
+      this.$log.debug('Uploading!')
+
+      this.errors = []
+      this.env = {}
+      this.loading = true
+      const reader = new FileReader()
+
+      if (this.file.type !== 'application/json') {
+        this.errors.push(
+          `⛔️ Uploaded file type (${this.file.type}) is not supported. Please import .json files only`
+        )
+        this.loading = false
+        return
+      }
 
       reader.onload = (() => {
         return e => {
-          this.errors = []
-          this.env = JSON.parse(e.target.result)
-          this.canSubmit = true
+          try {
+            this.env = JSON.parse(e.target.result)
+          } catch (error) {
+            this.$log.error(error)
+            this.$log.debug(e.target)
+            this.errors.push(error)
+          }
+          this.loading = false
         }
-      })(event.target.files[0])
+      })(this.file)
 
-      reader.readAsText(event.target.files[0])
+      reader.readAsText(this.file)
+    }
+  },
+  watch: {
+    file: {
+      handler() {
+        this.$log.debug('File has changed')
+        this.upload()
+      }
     }
   }
 }

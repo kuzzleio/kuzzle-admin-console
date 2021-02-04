@@ -2,6 +2,8 @@
   <div class="CrudlDocument">
     <filters
       :current-filter="currentFilter.basic"
+      :index="index"
+      :collection="collection"
       @filters-updated="onBasicFilterUpdated"
       @reset="onBasicFilterUpdated"
     />
@@ -23,7 +25,7 @@
             <em
               >Learn more about filtering syntax on
               <a
-                href="https://docs.kuzzle.io/guide/1/elasticsearch/"
+                href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/"
                 target="_blank"
                 >Kuzzle Elasticsearch Cookbook</a
               ></em
@@ -258,9 +260,6 @@ export default {
     },
     dispatchToggle() {
       this.$emit('toggle-all')
-    },
-    setBasicFilter(value) {
-      this.$store.direct.commit.crudlDocument.setBasicFilter(value)
     },
     deleteBulk() {
       this.bulkDeleteIsOpen = true

@@ -1,26 +1,22 @@
 <template>
-  <div class="row valign-center empty-set">
-    <div class="col s2 offset-s1">
-      <i
-        class="fa fa-6x fa-search grey-text text-lighten-1"
-        aria-hidden="true"
-      />
-    </div>
-    <div class="col s12">
-      <p>
-        There is no result matching your query<br />
-        Please try with another filter.
-      </p>
+  <b-row align-h="center" class="valign-center empty-set">
+    <b-col cols="2" class="text-center">
+      <i class="fa fa-5x fa-search text-secondary mt-3" aria-hidden="true" />
+    </b-col>
+    <b-col md="6">
+      <h3 class="text-secondary font-weight-bold">
+        There is no result matching your query. Please try with another filter.
+      </h3>
       <p>
         <em
           >Learn more about filtering syntax on
           <a
-            href="https://docs.kuzzle.io/guide/1/elasticsearch/"
+            href="https://docs.kuzzle.io/core/2/guides/elasticsearch/"
             target="_blank"
             >Kuzzle Elasticsearch Cookbook</a
           ></em
         >
       </p>
-    </div>
-  </div>
+    </b-col>
+  </b-row>
 </template>

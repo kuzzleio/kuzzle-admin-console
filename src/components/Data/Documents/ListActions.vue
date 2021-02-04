@@ -1,52 +1,42 @@
 <template>
-  <div class="ListActions row actions">
-    <div class="col s8">
-      <button
-        class="btn btn-small waves-effect waves-light tertiary"
+  <b-row no-gutters>
+    <b-col cols="8" class="mt-2">
+      <b-button
+        variant="outline-dark"
+        class="ml-0 mr-2"
         :disabled="!displayToggleAll"
-        :class="{ disabled: !displayToggleAll }"
         @click="$emit('toggle-all')"
       >
         <i
-          class="fa left"
-          :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
+          :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`"
         />
         Toggle all
-      </button>
+      </b-button>
 
-      <button
-        class="btn btn-small waves-effect waves-light margin-right-5 primary"
-        :disabled="!displayCreate"
-        :class="{ disabled: !displayCreate }"
-        @click.prevent="$emit('create')"
-      >
-        <i class="fa fa-plus-circle left" />
-        Create
-      </button>
-
-      <button
-        class="btn btn-small waves-effect waves-light red-color"
+      <b-button
+        variant="outline-danger"
+        class="m-2"
         :disabled="!displayBulkDelete"
-        :class="{ disabled: !displayBulkDelete }"
         @click="$emit('bulk-delete')"
       >
         <i class="fa fa-minus-circle left" />
         Delete
-      </button>
+      </b-button>
 
-      <button
-        class="btn btn-small waves-effect waves-light margin-right-5"
+      <b-button
+        variant="outline-secondary"
+        class="m-2"
         @click.prevent="$emit('refresh')"
       >
         <i class="fas fa-sync-alt left" />
         Refresh
-      </button>
-    </div>
-    <div v-if="displayGeopointSelect">
-      <div class="col s2">
+      </b-button>
+    </b-col>
+    <template v-if="displayGeopointSelect">
+      <b-col cols="2">
         Selected geopoint
-      </div>
-      <div class="col s2">
+      </b-col>
+      <b-col cols="2">
         <m-select
           v-model="selectedGeopoint"
           @input="
@@ -61,9 +51,9 @@
             {{ geopoint }}
           </option>
         </m-select>
-      </div>
-    </div>
-  </div>
+      </b-col>
+    </template>
+  </b-row>
 </template>
 
 <script>
@@ -77,7 +67,6 @@ export default {
   props: {
     allChecked: Boolean,
     displayBulkDelete: Boolean,
-    displayCreate: Boolean,
     displayGeopointSelect: Boolean,
     displayToggleAll: Boolean,
     geopointList: Array
@@ -90,13 +79,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.ListActions {
-  .select-wrapper {
-    input {
-      line-height: 1.5rem;
-      height: 1.5rem;
-    }
-  }
-}
-</style>
+<style lang="scss"></style>

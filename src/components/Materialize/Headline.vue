@@ -1,9 +1,8 @@
 <template>
   <div class="Headline">
-    <h1>
+    <h2>
       <slot>{{ title }}</slot>
-    </h1>
-
+    </h2>
     <breadcrumb />
   </div>
 </template>
@@ -12,7 +11,7 @@
 import Breadcrumb from '../Common/Breadcrumb'
 
 export default {
-  name: 'Eadline',
+  name: 'Headline',
   components: {
     Breadcrumb
   },
@@ -24,7 +23,7 @@ export default {
 
 <style lang="scss" rel="stylesheet/scss" scoped>
 .Headline {
-  margin-bottom: 30px;
+  color: $primary-color;
 
   h1 {
     margin-top: 0;

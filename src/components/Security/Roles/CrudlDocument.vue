@@ -2,6 +2,8 @@
   <div class="CrudlDocument">
     <filters
       :current-filter="currentFilter.basic"
+      :index="index"
+      :collection="collection"
       @filters-updated="onBasicFilterUpdated"
       @reset="onBasicFilterUpdated"
     />
@@ -242,9 +244,6 @@ export default {
     },
     dispatchToggle() {
       this.$emit('toggle-all')
-    },
-    setBasicFilter(value) {
-      this.$store.direct.commit.crudlDocument.setBasicFilter(value)
     },
     deleteBulk() {
       this.bulkDeleteIsOpen = true

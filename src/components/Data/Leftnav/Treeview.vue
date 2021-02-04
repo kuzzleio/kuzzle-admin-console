@@ -1,62 +1,48 @@
 <template>
-  <aside class="Treeview">
-    <ul
-      v-if="!canSearchIndex()"
-      class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y"
-    >
-      <li class="Treeview-unauthorized">
-        <ul class="indexes">
-          <li>
-            <i class="fa fa-lock" aria-hidden="true" />
-            <em>You are not allowed to list indexes</em>
-          </li>
-        </ul>
-      </li>
-    </ul>
-    <ul
-      v-else
-      class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y"
-    >
-      <li>
-        <nav>
-          <div class="nav-wrapper">
-            <form>
-              <div class="Treeview-searchField input-field">
-                <input
-                  v-model="filter"
-                  type="search"
-                  placeholder="Search index &amp; collection"
-                />
-                <div class="Treeview-searchIcon">
-                  <i class="fa fa-search" />
-                </div>
-              </div>
-            </form>
-          </div>
-        </nav>
-      </li>
-      <li>
-        <ul class="Treeview-root">
-          <li v-for="indexName in orderedFilteredIndices" :key="indexName">
-            <index-branch
-              :index-name="indexName"
-              :route-name="routeName"
-              :collections="indexesAndCollections[indexName]"
-              :current-index="index"
-              :filter="filter"
-              :current-collection="collection"
-            />
-          </li>
-        </ul>
-      </li>
-    </ul>
+  <aside class="Treeview h-100">
+    <div v-if="!canSearchIndex" class="Treeview-notAuth px-3 text-center">
+      <b-alert show variant="info">
+        <i class="fa fa-lock fa-2x" aria-hidden="true" />
+        <br />
+        <em>You are not allowed to list indexes</em>
+      </b-alert>
+    </div>
+    <template v-else>
+      <div class="Treeview-search p-3">
+        <b-form-input
+          v-model="filter"
+          data-cy="Treeview-filter"
+          placeholder="Search index &amp; collection"
+          type="search"
+        ></b-form-input>
+      </div>
+      <div class="Treeview-items p-3">
+        <router-link
+          data-cy="Treeview-item"
+          class="text-secondary"
+          :to="{ name: 'Data' }"
+        >
+          <i class="fas fa-list mr-1"></i>
+          All indexes <b-spinner small v-if="isLoading"></b-spinner>
+        </router-link>
+        <index-branch
+          v-for="index in orderedFilteredIndexes"
+          :index="index"
+          :browsed-index-name="indexName"
+          :browsed-collection-name="collectionName"
+          :filter="filter"
+          :key="index.name"
+          :data-cy="`Treeview-item-index--${index.name}`"
+        />
+      </div>
+    </template>
   </aside>
 </template>
 
 <script>
-import { canSearchIndex } from '../../../services/userAuthorization'
 import IndexBranch from './IndexBranch'
-import { filterIndexesByKeyword } from '../../../services/data'
+import { filterIndexesByKeyword } from '../../../services/indexHelpers'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Treeview',
@@ -64,9 +50,8 @@ export default {
     IndexBranch
   },
   props: {
-    index: String,
-    collection: String,
-    routeName: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {
@@ -74,85 +59,35 @@ export default {
     }
   },
   computed: {
-    orderedFilteredIndices() {
+    ...mapGetters('auth', ['canSearchIndex']),
+    orderedFilteredIndexes() {
       return [
-        ...filterIndexesByKeyword(
-          this.$store.state.index.indexes,
-          this.$store.state.index.indexesAndCollections,
-          this.filter
-        )
-      ].sort()
+        ...filterIndexesByKeyword(this.indexes, this.filter)
+      ].sort((a, b) => a.name.localeCompare(b.name))
     },
-    indexesAndCollections() {
-      return Object.keys(this.$store.state.index.indexesAndCollections).length
-        ? this.$store.state.index.indexesAndCollections
-        : {}
+    isLoading() {
+      return this.$store.direct.getters.index.loadingIndexes
+    },
+    indexes() {
+      return this.$store.direct.getters.index.indexes
     }
-  },
-  methods: {
-    canSearchIndex
   }
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-.Treeview-container {
-  z-index: 900;
-  top: $navbar-height;
-  height: 95%;
-  width: $sidebar-width;
-
-  @media (max-width: $medium-screen) {
-    // @HACK this is nasty, but we need it to override the default
-    // MaterializeCSS behavior, hiding the side menu whenever the
-    // screen is less than medium-width.
-    transform: translateX(0);
-  }
+<style lang="scss" scoped>
+.Treeview {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.Treeview-searchField {
-  height: 100%;
-  background-color: #ffffff;
-  color: #000000;
-
-  .Treeview-searchIcon {
-    position: absolute;
-    top: 0;
-    left: 20px;
-  }
-  input {
-    padding-left: 3rem;
-
-    &::-webkit-input-placeholder {
-      font-size: 1rem;
-    }
-    &::-moz-placeholder {
-      font-size: 1rem;
-    }
-    &:-ms-input-placeholder,
-    &:-moz-placeholder {
-      font-size: 1rem;
-    }
-  }
+.Treeview-search {
+  border-bottom: 1px solid #dbdbdb;
 }
 
-.Treeview-unauthorized {
-  li {
-    line-height: 24px;
-  }
-}
-
-.Treeview-root {
-  margin-top: 16px;
-  padding-left: 15px;
-  list-style: none;
-}
-
-li {
-  position: relative;
-}
-
-.sidenav {
-  transform: translateX(0%) !important;
+.Treeview-items {
+  flex: 1;
+  overflow-y: auto;
 }
 </style>

@@ -1,203 +1,165 @@
 <template>
-  <span ref="dropdown" class="EnvironmentsSwitch">
-    <a
-      class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light"
-      :style="{ backgroundColor: bgColor }"
-      :data-target="'environment-dropdown-' + _uid"
-    >
-      <span
-        v-if="$store.direct.getters.kuzzle.currentEnvironment"
-        class="current-environment-name truncate"
-      >
-        {{ currentEnvironmentName }}
-      </span>
-      <span
-        v-if="!$store.direct.getters.kuzzle.currentEnvironment"
-        class="current-environment-name truncate"
-      >
-        Choose Environment
-      </span>
-      <i class="fa fa-caret-down" />
-    </a>
-
-    <ul
-      :id="'environment-dropdown-' + _uid"
-      class="EnvironmentsSwitch-envList dropdown-content environment-dropdown"
-    >
-      <li
-        v-for="(env, index) in $store.direct.getters.kuzzle.environments"
-        :key="env.name"
-        :data-env="`env_${formatForDom(env.name)}`"
-        class="EnvironmentsSwitch-env environment"
-      >
-        <div @click="clickSwitch(index)">
-          <span class="name environment-attribute truncate">{{
-            env.name
-          }}</span>
-          <span class="host environment-attribute truncate">{{
-            env.host
-          }}</span>
-        </div>
+  <b-dropdown
+    ref="dropdown"
+    class="EnvironmentSwitch"
+    data-cy="EnvironmentSwitch"
+    toggle-class="text-truncate"
+    variant="outline-secondary"
+    :block="block"
+    :right="right"
+    :class="blendColor ? 'EnvironmentSwitch--blendColor' : ''"
+  >
+    <template v-slot:button-content>
+      <template v-if="currentEnvironment">
         <i
-          class="edit primary fa fa-pencil-alt"
+          v-if="!isValidEnvironment(currentEnvironment)"
+          class="fas fa-exclamation-triangle text-danger"
+        ></i
+        >&nbsp;{{ currentEnvironment.name }}
+      </template>
+      <template v-else>
+        Select a connection
+      </template>
+    </template>
+    <b-dropdown-item
+      v-for="(env, index) in $store.direct.getters.kuzzle.environments"
+      class="EnvironmentSwitch-env environment"
+      :key="env.name"
+      :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
+    >
+      <div
+        @click="
+          isValidEnvironment(env)
+            ? switchEnv(index)
+            : $emit('environment::create', index)
+        "
+        class="EnvironmentSwitch-env-name text-truncate mr-3"
+      >
+        {{ env.name }}
+        <i
+          v-if="!isValidEnvironment(env)"
+          class="fas fa-exclamation-triangle text-danger"
+        ></i>
+        <div class="text-muted">{{ env.host }}</div>
+      </div>
+      <div class="EnvironmentSwitch-env-inputs">
+        <i
+          class="edit primary fa fa-pencil-alt mr-3"
+          :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-edit`"
           @click.prevent="$emit('environment::create', index)"
         />
         <i
           class="delete error fa fa-trash"
+          :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-delete`"
           @click.prevent="$emit('environment::delete', index)"
         />
-      </li>
-      <li class="divider" />
-      <li>
-        <a href="" @click.prevent="$emit('environment::create')"
-          ><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle" />
-          Create new connection</a
-        >
-      </li>
-      <li>
-        <a ref="export"
-          ><i class="EnvironmentsSwitch-export-all fa fa-file-export" />Export
-          all</a
-        >
-      </li>
-      <li>
-        <a href="#" @click.prevent="$emit('environment::importEnv')"
-          ><i class="fa fa-file-import" />Import</a
-        >
-      </li>
-    </ul>
-  </span>
+      </div>
+    </b-dropdown-item>
+    <b-dropdown-divider></b-dropdown-divider>
+    <b-dropdown-item @click.prevent="$emit('environment::create')">
+      <a data-cy="EnvironmentSwitch-newConnectionBtn" href="">
+        Create new connection
+      </a>
+    </b-dropdown-item>
+    <b-dropdown-item
+      data-cy="export-environments"
+      download="connections.json"
+      :href="exportUrl"
+    >
+      Export all
+    </b-dropdown-item>
+    <b-dropdown-item @click.prevent="$emit('environment::importEnv')">
+      Import
+    </b-dropdown-item>
+  </b-dropdown>
 </template>
 
 <script>
-import { DEFAULT_COLOR } from '../../../services/environment'
-import tinycolor from 'tinycolor2/tinycolor'
-import Promise from 'bluebird'
-
 import { formatForDom } from '../../../utils'
-
+import { mapValues, omit } from 'lodash'
+import { isValidEnvironment } from '../../../validators'
+import { mapGetters } from 'vuex'
 export default {
-  name: 'EnvironmentsSwitch',
-  props: ['blendColor'],
-  computed: {
-    currentEnvironmentName() {
-      if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
-        return null
-      }
-
-      return this.$store.direct.getters.kuzzle.currentEnvironment.name
+  name: 'EnvironmentSwitch',
+  props: {
+    blendColor: {
+      type: Boolean,
+      default: false
     },
-    bgColor() {
-      if (!this.blendColor) {
-        return DEFAULT_COLOR
-      }
-
-      let color
-      if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
-        color = DEFAULT_COLOR
-      } else {
-        color = this.$store.direct.getters.kuzzle.currentEnvironment.color
-      }
-      if (!color) {
-        color = DEFAULT_COLOR
-      }
-
-      return tinycolor(color)
-        .lighten(10)
-        .toString()
+    block: {
+      type: Boolean,
+      default: true
+    },
+    right: {
+      type: Boolean,
+      default: true
     }
   },
-  mounted() {
-    const env = {}
-    for (const name in this.$store.state.kuzzle.environments) {
-      env[name] = Object.assign(
-        {},
-        this.$store.direct.getters.kuzzle.environments[name]
+  computed: {
+    ...mapGetters('kuzzle', ['currentEnvironment']),
+    exportUrl() {
+      const envWitoutToken = mapValues(
+        this.$store.state.kuzzle.environments,
+        e => omit(e, 'token')
       )
-      delete env[name].token
+
+      const blob = new Blob([JSON.stringify(envWitoutToken)], {
+        type: 'application/json'
+      })
+
+      return URL.createObjectURL(blob)
     }
-
-    const blob = new Blob([JSON.stringify(env)], { type: 'application/json' })
-
-    this.$refs.export.href = URL.createObjectURL(blob)
-    this.$refs.export.download = 'connections.json'
-
-    $(this.$refs.dropdown)
-      .find('.dropdown-button')
-      .dropdown({ constrain_width: false, belowOrigin: true })
   },
   methods: {
-    clickSwitch(id) {
-      return this.$store.direct.dispatch.kuzzle
-        .switchEnvironment(id)
-        .then(() => {
-          this.$router.push({ path: '/' }).catch(() => {})
-        })
-        .catch(e => {
-          this.$store.direct.commit.toaster(
-            'An error occurred while switching environment'
-          )
-          return Promise.reject(e)
-        })
+    isValidEnvironment,
+    async switchEnv(id) {
+      try {
+        await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id)
+        this.$log.debug(`Switched.`)
+        this.$emit('environmentSwitched')
+      } catch (error) {
+        this.$log.error(error)
+        if (error.code) {
+          this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        }
+      }
     },
     formatForDom
   }
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-.current-environment {
-  background-color: #002835;
-  transition: 0.25s ease;
-  margin-top: 7px;
-  .truncate {
-    display: inline-block;
-  }
-  .current-environment-name {
-    width: 150px;
-  }
-  i {
-    position: absolute;
-    top: 0;
-    right: 7px;
+<style lang="scss" rel="stylesheet/scss">
+.EnvironmentSwitch--blendColor,
+.EnvironmentSwitch--blendColor.show {
+  .dropdown-toggle {
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    border: none;
+    color: white;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    &:active {
+      background-color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5) !important;
+    }
   }
 }
 
-.environment-dropdown {
-  width: 280px;
-  .environment {
-    position: relative;
-    border-bottom: 1px solid #eaeaea;
-    line-height: 1.2rem;
+.EnvironmentSwitch-env {
+  a {
+    display: flex;
+    align-items: center;
+  }
 
-    .environment-attribute {
-      display: block;
-      width: 80%;
-      &.name {
-        color: #002835;
-        padding: 14px 14px 0 14px;
-        font-size: 1.2em;
-      }
-      &.host {
-        font-size: 0.8em;
-        color: #2a2a2a;
-        padding: 0 0 10px 14px;
-      }
-    }
-  }
-  .edit {
-    position: absolute;
-    top: 20px;
-    right: 35px;
-    font-size: 1em;
-  }
-  .delete {
-    position: absolute;
-    top: 20px;
-    right: 10px;
-    padding: 0;
-    margin: 0;
-    font-size: 1em;
+  .EnvironmentSwitch-env-name {
+    flex: 1;
+    max-width: 250px;
   }
 }
 </style>

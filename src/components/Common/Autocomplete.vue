@@ -1,6 +1,6 @@
 <template>
   <div class="Autocomplete">
-    <input
+    <b-form-input
       v-model="inputValue"
       type="text"
       :class="inputClass"
@@ -16,6 +16,7 @@
     <ul v-show="isOpen" class="Autocomplete-results">
       <li
         v-for="(result, i) in results"
+        :data-cy="`autocomplete-item--${result}`"
         :key="result"
         class="Autocomplete-result"
         :class="{ 'is-active': i === selectionCursor }"

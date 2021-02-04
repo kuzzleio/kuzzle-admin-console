@@ -1,87 +1,54 @@
 <template>
   <div class="document-create-update">
     <form class="wrapper" @submit.prevent="submit">
-      <div class="row">
-        <div class="switch right">
-          <label>
-            Form
-            <input
-              type="checkbox"
-              :checked="!isFormView"
-              @change="switchView"
-            />
-            <span class="lever" />
-            JSON
-          </label>
-        </div>
-      </div>
-
-      <div v-if="isFormView" class="row">
-        <div class="col s12 card">
-          <div class="card-content">
-            <json-form
-              :schema="schema"
-              :document="value"
-              @update-value="updateValue"
-            />
-          </div>
-        </div>
-      </div>
-
+      Here, you can define the custom content of your users. The fields you
+      define here will appear in the <code>content</code> field of your user
+      object, along with <code>profileIds</code> and <code>_kuzzle_info</code>.
       <!-- Json view -->
-      <div v-if="!isFormView" class="row json-view">
-        <div
-          class="col s6 card"
-          :class="{ s12: $store.state.collection.isRealtimeOnly }"
-        >
-          <div class="card-content">
-            <span class="card-title">Custom content</span>
-            <json-editor
-              id="document"
-              ref="jsoneditor"
-              class="document-json"
-              :content="newContent"
-              :height="300"
-              @changed="jsonChanged"
-            />
-          </div>
-        </div>
+      <b-row class="mt-3">
+        <b-col cols="8">
+          <h3>Custom content</h3>
+          <json-editor
+            data-cy="UserCustomContent-jsonEditor"
+            ref="jsoneditor"
+            class="document-json"
+            :content="value"
+            :height="300"
+            @change="jsonChanged"
+          />
+        </b-col>
 
         <!-- Mapping -->
-        <div v-if="!$store.state.collection.isRealtimeOnly" class="col s6 card">
-          <div class="card-content">
-            <span class="card-title">Mapping</span>
-            <json-editor
-              id="mapping"
-              class="document-json"
-              :content="mapping"
-              :readonly="true"
-              :height="300"
-            />
-          </div>
-        </div>
-      </div>
+        <b-col>
+          <h3>Mapping</h3>
+          <pre
+            v-json-formatter="{
+              content: mapping,
+              open: true
+            }"
+          />
+        </b-col>
+      </b-row>
     </form>
   </div>
 </template>
 
 <script>
-import JsonForm from '../../../Common/JsonForm/JsonForm'
 import JsonEditor from '../../../Common/JsonEditor'
+import JsonFormatter from '../../../../directives/json-formatter.directive'
+
 import { mergeSchemaMapping } from '../../../../services/collectionHelper'
 
 export default {
   name: 'CustomData',
   components: {
-    JsonForm,
     JsonEditor
   },
+  directives: { JsonFormatter },
   props: {
     value: {
-      type: Object,
-      default: () => {
-        return {}
-      }
+      type: String,
+      default: ''
     },
     mapping: {
       type: Object,
@@ -104,27 +71,9 @@ export default {
       return mergeSchemaMapping({}, this.mapping)
     }
   },
-  watch: {
-    value: function(val) {
-      if (this.viewType === 'form') {
-        this.newContent = { ...val }
-      }
-    }
-  },
   methods: {
-    switchView() {
-      if (this.viewType === 'json') {
-        Object.assign(this.newContent, this.$refs.jsoneditor.getJson())
-      }
-      this.viewType = this.isFormView ? 'json' : 'form'
-      this.newContent = { ...this.value }
-    },
-    updateValue(payload) {
-      this.newContent[payload.name] = payload.value
-      this.$emit('input', this.newContent)
-    },
-    jsonChanged() {
-      this.$emit('input', this.$refs.jsoneditor.getJson())
+    jsonChanged(value) {
+      this.$emit('input', value)
     }
   }
 }

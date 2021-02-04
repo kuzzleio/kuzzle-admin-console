@@ -1,74 +1,59 @@
 <template>
-  <div class="login">
-    <div class="container">
-      <div class="row">
-        <div class="col card wrapper s10 offset-s1 m8 offset-m2 l6 offset-l3">
-          <div class="row">
-            <div class="col s12">
-              <h2 class="center-align logo">
-                <img
-                  src="../assets/logo.svg"
-                  alt="Welcome to the Kuzzle Admin Console"
-                  style="width: 70%"
-                />
-              </h2>
+  <div class="LoginPage">
+    <b-row align-h="center" class="w-100">
+      <b-col xl="6" lg="7" md="8" sm="10">
+        <b-card>
+          <b-card-body>
+            <div class="text-center">
+              <img
+                src="../assets/logo.svg"
+                alt="Welcome to the Kuzzle Admin Console"
+                class="mb-5 img-fluid"
+              />
             </div>
-          </div>
-          <div class="row">
-            <div class="col offset-s1 s10">
-              <warning-header :text="bannerV4Text" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col offset-s4 s2">
+            <b-alert
+              class="text-center"
+              variant="info"
+              data-cy="noAdminAlert"
+              :show="!$store.direct.getters.auth.adminAlreadyExists"
+            >
+              <b>Warning!</b> Your Kuzzle has no administrator user. It is
+              strongly recommended
+              <a class="alert-link" data-cy="NoAdminAlert-link" href="#/signup">
+                that you create one.</a
+              >
+            </b-alert>
+            <b-form-group
+              label="Connected to"
+              label-cols-sm="4"
+              label-cols-lg="3"
+            >
               <environment-switch
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
                 @environment::importEnv="importEnv"
               />
-            </div>
-          </div>
-          <div class="row">
+            </b-form-group>
             <login-form :on-login="onLogin" />
-          </div>
-        </div>
-      </div>
-    </div>
+          </b-card-body>
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
-
-<style type="text/css" media="screen" scoped>
-.login {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  padding-top: 50px;
-  height: 100%;
-  overflow: auto;
-}
-.logo {
-  margin-top: 60px;
-}
-</style>
 
 <script>
 import LoginForm from './Common/Login/Form'
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
-import WarningHeader from './Common/WarningHeader'
 
 export default {
   name: 'Login',
   components: {
     LoginForm,
-    EnvironmentSwitch,
-    WarningHeader
+    EnvironmentSwitch
   },
   data() {
     return {
-      bannerV4Text:
-        '<span>Hey! A new version of the Admin Console will be available on Feb 4th 2021. You can <a target="_blank" href="http://next-console.kuzzle.io">preview it here</a>, or <a target="_blank" href="https://blog.kuzzle.io/kuzzle-admin-console-v4">read about what\'s new</a>.</span>',
       environmentId: null
     }
   },
@@ -81,12 +66,11 @@ export default {
       window.document.body.style.overflow = 'visible'
 
       if (this.$store.getters.routeBeforeRedirect) {
+        this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
         this.$router.push({ name: this.$store.getters.routeBeforeRedirect })
       } else {
-        this.$router.push({ name: 'Home' }).catch(() => {})
+        this.$router.push('/')
       }
-
-      this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
     },
     editEnvironment(id) {
       this.$emit('environment::create', id)
@@ -100,3 +84,12 @@ export default {
   }
 }
 </script>
+
+<style type="text/css" scoped>
+.LoginPage {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

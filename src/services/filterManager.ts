@@ -1,4 +1,6 @@
 import _ from 'lodash'
+import moment from 'moment'
+import { MappingAttributes } from './mappingHelpers'
 
 export const NO_ACTIVE = null
 export const ACTIVE_QUICK = 'quick'
@@ -7,6 +9,10 @@ export const ACTIVE_RAW = 'raw'
 export const SORT_ASC = 'asc'
 export const SORT_DESC = 'desc'
 export const DEFAULT_QUICK = ''
+
+const DEFAULT_FILTER = {
+  '_kuzzle_info.createdAt': 'desc'
+}
 
 export function Filter(this: any) {
   this.active = NO_ACTIVE
@@ -19,6 +25,8 @@ export function Filter(this: any) {
 }
 
 const LOCALSTORAGE_PREFIX = 'search-filter-current'
+const HISTORY_LOCALSTORAGE_PREFIX = 'history-filter'
+const FAVORIS_LOCALSTORAGE_PREFIX = 'favoris-filter'
 
 export const load = (index, collection, route) => {
   if (!index || !collection) {
@@ -124,16 +132,93 @@ export const saveToLocalStorage = (filter, index, collection) => {
   )
 }
 
-export const toSearchQuery = filter => {
+export const saveFavoritesToLocalStorage = (filters, index, collection) => {
+  localStorage.setItem(
+    `${FAVORIS_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
+    JSON.stringify(filters)
+  )
+}
+
+export const loadFavoritesFromLocalStorage = (index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot load filters from localstorage if no index or collection are specified'
+    )
+  }
+  const filterStr = localStorage.getItem(
+    `${FAVORIS_LOCALSTORAGE_PREFIX}:${index}/${collection}`
+  )
+  if (filterStr) {
+    return JSON.parse(filterStr)
+  }
+  return []
+}
+
+export const saveHistoyToLocalStorage = (filters, index, collection) => {
+  localStorage.setItem(
+    `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
+    JSON.stringify(filters)
+  )
+}
+
+export const addNewHistoryItemAndSave = (filter, index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot save filters to localstorage if no index or collection are specified'
+    )
+  }
+  if (filter.active === null) {
+    return
+  }
+  const filters = loadHistoyFromLocalStorage(index, collection)
+  const date = moment()
+  filter.name = date.format('YY/MM/DD k:mm')
+  filter.id = Date.now()
+  if (filters.length >= 10) {
+    filters.shift()
+  }
+  filters.push(filter)
+  saveHistoyToLocalStorage(filters, index, collection)
+}
+
+export const loadHistoyFromLocalStorage = (index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot load filters from localstorage if no index or collection are specified'
+    )
+  }
+  const filterStr = localStorage.getItem(
+    `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`
+  )
+  if (filterStr) {
+    return JSON.parse(filterStr)
+  }
+
+  return []
+}
+
+export const toSearchQuery = (
+  filter,
+  mappingAttributes: MappingAttributes,
+  kuzzleWrapper
+) => {
   if (!filter) {
     throw new Error('No filter specified')
   }
 
+  if (!kuzzleWrapper) {
+    throw new Error('No Kuzzle Wrapper specified')
+  }
+
   switch (filter.active) {
     case ACTIVE_QUICK:
-      return filter.quick ? formatFromQuickSearch(filter.quick) : {}
+      return filter.quick
+        ? kuzzleWrapper.quickSearchToESQuery(filter.quick)
+        : {}
     case ACTIVE_BASIC:
-      return filter.basic ? formatFromBasicSearch(filter.basic) : {}
+      return filter.basic
+        ? kuzzleWrapper.basicSearchToESQuery(filter.basic, mappingAttributes)
+        : {}
     case ACTIVE_RAW:
       return filter.raw ? rawFilterToSearchQuery(filter.raw) : {}
     case NO_ACTIVE:
@@ -172,8 +257,8 @@ export const stripDefaultValuesFromFilter = filter => {
 }
 
 export const searchFilterOperands = {
-  match: 'Match',
-  not_match: 'Not Match',
+  contains: 'Contains',
+  not_contains: 'Not Contains',
   equal: 'Equal',
   not_equal: 'Not equal',
   range: 'Range',
@@ -182,8 +267,8 @@ export const searchFilterOperands = {
 }
 
 export const realtimeFilterOperands = {
-  match: 'Match',
-  not_match: 'Not Match',
+  contains: 'contains',
+  not_contains: 'Not Contains',
   regexp: 'Regexp',
   exists: 'Exists',
   missing: 'Missing'
@@ -199,9 +284,9 @@ export const basicFilterToRealtimeQuery = (groups = [[]]) => {
       })
       .map(function(filter: any) {
         switch (filter.operator) {
-          case 'match':
+          case 'contains':
             return { equals: { [filter.attribute]: filter.value } }
-          case 'not_match':
+          case 'not_contains':
             return { not: { equals: { [filter.attribute]: filter.value } } }
           case 'regexp':
             return { regexp: { [filter.attribute]: filter.value } }
@@ -222,36 +307,9 @@ export const basicFilterToRealtimeQuery = (groups = [[]]) => {
   return { or }
 }
 
-export const formatFromQuickSearch = searchTerm => {
-  if (searchTerm === '' || !searchTerm) {
-    return {}
-  }
-
-  return {
-    query: {
-      bool: {
-        should: [
-          {
-            multi_match: {
-              query: searchTerm,
-              type: 'phrase_prefix',
-              fields: ['*']
-            }
-          },
-          {
-            match: {
-              _id: searchTerm
-            }
-          }
-        ]
-      }
-    }
-  }
-}
-
 export const rawFilterToSearchQuery = rawFilter => {
   if (!rawFilter.query) {
-    throw new Error('The filter is malformed: "query" attribute not found')
+    return null
   }
 
   if (rawFilter._source && rawFilter._source.indexOf('_kuzzle_info') === -1) {
@@ -264,125 +322,25 @@ export const rawFilterToSearchQuery = rawFilter => {
 export const toSort = filter => {
   switch (filter.active) {
     case ACTIVE_QUICK:
-      return ['_id']
+      return DEFAULT_FILTER
     case ACTIVE_RAW:
-      return filter.raw ? rawFilterToSort(filter.raw) : ['_id']
+      return filter.raw ? rawFilterToSort(filter.raw) : DEFAULT_FILTER
     case NO_ACTIVE:
     default:
     case ACTIVE_BASIC:
-      return filter.sorting ? formatSort(filter.sorting) : ['_id']
+      return filter.sorting ? formatSort(filter.sorting) : DEFAULT_FILTER
   }
 }
 
 export const rawFilterToSort = rawFilter => {
-  return rawFilter.sort || ['_id']
+  return rawFilter.sort || DEFAULT_FILTER
 }
 
 export const formatSort = sorting => {
   if (!sorting.attribute) {
-    return ['_id']
+    return DEFAULT_FILTER
   }
   return [{ [sorting.attribute]: { order: sorting.order } }]
-}
-
-// TODO rename to basicFilterToSearchQuery
-export const formatFromBasicSearch = (groups = [[]]) => {
-  let bool: any = {}
-
-  bool.should = groups.map(filters => {
-    let formattedFilter: any = { bool: { must: [], must_not: [] } }
-    filters.forEach((filter: any) => {
-      if (filter.attribute === null) {
-        return
-      }
-
-      if (filter.operator === 'match') {
-        formattedFilter.bool.must.push({
-          // Apologies. I know it's ugly to make a multimatch query here,
-          // its ugly and not pedagogic for the inexperienced users, but
-          // it's the only way to have one same query for both text and
-          // keyword fields.
-          multi_match: {
-            query: filter.value,
-            type: 'phrase_prefix',
-            fields: [filter.attribute]
-          }
-        })
-      } else if (filter.operator === 'not_match') {
-        formattedFilter.bool.must_not.push({
-          // Same as above.
-          multi_match: {
-            query: filter.value,
-            type: 'phrase_prefix',
-            fields: [filter.attribute]
-          }
-        })
-      } else if (filter.operator === 'equal') {
-        formattedFilter.bool.must.push({
-          range: {
-            [filter.attribute]: {
-              gte: filter.value,
-              lte: filter.value
-            }
-          }
-        })
-      } else if (filter.operator === 'not_equal') {
-        formattedFilter.bool.must_not.push({
-          range: {
-            [filter.attribute]: {
-              gte: filter.value,
-              lte: filter.value
-            }
-          }
-        })
-      } else if (filter.operator === 'range') {
-        const range = { range: {} }
-        if (filter.gt_value && filter.lt_value) {
-          range.range = {
-            [filter.attribute]: {
-              gt: filter.gt_value,
-              lt: filter.lt_value
-            }
-          }
-        } else if (filter.gt_value && !filter.lt_value) {
-          range.range = {
-            [filter.attribute]: {
-              gt: filter.gt_value
-            }
-          }
-        } else {
-          range.range = {
-            [filter.attribute]: {
-              lt: filter.lt_value
-            }
-          }
-        }
-        formattedFilter.bool.must.push(range)
-      } else if (filter.operator === 'exists') {
-        const exists = {
-          exists: {
-            field: filter.attribute
-          }
-        }
-        formattedFilter.bool.must.push(exists)
-      } else if (filter.operator === 'not_exists') {
-        const exists = {
-          exists: {
-            field: filter.attribute
-          }
-        }
-        formattedFilter.bool.must_not.push(exists)
-      }
-    })
-
-    return formattedFilter
-  })
-
-  if (bool.should.length === 0) {
-    return {}
-  }
-
-  return { query: { bool } }
 }
 
 export const formatPagination = (currentPage, limit) => {

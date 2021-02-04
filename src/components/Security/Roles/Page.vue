@@ -1,73 +1,70 @@
 <template>
-  <div class="RolesManagement">
-    <headline title="Role Management" />
+  <b-container class="RolesManagement">
+    <b-row>
+      <b-col cols="8">
+        <headline>Roles</headline>
+      </b-col>
+      <b-col class="text-right">
+        <b-button
+          :disabled="!displayRevokeAnonymous"
+          :title="
+            displayRevokeAnonymous
+              ? 'Reduce anonymous rights to the minimum'
+              : 'You cannot revoke anonymous rights either because you don\'t have the permissions to do it or because there is no administrator user yet in the system.'
+          "
+          class="mr-2"
+          data-cy="RolesManagement-revokeAnonymous"
+          variant="primary"
+          v-b-modal.revokeAnonymous-modal
+          >Revoke anonymous rights</b-button
+        >
+        <b-button
+          class="mr-2"
+          data-cy="RolesManagement-createBtn"
+          variant="primary"
+          :disabled="!canCreateRole"
+          :to="{ name: 'SecurityRolesCreate' }"
+          >Create Role</b-button
+        >
+      </b-col>
+    </b-row>
 
-    <list-not-allowed v-if="!canSearchRole()" />
+    <list-not-allowed v-if="!canSearchRole" />
 
     <role-list
-      v-if="canSearchRole()"
+      v-if="canSearchRole"
       item-name="RoleItem"
-      :display-create="canCreateRole()"
-      :perform-search="performSearchRoles"
-      :perform-delete="performDeleteRoles"
       route-create="SecurityRolesCreate"
       route-update="SecurityRolesUpdate"
-      @create-clicked="createRole"
     >
-      <div slot="emptySet" class="card-panel">
-        <div class="row valign-bottom empty-set">
-          <div class="col s1 offset-s1">
-            <i
-              class="fa fa-6x fa-unlock-alt grey-text text-lighten-1"
-              aria-hidden="true"
-            />
-          </div>
-          <div class="col s10">
-            <p>
-              In this page, you'll be able to manage the
-              <a
-                href="https://docs.kuzzle.io/guide/1/essentials/security/#defining-roles"
-                >Security Roles</a
-              >
-              defined in your Kuzzle server.<br />
-              <em
-                >Currently, no Security Role is defined. You can create one by
-                pushing the "Create" button above.</em
-              >
-            </p>
-            <router-link
-              :disabled="!canCreateRole()"
-              :class="!canCreateRole() ? 'disabled' : ''"
-              :title="
-                !canCreateRole()
-                  ? 'You are not allowed to create new roles'
-                  : ''
-              "
-              :to="{ name: 'SecurityRolesCreate' }"
-              class="btn primary waves-effect waves-light"
-            >
-              <i class="fa fa-plus-circle left" />
-              Create a role
-            </router-link>
-          </div>
-        </div>
-      </div>
+      <b-card class="EmptyState text-center" slot="emptySet">
+        <i class="text-secondary fas fa-unlock-alt fa-6x mb-3"></i>
+        <h2 class="text-secondary font-weight-bold">No role is defined</h2>
+        <p class="text-secondary" v-if="canCreateRole">
+          You can create a new role by hitting the button above
+        </p>
+      </b-card>
     </role-list>
-  </div>
+    <b-modal
+      id="revokeAnonymous-modal"
+      title="Revoke anonymous rights"
+      data-cy="revokeAnonymous-modal"
+      @ok="revokeAnonymous"
+    >
+      <p class="my-4">
+        The anonymous users will only be able to perform some basic
+        authentication actions, like logging-in, see their rights and see their
+        user ID. You will still be able to add more rights if needed.
+      </p>
+    </b-modal>
+  </b-container>
 </template>
 
 <script>
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import RoleList from './List'
-import {
-  canSearchRole,
-  canCreateRole
-} from '../../../services/userAuthorization'
 import Headline from '../../Materialize/Headline'
-import {
-  performSearchRoles,
-  performDeleteRoles
-} from '../../../services/kuzzleWrapper'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'RolesManagement',
@@ -77,17 +74,88 @@ export default {
     Headline
   },
   methods: {
-    createRole() {
-      this.$router.push({ name: 'SecurityRolesCreate' })
-    },
-    canSearchRole,
-    canCreateRole,
-    performSearchRoles,
-    performDeleteRoles
+    async revokeAnonymous() {
+      try {
+        await this.$kuzzle.security.updateRole(
+          'anonymous',
+          {
+            controllers: {
+              '*': {
+                actions: {
+                  '*': false
+                }
+              },
+              auth: {
+                actions: {
+                  checkToken: true,
+                  getCurrentUser: true,
+                  getMyRights: true,
+                  login: true
+                }
+              },
+              server: {
+                actions: {
+                  publicApi: true,
+                  openapi: true
+                }
+              }
+            }
+          },
+          { refresh: 'wait_for' }
+        )
+
+        await this.$kuzzle.security.updateRole(
+          'default',
+          {
+            controllers: {
+              '*': {
+                actions: {
+                  '*': false
+                }
+              },
+              auth: {
+                actions: {
+                  checkToken: true,
+                  getCurrentUser: true,
+                  getMyRights: true,
+                  logout: true,
+                  updateSelf: true
+                }
+              },
+              server: {
+                actions: {
+                  publicApi: true
+                }
+              }
+            }
+          },
+          { refresh: 'wait_for' }
+        )
+        this.$router.go(this.$router.currentRoute)
+      } catch (err) {
+        this.$log.error(err)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title: 'Ooops! Something went wrong while revoking Anonymous role.',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+      }
+    }
   },
-  route: {
-    data() {
-      this.$emit('crudl-refresh-search')
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('auth', ['canSearchRole', 'canCreateRole']),
+    displayRevokeAnonymous() {
+      return (
+        this.$store.direct.getters.auth.adminAlreadyExists &&
+        this.$store.direct.getters.auth.canEditRole &&
+        this.$store.direct.getters.auth.canManageRoles &&
+        this.$store.direct.getters.auth.user.id !== -1
+      )
     }
   }
 }

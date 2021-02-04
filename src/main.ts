@@ -1,36 +1,57 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
-import VueKuzzle from './plugins/kuzzle'
+import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
+import createRoutes from './routes/index'
 import './plugins/logger'
+import VueGtag from 'vue-gtag'
+
+import VueFormGenerator from 'vue-form-generator'
+import 'vue-form-generator/dist/vfg.css'
+import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue'
+import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue'
 
 import App from './App.vue'
 import store from './vuex/store'
 
-Vue.use(VueRouter)
-Vue.use(VueKuzzle)
+Reflect.defineProperty(window, 'kuzzle', {
+  get () {
+    return store.getters.kuzzle.$kuzzle
+  }
+})
 
-store.dispatch.kuzzle.loadEnvironments(null)
-store.dispatch.kuzzle
-  .switchLastEnvironment(null)
-  .then(() => {
-    let router = require('./services/router').default
+Vue.use(BootstrapVue)
+Vue.use(BootstrapVueIcons)
 
-    /* eslint-disable no-new */
-    new Vue({
-      el: '#app',
-      router,
-      store: store.original,
-      render: h => h(App)
-    })
+if (process.env.GA_ID && process.env.NODE_ENV === 'production') {
+  Vue.use(VueGtag, {
+    config: { id: process.env.GA_ID }
   })
-  .catch(() => {
-    let router = require('./services/router').default
+}
 
-    /* eslint-disable no-new */
-    new Vue({
-      el: '#app',
-      router,
-      store: store.original,
-      render: h => h(App)
-    })
-  })
+const router = createRoutes(Vue.prototype.$log, Vue.prototype.$gtag)
+
+Vue.component('fieldJsonFormInput', JsonFormInput)
+Vue.component('fieldDateTimeFormInput', DateTimeFormInput)
+Vue.use(VueFormGenerator)
+
+// Vue.config.errorHandler = (err, vm, info) => {
+//   // TODO : use vue-logger instead of console.error,
+//   // idk why but here vm.$log is undefined
+//   console.error(`Error: ${err.toString()}\nInfo: ${info}`)
+
+//   vm.$bvToast.toast('The complete error has been printed to the console.', {
+//     title: 'Ooops! Something went wrong.',
+//     variant: 'warning',
+//     toaster: 'b-toaster-bottom-right',
+//     appendToast: true,
+//     dismissible: true,
+//     noAutoHide: true
+//   })
+// }
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  store: store.original,
+  render: h => h(App)
+})

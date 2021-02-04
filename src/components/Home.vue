@@ -1,147 +1,133 @@
 <template>
-  <div class="Main">
-    <main-menu
-      @environment::create="editEnvironment"
-      @environment::delete="deleteEnvironment"
-      @environment::importEnv="importEnv"
-    />
-
-    <main class="loader">
-      <warning-header
-        v-if="!$store.direct.getters.auth.adminAlreadyExists"
-        :text="warningHeaderText"
+  <div class="Home">
+    <div class="Home-menuWrapper">
+      <main-menu
+        @environment::create="$emit('environment::create', $event)"
+        @environment::delete="$emit('environment::delete', $event)"
+        @environment::importEnv="$emit('environment::importEnv')"
       />
-      <warning-header v-else :text="bannerV4Text" />
-      <div class="wrapper">
-        <router-view />
-      </div>
-    </main>
+    </div>
 
-    <modal
+    <div class="Home-routeWrapper" data-cy="App-loggedIn">
+      <main-spinner v-if="authInitializing"></main-spinner>
+      <router-view v-else />
+    </div>
+    <b-alert
+      class="rounded-0 text-center mb-0 "
+      dismissible
+      fade
+      style="z-index: 2000;"
+      variant="info"
+      data-cy="noAdminAlert"
+      :show="!$store.direct.getters.auth.adminAlreadyExists"
+    >
+      <i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i>
+      <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly
+      recommended <a href="#/signup" class="alert-link"> that you create one.</a
+      ><i class="fa fa-exclamation-triangle ml-2" aria-hidden="true"></i>
+    </b-alert>
+
+    <b-modal
       id="tokenExpired"
-      class="small-modal"
-      :has-footer="false"
-      :can-close="false"
-      :is-open="tokenExpiredIsOpen"
-      :close="noop"
+      data-cy="Modal-tokenExpired"
+      hide-footer
+      title="Sorry, your session has expired"
+      v-model="tokenExpiredIsOpen"
     >
-      <h5>Your session has expired</h5>
-      <h6>Please, relogin</h6>
-      <login-form :on-login="onLogin" />
-    </modal>
-
-    <modal
-      id="kuzzleDisconnected"
-      class="small-modal"
-      :has-footer="false"
-      :can-close="false"
-      :close="noop"
-      :is-open="kuzzleDisconnectedIsOpen"
-    >
-      <h5><i class="fa fa-warning red-color" /> Can't connect to Kuzzle</h5>
-      <kuzzle-disconnected
-        :host="$store.direct.state.kuzzle.host"
-        :port="$store.direct.state.kuzzle.port"
-      />
-    </modal>
+      <login-form />
+    </b-modal>
   </div>
 </template>
 
 <script>
 import MainMenu from './Common/MainMenu'
-import WarningHeader from './Common/WarningHeader'
+import MainSpinner from './Common/MainSpinner'
 import LoginForm from './Common/Login/Form'
-import Modal from './Materialize/Modal'
-import KuzzleDisconnected from './Error/KuzzleDisconnected'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
   components: {
     LoginForm,
     MainMenu,
-    Modal,
-    KuzzleDisconnected,
-    WarningHeader
+    MainSpinner
   },
   data() {
     return {
       host: null,
       port: null,
-      tokenExpiredIsOpen: false,
-      kuzzleDisconnectedIsOpen: false,
-      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended <a href="#/signup"> that you create one.</a><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`,
-      bannerV4Text:
-        '<span>Hey! A new version of the Admin Console will be available on Feb 4th 2021. You can <a target="_blank" href="http://next-console.kuzzle.io">preview it here</a>, or <a target="_blank" href="https://blog.kuzzle.io/kuzzle-admin-console-v4">read about what\'s new</a>.</span>'
+      tokenExpiredIsOpen: false
     }
   },
-  watch: {
-    '$store.direct.state.auth.tokenValid'(valid) {
-      if (!valid) {
-        this.tokenExpiredIsOpen = true
-      }
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
+    tokenValid() {
+      return this.$store.direct.state.auth.tokenValid
     },
-    '$store.direct.state.kuzzle.connectedTo'(isConnected) {
-      if (!isConnected) {
-        this.kuzzleDisconnectedIsOpen = true
-        return
-      }
-      this.kuzzleDisconnectedIsOpen = false
+    authInitializing() {
+      return this.$store.direct.state.auth.initializing
     }
+  },
+  methods: {
+    onTokenExpired() {
+      this.$store.direct.dispatch.auth.setSession(null)
+    },
+    noop() {}
   },
   mounted() {
     this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
+    this.$kuzzle.on('queryError', e => {
+      if (this.currentEnvironment.backendMajorVersion === 1) {
+        switch (e.id) {
+          case 'security.token.invalid':
+            this.onTokenExpired()
+            break
+          default:
+            break
+        }
+      } else {
+        switch (e.id) {
+          case 'security.token.expired':
+            this.onTokenExpired()
+            break
+          default:
+            break
+        }
+      }
+    })
   },
-  methods: {
-    onLogin() {
-      this.tokenExpiredIsOpen = false
-      this.$emit('modal-close', 'tokenExpired')
-    },
-    editEnvironment(id) {
-      this.$emit('environment::create', id)
-    },
-    deleteEnvironment(id) {
-      this.$emit('environment::delete', id)
-    },
-    importEnv() {
-      this.$emit('environment::importEnv')
-    },
-    onTokenExpired() {
-      this.$store.direct.commit.auth.setTokenValid(false)
-    },
-    noop() {}
+  beforeDestroy() {
+    this.$kuzzle.removeListener('tokenExpired')
+    this.$kuzzle.removeListener('queryError')
+  },
+  watch: {
+    tokenValid: {
+      handler(val) {
+        setTimeout(() => {
+          this.tokenExpiredIsOpen = !val
+        }, 500)
+      }
+    }
   }
 }
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-h6 {
-  margin-bottom: 40px;
+.Home {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-items: stretch;
 }
 
-main {
-  padding-left: $sidebar-width;
-
-  .wrapper {
-    padding: 20px;
-  }
+.Home-menuWrapper {
+  flex-basis: 66px;
 }
 
-.loader {
-  transition: opacity 0.5s ease-out;
-  opacity: 1;
-
-  &.loading {
-    opacity: 0.3;
-    z-index: 10;
-
-    &:before {
-      content: 'loading ...';
-      position: fixed;
-      text-align: center;
-      left: 0;
-      right: 0;
-      bottom: 10px;
-    }
-  }
+.Home-routeWrapper {
+  flex-grow: 1;
+  flex-basis: 300px;
+  overflow: hidden;
 }
 </style>

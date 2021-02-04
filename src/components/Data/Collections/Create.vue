@@ -1,24 +1,20 @@
 <template>
-  <div v-if="hasRights">
+  <b-container class="CollectionCreate h-100" v-if="index">
     <create-or-update
+      v-if="hasRights"
       headline="Create a new collection"
-      :error="error"
-      :index="index"
-      @collection-create::create="create"
-      @collection-create::reset-error="error = ''"
-      @document-create::error="setError"
+      submit-label="Create"
+      :index="index.name"
+      @submit="create"
     />
-  </div>
-  <div v-else>
-    <page-not-allowed />
-  </div>
+    <page-not-allowed v-else />
+  </b-container>
 </template>
 
 <script>
-import { canCreateCollection } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import CreateOrUpdate from './CreateOrUpdate'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionCreate',
   components: {
@@ -26,43 +22,42 @@ export default {
     PageNotAllowed
   },
   props: {
-    index: String
-  },
-  data() {
-    return {
-      error: ''
-    }
+    indexName: String
   },
   computed: {
+    ...mapGetters('auth', ['canCreateCollection']),
     hasRights() {
-      return canCreateCollection(this.index, this.collection)
+      return this.canCreateCollection(this.index.name)
+    },
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
     }
   },
-  mounted() {
-    this.$store.direct.commit.collection.resetCollectionDetail()
-  },
   methods: {
-    create() {
-      this.error = ''
-
-      this.$store.direct.dispatch.index
-        .createCollectionInIndex({
+    async create(payload) {
+      try {
+        await this.$store.direct.dispatch.index.createCollection({
           index: this.index,
-          collection: this.$store.state.collection.name,
-          isRealtimeOnly: this.$store.state.collection.isRealtimeOnly
+          name: payload.name,
+          mapping: payload.mapping,
+          dynamic: payload.dynamic
         })
-        .then(() => {
-          this.$router.push({
-            name: 'DataIndexSummary',
-            params: { index: this.index }
-          })
+
+        this.$router.push({
+          name: 'Collections',
+          params: { indexName: this.index.name }
         })
-        .catch(e => {
-          this.error = e.message
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(error.message, {
+          title: 'Ooops! Something went wrong while creating the collection.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
-    },
-    setError(payload) {
-      this.error = payload
+      }
     }
   }
 }

@@ -1,0 +1,9 @@
+name: Lint
+description: Run ESLint
+runs:
+  using: "composite"
+  steps:
+    - run: npm ci
+      shell: bash
+    - run: npm run test:lint
+      shell: bash

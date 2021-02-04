@@ -1,97 +1,163 @@
 <template>
   <div class="RoleList">
     <slot v-if="!currentFilter.basic && totalDocuments === 0" name="emptySet" />
-    <crudl-document
-      v-else
-      :pagination-from="paginationFrom"
-      :pagination-size="paginationSize"
-      :current-filter="currentFilter"
-      :documents="documents"
-      :total-documents="totalDocuments"
-      :display-bulk-delete="displayBulkDelete"
-      :display-create="displayCreate"
-      :all-checked="allChecked"
-      :selected-documents="selectedDocuments"
-      :length-document="selectedDocuments.length"
-      :document-to-delete="documentToDelete"
-      :perform-delete="deleteRoles"
-      @filters-updated="onFiltersUpdated"
-      @create-clicked="create"
-      @toggle-all="toggleAll"
-    >
-      <div class="RoleList-list collection">
-        <div
-          v-for="document in documents"
-          :key="document.id"
-          class="collection-item collection-transition"
-        >
-          <component
-            :is="itemName"
-            :document="document"
-            :is-checked="isChecked(document.id)"
-            @checkbox-click="toggleSelectDocuments"
-            @common-list::edit-document="editDocument"
-            @delete-document="deleteDocument"
-          />
-        </div>
-      </div>
-    </crudl-document>
+    <template v-else>
+      <filters
+        class="mb-3"
+        :current-filter="currentFilter.basic"
+        @filters-updated="onFiltersUpdated"
+        @reset="onFiltersUpdated"
+      />
+      <b-card
+        class="light-shadow"
+        :bg-variant="documents.length === 0 ? 'light' : 'default'"
+      >
+        <template v-if="loading">
+          <b-row class="text-center">
+            <b-col>
+              <b-spinner variant="primary" class="mt-5"></b-spinner>
+            </b-col>
+          </b-row>
+        </template>
+
+        <b-card-text class="p-0">
+          <div v-show="!documents.length" class="row valign-center empty-set">
+            <b-row align-h="center" class="valign-center empty-set">
+              <b-col cols="2" class="text-center">
+                <i
+                  class="fa fa-5x fa-search text-secondary mt-3"
+                  aria-hidden="true"
+                />
+              </b-col>
+              <b-col md="6">
+                <h3 class="text-secondary font-weight-bold">
+                  There is no result matching your query. Please try with
+                  another filter.
+                </h3>
+                <p>
+                  <em
+                    >Learn more about filtering syntax on
+                    <a
+                      href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/basic-queries/"
+                      target="_blank"
+                      >Kuzzle Elasticsearch Cookbook</a
+                    ></em
+                  >
+                </p>
+              </b-col>
+            </b-row>
+          </div>
+          <div v-if="documents.length">
+            <b-row no-gutters class="mb-2">
+              <b-col cols="8">
+                <b-button
+                  variant="outline-danger"
+                  class="mr-2"
+                  data-cy="UserList-bulkDeleteBtn"
+                  :disabled="!displayBulkDelete"
+                  @click="deleteBulk"
+                >
+                  <i class="fa fa-minus-circle left" />
+                  Delete selected
+                </b-button>
+              </b-col>
+              <b-col cols="4" class="text-right"
+                >Show
+                <b-form-select
+                  class="mx-2"
+                  style="width: unset"
+                  :options="itemsPerPage"
+                  :value="paginationSize"
+                  @change="changePaginationSize($event)"
+                >
+                </b-form-select>
+                <span v-if="totalDocuments"
+                  >of {{ totalDocuments }} total items.</span
+                ></b-col
+              >
+            </b-row>
+          </div>
+          <b-list-group class="RoleList-list collection">
+            <b-list-group-item
+              v-for="document in documents"
+              data-cy="RoleList-list"
+              :key="document.id"
+              class="p-2"
+            >
+              <RoleItem
+                :document="document"
+                :is-checked="isChecked(document.id)"
+                @checkbox-click="toggleSelectDocuments"
+                @common-list::edit-document="editDocument"
+                @delete-document="deleteRole"
+              />
+            </b-list-group-item>
+          </b-list-group>
+        </b-card-text>
+      </b-card>
+      <b-row align-h="center">
+        <b-pagination
+          class="m-2 mt-4"
+          data-cy="RolesManagement-pagination"
+          v-model="currentPage"
+          :total-rows="totalDocuments"
+          :per-page="paginationSize"
+        ></b-pagination>
+      </b-row>
+    </template>
+    <delete-modal
+      id="modal-delete-roles"
+      :candidates-for-deletion="candidatesForDeletion"
+      :is-loading="deleteModalIsLoading"
+      @confirm="onDeleteConfirmed"
+      @hide="resetCandidatesForDeletion"
+    />
   </div>
 </template>
 
 <script>
-import CrudlDocument from './CrudlDocument'
-import UserItem from '../Users/UserItem'
+import DeleteModal from './DeleteModal'
+import Filters from './Filters'
 import RoleItem from '../Roles/RoleItem'
-import ProfileItem from '../Profiles/ProfileItem'
-import DocumentItem from '../../Data/Documents/DocumentListItem'
 import * as filterManager from '../../../services/filterManager'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'RoleList',
   components: {
-    CrudlDocument,
-    UserItem,
-    RoleItem,
-    ProfileItem,
-    DocumentItem
+    DeleteModal,
+    Filters,
+    RoleItem
   },
   props: {
-    itemName: String,
     displayCreate: {
       type: Boolean,
       default: false
     },
-    performSearch: Function,
-    performDelete: Function,
     routeCreate: String,
     routeUpdate: String
   },
   data() {
     return {
-      selectedDocuments: [],
-      documents: [],
-      totalDocuments: 0,
+      candidatesForDeletion: [],
+      currentFilter: new filterManager.Filter(),
+      currentPage: 1,
+      deleteModalIsLoading: false,
       documentToDelete: null,
-      currentFilter: new filterManager.Filter()
+      documents: [],
+      loading: false,
+      selectedDocuments: [],
+      totalDocuments: 0,
+      paginationSize: 10,
+      itemsPerPage: [10, 25, 50, 100, 500]
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     displayBulkDelete() {
       return this.selectedDocuments.length > 0
     },
-    allChecked() {
-      if (!this.selectedDocuments || !this.documents) {
-        return false
-      }
-
-      return this.selectedDocuments.length === this.documents.length
-    },
     paginationFrom() {
-      return parseInt(this.currentFilter.from) || 0
-    },
-    paginationSize() {
-      return parseInt(this.currentFilter.size) || 10
+      return (this.currentPage - 1) * this.paginationSize || 0
     }
   },
   watch: {
@@ -106,6 +172,9 @@ export default {
     },
     currentFilter() {
       this.fetchRoles()
+    },
+    currentPage() {
+      this.fetchRoles()
     }
   },
   mounted() {
@@ -115,24 +184,48 @@ export default {
     )
   },
   methods: {
-    async deleteRoles(index, collection, ids) {
-      await this.performDelete(index, collection, ids)
-      this.$set(
-        this.selectedDocuments,
-        this.selectedDocuments.splice(0, this.selectedDocuments.length)
-      )
+    changePaginationSize(e) {
+      this.paginationSize = e
       this.fetchRoles()
+    },
+    // DELETE
+    // =========================================================================
+    async onDeleteConfirmed() {
+      this.deleteModalIsLoading = true
+      try {
+        await this.wrapper.performDeleteRoles(this.candidatesForDeletion)
+        this.$bvModal.hide('modal-delete-roles')
+        this.deleteModalIsLoading = false
+        this.fetchRoles()
+      } catch (e) {
+        this.$log.error(e)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while deleting the document(s).',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+      }
+    },
+    deleteRole(id) {
+      this.candidatesForDeletion.push(id)
+      this.$bvModal.show('modal-delete-roles')
+    },
+    deleteBulk() {
+      this.candidatesForDeletion = this.candidatesForDeletion.concat(
+        this.selectedDocuments
+      )
+      this.$bvModal.show('modal-delete-roles')
+    },
+    resetCandidatesForDeletion() {
+      this.candidatesForDeletion = []
     },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
-    },
-    toggleAll() {
-      if (this.allChecked) {
-        this.selectedDocuments = []
-        return
-      }
-      this.selectedDocuments = []
-      this.selectedDocuments = this.documents.map(document => document.id)
     },
     toggleSelectDocuments(id) {
       let index = this.selectedDocuments.indexOf(id)
@@ -144,16 +237,36 @@ export default {
 
       this.selectedDocuments.splice(index, 1)
     },
-    onFiltersUpdated(newFilters) {
+    onFiltersUpdated(filter) {
+      let newFilters
+      if (filter.controllers && filter.controllers.length) {
+        newFilters = Object.assign(this.currentFilter, {
+          active: filterManager.ACTIVE_BASIC,
+          basic: filter,
+          from: 0
+        })
+      } else {
+        newFilters = Object.assign(this.currentFilter, {
+          active: filterManager.NO_ACTIVE,
+          basic: null,
+          from: 0
+        })
+      }
       try {
         filterManager.saveToRouter(
           filterManager.stripDefaultValuesFromFilter(newFilters),
           this.$router
         )
       } catch (error) {
-        this.$store.direct.commit.toaster.setToast({
-          text:
-            'An error occurred while updating filters: <br />' + error.message
+        this.$log.error(error)
+        this.$bvToast.toast('The complete error has been printed to console', {
+          title:
+            'Ooops! Something went wrong while updating the search filters',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
       }
     },
@@ -162,17 +275,33 @@ export default {
         from: this.paginationFrom,
         size: this.paginationSize
       }
-
-      this.performSearch(this.currentFilter.basic || {}, pagination)
+      const filter = {}
+      if (
+        this.currentFilter.active === filterManager.ACTIVE_BASIC &&
+        this.currentFilter.basic.controllers &&
+        this.currentFilter.basic.controllers.length
+      ) {
+        filter.controllers = this.currentFilter.basic.controllers
+      }
+      this.wrapper
+        .performSearchRoles(filter, pagination)
         .then(res => {
           this.documents = res.documents
           this.totalDocuments = res.total
         })
         .catch(e => {
-          this.$store.direct.commit.toaster.setToast({
-            text:
-              'An error occurred while performing search: <br />' + e.message
-          })
+          this.$log.error(e)
+          this.$bvToast.toast(
+            'The complete error has been printed to console',
+            {
+              title: 'Ooops! Something went wrong while fetching the role list',
+              variant: 'warning',
+              toaster: 'b-toaster-bottom-right',
+              appendToast: true,
+              dismissible: true,
+              noAutoHide: true
+            }
+          )
         })
     },
     editDocument(route, id) {
@@ -180,9 +309,6 @@ export default {
         name: this.routeUpdate,
         params: { id }
       })
-    },
-    deleteDocument(id) {
-      this.documentToDelete = id
     },
     create() {
       this.$router.push({ name: this.routeCreate })

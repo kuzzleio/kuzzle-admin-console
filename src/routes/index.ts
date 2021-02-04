@@ -1,105 +1,159 @@
-import Login from '../components/Login.vue'
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import store from '../vuex/store'
+import { moduleActionContext } from '../vuex/store'
+
 import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage.vue'
-import store from '@/vuex/store'
-import { hasSecurityRights } from '../services/userAuthorization'
+import SelectEnvironmentPage from '../components/Common/Environments/SelectEnvironmentPage.vue'
+import ConnectionAwareContainer from '../components/ConnectionAwareContainer.vue'
+import Home from '../components/Home.vue'
+import Login from '../components/Login.vue'
+import Signup from '../components/Signup.vue'
+import DataLayout from '../components/Data/Layout.vue'
+import ResetPassword from '../components/ResetPassword.vue'
+import SecurityLayout from '../components/Security/Layout.vue'
+import PageNotFound from '../components/404.vue'
+
 import SecuritySubRoutes from './children/security'
 import DataSubRoutes from './children/data'
 
-export default function createRoutes(VueRouter) {
-  let router = new VueRouter(
-    {
-      routes: [
-        {
-          path: '/',
-          name: 'Home',
-          redirect: '/data',
-          component(resolve) {
-            require(['../components/Home'], resolve)
-          },
-          meta: {
-            auth: true
-          },
-          children: [
-            {
-              path: '/security',
-              name: 'Security',
-              redirect: '/security/users',
-              component(resolve) {
-                if (!hasSecurityRights()) {
-                  require(['../components/Common/PageNotAllowed'], resolve)
-                } else {
-                  require(['../components/Security/Layout'], resolve)
-                }
-              },
-              children: SecuritySubRoutes
-            },
-            {
-              path: '/data',
-              name: 'DataLayout',
-              meta: {
-                auth: true
-              },
-              component(resolve) {
-                require(['../components/Data/Layout'], resolve)
-              },
-              children: DataSubRoutes
-            }
-          ]
-        },
-        {
-          path: '/signup',
-          name: 'Signup',
-          component(resolve) {
-            require(['../components/Signup'], resolve)
-          }
-        },
-        {
-          path: '/login',
-          name: 'Login',
-          meta: {
-            auth: false
-          },
-          component: Login
-        },
-        {
-          path: '/create-env',
-          name: 'CreateEnv',
-          meta: {
-            auth: false
-          },
-          component: CreateEnvironmentPage
-        }
-      ]
-    },
-    'hash'
-  )
+Vue.use(VueRouter)
 
-  router.afterEach(() => {
-    Array.prototype.forEach.call(
-      document.querySelectorAll('.loader'),
-      element => {
-        element.classList.remove('loading')
+export default function createRoutes(log, ga) {
+  const environmentsGuard = async (from, to, next) => {
+    log.debug('Router:EnvironmentsGuard')
+    try {
+      store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+    } catch (error) {
+      log.error(
+        'Something went wrong while loading the connections. The JSON content saved in the LocalStorage seems to be malformed.'
+      )
+      log.error(error.message)
+    }
+    if (store.getters.kuzzle.hasEnvironment) {
+      log.debug('Has environments')
+
+      if (!store.getters.kuzzle.currentEnvironment) {
+        log.debug('No environment selected')
+        return next({ name: 'SelectEnvironment' })
       }
-    )
+      if (!store.getters.kuzzle.isCurrentEnvironmentValid) {
+        log.debug('Current environment is not valid')
+        return next({
+          name: 'EditEnvironment',
+          params: { id: store.state.kuzzle.currentId }
+        })
+      }
+      return next()
+    } else {
+      log.debug('No environments')
+
+      return next({ name: 'CreateEnvironment' })
+    }
+  }
+
+  const router = new VueRouter({
+    routes: [
+      {
+        path: '/create-connection',
+        name: 'CreateEnvironment',
+        beforeEnter: async (from, to, next) => {
+          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+          next()
+        },
+        props: true,
+        component: CreateEnvironmentPage
+      },
+      {
+        path: '/edit-connection/:id',
+        name: 'EditEnvironment',
+        beforeEnter: async (from, to, next) => {
+          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+          next()
+        },
+        props: route => ({
+          id: route.params.id
+        }),
+        component: CreateEnvironmentPage
+      },
+      {
+        path: '/select-connection',
+        name: 'SelectEnvironment',
+        beforeEnter: async (from, to, next) => {
+          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+          next()
+        },
+        component: SelectEnvironmentPage
+      },
+      {
+        path: '/',
+        beforeEnter: environmentsGuard,
+        component: ConnectionAwareContainer,
+        children: [
+          {
+            path: '/login',
+            name: 'Login',
+            component: Login
+          },
+          {
+            path: '/reset-password/:token',
+            name: 'ResetPassword',
+            component: ResetPassword,
+            meta: {
+              skipLogin: true
+            },
+            props: true
+          },
+          {
+            path: '/signup',
+            name: 'Signup',
+            component: Signup,
+            meta: {
+              skipLogin: true
+            }
+          },
+          {
+            path: '/',
+            component: Home,
+            meta: {
+              requiresAuth: true
+            },
+            children: [
+              {
+                path: '/',
+                name: 'Data',
+                redirect: '/data',
+                component: DataLayout,
+                children: DataSubRoutes
+              },
+              {
+                path: '/security',
+                redirect: '/security/users',
+                name: 'Security',
+                component: SecurityLayout,
+                children: SecuritySubRoutes
+              }
+            ]
+          }
+        ]
+      },
+      {
+        path: '*',
+        name: '404',
+        beforeEnter: environmentsGuard,
+        component: PageNotFound
+      }
+    ]
   })
 
-  router.beforeEach((to, from, next) => {
-    Array.prototype.forEach.call(
-      document.querySelectorAll('.loader'),
-      element => {
-        element.classList.add('loading')
-      }
-    )
-
-    if (
-      (to.name === 'CreateEnv' && store.getters.kuzzle.hasEnvironment) ||
-      (to.name === 'Signup' && store.getters.auth.adminAlreadyExists) ||
-      (to.name === 'Login' && store.getters.auth.isAuthenticated)
-    ) {
-      next('/')
-    } else {
-      next()
+  router.afterEach(to => {
+    if (!ga) {
+      return
     }
+
+    ga.pageview({
+      page_title: to.name
+    })
   })
 
   return router

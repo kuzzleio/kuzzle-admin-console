@@ -1,128 +1,136 @@
 <template>
-  <div v-if="hasRights" class="wrapper">
-    <headline>
-      {{ collection }}
-      <collection-dropdown
-        class="icon-medium icon-black"
-        :index="index"
-        :collection="collection"
+  <b-container class="DocumentCreate d-flex flex-column h-100">
+    <template v-if="hasRights" class="wrapper">
+      <headline>
+        Create a new document
+      </headline>
+
+      <create-or-update
+        v-if="index && collection"
+        :index="indexName"
+        :collection="collectionName"
+        :mapping="collection.mapping"
+        :document="newDocument"
+        @cancel="onCancel"
+        @submit="onSubmit"
+        @document-change="onDocumentChange"
       />
-    </headline>
-
-    <collection-tabs />
-
-    <create-or-update
-      v-model="document"
-      :error="error"
-      :index="index"
-      :collection="collection"
-      :get-mapping="getMappingDocument"
-      :submitted="submitted"
-      @document-create::create="create"
-      @document-create::cancel="cancel"
-      @document-create::reset-error="error = null"
-      @document-create::error="setError"
-      @change-id="updateId"
-    />
-  </div>
-  <div v-else>
-    <page-not-allowed />
-  </div>
+    </template>
+    <template v-else>
+      <page-not-allowed />
+    </template>
+  </b-container>
 </template>
 
 <script>
-import { canCreateDocument } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
-
-import CollectionDropdown from '../Collections/Dropdown'
+import { mapGetters } from 'vuex'
 import Headline from '../../Materialize/Headline'
-import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
-import CollectionTabs from '../Collections/Tabs'
 
 export default {
-  name: 'DocumentCreateOrUpdate',
+  name: 'DocumentCreate',
   components: {
     Headline,
-    CollectionDropdown,
     CreateOrUpdate,
-    CollectionTabs,
     PageNotAllowed
   },
   props: {
-    index: String,
-    collection: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {
-      error: '',
-      document: {},
-      id: null,
-      submitted: false
+      mapping: {},
+      submitting: false,
+      newDocument: {}
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('auth', ['canCreateDocument']),
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.$store.direct.getters.index.getOneCollection(
+        this.index,
+        this.collectionName
+      )
+    },
     hasRights() {
-      return canCreateDocument(this.index, this.collection)
+      return this.canCreateDocument(this.indexName, this.collectionName)
     }
   },
   methods: {
-    getMappingDocument,
-    updateId(id) {
-      this.id = id
-    },
-    async create(document) {
-      this.error = ''
-
+    async onSubmit(document, id) {
       if (!document) {
         this.error = 'The document is invalid, please review it'
         return
       }
 
-      this.submitted = true
-
-      let id = this.id
-
-      if (document._id) {
-        id = document._id
-        delete document._id
-      }
+      this.submitting = true
 
       try {
         await this.$kuzzle.document.create(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           document,
           id,
           { refresh: 'wait_for' }
         )
-        await this.$store.direct.dispatch.collection.fetchCollectionDetail({
+
+        await this.fetchCollectionMapping()
+
+        this.$router.push({
+          name: 'DocumentList',
+          params: {
+            indexName: this.indexName,
+            collectionName: this.collectionName
+          }
+        })
+      } catch (err) {
+        this.$log.error(err)
+        this.$bvToast.toast(err.message, {
+          title: 'Ooops! Something went wrong while persisting the document.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
+      }
+    },
+    onCancel() {
+      this.$router.push({
+        name: 'DocumentList',
+        params: { index: this.index, collection: this.collection }
+      })
+    },
+    onDocumentChange(document) {
+      this.newDocument = document
+    },
+    async fetchCollectionMapping() {
+      try {
+        this.$store.direct.dispatch.index.fetchCollectionMapping({
           index: this.index,
           collection: this.collection
         })
-        this.$router.push({
-          name: 'DataDocumentsList',
-          params: { index: this.index, collection: this.collection }
-        })
-      } catch (err) {
-        this.error =
-          'An error occurred while trying to create the document: <br/> ' +
-          err.message
-        this.submitted = false
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while counting documents in collections.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
       }
-    },
-    cancel() {
-      if (this.$router._prevTransition && this.$router._prevTransition.to) {
-        this.$router.go(this.$router._prevTransition.to)
-      } else {
-        this.$router.push({
-          name: 'DataDocumentsList',
-          params: { index: this.index, collection: this.collection }
-        })
-      }
-    },
-    setError(payload) {
-      this.error = payload
     }
   }
 }

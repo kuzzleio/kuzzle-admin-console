@@ -1,167 +1,231 @@
 <template>
-  <div :class="{ open: open || filter }" class="index-branch">
+  <div :class="{ open }" class="IndexBranch mt-2">
     <i
-      v-if="collectionCount"
-      class="fa fa-caret-right tree-toggle"
       aria-hidden="true"
-      @click="toggleBranch"
+      class="fa fa-caret-right pointer tree-toggle"
+      :data-cy="`IndexBranch-toggle--${index.name}`"
+      @click="onToggleBranchClicked"
     />
     <router-link
-      :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
-      class="tree-item truncate"
-      :class="{ active: isIndexActive(indexName) }"
+      class="tree-item truncate mt-2"
+      :data-cy="`Treeview-item-index-link--${index.name}`"
+      :class="{ active: isIndexActive(index.name) }"
+      :title="index.name"
+      :to="{ name: 'Collections', params: { indexName: index.name } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
-      <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
+      <HighlightedSpan :value="index.name" :filter="filter" />
+
+      <template v-if="index.collectionsCount !== undefined"
+        >&nbsp;({{ index.collectionsCount }})</template
+      >
     </router-link>
-    <ul class="collections">
-      <li
-        v-for="collectionName in orderedFilteredStoredCollections"
-        :key="collectionName"
-      >
-        <router-link
-          class="tree-item truncate"
-          :to="{
-            name: 'DataDocumentsList',
-            params: { index: indexName, collection: collectionName }
-          }"
-          :class="{ active: isCollectionActive(indexName, collectionName) }"
+    <b-spinner small v-if="isLoading"></b-spinner>
+    <div class="collections" v-if="collectionsFetched">
+      <template v-if="orderedFilteredCollections.length">
+        <div
+          v-for="collection in orderedFilteredCollections"
+          class="tree-item truncate mt-2"
+          :class="{ active: isCollectionActive(index.name, collection.name) }"
+          :data-cy="`Treeview-item--${collection.name}`"
+          :key="`${collection.name}-${collection.type}`"
+          :title="collection.name"
         >
-          <i
-            class="fa fa-th-list"
-            aria-hidden="true"
-            title="Persisted collection"
-          />
-          <span v-html="highlight(collectionName, filter)" />
-        </router-link>
-      </li>
-      <li
-        v-for="collectionName in orderedFilteredRealtimeCollections"
-        :key="collectionName"
+          <template v-if="collection.isRealtime()">
+            <i
+              class="fa fa-bolt ml-1 mr-2"
+              aria-hidden="true"
+              title="Volatile collection"
+            />
+            <router-link
+              :to="{
+                name: 'WatchCollection',
+                params: {
+                  indexName: index.name,
+                  collectionName: collection.name
+                }
+              }"
+            >
+              <HighlightedSpan :value="collection.name" :filter="filter" />
+            </router-link>
+          </template>
+          <template v-else>
+            <i
+              class="fa fa-th-list"
+              aria-hidden="true"
+              title="Persisted collection"
+            />
+            <router-link
+              :to="{
+                name: 'DocumentList',
+                params: {
+                  indexName: index.name,
+                  collectionName: collection.name
+                }
+              }"
+            >
+              <HighlightedSpan :value="collection.name" :filter="filter" />
+            </router-link>
+          </template>
+        </div>
+      </template>
+      <template v-else><span class="text-muted">no collections</span></template>
+      <b-link
+        v-if="showMoreCollectionsDisplay"
+        @click="toggleShowMoreCollections"
+        class="tree-item truncate"
       >
-        <router-link
-          class="tree-item"
-          :to="{
-            name: 'DataCollectionWatch',
-            params: { index: indexName, collection: collectionName }
-          }"
-          :class="{ active: isCollectionActive(indexName, collectionName) }"
-        >
-          <i
-            class="fa fa-bolt"
-            aria-hidden="true"
-            title="Volatile collection"
-          />
-          <span v-html="highlight(collectionName, filter)" />
-          <i
-            class="fa fa-times right remove"
-            @click.prevent="removeRealtimeCollection(indexName, collectionName)"
-          />
-        </router-link>
-      </li>
-    </ul>
+        <u v-if="!showMoreCollections">Show More</u>
+        <u v-else>Show only results</u>
+      </b-link>
+    </div>
   </div>
 </template>
 
 <script>
+import { truncateName } from '../../../utils'
+import HighlightedSpan from '../../Common/HighlightedSpan'
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
+  components: {
+    HighlightedSpan
+  },
   props: {
     forceOpen: {
       type: Boolean,
       default: false
     },
-    indexName: String,
-    currentIndex: String,
+    index: Object,
+    browsedIndexName: String,
+    browsedCollectionName: String,
     filter: String,
-    currentCollection: String,
-    routeName: String,
-    collections: Object
+    routeName: String
   },
   data: function() {
     return {
-      open: false
+      open: false,
+      showMoreCollections: false,
+      collectionsFetched: false,
+      isLoading: false
     }
   },
   computed: {
-    collectionCount() {
-      if (!this.collections) {
-        return 0
+    ...mapGetters('index', ['loadingCollections']),
+    showMoreCollectionsDisplay() {
+      if (
+        this.filter.length > 0 &&
+        this.index.collections &&
+        this.index.collections.filter(
+          col => col.name.indexOf(this.filter) !== -1
+        ).length !== this.index.collections.length
+      ) {
+        return 1
+      }
+      return 0
+    },
+    orderedFilteredCollections() {
+      if (!this.index.collections) {
+        return []
       }
 
-      return this.collections.realtime.length + this.collections.stored.length
-    },
-    orderedFilteredStoredCollections() {
-      if (this.collections) {
-        return this.collections.stored
-          .filter(col => col.indexOf(this.filter) !== -1)
-          .sort()
-      }
-      return []
-    },
-    orderedFilteredRealtimeCollections() {
-      if (this.collections) {
-        return this.collections.realtime
-          .filter(col => col.indexOf(this.filter) !== -1)
-          .sort()
-      }
-      return []
+      return this.index.collections
+        .filter(
+          col =>
+            col.name.indexOf(this.filter) !== -1 || this.showMoreCollections
+        )
+        .sort()
     }
   },
   watch: {
-    currentIndex() {
+    browsedIndexName() {
       this.testOpen()
     },
-    currentCollection() {
+    browsedCollectionName() {
       this.testOpen()
+    },
+    filter() {
+      if (
+        this.index.collections &&
+        this.index.collections.filter(
+          col => col.name.indexOf(this.filter) !== -1
+        ).length > 0
+      ) {
+        this.open = true
+      }
+
+      if (this.filter == '') {
+        this.open = false
+      }
     }
   },
-  mounted() {
-    this.testOpen()
+  async mounted() {
+    if (this.index) {
+      await this.testOpen()
+    }
   },
   methods: {
+    ...mapActions('index', ['fetchCollectionList']),
+    truncateName,
+    async onToggleBranchClicked() {
+      if (!this.open) {
+        await this.fetchCollections()
+      }
+      this.toggleBranch()
+    },
+    async fetchCollections() {
+      try {
+        this.isLoading = true
+        await this.fetchCollectionList(this.index)
+        this.collectionsFetched = true
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while fetching the collections.',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+      }
+      this.isLoading = false
+    },
     toggleBranch() {
       // TODO This state should be one day persistent across page refreshes
+      // NJE edit: not today...
       this.open = !this.open
     },
+    // TODO get rid of this ESTEBAAAAAAAAN
     getRelativeLink(isRealtime) {
       switch (this.routeName) {
-        case 'DataCollectionWatch':
+        case 'WatchCollection':
           return this.routeName
-        case 'DataDocumentsList':
-          return isRealtime ? 'DataCollectionWatch' : this.routeName
+        case 'DocumentList':
+          return isRealtime ? 'WatchCollection' : this.routeName
         default:
-          return 'DataDocumentsList'
+          return 'DocumentList'
       }
     },
-    testOpen() {
-      if (this.currentIndex === this.indexName) {
+    toggleShowMoreCollections() {
+      this.showMoreCollections = !this.showMoreCollections
+    },
+    async testOpen() {
+      if (this.browsedIndexName === this.index.name) {
+        await this.fetchCollections()
         this.open = true
       }
     },
     isIndexActive(indexName) {
-      return this.currentIndex === indexName && !this.currentCollection
+      return this.browsedIndexName === indexName && !this.browsedCollectionName
     },
     isCollectionActive(indexName, collectionName) {
       return (
-        this.currentIndex === indexName &&
-        this.currentCollection === collectionName
+        this.browsedIndexName === indexName &&
+        this.browsedCollectionName === collectionName
       )
-    },
-    highlight(value, filter) {
-      if (value && value !== '' && filter && filter !== '') {
-        let index = value.toLowerCase().indexOf(filter.toLowerCase())
-
-        if (index >= 0) {
-          value =
-            value.substring(0, index) +
-            '<strong class="highlight">' +
-            value.substring(index, index + filter.length) +
-            '</strong>' +
-            value.substring(index + filter.length)
-        }
-      }
-
-      return value
     },
     removeRealtimeCollection(indexName, collectionName) {
       this.$store.direct.dispatch.index.removeRealtimeCollection({
@@ -173,7 +237,7 @@ export default {
         this.$route.params.collection === collectionName
       ) {
         this.$router.push({
-          name: 'DataIndexSummary',
+          name: 'Indexes',
           params: { index: indexName }
         })
       }
@@ -182,76 +246,61 @@ export default {
 }
 </script>
 
-<style scoped lang="css">
-ul.collections {
-  padding-left: 15px;
+<style scoped lang="scss">
+.IndexBranch {
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.collections {
+  padding-left: 25px;
   overflow-y: hidden;
   max-height: 0;
+  overflow: hidden;
 }
 
-li {
-  position: relative;
-}
-
-a,
-i.tree-toggle {
-  line-height: 32px;
-  height: 32px;
-}
-
-a.tree-item {
-  padding: 0 5px;
-  margin: 0 15px;
-}
-
-a.tree-item.active {
-  font-weight: bold;
-  color: #3498db;
-}
-
-i.fa {
-  margin-right: 5px;
-  color: rgb(100, 100, 100);
-}
-
-i.fa:hover {
-  margin-right: 5px;
-  color: rgb(50, 50, 50);
-}
-
-i.tree-toggle {
-  position: absolute;
-  cursor: pointer;
-  padding: 0 10px 0 10px;
-  margin: 0 0 0 -10px;
-  transition-duration: 0.2s;
-  transform-origin: 50% 50%;
-}
-
-/** open-closed state **/
-
-.open i.tree-toggle {
-  transform: rotate(90deg);
-}
-
-.open ul.collections {
+.open .collections {
   max-height: 2000px;
   transition: max-height 0.5s ease-out;
 }
 
-/* webkit adjacent element selector bugfix */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  .treeview {
-    -webkit-animation: webkit-adjacent-element-selector-bugfix infinite 1s;
-  }
+a {
+  color: #002835;
+}
 
-  @-webkit-keyframes webkit-adjacent-element-selector-bugfix {
-    from {
-      padding: 0;
-    }
-    to {
-      padding: 0;
-    }
+.tree-item {
+  padding: 0 5px;
+  margin: 0 5px;
+  color: #002835;
+  &.active {
+    font-weight: bold;
   }
+}
+
+.fa {
+  margin-right: 5px;
+  color: rgb(100, 100, 100);
+  &:hover {
+    margin-right: 5px;
+    color: rgb(50, 50, 50);
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.tree-toggle {
+  transition-duration: 0.2s;
+  transform-origin: 50% 50%;
+}
+
+.open .tree-toggle {
+  transform: rotate(90deg);
+}
+
+.no-caret {
+  margin: 0 0.35em;
 }
 </style>
