@@ -17,7 +17,7 @@ echo
 
 if [ -z $e2eLocal ]; then
   echo " Launching Kuzzle"
-  docker-compose -f test/e2e/docker-compose.yml up -d
+  docker-compose -f tests/e2e/docker-compose.yml up -d
 fi
 
 echo " Waiting for Kuzzle to be up at http://$kuzzleHost:$kuzzlePort"

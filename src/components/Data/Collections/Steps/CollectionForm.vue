@@ -99,7 +99,7 @@
         >
         <button
           type="submit"
-          class="btn primary waves-effect waves-light"
+          class="CollectionForm-submit btn primary waves-effect waves-light"
           @click.prevent="next"
         >
           Save
