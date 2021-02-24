@@ -11,7 +11,7 @@ describe('Switch between two backends', () => {
     backends.forEach(backend => {
       cy.task('doco', {
         version: backend.version,
-        docoArgs: ['up'],
+        docoArgs: ['up', '-d'],
         port: backend.port,
         stackPrefix: backend.name
       })

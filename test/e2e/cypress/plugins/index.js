@@ -15,7 +15,7 @@ const execa = require('execa')
 
 module.exports = on => {
   on('task', {
-    doco({ version, docoArgs, port, stackPrefix }) {
+    async doco({ version, docoArgs, port, stackPrefix }) {
       const docoFile = path.join(
         process.cwd(),
         'test',
@@ -34,7 +34,7 @@ module.exports = on => {
         )}`
       )
 
-      execa(
+      await execa(
         'docker-compose',
         ['-f', docoFile, '-p', `${stackPrefix}-${version}`].concat(docoArgs),
         {
