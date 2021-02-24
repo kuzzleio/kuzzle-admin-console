@@ -201,7 +201,7 @@ describe('Collection management', function() {
     )
   })
 
-  it.only('Should disable delete stored collections for Kuzzle v1', () => {
+  it('Should disable delete stored collections for Kuzzle v1', () => {
     cy.skipUnlessBackendVersion(1)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
