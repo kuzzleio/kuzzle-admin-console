@@ -201,9 +201,8 @@ describe('Collection management', function() {
     )
   })
 
-  it('Should disable delete stored collections for Kuzzle v1', () => {
+  it.only('Should disable delete stored collections for Kuzzle v1', () => {
     cy.skipUnlessBackendVersion(1)
-    cy.waitForService(`http://localhost:7512`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/`)
