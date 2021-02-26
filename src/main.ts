@@ -2,7 +2,6 @@ import Vue from 'vue'
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import createRoutes from './routes/index'
 import './plugins/logger'
-import VueGtag from 'vue-gtag'
 
 import VueFormGenerator from 'vue-form-generator'
 import 'vue-form-generator/dist/vfg.css'
@@ -13,7 +12,7 @@ import App from './App.vue'
 import store from './vuex/store'
 
 Reflect.defineProperty(window, 'kuzzle', {
-  get () {
+  get() {
     return store.getters.kuzzle.$kuzzle
   }
 })
@@ -21,13 +20,7 @@ Reflect.defineProperty(window, 'kuzzle', {
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
-if (process.env.GA_ID && process.env.NODE_ENV === 'production') {
-  Vue.use(VueGtag, {
-    config: { id: process.env.GA_ID }
-  })
-}
-
-const router = createRoutes(Vue.prototype.$log, Vue.prototype.$gtag)
+const router = createRoutes(Vue.prototype.$log)
 
 Vue.component('fieldJsonFormInput', JsonFormInput)
 Vue.component('fieldDateTimeFormInput', DateTimeFormInput)
