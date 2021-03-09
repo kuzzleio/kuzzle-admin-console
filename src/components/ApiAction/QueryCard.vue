@@ -1,14 +1,15 @@
 <template>
-  <b-card-body class="h-100">
+  <b-card-body class="px-0 py-0 h-100">
     <b-card-text :class="`mb-0 h-100`">
-      <b-container fluid class="h-100">
-        <b-row class="my-3 px-3" align-h="between">
-          <b-col cols="6">
+      <b-container fluid class="px-0 h-100">
+        <b-row class="my-3 px-0" align-h="between">
+          <b-col cols="8">
             <b-row>
               <b-col>
-                <b-form-group
-                  description="Controller"
+                <b-input-group
+                  prepend="Controller"
                   id="query-input-controller"
+                  append=""
                 >
                   <b-tooltip
                     v-if="!isQueryValid(jsonQuery)"
@@ -21,9 +22,16 @@
                     :data-cy="`api-actions-controller-input-${tabIdx}`"
                     v-model="editedQuery.controller"
                     :disabled="!isQueryValid(jsonQuery)"
+                    placeholder="Select or type your controller"
                     list="controllersList"
                   ></b-form-input>
-                </b-form-group>
+                  <b-input-group-append
+                    is-text
+                    @click="editedQuery.controller = ''"
+                  >
+                    <i class="fas fa-times" />
+                  </b-input-group-append>
+                </b-input-group>
                 <datalist id="controllersList">
                   <option
                     v-for="controller of controllers"
@@ -33,7 +41,7 @@
                 </datalist>
               </b-col>
               <b-col>
-                <b-form-group description="Action" id="query-input-action">
+                <b-input-group prepend="Action" id="query-input-action">
                   <b-tooltip
                     v-if="!isQueryValid(jsonQuery)"
                     target="query-input-action"
@@ -45,9 +53,16 @@
                     :data-cy="`api-actions-action-input-${tabIdx}`"
                     v-model="editedQuery.action"
                     list="actionsList"
+                    placeholder="Select or type your action"
                     :disabled="!isQueryValid(jsonQuery)"
                   ></b-form-input>
-                </b-form-group>
+                  <b-input-group-append
+                    is-text
+                    @click="editedQuery.action = ''"
+                  >
+                    <i class="fas fa-times" />
+                  </b-input-group-append>
+                </b-input-group>
                 <datalist id="actionsList">
                   <option
                     v-for="action of actions"
@@ -58,7 +73,7 @@
               </b-col>
             </b-row>
           </b-col>
-          <b-col class="text-right" id="query-button-actions" cols="2">
+          <b-col class="text-right" id="query-button-actions" cols="4">
             <b-tooltip
               v-if="!isQueryValid(jsonQuery)"
               target="query-button-actions"
@@ -88,7 +103,7 @@
             </b-button>
           </b-col>
         </b-row>
-        <b-row align-v="stretch" class="multipaneRow">
+        <b-row align-v="stretch" class="multipaneRow px-3">
           <Multipane
             class="QueryLayout-vertical Query-Custom-resizer-vertical"
             layout="vertical"
@@ -247,7 +262,7 @@ export default {
         if (value !== tmp.controller) {
           tmp.controller = value
           this.jsonQuery = JSON.stringify(tmp, null, 2)
-          this.$log.info(this.$refs);
+          this.$log.info(this.$refs)
           this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
             this.jsonQuery
           )
@@ -321,6 +336,6 @@ export default {
   }
 }
 .multipaneRow {
-  height: calc(100% - 100px);
+  height: calc(100% - 50px);
 }
 </style>

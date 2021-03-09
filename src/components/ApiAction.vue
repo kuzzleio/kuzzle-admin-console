@@ -16,20 +16,19 @@
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper-vertical">
+      <InfoAlert v-if="showAlert" @closeAlert="closeAlert" />
       <b-container fluid class="h-100">
         <b-row align-v="stretch" class="h-100">
-          <b-col cols="12" v-if="showAlert">
-            <InfoAlert @closeAlert="closeAlert" />
-          </b-col>
           <b-col cols="12" v-if="loading"> </b-col>
           <b-col cols="12" v-else>
-            <b-card no-body class="h-100">
-              <b-tabs card content-class="mt-3 tabsHeight">
+            <b-card no-body class="px-0 h-100">
+              <b-tabs card content-class="px-0 mt-3 tabsHeight">
                 <b-tab
                   v-for="(tabContent, tabIdx) of tabs"
                   :key="`query-${tabIdx}-${tabContent.name}`"
                   :active="currentTabIdx === tabIdx"
                   @click.prevent=""
+                  class="px-2 py-0"
                   title-link-class="px-3 py-0 titleItem"
                 >
                   <template #title>
@@ -58,6 +57,7 @@
                     </b-row>
                   </template>
                   <QueryCard
+                    class="px-0"
                     :query="tabContent.query"
                     :tabIdx="tabIdx"
                     :controllers="controllers"
@@ -169,7 +169,7 @@ export default {
       this.showAlert = false
     },
     formatTabName(tabContent) {
-      let name = tabContent.name ? tabContent.name : 'New query'
+      let name = tabContent.name ? tabContent.name : 'New API action'
       name = truncateName(name, 11)
       name += tabContent.saved ? '' : ' *'
       return name
@@ -315,13 +315,6 @@ export default {
 
       try {
         response = await this.wrapper.query(query)
-        this.$bvToast.toast('Query successfully played.', {
-          headerClass: "data-cy-api-actions-toast-header",
-          title: 'Success',
-          variant: 'success',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
       } catch (error) {
         response = {
           ...error,
@@ -329,13 +322,6 @@ export default {
           stack: error.stack,
           kuzzleStack: error.kuzzleStack
         }
-        this.$bvToast.toast('An error occured while playing query.', {
-          headerClass: "data-cy-api-actions-toast-header",
-          title: 'Error',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
       }
       this.tabs[tabIdx].response = response
     },
