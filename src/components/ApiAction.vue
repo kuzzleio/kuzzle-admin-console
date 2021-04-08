@@ -314,7 +314,7 @@ export default {
       let response = {}
 
       try {
-        response = await this.wrapper.query(query)
+        response = await this.$kuzzle.query(query)
       } catch (error) {
         response = {
           ...error,
@@ -332,7 +332,7 @@ export default {
     },
     async getKuzzleOpenApi() {
       try {
-        const openApi = await this.wrapper.query({
+        const openApi = await this.$kuzzle.query({
           controller: 'server',
           action: 'openapi'
         })
@@ -343,7 +343,7 @@ export default {
     },
     async getKuzzlePublicApi() {
       try {
-        const publicApi = await this.wrapper.query({
+        const publicApi = await this.$kuzzle.query({
           controller: 'server',
           action: 'publicApi'
         })

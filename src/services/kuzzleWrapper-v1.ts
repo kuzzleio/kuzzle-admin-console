@@ -413,10 +413,6 @@ export class KuzzleWrapperV1 {
       refresh: 'wait_for'
     })
   }
-
-  query(payload) {
-      return this.kuzzle.query(payload)
-  }
 }
 
 export const wrapper = new KuzzleWrapperV1(kuzzle)
