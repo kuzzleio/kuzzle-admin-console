@@ -32,7 +32,6 @@ import Vue from 'vue'
 export default {
   name: 'JsonEditor',
   props: {
-    reference: String,
     content: String,
     id: {
       type: String,
@@ -70,12 +69,12 @@ export default {
       return this.editor
     },
     setContent(value) {
-      this.$log.debug('Setting content', value)
-      this.editor.getSession().setValue(value)
+      Vue.nextTick(() => {
+        this.editor.getSession().setValue(value)
+      })
     }
   },
   mounted() {
-    this.editorReference = this.reference ? this.reference : 'jsoneditor'
     Vue.nextTick(() => {
       /* eslint no-undef: 0 */
       this.editor = ace.edit(this.$refs[this.id], {

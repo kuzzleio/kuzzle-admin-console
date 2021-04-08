@@ -123,7 +123,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
+    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     ...mapGetters('auth', ['canGetPublicApi', 'canGetOpenApi']),
     controllers() {
       return this.api ? Object.keys(this.api) : []
