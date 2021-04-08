@@ -59,13 +59,14 @@ export default {
   },
   computed: {
     currentStatus() {
-      return this.response ? _.get(this.response, 'status' , "undefined") : null;
+      return this.response ? _.get(this.response, 'status', 'undefined') : null
     },
     currentErrorMessage() {
       return this.response ? this.response.message : null
     },
     statusBarVariant() {
-      if (this.currentStatus === null || this.currentStatus === 'undefined') return 'secondary'
+      if (this.currentStatus === null || this.currentStatus === 'undefined')
+        return 'secondary'
       if (this.currentStatus.toString().match(/20[0-9]/)) return 'success'
       return 'danger'
     }

@@ -42,7 +42,7 @@
     </b-alert>
 
     <b-alert
-    data-cy="EnvironmentImport-err"
+      data-cy="EnvironmentImport-err"
       v-for="(err, k) in errors"
       class="mt-3"
       dismissible

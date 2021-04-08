@@ -48,14 +48,17 @@ const isActionAllowed = (
   if (
     filteredRights.some(function(item) {
       return item.value === 'allowed'
-    }) &&     filteredRights.some(function(item) {
+    }) &&
+    filteredRights.some(function(item) {
       return item.value === 'denied'
     })
   ) {
     return false
-  } else if ( filteredRights.some(function(item) {
-    return item.value === 'allowed'
-  })) {
+  } else if (
+    filteredRights.some(function(item) {
+      return item.value === 'allowed'
+    })
+  ) {
     return true
   }
   return false

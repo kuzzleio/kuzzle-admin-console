@@ -196,13 +196,20 @@ export default {
       }
       let path = api.http[0].url
       let verb = api.http[0].verb.toLowerCase()
-      const openApiPath = path.replaceAll(/:[^,/]+/g, (m) => (`{${m.replace(':', '')}}`))
+      const openApiPath = path.replaceAll(
+        /:[^,/]+/g,
+        m => `{${m.replace(':', '')}}`
+      )
 
-      const params = _.get(this.openapi, `${openApiPath}.${verb}.parameters`, null)
+      const params = _.get(
+        this.openapi,
+        `${openApiPath}.${verb}.parameters`,
+        null
+      )
       if (params) {
         for (let param of params) {
           this.$log.debug(param)
-          query[param.name] = ""
+          query[param.name] = ''
         }
       }
       this.jsonQuery = JSON.stringify(query, null, 2)
