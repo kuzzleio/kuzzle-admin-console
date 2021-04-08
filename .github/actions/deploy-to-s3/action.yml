@@ -18,9 +18,6 @@ inputs:
     description: AWS default region
     required: true
     default: 'us-west-2'
-  GA_ID:
-    description: Google Analytics ID
-    required: true
   TARGET_DIST:
     description: Build artifact folder to deploy
     required: true
@@ -41,7 +38,6 @@ runs:
         npm run build
       env:
         NODE_ENV: production
-        GA_ID: ${{ inputs.GA_ID }}
       shell: bash
     - name: Deploy
       run: |

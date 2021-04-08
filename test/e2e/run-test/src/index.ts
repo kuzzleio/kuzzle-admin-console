@@ -36,12 +36,12 @@ class RunTest extends Command {
         break
       case 'multi':
       default:
-        await this.multiBackend(flags.local, flags.tag)
+        await this.multiBackend(flags.local, flags.spec, flags.tag)
         break
     }
   }
 
-  async singleBackend(backend: string, local: boolean = false, specs: String[], tags: String[]) {
+  async singleBackend(backend: string, local: boolean = false, spec: String[], tag: String[]) {
     this.log(
       chalk.blueBright(
         ` Preparing single-backend stack with Kuzzle v${backend}`
@@ -113,8 +113,8 @@ class RunTest extends Command {
       backend,
       process.env.CYPRESS_RECORD_KEY,
       false,
-      specs,
-      tags
+      spec,
+      tag
     )
     this.log(npmArgs.join())
     try {
@@ -134,7 +134,7 @@ class RunTest extends Command {
     }
   }
 
-  async multiBackend(local: boolean = false, tags: String[]) {
+  async multiBackend(local: boolean = false, spec: String[], tag: String[]) {
     this.log(chalk.blueBright(` Preparing multi-backend stack`))
 
     const tasks = new Listr([
@@ -165,8 +165,8 @@ class RunTest extends Command {
       'multi-backend',
       process.env.CYPRESS_RECORD_KEY,
       true,
-      [],
-      tags
+      spec,
+      tag
     )
     try {
       const cy = execa('cypress', npmArgs, {
@@ -224,13 +224,11 @@ class RunTest extends Command {
       }
     }
     let specsArg = ''
-    if (specs.length !== 0 && backend !== 'multi-backend') {
-      specsArg = specs.map(s => `test/e2e/cypress/integration/single-backend/${s}.spec.js`).join()
+    const basePath = `test/e2e/cypress/integration/${multi ? 'multi-backend' : 'single-backend'}/`
+    if (specs.length !== 0) {
+      specsArg = specs.map(s => `${basePath}${s}.spec.js`).join()
     } else {
-      specsArg =
-        `test/e2e/cypress/integration/${
-          multi ? 'multi-backend' : 'single-backend'
-        }/*.spec.js`
+      specsArg = `${basePath}*.spec.js`
     }
     cypressArgs.push("--spec")
     cypressArgs.push(specsArg)
