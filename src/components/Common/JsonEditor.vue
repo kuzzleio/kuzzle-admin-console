@@ -52,13 +52,13 @@ export default {
   },
   computed: {
     classes() {
-      return (this.readonly ? 'readonly ' : '') + this.myclass;
+      return (this.readonly ? 'readonly ' : '') + this.myclass
     },
     style() {
       if (this.height === undefined) {
-        return { 'min-height': '250px' };
+        return { 'min-height': '250px' }
       } else {
-        return { 'min-height': this.height + 'px!important' };
+        return { 'min-height': this.height + 'px!important' }
       }
     }
   },
@@ -101,5 +101,5 @@ export default {
       this.editor.removeAllListeners('change')
     }
   }
-};
+}
 </script>
