@@ -96,6 +96,13 @@ export default {
       })
     })
   },
+  watch: {
+    content: {
+      handler(value) {
+        this.setContent(value)
+      }
+    }
+  },
   beforeDestroy() {
     if (this.editor) {
       this.editor.removeAllListeners('change')
