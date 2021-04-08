@@ -184,11 +184,8 @@ export default {
     },
     loadQueryParams() {
       const query = _.clone(this.editedQuery)
-      if (
-        !this.api ||
-        !this.api[query.controller] ||
-        !this.api[query.controller][query.action]
-      ) {
+      const api = _.get(this.api, `${query.controller}.${query.action}`, null)
+      if (api) {
         let obj = {
           controller: query.controller,
           action: query.action,
@@ -201,7 +198,6 @@ export default {
         )
         return
       }
-      const api = this.api[query.controller][query.action]
       let path = api.http[0].url
       let verb = api.http[0].verb.toLowerCase()
       let tmpPath = path
@@ -217,13 +213,9 @@ export default {
         }
         idx = tmpPath.search(/\/:/)
       }
-      if (
-        this.openapi &&
-        this.openapi[tmpPath] &&
-        this.openapi[tmpPath][verb] &&
-        this.openapi[tmpPath][verb].parameters
-      ) {
-        for (let param of this.openapi[tmpPath][verb].parameters) {
+      const params = _.get(this.openapi, `${tmpPath}.${verb}.parameters`, null)
+      if (params) {
+        for (let param of params) {
           query[param.name] = null
         }
       }
