@@ -98,7 +98,9 @@ export default {
   watch: {
     content: {
       handler(value) {
-        this.setContent(value)
+        if (this.editor && value !== this.getRawValue()) {
+          this.setContent(value)
+        }
       }
     }
   },

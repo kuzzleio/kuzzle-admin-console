@@ -32,6 +32,7 @@
 
 <script>
 import jsonEditor from '@/components/Common/JsonEditor'
+import _ from 'lodash'
 
 export default {
   components: {
@@ -58,13 +59,13 @@ export default {
   },
   computed: {
     currentStatus() {
-      return this.response ? this.response.status : null
+      return this.response ? _.get(this.response, 'status' , "undefined") : null;
     },
     currentErrorMessage() {
       return this.response ? this.response.message : null
     },
     statusBarVariant() {
-      if (this.currentStatus === null) return 'secondary'
+      if (this.currentStatus === null || this.currentStatus === 'undefined') return 'secondary'
       if (this.currentStatus.toString().match(/20[0-9]/)) return 'success'
       return 'danger'
     }

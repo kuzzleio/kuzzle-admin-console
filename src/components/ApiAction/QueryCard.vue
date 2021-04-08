@@ -185,7 +185,7 @@ export default {
     loadQueryParams() {
       const query = _.clone(this.editedQuery)
       const api = _.get(this.api, `${query.controller}.${query.action}`, null)
-      if (api) {
+      if (!api) {
         let obj = {
           controller: query.controller,
           action: query.action,
@@ -196,23 +196,13 @@ export default {
       }
       let path = api.http[0].url
       let verb = api.http[0].verb.toLowerCase()
-      let tmpPath = path
-      let idx = tmpPath.search(/\/:/)
-      while (idx !== -1) {
-        tmpPath = tmpPath.replace('/:', '/{')
-        let sub = tmpPath.substring(idx + 1, tmpPath.length)
-        if (sub.search(/\//) !== -1) {
-          let newSub = sub.replace('/', '}/')
-          tmpPath = tmpPath.replace(sub, newSub)
-        } else {
-          tmpPath += '}'
-        }
-        idx = tmpPath.search(/\/:/)
-      }
-      const params = _.get(this.openapi, `${tmpPath}.${verb}.parameters`, null)
+      const openApiPath = path.replaceAll(/:[^,/]+/g, (m) => (`{${m.replace(':', '')}}`))
+
+      const params = _.get(this.openapi, `${openApiPath}.${verb}.parameters`, null)
       if (params) {
         for (let param of params) {
-          query[param.name] = null
+          this.$log.debug(param)
+          query[param.name] = ""
         }
       }
       this.jsonQuery = JSON.stringify(query, null, 2)
