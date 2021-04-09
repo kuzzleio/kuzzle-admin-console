@@ -228,14 +228,6 @@ export default {
         return q.name === name
       })
       const nameAlreadyUsed = nameSearch !== undefined
-      if (nameAlreadyUsed) {
-        this.$bvToast.toast('Query name already used.', {
-          title: 'Error',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
-      }
       return !nameAlreadyUsed
     },
     storeNewQuery(name) {
@@ -246,12 +238,6 @@ export default {
       this.savedQueries.push(tab)
       this.newSaveTabIdx = null
       this.storeQueriesToLocalStorage()
-      this.$bvToast.toast('Query successfully saved.', {
-        title: 'Info',
-        variant: 'info',
-        toaster: 'b-toaster-bottom-right',
-        appendToast: true
-      })
     },
     saveQuery(tabIdx) {
       const tab = this.tabs[tabIdx]
@@ -262,12 +248,6 @@ export default {
         this.savedQueries[storedQueryIdx].query = JSON.parse(JSON.stringify(tab.query))
         this.tabs[tabIdx].saved = true
         this.storeQueriesToLocalStorage()
-        this.$bvToast.toast('Query successfully saved.', {
-          title: 'Info',
-          variant: 'info',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
       } else {
         this.newSaveTabIdx = tabIdx
         this.$bvModal.show('modal-save-query')
