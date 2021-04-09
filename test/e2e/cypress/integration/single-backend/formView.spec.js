@@ -162,6 +162,7 @@ describe('Form view', function() {
       .type(`{selectall}{backspace}{
 "name": "PHP CEO"`,
         {
+          delay: 200,
           force: true
         }
       )
