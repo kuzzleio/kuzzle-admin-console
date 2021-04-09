@@ -47,13 +47,11 @@ export default {
   data() {
     return {
       isFullScreen: false,
-      // content: '{}'
     }
   },
   watch: {
     response: {
       handler(value) {
-        // this.content = JSON.stringify(value, null, ' ')
         this.$refs[`responseEditorWrapper-${this.tabIdx}`].setContent(
           JSON.stringify(value, null, ' ')
         )
