@@ -95,15 +95,6 @@ export default {
       })
     })
   },
-  watch: {
-    content: {
-      handler(value) {
-        if (this.editor && value !== this.getRawValue()) {
-          this.setContent(value)
-        }
-      }
-    }
-  },
   beforeDestroy() {
     if (this.editor) {
       this.editor.removeAllListeners('change')

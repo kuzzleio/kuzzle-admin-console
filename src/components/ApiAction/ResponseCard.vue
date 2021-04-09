@@ -24,7 +24,7 @@
         :data-cy="`api-actions-response-JSONEditor-${tabIdx}`"
         readonly
         class="m-2 responseJsonEditor"
-        :content="content"
+        content="{}"
       />
     </b-card-body>
   </b-card>
@@ -47,13 +47,16 @@ export default {
   data() {
     return {
       isFullScreen: false,
-      content: '{}'
+      // content: '{}'
     }
   },
   watch: {
     response: {
       handler(value) {
-        this.content = JSON.stringify(value, null, ' ')
+        // this.content = JSON.stringify(value, null, ' ')
+        this.$refs[`responseEditorWrapper-${this.tabIdx}`].setContent(
+          JSON.stringify(value, null, ' ')
+        )
       }
     }
   },

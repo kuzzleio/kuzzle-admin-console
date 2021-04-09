@@ -46,7 +46,7 @@ describe('Form view', function() {
         },
         skill: {
           name: 'managment',
-          level: '1'
+          level: 1
         },
         job: 'Always asking Esteban to do his job',
         employeeOfTheMonthSince: '1996-07-10'
@@ -67,21 +67,20 @@ describe('Form view', function() {
     cy.get('input#age').type('31')
 
     cy.get('[name="items"] > textarea.ace_text-input')
-      .type('{backspace}{backspace}', { force: true })
-      .type(
-        `{
-      "desktop": "standing"`,
+      .type(`{selectall}{backspace}{
+"desktop": "standing"`,
         {
+          delay: 200,
           force: true
         }
       )
 
     cy.get('[name="skill"] > textarea.ace_text-input')
-      .type('{backspace}{backspace}', { force: true })
-      .type(
-        `{
-      "name": "CSS", "level": 60`,
+      .type(`{selectall}{backspace}{
+"name": "CSS",
+"level": 60`,
         {
+          delay: 200,
           force: true
         }
       )
@@ -126,15 +125,17 @@ describe('Form view', function() {
       .clear()
       .type('23:30:00')
 
-    cy.get('[name="skill"] > textarea.ace_text-input').type(
-      `{selectall}{backspace}
-      {
-        "name": "management", "level": 0`,
-      {
-        delay: 400,
-        force: true
-      }
-    )
+
+
+    cy.get('[name="skill"] > textarea.ace_text-input')
+      .type(`{selectall}{backspace}{
+"name": "management",
+"level": 0`,
+        {
+          delay: 200,
+          force: true
+        }
+      )
 
     cy.get('[data-cy="DocumentUpdate-btn"').click({ force: true })
 
@@ -158,14 +159,8 @@ describe('Form view', function() {
     cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
 
     cy.get('textarea.ace_text-input')
-      .type(`{selectall}{backspace}`, {
-        delay: 400,
-        force: true
-      })
-      .type(
-        `{
-  "name": "PHP CEO"
-`,
+      .type(`{selectall}{backspace}{
+"name": "PHP CEO"`,
         {
           force: true
         }

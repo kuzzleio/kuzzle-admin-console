@@ -13,16 +13,16 @@ describe('API Actions - query', function() {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
-    .type(`{selectall}{backspace}
-    {
+    .type(`{selectall}{backspace}{
 "controller": "index",
 "action": "create",
 "index": "${indexName}"`, {
-      delay: 400,
+      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-run-button-0"]').click()
-    cy.get('.data-cy-api-actions-toast-header')
+
+    cy.wait(1000)
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/_exists`)
     .should((response) => {
@@ -36,12 +36,11 @@ describe('API Actions - query', function() {
     cy.visit(`/#/api-action`)
     cy.wait(500)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
-    .type(`{selectall}{backspace}
-    {
+    .type(`{selectall}{backspace}{
 "controller": "index",
 "action": "create",
 "index": "${indexName}"`, {
-      delay: 400,
+      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-run-button-0"]').click()
@@ -56,40 +55,6 @@ describe('API Actions - query', function() {
     .should('contain', '"status": 200')
   })
 
-  it('Should get a success toast after run valid query', () => {
-    const indexName = "testindex"
-    cy.waitOverlay()
-    cy.visit(`/#/api-action`)
-    cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
-    .type(`{selectall}{backspace}
-    {
-"controller": "index",
-"action": "create",
-"index": "${indexName}"`, {
-      delay: 400,
-      force: true
-    })
-    cy.get('[data-cy="api-actions-run-button-0"]').click()
-    cy.get('.data-cy-api-actions-toast-header').should('contain', 'Success')
-  })
-
-  it('Should get an error toast after run valid inquery', () => {
-    const indexName = "testindex"
-    cy.waitOverlay()
-    cy.visit(`/#/api-action`)
-    cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
-    .type(`{selectall}{backspace}
-    {
-"controller": "index",
-"action": "create",
-"index": null`, {
-      delay: 400,
-      force: true
-    })
-    cy.get('[data-cy="api-actions-run-button-0"]').click()
-    cy.get('.data-cy-api-actions-toast-header').should('contain', 'Error')
-  })
-
   it('Should be able to set query controller using input', () => {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
@@ -97,6 +62,7 @@ describe('API Actions - query', function() {
     cy.get('[data-cy="api-actions-query-JSONEditor-0"]')
     .should('contain', '"controller": "index"')
   })
+
   it('Should be able to set query action using input', () => {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
@@ -172,7 +138,7 @@ describe('API Actions - tabs and save', function() {
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
     .type(`{selectall}{backspace}tab0`, {
-      delay: 400,
+      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-tab-plus"]').click()
@@ -190,18 +156,17 @@ describe('API Actions - tabs and save', function() {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
-    .type(`{selectall}{backspace}
-    {
+    .type(`{selectall}{backspace}{
 "controller": "index",
 "action": "create",
 "index": "toto"`, {
-      delay: 400,
+      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-save-button-0"]').click()
     cy.get('[data-cy="api-actions-modal-name-input"]')
     .type(`{selectall}{backspace}${queryName}`, {
-      delay: 400,
+      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-modal-ok-button"]').click()
@@ -252,7 +217,8 @@ describe('API Actions - tabs and save', function() {
 
     cy.get(`[data-cy="api-actions-saved-query-${queryName}"]`).click()
     cy.get('[data-cy="api-actions-run-button-1"]').click()
-    cy.get('.data-cy-api-actions-toast-header')
+
+    cy.wait(1000)
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/_exists`)
     .should((response) => {
@@ -277,12 +243,11 @@ describe('API Actions - tabs and save', function() {
     cy.get(`[data-cy="api-actions-saved-query-${queryName}"]`).click()
 
     cy.get('[data-cy="api-actions-query-JSONEditor-1"] textarea.ace_text-input')
-    .type(`{selectall}{backspace}
-    {
+    .type(`{selectall}{backspace}{
 "controller": "index",
 "action": "create",
 "index": "${indexName2}"`, {
-      delay: 400,
+      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-save-button-1"]').click()

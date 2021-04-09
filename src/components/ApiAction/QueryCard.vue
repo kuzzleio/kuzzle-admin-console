@@ -192,6 +192,9 @@ export default {
           body: query.body
         }
         this.jsonQuery = JSON.stringify(obj, null, 2)
+        this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
+          this.jsonQuery
+        )
         return
       }
       let path = api.http[0].url
@@ -213,6 +216,7 @@ export default {
         }
       }
       this.jsonQuery = JSON.stringify(query, null, 2)
+      this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery)
     },
     queryBodyChange($event) {
       this.jsonQuery = $event
@@ -246,6 +250,9 @@ export default {
         if (value !== tmp.controller) {
           tmp.controller = value
           this.jsonQuery = JSON.stringify(tmp, null, 2)
+          this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
+            this.jsonQuery
+          )
         }
       }
     },
@@ -256,6 +263,9 @@ export default {
         if (value !== tmp.action) {
           tmp.action = value
           this.jsonQuery = JSON.stringify(tmp, null, 2)
+          this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
+            this.jsonQuery
+          )
           this.loadQueryParams()
         }
       }
