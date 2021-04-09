@@ -46,7 +46,7 @@ export default {
   },
   data() {
     return {
-      isFullScreen: false,
+      isFullScreen: false
     }
   },
   watch: {
