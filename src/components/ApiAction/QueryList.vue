@@ -39,7 +39,7 @@
                     <b-col cols="3" class="py-3">
                       <i
                         class="fas fa-trash pointer"
-                        @click="deleteSavedQuery(query.idx)"
+                        @click="deleteSavedQuery(query)"
                       />
                     </b-col>
                   </b-row>
@@ -74,8 +74,25 @@ export default {
     }
   },
   methods: {
-    deleteSavedQuery(savedQueryIdx) {
-      this.$emit('deleteSavedQuery', savedQueryIdx)
+    deleteSavedQuery(query) {
+      this.$bvModal.msgBoxConfirm('Please confirm the deletion of the API Action.', {
+        title: `Api Action ${query.name} deletion`,
+        size: 'md',
+        buttonSize: 'sm',
+        okVariant: 'danger',
+        okTitle: 'YES',
+        cancelTitle: 'NO',
+        footerClass: 'p-2',
+        hideHeaderClose: false,
+      })
+      .then(value => {
+        if (value) {
+          this.$emit('deleteSavedQuery', query.idx)
+        }
+      })
+      .catch(err => {
+        this.$log.error(err)
+      })
     },
     loadSavedQuery(savedQueryIdx) {
       this.$emit('loadSavedQuery', savedQueryIdx)

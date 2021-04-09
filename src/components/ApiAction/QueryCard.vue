@@ -71,6 +71,26 @@
                   >
                 </datalist>
               </b-col>
+              <b-button id="popover-target-1" variant="link">
+                <i color="primary" class="fas fa-question-circle fa-lg" ></i>
+              </b-button>
+              <b-popover target="popover-target-1" triggers="hover" placement="top">
+                Here, you'll be able to perform custom
+                <a
+                  href="https://docs.kuzzle.io/sdk/js/7/core-classes/kuzzle/query/"
+                  target="_blank"
+                  >query
+                  <i class="fa fa-external-link-alt" />
+                </a>
+                to Kuzzle following the
+                <a
+                  href="https://docs.kuzzle.io/core/2/api/payloads/request/"
+                  target="_blank"
+                  >API Documentation
+                  <i class="fa fa-external-link-alt" />
+                </a>
+                .
+              </b-popover>
             </b-row>
           </b-col>
           <b-col class="text-right" id="query-button-actions" cols="4">
@@ -87,7 +107,7 @@
               :disabled="!isQueryValid(jsonQuery)"
               variant="success"
               :data-cy="`api-actions-run-button-${tabIdx}`"
-              class="mr-3"
+              class="mr-3 pointer"
             >
               <i class="fas fa-rocket mr-2" />
               RUN
@@ -97,6 +117,7 @@
               :disabled="!isQueryValid(jsonQuery)"
               :data-cy="`api-actions-save-button-${tabIdx}`"
               variant="outline-primary"
+              class="pointer"
             >
               <i class="fas fa-save mr-2" />
               SAVE
@@ -169,7 +190,7 @@ export default {
     }
   },
   mounted() {
-    this.editedQuery = _.clone(this.query)
+    this.editedQuery = JSON.parse(JSON.stringify(this.query))
     this.jsonQuery = JSON.stringify(this.editedQuery, null, 2)
   },
   methods: {
@@ -183,7 +204,7 @@ export default {
       this.$emit('performQuery', this.tabIdx)
     },
     loadQueryParams() {
-      const query = _.clone(this.editedQuery)
+      const query = JSON.parse(JSON.stringify(this.editedQuery))
       const api = _.get(this.api, `${query.controller}.${query.action}`, null)
       if (!api) {
         let obj = {

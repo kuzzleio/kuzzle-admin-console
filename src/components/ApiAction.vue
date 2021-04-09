@@ -16,7 +16,6 @@
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper-vertical">
-      <InfoAlert v-if="showAlert" @closeAlert="closeAlert" />
       <b-container fluid class="h-100">
         <b-row align-v="stretch" class="h-100">
           <b-col cols="12" v-if="loading"> </b-col>
@@ -91,7 +90,6 @@
 </template>
 
 <script>
-import InfoAlert from '@/components/ApiAction/InfoAlert'
 import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
 import QueryList from '@/components/ApiAction/QueryList'
 import QueryCard from '@/components/ApiAction/QueryCard'
@@ -105,7 +103,6 @@ export default {
   components: {
     Multipane,
     MultipaneResizer,
-    InfoAlert,
     QueryCard,
     SaveQueryModal,
     QueryList
@@ -176,13 +173,13 @@ export default {
     },
     queryChanged({ query, tabIdx }) {
       const savedIdx = this.tabs[tabIdx].savedIdx
-      if (savedIdx !== null) {
+      if (savedIdx !== null && savedIdx !== undefined) {
         this.tabs[tabIdx].saved = _.isEqual(
           this.savedQueries[savedIdx].query,
           query
         )
       }
-      this.tabs[tabIdx].query = _.clone(query)
+      this.tabs[tabIdx].query = JSON.parse(JSON.stringify(query))
     },
     setCurrentTab(tabIdx) {
       this.currentTabIdx = tabIdx
@@ -211,8 +208,7 @@ export default {
     },
     loadSavedQuery(savedQueryIdx) {
       if (!this.savedQueries[savedQueryIdx]) return
-      const query = _.clone(this.savedQueries[savedQueryIdx])
-
+      const query = JSON.parse(JSON.stringify(this.savedQueries[savedQueryIdx]))
       const tabIdx = this.tabs.findIndex(t => t.name === query.name)
       if (tabIdx !== -1) {
         this.currentTabIdx = tabIdx
@@ -245,9 +241,9 @@ export default {
     storeNewQuery(name) {
       this.tabs[this.newSaveTabIdx].name = name
       this.tabs[this.newSaveTabIdx].saved = true
-      const tab = _.clone(this.tabs[this.newSaveTabIdx])
+      this.tabs[this.newSaveTabIdx].savedIdx = this.savedQueries.length
+      const tab = JSON.parse(JSON.stringify(this.tabs[this.newSaveTabIdx]))
       this.savedQueries.push(tab)
-      this.tabs[this.newSaveTabIdx].savedIdx = this.savedQueries.length - 1
       this.newSaveTabIdx = null
       this.storeQueriesToLocalStorage()
       this.$bvToast.toast('Query successfully saved.', {
@@ -263,7 +259,7 @@ export default {
         q => q.name === tab.name
       )
       if (storedQueryIdx !== -1) {
-        this.savedQueries[storedQueryIdx].query = _.clone(tab.query)
+        this.savedQueries[storedQueryIdx].query = JSON.parse(JSON.stringify(tab.query))
         this.tabs[tabIdx].saved = true
         this.storeQueriesToLocalStorage()
         this.$bvToast.toast('Query successfully saved.', {
@@ -300,7 +296,7 @@ export default {
       if (!storedQueries) {
         storedQueries = {}
       }
-      const queriesToStore = _.clone(this.savedQueries)
+      const queriesToStore = JSON.parse(JSON.stringify(this.savedQueries))
       storedQueries[this.currentEnvironment.name] = queriesToStore.map(q => {
         delete q.response
         delete q.saved
@@ -310,7 +306,7 @@ export default {
       localStorage.setItem('storedQueries', JSON.stringify(storedQueries))
     },
     async performQuery(tabIdx) {
-      const query = _.clone(this.tabs[tabIdx].query)
+      const query = JSON.parse(JSON.stringify(this.tabs[tabIdx].query))
       let response = {}
 
       try {
@@ -326,7 +322,7 @@ export default {
       this.tabs[tabIdx].response = response
     },
     newTab() {
-      let newTab = _.clone(this.emptyTab)
+      let newTab = JSON.parse(JSON.stringify(this.emptyTab))
       this.tabs.push(newTab)
       this.currentTabIdx = this.tabs.length - 1
     },
