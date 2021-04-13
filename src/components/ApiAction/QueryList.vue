@@ -75,24 +75,25 @@ export default {
   },
   methods: {
     deleteSavedQuery(query) {
-      this.$bvModal.msgBoxConfirm('Please confirm the deletion of the API Action.', {
-        title: `Api Action ${query.name} deletion`,
-        size: 'md',
-        buttonSize: 'sm',
-        okVariant: 'danger',
-        okTitle: 'YES',
-        cancelTitle: 'NO',
-        footerClass: 'p-2',
-        hideHeaderClose: false,
-      })
-      .then(value => {
-        if (value) {
-          this.$emit('deleteSavedQuery', query.idx)
-        }
-      })
-      .catch(err => {
-        this.$log.error(err)
-      })
+      this.$bvModal
+        .msgBoxConfirm('Please confirm the deletion of the API Action.', {
+          title: `Api Action ${query.name} deletion`,
+          size: 'md',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'YES',
+          cancelTitle: 'NO',
+          footerClass: 'p-2',
+          hideHeaderClose: false
+        })
+        .then(value => {
+          if (value) {
+            this.$emit('deleteSavedQuery', query.idx)
+          }
+        })
+        .catch(err => {
+          this.$log.error(err)
+        })
     },
     loadSavedQuery(savedQueryIdx) {
       this.$emit('loadSavedQuery', savedQueryIdx)

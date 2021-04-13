@@ -72,9 +72,13 @@
                 </datalist>
               </b-col>
               <b-button id="popover-target-1" variant="link">
-                <i color="primary" class="fas fa-question-circle fa-lg" ></i>
+                <i color="primary" class="fas fa-question-circle fa-lg"></i>
               </b-button>
-              <b-popover target="popover-target-1" triggers="hover" placement="top">
+              <b-popover
+                target="popover-target-1"
+                triggers="hover"
+                placement="top"
+              >
                 Here, you'll be able to perform custom
                 <a
                   href="https://docs.kuzzle.io/sdk/js/7/core-classes/kuzzle/query/"

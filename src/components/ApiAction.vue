@@ -245,7 +245,9 @@ export default {
         q => q.name === tab.name
       )
       if (storedQueryIdx !== -1) {
-        this.savedQueries[storedQueryIdx].query = JSON.parse(JSON.stringify(tab.query))
+        this.savedQueries[storedQueryIdx].query = JSON.parse(
+          JSON.stringify(tab.query)
+        )
         this.tabs[tabIdx].saved = true
         this.storeQueriesToLocalStorage()
       } else {
