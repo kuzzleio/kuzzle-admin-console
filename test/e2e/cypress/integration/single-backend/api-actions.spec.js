@@ -45,6 +45,8 @@ describe('API Actions - query', function() {
     })
     cy.get('[data-cy="api-actions-run-button-0"]').click()
 
+    cy.wait(1000)
+
     cy.get('[data-cy="api-actions-response-status-0"]').should('contain', '200')
     cy.get('[data-cy="api-actions-response-JSONEditor-0"]')
     .should('contain', '"error": null')
