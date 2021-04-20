@@ -35,6 +35,16 @@
         >
           Security
         </b-nav-item>
+        <b-nav-item
+          :active="
+            $route.path.match('/api-action')
+              ? $route.path.match('/api-action').length > 0
+              : false
+          "
+          :to="{ name: 'ApiAction' }"
+        >
+          API Action
+        </b-nav-item>
         <b-nav-text
           class="ml-2"
           title="Give us your feedback on our GitHub page"

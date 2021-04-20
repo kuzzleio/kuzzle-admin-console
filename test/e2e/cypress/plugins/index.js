@@ -15,7 +15,7 @@ const execa = require('execa')
 
 module.exports = on => {
   on('task', {
-    doco({ version, docoArgs, port, stackPrefix }) {
+    async doco({ version, docoArgs, port, stackPrefix }) {
       const docoFile = path.join(
         process.cwd(),
         'test',
@@ -29,12 +29,12 @@ module.exports = on => {
         stackPrefix = 'stack'
       }
       console.log(
-        `cy.task('doco') -- $ KUZZLE_PORT=${port} docker-compose -f ${docoFile} -p stack-${version} ${docoArgs.join(
+        `cy.task('doco') -- $ KUZZLE_PORT=${port} docker-compose -f ${docoFile} -p ${stackPrefix}-${version} ${docoArgs.join(
           ' '
         )}`
       )
 
-      execa(
+      await execa(
         'docker-compose',
         ['-f', docoFile, '-p', `${stackPrefix}-${version}`].concat(docoArgs),
         {

@@ -69,8 +69,9 @@ export default {
       return this.editor
     },
     setContent(value) {
-      this.$log.debug('Setting content', value)
-      this.editor.getSession().setValue(value)
+      Vue.nextTick(() => {
+        this.editor.getSession().setValue(value)
+      })
     }
   },
   mounted() {

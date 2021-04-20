@@ -9,9 +9,10 @@ describe('Switch between two backends', () => {
     const indexName = 'testindex'
 
     backends.forEach(backend => {
+      cy.waitForService(`http://localhost:${backend.port}`, 'down')
       cy.task('doco', {
         version: backend.version,
-        docoArgs: ['up'],
+        docoArgs: ['up', '-d'],
         port: backend.port,
         stackPrefix: backend.name
       })

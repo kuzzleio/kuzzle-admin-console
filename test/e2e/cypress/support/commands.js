@@ -61,8 +61,8 @@ function wait(ms) {
   })
 }
 
-async function poll(url, state = 'up') {
-  for (let i = 30; i > 0; i--) {
+async function poll(url, state = 'up', tries) {
+  for (let i = tries; i > 0; i--) {
     try {
       const r = await axios.get(url)
       if (r) {
@@ -86,8 +86,8 @@ async function poll(url, state = 'up') {
   throw new Error('Poll timeout expired')
 }
 
-Cypress.Commands.add('waitForService', (url, state = 'up') => {
-  return poll(url, state)
+Cypress.Commands.add('waitForService', (url, state = 'up', tries = 30) => {
+  return poll(url, state, tries)
 })
 
 Cypress.Commands.add('skipOnBackendVersion', version => {

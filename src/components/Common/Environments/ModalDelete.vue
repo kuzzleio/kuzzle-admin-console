@@ -94,10 +94,10 @@ export default {
     reset() {
       this.envConfirmation = null
     },
-    confirmDeleteEnvironment() {
+    async confirmDeleteEnvironment() {
       if (this.confirmationOk) {
         if (this.$store.direct.state.kuzzle.currentId === this.environmentId) {
-          this.$store.direct.dispatch.auth.doLogout()
+          await this.$store.direct.dispatch.auth.doLogout()
         }
 
         this.$store.direct.dispatch.kuzzle.deleteEnvironment(this.environmentId)

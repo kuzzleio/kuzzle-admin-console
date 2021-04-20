@@ -47,7 +47,7 @@
             Mapping is the process of defining how a document, and the fields it
             contains, are stored and indexed.
             <a
-              href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
+              href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
               target="_blank"
               >Read more about mapping</a
             >
