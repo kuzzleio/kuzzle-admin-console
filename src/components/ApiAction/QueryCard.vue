@@ -207,7 +207,7 @@ export default {
       return currentController && this.api[currentController]
         ? Object.keys(this.api[currentController])
         : []
-    },
+    }
   },
   methods: {
     toggleFullscreen() {
