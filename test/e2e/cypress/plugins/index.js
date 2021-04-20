@@ -29,7 +29,7 @@ module.exports = on => {
         stackPrefix = 'stack'
       }
       console.log(
-        `cy.task('doco') -- $ KUZZLE_PORT=${port} docker-compose -f ${docoFile} -p stack-${version} ${docoArgs.join(
+        `cy.task('doco') -- $ KUZZLE_PORT=${port} docker-compose -f ${docoFile} -p ${stackPrefix}-${version} ${docoArgs.join(
           ' '
         )}`
       )

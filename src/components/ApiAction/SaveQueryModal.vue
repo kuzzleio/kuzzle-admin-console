@@ -1,7 +1,7 @@
 <template>
   <b-modal
     id="modal-save-query"
-    title="Choose a name for that query"
+    title="Choose a name for this query"
     @ok="handleOk"
     ok-title-html='<span data-cy="api-actions-modal-ok-button">OK</span>'
   >

@@ -52,7 +52,6 @@ describe('API Actions - query', function() {
     .should('contain', '"error": null')
     .should('contain', '"action": "create"')
     .should('contain', '"controller": "index"')
-    .should('contain', '"collection": null')
     .should('contain', `"index": "${indexName}"`)
     .should('contain', '"status": 200')
   })

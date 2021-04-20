@@ -65,12 +65,16 @@
                     :openapi="openapi"
                     :response="tabContent.response"
                     @saveQuery="saveQuery"
-                    @queryChanged="queryChanged"
+                    @onQueryChanged="onQueryChanged"
                     @performQuery="performQuery"
                   />
                 </b-tab>
                 <template #tabs-end>
-                  <b-row align-v="center" class="px-3" @click.prevent="newTab">
+                  <b-row
+                    align-v="center"
+                    class="px-3"
+                    @click.prevent="addNewTab"
+                  >
                     <b-col cols="12" class="text-center my-3 pointer">
                       <b data-cy="api-actions-tab-plus">+</b>
                     </b-col>
@@ -171,7 +175,7 @@ export default {
       name += tabContent.saved ? '' : ' *'
       return name
     },
-    queryChanged({ query, tabIdx }) {
+    onQueryChanged({ query, tabIdx }) {
       const savedIdx = this.tabs[tabIdx].savedIdx
       if (savedIdx !== null && savedIdx !== undefined) {
         this.tabs[tabIdx].saved = _.isEqual(
@@ -303,7 +307,7 @@ export default {
       }
       this.tabs[tabIdx].response = response
     },
-    newTab() {
+    addNewTab() {
       let newTab = JSON.parse(JSON.stringify(this.emptyTab))
       this.tabs.push(newTab)
       this.currentTabIdx = this.tabs.length - 1
@@ -317,6 +321,17 @@ export default {
         this.openapi = openApi.paths
       } catch (error) {
         this.$log.error(error)
+        this.$bvToast.toast(
+          'This view remains functional but you will not be able to select controllers and actions in the selectors.',
+          {
+            title: 'Unable to fetch the API action list.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
       }
     },
     async getKuzzlePublicApi() {
@@ -328,6 +343,17 @@ export default {
         this.api = publicApi.result
       } catch (error) {
         this.$log.error(error)
+        this.$bvToast.toast(
+          'This view remains functional but you will not be able to select controllers and actions in the selectors.',
+          {
+            title: 'Unable to fetch the API action list.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
       }
     }
   },
@@ -335,12 +361,36 @@ export default {
     this.loading = true
     if (this.canGetPublicApi) {
       await this.getKuzzlePublicApi()
+    } else {
+      this.$bvToast.toast(
+        'This view remains functional but you will not be able to select controllers and actions in the selectors.',
+        {
+          title: 'Unable to fetch the API action list.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        }
+      )
     }
     if (this.currentEnvironment.backendMajorVersion > 1 && this.canGetOpenApi) {
       await this.getKuzzleOpenApi()
+    } else {
+      this.$bvToast.toast(
+        'This view remains functional but you will not be able to select controllers and actions in the selectors.',
+        {
+          title: 'Unable to fetch the API action list.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        }
+      )
     }
     this.loadStoredQueriesFromLocalStorage()
-    this.newTab()
+    this.addNewTab()
     this.loading = false
   }
 }

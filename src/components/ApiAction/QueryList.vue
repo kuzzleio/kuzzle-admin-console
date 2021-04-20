@@ -10,9 +10,9 @@
               v-if="!paginatedQueries.length"
             >
               <b-col>
-                <b-card title="No API actions saved...">
+                <b-card title="No API actions saved.">
                   <b-card-text>
-                    <p>You can save your API ctions to fill this menu...</p>
+                    <p>Your saved API Actions will appear in this list.</p>
                   </b-card-text>
                 </b-card>
               </b-col>
