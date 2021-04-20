@@ -170,8 +170,6 @@ export default {
   props: {
     query: {},
     tabIdx: {},
-    controllers: {},
-    actions: {},
     api: {},
     openapi: {},
     response: {}
@@ -196,6 +194,20 @@ export default {
   mounted() {
     this.editedQuery = JSON.parse(JSON.stringify(this.query))
     this.jsonQuery = JSON.stringify(this.editedQuery, null, 2)
+  },
+  computed: {
+    controllers() {
+      return this.api ? Object.keys(this.api) : []
+    },
+    actions() {
+      if (!this.api) {
+        return []
+      }
+      const currentController = this.editedQuery.controller
+      return currentController && this.api[currentController]
+        ? Object.keys(this.api[currentController])
+        : []
+    },
   },
   methods: {
     toggleFullscreen() {

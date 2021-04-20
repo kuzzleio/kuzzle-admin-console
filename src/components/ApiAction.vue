@@ -59,13 +59,11 @@
                     class="px-0"
                     :query="tabContent.query"
                     :tabIdx="tabIdx"
-                    :controllers="controllers"
-                    :actions="actions"
                     :api="api"
                     :openapi="openapi"
                     :response="tabContent.response"
                     @saveQuery="saveQuery"
-                    @onQueryChanged="onQueryChanged"
+                    @queryChanged="onQueryChanged"
                     @performQuery="performQuery"
                   />
                 </b-tab>
@@ -126,19 +124,6 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     ...mapGetters('auth', ['canGetPublicApi', 'canGetOpenApi']),
-    controllers() {
-      return this.api ? Object.keys(this.api) : []
-    },
-    actions() {
-      if (!this.tabs[this.currentTabIdx] || !this.api) {
-        return []
-      }
-      const currentController = this.tabs[this.currentTabIdx].query.controller
-      return currentController && this.api[currentController]
-        ? Object.keys(this.api[currentController])
-        : []
-    },
-
     emptyTab() {
       return {
         query: {
