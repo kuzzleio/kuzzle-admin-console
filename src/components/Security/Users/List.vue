@@ -3,6 +3,7 @@
     <slot v-if="isCollectionEmpty && !loading" name="emptySet" />
     <template v-else>
       <filters
+        v-if="!initialLoading"
         class="mb-3"
         :available-operands="searchFilterOperands"
         :current-filter="currentFilter"
@@ -194,6 +195,7 @@ export default {
       deleteModalIsLoading: false,
       documents: [],
       loading: true,
+      initialLoading: true,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       totalDocuments: 0,
@@ -397,6 +399,7 @@ export default {
     }
   },
   mounted() {
+    this.initialLoading = true;
     this.currentFilter = filterManager.load(
       this.index,
       this.collection,
@@ -408,6 +411,7 @@ export default {
       this.index,
       this.collection
     )
+    this.initialLoading = false;
   },
   watch: {
     $route: {
