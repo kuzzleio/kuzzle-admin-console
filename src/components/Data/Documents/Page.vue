@@ -644,7 +644,9 @@ export default {
       this.$log.debug(`changing pagination to ${size}`)
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
-          size
+          size,
+          currentPage: 0,
+          from: 0
         })
       )
       this.fetchDocuments()
