@@ -399,7 +399,7 @@ export default {
     }
   },
   mounted() {
-    this.initialLoading = true;
+    this.initialLoading = true
     this.currentFilter = filterManager.load(
       this.index,
       this.collection,
@@ -411,7 +411,7 @@ export default {
       this.index,
       this.collection
     )
-    this.initialLoading = false;
+    this.initialLoading = false
   },
   watch: {
     $route: {
