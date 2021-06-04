@@ -96,7 +96,7 @@ export default {
     },
     currentUserName() {
       if (!this.user) {
-        return 'Not authentified'
+        return 'Not authenticated'
       }
       if (this.user.id === -1) {
         return 'Anonymous'
