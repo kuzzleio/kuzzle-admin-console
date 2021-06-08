@@ -74,20 +74,13 @@
                   Delete selected
                 </b-button>
               </b-col>
-              <b-col cols="4" class="text-right"
-                >Show
-                <b-form-select
-                  class="mx-2"
-                  style="width: unset"
-                  :options="itemsPerPage"
-                  :value="paginationSize"
-                  @change="changePaginationSize($event)"
-                >
-                </b-form-select>
-                <span v-if="totalDocuments"
-                  >of {{ totalDocuments }} total items.</span
-                ></b-col
-              >
+              <b-col cols="4" class="text-right">
+                <PerPageSelector
+                  :current-page-size="paginationSize"
+                  :total-documents="totalDocuments"
+                  @change-page-size="changePaginationSize($event)"
+                />
+              </b-col>
             </b-row>
           </div>
 
@@ -143,6 +136,7 @@
 import DeleteModal from './DeleteModal'
 import ProfileItem from '../Profiles/ProfileItem'
 import Filters from './Filters'
+import PerPageSelector from '@/components/Common/PerPageSelector'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -150,7 +144,8 @@ export default {
   components: {
     DeleteModal,
     Filters,
-    ProfileItem
+    ProfileItem,
+    PerPageSelector
   },
   props: {
     index: String,

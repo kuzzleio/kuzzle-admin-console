@@ -6,6 +6,7 @@
       style="width: unset"
       :options="itemsPerPage"
       :value="pageSize"
+      data-cy="perPageSelector"
       @change="$emit('change-page-size', $event)"
     >
     </b-form-select>

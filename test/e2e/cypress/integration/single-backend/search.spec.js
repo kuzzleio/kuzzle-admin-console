@@ -623,6 +623,7 @@ describe('Search', function() {
     cy.get('[data-cy=BasicFilter-sortAttributeSelect]').select('lastName')
 
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=perPageSelector]').select('10')
 
     cy.get('[data-cy=DocumentList-pagination] [aria-posinset=4]').click()
 

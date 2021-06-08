@@ -275,6 +275,8 @@ describe('Users', function() {
       )
     }
     cy.visit('/#/security/users')
+    cy.get('[data-cy=UserItem]').should('have.length', 14)
+    cy.get('[data-cy=perPageSelector]').select('10')
     cy.get('[data-cy=UserItem]').should('have.length', 10)
 
     cy.get(
