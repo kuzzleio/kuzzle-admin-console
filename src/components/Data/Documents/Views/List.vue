@@ -63,7 +63,7 @@
 <script>
 import DocumentListItem from '../DocumentListItem'
 import { mapGetters } from 'vuex'
-import PerPageSelector from "@/components/Common/PerPageSelector"
+import PerPageSelector from '@/components/Common/PerPageSelector'
 
 export default {
   name: 'DocumentsListView',

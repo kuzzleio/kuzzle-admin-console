@@ -214,7 +214,7 @@ import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
 import HeaderTableView from '../HeaderTableView'
-import PerPageSelector from "@/components/Common/PerPageSelector"
+import PerPageSelector from '@/components/Common/PerPageSelector'
 
 export default {
   name: 'Column',

@@ -3,11 +3,11 @@
     <b-row v-if="isChartViewAvailable">
       <b-col lg="3" class="card p-3">
         <div class="mt-2 mb-3">
-        <PerPageSelector
-          :current-page-size="currentPageSize"
-          :total-documents="totalDocuments"
-          @change-page-size="$emit('change-page-size', $event)"
-        />
+          <PerPageSelector
+            :current-page-size="currentPageSize"
+            :total-documents="totalDocuments"
+            @change-page-size="$emit('change-page-size', $event)"
+          />
         </div>
         <span>Date</span>
         <b-form-select
@@ -94,7 +94,7 @@ import TimeSeriesItem from './TimeSeriesItem'
 import VueApexCharts from 'vue-apexcharts'
 import _ from 'lodash'
 import { dateFromTimestamp } from '@/utils'
-import PerPageSelector from "@/components/Common/PerPageSelector"
+import PerPageSelector from '@/components/Common/PerPageSelector'
 
 const ES_NUMBER_DATA_TYPE = [
   'short',

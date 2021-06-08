@@ -17,7 +17,7 @@
 export default {
   props: {
     totalDocuments: Number,
-    currentPageSize: Number,
+    currentPageSize: Number
   },
   data() {
     return {

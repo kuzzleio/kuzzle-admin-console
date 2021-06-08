@@ -129,7 +129,7 @@ import '@/assets/leaflet.css'
 import JsonFormatter from '@/directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
-import PerPageSelector from "@/components/Common/PerPageSelector"
+import PerPageSelector from '@/components/Common/PerPageSelector'
 
 export default {
   name: 'ViewMap',
