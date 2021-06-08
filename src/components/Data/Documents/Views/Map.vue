@@ -13,18 +13,11 @@
         </b-form-select>
       </b-col>
       <b-col cols="6" class="text-right">
-        Show
-        <b-form-select
-          class="mx-2"
-          style="width: unset"
-          :options="itemsPerPage"
-          :value="currentPageSize"
-          @change="$emit('change-page-size', $event)"
-        >
-        </b-form-select>
-        <span v-if="totalDocuments">
-          of {{ totalDocuments }} total items.
-        </span>
+        <PerPageSelector
+          :current-page-size="currentPageSize"
+          :total-documents="totalDocuments"
+          @change-page-size="$emit('change-page-size', $event)"
+        />
       </b-col>
     </b-row>
     <b-row class="align-self-stretch">
@@ -136,13 +129,15 @@ import '@/assets/leaflet.css'
 import JsonFormatter from '@/directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
+import PerPageSelector from "@/components/Common/PerPageSelector"
 
 export default {
   name: 'ViewMap',
   components: {
     LMap,
     LTileLayer,
-    LMarker
+    LMarker,
+    PerPageSelector
   },
   directives: {
     JsonFormatter
@@ -150,7 +145,7 @@ export default {
   props: {
     currentPageSize: {
       type: Number,
-      default: 10
+      default: 25
     },
     selectedGeopoint: {
       type: String,

@@ -173,7 +173,7 @@ export default {
       loading: true,
       selectedDocuments: [],
       totalDocuments: 0,
-      paginationSize: 10,
+      paginationSize: 25,
       itemsPerPage: [10, 25, 50, 100, 500]
     }
   },

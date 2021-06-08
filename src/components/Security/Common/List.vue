@@ -126,7 +126,7 @@ export default {
       return parseInt(this.$route.query.from) || 0
     },
     paginationSize() {
-      return parseInt(this.$route.query.size) || 10
+      return parseInt(this.$route.query.size) ||25
     }
   },
   watch: {

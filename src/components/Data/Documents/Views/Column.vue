@@ -75,20 +75,13 @@
         </b-button>
       </b-col>
 
-      <b-col cols="4" class="text-right"
-        >Show
-        <b-form-select
-          class="mx-2"
-          style="width: unset"
-          :options="itemsPerPage"
-          :value="currentPageSize"
-          @change="$emit('change-page-size', $event)"
-        >
-        </b-form-select>
-        <span v-if="totalDocuments"
-          >of {{ totalDocuments }} total items.</span
-        ></b-col
-      >
+      <b-col cols="4" class="text-right">
+        <PerPageSelector
+          :current-page-size="currentPageSize"
+          :total-documents="totalDocuments"
+          @change-page-size="$emit('change-page-size', $event)"
+        />
+      </b-col>
     </b-row>
     <b-row no-gutters class="mt-3 mb-2">
       <b-col cols="12">
@@ -221,6 +214,7 @@ import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
 import HeaderTableView from '../HeaderTableView'
+import PerPageSelector from "@/components/Common/PerPageSelector"
 
 export default {
   name: 'Column',
@@ -229,7 +223,8 @@ export default {
   },
   components: {
     draggable,
-    HeaderTableView
+    HeaderTableView,
+    PerPageSelector
   },
   props: {
     allChecked: Boolean,
