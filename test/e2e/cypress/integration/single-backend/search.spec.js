@@ -702,7 +702,7 @@ describe('Search', function() {
     }
   })
 
-  it.only('Should be able to delete a previous searche in the search history.', () => {
+  it('Should be able to delete a previous search in the search history', () => {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/dummy-0/_create?refresh=wait_for`,
