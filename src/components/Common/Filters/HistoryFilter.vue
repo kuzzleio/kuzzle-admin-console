@@ -75,6 +75,11 @@ export default {
         })
         .indexOf(id)
       this.filters.splice(idIndex, 1)
+      filterManager.saveHistoyToLocalStorage(
+        this.filters,
+        this.index,
+        this.collection
+      )
     },
     toggleFavorite(filter, favorite) {
       if (favorite) {
