@@ -61,20 +61,13 @@
                   Delete selected
                 </b-button>
               </b-col>
-              <b-col cols="4" class="text-right"
-                >Show
-                <b-form-select
-                  class="mx-2"
-                  style="width: unset"
-                  :options="itemsPerPage"
-                  :value="paginationSize"
-                  @change="changePaginationSize($event)"
-                >
-                </b-form-select>
-                <span v-if="totalDocuments"
-                  >of {{ totalDocuments }} total items.</span
-                ></b-col
-              >
+              <b-col cols="4" class="text-right">
+                <PerPageSelector
+                  :current-page-size="paginationSize"
+                  :total-documents="totalDocuments"
+                  @change-page-size="changePaginationSize($event)"
+                />
+              </b-col>
             </b-row>
           </div>
           <b-list-group class="RoleList-list collection">
@@ -119,14 +112,17 @@
 import DeleteModal from './DeleteModal'
 import Filters from './Filters'
 import RoleItem from '../Roles/RoleItem'
+import PerPageSelector from '@/components/Common/PerPageSelector'
 import * as filterManager from '../../../services/filterManager'
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'RoleList',
   components: {
     DeleteModal,
     Filters,
-    RoleItem
+    RoleItem,
+    PerPageSelector
   },
   props: {
     displayCreate: {
@@ -147,7 +143,7 @@ export default {
       loading: false,
       selectedDocuments: [],
       totalDocuments: 0,
-      paginationSize: 10,
+      paginationSize: 25,
       itemsPerPage: [10, 25, 50, 100, 500]
     }
   },

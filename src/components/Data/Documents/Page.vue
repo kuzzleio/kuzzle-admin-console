@@ -347,7 +347,7 @@ export default {
       return parseInt(this.currentFilter.from) || 0
     },
     paginationSize() {
-      return parseInt(this.currentFilter.size) || 10
+      return parseInt(this.currentFilter.size) || 25
     },
     isRealtimeCollection() {
       return this.collection ? this.collection.isRealtime() : false
@@ -644,7 +644,9 @@ export default {
       this.$log.debug(`changing pagination to ${size}`)
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
-          size
+          size,
+          currentPage: 0,
+          from: 0
         })
       )
       this.fetchDocuments()

@@ -113,7 +113,7 @@ export default {
       return parseInt(this.currentFilter.from) || 0
     },
     paginationSize() {
-      return parseInt(this.currentFilter.size) || 10
+      return parseInt(this.currentFilter.size) || 25
     }
   },
   watch: {

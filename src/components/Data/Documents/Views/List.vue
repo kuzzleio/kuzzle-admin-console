@@ -32,20 +32,13 @@
           Refresh
         </b-button>
       </b-col>
-      <b-col cols="4" class="text-right"
-        >Show
-        <b-form-select
-          class="mx-2"
-          style="width: unset"
-          :options="itemsPerPage"
-          :value="currentPageSize"
-          @change="$emit('change-page-size', $event)"
-        >
-        </b-form-select>
-        <span v-if="totalDocuments"
-          >of {{ totalDocuments }} total items.</span
-        ></b-col
-      >
+      <b-col cols="4" class="text-right">
+        <PerPageSelector
+          :current-page-size="currentPageSize"
+          :total-documents="totalDocuments"
+          @change-page-size="$emit('change-page-size', $event)"
+        />
+      </b-col>
     </b-row>
     <b-list-group class="w-100">
       <b-list-group-item
@@ -70,11 +63,13 @@
 <script>
 import DocumentListItem from '../DocumentListItem'
 import { mapGetters } from 'vuex'
+import PerPageSelector from '@/components/Common/PerPageSelector'
 
 export default {
   name: 'DocumentsListView',
   components: {
-    DocumentListItem
+    DocumentListItem,
+    PerPageSelector
   },
   props: {
     allChecked: {
@@ -87,7 +82,7 @@ export default {
     },
     currentPageSize: {
       type: Number,
-      default: 10
+      default: 25
     },
     documents: {
       type: Array,
