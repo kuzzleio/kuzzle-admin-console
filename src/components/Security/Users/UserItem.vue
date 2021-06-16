@@ -25,7 +25,7 @@
         <a
           class="d-inline-block align-middle code pointer mr-2"
           @click="toggleCollapse"
-          >{{ document.id }}</a
+          >{{ userDisplayedId }}</a
         >
         <div class="UserItem-profileList">
           <b-badge
@@ -136,6 +136,12 @@ export default {
     },
     checkboxId() {
       return `checkbox-${this.document.id}`
+    },
+    userDisplayedId() {
+      if (this.document.credentials && this.document.credentials.local) {
+        return `${this.document.credentials.local.username}`
+      }
+      return `${this.document.id}`
     }
   },
   watch: {
