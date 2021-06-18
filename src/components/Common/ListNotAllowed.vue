@@ -10,7 +10,7 @@
           <em
             >Learn more about security &amp; permissions on the
             <a
-              href="https://docs.kuzzle.io/core/2/guides/main-concepts/permissions//"
+              href="https://docs.kuzzle.io/core/2/guides/main-concepts/permissions/"
               target="_blank"
               >Kuzzle guide</a
             ></em
