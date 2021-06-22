@@ -625,18 +625,40 @@ describe('Users', function() {
     })
   })
 
+  it('Should display the username if it is present in the local strategy', () => {
+    const username = 'Estebaaaan'
+
+    cy.request('POST', `${kuzzleUrl}/users/_create?refresh=wait_for`, {
+      content: {
+        profileIds: ['default'],
+        name: username
+      },
+      credentials: {
+        local: {
+          username: username,
+          password: 'test'
+        }
+      }
+    })
+
+    cy.visit('/#/security/users')
+    cy.get(`[data-cy="local-strategy-username-${username}"]`)
+      .should('be.visible')
+      .should('contain', username)
+  })
+
   it('Should be able to create an user without strategy', () => {
     cy.visit(`/#/security/users/create`)
 
-    cy.get('[data-cy=UserBasic-kuid]').type("without-credentials")
+    cy.get('[data-cy=UserBasic-kuid]').type('without-credentials')
     cy.get('[data-cy="UserProfileList-select"]').select('admin')
     cy.get('[data-cy=CredentialsSelector-local-username]').clear()
     cy.get('[data-cy=CredentialsSelector-local-password]').clear()
     cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get('[id="collapse-without-credentials"]')
-    .contains("credentials:")
-    .next()
-    .should('not.contain', 'local:')
-    .should("have.class", "json-formatter-empty")
+      .contains('credentials:')
+      .next()
+      .should('not.contain', 'local:')
+      .should('have.class', 'json-formatter-empty')
   })
 })
