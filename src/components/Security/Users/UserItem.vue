@@ -1,19 +1,14 @@
 <template>
-  <b-container fluid data-cy="UserItem">
-    <b-row align-h="between" no-gutters>
-      <b-col cols="12" class="UserItem-titleCol py-1 vertical-align">
+  <div>
+    <b-container fluid data-cy="UserItem" class="UserItem">
+      <div class="UserItem-toggle-select mr-3">
         <i
           aria-role="button"
-          :class="
-            `fa fa-caret-${
-              expanded ? 'down' : 'right'
-            } mr-2  d-inline-block align-middle`
-          "
+          :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2 `"
           :data-cy="`UserItem-${document.id}--toggle`"
           @click="toggleCollapse"
         />
         <b-form-checkbox
-          class="d-inline-block align-middle"
           type="checkbox"
           value="true"
           unchecked-value="false"
@@ -22,16 +17,40 @@
           :id="checkboxId"
           @change="notifyCheckboxClick"
         />
-        <a
-          class="d-inline-block align-middle code pointer mr-2"
-          @click="toggleCollapse"
-          >{{ userDisplayedId }}</a
-        >
-        <div class="UserItem-profileList">
+      </div>
+      <div class="UserItem-title">
+        <div class="UserItem-title-info">
+          <a
+            class="d-inline-block align-middle code pointer mr-2"
+            @click="toggleCollapse"
+            >{{ document.id }}</a
+          >
+          <span
+            v-if="localStrategyUsername"
+            :data-cy="`local-strategy-username-${localStrategyUsername}`"
+            class="d-inline-block align-middle code ml-2 mr-2"
+          >
+            <i
+              class="fas fa-user text-secondary"
+              title="Username (local strategy)"
+            />
+            {{ localStrategyUsername }}
+          </span>
+          <label
+            @click="toggleCollapse"
+            v-if="
+              document.additionalAttribute && document.additionalAttribute.value
+            "
+            class="UserItem-title-additionalAttribute"
+            >({{ document.additionalAttribute.name }}:
+            {{ document.additionalAttribute.value }})</label
+          >
+        </div>
+        <div class="UserItem-title-profiles">
           <b-badge
             v-for="profile in profileList"
             :key="profile"
-            class="ml-1"
+            class="mr-1 mt-1 mb-1"
             variant="primary"
           >
             <router-link
@@ -43,61 +62,47 @@
               >{{ profile }}</router-link
             >
           </b-badge>
-          <div class="UserItem-whiteGradient"></div>
         </div>
-        <label
-          @click="toggleCollapse"
-          v-if="
-            document.additionalAttribute && document.additionalAttribute.value
+      </div>
+      <div class="UserItem-actions">
+        <b-button
+          class="UserListItem-update"
+          href=""
+          variant="link"
+          :data-cy="`UserListItem-update--${document.id}`"
+          :disabled="!canEditUser"
+          :title="
+            canEditUser ? 'Edit User' : 'You are not allowed to edit this user'
           "
-          class="UserItem-additionalAttribute"
-          >({{ document.additionalAttribute.name }}:
-          {{ document.additionalAttribute.value }})</label
+          @click.prevent="update"
         >
-        <div class="UserItem-actions">
-          <b-button
-            class="UserListItem-update"
-            href=""
-            variant="link"
-            :data-cy="`UserListItem-update--${document.id}`"
-            :disabled="!canEditUser"
-            :title="
-              canEditUser
-                ? 'Edit User'
-                : 'You are not allowed to edit this user'
-            "
-            @click.prevent="update"
-          >
-            <i class="fa fa-pencil-alt" :class="{ disabled: !canEditUser }" />
-          </b-button>
-          <b-button
-            class="UserListItem-delete"
-            href=""
-            variant="link"
-            :data-cy="`UserListItem-delete--${document.id}`"
-            :disabled="!canDeleteUser"
-            :title="
-              canDeleteUser
-                ? 'Delete user'
-                : 'You are not allowed to delete this user'
-            "
-            @click.prevent="deleteDocument(document.id)"
-          >
-            <i class="fa fa-trash" :class="{ disabled: !canDeleteUser }" />
-          </b-button>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-collapse
-        :id="`collapse-${document.id}`"
-        v-model="expanded"
-        class="ml-3 DocumentListItem-content"
-      >
-        <pre v-json-formatter="{ content: document, open: true }" />
-      </b-collapse>
-    </b-row>
-  </b-container>
+          <i class="fa fa-pencil-alt" :class="{ disabled: !canEditUser }" />
+        </b-button>
+        <b-button
+          class="UserListItem-delete"
+          href=""
+          variant="link"
+          :data-cy="`UserListItem-delete--${document.id}`"
+          :disabled="!canDeleteUser"
+          :title="
+            canDeleteUser
+              ? 'Delete user'
+              : 'You are not allowed to delete this user'
+          "
+          @click.prevent="deleteDocument(document.id)"
+        >
+          <i class="fa fa-trash" :class="{ disabled: !canDeleteUser }" />
+        </b-button>
+      </div>
+    </b-container>
+    <b-collapse
+      :id="`collapse-${document.id}`"
+      v-model="expanded"
+      class="ml-3 DocumentListItem-content"
+    >
+      <pre v-json-formatter="{ content: document, open: true }" />
+    </b-collapse>
+  </div>
 </template>
 
 <script>
@@ -137,11 +142,10 @@ export default {
     checkboxId() {
       return `checkbox-${this.document.id}`
     },
-    userDisplayedId() {
-      if (this.document.credentials && this.document.credentials.local) {
-        return `${this.document.credentials.local.username}`
-      }
-      return `${this.document.id}`
+    localStrategyUsername() {
+      return this.document.credentials && this.document.credentials.local
+        ? this.document.credentials.local.username
+        : null
     }
   },
   watch: {
@@ -173,45 +177,37 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.UserItem-titleCol {
+.UserItem {
   display: flex;
-}
+  flex-direction: row;
+  align-items: center;
 
-.UserItem-actions {
-  white-space: nowrap;
-}
+  &-toggle-select {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
 
-.UserItem-additionalAttribute {
-  color: grey;
-  font-style: italic;
-  color: black;
-  line-height: 21px;
-}
+  &-actions {
+    display: flex;
+    flex-wrap: nowrap;
+  }
 
-.UserItem-profileList {
-  display: inline-block;
-  overflow-x: hidden;
-  flex-grow: 1;
-  white-space: nowrap;
-  position: relative;
-}
+  &-title {
+    flex-grow: 1;
 
-.UserItem-whiteGradient {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 50px;
-  height: 100%;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.65) 50%,
-    rgba(255, 255, 255, 1) 100%
-  );
-}
+    &-profiles {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
 
-.UserItem-actions {
-  margin-top: 1px;
-  font-size: 1em;
+    &-additionalAttribute {
+      color: grey;
+      font-style: italic;
+      color: black;
+      line-height: 21px;
+    }
+  }
 }
 </style>
