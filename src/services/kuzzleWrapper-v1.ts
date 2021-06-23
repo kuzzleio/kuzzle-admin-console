@@ -205,7 +205,7 @@ export class KuzzleWrapperV1 {
   async performSearchProfiles(filters = {}, pagination = {}) {
     const result = await this.kuzzle.security.searchProfiles(
       { ...filters },
-      { size: 100, ...pagination }
+      { size: 1000, ...pagination }
     )
 
     const profiles = result.hits.map(document => {
