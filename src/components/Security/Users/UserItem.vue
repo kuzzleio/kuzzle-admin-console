@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <b-container fluid data-cy="UserItem" class="UserItem">
+  <div data-cy="UserItem" class="UserItem">
+    <b-container fluid class="UserItem-container">
       <div class="UserItem-toggle-select mr-3">
         <i
           aria-role="button"
@@ -178,9 +178,11 @@ export default {
 
 <style lang="scss" rel="stylesheet/scss" scoped>
 .UserItem {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  &-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
 
   &-toggle-select {
     display: flex;
