@@ -17,6 +17,9 @@
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper-vertical">
       <b-container fluid class="h-100">
+        <b-row>
+          <b-button v-b-modal.export-actions>Export API Actions</b-button>
+        </b-row>
         <b-row align-v="stretch" class="h-100">
           <b-col cols="12" v-if="loading"> </b-col>
           <b-col cols="12" v-else>
@@ -40,7 +43,7 @@
                     >
                       <b-col
                         cols="9"
-                        class=" text-left py-3 pointer"
+                        class="text-left py-3 pointer"
                         @click="setCurrentTab(tabIdx)"
                       >
                         <span>
@@ -78,6 +81,22 @@
                     </b-col>
                   </b-row>
                 </template>
+                <template #empty>
+                  <b-row align-v="center" align-h="center" class="h-100">
+                    <b-col cols="4">
+                      <b-card title="No API action opened.">
+                        <b-card-text>
+                          <p>
+                            You can open a saved action in the left menu or
+                            <b-button variant="primary" @click="addNewTab"
+                              >create one</b-button
+                            >
+                          </p>
+                        </b-card-text>
+                      </b-card>
+                    </b-col>
+                  </b-row>
+                </template>
               </b-tabs>
             </b-card>
           </b-col>
@@ -88,6 +107,7 @@
       :isQueryNameValid="isQueryNameValid"
       @storeNewQuery="storeNewQuery"
     />
+    <ExportActionsModal />
   </Multipane>
 </template>
 
@@ -95,6 +115,7 @@
 import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
 import QueryList from '@/components/ApiAction/QueryList'
 import QueryCard from '@/components/ApiAction/QueryCard'
+import ExportActionsModal from '@/components/ApiAction/ExportActionsModal'
 
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { mapGetters } from 'vuex'
@@ -107,7 +128,8 @@ export default {
     MultipaneResizer,
     QueryCard,
     SaveQueryModal,
-    QueryList
+    QueryList,
+    ExportActionsModal
   },
   data() {
     return {
