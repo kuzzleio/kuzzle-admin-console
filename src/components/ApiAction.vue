@@ -12,93 +12,111 @@
         :currentQueryName="currentQueryName"
         @deleteSavedQuery="deleteSavedQuery"
         @loadSavedQuery="loadSavedQuery"
-      />
+      >
+        <template #actions>
+          <b-button
+            class="mb-2 mt-2"
+            block
+            variant="outline-primary"
+            v-b-modal.export-actions
+            >Export API Actions</b-button
+          >
+          <b-button
+            class="mb-4"
+            block
+            variant="outline-primary"
+            v-b-modal.import-actions
+            >Import API Actions</b-button
+          >
+        </template>
+      </QueryList>
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper-vertical">
       <b-container fluid class="h-100">
-        <b-row>
-          <b-button v-b-modal.export-actions>Export API Actions</b-button>
-        </b-row>
-        <b-row align-v="stretch" class="h-100">
+        <b-row class="h-100">
           <b-col cols="12" v-if="loading"> </b-col>
           <b-col cols="12" v-else>
-            <b-card no-body class="px-0 h-100">
-              <b-tabs card content-class="px-0 mt-3 tabsHeight">
-                <b-tab
-                  v-for="(tabContent, tabIdx) of tabs"
-                  :key="`query-${tabIdx}-${tabContent.name}`"
-                  :active="currentTabIdx === tabIdx"
-                  @click.prevent=""
-                  class="px-2 py-0"
-                  title-link-class="px-3 py-0 titleItem"
-                >
-                  <template #title>
-                    <b-row
-                      align-v="center"
-                      class="tabTitle"
-                      v-b-tooltip.hover
-                      :data-cy="`api-actions-tab-${tabIdx}`"
-                      :title="tabContent.name"
+            <b-row class="h-100">
+              <b-col cols="12">
+                <b-card no-body class="px-0 h-100">
+                  <b-tabs card content-class="px-0 mt-3 tabsHeight">
+                    <b-tab
+                      v-for="(tabContent, tabIdx) of tabs"
+                      :key="`query-${tabIdx}-${tabContent.name}`"
+                      :active="currentTabIdx === tabIdx"
+                      @click.prevent=""
+                      class="px-2 py-0"
+                      title-link-class="px-3 py-0 titleItem"
                     >
-                      <b-col
-                        cols="9"
-                        class="text-left py-3 pointer"
-                        @click="setCurrentTab(tabIdx)"
+                      <template #title>
+                        <b-row
+                          align-v="center"
+                          class="tabTitle"
+                          v-b-tooltip.hover
+                          :data-cy="`api-actions-tab-${tabIdx}`"
+                          :title="tabContent.name"
+                        >
+                          <b-col
+                            cols="9"
+                            class="text-left py-3 pointer"
+                            @click="setCurrentTab(tabIdx)"
+                          >
+                            <span>
+                              {{ formatTabName(tabContent) }}
+                            </span>
+                          </b-col>
+                          <b-col cols="3" class="py-3">
+                            <i
+                              class="fas fa-times pointer"
+                              @click="closeTab(tabIdx)"
+                            />
+                          </b-col>
+                        </b-row>
+                      </template>
+                      <QueryCard
+                        class="px-0"
+                        :query="tabContent.query"
+                        :tabIdx="tabIdx"
+                        :api="api"
+                        :openapi="openapi"
+                        :response="tabContent.response"
+                        @saveQuery="saveQuery"
+                        @queryChanged="onQueryChanged"
+                        @performQuery="performQuery"
+                      />
+                    </b-tab>
+                    <template #tabs-end>
+                      <b-row
+                        align-v="center"
+                        class="px-3"
+                        @click.prevent="addNewTab"
                       >
-                        <span>
-                          {{ formatTabName(tabContent) }}
-                        </span>
-                      </b-col>
-                      <b-col cols="3" class="py-3">
-                        <i
-                          class="fas fa-times pointer"
-                          @click="closeTab(tabIdx)"
-                        />
-                      </b-col>
-                    </b-row>
-                  </template>
-                  <QueryCard
-                    class="px-0"
-                    :query="tabContent.query"
-                    :tabIdx="tabIdx"
-                    :api="api"
-                    :openapi="openapi"
-                    :response="tabContent.response"
-                    @saveQuery="saveQuery"
-                    @queryChanged="onQueryChanged"
-                    @performQuery="performQuery"
-                  />
-                </b-tab>
-                <template #tabs-end>
-                  <b-row
-                    align-v="center"
-                    class="px-3"
-                    @click.prevent="addNewTab"
-                  >
-                    <b-col cols="12" class="text-center my-3 pointer">
-                      <b data-cy="api-actions-tab-plus">+</b>
-                    </b-col>
-                  </b-row>
-                </template>
-                <template #empty>
-                  <b-row align-v="center" align-h="center" class="h-100">
-                    <b-col cols="4">
-                      <b-card title="No API action opened.">
-                        <b-card-text>
-                          <p>
-                            You can open a saved action in the left menu or
-                            <b-button variant="primary" @click="addNewTab"
-                              >create one</b-button
-                            >
-                          </p>
-                        </b-card-text>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </template>
-              </b-tabs>
-            </b-card>
+                        <b-col cols="12" class="text-center my-3 pointer">
+                          <b data-cy="api-actions-tab-plus">+</b>
+                        </b-col>
+                      </b-row>
+                    </template>
+                    <template #empty>
+                      <b-row align-v="center" align-h="center" class="h-100">
+                        <b-col cols="4">
+                          <b-card title="No API action opened.">
+                            <b-card-text>
+                              <p>
+                                You can open a saved action in the left menu or
+                                <b-button variant="primary" @click="addNewTab"
+                                  >create one</b-button
+                                >
+                              </p>
+                            </b-card-text>
+                          </b-card>
+                        </b-col>
+                      </b-row>
+                    </template>
+                  </b-tabs>
+                </b-card>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
       </b-container>
@@ -107,7 +125,11 @@
       :isQueryNameValid="isQueryNameValid"
       @storeNewQuery="storeNewQuery"
     />
-    <ExportActionsModal />
+    <ExportActionsModal :tabs="tabs" />
+    <ImportActionsModal
+      :savedActionNames="savedActionNames"
+      @import-actions="importActions"
+    />
   </Multipane>
 </template>
 
@@ -116,6 +138,7 @@ import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
 import QueryList from '@/components/ApiAction/QueryList'
 import QueryCard from '@/components/ApiAction/QueryCard'
 import ExportActionsModal from '@/components/ApiAction/ExportActionsModal'
+import ImportActionsModal from '@/components/ApiAction/ImportActionsModal'
 
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { mapGetters } from 'vuex'
@@ -129,7 +152,8 @@ export default {
     QueryCard,
     SaveQueryModal,
     QueryList,
-    ExportActionsModal
+    ExportActionsModal,
+    ImportActionsModal
   },
   data() {
     return {
@@ -146,6 +170,9 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     ...mapGetters('auth', ['canGetPublicApi', 'canGetOpenApi']),
+    savedActionNames() {
+      return this.savedQueries.map(q => q.name)
+    },
     emptyTab() {
       return {
         query: {
@@ -173,6 +200,16 @@ export default {
     }
   },
   methods: {
+    importActions(actions) {
+      for (const action of actions) {
+        action.idx = this.savedQueries.length
+        action.savedIdx = this.savedQueries.length
+        action.response = ''
+        action.saved = true
+        this.savedQueries.push(JSON.parse(JSON.stringify(action)))
+      }
+      this.storeQueriesToLocalStorage()
+    },
     closeAlert() {
       this.showAlert = false
     },

@@ -1,11 +1,12 @@
 <template>
   <b-modal
+    scrollable
     id="export-actions"
     title="Export API Actions"
-    @shown="fetchQueries"
     size="lg"
     @ok="handleOk"
-    scrollable
+    @shown="fetchQueries"
+    okTitle="Export"
   >
     <p class="my-4">Select the actions you want to export</p>
     <b-form-checkbox-group v-model="selectedActionIds">
@@ -25,6 +26,11 @@
 <script>
 export default {
   name: 'ExportActionsModal',
+  props: {
+    tabs: {
+      default: []
+    }
+  },
   data() {
     return {
       apiActions: [],
@@ -40,13 +46,15 @@ export default {
         { key: 'query.controller', label: 'Controller' },
         { key: 'query.action', label: 'Action' }
       ]
+    },
+    currentEnvironmentId() {
+      return this.$store.state.kuzzle.currentId
     }
   },
   mounted() {},
   watch: {},
   methods: {
     handleOk() {
-      this.$log.debug(this.selectedActionIds, this.apiActions)
       const selectedActions = this.apiActions.filter(action =>
         this.selectedActionIds.includes(action.id)
       )
@@ -55,7 +63,6 @@ export default {
         delete action.idx
         delete action.env
       })
-      this.$log.debug(selectedActions)
       const data = JSON.stringify(selectedActions)
       const blob = new Blob([data], { type: 'text/plain' })
       const e = document.createEvent('MouseEvents'),
@@ -104,6 +111,9 @@ export default {
           this.apiActions.push(action)
         })
       })
+      this.selectedActionIds = this.tabs
+        .filter(tab => tab.saved)
+        .map(tab => `${this.currentEnvironmentId}-${tab.name}`)
     }
   }
 }
