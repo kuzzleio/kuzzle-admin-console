@@ -5,6 +5,7 @@
     title="Import API Actions"
     size="lg"
     okTitle="Import"
+    @hide="resetForm"
     :ok-disabled="validNames || !Boolean(files.length)"
     @ok="handleImport"
   >
@@ -100,11 +101,16 @@ export default {
     }
   },
   methods: {
+    resetForm() {
+      this.file = null
+      this.files = []
+      this.actions = []
+    },
     handleImport() {
       this.$emit('import-actions', this.actions)
     },
     async isInvalidFile(file) {
-      if (this.files.find(f => JSON.stringify(file) === JSON.stringify(f))) {
+      if (this.files.find(f => f.name === file.name  && f.size === file.size)) {
          this.$bvToast.toast(`File ${this.file.name} already added!`, {
           title: 'Warning',
           variant: 'warning',

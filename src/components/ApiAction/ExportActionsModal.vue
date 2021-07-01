@@ -4,10 +4,17 @@
     id="export-actions"
     title="Export API Actions"
     size="lg"
-    @ok="handleOk"
     @shown="fetchQueries"
-    okTitle="Export"
   >
+    <template #modal-ok>
+      <b-button
+        :disabled="!Boolean(apiActions.length)"
+        variant="primary"
+        download="connections.json"
+        :href="exportURL"
+        >Export
+      </b-button>
+    </template>
     <p class="my-4">Select the actions you want to export</p>
     <b-form-checkbox-group v-model="selectedActionIds">
       <b-table small :fields="tableFields" :items="apiActions" responsive="sm">
@@ -38,6 +45,23 @@ export default {
     }
   },
   computed: {
+    exportURL() {
+      const selectedActions = this.apiActions.filter(action =>
+        this.selectedActionIds.includes(action.id)
+      )
+      selectedActions.map(action => {
+        delete action.id
+        delete action.idx
+        delete action.env
+      })
+      const data = JSON.stringify(selectedActions)
+
+      const blob = new Blob([JSON.stringify(data)], {
+        type: 'application/json'
+      })
+
+      return URL.createObjectURL(blob)
+    },
     tableFields() {
       return [
         { key: 'checkbox', label: 'Selected' },
@@ -54,41 +78,6 @@ export default {
   mounted() {},
   watch: {},
   methods: {
-    handleOk() {
-      const selectedActions = this.apiActions.filter(action =>
-        this.selectedActionIds.includes(action.id)
-      )
-      selectedActions.map(action => {
-        delete action.id
-        delete action.idx
-        delete action.env
-      })
-      const data = JSON.stringify(selectedActions)
-      const blob = new Blob([data], { type: 'text/plain' })
-      const e = document.createEvent('MouseEvents'),
-        a = document.createElement('a')
-      a.download = 'APIActions.json'
-      a.href = window.URL.createObjectURL(blob)
-      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
-      e.initEvent(
-        'click',
-        true,
-        false,
-        window,
-        0,
-        0,
-        0,
-        0,
-        0,
-        false,
-        false,
-        false,
-        false,
-        0,
-        null
-      )
-      a.dispatchEvent(e)
-    },
     fetchQueries() {
       this.apiActions = []
       let storedActions = localStorage.getItem('storedQueries')
