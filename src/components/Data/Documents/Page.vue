@@ -54,7 +54,7 @@
       />
 
       <template v-else>
-        <template v-if="isCollectionEmpty">
+        <template v-if="isCollectionEmpty && !isFetching">
           <realtime-only-empty-state
             v-if="isRealtimeCollection"
             :index="indexName"
@@ -64,7 +64,7 @@
           <empty-state v-else :index="indexName" :collection="collectionName" />
         </template>
 
-        <template v-if="!isCollectionEmpty">
+        <template v-if="!isCollectionEmpty && !isFetching">
           <filters
             class="mb-3"
             :available-operands="searchFilterOperands"
@@ -78,7 +78,7 @@
           />
         </template>
         <template>
-          <template v-if="!isCollectionEmpty">
+          <template v-if="!isCollectionEmpty && !isFetching">
             <b-card
               class="light-shadow"
               :bg-variant="documents.length === 0 ? 'light' : 'default'"
@@ -251,6 +251,7 @@ export default {
   },
   data() {
     return {
+      isFetching: false,
       loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
@@ -570,6 +571,8 @@ export default {
       this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
+      this.$emit('start-fetch')
+      this.isFetching = true
       this.$forceUpdate()
       this.selectedDocuments = []
 
@@ -636,6 +639,8 @@ export default {
           })
         }
       }
+      this.isFetching = false
+      this.$emit('end-fetch')
     },
 
     // PAGINATION
