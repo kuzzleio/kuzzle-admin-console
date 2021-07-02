@@ -358,6 +358,11 @@ export default {
       return this.collection ? this.collection.isRealtime() : false
     }
   },
+  async beforeDestroy() {
+    if (this.subscribeRoomId) {
+      await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
+    }
+  },
   async mounted() {
     await this.loadAllTheThings()
 
@@ -367,11 +372,11 @@ export default {
   },
   watch: {
     enableRealtime: {
-      async handler(value) {
+      handler(value) {
         if (value) {
           this.fetchDocuments()
         } else if (this.subscribeRoomId) {
-          await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
+          this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
           this.subscribeRoomId = null
         }
       }
