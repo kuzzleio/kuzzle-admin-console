@@ -10,8 +10,9 @@
       <b-button
         :disabled="!Boolean(apiActions.length)"
         variant="primary"
-        download="connections.json"
+        download="APIActions.json"
         :href="exportURL"
+        data-cy="modal-button-export-action"
         >Export
       </b-button>
     </template>
@@ -19,7 +20,10 @@
     <b-form-checkbox-group v-model="selectedActionIds">
       <b-table small :fields="tableFields" :items="apiActions" responsive="sm">
         <template #cell(checkbox)="data">
-          <b-form-checkbox :value="data.item.id" />
+          <b-form-checkbox
+            :data-cy="`modal-export-action-checkbox-${data.item.id}`"
+            :value="data.item.id"
+          />
         </template>
         <template #cell(name)="data">
           {{ data.item.name.substring(0, 20)

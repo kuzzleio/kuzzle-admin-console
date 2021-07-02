@@ -4,11 +4,17 @@
     id="import-actions"
     title="Import API Actions"
     size="lg"
-    okTitle="Import"
     @hide="resetForm"
-    :ok-disabled="validNames || !Boolean(files.length)"
-    @ok="handleImport"
   >
+    <template #modal-ok>
+      <b-button
+        @click="handleImport"
+        :disabled="validNames || !Boolean(files.length)"
+        variant="primary"
+        data-cy="modal-button-import-action"
+        >Import
+      </b-button>
+    </template>
     <b-container>
       <b-row>
         <b-col cols="12" class="text-center mb-3">
@@ -22,6 +28,7 @@
             accept=".json"
             placeholder="Choose a file or drop it here..."
             drop-placeholder="Drop file here..."
+            data-cy="import-api-actions-file-input"
           ></b-form-file>
         </b-col>
         <b-col cols="12" v-if="files.length" class="mb-3">
@@ -46,6 +53,7 @@
                 <b-form-input
                   :id="`name-input-${data.index}`"
                   size="sm"
+                  :data-cy="`imported-action-name-editor-${data.index}`"
                   :state="!savedActionNames.includes(data.item.name)"
                   v-model="data.item.name"
                 >
@@ -87,7 +95,9 @@ export default {
   },
   computed: {
     validNames() {
-      return this.actions.some(action => this.savedActionNames.includes(action.name))
+      return this.actions.some(action =>
+        this.savedActionNames.includes(action.name)
+      )
     }
   },
   watch: {
@@ -110,8 +120,8 @@ export default {
       this.$emit('import-actions', this.actions)
     },
     async isInvalidFile(file) {
-      if (this.files.find(f => f.name === file.name  && f.size === file.size)) {
-         this.$bvToast.toast(`File ${this.file.name} already added!`, {
+      if (this.files.find(f => f.name === file.name && f.size === file.size)) {
+        this.$bvToast.toast(`File ${this.file.name} already added!`, {
           title: 'Warning',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
@@ -125,7 +135,7 @@ export default {
         await this.readFile(file)
         return false
       } catch (error) {
-         this.$bvToast.toast(`Unable to parse file: ${this.file.name}`, {
+        this.$bvToast.toast(`Unable to parse file: ${this.file.name}`, {
           title: 'Error',
           variant: 'danger',
           toaster: 'b-toaster-bottom-right',

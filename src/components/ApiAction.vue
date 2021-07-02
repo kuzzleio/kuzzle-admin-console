@@ -19,6 +19,7 @@
             block
             variant="outline-primary"
             v-b-modal.export-actions
+            data-cy="button-export-api-actions"
             >Export API Actions</b-button
           >
           <b-button
@@ -26,6 +27,7 @@
             block
             variant="outline-primary"
             v-b-modal.import-actions
+            data-cy="button-import-api-actions"
             >Import API Actions</b-button
           >
         </template>
