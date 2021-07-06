@@ -53,14 +53,14 @@ export default {
       const selectedActions = this.apiActions.filter(action =>
         this.selectedActionIds.includes(action.id)
       )
-      selectedActions.map(action => {
+      selectedActions.forEach(action => {
         delete action.id
         delete action.idx
         delete action.env
       })
-      const data = JSON.stringify(selectedActions)
+      const data = JSON.stringify(selectedActions, null, 2)
 
-      const blob = new Blob([JSON.stringify(data)], {
+      const blob = new Blob([data], {
         type: 'application/json'
       })
 

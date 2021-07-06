@@ -119,7 +119,7 @@ export default {
     handleImport() {
       this.$emit('import-actions', this.actions)
     },
-    async isInvalidFile(file) {
+    async isValidFile(file) {
       if (this.files.find(f => f.name === file.name && f.size === file.size)) {
         this.$bvToast.toast(`File ${this.file.name} already added!`, {
           title: 'Warning',
@@ -129,11 +129,11 @@ export default {
           dismissible: true,
           noAutoHide: true
         })
-        return true
+        return false
       }
       try {
         await this.readFile(file)
-        return false
+        return true
       } catch (error) {
         this.$bvToast.toast(`Unable to parse file: ${this.file.name}`, {
           title: 'Error',
@@ -143,16 +143,16 @@ export default {
           dismissible: true,
           noAutoHide: true
         })
-        return true
+        return false
       }
     },
-    async readFile(file) {
+    readFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.readAsText(file, 'UTF-8')
         reader.onload = evt => {
           try {
-            resolve(JSON.parse(evt.target.result))
+            resolve({file: file, content: JSON.parse(evt.target.result)})
           } catch (error) {
             reject(error)
           }
@@ -163,17 +163,24 @@ export default {
       })
     },
     async fileAdded() {
-      const isInvalidFile = await this.isInvalidFile(this.file)
-      if (!isInvalidFile) {
+      const isValidFile = await this.isValidFile(this.file)
+      if (isValidFile) {
         this.files.push(this.file)
       }
       this.file = null
     },
     async filesChange() {
       const fileContent = {}
+      const promises = []
       for (const file of this.files) {
-        fileContent[file.name] = await this.readFile(file)
+        promises.push(await this.readFile(file))
       }
+      Promise.all(promises)
+      .then(values => {
+        for (const value of values) {
+          fileContent[value.file.name] = value.content
+        }
+      })
       this.actions = []
       for (const [env, content] of Object.entries(fileContent)) {
         this.actions = this.actions.concat(content)
