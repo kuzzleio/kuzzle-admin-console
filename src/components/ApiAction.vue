@@ -38,87 +38,80 @@
       <b-container fluid class="h-100">
         <b-row class="h-100">
           <b-col cols="12" v-if="loading"> </b-col>
-          <b-col cols="12" v-else>
-            <b-row class="h-100">
-              <b-col cols="12">
-                <b-card no-body class="px-0 h-100">
-                  <b-tabs card content-class="px-0 mt-3 tabsHeight">
-                    <b-tab
-                      v-for="(tabContent, tabIdx) of tabs"
-                      :key="`query-${tabIdx}-${tabContent.name}`"
-                      :active="currentTabIdx === tabIdx"
-                      @click.prevent=""
-                      class="px-2 py-0"
-                      title-link-class="px-3 py-0 titleItem"
+          <b-col cols="12" class="h-100" v-else>
+            <b-card no-body class="px-0 h-100">
+              <b-tabs card content-class="px-0 mt-3 tabsHeight">
+                <b-tab
+                  v-for="(tabContent, tabIdx) of tabs"
+                  :key="`query-${tabIdx}-${tabContent.name}`"
+                  :active="currentTabIdx === tabIdx"
+                  @click.prevent=""
+                  class="px-2 py-0"
+                  title-link-class="px-3 py-0 titleItem"
+                >
+                  <template #title>
+                    <b-row
+                      align-v="center"
+                      class="tabTitle"
+                      v-b-tooltip.hover
+                      :data-cy="`api-actions-tab-${tabIdx}`"
+                      :title="tabContent.name"
                     >
-                      <template #title>
-                        <b-row
-                          align-v="center"
-                          class="tabTitle"
-                          v-b-tooltip.hover
-                          :data-cy="`api-actions-tab-${tabIdx}`"
-                          :title="tabContent.name"
-                        >
-                          <b-col
-                            cols="9"
-                            class="text-left py-3 pointer"
-                            @click="setCurrentTab(tabIdx)"
-                          >
-                            <span>
-                              {{ formatTabName(tabContent) }}
-                            </span>
-                          </b-col>
-                          <b-col cols="3" class="py-3">
-                            <i
-                              class="fas fa-times pointer"
-                              @click="closeTab(tabIdx)"
-                            />
-                          </b-col>
-                        </b-row>
-                      </template>
-                      <QueryCard
-                        class="px-0"
-                        :query="tabContent.query"
-                        :tabIdx="tabIdx"
-                        :api="api"
-                        :openapi="openapi"
-                        :response="tabContent.response"
-                        @saveQuery="saveQuery"
-                        @queryChanged="onQueryChanged"
-                        @performQuery="performQuery"
-                      />
-                    </b-tab>
-                    <template #tabs-end>
-                      <b-row
-                        align-v="center"
-                        class="px-3"
-                        @click.prevent="addNewTab"
+                      <b-col
+                        cols="9"
+                        class="text-left py-3 pointer"
+                        @click="setCurrentTab(tabIdx)"
                       >
-                        <b-col cols="12" class="text-center my-3 pointer">
-                          <b data-cy="api-actions-tab-plus">+</b>
-                        </b-col>
-                      </b-row>
-                    </template>
-                    <template #empty>
-                      <b-row align-v="center" align-h="center" class="h-100">
-                        <b-col cols="4">
-                          <b-card title="No API action opened.">
-                            <b-card-text>
-                              <p>
-                                You can open a saved action in the left menu or
-                                <b-button variant="primary" @click="addNewTab"
-                                  >create one</b-button
-                                >
-                              </p>
-                            </b-card-text>
-                          </b-card>
-                        </b-col>
-                      </b-row>
-                    </template>
-                  </b-tabs>
-                </b-card>
-              </b-col>
-            </b-row>
+                        <span>
+                          {{ formatTabName(tabContent) }}
+                        </span>
+                      </b-col>
+                      <b-col cols="3" class="py-3">
+                        <i
+                          class="fas fa-times pointer"
+                          @click="closeTab(tabIdx)"
+                        />
+                      </b-col>
+                    </b-row>
+                  </template>
+                  <QueryCard
+                    class="px-0"
+                    :query="tabContent.query"
+                    :tabIdx="tabIdx"
+                    :api="api"
+                    :openapi="openapi"
+                    :response="tabContent.response"
+                    @saveQuery="saveQuery"
+                    @queryChanged="onQueryChanged"
+                    @performQuery="performQuery"
+                  />
+                </b-tab>
+                <template #tabs-end>
+                  <b
+                    @click.prevent="addNewTab"
+                    class="px-3 my-3 text-center pointer"
+                    data-cy="api-actions-tab-plus"
+                    >+</b
+                  >
+                </template>
+                <template #empty>
+                  <b-row align-v="center" align-h="center" class="h-100">
+                    <b-col cols="4">
+                      <b-card title="No API action opened.">
+                        <b-card-text>
+                          <p>
+                            You can open a saved action in the left menu or
+                            <b-button variant="primary" @click="addNewTab"
+                              >create one</b-button
+                            >
+                          </p>
+                        </b-card-text>
+                      </b-card>
+                    </b-col>
+                  </b-row>
+                </template>
+              </b-tabs>
+            </b-card>
           </b-col>
         </b-row>
       </b-container>
