@@ -175,7 +175,7 @@ export default {
       for (const file of this.files) {
         promises.push(await this.readFile(file))
       }
-      Promise.all(promises)
+      await Promise.all(promises)
       .then(values => {
         for (const value of values) {
           fileContent[value.file.name] = value.content
