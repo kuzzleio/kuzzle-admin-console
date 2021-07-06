@@ -359,9 +359,7 @@ export default {
     }
   },
   async beforeDestroy() {
-    if (this.subscribeRoomId) {
-      await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
-    }
+    await this.unsubscribeToCurrentDocs()
   },
   async mounted() {
     await this.loadAllTheThings()
@@ -372,12 +370,11 @@ export default {
   },
   watch: {
     enableRealtime: {
-      handler(value) {
+      async handler(value) {
         if (value) {
-          this.fetchDocuments()
-        } else if (this.subscribeRoomId) {
-          this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
-          this.subscribeRoomId = null
+          await this.fetchDocuments()
+        } else {
+          await this.unsubscribeToCurrentDocs()
         }
       }
     },
@@ -410,12 +407,15 @@ export default {
     }
   },
   methods: {
+    async unsubscribeToCurrentDocs() {
+      if (this.subscribeRoomId) {
+        await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
+        this.subscribeRoomId = null
+      }
+    },
     async subscribeToCurrentDocs() {
       try {
-        if (this.subscribeRoomId) {
-          await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
-          this.subscribeRoomId = null
-        }
+        await this.unsubscribeToCurrentDocs()
         const roomId = await this.$kuzzle.realtime.subscribe(
           this.indexName,
           this.collectionName,
