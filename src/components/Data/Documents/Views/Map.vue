@@ -2,15 +2,28 @@
   <div class="ViewMap">
     <b-row class="pb-2">
       <b-col cols="6" class="text-left">
-        GeoPoint field
-        <b-form-select
-          class="mx-2"
-          style="width: unset"
-          :options="mappingGeopoints"
-          :value="selectedGeopoint"
-          @change="$emit('on-select-geopoint', $event)"
-        >
-        </b-form-select>
+        <div v-if="mappingGeopoints.length">
+          GeoPoint field
+          <b-form-select
+            class="mx-2"
+            style="width: unset"
+            :options="mappingGeopoints"
+            :value="selectedGeopoint || ''"
+            @change="$emit('on-select-geopoint', $event)"
+          >
+          </b-form-select>
+        </div>
+        <div v-if="mappingGeoshapes.length">
+          GeoShape field
+          <b-form-select
+            class="mx-2"
+            style="width: unset"
+            :options="mappingGeoshapes"
+            :value="selectedGeoshape || ''"
+            @change="$emit('on-select-geoshape', $event)"
+          >
+          </b-form-select>
+        </div>
       </b-col>
       <b-col cols="6" class="text-right">
         <PerPageSelector
@@ -31,6 +44,24 @@
             :icon="getIcon(document.source)"
             @click="onMarkerClick(document.source)"
           />
+          <l-circle
+            v-for="shape of circleShapes"
+            :key="shape._id"
+            :lat-lng="shape.content.coordinates"
+            :radius="parseInt(shape.content.radius)"
+          />
+          <l-polygon
+            v-for="shape of polygonShapes"
+            :key="shape._id"
+            :lat-lngs="shape.content.coordinates"
+          />
+          <div v-for="shape of multiPolygonShapes" :key="shape._id">
+            <l-polygon
+              v-for="(polygon, index) in shape.content.coordinates"
+              :key="`${shape._id}-${index}`"
+              :lat-lngs="polygon"
+            />
+          </div>
         </l-map>
       </b-col>
       <b-col cols="4">
@@ -123,7 +154,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker } from 'vue2-leaflet'
+import { LMap, LTileLayer, LMarker, LCircle, LPolygon } from 'vue2-leaflet'
 import L from 'leaflet'
 import '@/assets/leaflet.css'
 import JsonFormatter from '@/directives/json-formatter.directive'
@@ -137,7 +168,9 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-    PerPageSelector
+    PerPageSelector,
+    LCircle,
+    LPolygon
   },
   directives: {
     JsonFormatter
@@ -151,13 +184,25 @@ export default {
       type: String,
       required: true
     },
+    selectedGeoshape: {
+      type: String,
+      required: true
+    },
     mappingGeopoints: {
+      type: Array,
+      required: true
+    },
+    mappingGeoshapes: {
       type: Array,
       required: true
     },
     geoDocuments: {
       type: Array,
       required: true
+    },
+    shapesDocuments: {
+      type: Array,
+      require: true
     },
     index: String,
     collection: String
@@ -232,6 +277,14 @@ export default {
       }
       return this.canDeleteDocument(this.index, this.collection)
     },
+    formattedShapes() {
+      if (!this.currentDocument) {
+        return {}
+      }
+      const document = _.omit(this.currentDocument, ['_id', '_kuzzle_info'])
+      document._kuzzle_info = this.currentDocument._kuzzle_info
+      return document
+    },
     formattedDocument() {
       if (!this.currentDocument) {
         return {}
@@ -239,22 +292,61 @@ export default {
       const document = _.omit(this.currentDocument, ['_id', '_kuzzle_info'])
       document._kuzzle_info = this.currentDocument._kuzzle_info
       return document
+    },
+    circleShapes() {
+      return this.shapesDocuments
+        .filter(shape => shape[this.selectedGeoshape].type === 'circle')
+        .map(shape => ({
+          content: shape[this.selectedGeoshape],
+          _id: shape._id
+        }))
+    },
+    polygonShapes() {
+      return this.shapesDocuments
+        .filter(shape => shape[this.selectedGeoshape].type === 'polygon')
+        .map(shape => ({
+          content: shape[this.selectedGeoshape],
+          _id: shape._id
+        }))
+    },
+    multiPolygonShapes() {
+      return this.shapesDocuments
+        .filter(shape => shape[this.selectedGeoshape].type === 'multipolygon')
+        .map(shape => ({
+          content: shape[this.selectedGeoshape],
+          _id: shape._id
+        }))
     }
   },
   watch: {
     selectedGeopoint: {
-      handler() {
-        this.map.fitBounds(this.coordinates)
+      handler(value) {
+        if (value) {
+          this.map.fitBounds(this.coordinates)
+        }
+      }
+    },
+    selectedGeoshape: {
+      handler(value) {
+        if (value) {
+          this.mapFitGeoShapes()
+        }
       }
     }
   },
   mounted() {
     this.$nextTick(() => {
       this.map = this.$refs.map.mapObject
-      this.map.fitBounds(this.coordinates)
+      if (this.coordinates.length) {
+        this.map.fitBounds(this.coordinates)
+      }
     })
   },
   methods: {
+    mapFitGeoShapes() {
+      this.$log.debug('MAP FIT GEO SHAPES')
+      // todo get shapes bounds and do map.fitbounds
+    },
     onMarkerClick(document) {
       if (this.currentDocument === document) {
         this.currentDocument = null
