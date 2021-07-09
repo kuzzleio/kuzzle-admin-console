@@ -293,10 +293,15 @@ export default {
       return this.listViewType === 'map' && this.mappingGeoshapes.length === 0
     },
     shapesDocuments() {
-      return this.documents.filter(document => {
-        const shape = this.getProperty(document, this.selectedGeoshape)
-        return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
-      })
+      return this.documents
+        .filter(document => {
+          const shape = this.getProperty(document, this.selectedGeoshape)
+          return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
+        })
+        .map(d => ({
+          content: d[this.selectedGeoshape],
+          source: d
+        }))
     },
     geoDocuments() {
       return this.documents

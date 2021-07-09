@@ -35,31 +35,51 @@
     </b-row>
     <b-row class="align-self-stretch">
       <b-col cols="8" class="viewMap-document-map">
-        <l-map ref="map" @click="onMapClick" data-cy="mapView-map">
+        <l-map ref="map" data-cy="mapView-map">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
             v-for="document in geoDocuments"
             :key="document.source._id"
             :lat-lng="document.coordinates"
             :icon="getIcon(document.source)"
-            @click="onMarkerClick(document.source)"
+            @click="
+              onItemClicked(document.source, document.coordinates, 'point')
+            "
           />
           <l-circle
             v-for="shape of circleShapes"
+            :ref="`circle-${shape._id}`"
             :key="shape._id"
             :lat-lng="shape.content.coordinates"
-            :radius="parseInt(shape.content.radius)"
+            :radius="getRadiusInMeter(shape.content.radius)"
+            color="#FFFF80"
+            @click="
+              onItemClicked(
+                shape.source,
+                shape.content.coordinates,
+                'circle',
+                shape.content.coordinates
+              )
+            "
           />
           <l-polygon
             v-for="shape of polygonShapes"
+            :ref="`polygon-${shape._id}`"
             :key="shape._id"
             :lat-lngs="shape.content.coordinates"
+            color="#FF80FF"
+            @click="
+              onItemClicked(shape.source, shape.content.coordinates, 'array')
+            "
           />
           <div v-for="shape of multiPolygonShapes" :key="shape._id">
             <l-polygon
               v-for="(polygon, index) in shape.content.coordinates"
+              :ref="`polygon-${shape._id}-${index}`"
               :key="`${shape._id}-${index}`"
               :lat-lngs="polygon"
+              color="#80FFFF"
+              @click="onItemClicked(shape.source, polygon, 'array')"
             />
           </div>
         </l-map>
@@ -72,12 +92,12 @@
         >
           <b-card-header>
             <b-row align-v="center">
-              <b-col cols="9" align-v="center">
+              <b-col cols="8" align-v="center">
                 <span data-cy="mapView-current-document-id">{{
                   currentDocument._id
                 }}</span>
               </b-col>
-              <b-col cols="3">
+              <b-col cols="4" class="pr-1 text-right">
                 <b-button
                   class="DocumentMapItem-update"
                   href=""
@@ -108,6 +128,13 @@
                   @click.prevent="deleteCurrentDocument"
                 >
                   <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
+                </b-button>
+                <b-button
+                  class="ml-2"
+                  title="Close"
+                  @click.prevent="closeDocument"
+                >
+                  <i class="fa fa-times" />
                 </b-button>
               </b-col>
             </b-row>
@@ -168,9 +195,9 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-    PerPageSelector,
     LCircle,
-    LPolygon
+    LPolygon,
+    PerPageSelector
   },
   directives: {
     JsonFormatter
@@ -263,7 +290,12 @@ export default {
     },
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     coordinates() {
-      return this.geoDocuments.map(d => d.coordinates)
+      const coordinates = [
+        ...this.geoDocuments.map(d => d.coordinates),
+        ...this.getShapesCoordinates()
+      ]
+      this.$log.debug('coordinates', coordinates)
+      return coordinates
     },
     canEdit() {
       if (!this.index || !this.collection) {
@@ -294,42 +326,36 @@ export default {
       return document
     },
     circleShapes() {
-      return this.shapesDocuments
-        .filter(shape => shape[this.selectedGeoshape].type === 'circle')
-        .map(shape => ({
-          content: shape[this.selectedGeoshape],
-          _id: shape._id
-        }))
+      const circleShapes = this.shapesDocuments.filter(
+        shape => shape.content.type === 'circle'
+      )
+      this.$log.debug(circleShapes)
+      return circleShapes
     },
     polygonShapes() {
-      return this.shapesDocuments
-        .filter(shape => shape[this.selectedGeoshape].type === 'polygon')
-        .map(shape => ({
-          content: shape[this.selectedGeoshape],
-          _id: shape._id
-        }))
+      return this.shapesDocuments.filter(
+        shape => shape.content.type === 'polygon'
+      )
     },
     multiPolygonShapes() {
-      return this.shapesDocuments
-        .filter(shape => shape[this.selectedGeoshape].type === 'multipolygon')
-        .map(shape => ({
-          content: shape[this.selectedGeoshape],
-          _id: shape._id
-        }))
+      return this.shapesDocuments.filter(
+        shape => shape.content.type === 'multipolygon'
+      )
     }
   },
   watch: {
     selectedGeopoint: {
       handler(value) {
         if (value) {
-          this.map.fitBounds(this.coordinates)
+          this.map.fitBounds(this.coordinates, { maxZoom: 12 })
         }
       }
     },
     selectedGeoshape: {
       handler(value) {
         if (value) {
-          this.mapFitGeoShapes()
+          this.$log.debug(this.circleShapes)
+          this.map.fitBounds(this.coordinates, { maxZoom: 12 })
         }
       }
     }
@@ -337,24 +363,80 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.map = this.$refs.map.mapObject
-      if (this.coordinates.length) {
-        this.map.fitBounds(this.coordinates)
+      if (L.latLngBounds(this.coordinates).isValid()) {
+        this.map.fitBounds(this.coordinates, { maxZoom: 12 })
       }
     })
   },
   methods: {
-    mapFitGeoShapes() {
-      this.$log.debug('MAP FIT GEO SHAPES')
-      // todo get shapes bounds and do map.fitbounds
+    getRadiusInMeter(radius) {
+      if (typeof radius === 'number') {
+        return radius
+      }
+      if (typeof radius !== 'string') {
+        return null
+      }
+      const value = parseInt(radius)
+      const unit = radius.replace(value.toString(), '')
+      let multiplicator = 0
+      switch (unit) {
+        case 'km':
+          multiplicator = 1000
+          break
+        default:
+          multiplicator = 0
+      }
+      return value * multiplicator
     },
-    onMarkerClick(document) {
+    flattenShapes(arr) {
+      return arr.reduce((a, b) => {
+        return a.concat(
+          Array.isArray(b) && typeof b[0] !== typeof 1
+            ? this.flattenShapes(b)
+            : [b]
+        )
+      }, [])
+    },
+    getShapesCoordinates() {
+      const circlePoints = this.circleShapes.map(
+        circle => circle.content.coordinates
+      )
+
+      const polygonArrays = this.polygonShapes.map(
+        polygon => polygon.content.coordinates
+      )
+
+      const multipolygonArrays = [
+        ...this.multiPolygonShapes.map(
+          multipolygon => multipolygon.content.coordinates
+        )
+      ]
+
+      const points = [
+        ...circlePoints,
+        ...this.flattenShapes(polygonArrays),
+        ...this.flattenShapes(multipolygonArrays)
+      ]
+      this.$log.debug('points', points)
+      return points
+    },
+    onItemClicked(document, latlng, type, radius) {
       if (this.currentDocument === document) {
         this.currentDocument = null
-      } else {
-        this.currentDocument = document
+        return
+      }
+      this.currentDocument = document
+      if (type === 'array') {
+        this.map.fitBounds(latlng, { maxZoom: 12 })
+      } else if (type === 'point') {
+        this.map.setView(latlng, 12)
+      } else if (type === 'circle') {
+        this.map.fitBounds(
+          L.latLng(latlng).toBounds(this.getRadiusInMeter(radius))
+        )
       }
     },
-    onMapClick() {
+    closeDocument() {
       this.currentDocument = null
     },
     getIcon(document) {
