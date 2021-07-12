@@ -50,11 +50,13 @@
           />
           <l-circle
             v-for="shape of circleShapes"
-            :ref="`circle-${shape._id}`"
-            :key="shape._id"
+            :ref="`circle-${shape.source_id}`"
+            :key="shape.source_id"
             :lat-lng="shape.content.coordinates"
             :radius="getRadiusInMeter(shape.content.radius)"
-            color="#FFFF80"
+            :color="getShapeColor(shape.source._id)"
+            :className="`data-cy-shape data-cy-shape-${shape.source._id}`"
+            :class="getShapeCyClasse(shape)"
             @click="
               onItemClicked(
                 shape.source,
@@ -66,21 +68,25 @@
           />
           <l-polygon
             v-for="shape of polygonShapes"
-            :ref="`polygon-${shape._id}`"
-            :key="shape._id"
+            :ref="`polygon-${shape.source_id}`"
+            :key="shape.source_id"
             :lat-lngs="shape.content.coordinates"
-            color="#FF80FF"
+            :color="getShapeColor(shape.source._id)"
+            :class="getShapeCyClasse(shape)"
+            :className="`data-cy-shape data-cy-shape-${shape.source._id}`"
             @click="
               onItemClicked(shape.source, shape.content.coordinates, 'array')
             "
           />
-          <div v-for="shape of multiPolygonShapes" :key="shape._id">
+          <div v-for="shape of multiPolygonShapes" :key="shape.source_id">
             <l-polygon
               v-for="(polygon, index) in shape.content.coordinates"
-              :ref="`polygon-${shape._id}-${index}`"
-              :key="`${shape._id}-${index}`"
+              :ref="`polygon-${shape.source_id}-${index}`"
+              :key="`${shape.source_id}-${index}`"
               :lat-lngs="polygon"
-              color="#80FFFF"
+              :color="getShapeColor(shape.source._id)"
+              :class="getShapeCyClasse(shape)"
+              :className="`data-cy-shape data-cy-shape-${shape.source._id}`"
               @click="onItemClicked(shape.source, polygon, 'array')"
             />
           </div>
@@ -367,6 +373,17 @@ export default {
     })
   },
   methods: {
+    getShapeCyClasse(shape) {
+      return this.currentDocument &&
+        this.currentDocument._id === shape.source._id
+        ? 'data-cy-shape-selected'
+        : ''
+    },
+    getShapeColor(id) {
+      return this.currentDocument && this.currentDocument._id === id
+        ? '#26AD23'
+        : '#2981CA'
+    },
     getRadiusInMeter(radius) {
       if (typeof radius === 'number') {
         return radius
@@ -376,13 +393,13 @@ export default {
       }
       const value = parseInt(radius)
       const unit = radius.replace(value.toString(), '')
-      let multiplicator = 0
+      let multiplicator = 1
       switch (unit) {
         case 'km':
           multiplicator = 1000
           break
         default:
-          multiplicator = 0
+          multiplicator = 1
       }
       return value * multiplicator
     },
@@ -424,13 +441,13 @@ export default {
       }
       this.currentDocument = document
       if (type === 'array') {
-        this.map.fitBounds(latlng, { maxZoom: 12 })
+        this.map.fitBounds(latlng, { maxZoom: 14 })
       } else if (type === 'point') {
-        this.map.setView(latlng, 12)
+        this.map.setView(latlng, 14)
       } else if (type === 'circle') {
         const radiusInMeter = this.getRadiusInMeter(radius)
-        const bounds = L.latLng(latlng).toBounds(radiusInMeter)
-        this.map.fitBounds(bounds)
+        const bounds = L.latLng(latlng).toBounds(radiusInMeter * 2)
+        this.map.fitBounds(bounds, 14)
       }
     },
     closeDocument() {
