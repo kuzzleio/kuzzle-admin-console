@@ -24,7 +24,7 @@
             </b-button>
             <IndexDropdownAction
               :indexName="indexName"
-              @delete-index-clicked="ondeleteIndexClicked"
+              @delete-index-clicked="onDeleteIndexClicked"
             />
           </b-col>
         </b-row>
@@ -242,9 +242,11 @@
       />
     </b-container>
     <DeleteIndexModal
+      :ref="deleteIndexModalId"
       :index="index"
-      :modalId="`delete-index-${indexName}`"
-      @delete-successful="onDeleteIndexSuccess"
+      :modalId="deleteIndexModalId"
+      @confirm-deletion="onIndexConfirmDeleteModal"
+      @cancel="onIndexCancelDeleteModal"
     />
   </div>
 </template>
@@ -332,14 +334,27 @@ export default {
           label: ''
         }
       ]
+    },
+    deleteIndexModalId() {
+      return `delete-index-${this.indexName}`
     }
   },
   methods: {
     truncateName,
-    onDeleteIndexSuccess() {
-      this.$router.push({ name: 'Indexes', params: {} })
+    onIndexCancelDeleteModal() {
+      this.$refs[this.deleteIndexModalId].resetForm()
+      this.$bvModal.hide(this.deleteIndexModalId)
     },
-    ondeleteIndexClicked() {
+    async onIndexConfirmDeleteModal() {
+      try {
+        await this.$store.direct.dispatch.index.deleteIndex(this.index)
+        this.$bvModal.hide(this.deleteIndexModalId)
+        this.$router.push({ name: 'Indexes', params: {} })
+      } catch (err) {
+        this.$refs[this.deleteIndexModalId].setError(err.message)
+      }
+    },
+    onDeleteIndexClicked() {
       this.$bvModal.show(`delete-index-${this.indexName}`)
     },
     onDeleteCollectionClicked(collection) {

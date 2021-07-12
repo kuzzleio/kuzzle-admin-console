@@ -1,11 +1,5 @@
 <template>
-  <b-modal
-    class="DeleteIndexModal"
-    size="lg"
-    :id="modalId"
-    :ref="modalId"
-    @hide="resetForm"
-  >
+  <b-modal class="DeleteIndexModal" size="lg" :id="modalId" @hide="resetForm">
     <template v-slot:modal-title>
       Index
       <strong>{{ truncateName(index ? index.name : '') }}</strong> deletion
@@ -76,14 +70,11 @@ export default {
       this.confirmation = ''
       this.error = ''
     },
-    onDeleteSuccess() {
-      this.resetForm()
-      this.$bvModal.hide(this.modalId)
-      this.$emit('delete-successful')
+    setError(error) {
+      this.error = error
     },
     onCancel() {
       this.resetForm()
-      this.$bvModal.hide(this.modalId)
       this.$emit('cancel')
     },
 
@@ -91,13 +82,7 @@ export default {
       if (!this.isConfirmationValid) {
         return
       }
-
-      try {
-        await this.$store.direct.dispatch.index.deleteIndex(this.index)
-        this.onDeleteSuccess()
-      } catch (err) {
-        this.error = err.message
-      }
+      this.$emit('confirm-deletion')
     }
   }
 }
