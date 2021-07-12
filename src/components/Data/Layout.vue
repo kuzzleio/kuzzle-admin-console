@@ -1,6 +1,6 @@
 <template>
   <Multipane class="DataLayout Custom-resizer" layout="vertical" @paneResizeStop="registerNewPaneSize($event)">
-    <div class="DataLayout-sidebarWrapper" :style="{ width: this.paneSize}" data-cy="DataLayout-sidebarWrapper">
+    <div class="DataLayout-sidebarWrapper" :style="{ width: this.paneSize }" data-cy="DataLayout-sidebarWrapper">
       <treeview
         :indexName="$route.params.indexName"
         :collectionName="$route.params.collectionName"
