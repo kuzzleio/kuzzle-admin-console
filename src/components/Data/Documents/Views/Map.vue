@@ -1,31 +1,33 @@
 <template>
   <div class="ViewMap">
     <b-row class="pb-2">
-      <b-col cols="6" class="text-left">
-        <div v-if="mappingGeopoints.length">
-          GeoPoint field
-          <b-form-select
-            class="mx-2"
-            style="width: unset"
-            :options="mappingGeopoints"
-            :value="selectedGeopoint || ''"
-            @change="$emit('on-select-geopoint', $event)"
-          >
-          </b-form-select>
-        </div>
-        <div v-if="mappingGeoshapes.length">
-          GeoShape field
-          <b-form-select
-            class="mx-2"
-            style="width: unset"
-            :options="mappingGeoshapes"
-            :value="selectedGeoshape || ''"
-            @change="$emit('on-select-geoshape', $event)"
-          >
-          </b-form-select>
-        </div>
+      <b-col cols="9" class="text-left">
+        <b-row no-gutters>
+          <div v-if="mappingGeopoints.length">
+            GeoPoint field
+            <b-form-select
+              class="mx-2"
+              style="width: unset"
+              :options="mappingGeopoints"
+              :value="selectedGeopoint || ''"
+              @change="$emit('on-select-geopoint', $event)"
+            >
+            </b-form-select>
+          </div>
+          <div v-if="mappingGeoshapes.length">
+            GeoShape field
+            <b-form-select
+              class="mx-2"
+              style="width: unset"
+              :options="mappingGeoshapes"
+              :value="selectedGeoshape || ''"
+              @change="$emit('on-select-geoshape', $event)"
+            >
+            </b-form-select>
+          </div>
+        </b-row>
       </b-col>
-      <b-col cols="6" class="text-right">
+      <b-col cols="3" class="text-right">
         <PerPageSelector
           :current-page-size="currentPageSize"
           :total-documents="totalDocuments"
@@ -58,7 +60,7 @@
                 shape.source,
                 shape.content.coordinates,
                 'circle',
-                shape.content.coordinates
+                shape.content.radius
               )
             "
           />
@@ -294,7 +296,6 @@ export default {
         ...this.geoDocuments.map(d => d.coordinates),
         ...this.getShapesCoordinates()
       ]
-      this.$log.debug('coordinates', coordinates)
       return coordinates
     },
     canEdit() {
@@ -326,11 +327,9 @@ export default {
       return document
     },
     circleShapes() {
-      const circleShapes = this.shapesDocuments.filter(
+      return this.shapesDocuments.filter(
         shape => shape.content.type === 'circle'
       )
-      this.$log.debug(circleShapes)
-      return circleShapes
     },
     polygonShapes() {
       return this.shapesDocuments.filter(
@@ -354,7 +353,6 @@ export default {
     selectedGeoshape: {
       handler(value) {
         if (value) {
-          this.$log.debug(this.circleShapes)
           this.map.fitBounds(this.coordinates, { maxZoom: 12 })
         }
       }
@@ -391,7 +389,7 @@ export default {
     flattenShapes(arr) {
       return arr.reduce((a, b) => {
         return a.concat(
-          Array.isArray(b) && typeof b[0] !== typeof 1
+          Array.isArray(b) && typeof b[0] !== 'number'
             ? this.flattenShapes(b)
             : [b]
         )
@@ -417,7 +415,6 @@ export default {
         ...this.flattenShapes(polygonArrays),
         ...this.flattenShapes(multipolygonArrays)
       ]
-      this.$log.debug('points', points)
       return points
     },
     onItemClicked(document, latlng, type, radius) {
@@ -431,9 +428,9 @@ export default {
       } else if (type === 'point') {
         this.map.setView(latlng, 12)
       } else if (type === 'circle') {
-        this.map.fitBounds(
-          L.latLng(latlng).toBounds(this.getRadiusInMeter(radius))
-        )
+        const radiusInMeter = this.getRadiusInMeter(radius)
+        const bounds = L.latLng(latlng).toBounds(radiusInMeter)
+        this.map.fitBounds(bounds)
       }
     },
     closeDocument() {
