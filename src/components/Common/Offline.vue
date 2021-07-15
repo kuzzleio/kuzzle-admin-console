@@ -11,11 +11,7 @@
           />
           <h2>
             Connecting to Kuzzle at
-            <span class="code"
-              >{{ $store.direct.getters.kuzzle.currentEnvironment.host }}:{{
-                $store.direct.getters.kuzzle.currentEnvironment.port
-              }}</span
-            >
+            <span class="code">{{ host }}:{{ port }}</span>
           </h2>
         </template>
 
@@ -50,13 +46,16 @@ export default {
   components: {
     EnvironmentSwitch
   },
-  data() {
-    return {
-      host: null,
-      port: null
-    }
-  },
   computed: {
+    currentEnvironment() {
+      return this.$store.direct.getters.kuzzle.currentEnvironment
+    },
+    host() {
+      return this.currentEnvironment ? this.currentEnvironment.host : ''
+    },
+    port() {
+      return this.currentEnvironment ? this.currentEnvironment.port : ''
+    },
     errorInternalMessage() {
       return this.$store.state.kuzzle.errorFromKuzzle
     }

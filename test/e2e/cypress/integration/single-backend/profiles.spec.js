@@ -72,6 +72,8 @@ describe('Profiles', () => {
 
     cy.visit('/#/security/profiles')
     cy.contains('Profiles')
+    cy.get('[data-cy=ProfileItem]').should('have.length', 17)
+    cy.get('[data-cy=perPageSelector]').select('10')
     cy.get('[data-cy=ProfileItem]').should('have.length', 10)
     cy.get(
       '[data-cy="ProfileManagement-pagination"] .page-link[aria-posinset="2"]'

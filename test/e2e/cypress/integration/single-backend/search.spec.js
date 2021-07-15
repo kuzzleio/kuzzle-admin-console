@@ -623,6 +623,7 @@ describe('Search', function() {
     cy.get('[data-cy=BasicFilter-sortAttributeSelect]').select('lastName')
 
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=perPageSelector]').select('10')
 
     cy.get('[data-cy=DocumentList-pagination] [aria-posinset=4]').click()
 
@@ -700,6 +701,35 @@ describe('Search', function() {
       cy.get('[data-cy="Filters-close"]').click()
       cy.get('[data-cy="QuickFilter-resetBtn"]').click()
     }
+  })
+
+  it('Should be able to delete a previous search in the search history', () => {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/dummy-0/_create?refresh=wait_for`,
+      {
+        firstName: 'Dummy',
+        lastName: `Clone-0`,
+        job: 'Blockchain as a Service'
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(0)
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+    cy.get('[data-cy="FilterHistoryItem-deleteBtn--0"]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]').should('not.exist')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]').should('not.exist')
   })
 
   it('should be able to add a filter to favorite', () => {

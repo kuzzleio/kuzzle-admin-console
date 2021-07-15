@@ -35,6 +35,26 @@
         >
           Security
         </b-nav-item>
+        <b-nav-item
+          :active="
+            $route.path.match('/api-action')
+              ? $route.path.match('/api-action').length > 0
+              : false
+          "
+          :to="{ name: 'ApiAction' }"
+        >
+          API Action
+        </b-nav-item>
+        <b-nav-text
+          class="ml-2"
+          title="Give us your feedback on our GitHub page"
+        >
+          <a
+            href="https://github.com/kuzzleio/kuzzle-admin-console"
+            target="_blank"
+            ><i class="logout fab fa-github fa-lg"
+          /></a>
+        </b-nav-text>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
         <b-nav-text
@@ -76,7 +96,7 @@ export default {
     },
     currentUserName() {
       if (!this.user) {
-        return 'Not authentified'
+        return 'Not authenticated'
       }
       if (this.user.id === -1) {
         return 'Anonymous'

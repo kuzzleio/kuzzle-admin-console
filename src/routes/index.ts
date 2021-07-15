@@ -13,13 +13,14 @@ import DataLayout from '../components/Data/Layout.vue'
 import ResetPassword from '../components/ResetPassword.vue'
 import SecurityLayout from '../components/Security/Layout.vue'
 import PageNotFound from '../components/404.vue'
+import ApiAction from '../components/ApiAction.vue'
 
 import SecuritySubRoutes from './children/security'
 import DataSubRoutes from './children/data'
 
 Vue.use(VueRouter)
 
-export default function createRoutes(log, ga) {
+export default function createRoutes(log) {
   const environmentsGuard = async (from, to, next) => {
     log.debug('Router:EnvironmentsGuard')
     try {
@@ -132,6 +133,11 @@ export default function createRoutes(log, ga) {
                 name: 'Security',
                 component: SecurityLayout,
                 children: SecuritySubRoutes
+              },
+              {
+                path: '/api-action',
+                name: 'ApiAction',
+                component: ApiAction
               }
             ]
           }
@@ -144,16 +150,6 @@ export default function createRoutes(log, ga) {
         component: PageNotFound
       }
     ]
-  })
-
-  router.afterEach(to => {
-    if (!ga) {
-      return
-    }
-
-    ga.pageview({
-      page_title: to.name
-    })
   })
 
   return router

@@ -46,6 +46,7 @@
             <b-button
               variant="link"
               @click="deleteFilter"
+              :data-cy="`FilterHistoryItem-deleteBtn--${id}`"
               :title="'Delete Filter'"
             >
               <i class="fa fa-trash" />

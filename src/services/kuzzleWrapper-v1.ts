@@ -158,7 +158,9 @@ export class KuzzleWrapperV1 {
           )
           formattedUser.credentials[strategy] = res
         } catch (e) {
-          formattedUser.credentials[strategy] = {}
+          /* eslint-disable no-empty */
+          // Strategies contains local by default but some user
+          // might not have local credentials
         }
       }
 
@@ -203,7 +205,7 @@ export class KuzzleWrapperV1 {
   async performSearchProfiles(filters = {}, pagination = {}) {
     const result = await this.kuzzle.security.searchProfiles(
       { ...filters },
-      { size: 100, ...pagination }
+      { size: 1000, ...pagination }
     )
 
     const profiles = result.hits.map(document => {
