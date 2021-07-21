@@ -65,10 +65,7 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['currentEnvironment']),
     displayNoAdminWarning() {
-      return (
-        !this.currentEnvironment.hideAdminWarning &&
-        !this.$store.direct.getters.auth.adminAlreadyExists
-      )
+      return !this.$store.direct.getters.auth.adminAlreadyExists
     }
   },
   methods: {
