@@ -127,7 +127,11 @@ import { validationMixin } from 'vuelidate'
 import { numeric, required } from 'vuelidate/lib/validators'
 import { isValidHostname, notIncludeScheme } from '../../../validators'
 
-import { envColors, DEFAULT_COLOR } from '../../../vuex/modules/kuzzle/store'
+import {
+  envColors,
+  DEFAULT_COLOR,
+  NO_ADMIN_WARNING_HOSTS
+} from '../../../vuex/modules/kuzzle/store'
 const useHttps = window.location.protocol === 'https:'
 
 /**
@@ -168,7 +172,7 @@ export default {
         color: null,
         ssl: useHttps,
         backendMajorVersion: null,
-        hideAdminBanner: false
+        hideAdminWarning: false
       },
       submitting: false
     }
@@ -268,7 +272,7 @@ export default {
       this.environment.color = currentEnv.color
       this.environment.ssl = currentEnv.ssl
       this.environment.backendMajorVersion = currentEnv.backendMajorVersion
-      this.environment.hideAdminBanner = currentEnv.hideAdminBanner
+      this.environment.hideAdminWarning = currentEnv.hideAdminWarning
       this.$nextTick(() => this.showValidationErrors())
     } else {
       this.environment.name = null
@@ -277,7 +281,7 @@ export default {
       this.environment.color = DEFAULT_COLOR
       this.environment.ssl = useHttps
       this.environment.backendMajorVersion = null
-      this.environment.hideAdminBanner = false
+      this.environment.hideAdminWarning = false
     }
   },
   methods: {
@@ -319,7 +323,7 @@ export default {
               port: parseInt(this.environment.port),
               ssl: this.environment.ssl,
               backendMajorVersion: this.environment.backendMajorVersion,
-              hideAdminBanner: this.environment.hideAdminBanner
+              hideAdminWarning: this.environment.hideAdminWarning
             }
           })
         } else {
@@ -332,7 +336,7 @@ export default {
               port: parseInt(this.environment.port),
               ssl: this.environment.ssl,
               backendMajorVersion: this.environment.backendMajorVersion,
-              hideAdminBanner: ['localhost', '127.0.0.1'].includes(
+              hideAdminWarning: NO_ADMIN_WARNING_HOSTS.includes(
                 this.environment.host
               )
                 ? true

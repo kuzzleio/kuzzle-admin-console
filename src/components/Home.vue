@@ -17,8 +17,8 @@
       no-auto-hide
       toaster="b-toaster-bottom-right"
       title="Warning!"
-      data-cy="noAdminAlert"
-      id="no-admin-banner"
+      data-cy="noAdminWarning"
+      id="no-admin-warning"
     >
       <p>
         Your Kuzzle has no administrator user. It is strongly recommended
@@ -30,7 +30,7 @@
           variant="primary"
           size="sm"
           id="noAdminGotIt"
-          @click="hideNoAdminBanner"
+          @click="hideNoAdminWarning"
         >
           Ok, got it
         </b-button>
@@ -79,28 +79,28 @@ export default {
     }
   },
   methods: {
-    hideNoAdminBanner() {
+    hideNoAdminWarning() {
       this.$store.direct.dispatch.kuzzle.updateEnvironment({
         id: this.$store.direct.state.kuzzle.currentId,
         environment: {
           ...this.currentEnvironment,
-          hideAdminBanner: true
+          hideAdminWarning: true
         }
       })
-      this.$bvToast.hide('no-admin-banner')
+      this.$bvToast.hide('no-admin-warning')
     },
     onTokenExpired() {
       this.$store.direct.dispatch.auth.setSession(null)
     },
     noop() {},
-    displayNoAdminToast() {
+    displayNoAdminWarning() {
       if (this.$store.direct.getters.auth.adminAlreadyExists) {
         return
       }
-      if (this.currentEnvironment.hideAdminBanner) {
+      if (this.currentEnvironment.hideAdminWarning) {
         return
       }
-      this.$bvToast.show('no-admin-banner')
+      this.$bvToast.show('no-admin-warning')
     }
   },
   mounted() {
@@ -124,7 +124,7 @@ export default {
         }
       }
     })
-    this.displayNoAdminToast()
+    this.displayNoAdminWarning()
   },
   beforeDestroy() {
     this.$kuzzle.removeListener('tokenExpired')

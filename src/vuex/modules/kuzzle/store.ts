@@ -13,6 +13,7 @@ export const state: KuzzleState = {
   online: false,
   errorFromKuzzle: undefined
 }
+export const NO_ADMIN_WARNING_HOSTS = ['localhost', '127.0.0.1']
 
 export const DEFAULT_COLOR = 'darkblue'
 
@@ -203,8 +204,8 @@ const actions = createActions({
     loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
     Object.keys(loadedEnv).forEach(envName => {
       const env = loadedEnv[envName]
-      if (env.hideAdminBanner === undefined) {
-        env.hideAdminBanner = ['localhost', '127.0.0.1'].includes(env.host)
+      if (env.hideAdminWarning === undefined) {
+        env.hideAdminWarning = NO_ADMIN_WARNING_HOSTS.includes(env.host)
       }
       commit.createEnvironment({
         environment: env,

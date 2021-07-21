@@ -14,12 +14,16 @@
             <b-alert
               class="text-center"
               variant="info"
-              data-cy="noAdminAlert"
-              :show="displayNoAdminBanner"
+              data-cy="noAdminWarning"
+              :show="displayNoAdminWarning"
             >
               <b>Warning!</b> Your Kuzzle has no administrator user. It is
               strongly recommended
-              <a class="alert-link" data-cy="NoAdminAlert-link" href="#/signup">
+              <a
+                class="alert-link"
+                data-cy="NoAdminWarning-link"
+                href="#/signup"
+              >
                 that you create one.</a
               >
             </b-alert>
@@ -60,9 +64,9 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['currentEnvironment']),
-    displayNoAdminBanner() {
+    displayNoAdminWarning() {
       return (
-        !this.currentEnvironment.hideAdminBanner &&
+        !this.currentEnvironment.hideAdminWarning &&
         !this.$store.direct.getters.auth.adminAlreadyExists
       )
     }
