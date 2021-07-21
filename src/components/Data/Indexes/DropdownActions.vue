@@ -1,10 +1,7 @@
 <template>
   <span>
     <b-dropdown
-      v-if="
-        $store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !==
-          1
-      "
+      v-if="backendMajorVersion !== 1"
       data-cy="IndexDropdownAction"
       no-caret
       toggle-class="indexDropdown"
@@ -24,10 +21,7 @@
               ? 'Your rights do not allow you to delete this index'
               : ''
           "
-          v-if="
-            $store.direct.getters.kuzzle.currentEnvironment
-              .backendMajorVersion !== 1
-          "
+          v-if="backendMajorVersion !== 1"
           @click="onDeleteIndexClicked"
         >
           Delete index
@@ -49,7 +43,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('auth', ['canDeleteIndex'])
+    ...mapGetters('auth', ['canDeleteIndex']),
+    backendMajorVersion() {
+      return this.$store.direct.getters.kuzzle.currentEnvironment
+        .backendMajorVersion
+    }
   },
   methods: {
     onDeleteIndexClicked() {

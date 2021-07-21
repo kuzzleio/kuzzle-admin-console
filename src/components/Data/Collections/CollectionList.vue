@@ -2,12 +2,12 @@
   <div>
     <b-container class="CollectionList" v-if="index">
       <headline>
-        <b-row>
-          <b-col sm="9" class="text-truncate">
+        <div class="d-flex flex-row">
+          <span class="flex-grow-1 text-truncate">
             <i class="fa fa-database text-secondary"></i> &nbsp;
             <span class="code">{{ indexName }}</span>
-          </b-col>
-          <b-col class="text-right">
+          </span>
+          <span class="text-right">
             <b-button
               class="align-middle"
               data-cy="CollectionList-create"
@@ -26,8 +26,8 @@
               :indexName="indexName"
               @delete-index-clicked="onDeleteIndexClicked"
             />
-          </b-col>
-        </b-row>
+          </span>
+        </div>
       </headline>
 
       <list-not-allowed v-if="!canSearchCollection(indexName)" />
@@ -245,8 +245,8 @@
       :ref="deleteIndexModalId"
       :index="index"
       :modalId="deleteIndexModalId"
-      @confirm-deletion="onIndexConfirmDeleteModal"
-      @cancel="onIndexCancelDeleteModal"
+      @confirm-deletion="onDeleteIndexConfirm"
+      @cancel="onDeleteIndexCancel"
     />
   </div>
 </template>
@@ -341,11 +341,11 @@ export default {
   },
   methods: {
     truncateName,
-    onIndexCancelDeleteModal() {
+    onDeleteIndexCancel() {
       this.$refs[this.deleteIndexModalId].resetForm()
       this.$bvModal.hide(this.deleteIndexModalId)
     },
-    async onIndexConfirmDeleteModal() {
+    async onDeleteIndexConfirm() {
       try {
         await this.$store.direct.dispatch.index.deleteIndex(this.index)
         this.$bvModal.hide(this.deleteIndexModalId)
