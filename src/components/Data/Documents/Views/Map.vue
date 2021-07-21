@@ -488,6 +488,7 @@ export default {
   }
   .json-formatter {
     max-height: 525px;
+    width: 100%;
     overflow-y: auto;
   }
 }
