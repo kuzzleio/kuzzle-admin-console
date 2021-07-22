@@ -135,7 +135,7 @@ const actions = createActions({
       (payload.environment.host !== getters.currentEnvironment.host ||
         payload.environment.port !== getters.currentEnvironment.port ||
         payload.environment.ssl !== getters.currentEnvironment.ssl ||
-        payload.environment.backendMajorVersion !==
+        payload.backendMajorVersion !==
           getters.currentEnvironment.backendMajorVersion)
     ) {
       mustReconnect = true
