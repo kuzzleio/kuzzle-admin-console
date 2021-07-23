@@ -8,15 +8,14 @@
               <i class="fa fa-search search" />
             </b-input-group-prepend>
             <div class="QuickFilter-searchBar-input-wrapper">
-              <auto-focus-input
-                name="quick-filter"
+              <b-form-input
+                autofocus
                 data-cy="QuickFilter-input"
                 debounce="300"
                 type="search"
                 v-model="value"
-                :initialValue="this.initialValue"
                 :placeholder="placeholder"
-                @submit="inputSubmit"
+                @keyup.enter="inputSubmit"
               />
             </div>
           </b-input-group>
@@ -96,13 +95,8 @@
 </template>
 
 <script>
-import AutoFocusInput from '../AutoFocusInput'
-
 export default {
   name: 'QuickFilter',
-  components: {
-    AutoFocusInput
-  },
   props: {
     currentFilter: Object,
     advancedFiltersVisible: Boolean,
