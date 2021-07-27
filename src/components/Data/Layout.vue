@@ -1,6 +1,14 @@
 <template>
-  <Multipane class="DataLayout Custom-resizer" layout="vertical">
-    <div class="DataLayout-sidebarWrapper" data-cy="DataLayout-sidebarWrapper">
+  <Multipane
+    class="DataLayout Custom-resizer"
+    layout="vertical"
+    @paneResizeStop="saveNewPaneSize($event)"
+  >
+    <div
+      class="DataLayout-sidebarWrapper"
+      :style="{ width: this.paneSize }"
+      data-cy="DataLayout-sidebarWrapper"
+    >
       <treeview
         :indexName="$route.params.indexName"
         :collectionName="$route.params.collectionName"
@@ -28,6 +36,7 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import Treeview from '@/components/Data/Leftnav/Treeview'
 import DataNotFound from './Data404'
 import { mapGetters } from 'vuex'
+import { setPersistedItem, getPersistedItem } from './itemsStorage'
 
 export default {
   name: 'DataLayout',
@@ -41,7 +50,8 @@ export default {
     return {
       isFetching: true,
       dataNotFound: false,
-      viewIsFetching: false
+      viewIsFetching: false,
+      paneSize: ''
     }
   },
   computed: {
@@ -70,6 +80,10 @@ export default {
     }
   },
   methods: {
+    saveNewPaneSize(size) {
+      setPersistedItem('paneSize', size.scrollWidth)
+      this.paneSize = `${getPersistedItem('paneSize')}px`
+    },
     async fetchIndexList() {
       try {
         await this.$store.direct.dispatch.index.fetchIndexList()
@@ -188,6 +202,7 @@ export default {
   },
   async mounted() {
     await this.lazyLoadingSequence()
+    this.paneSize = `${getPersistedItem('paneSize')}px`
   },
   watch: {
     $route: {
@@ -210,7 +225,6 @@ export default {
 .DataLayout-sidebarWrapper {
   background-color: $light-grey-color;
   min-width: $sidebar-width;
-  width: $sidebar-width;
   height: 100%;
   overflow: auto;
   z-index: 1;

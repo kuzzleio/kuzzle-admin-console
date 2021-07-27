@@ -65,7 +65,7 @@
           <pre class="my-3 ml-3">
 {
   "policies": [{
-      "roleIds": "roleId"
+      "roleId": "roleId"
       "restrictedTo": {
         "index": "myindex",
         "collections": [
