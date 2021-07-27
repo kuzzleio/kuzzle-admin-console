@@ -132,13 +132,17 @@
                 <Map
                   v-if="listViewType === 'map'"
                   :selected-geopoint="selectedGeopoint"
+                  :selectedGeoshape="selectedGeoshape"
                   :current-page-size="paginationSize"
                   :index="indexName"
                   :geoDocuments="geoDocuments"
+                  :shapesDocuments="shapesDocuments"
                   :collection="collectionName"
                   :mappingGeopoints="mappingGeopoints"
+                  :mappingGeoshapes="mappingGeoshapes"
                   @change-page-size="changePaginationSize"
                   @on-select-geopoint="onSelectGeopoint"
+                  @on-select-geoshape="onSelectGeoshape"
                   @edit="onEditClicked"
                   @delete="onDeleteClicked"
                 />
