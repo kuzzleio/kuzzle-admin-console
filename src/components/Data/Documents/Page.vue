@@ -46,14 +46,24 @@
           />
         </b-col>
       </b-row>
-
       <list-not-allowed
         v-if="
           !canSearchDocument(indexName, collectionName) && index && collection
         "
       />
 
-      <template v-else>
+      <template v-else-if="!isFetching">
+        <filters
+          class="mb-3"
+          :available-operands="searchFilterOperands"
+          :collection="collectionName"
+          :current-filter="currentFilter"
+          :index="indexName"
+          :mapping-attributes="mappingAttributes"
+          @enter-pressed="navigateToDocument"
+          @filters-updated="onFiltersUpdated"
+          @submit="onFilterSubmit"
+        />
         <template v-if="isCollectionEmpty">
           <realtime-only-empty-state
             v-if="isRealtimeCollection"
@@ -63,120 +73,106 @@
           <no-geopoint-field-state v-else-if="hasGeopoints" />
           <empty-state v-else :index="indexName" :collection="collectionName" />
         </template>
+        <template v-else>
+          <b-card
+            class="light-shadow"
+            :bg-variant="documents.length === 0 ? 'light' : 'default'"
+          >
+            <b-card-text class="p-0">
+              <no-results-empty-state v-if="!documents.length" />
+              <template v-else>
+                <List
+                  v-if="listViewType === 'list'"
+                  :all-checked="allChecked"
+                  :collection="collectionName"
+                  :documents="formattedDocuments"
+                  :index="indexName"
+                  :current-page-size="paginationSize"
+                  :selected-documents="selectedDocuments"
+                  :total-documents="totalDocuments"
+                  @bulk-delete="onBulkDeleteClicked"
+                  @change-page-size="changePaginationSize"
+                  @checkbox-click="toggleSelectDocuments"
+                  @delete="onDeleteClicked"
+                  @refresh="onRefresh"
+                  @toggle-all="onToggleAllClicked"
+                />
 
-        <template v-if="!isCollectionEmpty">
-          <filters
-            class="mb-3"
-            :available-operands="searchFilterOperands"
-            :collection="collectionName"
-            :current-filter="currentFilter"
-            :index="indexName"
-            :mapping-attributes="mappingAttributes"
-            @enter-pressed="navigateToDocument"
-            @filters-updated="onFiltersUpdated"
-            @submit="onFilterSubmit"
-          />
-        </template>
-        <template>
-          <template v-if="!isCollectionEmpty">
-            <b-card
-              class="light-shadow"
-              :bg-variant="documents.length === 0 ? 'light' : 'default'"
-            >
-              <b-card-text class="p-0">
-                <no-results-empty-state v-if="!documents.length" />
-                <template v-else>
-                  <List
-                    v-if="listViewType === 'list'"
-                    :all-checked="allChecked"
-                    :collection="collectionName"
-                    :documents="formattedDocuments"
-                    :index="indexName"
-                    :current-page-size="paginationSize"
-                    :selected-documents="selectedDocuments"
-                    :total-documents="totalDocuments"
-                    @bulk-delete="onBulkDeleteClicked"
-                    @change-page-size="changePaginationSize"
-                    @checkbox-click="toggleSelectDocuments"
-                    @delete="onDeleteClicked"
-                    @refresh="onRefresh"
-                    @toggle-all="onToggleAllClicked"
-                  />
+                <Column
+                  v-if="listViewType === 'column'"
+                  :index="indexName"
+                  :collection="collectionName"
+                  :documents="documents"
+                  :mapping="collectionMapping"
+                  :selected-documents="selectedDocuments"
+                  :all-checked="allChecked"
+                  :current-page-size="paginationSize"
+                  :total-documents="totalDocuments"
+                  @edit="onEditClicked"
+                  @delete="onDeleteClicked"
+                  @bulk-delete="onBulkDeleteClicked"
+                  @change-page-size="changePaginationSize"
+                  @checkbox-click="toggleSelectDocuments"
+                  @refresh="onRefresh"
+                  @toggle-all="onToggleAllClicked"
+                />
 
-                  <Column
-                    v-if="listViewType === 'column'"
-                    :index="indexName"
-                    :collection="collectionName"
-                    :documents="documents"
-                    :mapping="collectionMapping"
-                    :selected-documents="selectedDocuments"
-                    :all-checked="allChecked"
-                    :current-page-size="paginationSize"
-                    :total-documents="totalDocuments"
-                    @edit="onEditClicked"
-                    @delete="onDeleteClicked"
-                    @bulk-delete="onBulkDeleteClicked"
-                    @change-page-size="changePaginationSize"
-                    @checkbox-click="toggleSelectDocuments"
-                    @refresh="onRefresh"
-                    @toggle-all="onToggleAllClicked"
-                  />
+                <TimeSeries
+                  v-if="listViewType === 'time-series'"
+                  :index="indexName"
+                  :collection="collectionName"
+                  :documents="documents"
+                  :mapping="collectionMapping"
+                  :current-page-size="paginationSize"
+                  :total-documents="totalDocuments"
+                  @change-page-size="changePaginationSize"
+                  @changeDisplayPagination="changeDisplayPagination"
+                />
 
-                  <TimeSeries
-                    v-if="listViewType === 'time-series'"
-                    :index="indexName"
-                    :collection="collectionName"
-                    :documents="documents"
-                    :mapping="collectionMapping"
-                    :current-page-size="paginationSize"
-                    :total-documents="totalDocuments"
-                    @change-page-size="changePaginationSize"
-                    @changeDisplayPagination="changeDisplayPagination"
-                  />
+                <Map
+                  v-if="listViewType === 'map'"
+                  :selected-geopoint="selectedGeopoint"
+                  :selectedGeoshape="selectedGeoshape"
+                  :current-page-size="paginationSize"
+                  :index="indexName"
+                  :geoDocuments="geoDocuments"
+                  :shapesDocuments="shapesDocuments"
+                  :collection="collectionName"
+                  :mappingGeopoints="mappingGeopoints"
+                  :mappingGeoshapes="mappingGeoshapes"
+                  @change-page-size="changePaginationSize"
+                  @on-select-geopoint="onSelectGeopoint"
+                  @on-select-geoshape="onSelectGeoshape"
+                  @edit="onEditClicked"
+                  @delete="onDeleteClicked"
+                />
 
-                  <Map
-                    v-if="listViewType === 'map'"
-                    :selected-geopoint="selectedGeopoint"
-                    :current-page-size="paginationSize"
-                    :index="indexName"
-                    :geoDocuments="geoDocuments"
-                    :collection="collectionName"
-                    :mappingGeopoints="mappingGeopoints"
-                    @change-page-size="changePaginationSize"
-                    @on-select-geopoint="onSelectGeopoint"
-                    @edit="onEditClicked"
-                    @delete="onDeleteClicked"
-                  />
-
-                  <b-row
-                    v-show="
-                      totalDocuments > paginationSize && displayPagination
-                    "
-                    align-h="center"
+                <b-row
+                  v-show="totalDocuments > paginationSize && displayPagination"
+                  align-h="center"
+                >
+                  <b-pagination
+                    v-model="currentPage"
+                    aria-controls="my-table"
+                    class="m-2 mt-4"
+                    data-cy="DocumentList-pagination"
+                    :total-rows="totalDocuments"
+                    :per-page="paginationSize"
+                  ></b-pagination>
+                </b-row>
+                <div
+                  v-if="totalDocuments > 10000"
+                  class="text-center mt-2"
+                  data-cy="DocumentList-exceedESLimitMsg"
+                >
+                  <small class="text-secondary"
+                    >Due to limitations imposed by Elasticsearch, you won't be
+                    able to browse documents beyond 10000.</small
                   >
-                    <b-pagination
-                      v-model="currentPage"
-                      aria-controls="my-table"
-                      class="m-2 mt-4"
-                      data-cy="DocumentList-pagination"
-                      :total-rows="totalDocuments"
-                      :per-page="paginationSize"
-                    ></b-pagination>
-                  </b-row>
-                  <div
-                    v-if="totalDocuments > 10000"
-                    class="text-center mt-2"
-                    data-cy="DocumentList-exceedESLimitMsg"
-                  >
-                    <small class="text-secondary"
-                      >Due to limitations imposed by Elasticsearch, you won't be
-                      able to browse documents beyond 10000.</small
-                    >
-                  </div>
-                </template>
-              </b-card-text>
-            </b-card>
-          </template>
+                </div>
+              </template>
+            </b-card-text>
+          </b-card>
         </template>
       </template>
       <DeleteCollectionModal
@@ -251,6 +247,7 @@ export default {
   },
   data() {
     return {
+      isFetching: false,
       loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
@@ -264,11 +261,14 @@ export default {
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
       mappingGeopoints: [],
-      selectedGeopoint: null,
+      selectedGeopoint: '',
       resultPerPage: [10, 25, 50, 100, 500],
       currentPage: 1,
       modalDeleteId: 'modal-collection-delete',
-      displayPagination: true
+      displayPagination: true,
+      mappingGeoshapes: [],
+      selectedGeoshape: '',
+      handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon']
     }
   },
   computed: {
@@ -281,6 +281,20 @@ export default {
     ]),
     hasGeopoints() {
       return this.listViewType === 'map' && this.mappingGeopoints.length === 0
+    },
+    hasGeoshapes() {
+      return this.listViewType === 'map' && this.mappingGeoshapes.length === 0
+    },
+    shapesDocuments() {
+      return this.documents
+        .filter(document => {
+          const shape = this.getProperty(document, this.selectedGeoshape)
+          return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
+        })
+        .map(d => ({
+          content: d[this.selectedGeoshape],
+          source: d
+        }))
     },
     geoDocuments() {
       return this.documents
@@ -328,7 +342,7 @@ export default {
       return `${this.selectedGeopoint}.lon`
     },
     isCollectionGeo() {
-      return this.mappingGeopoints.length > 0
+      return this.mappingGeopoints.length > 0 || this.mappingGeoshapes > 0
     },
     isDocumentListFiltered() {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
@@ -347,7 +361,7 @@ export default {
       return parseInt(this.currentFilter.from) || 0
     },
     paginationSize() {
-      return parseInt(this.currentFilter.size) || 10
+      return parseInt(this.currentFilter.size) || 25
     },
     isRealtimeCollection() {
       return this.collection ? this.collection.isRealtime() : false
@@ -416,6 +430,9 @@ export default {
     onSelectGeopoint(selectedGeopoint) {
       this.selectedGeopoint = selectedGeopoint
     },
+    onSelectGeoshape(selectedGeoshape) {
+      this.selectedGeoshape = selectedGeoshape
+    },
     listMappingGeopoints(mapping, path = []) {
       let attributes = []
       for (const [attributeName, { type, properties }] of Object.entries(
@@ -430,6 +447,22 @@ export default {
             this.listMappingGeopoints(properties, path.concat(attributeName))
           )
         } else if (type === 'geo_point') {
+          attributes = attributes.concat(path.concat(attributeName).join('.'))
+        }
+      }
+
+      return attributes
+    },
+    listMappingGeoshapes(mapping, path = []) {
+      let attributes = []
+      for (const [attributeName, { type, properties }] of Object.entries(
+        mapping
+      )) {
+        if (properties) {
+          attributes = attributes.concat(
+            this.listMappingGeoshapes(properties, path.concat(attributeName))
+          )
+        } else if (type === 'geo_shape') {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }
@@ -570,6 +603,8 @@ export default {
       this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
+      this.$emit('start-fetch')
+      this.isFetching = true
       this.$forceUpdate()
       this.selectedDocuments = []
 
@@ -636,6 +671,8 @@ export default {
           })
         }
       }
+      this.isFetching = false
+      this.$emit('end-fetch')
     },
 
     // PAGINATION
@@ -644,7 +681,9 @@ export default {
       this.$log.debug(`changing pagination to ${size}`)
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
-          size
+          size,
+          currentPage: 0,
+          from: 0
         })
       )
       this.fetchDocuments()
@@ -730,7 +769,13 @@ export default {
 
     loadMappingInfo() {
       this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
-      this.selectedGeopoint = this.mappingGeopoints[0]
+      this.mappingGeoshapes = this.listMappingGeoshapes(this.collectionMapping)
+      if (this.mappingGeopoints.length) {
+        this.selectedGeopoint = this.mappingGeopoints[0]
+      }
+      if (this.mappingGeoshapes.length) {
+        this.selectedGeoshape = this.mappingGeoshapes[0]
+      }
     },
     // TODO: Refactor this method to avoid
     // cloning document list (computed property??)

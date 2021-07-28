@@ -127,7 +127,11 @@ import { validationMixin } from 'vuelidate'
 import { numeric, required } from 'vuelidate/lib/validators'
 import { isValidHostname, notIncludeScheme } from '../../../validators'
 
-import { envColors, DEFAULT_COLOR } from '../../../vuex/modules/kuzzle/store'
+import {
+  envColors,
+  DEFAULT_COLOR,
+  NO_ADMIN_WARNING_HOSTS
+} from '../../../vuex/modules/kuzzle/store'
 const useHttps = window.location.protocol === 'https:'
 
 /**
@@ -167,7 +171,8 @@ export default {
         port: 7512,
         color: null,
         ssl: useHttps,
-        backendMajorVersion: null
+        backendMajorVersion: null,
+        hideAdminWarning: false
       },
       submitting: false
     }
@@ -259,15 +264,15 @@ export default {
     }
   },
   mounted() {
-    if (this.environmentId && this.environments[this.environmentId]) {
-      this.environment.name = this.environments[this.environmentId].name
-      this.environment.host = this.environments[this.environmentId].host
-      this.environment.port = this.environments[this.environmentId].port
-      this.environment.color = this.environments[this.environmentId].color
-      this.environment.ssl = this.environments[this.environmentId].ssl
-      this.environment.backendMajorVersion = this.environments[
-        this.environmentId
-      ].backendMajorVersion
+    const currentEnv = this.environments[this.environmentId]
+    if (this.environmentId && currentEnv) {
+      this.environment.name = currentEnv.name
+      this.environment.host = currentEnv.host
+      this.environment.port = currentEnv.port
+      this.environment.color = currentEnv.color
+      this.environment.ssl = currentEnv.ssl
+      this.environment.backendMajorVersion = currentEnv.backendMajorVersion
+      this.environment.hideAdminWarning = currentEnv.hideAdminWarning
       this.$nextTick(() => this.showValidationErrors())
     } else {
       this.environment.name = null
@@ -276,6 +281,7 @@ export default {
       this.environment.color = DEFAULT_COLOR
       this.environment.ssl = useHttps
       this.environment.backendMajorVersion = null
+      this.environment.hideAdminWarning = false
     }
   },
   methods: {
@@ -316,7 +322,8 @@ export default {
               host: this.environment.host,
               port: parseInt(this.environment.port),
               ssl: this.environment.ssl,
-              backendMajorVersion: this.environment.backendMajorVersion
+              backendMajorVersion: this.environment.backendMajorVersion,
+              hideAdminWarning: this.environment.hideAdminWarning
             }
           })
         } else {
@@ -328,7 +335,12 @@ export default {
               host: this.environment.host,
               port: parseInt(this.environment.port),
               ssl: this.environment.ssl,
-              backendMajorVersion: this.environment.backendMajorVersion
+              backendMajorVersion: this.environment.backendMajorVersion,
+              hideAdminWarning: NO_ADMIN_WARNING_HOSTS.includes(
+                this.environment.host
+              )
+                ? true
+                : false
             }
           })
         }

@@ -12,20 +12,30 @@
       <main-spinner v-if="authInitializing"></main-spinner>
       <router-view v-else />
     </div>
-    <b-alert
-      class="rounded-0 text-center mb-0 "
-      dismissible
-      fade
-      style="z-index: 2000;"
+    <b-toast
       variant="info"
-      data-cy="noAdminAlert"
-      :show="!$store.direct.getters.auth.adminAlreadyExists"
+      no-auto-hide
+      toaster="b-toaster-bottom-right"
+      title="Warning!"
+      data-cy="noAdminWarning"
+      id="no-admin-warning"
     >
-      <i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i>
-      <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly
-      recommended <a href="#/signup" class="alert-link"> that you create one.</a
-      ><i class="fa fa-exclamation-triangle ml-2" aria-hidden="true"></i>
-    </b-alert>
+      <p>
+        Your Kuzzle has no administrator user. It is strongly recommended
+        <a href="#/signup" class="alert-link"> that you create one.</a>
+      </p>
+      <div class="text-center">
+        <b-button
+          title="Don't show this toast again for the current environment"
+          variant="primary"
+          size="sm"
+          id="noAdminGotIt"
+          @click="hideNoAdminWarning"
+        >
+          Ok, got it
+        </b-button>
+      </div>
+    </b-toast>
 
     <b-modal
       id="tokenExpired"
@@ -69,10 +79,29 @@ export default {
     }
   },
   methods: {
+    hideNoAdminWarning() {
+      this.$store.direct.dispatch.kuzzle.updateEnvironment({
+        id: this.$store.direct.state.kuzzle.currentId,
+        environment: {
+          ...this.currentEnvironment,
+          hideAdminWarning: true
+        }
+      })
+      this.$bvToast.hide('no-admin-warning')
+    },
     onTokenExpired() {
       this.$store.direct.dispatch.auth.setSession(null)
     },
-    noop() {}
+    noop() {},
+    displayNoAdminWarning() {
+      if (this.$store.direct.getters.auth.adminAlreadyExists) {
+        return
+      }
+      if (this.currentEnvironment.hideAdminWarning) {
+        return
+      }
+      this.$bvToast.show('no-admin-warning')
+    }
   },
   mounted() {
     this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
@@ -95,6 +124,7 @@ export default {
         }
       }
     })
+    this.displayNoAdminWarning()
   },
   beforeDestroy() {
     this.$kuzzle.removeListener('tokenExpired')

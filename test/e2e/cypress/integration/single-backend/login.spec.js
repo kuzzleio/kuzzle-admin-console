@@ -39,7 +39,7 @@ describe('Login', function() {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
 
     cy.visit('/')
-    cy.get('[data-cy="NoAdminAlert-link"]').click()
+    cy.get('[data-cy="NoAdminWarning-link"]').click()
     cy.contains('Create an Admin Account')
     cy.get('[data-cy="Signup-username"]').type(admin.username)
     cy.get('[data-cy="Signup-password1"]').type(admin.password)
