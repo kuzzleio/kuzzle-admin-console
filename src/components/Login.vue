@@ -14,12 +14,16 @@
             <b-alert
               class="text-center"
               variant="info"
-              data-cy="noAdminAlert"
-              :show="!$store.direct.getters.auth.adminAlreadyExists"
+              data-cy="noAdminWarning"
+              :show="displayNoAdminWarning"
             >
               <b>Warning!</b> Your Kuzzle has no administrator user. It is
               strongly recommended
-              <a class="alert-link" data-cy="NoAdminAlert-link" href="#/signup">
+              <a
+                class="alert-link"
+                data-cy="NoAdminWarning-link"
+                href="#/signup"
+              >
                 that you create one.</a
               >
             </b-alert>
@@ -45,6 +49,7 @@
 <script>
 import LoginForm from './Common/Login/Form'
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Login',
@@ -55,6 +60,12 @@ export default {
   data() {
     return {
       environmentId: null
+    }
+  },
+  computed: {
+    ...mapGetters('kuzzle', ['currentEnvironment']),
+    displayNoAdminWarning() {
+      return !this.$store.direct.getters.auth.adminAlreadyExists
     }
   },
   methods: {
