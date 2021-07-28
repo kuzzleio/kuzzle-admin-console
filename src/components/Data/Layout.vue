@@ -16,19 +16,22 @@
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
-      <template v-if="loading">
-        <main-spinner></main-spinner>
-      </template>
-      <template v-else>
-        <data-not-found v-if="dataNotFound" class="mt-3"></data-not-found>
-        <router-view v-else />
-      </template>
+      <b-overlay :show="loading || viewIsFetching" opacity="0" class="h-100">
+        <data-not-found
+          v-if="!loading && dataNotFound"
+          class="mt-3"
+        ></data-not-found>
+        <router-view
+          v-if="!loading"
+          @start-fetch="viewIsFetching = true"
+          @end-fetch="viewIsFetching = false"
+        />
+      </b-overlay>
     </div>
   </Multipane>
 </template>
 
 <script>
-import MainSpinner from '../Common/MainSpinner'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import Treeview from '@/components/Data/Leftnav/Treeview'
 import DataNotFound from './Data404'
@@ -38,7 +41,6 @@ import { setPersistedItem, getPersistedItem } from './itemsStorage'
 export default {
   name: 'DataLayout',
   components: {
-    MainSpinner,
     Treeview,
     Multipane,
     MultipaneResizer,
@@ -48,6 +50,7 @@ export default {
     return {
       isFetching: true,
       dataNotFound: false,
+      viewIsFetching: false,
       paneSize: ''
     }
   },
