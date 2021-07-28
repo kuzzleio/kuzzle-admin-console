@@ -334,17 +334,17 @@ export default {
     },
     circleShapes() {
       return this.shapesDocuments.filter(
-        shape => shape.content.type === 'circle'
+        shape => shape.content && shape.content.type === 'circle'
       )
     },
     polygonShapes() {
       return this.shapesDocuments.filter(
-        shape => shape.content.type === 'polygon'
+        shape => shape.content && shape.content.type === 'polygon'
       )
     },
     multiPolygonShapes() {
       return this.shapesDocuments.filter(
-        shape => shape.content.type === 'multipolygon'
+        shape => shape.content && shape.content.type === 'multipolygon'
       )
     }
   },
