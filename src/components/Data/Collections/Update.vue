@@ -54,9 +54,12 @@ export default {
       )
     },
     mappingAttributes() {
-      return this.collection
-        ? omit(this.collection.mapping, 'properties._kuzzle_info')
+      const mapping = this.collection
+        ? omit(this.collection.mapping, '_kuzzle_info')
         : null
+      const dynamic = mapping.dynamic
+      delete mapping.dynamic
+      return { dynamic: dynamic, properties: mapping }
     },
     loading() {
       return this.$store.direct.getters.index.loadingCollections(

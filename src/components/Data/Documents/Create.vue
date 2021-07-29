@@ -9,7 +9,7 @@
         v-if="index && collection"
         :index="indexName"
         :collection="collectionName"
-        :mapping="collection.mapping.properties"
+        :mapping="mappingAttributes"
         :document="newDocument"
         @cancel="onCancel"
         @submit="onSubmit"
@@ -27,6 +27,7 @@ import PageNotAllowed from '../../Common/PageNotAllowed'
 import { mapGetters } from 'vuex'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
+import { clone } from 'lodash'
 
 export default {
   name: 'DocumentCreate',
@@ -41,7 +42,6 @@ export default {
   },
   data() {
     return {
-      mapping: {},
       submitting: false,
       newDocument: {}
     }
@@ -57,6 +57,12 @@ export default {
         this.index,
         this.collectionName
       )
+    },
+    mappingAttributes() {
+      const mapping = _.clone(this.collection.mapping)
+      delete mapping.dynamic
+      delete mapping._kuzzle_info
+      return mapping
     },
     hasRights() {
       return this.canCreateDocument(this.indexName, this.collectionName)
