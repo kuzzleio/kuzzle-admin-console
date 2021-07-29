@@ -7,7 +7,6 @@
         submit-label="Update"
         :collection="collection.name"
         :index="index.name"
-        :dynamic="collection.dynamic"
         :mapping="mappingAttributes"
         :realtime-only="collection.isRealtime()"
         @submit="update"
@@ -36,7 +35,6 @@ export default {
   },
   data() {
     return {
-      dynamic: 'false',
       mapping: {},
       realtimeOnly: false
     }
@@ -57,7 +55,7 @@ export default {
     },
     mappingAttributes() {
       return this.collection
-        ? omit(this.collection.mapping, '_kuzzle_info')
+        ? omit(this.collection.mapping, 'properties._kuzzle_info')
         : null
     },
     loading() {
@@ -74,7 +72,6 @@ export default {
           index: this.index,
           name: payload.name,
           mapping: payload.mapping,
-          dynamic: payload.dynamic
         })
         this.$router.push({
           name: 'Collections',
