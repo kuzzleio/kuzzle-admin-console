@@ -59,9 +59,9 @@ export default {
       )
     },
     mappingAttributes() {
-      const mapping = clone(this.collection.mapping) ? 
-      omit(this.collection.mapping, '_kuzzle_info', 'dynamic')
-      : null
+      const mapping = clone(this.collection.mapping)
+        ? omit(this.collection.mapping, '_kuzzle_info', 'dynamic')
+        : null
       return mapping
     },
     hasRights() {
