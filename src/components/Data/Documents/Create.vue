@@ -115,7 +115,7 @@ export default {
         this.$store.direct.dispatch.index.fetchCollectionMapping({
           index: this.index,
           collection: this.collection
-        })
+        }).properties
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
