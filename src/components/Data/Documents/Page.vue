@@ -24,18 +24,32 @@
             }"
             >Create New Document</b-button
           >
-          <b-button
-            variant="outline-dark"
-            class="ml-2"
-            @click="enableRealtime = !enableRealtime"
-          >
-            <i
-              :class="
-                `far ${enableRealtime ? 'fa-check-square' : 'fa-square'} left`
-              "
-            />
-            Realtime
-          </b-button>
+          <div style="display: inline-block" class="ml-2 mt-1">
+            <b-input-group>
+              <b-button
+                @click="enableRealtime = !enableRealtime"
+                variant="primary"
+              >
+                <i
+                  :class="
+                    `far ${
+                      enableRealtime ? 'fa-check-square' : 'fa-square'
+                    } left`
+                  "
+                />
+                Realtime
+              </b-button>
+              <template #append>
+                <RealtimeDropdownSettings
+                  :enableRealtime="enableRealtime"
+                  :realtimeSettings="realtimeSettings"
+                  @realtime-settings-changed="
+                    settings => (realtimeSettings = settings)
+                  "
+                />
+              </template>
+            </b-input-group>
+          </div>
           <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"
@@ -90,7 +104,11 @@
         <template>
           <template v-if="!isCollectionEmpty">
             <b-row align-v="stretch">
-              <b-col :cols="enableRealtime ? 9 : 12">
+              <b-col
+                :cols="
+                  enableRealtime && realtimeSettings.showNotifications ? 9 : 12
+                "
+              >
                 <b-card
                   class="light-shadow"
                   :bg-variant="documents.length === 0 ? 'light' : 'default'"
@@ -107,6 +125,7 @@
                         :current-page-size="paginationSize"
                         :selected-documents="selectedDocuments"
                         :total-documents="totalDocuments"
+                        :notifications="notifications"
                         @bulk-delete="onBulkDeleteClicked"
                         @change-page-size="changePaginationSize"
                         @checkbox-click="toggleSelectDocuments"
@@ -190,65 +209,35 @@
                 </b-card>
               </b-col>
 
-              <b-col v-if="enableRealtime">
+              <b-col
+                v-if="enableRealtime && realtimeSettings.showNotifications"
+              >
                 <b-card
                   :bg-variant="documents.length === 0 ? 'light' : 'default'"
                   no-body
                   class="light-shadow"
                 >
-                  <span class="text-right mx-2 mt-2">
-                    <i
-                      class="cursor fas fa-check-circle fa-lg"
-                      tooltip="Clear all notifications"
+                  <b-col class="p-0 m-2">
+                    <b-button
+                      variant="outline-success"
+                      class="mr-2"
                       @click="applyAllNotifications"
-                    />
-                    <i
-                      class="cursor fas fa-trash fa-lg mx-2"
-                      tooltip="Clear all notifications"
+                      :disabled="!hasNotificationsToApply"
+                    >
+                      <i class="fa fa-check-circle left" />
+                      Apply changes
+                    </b-button>
+                    <b-button
+                      variant="outline-danger"
+                      class="mr-2"
                       @click="clearNotifications"
-                    />
-                    <i class="fas fa-cog fa-lg" v-b-toggle.collapse-1 />
-                  </span>
+                      :disabled="!notifications.length"
+                    >
+                      <i class="fa fa-minus-circle left" />
+                      Delete notifications
+                    </b-button>
+                  </b-col>
                   <b-card-body class="m-0 p-2">
-                    <b-collapse id="collapse-1" class="mx-3 my-2">
-                      <b-row>
-                        <b-col cols="12">
-                          <b-form-checkbox
-                            switch
-                            v-model="realtimeSettings.autoClearApplied"
-                          >
-                            Auto clear applied
-                          </b-form-checkbox>
-                        </b-col>
-                        <b-col>
-                          Auto apply
-                          <b-form-checkbox
-                            switch
-                            v-model="realtimeSettings.createAutoApply"
-                          >
-                            Creations
-                          </b-form-checkbox>
-                          <b-form-checkbox
-                            switch
-                            v-model="realtimeSettings.deleteAutoApply"
-                          >
-                            Deletions
-                          </b-form-checkbox>
-                          <b-form-checkbox
-                            switch
-                            v-model="realtimeSettings.updateAutoApply"
-                          >
-                            Updates
-                          </b-form-checkbox>
-                          <b-form-checkbox
-                            switch
-                            v-model="realtimeSettings.replaceAutoApply"
-                          >
-                            Replacements
-                          </b-form-checkbox>
-                        </b-col>
-                      </b-row>
-                    </b-collapse>
                     <b-card-text>
                       <b-row>
                         <b-col v-if="notifications.length">
@@ -263,7 +252,7 @@
                           </b-list-group>
                         </b-col>
                         <b-col v-else class="m-2">
-                          <h4>Waiting for notifications...</h4>
+                          <h4>Waiting for documents changes...</h4>
                         </b-col>
                       </b-row>
                     </b-card-text>
@@ -308,6 +297,7 @@ import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdownView from '../Collections/DropdownView'
 import CollectionDropdownAction from '../Collections/DropdownAction'
+import RealtimeDropdownSettings from './RealtimeDropdownSettings.vue'
 import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
@@ -340,7 +330,8 @@ export default {
     NoResultsEmptyState,
     RealtimeOnlyEmptyState,
     NoGeopointFieldState,
-    Notification
+    Notification,
+    RealtimeDropdownSettings
   },
   props: {
     indexName: String,
@@ -371,10 +362,11 @@ export default {
       notifications: [],
       realtimeSettings: {
         autoClearApplied: false,
-        createAutoApply: false,
-        deleteAutoApply: false,
-        updateAutoApply: false,
-        replaceAutoApply: false
+        createAutoApply: true,
+        deleteAutoApply: true,
+        updateAutoApply: true,
+        replaceAutoApply: true,
+        showNotifications: false
       }
     }
   },
@@ -386,6 +378,9 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    hasNotificationsToApply() {
+      return Boolean(this.notifications.find(notif => !notif.applied))
+    },
     hasGeopoints() {
       return this.listViewType === 'map' && this.mappingGeopoints.length === 0
     },
@@ -623,6 +618,7 @@ export default {
       if (notif.scope === 'out') {
         return
       }
+      this.$log.debug(notif)
       this.notifications.push(notif)
       if (this.realtimeSettings[`${notif.action}AutoApply`]) {
         this.applyNotification(notif, true)

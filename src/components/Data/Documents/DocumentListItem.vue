@@ -25,6 +25,9 @@
           @click="toggleCollapse"
           >{{ document._id }}</a
         >
+        <b-badge class="mx-2" variant="warning" v-if="badged"
+          >{{ badged }}
+        </b-badge>
       </b-col>
       <b-col cols="2">
         <div class="float-right">
@@ -87,7 +90,8 @@ export default {
     index: String,
     collection: String,
     document: Object,
-    isChecked: Boolean
+    isChecked: Boolean,
+    notifications: Array
   },
   data() {
     return {
@@ -100,10 +104,23 @@ export default {
       handler(value) {
         this.checked = value
       }
+    },
+    notifications: {
+      deep: true,
+      handler() {
+        this.$log.debug('toto', this.notifications, this.document)
+      }
     }
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
+    badged() {
+      const notifFound = this.notifications
+        .slice()
+        .reverse()
+        .find(notif => notif.result._id === this.document._id)
+      return notifFound && notifFound.applied ? `${notifFound.action}d` : false
+    },
     canEdit() {
       if (!this.index || !this.collection) {
         return false

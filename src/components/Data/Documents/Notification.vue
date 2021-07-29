@@ -1,13 +1,18 @@
 <template>
   <b-list-group-item :variant="notificationVariant">
     <span class="text-secondary">{{ time }}</span>
-    <span v-if="notification.applied" class="text-secondary"> - Applied</span>
-    <i
-      v-else
-      class="cursor ml-3 fa-lg far fa-check-square"
-      @click="$emit('apply')"
-    />
     <i class="cursor ml-3 fa-lg fas fa-trash" @click="$emit('clear')" />
+    <span v-if="notification.applied" class="text-secondary"> - Applied</span>
+    <b-button
+      size="sm"
+      variant="success"
+      pill
+      v-else
+      @click="$emit('apply')"
+      class="mx-2"
+    >
+      Apply change
+    </b-button>
     <p class="code mb-0">
       {{ text }}
     </p>

@@ -52,6 +52,7 @@
           :collection="collection"
           :index="index"
           :is-checked="isChecked(document._id)"
+          :notifications="notifications"
           @checkbox-click="$emit('checkbox-click', $event)"
           @delete="$emit('delete', $event)"
         />
@@ -98,6 +99,9 @@ export default {
     },
     totalDocuments: {
       type: Number
+    },
+    notifications: {
+      type: Array
     }
   },
   data() {
