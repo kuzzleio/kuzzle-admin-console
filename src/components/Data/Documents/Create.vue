@@ -59,7 +59,7 @@ export default {
       )
     },
     mappingAttributes() {
-      const mapping = _.clone(this.collection.mapping)
+      const mapping = clone(this.collection.mapping)
       delete mapping.dynamic
       delete mapping._kuzzle_info
       return mapping
