@@ -22,7 +22,7 @@
         :index="indexName"
         :collection="collectionName"
         :document="document"
-        :mapping="collection.mapping"
+        :mapping="collection.mapping.properties"
         @cancel="onCancel"
         @submit="onSubmit"
         @document-change="onDocumentChange"

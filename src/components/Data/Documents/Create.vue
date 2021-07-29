@@ -9,7 +9,7 @@
         v-if="index && collection"
         :index="indexName"
         :collection="collectionName"
-        :mapping="collection.mapping"
+        :mapping="collection.mapping.properties"
         :document="newDocument"
         @cancel="onCancel"
         @submit="onSubmit"
@@ -115,7 +115,7 @@ export default {
         this.$store.direct.dispatch.index.fetchCollectionMapping({
           index: this.index,
           collection: this.collection
-        }).properties
+        })
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
