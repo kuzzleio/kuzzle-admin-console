@@ -70,7 +70,6 @@ export class Collection {
   private _name: string
   private _type: CollectionType
   mapping?: object
-  dynamic?: string
 
   constructor(name: string, type: CollectionType) {
     this._type = this.findType(name, type)
@@ -130,7 +129,6 @@ export interface CreateCollectionPayload {
   name: string
   isRealtime: boolean
   mapping: object
-  dynamic: string
 }
 
 export interface UpdateCollectionPayload {
@@ -138,5 +136,4 @@ export interface UpdateCollectionPayload {
   name: string
   isRealtime: boolean
   mapping: object
-  dynamic: string
 }

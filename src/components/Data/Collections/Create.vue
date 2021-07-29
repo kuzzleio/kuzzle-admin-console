@@ -40,7 +40,6 @@ export default {
           index: this.index,
           name: payload.name,
           mapping: payload.mapping,
-          dynamic: payload.dynamic
         })
 
         this.$router.push({
