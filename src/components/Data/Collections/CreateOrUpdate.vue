@@ -169,11 +169,10 @@ export default {
     mapping: {
       type: Object,
       default: () => ({
-        "dynamic": false, 
-        "properties": {
-        }
+        dynamic: false,
+        properties: {}
       })
-    },
+    }
   },
   data() {
     return {

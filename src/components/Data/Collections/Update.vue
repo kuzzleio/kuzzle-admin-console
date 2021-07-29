@@ -71,7 +71,7 @@ export default {
         await this.$store.direct.dispatch.index.updateCollection({
           index: this.index,
           name: payload.name,
-          mapping: payload.mapping,
+          mapping: payload.mapping
         })
         this.$router.push({
           name: 'Collections',
