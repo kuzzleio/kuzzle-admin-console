@@ -499,6 +499,7 @@ export default {
     },
     documents: {
       immediate: true,
+      deep: true,
       handler() {
         this.addHumanReadableDateFields()
       }
@@ -580,7 +581,7 @@ export default {
       const notifIdx = notifications.findIndex(
         notif => notif.requestId === notifId
       )
-      const documents = save
+      let documents = save
         ? JSON.parse(JSON.stringify(this.documents))
         : clonedDocuments
 
@@ -588,17 +589,33 @@ export default {
         const documentIdx = documents.findIndex(
           doc => doc._id === notification.result._id
         )
-        documents[documentIdx] = {
+        const payload = {
           _id: notification.result._id,
           ...notification.result._source,
           _kuzzle_info: notification.result._source._kuzzle_info
             ? this.formatMeta(notification.result._source._kuzzle_info)
             : undefined
         }
+        if (documentIdx !== -1) {
+          documents[documentIdx] = payload
+        } else {
+          documents.push(payload)
+        }
       } else if (notification.action === 'delete') {
-        //
+        const documentIdx = documents.findIndex(
+          doc => doc._id === notification.result._id
+        )
+        if (documentIdx !== -1) {
+          documents.splice(documentIdx, 1)
+        }
       } else if (notification.action === 'create') {
-        //
+        documents.push({
+          _id: notification.result._id,
+          ...notification.result._source,
+          _kuzzle_info: notification.result._source._kuzzle_info
+            ? this.formatMeta(notification.result._source._kuzzle_info)
+            : undefined
+        })
       } else {
         //
       }
@@ -615,9 +632,6 @@ export default {
     },
 
     realtimeNotifCallback(notif) {
-      if (notif.scope === 'out') {
-        return
-      }
       this.$log.debug(notif)
       this.notifications.push(notif)
       if (this.realtimeSettings[`${notif.action}AutoApply`]) {
@@ -977,9 +991,8 @@ export default {
       if (!this.collectionMapping) {
         return
       }
-
       const dateFields = []
-      const formattedDocuments = _.cloneDeep(this.documents)
+      const formattedDocuments = JSON.parse(JSON.stringify(this.documents))
       const findDateFields = (mapping, previousKey) => {
         for (const [field, value] of Object.entries(mapping)) {
           if (typeof value === 'object') {
@@ -1007,7 +1020,13 @@ export default {
       findDateFields(this.collectionMapping, null)
 
       formattedDocuments.forEach(changeField)
-      this.formattedDocuments = formattedDocuments
+      this.$log.debug(
+        'add human readable setting value',
+        JSON.parse(JSON.stringify(this.formattedDocuments)),
+        JSON.parse(JSON.stringify(formattedDocuments))
+      )
+      this.$set(this, 'formattedDocuments', formattedDocuments)
+      // this.formattedDocuments = formattedDocuments
     },
     changeDisplayPagination(value) {
       this.displayPagination = value

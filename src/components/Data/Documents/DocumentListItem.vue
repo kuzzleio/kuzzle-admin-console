@@ -25,8 +25,8 @@
           @click="toggleCollapse"
           >{{ document._id }}</a
         >
-        <b-badge class="mx-2" variant="warning" v-if="badged"
-          >{{ badged }}
+        <b-badge :variant="badgeVariant" class="mx-2" v-if="linkedNotif"
+          >{{ notifBadge }}
         </b-badge>
       </b-col>
       <b-col cols="2">
@@ -104,22 +104,43 @@ export default {
       handler(value) {
         this.checked = value
       }
-    },
-    notifications: {
-      deep: true,
-      handler() {
-        this.$log.debug('toto', this.notifications, this.document)
-      }
     }
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
-    badged() {
-      const notifFound = this.notifications
+    badgeVariant() {
+      if (!this.notifBadge) {
+        return 'secondary'
+      }
+      if (this.notifBadge.includes('Change available')) {
+        return 'info'
+      }
+      switch (this.notifBadge) {
+        case 'updated':
+          return 'warning'
+        case 'created':
+          return 'success'
+        case 'deleted':
+          return 'danger'
+        case 'replaced':
+          return 'warning'
+      }
+      return 'secondary'
+    },
+    linkedNotif() {
+      return this.notifications
         .slice()
         .reverse()
         .find(notif => notif.result._id === this.document._id)
-      return notifFound && notifFound.applied ? `${notifFound.action}d` : false
+    },
+    notifBadge() {
+      if (!this.linkedNotif) {
+        return null
+      }
+      const action = this.linkedNotif.action
+      return this.linkedNotif.applied
+        ? `${action}d`
+        : `Change available: ${action}`
     },
     canEdit() {
       if (!this.index || !this.collection) {
