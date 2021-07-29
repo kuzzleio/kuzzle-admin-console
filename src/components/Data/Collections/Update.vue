@@ -55,10 +55,9 @@ export default {
     },
     mappingAttributes() {
       const mapping = this.collection
-        ? omit(this.collection.mapping, '_kuzzle_info')
+        ? omit(this.collection.mapping, '_kuzzle_info', 'dynamic')
         : null
       const dynamic = mapping.dynamic
-      delete mapping.dynamic
       return { dynamic: dynamic, properties: mapping }
     },
     loading() {

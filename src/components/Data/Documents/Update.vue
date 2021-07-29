@@ -65,10 +65,9 @@ export default {
     ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
     ...mapGetters('auth', ['canEditDocument']),
     mappingAttributes() {
-      this.$log.debug(this.collection.mapping)
-      const mapping = clone(this.collection.mapping)
-      delete mapping.dynamic
-      delete mapping._kuzzle_info
+      const mapping = clone(this.collection.mapping) ? 
+      omit(this.collection.mapping, '_kuzzle_info', 'dynamic')
+      : null
       return mapping
     },
     index() {
