@@ -1,6 +1,9 @@
 <template>
   <div class="DocumentList">
-    <b-container class="DocumentList--container DocumentList--containerFluid">
+    <b-container
+      :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
+      class="DocumentList--container"
+    >
       <b-row>
         <b-col>
           <headline>
@@ -299,7 +302,7 @@ export default {
       mappingGeoshapes: [],
       selectedGeoshape: '',
       handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon'],
-      handledNotificationActions: ['create', 'update', 'replace', 'delete'],
+      handledNotificationActions: ['create', 'update', 'replace'],
       displayRealtimeButton: ['time-series', 'map']
     }
   },
@@ -311,9 +314,6 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
-    hasNotificationsToApply() {
-      return Boolean(this.notifications.find(notif => !notif.applied))
-    },
     hasGeopoints() {
       return this.listViewType === 'map' && this.mappingGeopoints.length === 0
     },
@@ -383,12 +383,7 @@ export default {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
     },
     isCollectionEmpty() {
-      return (
-        !this.isDocumentListFiltered &&
-        this.totalDocuments === 0 &&
-        this.documents.length === 0 &&
-        this.notifications.length === 0
-      )
+      return !this.isDocumentListFiltered && this.totalDocuments === 0
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
@@ -409,7 +404,6 @@ export default {
     listViewRealtimeSettings() {
       return {
         createAutoApply: false,
-        deleteAutoApply: false,
         updateAutoApply: false,
         replaceAutoApply: false,
         showNotifications: false
@@ -418,7 +412,6 @@ export default {
     columnViewRealtimeSettings() {
       return {
         createAutoApply: false,
-        deleteAutoApply: false,
         updateAutoApply: false,
         replaceAutoApply: false
       }
@@ -426,7 +419,6 @@ export default {
     timeSeriesViewRealtimeSettings() {
       return {
         createAutoApply: true,
-        deleteAutoApply: false,
         updateAutoApply: true,
         replaceAutoApply: true
       }
@@ -434,7 +426,6 @@ export default {
     mapViewRealtimeSettings() {
       return {
         createAutoApply: false,
-        deleteAutoApply: false,
         updateAutoApply: true,
         replaceAutoApply: true
       }
@@ -454,7 +445,7 @@ export default {
     enableRealtime: {
       async handler(value) {
         if (value) {
-          await this.fetchDocuments()
+          await this.subscribeToCurrentDocs()
         } else {
           await this.unsubscribeToCurrentDocs()
         }
@@ -525,25 +516,6 @@ export default {
     }
   },
   methods: {
-    applyAllNotifications() {
-      let notifications = JSON.parse(JSON.stringify(this.notifications))
-      let documents = JSON.parse(JSON.stringify(this.documents))
-      for (const notif of notifications) {
-        const appliedResult = this.applyNotification(
-          notif,
-          false,
-          notifications,
-          documents
-        )
-        notifications = appliedResult.notifications
-        documents = appliedResult.documents
-      }
-      this.$set(this, 'notifications', notifications)
-      this.$set(this, 'documents', documents)
-    },
-    clearNotifications() {
-      this.$set(this, 'notifications', [])
-    },
     async unsubscribeToCurrentDocs() {
       if (this.subscribeRoomId) {
         await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
@@ -564,15 +536,6 @@ export default {
         this.$log.error(error)
       }
     },
-    clearNotification(notification) {
-      const notifId = notification.requestId
-      let notifications = JSON.parse(JSON.stringify(this.notifications))
-      const notifIdx = notifications.findIndex(
-        notif => notif.requestId === notifId
-      )
-      notifications.splice(notifIdx, 1)
-      this.$set(this, 'notifications', notifications)
-    },
     formatMeta(_kuzzle_info) {
       return {
         author:
@@ -585,65 +548,27 @@ export default {
         updatedAt: _kuzzle_info.updatedAt
       }
     },
-    applyNotification(
-      notification,
-      save,
-      clonedNotifications,
-      clonedDocuments
-    ) {
-      const notifId = notification.requestId
-      const notifications = save
-        ? JSON.parse(JSON.stringify(this.notifications))
-        : clonedNotifications
-      const notifIdx = notifications.findIndex(
-        notif => notif.requestId === notifId
-      )
-      let documents = save
-        ? JSON.parse(JSON.stringify(this.documents))
-        : clonedDocuments
-
+    applyNotification(notification) {
+      let documents = JSON.parse(JSON.stringify(this.documents))
+      const payload = {
+        _id: notification.result._id,
+        ...notification.result._source,
+        _kuzzle_info: notification.result._source._kuzzle_info
+          ? this.formatMeta(notification.result._source._kuzzle_info)
+          : undefined
+      }
       if (['update', 'replace'].includes(notification.action)) {
         const documentIdx = documents.findIndex(
           doc => doc._id === notification.result._id
         )
-        const payload = {
-          _id: notification.result._id,
-          ...notification.result._source,
-          _kuzzle_info: notification.result._source._kuzzle_info
-            ? this.formatMeta(notification.result._source._kuzzle_info)
-            : undefined
-        }
+
         if (documentIdx !== -1) {
           documents[documentIdx] = payload
-        } else {
-          documents.push(payload)
-        }
-      } else if (notification.action === 'delete') {
-        const documentIdx = documents.findIndex(
-          doc => doc._id === notification.result._id
-        )
-        if (documentIdx !== -1) {
-          documents.splice(documentIdx, 1)
         }
       } else if (notification.action === 'create') {
-        documents.push({
-          _id: notification.result._id,
-          ...notification.result._source,
-          _kuzzle_info: notification.result._source._kuzzle_info
-            ? this.formatMeta(notification.result._source._kuzzle_info)
-            : undefined
-        })
-      } else {
-        return
+        documents.push(payload)
       }
-      notifications[notifIdx].applied = true
-      notifications.splice(notifIdx, 1)
-      if (save) {
-        this.$set(this, 'notifications', notifications)
-        this.$set(this, 'documents', documents)
-      } else {
-        return { notifications, documents }
-      }
+      this.$set(this, 'documents', documents)
     },
 
     realtimeNotifCallback(notif) {
