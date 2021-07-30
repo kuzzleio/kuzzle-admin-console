@@ -648,7 +648,7 @@ export default {
     },
 
     realtimeNotifCallback(notif) {
-      if (!handledNotificationActions.includes(notif.action)) {
+      if (!this.handledNotificationActions.includes(notif.action)) {
         return
       }
       this.notifications.push(notif)
