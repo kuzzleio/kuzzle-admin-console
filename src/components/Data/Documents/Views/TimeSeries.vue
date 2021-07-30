@@ -281,11 +281,9 @@ export default {
       }
       this.series = []
       this.chartOptions.colors = []
-      const chartOptions = { ...this.chartOptions, colors: [] }
       for (const item of this.customNumberFields) {
-        chartOptions.colors.push(item.color)
+        this.chartOptions.colors.push(item.color)
       }
-      this.$set(this, 'chartOptions', chartOptions)
 
       const series = []
       for (const field of this.customNumberFields) {
