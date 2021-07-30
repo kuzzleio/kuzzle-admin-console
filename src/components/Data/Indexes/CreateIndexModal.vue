@@ -4,67 +4,71 @@
     ref="createIndexModal"
     size="lg"
     title="Index creation"
+    body-class="p-0"
     :id="modalId"
     @hide="resetForm"
   >
     <template v-slot:modal-footer>
-      <b-button variant="secondary" @click="onCancel">
+      <b-button variant="secondary" @click="onCancel" :disabled="modalBusy">
         Cancel
       </b-button>
       <b-button
         data-cy="CreateIndexModal-createBtn"
         variant="primary"
+        :disabled="modalBusy"
         @click="tryCreateIndex"
       >
         OK
       </b-button>
     </template>
-    <b-form v-on:submit.prevent="tryCreateIndex">
-      <b-form-group
-        data-cy="CreateIndexModal-name"
-        label="Index name"
-        label-for="indexName"
-      >
-        <template v-slot:description
-          >The index name should contain only lowercase characters and no
-          spaces. It also must not contain de following characters:
-          <code>\</code>, <code>/</code>, <code>*</code>, <code>?</code>,
-          <code>"</code>, <code>&lt;</code>, <code>></code>, <code>|</code>,
-          <code>,</code>, <code>#</code>, <code>:</code>, <code>%</code>,
-          <code>&</code>, <code>.</code>
-        </template>
-        <template v-slot:invalid-feedback id="profile-id-feedback">
-          <span v-if="!$v.index.required">This field cannot be empty</span>
-          <span v-else-if="!$v.index.isNotWhitespace"
-            >This field cannot contain just whitespaces</span
-          >
-          <span v-else-if="!$v.index.startsWithLetter"
-            >This field cannot start with a whitespace</span
-          >
-          <span v-else-if="!$v.index.isLowercase"
-            >This field cannot contain uppercase letters</span
-          >
-          <span v-else-if="!$v.index.validChars"
-            >This field cannnot contain invalid chars</span
-          >
-        </template>
-        <b-form-input
-          id="indexName"
-          autofocus
-          required
-          type="text"
-          v-model="$v.index.$model"
-          :state="validateState('index')"
-        ></b-form-input>
-      </b-form-group>
-      <b-alert
-        data-cy="CreateIndexModal-alert"
-        style="overflow: auto"
-        :show="error.length"
-        variant="danger"
-        >{{ error }}</b-alert
-      >
-    </b-form>
+    <b-overlay :show="modalBusy" rounded="sm" class="p-3">
+      <b-form v-on:submit.prevent="tryCreateIndex">
+        <b-form-group
+          data-cy="CreateIndexModal-name"
+          label="Index name"
+          label-for="indexName"
+        >
+          <template v-slot:description
+            >The index name should contain only lowercase characters and no
+            spaces. It also must not contain de following characters:
+            <code>\</code>, <code>/</code>, <code>*</code>, <code>?</code>,
+            <code>"</code>, <code>&lt;</code>, <code>></code>, <code>|</code>,
+            <code>,</code>, <code>#</code>, <code>:</code>, <code>%</code>,
+            <code>&</code>, <code>.</code>
+          </template>
+          <template v-slot:invalid-feedback id="profile-id-feedback">
+            <span v-if="!$v.index.required">This field cannot be empty</span>
+            <span v-else-if="!$v.index.isNotWhitespace"
+              >This field cannot contain just whitespaces</span
+            >
+            <span v-else-if="!$v.index.startsWithLetter"
+              >This field cannot start with a whitespace</span
+            >
+            <span v-else-if="!$v.index.isLowercase"
+              >This field cannot contain uppercase letters</span
+            >
+            <span v-else-if="!$v.index.validChars"
+              >This field cannnot contain invalid chars</span
+            >
+          </template>
+          <b-form-input
+            id="indexName"
+            autofocus
+            required
+            type="text"
+            v-model="$v.index.$model"
+            :state="validateState('index')"
+          ></b-form-input>
+        </b-form-group>
+        <b-alert
+          data-cy="CreateIndexModal-alert"
+          style="overflow: auto"
+          :show="error.length"
+          variant="danger"
+          >{{ error }}</b-alert
+        >
+      </b-form>
+    </b-overlay>
   </b-modal>
 </template>
 
@@ -91,7 +95,8 @@ export default {
   data() {
     return {
       error: '',
-      index: ''
+      index: '',
+      modalBusy: false
     }
   },
   validations() {
@@ -114,6 +119,7 @@ export default {
       this.$v.$reset()
       this.index = ''
       this.error = ''
+      this.modalBusy = false
     },
     async onCreateSuccess() {
       this.resetForm()
@@ -125,6 +131,7 @@ export default {
       this.$bvModal.hide(this.modalId)
     },
     async tryCreateIndex() {
+      this.modalBusy = true
       this.$v.$touch()
       if (this.$v.$anyError) {
         return
@@ -135,6 +142,7 @@ export default {
         this.onCreateSuccess()
       } catch (err) {
         this.error = err.message
+        this.modalBusy = false
       }
     }
   }

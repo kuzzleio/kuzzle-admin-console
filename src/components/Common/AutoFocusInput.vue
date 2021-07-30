@@ -1,5 +1,6 @@
 <template>
   <b-form-input
+    autofocus
     :ref="refName"
     v-model="value"
     v-bind="$attrs"
