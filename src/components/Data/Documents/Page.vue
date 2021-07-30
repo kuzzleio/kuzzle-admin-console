@@ -295,7 +295,6 @@ export default {
       enableRealtime: true,
       realtimeSettings: {
         createAutoApply: false,
-        deleteAutoApply: false,
         updateAutoApply: false,
         replaceAutoApply: false
       },
@@ -405,8 +404,7 @@ export default {
       return {
         createAutoApply: false,
         updateAutoApply: false,
-        replaceAutoApply: false,
-        showNotifications: false
+        replaceAutoApply: false
       }
     },
     columnViewRealtimeSettings() {
@@ -570,14 +568,13 @@ export default {
       }
       this.$set(this, 'documents', documents)
     },
-
     realtimeNotifCallback(notif) {
       if (!this.handledNotificationActions.includes(notif.action)) {
         return
       }
       this.notifications.push(notif)
       if (this.realtimeSettings[`${notif.action}AutoApply`]) {
-        this.applyNotification(notif, true)
+        this.applyNotification(notif)
       }
     },
     extractAttributesFromMapping,
