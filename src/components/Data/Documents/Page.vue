@@ -1,6 +1,5 @@
 <template>
   <div class="DocumentList">
-    <!-- :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }" -->
     <b-container class="DocumentList--container DocumentList--containerFluid">
       <b-row>
         <b-col>
@@ -367,7 +366,8 @@ export default {
       },
       mappingGeoshapes: [],
       selectedGeoshape: '',
-      handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon']
+      handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon'],
+      handledNotificationActions: ['create', 'update', 'replace', 'delete']
     }
   },
   computed: {
@@ -555,9 +555,7 @@ export default {
         const roomId = await this.$kuzzle.realtime.subscribe(
           this.indexName,
           this.collectionName,
-          {
-            // or: this.documents.map(d => ({ equals: { _id: d._id } }))
-          },
+          {},
           this.realtimeNotifCallback
         )
         this.subscribeRoomId = roomId
@@ -635,7 +633,7 @@ export default {
             : undefined
         })
       } else {
-        //
+        return
       }
       notifications[notifIdx].applied = true
       if (this.realtimeSettings.autoClearApplied) {
@@ -650,6 +648,9 @@ export default {
     },
 
     realtimeNotifCallback(notif) {
+      if (!handledNotificationActions.includes(notif.action)) {
+        return
+      }
       this.notifications.push(notif)
       if (this.realtimeSettings[`${notif.action}AutoApply`]) {
         this.applyNotification(notif, true)
@@ -1066,7 +1067,6 @@ export default {
 
       formattedDocuments.forEach(changeField)
       this.$set(this, 'formattedDocuments', formattedDocuments)
-      // this.formattedDocuments = formattedDocuments
     },
     changeDisplayPagination(value) {
       this.displayPagination = value

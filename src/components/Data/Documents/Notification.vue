@@ -37,7 +37,6 @@ export default {
       }
       switch (this.notification.action) {
         case 'create':
-        case 'createOrReplace':
           return 'success'
         case 'replace':
         case 'update':
@@ -47,39 +46,11 @@ export default {
       }
       return 'secondary'
     },
-    headerClass() {
-      switch (this.notification.action) {
-        case 'publish':
-          return 'Notification--publish'
-        case 'create':
-        case 'createOrReplace':
-        case 'replace':
-          return 'Notification--document'
-        case 'subscribe':
-        case 'unsubscribe':
-          return 'Notification--subscribe'
-        case 'delete':
-          return 'Notification--delete'
-      }
-      return ''
-    },
-    notificationId() {
+    documentId() {
       return this.notification.type === 'document' &&
         this.notification.result._id
         ? truncateName(this.notification.result._id)
         : ''
-    },
-    icon() {
-      switch (this.notification.action) {
-        case 'publish':
-          return 'paper-plane'
-        case 'subscribe':
-        case 'unsubscribe':
-          return 'user'
-        case 'delete':
-          return 'remove'
-      }
-      return 'file'
     },
     time() {
       return moment(this.notification.timestamp).format('H:mm:ss')
@@ -87,13 +58,13 @@ export default {
     text() {
       switch (this.notification.action) {
         case 'create':
-          return `Creation (${this.notificationId})`
+          return `Creation (${this.documentId})`
         case 'replace':
-          return `Replacement (${this.notificationId})`
+          return `Replacement (${this.documentId})`
         case 'update':
-          return `Update (${this.notificationId})`
+          return `Update (${this.documentId})`
         case 'delete':
-          return `Deletion (${this.notificationId})`
+          return `Deletion (${this.documentId})`
       }
       return 'New notification'
     }
@@ -104,41 +75,5 @@ export default {
 <style lang="scss" scoped>
 .cursor {
   cursor: pointer;
-}
-
-$types: (
-  'publish': #e3eff4,
-  'document': #cae6d3,
-  'subscribe': #e1c8e8,
-  'delete': #e6c6c4
-);
-
-@each $name, $value in $types {
-  .Notification {
-    border-radius: 0;
-    border-width: 0 1px 0 1px;
-    & .card-header {
-      border-radius: 0;
-    }
-
-    &:first-child {
-      border-radius: 0.25rem 0.25rem 0 0;
-      border-width: 1px 1px 0 1px;
-    }
-    &:last-child {
-      border-radius: 0 0 0.25rem 0.25rem;
-      border-width: 0 1px 1px 1px;
-    }
-    &:only-child {
-      border-radius: 0.25rem 0.25rem 0.25rem 0.25rem;
-      border-width: 1px 1px 1px 1px;
-    }
-  }
-
-  .Notification--#{$name} {
-    .card-header {
-      background-color: $value;
-    }
-  }
 }
 </style>
