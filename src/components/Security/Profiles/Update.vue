@@ -18,11 +18,11 @@
 </template>
 
 <script>
-import CreateOrUpdate from './CreateOrUpdate'
-import Headline from '../../Materialize/Headline'
-import Notice from '../Common/Notice'
-import { mapGetters } from 'vuex'
-import omit from 'lodash/omit'
+import CreateOrUpdate from './CreateOrUpdate' ;
+import Headline from '../../Materialize/Headline' ;
+import Notice from '../Common/Notice' ;
+import { mapGetters } from 'vuex' ;
+import omit from 'lodash/omit' ;
 
 export default {
   name: 'UpdateProfile',
@@ -36,7 +36,7 @@ export default {
       document: '{}',
       submitted: false,
       loading: true
-    }
+    } ;
   },
   props: {
     id: {
@@ -64,11 +64,12 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
-        return
+        ) ;
+
+        return ;
       }
 
-      this.submitted = true
+      this.submitted = true ;
 
       try {
         await this.$kuzzle.security.updateProfile(this.id, profile)
@@ -82,8 +83,8 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
-        this.submitted = false
+        }) ;
+        this.submitted = false ;
       }
     },
     onCancel() {
@@ -95,12 +96,12 @@ export default {
     }
   },
   async mounted() {
-    this.loading = true
+    this.loading = true ;
     try {
       const fetchedProfile = await this.$kuzzle.security.getProfile(this.id)
       const profile = omit(fetchedProfile, ['_id', '_kuzzle'])
       this.document = JSON.stringify(profile, null, 2)
-      this.loading = false
+      this.loading = false ;
     } catch (e) {
       this.$log.error(e)
       this.$bvToast.toast('The complete error has been printed to console', {
@@ -110,8 +111,8 @@ export default {
         appendToast: true,
         dismissible: true,
         noAutoHide: true
-      })
+      }) ;
     }
   }
-}
+} ;
 </script>

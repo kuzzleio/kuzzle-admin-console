@@ -21,9 +21,9 @@
 
 <script>
 // https://vue-generators.gitbook.io/vue-generators/fields/custom_fields
-import { abstractField } from 'vue-form-generator'
-import JsonEditor from '@/components/Common/JsonEditor'
-import JsonFormatter from '@/directives/json-formatter.directive'
+import { abstractField } from 'vue-form-generator' ;
+import JsonEditor from '@/components/Common/JsonEditor' ;
+import JsonFormatter from '@/directives/json-formatter.directive' ;
 
 export default {
   directives: {
@@ -40,9 +40,9 @@ export default {
       } catch (err) {
         // do nothing...
         // if the JSON is invalid, no need to trigger form change event
-        return
+        return ;
       }
     }
   }
-}
+} ;
 </script>

@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue from 'vue' ;
 
 export default {
   id: 'focus',
@@ -7,6 +7,6 @@ export default {
       if (el) {
         el.focus()
       }
-    }, 0)
+    }, 0) ;
   }
-}
+} ;

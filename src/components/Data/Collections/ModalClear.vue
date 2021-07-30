@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import Focus from '../../../directives/focus.directive'
-import { mapGetters } from 'vuex'
+import Focus from '../../../directives/focus.directive' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'ClearCollectionModal',
@@ -55,21 +55,21 @@ export default {
   data() {
     return {
       confirmation: ''
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
     confirmationOk() {
-      return this.collection !== null && this.collection === this.confirmation
+      return this.collection !== null && this.collection === this.confirmation ;
     }
   },
   methods: {
     reset() {
-      this.confirmation = ''
+      this.confirmation = '' ;
     },
     async clearCollection() {
       if (!this.index.trim() || !this.collection.trim()) {
-        return
+        return ;
       }
 
       try {
@@ -79,7 +79,7 @@ export default {
           index: this.index,
           collection: this.collection,
           refresh: 'wait_for'
-        })
+        }) ;
         this.$emit('clear')
         this.reset()
         this.$bvModal.hide(this.id)
@@ -93,9 +93,9 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true
           }
-        )
+        ) ;
       }
     }
   }
-}
+} ;
 </script>

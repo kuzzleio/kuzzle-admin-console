@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _ from 'lodash' ;
 
 export const typesCorrespondance = {
   boolean: 'checkbox',
@@ -37,7 +37,7 @@ export const typesCorrespondance = {
   sparse_vector: 'JsonFormInput',
   nested: 'JsonFormInput',
   join: 'JsonFormInput'
-}
+} ;
 
 const inputTypesCorrespondance = {
   binary: 'text',
@@ -53,27 +53,28 @@ const inputTypesCorrespondance = {
   keyword: 'text',
   wildcard: 'text',
   constant_keyword: 'text'
-}
+} ;
 
 class FormSchemaService {
   public generate(mapping: Object, document: Object) {
     const schema: Schema = {
       fields: [],
       unavailable: []
-    }
+    } ;
 
     const cleanedMapping = this.cleanMapping(mapping)
 
     Object.entries(cleanedMapping).forEach(
       ([mappingFieldName, mappingFieldValues]: [string, any]) => {
-        const documentField: object = document[mappingFieldName]
+        const documentField: object = document[mappingFieldName] ;
         const type: string = mappingFieldValues['properties']
           ? 'object'
           : mappingFieldValues['type']
 
         if (this.isUnavailable(documentField, type)) {
           schema.unavailable.push(mappingFieldName)
-          return
+
+          return ;
         }
 
         const typeCorrespondance = this.getTypeCorrespondance(type)
@@ -84,38 +85,39 @@ class FormSchemaService {
           label: mappingFieldName,
           model: mappingFieldName,
           mapping: mappingFieldValues
-        }
+        } ;
 
         schema.fields.push(field)
       }
-    )
+    ) ;
 
-    return schema
+    return schema ;
   }
 
   private cleanMapping(mapping: object) {
-    const fieldsToRemove = ['_kuzzle_info']
+    const fieldsToRemove = ['_kuzzle_info'] ;
+
     return _.omit(mapping, fieldsToRemove)
   }
 
   private isUnavailable(documentField: object, type: string) {
     if (!Object.keys(typesCorrespondance).includes(type)) {
-      return true
+      return true ;
     }
 
     if (Array.isArray(documentField)) {
-      return true
+      return true ;
     }
 
-    return false
+    return false ;
   }
 
   private getTypeCorrespondance(mappingType: string) {
-    return typesCorrespondance[mappingType]
+    return typesCorrespondance[mappingType] ;
   }
 
   private getInputTypeCorrespondance(mappingType: string) {
-    return inputTypesCorrespondance[mappingType] || null
+    return inputTypesCorrespondance[mappingType] || null ;
   }
 }
 

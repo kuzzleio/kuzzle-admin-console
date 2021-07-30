@@ -27,9 +27,9 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import Vue from 'vue' ;
 // translated from https://github.com/appcomponents/material-components/tree/master/src/components/modal
-const ESC_KEY = 27
+const ESC_KEY = 27 ;
 
 export default {
   props: {
@@ -62,14 +62,14 @@ export default {
   },
   computed: {
     computedClasses() {
-      let cssClass = ''
+      let cssClass = '' ;
 
       if (!this.isOpen) {
-        return null
+        return null ;
       }
 
       if (this.footerFixed) {
-        cssClass = 'modal-fixed-footer '
+        cssClass = 'modal-fixed-footer ' ;
       }
 
       if (this.bottom) {
@@ -78,7 +78,7 @@ export default {
           'bottom-modal bottom-sheet ' +
           this.additionalClass +
           (this.loading ? ' grey' : '')
-        )
+        ) ;
       }
 
       return (
@@ -86,32 +86,32 @@ export default {
         'normal-modal ' +
         this.additionalClass +
         (this.loading ? ' grey' : '')
-      )
+      ) ;
     },
     transition() {
-      return this.bottom ? 'modal-bottom' : 'modal'
+      return this.bottom ? 'modal-bottom' : 'modal' ;
     }
   },
   watch: {
     isOpen: function(active) {
       if (active) {
-        window.document.body.style.overflow = 'hidden'
+        window.document.body.style.overflow = 'hidden' ;
       } else {
-        window.document.body.style.overflow = 'visible'
+        window.document.body.style.overflow = 'visible' ;
       }
     }
   },
   mounted() {
     Vue.nextTick(() => {
       window.document.addEventListener('keydown', this.handleEsc)
-    })
+    }) ;
   },
   destroyed() {
     window.document.removeEventListener('keydown', this.handleEsc)
   },
   methods: {
     handleEsc(evt) {
-      evt = evt || window.event
+      evt = evt || window.event ;
 
       if (this.canClose && evt.keyCode === ESC_KEY) {
         this.close()
@@ -120,11 +120,12 @@ export default {
     closeModal(id) {
       if (this.id === id) {
         this.close()
-        return true
+
+        return true ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss">

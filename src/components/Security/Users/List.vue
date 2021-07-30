@@ -149,12 +149,12 @@
 </template>
 
 <script>
-import DeleteModal from './DeleteModal'
-import Filters from '../../Common/Filters/Filters'
-import UserItem from './UserItem'
-import PerPageSelector from '@/components/Common/PerPageSelector'
-import * as filterManager from '../../../services/filterManager'
-import { mapGetters } from 'vuex'
+import DeleteModal from './DeleteModal' ;
+import Filters from '../../Common/Filters/Filters' ;
+import UserItem from './UserItem' ;
+import PerPageSelector from '@/components/Common/PerPageSelector' ;
+import * as filterManager from '../../../services/filterManager' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'UserList',
@@ -195,25 +195,25 @@ export default {
       candidatesForDeletion: [],
       paginationSize: 25,
       itemsPerPage: [10, 25, 50, 100, 500]
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     isDocumentListFiltered() {
-      return this.currentFilter.active !== filterManager.NO_ACTIVE
+      return this.currentFilter.active !== filterManager.NO_ACTIVE ;
     },
     isCollectionEmpty() {
-      return !this.isDocumentListFiltered && this.totalDocuments === 0
+      return !this.isDocumentListFiltered && this.totalDocuments === 0 ;
     },
     displayBulkDelete() {
-      return this.selectedDocuments.length > 0
+      return this.selectedDocuments.length > 0 ;
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
-        return false
+        return false ;
       }
 
-      return this.selectedDocuments.length === this.documents.length
+      return this.selectedDocuments.length === this.documents.length ;
     },
     paginationFrom() {
       return parseInt(this.currentFilter.from) || 0
@@ -221,7 +221,7 @@ export default {
   },
   methods: {
     changePaginationSize(e) {
-      this.paginationSize = e
+      this.paginationSize = e ;
       this.fetchDocuments()
     },
     isChecked(id) {
@@ -229,8 +229,9 @@ export default {
     },
     toggleAll() {
       if (this.allChecked) {
-        this.selectedDocuments = []
-        return
+        this.selectedDocuments = [] ;
+
+        return ;
       }
       this.selectedDocuments = this.documents.map(document => document.id)
     },
@@ -239,26 +240,27 @@ export default {
 
       if (index === -1) {
         this.selectedDocuments.push(id)
-        return
+
+        return ;
       }
 
       this.selectedDocuments.splice(index, 1)
     },
     onFiltersUpdated(newFilters, loadedFromHistory) {
-      this.currentFilter = newFilters
+      this.currentFilter = newFilters ;
       try {
         filterManager.save(
           newFilters,
           this.$router,
           this.index,
           this.collection
-        )
+        ) ;
         if (!loadedFromHistory) {
           filterManager.addNewHistoryItemAndSave(
             newFilters,
             this.index,
             this.collection
-          )
+          ) ;
         }
       } catch (error) {
         this.$log.error(error)
@@ -269,28 +271,28 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     },
     async fetchDocuments() {
-      this.loading = true
+      this.loading = true ;
       this.$forceUpdate()
 
-      this.selectedDocuments = []
+      this.selectedDocuments = [] ;
 
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
-      }
+      } ;
 
-      let searchQuery = null
+      let searchQuery = null ;
       searchQuery = filterManager.toSearchQuery(
         this.currentFilter,
         this.mappingAttributes,
         this.wrapper
-      )
+      ) ;
       if (!searchQuery) {
-        searchQuery = {}
+        searchQuery = {} ;
       }
 
       const sorting = filterManager.toSort(this.currentFilter)
@@ -304,16 +306,17 @@ export default {
           searchQuery,
           pagination,
           sorting
-        )
-        this.documents = res.documents
-        this.totalDocuments = res.total
+        ) ;
+        this.documents = res.documents ;
+        this.totalDocuments = res.total ;
         if (res.documents.length === 0 && res.total !== 0) {
           this.onFiltersUpdated(
             Object.assign(this.currentFilter, {
               from: 0
             })
-          )
-          return
+          ) ;
+
+          return ;
         }
       } catch (error) {
         this.$log.error(error)
@@ -325,29 +328,29 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
-      this.loading = false
+      this.loading = false ;
     },
     editUser(id) {
       this.$router.push({
         name: 'SecurityUsersUpdate',
         params: { id }
-      })
+      }) ;
     },
 
     // DELETE
     // =========================================================================
     async onDeleteConfirmed() {
-      this.deleteModalIsLoading = true
-      this.loading = true
+      this.deleteModalIsLoading = true ;
+      this.loading = true ;
       try {
         await this.wrapper.performDeleteUsers(
           this.index,
           this.collection,
           this.candidatesForDeletion
-        )
-        this.deleteModalIsLoading = false
+        ) ;
+        this.deleteModalIsLoading = false ;
         this.$bvModal.hide('modal-delete-users')
         await this.fetchDocuments()
         if (this.$store.direct.getters.auth.adminAlreadyExists) {
@@ -360,7 +363,7 @@ export default {
         }
       } catch (e) {
         this.$log.error(e)
-        this.deleteModalIsLoading = false
+        this.deleteModalIsLoading = false ;
         this.$bvToast.toast(
           'The complete error has been printed to the console.',
           {
@@ -370,9 +373,9 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true
           }
-        )
+        ) ;
       }
-      this.loading = false
+      this.loading = false ;
     },
     deleteUser(id) {
       this.candidatesForDeletion.push(id)
@@ -381,11 +384,11 @@ export default {
     deleteBulk() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(
         this.selectedDocuments
-      )
+      ) ;
       this.$bvModal.show('modal-delete-users')
     },
     resetCandidatesForDeletion() {
-      this.candidatesForDeletion = []
+      this.candidatesForDeletion = [] ;
     },
     create() {
       this.$router.push({ name: this.routeCreate })
@@ -396,13 +399,13 @@ export default {
       this.index,
       this.collection,
       this.$route
-    )
+    ) ;
     filterManager.save(
       this.currentFilter,
       this.$router,
       this.index,
       this.collection
-    )
+    ) ;
   },
   watch: {
     $route: {
@@ -412,13 +415,13 @@ export default {
           this.index,
           this.collection,
           newValue
-        )
+        ) ;
         filterManager.save(
           this.currentFilter,
           this.$router,
           this.index,
           this.collection
-        )
+        ) ;
       }
     },
     currentFilter() {
@@ -426,16 +429,16 @@ export default {
     },
     currentPage: {
       handler(value) {
-        const from = (value - 1) * this.paginationSize
+        const from = (value - 1) * this.paginationSize ;
         this.onFiltersUpdated(
           Object.assign(this.currentFilter, {
             from
           })
-        )
+        ) ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped></style>

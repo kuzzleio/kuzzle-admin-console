@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import MSelect from '../../Common/MSelect'
+import MSelect from '../../Common/MSelect' ;
 
 export default {
   name: 'ListActions',
@@ -74,9 +74,9 @@ export default {
   data() {
     return {
       selectedGeopoint: null
-    }
+    } ;
   }
-}
+} ;
 </script>
 
 <style lang="scss"></style>

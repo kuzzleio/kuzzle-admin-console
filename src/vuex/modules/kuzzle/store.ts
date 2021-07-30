@@ -1,21 +1,21 @@
-import Vue from 'vue'
-import { createMutations, createModule, createActions } from 'direct-vuex'
-import { KuzzleState } from './types'
-import { moduleActionContext } from '@/vuex/store'
-import { getters } from './getters'
+import Vue from 'vue' ;
+import { createActions, createModule, createMutations } from 'direct-vuex' ;
+import { KuzzleState } from './types' ;
+import { moduleActionContext } from '@/vuex/store' ;
+import { getters } from './getters' ;
 
-export const LS_ENVIRONMENTS = 'environments'
-export const LS_CURRENT_ENV = 'currentEnv'
+export const LS_ENVIRONMENTS = 'environments' ;
+export const LS_CURRENT_ENV = 'currentEnv' ;
 export const state: KuzzleState = {
   environments: {},
   currentId: undefined,
   connecting: true,
   online: false,
   errorFromKuzzle: undefined
-}
-export const NO_ADMIN_WARNING_HOSTS = ['localhost', '127.0.0.1']
+} ;
+export const NO_ADMIN_WARNING_HOSTS = ['localhost', '127.0.0.1'] ;
 
-export const DEFAULT_COLOR = 'darkblue'
+export const DEFAULT_COLOR = 'darkblue' ;
 
 export const envColors = [
   DEFAULT_COLOR,
@@ -26,28 +26,28 @@ export const envColors = [
   'red',
   'grey',
   'magenta'
-]
+] ;
 
 const wait = async ms =>
   new Promise(resolve => {
     setTimeout(() => {
       resolve()
-    }, ms)
-  })
+    }, ms) ;
+  }) ;
 
 const mutations = createMutations<KuzzleState>()({
   createEnvironment(state, payload) {
     if (!payload) {
-      return
+      return ;
     }
     if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
-      return
+      return ;
     }
     try {
       state.environments = {
         ...state.environments,
         [payload.id]: payload.environment
-      }
+      } ;
     } catch (error) {
       throw new Error(`[${payload.id}] - ${error.message}`)
     }
@@ -55,32 +55,32 @@ const mutations = createMutations<KuzzleState>()({
   updateEnvironment(state, payload) {
     if (Object.keys(state.environments).indexOf(payload.id) === -1) {
       throw new Error(`The given id ${payload.id} does not correspond to any existing
-        environment.`)
+        environment.`) ;
     }
     state.environments = {
       ...state.environments,
       [payload.id]: payload.environment
-    }
+    } ;
   },
   deleteEnvironment(state, id) {
     if (Object.keys(state.environments).indexOf(id) === -1) {
-      return
+      return ;
     }
     Vue.delete(state.environments, id)
   },
   setErrorFromKuzzle(state, error) {
-    state.errorFromKuzzle = error
+    state.errorFromKuzzle = error ;
   },
   setCurrentEnvironment(state, payload) {
-    state.currentId = payload
+    state.currentId = payload ;
   },
   setConnecting(state, value: boolean) {
-    state.connecting = value
+    state.connecting = value ;
   },
   setOnline(state, value: boolean) {
-    state.online = value
+    state.online = value ;
   }
-})
+}) ;
 
 const actions = createActions({
   setCurrentEnvironment(context, payload) {
@@ -95,13 +95,13 @@ const actions = createActions({
     if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
       throw new Error(
         `An environment with name ${payload.id} already exists. Please specify a different one.`
-      )
+      ) ;
     }
 
     commit.createEnvironment(payload)
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
 
-    return payload.id
+    return payload.id ;
   },
   deleteEnvironment(context, id) {
     const { dispatch, commit, state } = kuzzleActionContext(context)
@@ -122,13 +122,13 @@ const actions = createActions({
         ...getters.currentEnvironment,
         token: payload
       }
-    })
+    }) ;
 
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
   },
   updateEnvironment(context, payload) {
     const { dispatch, commit, state, getters } = kuzzleActionContext(context)
-    let mustReconnect = false
+    let mustReconnect = false ;
 
     if (
       payload.id === state.currentId &&
@@ -138,22 +138,23 @@ const actions = createActions({
         payload.backendMajorVersion !==
           getters.currentEnvironment.backendMajorVersion)
     ) {
-      mustReconnect = true
+      mustReconnect = true ;
     }
     commit.updateEnvironment({
       id: payload.id,
       environment: payload.environment
-    })
+    }) ;
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
     if (mustReconnect) {
       dispatch.switchEnvironment(payload.id)
     }
-    return payload.id
+
+    return payload.id ;
   },
   async connectToCurrentEnvironment(context) {
     const { dispatch, state, getters, commit } = kuzzleActionContext(context)
     if (!getters.hasEnvironment) {
-      return
+      return ;
     }
 
     if (!getters.currentEnvironment) {
@@ -170,11 +171,12 @@ const actions = createActions({
     } catch (error) {
       if (error.id) {
         dispatch.onConnectionError(error)
-        return false
+
+        return false ;
       }
     }
 
-    return true
+    return true ;
   },
   async switchEnvironment(context, id) {
     const { dispatch, state } = kuzzleActionContext(context)
@@ -182,11 +184,12 @@ const actions = createActions({
       throw new Error('No id provided')
     }
 
-    let environment = state.environments[id]
+    let environment = state.environments[id] ;
     if (!environment) {
       throw new Error(`Id ${id} does not match any environment`)
     }
     await dispatch.setCurrentEnvironment(id)
+
     return await dispatch.connectToCurrentEnvironment()
   },
   onConnectionError(context, error: Error) {
@@ -197,26 +200,26 @@ const actions = createActions({
     commit.setErrorFromKuzzle(error.message)
   },
   loadEnvironments(context) {
-    let loadedEnv
-    let currentId
+    let loadedEnv ;
+    let currentId ;
     const { commit } = kuzzleActionContext(context)
 
     loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
     Object.keys(loadedEnv).forEach(envName => {
-      const env = loadedEnv[envName]
+      const env = loadedEnv[envName] ;
       if (env.hideAdminWarning === undefined) {
         env.hideAdminWarning = NO_ADMIN_WARNING_HOSTS.includes(env.host)
       }
       commit.createEnvironment({
         environment: env,
         id: envName
-      })
-    })
+      }) ;
+    }) ;
 
     currentId = localStorage.getItem(LS_CURRENT_ENV)
     commit.setCurrentEnvironment(currentId)
   }
-})
+}) ;
 
 const kuzzle = createModule({
   namespaced: true,
@@ -224,8 +227,8 @@ const kuzzle = createModule({
   mutations,
   getters,
   actions
-})
+}) ;
 
-export default kuzzle
+export default kuzzle ;
 export const kuzzleActionContext = (context: any) =>
   moduleActionContext(context, kuzzle)

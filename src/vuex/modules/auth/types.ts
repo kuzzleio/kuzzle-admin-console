@@ -1,4 +1,4 @@
-import { SessionUser } from '@/models/SessionUser'
+import { SessionUser } from '@/models/SessionUser' ;
 
 export interface AuthState {
   user: SessionUser

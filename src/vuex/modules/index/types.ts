@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _ from 'lodash' ;
 
 export class Index {
   private _name: string
@@ -6,26 +6,26 @@ export class Index {
   collections?: Collection[]
 
   constructor(name: string) {
-    this._name = name
+    this._name = name ;
   }
 
   get name() {
-    return this._name
+    return this._name ;
   }
 
   get collectionsCount(): number | undefined {
-    return this.collections?.length
+    return this.collections?.length ;
   }
 
   public initCollections(collections: Collection[]) {
-    this.collections = collections
+    this.collections = collections ;
   }
 
   public addCollection(collection: Collection) {
     if (!this.collections) {
       throw new Error(
         'Unable to perform operations, the collection list is not yet initialized'
-      )
+      ) ;
     }
 
     this.collections.push(collection)
@@ -35,19 +35,19 @@ export class Index {
     if (!this.collections) {
       throw new Error(
         'Unable to perform operations, the collection list is not yet initialized'
-      )
+      ) ;
     }
 
     this.collections = this.collections.filter(
       el => el.name !== collection.name
-    )
+    ) ;
   }
 
   public getOneCollection(collectionName: string) {
     if (!this.collections) {
       throw new Error(
         'Unable to perform operations, the collection list is not yet initialized'
-      )
+      ) ;
     }
 
     return this.collections.find(el => el.name === collectionName)
@@ -57,7 +57,7 @@ export class Index {
     if (!this.collections) {
       throw new Error(
         'Unable to perform operations, the collection list is not yet initialized'
-      )
+      ) ;
     }
 
     return this.collections.find(el => el.name === collectionName)
@@ -74,19 +74,19 @@ export class Collection {
 
   constructor(name: string, type: CollectionType) {
     this._type = this.findType(name, type)
-    this._name = name
+    this._name = name ;
   }
 
   get name(): string {
-    return this._name
+    return this._name ;
   }
 
   get type(): CollectionType {
-    return this._type
+    return this._type ;
   }
 
   public isRealtime(): boolean {
-    return this._type === CollectionType.REALTIME
+    return this._type === CollectionType.REALTIME ;
   }
 
   private findType(name: string, type: CollectionType) {

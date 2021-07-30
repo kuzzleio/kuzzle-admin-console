@@ -64,8 +64,8 @@
 </template>
 
 <script>
-import { truncateName } from '@/utils'
-import { mapGetters } from 'vuex'
+import { truncateName } from '@/utils' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'Filters',
   components: {},
@@ -84,12 +84,12 @@ export default {
     return {
       roleList: [],
       selectedRoles: []
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     hasFilter() {
-      return this.selectedRoles.length > 0
+      return this.selectedRoles.length > 0 ;
     }
   },
   methods: {
@@ -109,7 +109,7 @@ export default {
       }
     },
     reset() {
-      this.selectedRoles = []
+      this.selectedRoles = [] ;
       this.$emit('reset')
     }
   },
@@ -122,7 +122,7 @@ export default {
       this.$emit('filters-updated', this.selectedRoles)
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

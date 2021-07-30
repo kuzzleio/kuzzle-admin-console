@@ -110,9 +110,9 @@ export const elements = {
     name: 'Json',
     tag: 'json'
   }
-}
+} ;
 
-export const elementJson = elements['json']
+export const elementJson = elements['json'] ;
 
 export const config = {
   keyword: {
@@ -226,4 +226,4 @@ export const config = {
     elements: [elements['geopoint'], elements['input:text']],
     default: elements['geopoint']
   }
-}
+} ;

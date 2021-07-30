@@ -257,18 +257,18 @@
 </template>
 
 <script>
-import Headline from '../../Materialize/Headline'
-import Notification from '../Realtime/Notification'
-import CollectionDropdownView from './DropdownView'
-import CollectionDropdownAction from './DropdownAction'
-import DeleteCollectionModal from './DeleteCollectionModal'
-import JsonEditor from '../../Common/JsonEditor'
-import * as filterManager from '../../../services/filterManager'
-import { truncateName } from '@/utils'
-import JsonFormatter from '../../../directives/json-formatter.directive'
-import moment from 'moment'
-import { isEqual } from 'lodash'
-import { mapGetters } from 'vuex'
+import Headline from '../../Materialize/Headline' ;
+import Notification from '../Realtime/Notification' ;
+import CollectionDropdownView from './DropdownView' ;
+import CollectionDropdownAction from './DropdownAction' ;
+import DeleteCollectionModal from './DeleteCollectionModal' ;
+import JsonEditor from '../../Common/JsonEditor' ;
+import * as filterManager from '../../../services/filterManager' ;
+import { truncateName } from '@/utils' ;
+import JsonFormatter from '../../../directives/json-formatter.directive' ;
+import moment from 'moment' ;
+import { isEqual } from 'lodash' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'CollectionWatch',
   directives: {
@@ -297,7 +297,7 @@ export default {
       subscribed: false,
       subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
       warning: { message: '', count: 0, lastTime: null, info: false }
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
@@ -318,36 +318,39 @@ export default {
         !!this.realtimeQuery &&
         !isEqual(this.realtimeQuery, {}) &&
         this.isFilterValid
-      )
+      ) ;
     },
     lastNotification() {
       if (this.notifications.length) {
-        return this.notifications[0]
+        return this.notifications[0] ;
       }
-      return {}
+
+      return {} ;
     },
     lastNotificationTime() {
       if (!this.notifications.length) {
-        return null
+        return null ;
       }
+
       return moment(this.lastNotification.timestamp).format('H:mm:ss')
     },
     realtimeQuery() {
       try {
         return JSON.parse(this.rawFilter)
       } catch (error) {
-        return {}
+        return {} ;
       }
     },
     isFilterValid() {
       if (!this.rawFilter) {
-        return true
+        return true ;
       }
       try {
         JSON.parse(this.rawFilter)
-        return true
+
+        return true ;
       } catch (error) {
-        return false
+        return false ;
       }
     },
     isRealtimeCollection() {
@@ -366,10 +369,10 @@ export default {
       this.$router.push({
         name: 'Collections',
         params: { indexName: this.indexName }
-      })
+      }) ;
     },
     onFilterChanged(value) {
-      this.rawFilter = value
+      this.rawFilter = value ;
     },
     async toggleSubscription() {
       if (!this.subscribed) {
@@ -381,21 +384,21 @@ export default {
     handleNotification(result) {
       if (this.notifications.length > this.notificationsLengthLimit) {
         if (this.warning.message === '') {
-          this.warning.info = true
+          this.warning.info = true ;
           this.warning.message =
-            'Older notifications are discarded due to the amount of items displayed'
+            'Older notifications are discarded due to the amount of items displayed' ;
         }
 
         if (Date.now() - this.warning.lastTime < 50) {
-          this.warning.count++
+          this.warning.count++ ;
         }
 
         this.warning.lastTime = Date.now()
 
         if (this.warning.count >= 100) {
-          this.warning.info = false
+          this.warning.info = false ;
           this.warning.message =
-            'You are receiving too many messages, try to add more filters to reduce the amount of messages'
+            'You are receiving too many messages, try to add more filters to reduce the amount of messages' ;
         }
 
         // two shift instead of one to have a visual effect on items in the view
@@ -416,12 +419,12 @@ export default {
           this.realtimeQuery,
           this.handleNotification,
           this.subscribeOptions
-        )
-        this.subscribed = true
-        this.room = room
+        ) ;
+        this.subscribed = true ;
+        this.room = room ;
       } catch (err) {
-        this.room = null
-        this.subscribed = false
+        this.room = null ;
+        this.subscribed = false ;
         this.$log.error(err)
         this.$bvToast.toast(err.message, {
           title:
@@ -431,20 +434,20 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     },
     async unsubscribe(room) {
-      this.warning.message = ''
-      this.warning.count = 0
+      this.warning.message = '' ;
+      this.warning.count = 0 ;
 
       await this.$kuzzle.realtime.unsubscribe(room)
-      this.subscribed = false
-      this.room = null
+      this.subscribed = false ;
+      this.room = null ;
     },
     resetFilters() {
       if (this.subscribed) {
-        this.subscribed = false
+        this.subscribed = false ;
         this.unsubscribe(this.room)
       }
       if (this.$refs.filter) {
@@ -452,9 +455,9 @@ export default {
       }
     },
     resetNotifications() {
-      this.notifications = []
-      this.warning.message = ''
-      this.warning.count = 0
+      this.notifications = [] ;
+      this.warning.message = '' ;
+      this.warning.count = 0 ;
     },
     reset() {
       // trigged when user changed the collection of watch data page
@@ -480,7 +483,7 @@ export default {
       await this.$kuzzle.realtime.unsubscribe(this.room)
     }
   }
-}
+} ;
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

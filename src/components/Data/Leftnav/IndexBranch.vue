@@ -83,9 +83,9 @@
 </template>
 
 <script>
-import { truncateName } from '../../../utils'
-import HighlightedSpan from '../../Common/HighlightedSpan'
-import { mapActions, mapGetters } from 'vuex'
+import { truncateName } from '../../../utils' ;
+import HighlightedSpan from '../../Common/HighlightedSpan' ;
+import { mapActions, mapGetters } from 'vuex' ;
 
 export default {
   components: {
@@ -108,7 +108,7 @@ export default {
       showMoreCollections: false,
       collectionsFetched: false,
       isLoading: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('index', ['loadingCollections']),
@@ -120,13 +120,14 @@ export default {
           col => col.name.indexOf(this.filter) !== -1
         ).length !== this.index.collections.length
       ) {
-        return 1
+        return 1 ;
       }
-      return 0
+
+      return 0 ;
     },
     orderedFilteredCollections() {
       if (!this.index.collections) {
-        return []
+        return [] ;
       }
 
       return this.index.collections
@@ -151,11 +152,11 @@ export default {
           col => col.name.indexOf(this.filter) !== -1
         ).length > 0
       ) {
-        this.open = true
+        this.open = true ;
       }
 
       if (this.filter == '') {
-        this.open = false
+        this.open = false ;
       }
     }
   },
@@ -175,9 +176,9 @@ export default {
     },
     async fetchCollections() {
       try {
-        this.isLoading = true
+        this.isLoading = true ;
         await this.fetchCollectionList(this.index)
-        this.collectionsFetched = true
+        this.collectionsFetched = true ;
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -189,49 +190,49 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true
           }
-        )
+        ) ;
       }
-      this.isLoading = false
+      this.isLoading = false ;
     },
     toggleBranch() {
       // TODO This state should be one day persistent across page refreshes
       // NJE edit: not today...
-      this.open = !this.open
+      this.open = !this.open ;
     },
     // TODO get rid of this ESTEBAAAAAAAAN
     getRelativeLink(isRealtime) {
       switch (this.routeName) {
         case 'WatchCollection':
-          return this.routeName
+          return this.routeName ;
         case 'DocumentList':
-          return isRealtime ? 'WatchCollection' : this.routeName
+          return isRealtime ? 'WatchCollection' : this.routeName ;
         default:
-          return 'DocumentList'
+          return 'DocumentList' ;
       }
     },
     toggleShowMoreCollections() {
-      this.showMoreCollections = !this.showMoreCollections
+      this.showMoreCollections = !this.showMoreCollections ;
     },
     async testOpen() {
       if (this.browsedIndexName === this.index.name) {
         await this.fetchCollections()
-        this.open = true
+        this.open = true ;
       }
     },
     isIndexActive(indexName) {
-      return this.browsedIndexName === indexName && !this.browsedCollectionName
+      return this.browsedIndexName === indexName && !this.browsedCollectionName ;
     },
     isCollectionActive(indexName, collectionName) {
       return (
         this.browsedIndexName === indexName &&
         this.browsedCollectionName === collectionName
-      )
+      ) ;
     },
     removeRealtimeCollection(indexName, collectionName) {
       this.$store.direct.dispatch.index.removeRealtimeCollection({
         index: indexName,
         collection: collectionName
-      })
+      }) ;
       if (
         this.$route.params.index === indexName &&
         this.$route.params.collection === collectionName
@@ -239,11 +240,11 @@ export default {
         this.$router.push({
           name: 'Indexes',
           params: { index: indexName }
-        })
+        }) ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style scoped lang="scss">

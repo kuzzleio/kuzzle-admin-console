@@ -23,14 +23,14 @@ export default {
   data() {
     return {
       itemsPerPage: [10, 25, 50, 100, 500]
-    }
+    } ;
   },
   computed: {
     pageSize() {
-      return this.currentPageSize || 25
+      return this.currentPageSize || 25 ;
     }
   }
-}
+} ;
 </script>
 
 <style></style>

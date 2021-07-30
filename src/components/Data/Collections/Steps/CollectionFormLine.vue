@@ -45,13 +45,13 @@
 
 <script>
 import {
-  getSchemaForType,
+  castByElementId,
   getElementDefinition,
-  castByElementId
-} from '../../../../services/collectionHelper'
-import Multiselect from 'vue-multiselect'
-import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
-import MSelect from '../../../Common/MSelect'
+  getSchemaForType
+} from '../../../../services/collectionHelper' ;
+import Multiselect from 'vue-multiselect' ;
+import {} from 'vue-multiselect/dist/vue-multiselect.min.css' ;
+import MSelect from '../../../Common/MSelect' ;
 
 export default {
   name: 'CollectionFormLine',
@@ -70,26 +70,26 @@ export default {
   data() {
     return {
       elementDefinition: { ...this.value }
-    }
+    } ;
   },
   computed: {
     optionsForAttribute() {
       return getSchemaForType(this.type)
     },
     placeholder() {
-      return `${this.name} values (${this.type} only)`
+      return `${this.name} values (${this.type} only)` ;
     }
   },
   methods: {
     changeSchema(element) {
       this.elementDefinition = getElementDefinition(element)
       if (!this.elementDefinition) {
-        return
+        return ;
       }
 
-      let elementDefinition = { ...this.elementDefinition }
+      let elementDefinition = { ...this.elementDefinition } ;
       if (elementDefinition.chooseValues) {
-        elementDefinition.values = this.values || []
+        elementDefinition.values = this.values || [] ;
       }
       this.$emit('input', { name: this.name, element: elementDefinition })
     },
@@ -97,13 +97,13 @@ export default {
       let castValue = castByElementId(this.elementDefinition.id, value)
 
       if (!castValue) {
-        return
+        return ;
       }
 
-      let _values = this.values ? [...this.values] : []
+      let _values = this.values ? [...this.values] : [] ;
 
       if (_values.some(value => value === castValue)) {
-        return
+        return ;
       }
 
       this.$emit('input', {
@@ -112,23 +112,23 @@ export default {
           ...this.elementDefinition,
           values: _values.concat([castValue])
         }
-      })
+      }) ;
     },
     removeValue(removedValue) {
       let castValue = castByElementId(this.elementDefinition.id, removedValue)
 
       if (!castValue) {
-        return
+        return ;
       }
 
       let _values = this.values.filter(value => value !== castValue)
       this.$emit('input', {
         name: this.name,
         element: { ...this.elementDefinition, values: _values }
-      })
+      }) ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss">

@@ -208,13 +208,13 @@
 </template>
 
 <script>
-import JsonFormatter from '../../../../directives/json-formatter.directive'
-import _ from 'lodash'
-import { truncateName } from '@/utils'
-import { mapGetters } from 'vuex'
-import draggable from 'vuedraggable'
-import HeaderTableView from '../HeaderTableView'
-import PerPageSelector from '@/components/Common/PerPageSelector'
+import JsonFormatter from '../../../../directives/json-formatter.directive' ;
+import _ from 'lodash' ;
+import { truncateName } from '@/utils' ;
+import { mapGetters } from 'vuex' ;
+import draggable from 'vuedraggable' ;
+import HeaderTableView from '../HeaderTableView' ;
+import PerPageSelector from '@/components/Common/PerPageSelector' ;
 
 export default {
   name: 'Column',
@@ -255,66 +255,69 @@ export default {
       displayDragIcon: false,
       tabResizing: null,
       startOffset: null
-    }
+    } ;
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     hasSelectedDocuments() {
-      return this.selectedDocuments.length > 0
+      return this.selectedDocuments.length > 0 ;
     },
     bulkDeleteEnabled() {
       return (
         this.canDeleteDocument(this.index, this.collection) &&
         this.hasSelectedDocuments
-      )
+      ) ;
     },
     dropdownFields() {
       return this.fieldList.map(field => ({
         text: field,
         displayed: this.selectedFields.includes(field)
-      }))
+      })) ;
     },
     formattedItems() {
       return this.documents.map(d => {
-        const doc = {}
-        doc._id = d._id
+        const doc = {} ;
+        doc._id = d._id ;
         for (const key of this.selectedFields) {
           // if there is an array in the current document within the 'path'
           if (this.documentPathContainsArray(key, d)) {
-            doc[key] = { array: true }
+            doc[key] = { array: true } ;
           } else {
             const parsed = this.parseDocument(key, d)
             if (parsed.value === undefined) {
-              doc[key] = { undefined: true }
+              doc[key] = { undefined: true } ;
             } else if (parsed.value === null) {
-              doc[key] = { null: true }
+              doc[key] = { null: true } ;
             } else {
-              doc[key] = parsed.value
+              doc[key] = parsed.value ;
             }
           }
         }
-        return doc
-      })
+
+        return doc ;
+      }) ;
     },
     canEdit() {
       if (!this.index || !this.collection) {
-        return false
+        return false ;
       }
+
       return this.canEditDocument(this.index, this.collection)
     },
     canDelete() {
       if (!this.index || !this.collection) {
-        return false
+        return false ;
       }
+
       return this.canDeleteDocument(this.index, this.collection)
     },
     checkboxId() {
-      return `checkbox-${this.document._id}`
+      return `checkbox-${this.document._id}` ;
     }
   },
   methods: {
     resetColumns() {
-      this.selectedFields = []
+      this.selectedFields = [] ;
       this.saveSelectedFieldsToLocalStorage()
     },
     truncateName,
@@ -323,21 +326,23 @@ export default {
     },
     documentPathContainsArray(path, document) {
       let containsArray = false,
-        str = ''
+        str = '' ;
       for (const key of path.split('.')) {
-        str += key
+        str += key ;
         if (Array.isArray(this.parseDocument(str, document).realValue)) {
-          containsArray = true
+          containsArray = true ;
         }
-        str += '.'
+        str += '.' ;
       }
-      return containsArray
+
+      return containsArray ;
     },
     getLastKeyPath(label) {
       const splittedLabel = label.split('.')
+
       return `${splittedLabel.length > 1 ? '...' : ''}${
         splittedLabel[splittedLabel.length - 1]
-      }`
+      }` ;
     },
     toggleSelectDocument(id) {
       this.$emit('checkbox-click', id)
@@ -345,12 +350,12 @@ export default {
     initSelectedFields() {
       const columnViewConfig = JSON.parse(
         localStorage.getItem('columnViewConfig') || '{}'
-      )
+      ) ;
       if (
         columnViewConfig[this.index] &&
         columnViewConfig[this.index][this.collection]
       ) {
-        this.selectedFields = columnViewConfig[this.index][this.collection]
+        this.selectedFields = columnViewConfig[this.index][this.collection] ;
       }
     },
     toggleColumn(field, value) {
@@ -365,9 +370,9 @@ export default {
     },
     toggleJsonFormatter(id) {
       if (this.$refs[id][0].style.visibility === 'hidden') {
-        this.$refs[id][0].style.visibility = 'visible'
+        this.$refs[id][0].style.visibility = 'visible' ;
       } else {
-        this.$refs[id][0].style.visibility = 'hidden'
+        this.$refs[id][0].style.visibility = 'hidden' ;
       }
     },
     parseDocument(attr, doc) {
@@ -380,23 +385,23 @@ export default {
           isObject: true,
           value: JSON.stringify(ret).substring(0, 10),
           realValue: ret
-        }
+        } ;
       }
 
       return {
         isObject: false,
         value: ret
-      }
+      } ;
     },
     saveSelectedFieldsToLocalStorage() {
       if (this.index && this.collection) {
         const config = JSON.parse(
           localStorage.getItem('columnViewConfig') || '{}'
-        )
+        ) ;
         if (!config[this.index]) {
-          config[this.index] = {}
+          config[this.index] = {} ;
         }
-        config[this.index][this.collection] = this.selectedFields
+        config[this.index][this.collection] = this.selectedFields ;
         localStorage.setItem('columnViewConfig', JSON.stringify(config))
       }
     },
@@ -414,7 +419,7 @@ export default {
       }
     },
     buildFieldList(mapping, path = []) {
-      let attributes = []
+      let attributes = [] ;
 
       for (const [attributeName, attributeValue] of Object.entries(mapping)) {
         if (
@@ -425,14 +430,15 @@ export default {
               attributeValue.properties,
               path.concat(attributeName)
             )
-          )
+          ) ;
         } else if (
           Object.prototype.hasOwnProperty.call(attributeValue, 'type')
         ) {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }
-      return attributes
+
+      return attributes ;
     },
     initFields() {
       this.initSelectedFields()
@@ -456,7 +462,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss">

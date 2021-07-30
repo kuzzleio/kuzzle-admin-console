@@ -68,8 +68,8 @@
 </template>
 
 <script>
-import jsonFormatter from '../../../directives/json-formatter.directive'
-import { mapGetters } from 'vuex'
+import jsonFormatter from '../../../directives/json-formatter.directive' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'RoleItem',
@@ -85,14 +85,14 @@ export default {
     return {
       expanded: false,
       checked: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('auth', ['canEditRole', 'canDeleteRole'])
   },
   methods: {
     toggleCollapse() {
-      this.expanded = !this.expanded
+      this.expanded = !this.expanded ;
     },
     notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document._id)
@@ -108,16 +108,16 @@ export default {
           'common-list::edit-document',
           'SecurityRolesUpdate',
           this.document._id
-        )
+        ) ;
       }
     }
   },
   watch: {
     isChecked: {
       handler(value) {
-        this.checked = value
+        this.checked = value ;
       }
     }
   }
-}
+} ;
 </script>

@@ -74,25 +74,26 @@ export default {
       error: '',
       document: null,
       id: null
-    }
+    } ;
   },
   computed: {},
   methods: {
     getValue(strategy, fieldName) {
       if (!this.credentials[strategy]) {
-        return null
+        return null ;
       }
-      return this.credentials[strategy][fieldName]
+
+      return this.credentials[strategy][fieldName] ;
     },
     getFieldHelp(fieldName) {
       return fieldName.replace(/^\w/, c => c.toUpperCase())
     },
     fieldType(fieldName) {
       if (fieldName === 'password') {
-        return 'password'
+        return 'password' ;
       }
 
-      return 'text'
+      return 'text' ;
     },
     onFieldChange(strategy, fieldName, value) {
       this.$emit('input', {
@@ -101,10 +102,10 @@ export default {
           ...this.credentials[strategy],
           [fieldName]: value
         }
-      })
+      }) ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss">

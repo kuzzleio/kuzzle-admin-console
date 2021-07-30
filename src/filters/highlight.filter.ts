@@ -12,5 +12,5 @@ export function highlight(value, filter) {
     }
   }
 
-  return value
+  return value ;
 }

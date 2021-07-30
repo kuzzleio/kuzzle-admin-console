@@ -149,19 +149,19 @@
 </style>
 
 <script>
-import QuickFilter from './QuickFilter'
-import BasicFilter from './BasicFilter'
-import RawFilter from './RawFilter'
-import HistoryFilter from './HistoryFilter'
-import FavoriteFilters from './FavoriteFilters'
+import QuickFilter from './QuickFilter' ;
+import BasicFilter from './BasicFilter' ;
+import RawFilter from './RawFilter' ;
+import HistoryFilter from './HistoryFilter' ;
+import FavoriteFilters from './FavoriteFilters' ;
 
 import {
-  NO_ACTIVE,
-  ACTIVE_QUICK,
   ACTIVE_BASIC,
+  ACTIVE_QUICK,
   ACTIVE_RAW,
-  Filter
-} from '../../../services/filterManager'
+  Filter,
+  NO_ACTIVE
+} from '../../../services/filterManager' ;
 
 export default {
   name: 'Filters',
@@ -236,7 +236,7 @@ export default {
       jsonInvalid: false,
       objectTabActive: null,
       refreshace: false
-    }
+    } ;
   },
   computed: {
     complexFilterActive() {
@@ -245,40 +245,42 @@ export default {
           this.currentFilter.basic !== null) ||
         (this.currentFilter.active === ACTIVE_RAW &&
           this.currentFilter.raw !== null)
-      )
+      ) ;
     },
     quickFilter: {
       get() {
         if (!this.currentFilter) {
-          return null
+          return null ;
         }
 
-        return this.currentFilter.quick
+        return this.currentFilter.quick ;
       },
       set(value) {
-        this.currentFilter.quick = value
+        this.currentFilter.quick = value ;
       }
     },
     basicFilter() {
       if (!this.currentFilter) {
-        return null
+        return null ;
       }
-      return this.currentFilter.basic
+
+      return this.currentFilter.basic ;
     },
     rawFilter() {
       if (!this.currentFilter) {
-        return null
+        return null ;
       }
-      return this.currentFilter.raw
+
+      return this.currentFilter.raw ;
     },
     sorting() {
-      return this.currentFilter.sorting
+      return this.currentFilter.sorting ;
     }
   },
   methods: {
     setObjectTabActive(tab) {
-      this.objectTabActive = tab
-      this.refreshace = !this.refreshace
+      this.objectTabActive = tab ;
+      this.refreshace = !this.refreshace ;
     },
     onQuickFilterSubmitted(term) {
       this.onSubmit(
@@ -286,27 +288,27 @@ export default {
           active: term ? ACTIVE_QUICK : NO_ACTIVE,
           quick: term
         })
-      )
+      ) ;
     },
     onBasicFilterSubmitted(filter, sorting) {
       const newFilter = new Filter()
-      newFilter.basic = filter
-      newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE
-      newFilter.sorting = sorting
+      newFilter.basic = filter ;
+      newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE ;
+      newFilter.sorting = sorting ;
       this.onSubmit(newFilter)
     },
 
     onRawFilterSubmitted(filter) {
-      this.advancedFiltersVisible = false
+      this.advancedFiltersVisible = false ;
       this.onSubmit(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
           raw: filter
         })
-      )
+      ) ;
     },
     onSubmitFromHistory(filter) {
-      this.advancedFiltersVisible = false
+      this.advancedFiltersVisible = false ;
       this.onSubmit(Object.assign(this.currentFilter, filter), false)
     },
     onGenerateRawFilter(filter) {
@@ -315,15 +317,15 @@ export default {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
           raw: filter
         })
-      )
-      this.complexFiltersSelectedTab = 'raw'
+      ) ;
+      this.complexFiltersSelectedTab = 'raw' ;
     },
     onRefresh() {
       this.submit(
         Object.assign(this.currentFilter, {
           from: 0
         })
-      )
+      ) ;
     },
     onReset() {
       this.onSubmit(new Filter())
@@ -336,7 +338,7 @@ export default {
         Object.assign(filter, {
           from: 0
         })
-      )
+      ) ;
       this.$emit('submit', saveToHistory)
       this.close()
     },
@@ -344,12 +346,12 @@ export default {
       this.$emit('enter-pressed')
     },
     toggleFullscreen() {
-      this.isFullscreen = !this.isFullscreen
+      this.isFullscreen = !this.isFullscreen ;
     },
     close() {
-      this.advancedFiltersVisible = false
-      this.isFullscreen = false
+      this.advancedFiltersVisible = false ;
+      this.isFullscreen = false ;
     }
   }
-}
+} ;
 </script>

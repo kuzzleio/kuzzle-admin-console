@@ -92,14 +92,14 @@
 </template>
 
 <script>
-import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
-import QueryList from '@/components/ApiAction/QueryList'
-import QueryCard from '@/components/ApiAction/QueryCard'
+import SaveQueryModal from '@/components/ApiAction/SaveQueryModal' ;
+import QueryList from '@/components/ApiAction/QueryList' ;
+import QueryCard from '@/components/ApiAction/QueryCard' ;
 
-import { Multipane, MultipaneResizer } from 'vue-multipane'
-import { mapGetters } from 'vuex'
-import _ from 'lodash'
-import { truncateName } from '@/utils'
+import { Multipane, MultipaneResizer } from 'vue-multipane' ;
+import { mapGetters } from 'vuex' ;
+import _ from 'lodash' ;
+import { truncateName } from '@/utils' ;
 
 export default {
   components: {
@@ -119,7 +119,7 @@ export default {
       loading: true,
       savedQueries: [],
       newSaveTabIdx: null
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
@@ -135,150 +135,158 @@ export default {
         name: '',
         response: '',
         savedIdx: null
-      }
+      } ;
     },
     currentQueryBody() {
       if (!this.tabs[this.currentTabIdx]) {
-        return null
+        return null ;
       }
-      return this.tabs[this.currentTabIdx].body
+
+      return this.tabs[this.currentTabIdx].body ;
     },
     currentQueryName() {
       if (!this.tabs[this.currentTabIdx]) {
-        return null
+        return null ;
       }
-      return this.tabs[this.currentTabIdx].name
+
+      return this.tabs[this.currentTabIdx].name ;
     }
   },
   methods: {
     closeAlert() {
-      this.showAlert = false
+      this.showAlert = false ;
     },
     formatTabName(tabContent) {
-      let name = tabContent.name ? tabContent.name : 'New API action'
+      let name = tabContent.name ? tabContent.name : 'New API action' ;
       name = truncateName(name, 11)
-      name += tabContent.saved ? '' : ' *'
-      return name
+      name += tabContent.saved ? '' : ' *' ;
+
+      return name ;
     },
     onQueryChanged({ query, tabIdx }) {
-      const savedIdx = this.tabs[tabIdx].savedIdx
+      const savedIdx = this.tabs[tabIdx].savedIdx ;
       if (savedIdx !== null && savedIdx !== undefined) {
         this.tabs[tabIdx].saved = _.isEqual(
           this.savedQueries[savedIdx].query,
           query
-        )
+        ) ;
       }
       this.tabs[tabIdx].query = JSON.parse(JSON.stringify(query))
     },
     setCurrentTab(tabIdx) {
-      this.currentTabIdx = tabIdx
+      this.currentTabIdx = tabIdx ;
     },
     closeTab(tabIdx) {
       if (this.currentTabIdx === tabIdx) {
         if (this.currentTabIdx > 0) {
-          this.currentTabIdx = tabIdx - 1
+          this.currentTabIdx = tabIdx - 1 ;
         } else {
-          this.currentTabIdx = 0
+          this.currentTabIdx = 0 ;
         }
       } else if (this.currentTabIdx > tabIdx) {
-        this.currentTabIdx = this.currentTabIdx - 1
+        this.currentTabIdx = this.currentTabIdx - 1 ;
       }
       this.tabs.splice(tabIdx, 1)
     },
     deleteSavedQuery(savedQueryIdx) {
       const tabIdx = this.tabs.findIndex(t => t.savedIdx === savedQueryIdx)
       if (tabIdx !== -1) {
-        this.tabs[tabIdx].name = ''
-        this.tabs[tabIdx].savedIdx = null
-        this.tabs[tabIdx].saved = false
+        this.tabs[tabIdx].name = '' ;
+        this.tabs[tabIdx].savedIdx = null ;
+        this.tabs[tabIdx].saved = false ;
       }
       this.savedQueries.splice(savedQueryIdx, 1)
       this.storeQueriesToLocalStorage()
     },
     loadSavedQuery(savedQueryIdx) {
-      if (!this.savedQueries[savedQueryIdx]) return
+      if (!this.savedQueries[savedQueryIdx]) return ;
       const query = JSON.parse(JSON.stringify(this.savedQueries[savedQueryIdx]))
       const tabIdx = this.tabs.findIndex(t => t.name === query.name)
       if (tabIdx !== -1) {
-        this.currentTabIdx = tabIdx
-        return
+        this.currentTabIdx = tabIdx ;
+
+        return ;
       }
       this.tabs.push(query)
-      this.currentTabIdx = this.tabs.length - 1
+      this.currentTabIdx = this.tabs.length - 1 ;
     },
     isQueryNameValid(name) {
       if (name === '' || name === 'New Query') {
-        return false
+        return false ;
       }
       const nameSearch = this.savedQueries.find((q, index) => {
         if (this.currentQueryIndexName === index) {
-          return false
+          return false ;
         }
-        return q.name === name
-      })
-      const nameAlreadyUsed = nameSearch !== undefined
-      return !nameAlreadyUsed
+
+        return q.name === name ;
+      }) ;
+      const nameAlreadyUsed = nameSearch !== undefined ;
+
+      return !nameAlreadyUsed ;
     },
     storeNewQuery(name) {
-      this.tabs[this.newSaveTabIdx].name = name
-      this.tabs[this.newSaveTabIdx].saved = true
-      this.tabs[this.newSaveTabIdx].savedIdx = this.savedQueries.length
+      this.tabs[this.newSaveTabIdx].name = name ;
+      this.tabs[this.newSaveTabIdx].saved = true ;
+      this.tabs[this.newSaveTabIdx].savedIdx = this.savedQueries.length ;
       const tab = JSON.parse(JSON.stringify(this.tabs[this.newSaveTabIdx]))
       this.savedQueries.push(tab)
-      this.newSaveTabIdx = null
+      this.newSaveTabIdx = null ;
       this.storeQueriesToLocalStorage()
     },
     saveQuery(tabIdx) {
-      const tab = this.tabs[tabIdx]
+      const tab = this.tabs[tabIdx] ;
       const storedQueryIdx = this.savedQueries.findIndex(
         q => q.name === tab.name
-      )
+      ) ;
       if (storedQueryIdx !== -1) {
         this.savedQueries[storedQueryIdx].query = JSON.parse(
           JSON.stringify(tab.query)
-        )
-        this.tabs[tabIdx].saved = true
+        ) ;
+        this.tabs[tabIdx].saved = true ;
         this.storeQueriesToLocalStorage()
       } else {
-        this.newSaveTabIdx = tabIdx
+        this.newSaveTabIdx = tabIdx ;
         this.$bvModal.show('modal-save-query')
       }
     },
     loadStoredQueriesFromLocalStorage() {
       const storedQueries = localStorage.getItem('storedQueries')
       if (!storedQueries) {
-        return
+        return ;
       }
       const jsonStoreQueries = JSON.parse(storedQueries)
       if (!jsonStoreQueries[this.currentEnvironment.name]) {
-        return
+        return ;
       }
       this.savedQueries = jsonStoreQueries[this.currentEnvironment.name].map(
         (q, idx) => {
-          q.response = ''
-          q.saved = true
-          q.savedIdx = idx
-          return q
+          q.response = '' ;
+          q.saved = true ;
+          q.savedIdx = idx ;
+
+          return q ;
         }
-      )
+      ) ;
     },
     storeQueriesToLocalStorage() {
       let storedQueries = JSON.parse(localStorage.getItem('storedQueries'))
       if (!storedQueries) {
-        storedQueries = {}
+        storedQueries = {} ;
       }
       const queriesToStore = JSON.parse(JSON.stringify(this.savedQueries))
       storedQueries[this.currentEnvironment.name] = queriesToStore.map(q => {
-        delete q.response
-        delete q.saved
-        delete q.savedIdx
-        return q
-      })
+        delete q.response ;
+        delete q.saved ;
+        delete q.savedIdx ;
+
+        return q ;
+      }) ;
       localStorage.setItem('storedQueries', JSON.stringify(storedQueries))
     },
     async performQuery(tabIdx) {
       const query = JSON.parse(JSON.stringify(this.tabs[tabIdx].query))
-      let response = {}
+      let response = {} ;
 
       try {
         response = await this.$kuzzle.query(query)
@@ -288,22 +296,22 @@ export default {
           message: error.message,
           stack: error.stack,
           kuzzleStack: error.kuzzleStack
-        }
+        } ;
       }
-      this.tabs[tabIdx].response = response
+      this.tabs[tabIdx].response = response ;
     },
     addNewTab() {
       let newTab = JSON.parse(JSON.stringify(this.emptyTab))
       this.tabs.push(newTab)
-      this.currentTabIdx = this.tabs.length - 1
+      this.currentTabIdx = this.tabs.length - 1 ;
     },
     async getKuzzleOpenApi() {
       try {
         const openApi = await this.$kuzzle.query({
           controller: 'server',
           action: 'openapi'
-        })
-        this.openapi = openApi.paths
+        }) ;
+        this.openapi = openApi.paths ;
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -316,7 +324,7 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
+        ) ;
       }
     },
     async getKuzzlePublicApi() {
@@ -324,8 +332,8 @@ export default {
         const publicApi = await this.$kuzzle.query({
           controller: 'server',
           action: 'publicApi'
-        })
-        this.api = publicApi.result
+        }) ;
+        this.api = publicApi.result ;
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -338,12 +346,12 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
+        ) ;
       }
     }
   },
   async mounted() {
-    this.loading = true
+    this.loading = true ;
     if (this.canGetPublicApi) {
       await this.getKuzzlePublicApi()
     } else {
@@ -357,7 +365,7 @@ export default {
           dismissible: true,
           noAutoHide: true
         }
-      )
+      ) ;
     }
     if (this.currentEnvironment.backendMajorVersion > 1 && this.canGetOpenApi) {
       await this.getKuzzleOpenApi()
@@ -372,13 +380,13 @@ export default {
           dismissible: true,
           noAutoHide: true
         }
-      )
+      ) ;
     }
     this.loadStoredQueriesFromLocalStorage()
     this.addNewTab()
-    this.loading = false
+    this.loading = false ;
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

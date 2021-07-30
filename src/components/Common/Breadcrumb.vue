@@ -152,20 +152,21 @@ export default {
     },
     isCollectionRealtime() {
       if (!this.index || this.$route.params.collectionName) {
-        return false
+        return false ;
       }
+
       return this.$store.direct.getters.index.getOneCollection(
         this.index,
         this.$route.params.collectionName
-      ).isRealtime
+      ).isRealtime ;
     },
     isRouteActive(routeName) {
       if (Array.isArray(routeName)) {
         return routeName.indexOf(this.$route.name) >= 0
       }
 
-      return this.$route.name === routeName
+      return this.$route.name === routeName ;
     }
   }
-}
+} ;
 </script>

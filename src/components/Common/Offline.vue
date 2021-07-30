@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
+import EnvironmentSwitch from './Environments/EnvironmentsSwitch' ;
 
 export default {
   name: 'OfflinePage',
@@ -48,16 +48,16 @@ export default {
   },
   computed: {
     currentEnvironment() {
-      return this.$store.direct.getters.kuzzle.currentEnvironment
+      return this.$store.direct.getters.kuzzle.currentEnvironment ;
     },
     host() {
-      return this.currentEnvironment ? this.currentEnvironment.host : ''
+      return this.currentEnvironment ? this.currentEnvironment.host : '' ;
     },
     port() {
-      return this.currentEnvironment ? this.currentEnvironment.port : ''
+      return this.currentEnvironment ? this.currentEnvironment.port : '' ;
     },
     errorInternalMessage() {
-      return this.$store.state.kuzzle.errorFromKuzzle
+      return this.$store.state.kuzzle.errorFromKuzzle ;
     }
   },
   methods: {
@@ -71,7 +71,7 @@ export default {
       this.$emit('environment::importEnv')
     }
   }
-}
+} ;
 </script>
 
 <style lang="sass" scoped>

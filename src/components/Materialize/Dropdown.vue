@@ -45,18 +45,18 @@ a.dropdown-button {
 </style>
 
 <script>
-import Vue from 'vue'
-import { formatForDom } from '../../utils'
+import Vue from 'vue' ;
+import { formatForDom } from '../../utils' ;
 
 export default {
   props: ['id', 'myclass'],
   computed: {
     parsedId() {
       if (!this.id) {
-        return null
+        return null ;
       }
 
-      let parsed = this.id + this._id
+      let parsed = this.id + this._id ;
 
       return formatForDom(parsed)
     }
@@ -67,7 +67,7 @@ export default {
       $(this.$el)
         .find('.dropdown-button')
         .dropdown({ constrainWidth: false, belowOrigin: true })
-    })
+    }) ;
   }
-}
+} ;
 </script>

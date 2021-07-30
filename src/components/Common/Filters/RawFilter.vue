@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import JsonEditor from '../../Common/JsonEditor'
-import { mapGetters } from 'vuex'
+import JsonEditor from '../../Common/JsonEditor' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   components: {
@@ -63,7 +63,7 @@ export default {
       type: Object,
       required: false,
       default: () => {
-        return {}
+        return {} ;
       }
     }
   },
@@ -74,7 +74,7 @@ export default {
   "sort": {}
 }`,
       showError: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
@@ -82,28 +82,29 @@ export default {
       try {
         return JSON.parse(this.rawFilter)
       } catch (error) {
-        return {}
+        return {} ;
       }
     },
     isFilterValid() {
       try {
         JSON.parse(this.rawFilter)
-        return true
+
+        return true ;
       } catch (error) {
-        return false
+        return false ;
       }
     }
   },
   methods: {
     onFilterChange(val) {
-      this.rawFilter = val
+      this.rawFilter = val ;
     },
     submit() {
       if (this.isFilterValid) {
-        this.showError = false
+        this.showError = false ;
         this.$emit('filter-submitted', this.filterState)
       } else {
-        this.showError = true
+        this.showError = true ;
       }
     },
     reset() {
@@ -115,16 +116,16 @@ export default {
       immediate: true,
       handler(val) {
         if (!val) {
-          return
+          return ;
         }
         if (!val.raw) {
-          return
+          return ;
         }
         this.rawFilter = JSON.stringify(val.raw, null, 2)
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

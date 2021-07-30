@@ -92,8 +92,8 @@
 </template>
 
 <script>
-import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
-import { mapGetters } from 'vuex'
+import EnvironmentSwitch from './Environments/EnvironmentsSwitch' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'MainMenu',
   components: {
@@ -120,24 +120,25 @@ export default {
           icon: 'fab fa-github'
         }
       ]
-    }
+    } ;
   },
   computed: {
     ...mapGetters('auth', ['hasSecurityRights', 'user']),
     currentEnvironmentColor() {
-      return this.$store.direct.getters.kuzzle.currentEnvironment.color
+      return this.$store.direct.getters.kuzzle.currentEnvironment.color ;
     },
     currentUserName() {
       if (!this.user) {
-        return 'Not authenticated'
+        return 'Not authenticated' ;
       }
       if (this.user.id === -1) {
-        return 'Anonymous'
+        return 'Anonymous' ;
       }
       if (this.user.params && this.user.params.name) {
-        return this.user.params.name
+        return this.user.params.name ;
       }
-      return this.user.id
+
+      return this.user.id ;
     },
     adminConsoleVersion() {
       return require('../../../package.json').version
@@ -160,7 +161,7 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
+        ) ;
       }
     },
 
@@ -174,7 +175,7 @@ export default {
       this.$emit('environment::delete', id)
     }
   }
-}
+} ;
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

@@ -90,8 +90,8 @@
 </template>
 
 <script>
-import jsonFormatter from '../../../directives/json-formatter.directive'
-import { mapGetters } from 'vuex'
+import jsonFormatter from '../../../directives/json-formatter.directive' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'ProfileItem',
@@ -107,17 +107,17 @@ export default {
     return {
       expanded: false,
       checked: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('auth', ['canEditProfile', 'canDeleteProfile']),
     checkboxId() {
-      return `checkbox-${this.document._id}`
+      return `checkbox-${this.document._id}` ;
     }
   },
   methods: {
     toggleCollapse() {
-      this.expanded = !this.expanded
+      this.expanded = !this.expanded ;
     },
     notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document._id)
@@ -136,11 +136,11 @@ export default {
   watch: {
     isChecked: {
       handler(value) {
-        this.checked = value
+        this.checked = value ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

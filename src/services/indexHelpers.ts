@@ -1,15 +1,15 @@
-import { Index } from '@/vuex/modules/index/types'
+import { Index } from '@/vuex/modules/index/types' ;
 
 export const filterIndexesByKeyword = (indexes: Index[], word: string) => {
   if (!word || word === '') {
-    return indexes
+    return indexes ;
   }
 
   let lowerCaseWord = word.toLowerCase()
 
   return indexes.filter(element => {
     if (element.name.toLowerCase().indexOf(lowerCaseWord) >= 0) {
-      return true
+      return true ;
     }
 
     if (
@@ -18,14 +18,14 @@ export const filterIndexesByKeyword = (indexes: Index[], word: string) => {
         collection => collection.name.toLowerCase().indexOf(lowerCaseWord) >= 0
       )
     ) {
-      return true
+      return true ;
     }
-  })
-}
+  }) ;
+} ;
 
 export const getIndexPosition = (
   indexes: Index[],
   indexName: string
 ): number => {
   return indexes.findIndex(el => el.name === indexName)
-}
+} ;

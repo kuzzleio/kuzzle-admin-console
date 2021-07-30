@@ -135,14 +135,14 @@
 </template>
 
 <script>
-import Pagination from '../../Materialize/Pagination'
-import Modal from '../../Materialize/Modal'
-import Filters from './Filters'
+import Pagination from '../../Materialize/Pagination' ;
+import Modal from '../../Materialize/Modal' ;
+import Filters from './Filters' ;
 import {
-  formatFromBasicSearch,
   ACTIVE_BASIC,
-  NO_ACTIVE
-} from '../../../services/filterManager'
+  NO_ACTIVE,
+  formatFromBasicSearch
+} from '../../../services/filterManager' ;
 
 export default {
   name: 'CrudlDocument',
@@ -178,12 +178,12 @@ export default {
       singleDeleteIsOpen: false,
       bulkDeleteIsOpen: false,
       isLoading: false
-    }
+    } ;
   },
   watch: {
     documentToDelete(val) {
-      this.documentIdToDelete = val
-      this.singleDeleteIsOpen = true
+      this.documentIdToDelete = val ;
+      this.singleDeleteIsOpen = true ;
     }
   },
   methods: {
@@ -195,7 +195,7 @@ export default {
         Object.assign(this.currentFilter, {
           from
         })
-      )
+      ) ;
     },
     onBasicFilterUpdated(filter) {
       this.onFiltersUpdated(
@@ -204,31 +204,33 @@ export default {
           basic: filter,
           from: 0
         })
-      )
+      ) ;
     },
     confirmBulkDelete() {
-      this.isLoading = true
+      this.isLoading = true ;
       this.performDelete(this.selectedDocuments)
         .then(() => {
           this.close()
           this.refreshSearch()
-          this.isLoading = false
-          return null
+          this.isLoading = false ;
+
+          return null ;
         })
         .catch(e => {
           this.$store.direct.commit.toaster.setToast({ text: e.message })
-        })
+        }) ;
     },
     confirmSingleDelete(id) {
       this.performDelete([id])
         .then(() => {
           this.close()
           this.refreshSearch()
-          return null
+
+          return null ;
         })
         .catch(e => {
           this.$store.direct.commit.toaster.setToast({ text: e.message })
-        })
+        }) ;
     },
     onFiltersUpdated(newFilters) {
       this.$emit('filters-updated', newFilters)
@@ -246,15 +248,15 @@ export default {
       this.$emit('toggle-all')
     },
     deleteBulk() {
-      this.bulkDeleteIsOpen = true
+      this.bulkDeleteIsOpen = true ;
     },
     close() {
-      this.singleDeleteIsOpen = false
-      this.bulkDeleteIsOpen = false
-      this.documentIdToDelete = []
+      this.singleDeleteIsOpen = false ;
+      this.bulkDeleteIsOpen = false ;
+      this.documentIdToDelete = [] ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

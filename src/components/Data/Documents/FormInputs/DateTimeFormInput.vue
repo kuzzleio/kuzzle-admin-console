@@ -53,11 +53,11 @@
 
 <script>
 // https://vue-generators.gitbook.io/vue-generators/fields/custom_fields
-import { abstractField } from 'vue-form-generator'
-import moment from 'moment'
+import { abstractField } from 'vue-form-generator' ;
+import moment from 'moment' ;
 
-const DATE_PICKER_FORMAT = 'YYYY-MM-DD'
-const TIME_PICKER_FORMAT = 'HH:mm:ss'
+const DATE_PICKER_FORMAT = 'YYYY-MM-DD' ;
+const TIME_PICKER_FORMAT = 'HH:mm:ss' ;
 
 export default {
   mixins: [abstractField],
@@ -65,11 +65,11 @@ export default {
     return {
       date: null,
       time: null
-    }
+    } ;
   },
   mounted() {
     if (!this.value) {
-      return
+      return ;
     }
 
     // if no date format specified, ES save date in ms timestamp
@@ -88,5 +88,5 @@ export default {
       this.value = moment(`${this.date} ${time}`).format('x')
     }
   }
-}
+} ;
 </script>

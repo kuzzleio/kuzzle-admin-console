@@ -1,6 +1,6 @@
-import { AuthState } from './types'
-import { SessionUser } from '@/models/SessionUser'
-import { createGetters } from 'direct-vuex'
+import { AuthState } from './types' ;
+import { SessionUser } from '@/models/SessionUser' ;
+import { createGetters } from 'direct-vuex' ;
 
 const isActionAllowed = (
   user,
@@ -10,89 +10,90 @@ const isActionAllowed = (
   collection = '*'
 ) => {
   if (!user) {
-    return false
+    return false ;
   }
 
-  const rights = user.rights || []
+  const rights = user.rights || [] ;
 
   if (!rights || typeof rights !== 'object') {
     throw new Error(
       'rights parameter is mandatory for isActionAllowed function'
-    )
+    ) ;
   }
   if (!controller || typeof controller !== 'string') {
     throw new Error(
       'controller parameter is mandatory for isActionAllowed function'
-    )
+    ) ;
   }
   if (!action || typeof action !== 'string') {
     throw new Error(
       'action parameter is mandatory for isActionAllowed function'
-    )
+    ) ;
   }
   // We filter in all the rights that match the request (including wildcards).
   const filteredRights = rights
     .filter(function(right) {
-      return right.controller === controller || right.controller === '*'
+      return right.controller === controller || right.controller === '*' ;
     })
     .filter(function(right) {
-      return right.action === action || right.action === '*'
+      return right.action === action || right.action === '*' ;
     })
     .filter(function(right) {
-      return right.index === index || right.index === '*'
+      return right.index === index || right.index === '*' ;
     })
     .filter(function(right) {
-      return right.collection === collection || right.collection === '*'
-    })
+      return right.collection === collection || right.collection === '*' ;
+    }) ;
 
   if (
     filteredRights.some(function(item) {
-      return item.value === 'allowed'
+      return item.value === 'allowed' ;
     }) &&
     filteredRights.some(function(item) {
-      return item.value === 'denied'
+      return item.value === 'denied' ;
     })
   ) {
-    return false
+    return false ;
   } else if (
     filteredRights.some(function(item) {
-      return item.value === 'allowed'
+      return item.value === 'allowed' ;
     })
   ) {
-    return true
+    return true ;
   }
-  return false
-}
+
+  return false ;
+} ;
 
 export const getters = createGetters<AuthState>()({
   isAuthenticated(state): boolean {
-    return !!state?.user?.id
+    return !!state?.user?.id ;
   },
   user(state): SessionUser {
-    return state.user
+    return state.user ;
   },
   userProfiles(state) {
-    return state.user.params.profileIds
+    return state.user.params.profileIds ;
   },
   tokenValid(state): boolean {
-    return state.tokenValid
+    return state.tokenValid ;
   },
   adminAlreadyExists(state): boolean {
-    return state.adminAlreadyExists
+    return state.adminAlreadyExists ;
   },
 
   // Index
   canSearchIndex(state): boolean {
     if (!state.user) {
-      return false
+      return false ;
     }
     const indexListRight = state.user.rights.filter(
       rights =>
         (rights.action === 'list' || rights.action === '*') &&
         (rights.controller === 'index' || rights.controller === '*')
-    )
+    ) ;
 
-    return indexListRight[0] && indexListRight[0].value === 'allowed'
+    return indexListRight[0] && indexListRight[0].value === 'allowed' ;
   },
   canCreateIndex(state): boolean {
     return isActionAllowed(state.user, 'index', 'create')
@@ -116,7 +117,7 @@ export const getters = createGetters<AuthState>()({
         'updateMapping',
         index,
         collection
-      )
+      ) ;
   },
   canTruncateCollection(state) {
     return (index, collection) =>
@@ -144,7 +145,7 @@ export const getters = createGetters<AuthState>()({
         'createOrReplace',
         index,
         collection
-      )
+      ) ;
   },
   canDeleteDocument(state) {
     return (index, collection) =>
@@ -201,7 +202,7 @@ export const getters = createGetters<AuthState>()({
       getters.canEditRole ||
       getters.canCreateRole ||
       getters.canDeleteRole
-    )
+    ) ;
   },
 
   // Profiles
@@ -227,7 +228,7 @@ export const getters = createGetters<AuthState>()({
       getters.canEditProfile ||
       getters.canCreateProfile ||
       getters.canDeleteProfile
-    )
+    ) ;
   },
 
   // Users
@@ -253,14 +254,14 @@ export const getters = createGetters<AuthState>()({
       getters.canEditUser ||
       getters.canCreateUser ||
       getters.canDeleteUser
-    )
+    ) ;
   },
   hasSecurityRights(state, getters) {
     return (
       getters.getterscanManageRoles ||
       getters.canManageProfiles ||
       getters.canManageUsers
-    )
+    ) ;
   },
 
   // Server
@@ -270,4 +271,4 @@ export const getters = createGetters<AuthState>()({
   canGetOpenApi(state) {
     return isActionAllowed(state.user, 'server', 'openapi')
   }
-})
+}) ;

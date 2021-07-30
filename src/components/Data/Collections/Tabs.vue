@@ -83,7 +83,7 @@
 </style>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'CollectionTabs',
   computed: {
@@ -95,8 +95,8 @@ export default {
         return routeName.indexOf(this.$route.name) >= 0
       }
 
-      return this.$route.name === routeName
+      return this.$route.name === routeName ;
     }
   }
-}
+} ;
 </script>

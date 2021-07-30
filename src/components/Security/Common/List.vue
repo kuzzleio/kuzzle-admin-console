@@ -59,12 +59,12 @@
 </style>
 
 <script>
-import CrudlDocument from './CrudlDocument'
-import UserItem from '../Users/UserItem'
-import RoleItem from '../Roles/RoleItem'
-import ProfileItem from '../Profiles/ProfileItem'
-import DocumentItem from '../../Data/Documents/DocumentItem'
-import { availableFilters } from '../../../services/filterManager'
+import CrudlDocument from './CrudlDocument' ;
+import UserItem from '../Users/UserItem' ;
+import RoleItem from '../Roles/RoleItem' ;
+import ProfileItem from '../Profiles/ProfileItem' ;
+import DocumentItem from '../../Data/Documents/DocumentItem' ;
+import { availableFilters } from '../../../services/filterManager' ;
 
 export default {
   name: 'SecurityCommonList',
@@ -95,31 +95,31 @@ export default {
       documents: [],
       totalDocuments: 0,
       documentToDelete: null
-    }
+    } ;
   },
   computed: {
     displayBulkDelete() {
-      return this.selectedDocuments.length > 0
+      return this.selectedDocuments.length > 0 ;
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
-        return false
+        return false ;
       }
 
-      return this.selectedDocuments.length === this.documents.length
+      return this.selectedDocuments.length === this.documents.length ;
     },
     basicFilter() {
       try {
         return JSON.parse(this.$route.query.basicFilter)
       } catch (e) {
-        return null
+        return null ;
       }
     },
     rawFilter() {
       try {
         return JSON.parse(this.$route.query.rawFilter)
       } catch (e) {
-        return null
+        return null ;
       }
     },
     paginationFrom() {
@@ -143,10 +143,11 @@ export default {
     },
     toggleAll() {
       if (this.allChecked) {
-        this.selectedDocuments = []
-        return
+        this.selectedDocuments = [] ;
+
+        return ;
       }
-      this.selectedDocuments = []
+      this.selectedDocuments = [] ;
       this.selectedDocuments = this.documents.map(document => document.id)
     },
     toggleSelectDocuments(id) {
@@ -154,7 +155,8 @@ export default {
 
       if (index === -1) {
         this.selectedDocuments.push(id)
-        return
+
+        return ;
       }
 
       this.selectedDocuments.splice(index, 1)
@@ -164,13 +166,13 @@ export default {
         this.$route.query.searchTerm !== '' ||
         this.basicFilter.length > 0 ||
         this.rawFilter.length > 0
-      )
+      ) ;
     },
     fetchData() {
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
-      }
+      } ;
 
       // Execute search with corresponding filters
       this.performSearch(
@@ -178,24 +180,24 @@ export default {
         pagination
       )
         .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
+          this.documents = res.documents ;
+          this.totalDocuments = res.total ;
         })
         .catch(e => {
           this.$store.direct.commit.toaster.setToast({
             text:
               'An error occurred while performing search: <br />' + e.message
-          })
-        })
+          }) ;
+        }) ;
     },
     editDocument(route, id) {
       this.$router.push({
         name: this.routeUpdate,
         params: { id }
-      })
+      }) ;
     },
     deleteDocument(id) {
-      this.documentToDelete = id
+      this.documentToDelete = id ;
     },
     refreshSearch() {
       this.fetchData()
@@ -204,5 +206,5 @@ export default {
       this.$router.push({ name: this.routeCreate })
     }
   }
-}
+} ;
 </script>

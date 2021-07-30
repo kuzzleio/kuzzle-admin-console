@@ -76,8 +76,8 @@
 </template>
 
 <script>
-import * as filterManager from '../../../services/filterManager'
-import { mapGetters } from 'vuex'
+import * as filterManager from '../../../services/filterManager' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'FilterHistoryItem',
@@ -92,7 +92,7 @@ export default {
     return {
       expanded: false,
       oldName: this.filter.name
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper'])
@@ -101,17 +101,17 @@ export default {
     isFavorite() {
       const idIndex = this.favorite
         .map(f => {
-          return f.id
+          return f.id ;
         })
         .indexOf(this.filter.id)
       if (idIndex !== -1) {
-        return true
+        return true ;
       } else {
-        return false
+        return false ;
       }
     },
     cancelChange() {
-      this.filter.name = this.oldName
+      this.filter.name = this.oldName ;
     },
     toggleFavorite() {
       this.$emit('toggle-favorite', !this.isFavorite())
@@ -132,13 +132,13 @@ export default {
       const loadedFilter = Object.assign(
         new filterManager.Filter(),
         this.filter
-      )
-      if (loadedFilter.active == 'basic') return loadedFilter.basic
-      if (loadedFilter.active == 'raw') return loadedFilter.raw
+      ) ;
+      if (loadedFilter.active == 'basic') return loadedFilter.basic ;
+      if (loadedFilter.active == 'raw') return loadedFilter.raw ;
     },
     toggleCollapse() {
-      this.expanded = !this.expanded
+      this.expanded = !this.expanded ;
     }
   }
-}
+} ;
 </script>

@@ -40,10 +40,10 @@
 </template>
 
 <script>
-import List from './List'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import Headline from '../../Materialize/Headline'
-import { mapGetters } from 'vuex'
+import List from './List' ;
+import ListNotAllowed from '../../Common/ListNotAllowed' ;
+import Headline from '../../Materialize/Headline' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'ProfileManagement',
@@ -65,7 +65,7 @@ export default {
       this.$emit('crudl-refresh-search')
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

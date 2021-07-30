@@ -23,10 +23,10 @@
 </template>
 
 <script>
-import PageNotAllowed from '../../Common/PageNotAllowed'
-import { mapGetters } from 'vuex'
-import Headline from '../../Materialize/Headline'
-import CreateOrUpdate from './Common/CreateOrUpdate'
+import PageNotAllowed from '../../Common/PageNotAllowed' ;
+import { mapGetters } from 'vuex' ;
+import Headline from '../../Materialize/Headline' ;
+import CreateOrUpdate from './Common/CreateOrUpdate' ;
 
 export default {
   name: 'DocumentCreate',
@@ -44,7 +44,7 @@ export default {
       mapping: {},
       submitting: false,
       newDocument: {}
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
@@ -56,7 +56,7 @@ export default {
       return this.$store.direct.getters.index.getOneCollection(
         this.index,
         this.collectionName
-      )
+      ) ;
     },
     hasRights() {
       return this.canCreateDocument(this.indexName, this.collectionName)
@@ -65,11 +65,12 @@ export default {
   methods: {
     async onSubmit(document, id) {
       if (!document) {
-        this.error = 'The document is invalid, please review it'
-        return
+        this.error = 'The document is invalid, please review it' ;
+
+        return ;
       }
 
-      this.submitting = true
+      this.submitting = true ;
 
       try {
         await this.$kuzzle.document.create(
@@ -78,7 +79,7 @@ export default {
           document,
           id,
           { refresh: 'wait_for' }
-        )
+        ) ;
 
         await this.fetchCollectionMapping()
 
@@ -88,7 +89,7 @@ export default {
             indexName: this.indexName,
             collectionName: this.collectionName
           }
-        })
+        }) ;
       } catch (err) {
         this.$log.error(err)
         this.$bvToast.toast(err.message, {
@@ -98,24 +99,24 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     },
     onCancel() {
       this.$router.push({
         name: 'DocumentList',
         params: { index: this.index, collection: this.collection }
-      })
+      }) ;
     },
     onDocumentChange(document) {
-      this.newDocument = document
+      this.newDocument = document ;
     },
     async fetchCollectionMapping() {
       try {
         this.$store.direct.dispatch.index.fetchCollectionMapping({
           index: this.index,
           collection: this.collection
-        })
+        }) ;
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -129,9 +130,9 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
+        ) ;
       }
     }
   }
-}
+} ;
 </script>

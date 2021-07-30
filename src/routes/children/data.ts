@@ -86,4 +86,4 @@ export default [
       collectionName: route.params.collectionName
     })
   }
-]
+] ;

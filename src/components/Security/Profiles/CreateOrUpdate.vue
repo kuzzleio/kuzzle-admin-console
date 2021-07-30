@@ -127,12 +127,12 @@
 </style>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { requiredUnless, not } from 'vuelidate/lib/validators'
-import { startsWithSpace, isWhitespace } from '../../../validators'
+import { validationMixin } from 'vuelidate' ;
+import { not, requiredUnless } from 'vuelidate/lib/validators' ;
+import { isWhitespace, startsWithSpace } from '../../../validators' ;
 
-import JsonEditor from '../../Common/JsonEditor'
-import JsonFormatter from '../../../directives/json-formatter.directive'
+import JsonEditor from '../../Common/JsonEditor' ;
+import JsonFormatter from '../../../directives/json-formatter.directive' ;
 
 export default {
   mixins: [validationMixin],
@@ -157,7 +157,7 @@ export default {
       profileValue: this.profile || '{}',
       idValue: null,
       submitting: false
-    }
+    } ;
   },
   validations: {
     idValue: {
@@ -170,33 +170,35 @@ export default {
         try {
           JSON.parse(value)
         } catch (e) {
-          return false
+          return false ;
         }
-        return true
+
+        return true ;
       }
     }
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v[fieldName]
-      return $dirty ? !$error : null
+      const { $dirty, $error } = this.$v[fieldName] ;
+
+      return $dirty ? !$error : null ;
     },
     onContentChange(value) {
-      this.profileValue = value
+      this.profileValue = value ;
     },
     submit() {
       this.$v.$touch()
       if (this.$v.$anyError) {
-        return
+        return ;
       }
       this.$emit('submit', {
         profile: JSON.parse(this.profileValue),
         id: this.idValue
-      })
+      }) ;
     },
     cancel() {
       this.$router.push({ name: 'SecurityProfilesList' })
     }
   }
-}
+} ;
 </script>

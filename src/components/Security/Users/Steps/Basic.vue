@@ -48,7 +48,7 @@
 </template>
 
 <script type="text/javascript">
-import UserProfileList from './UserProfileList'
+import UserProfileList from './UserProfileList' ;
 
 export default {
   name: 'UserBasicData',
@@ -59,7 +59,7 @@ export default {
     addedProfiles: {
       type: Array,
       default: () => {
-        return []
+        return [] ;
       }
     },
     kuid: {
@@ -76,8 +76,9 @@ export default {
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.validations[fieldName]
-      return $dirty ? !$error : null
+      const { $dirty, $error } = this.validations[fieldName] ;
+
+      return $dirty ? !$error : null ;
     },
     setCustomKuid(value) {
       this.$emit('set-custom-kuid', value)
@@ -89,5 +90,5 @@ export default {
       this.$emit('profile-remove', profile)
     }
   }
-}
+} ;
 </script>

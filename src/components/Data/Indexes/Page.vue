@@ -177,13 +177,13 @@
 </template>
 
 <script>
-import Headline from '../../Materialize/Headline'
-import CreateIndexModal from './CreateIndexModal'
-import DeleteIndexModal from './DeleteIndexModal'
-import BulkDeleteIndexesModal from './BulkDeleteIndexesModal'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import AutoFocusInput from '../../Common/AutoFocusInput'
-import { mapGetters } from 'vuex'
+import Headline from '../../Materialize/Headline' ;
+import CreateIndexModal from './CreateIndexModal' ;
+import DeleteIndexModal from './DeleteIndexModal' ;
+import BulkDeleteIndexesModal from './BulkDeleteIndexesModal' ;
+import ListNotAllowed from '../../Common/ListNotAllowed' ;
+import AutoFocusInput from '../../Common/AutoFocusInput' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'IndexesPage',
@@ -233,7 +233,7 @@ export default {
       ],
       filteredIndexes: [],
       selectedIndexes: []
-    }
+    } ;
   },
   mounted() {
     this.updateFilteredIndexes(this.indexes)
@@ -242,13 +242,14 @@ export default {
     ...mapGetters('auth', ['canSearchIndex', 'canCreateIndex']),
     ...mapGetters('index', ['indexes', 'loadingIndexes']),
     bulkDeleteEnabled() {
-      return this.selectedIndexes.length > 0
+      return this.selectedIndexes.length > 0 ;
     },
     allChecked() {
       if (!this.selectedIndexes || !this.filteredIndexes) {
-        return false
+        return false ;
       }
-      return this.selectedIndexes.length === this.filteredIndexes.length
+
+      return this.selectedIndexes.length === this.filteredIndexes.length ;
     }
   },
   methods: {
@@ -256,7 +257,7 @@ export default {
       this.$bvModal.show(this.createIndexModalId)
     },
     openDeleteModal(index) {
-      this.indexToDelete = index
+      this.indexToDelete = index ;
       this.$bvModal.show(this.deleteIndexModalId)
     },
     openBulkDeleteModal() {
@@ -281,16 +282,17 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true
           }
-        )
+        ) ;
       }
     },
     onToggleAllClicked() {
       if (this.allChecked) {
-        this.selectedIndexes = []
-        return
+        this.selectedIndexes = [] ;
+
+        return ;
       }
-      this.selectedIndexes = []
-      this.selectedIndexes = this.filteredIndexes
+      this.selectedIndexes = [] ;
+      this.selectedIndexes = this.filteredIndexes ;
     },
     isChecked(index) {
       return this.selectedIndexes.find(el => el.name === index.name)
@@ -300,36 +302,37 @@ export default {
     onCheckboxClick(index) {
       const indexAlreadySelected = this.selectedIndexes.find(
         el => el.name === index.name
-      )
+      ) ;
 
       if (!indexAlreadySelected) {
         this.selectedIndexes.push(index)
-        return
+
+        return ;
       }
 
       this.selectedIndexes = this.selectedIndexes.filter(
         el => el.name !== index.name
-      )
+      ) ;
     },
     navigateToIndex() {
-      const index = this.filteredIndexes[0]
+      const index = this.filteredIndexes[0] ;
 
       if (!index) {
-        return
+        return ;
       }
 
       const route = {
         name: 'Collections',
         params: { indexName: index.name }
-      }
+      } ;
 
       this.$router.push(route)
     },
     updateFilteredIndexes(filteredIndexes) {
-      this.filteredIndexes = filteredIndexes
+      this.filteredIndexes = filteredIndexes ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss">

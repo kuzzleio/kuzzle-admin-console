@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import Focus from '../../../../directives/focus.directive'
+import Focus from '../../../../directives/focus.directive' ;
 
 export default {
   name: 'QuickFilter',
@@ -59,24 +59,24 @@ export default {
       filters: {
         searchTerm: null
       }
-    }
+    } ;
   },
   mounted() {
-    this.filters.searchTerm = this.searchTerm
+    this.filters.searchTerm = this.searchTerm ;
   },
   methods: {
     quickSearch() {
       this.$emit('filters-quick-search', this.filters.searchTerm)
     },
     resetQuickSearch() {
-      this.filters.searchTerm = null
+      this.filters.searchTerm = null ;
       this.$emit('filters-quick-search', null)
     },
     displayComplexSearch() {
       this.$emit('filters-display-block-filter')
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

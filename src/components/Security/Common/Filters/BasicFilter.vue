@@ -116,10 +116,10 @@
 </template>
 
 <script>
-import MSelect from '../../../Common/MSelect'
+import MSelect from '../../../Common/MSelect' ;
 
-const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
-const emptySorting = { attribute: null, order: 'asc' }
+const emptyBasicFilter = { attribute: null, operator: 'match', value: null } ;
+const emptySorting = { attribute: null, order: 'asc' } ;
 
 export default {
   components: {
@@ -149,29 +149,29 @@ export default {
         basic: null,
         sorting: { ...emptySorting }
       }
-    }
+    } ;
   },
   mounted() {
-    this.filters.basic = this.basicFilter || [[{ ...emptyBasicFilter }]]
-    this.filters.sorting = this.sorting || { ...emptySorting }
+    this.filters.basic = this.basicFilter || [[{ ...emptyBasicFilter }]] ;
+    this.filters.sorting = this.sorting || { ...emptySorting } ;
   },
   methods: {
     basicSearch() {
-      let filters = this.filters.basic
+      let filters = this.filters.basic ;
 
       if (
         this.filters.basic.length === 1 &&
         this.filters.basic[0].length === 1 &&
         !this.filters.basic[0][0].attribute
       ) {
-        filters = null
+        filters = null ;
       }
 
       if (this.sortingEnabled) {
-        let sorting = this.filters.sorting
+        let sorting = this.filters.sorting ;
 
         if (!this.filters.sorting.attribute) {
-          sorting = null
+          sorting = null ;
         }
 
         this.$emit('filters-basic-search', filters, sorting)
@@ -180,15 +180,15 @@ export default {
       }
     },
     resetBasicSearch() {
-      this.filters.basic = [[{ ...emptyBasicFilter }]]
-      this.filters.sorting = { ...emptySorting }
+      this.filters.basic = [[{ ...emptyBasicFilter }]] ;
+      this.filters.sorting = { ...emptySorting } ;
     },
     addGroupBasicFilter() {
       this.filters.basic.push([{ ...emptyBasicFilter }])
     },
     addAndBasicFilter(groupIndex) {
       if (!this.filters.basic[groupIndex]) {
-        return false
+        return false ;
       }
 
       this.filters.basic[groupIndex].push({ ...emptyBasicFilter })
@@ -198,7 +198,7 @@ export default {
         !this.filters.basic[groupIndex] ||
         !this.filters.basic[groupIndex][filterIndex]
       ) {
-        return false
+        return false ;
       }
 
       if (
@@ -206,7 +206,8 @@ export default {
         this.filters.basic[0].length === 1
       ) {
         this.$set(this.filters.basic[0], 0, { ...emptyBasicFilter })
-        return
+
+        return ;
       }
 
       if (
@@ -214,11 +215,12 @@ export default {
         this.filters.basic.length > 1
       ) {
         this.filters.basic.splice(groupIndex, 1)
-        return
+
+        return ;
       }
 
       this.filters.basic[groupIndex].splice(filterIndex, 1)
     }
   }
-}
+} ;
 </script>

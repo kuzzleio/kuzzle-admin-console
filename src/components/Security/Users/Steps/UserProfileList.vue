@@ -61,7 +61,7 @@
 </template>
 
 <script type="text/javascript">
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'UserProfileList',
   components: {},
@@ -74,7 +74,7 @@ export default {
     return {
       profileList: [],
       selectedProfiled: 0
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
@@ -95,21 +95,21 @@ export default {
       return this.wrapper.performSearchProfiles().then(result => {
         result.documents.forEach(profile => {
           this.profileList.push(profile)
-        })
-      })
+        }) ;
+      }) ;
     },
     onProfileSelected(profile) {
       if (!profile) {
-        return
+        return ;
       }
       this.$emit('selected-profile', profile)
-      this.selectedProfiled = 0
+      this.selectedProfiled = 0 ;
     },
     removeProfile(profile) {
       this.$emit('remove-profile', profile)
     }
   }
-}
+} ;
 </script>
 
 <style type="text/css" scoped>

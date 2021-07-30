@@ -32,12 +32,13 @@ export default {
         !this.filter ||
         this.filter === ''
       ) {
-        return -1
+        return -1 ;
       }
+
       return this.value.toLowerCase().indexOf(this.filter.toLowerCase())
     }
   }
-}
+} ;
 </script>
 
 <style></style>

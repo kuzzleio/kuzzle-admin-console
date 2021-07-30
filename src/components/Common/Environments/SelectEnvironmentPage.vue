@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import EnvironmentSelector from './EnvironmentsSwitch'
+import EnvironmentSelector from './EnvironmentsSwitch' ;
 
 export default {
   name: 'SelectEnvironmentPage',
@@ -43,7 +43,7 @@ export default {
       this.$router.push({ path: '/' })
     }
   }
-}
+} ;
 </script>
 
 <style>

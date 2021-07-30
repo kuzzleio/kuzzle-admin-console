@@ -35,12 +35,12 @@
 </template>
 
 <script>
-import PageNotAllowed from '../../Common/PageNotAllowed'
-import Headline from '../../Materialize/Headline'
-import CreateOrUpdate from './Common/CreateOrUpdate'
+import PageNotAllowed from '../../Common/PageNotAllowed' ;
+import Headline from '../../Materialize/Headline' ;
+import CreateOrUpdate from './Common/CreateOrUpdate' ;
 
-import { omit } from 'lodash'
-import { mapGetters } from 'vuex'
+import { omit } from 'lodash' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'DocumentUpdate',
@@ -59,7 +59,7 @@ export default {
       document: {},
       loading: false,
       showAlert: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
@@ -71,7 +71,7 @@ export default {
       return this.$store.direct.getters.index.getOneCollection(
         this.index,
         this.collectionName
-      )
+      ) ;
     },
     hasRights() {
       return this.canEditDocument(this.indexName, this.collectionName)
@@ -84,9 +84,9 @@ export default {
       this.collectionName,
       { ids: { values: [this.$route.params.id] } },
       () => {
-        this.showAlert = true
+        this.showAlert = true ;
       }
-    )
+    ) ;
   },
   async destroyed() {
     if (this.room) {
@@ -95,19 +95,20 @@ export default {
   },
   methods: {
     async onSubmit(document, id, replace = false) {
-      this.submitted = true
-      this.error = ''
+      this.submitted = true ;
+      this.error = '' ;
 
       if (!document) {
-        this.error = 'The document is invalid, please review it'
-        return
+        this.error = 'The document is invalid, please review it' ;
+
+        return ;
       }
 
       try {
-        delete document._id
-        let action = 'update'
+        delete document._id ;
+        let action = 'update' ;
         if (replace === true) {
-          action = 'replace'
+          action = 'replace' ;
         }
         await this.$kuzzle.document[action](
           this.indexName,
@@ -115,11 +116,11 @@ export default {
           this.id,
           document,
           { refresh: 'wait_for' }
-        )
+        ) ;
         this.$router.push({
           name: 'DocumentList',
           params: { index: this.indexName, collection: this.collectionName }
-        })
+        }) ;
       } catch (err) {
         this.$log.error(err)
         this.$bvToast.toast(err.message, {
@@ -129,29 +130,29 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     },
     onCancel() {
       this.$router.push({
         name: 'DocumentList',
         params: { index: this.indexName, collection: this.collectionName }
-      })
+      }) ;
     },
     onDocumentChange(document) {
-      this.document = document
+      this.document = document ;
     },
     async fetch() {
-      this.showAlert = false
-      this.loading = true
+      this.showAlert = false ;
+      this.loading = true ;
       try {
         const res = await this.$kuzzle.document.get(
           this.indexName,
           this.collectionName,
           this.id
-        )
+        ) ;
         this.document = omit(res._source, '_kuzzle_info')
-        this.loading = false
+        this.loading = false ;
       } catch (err) {
         this.$log.error(err)
         this.$bvToast.toast(err.message, {
@@ -161,9 +162,9 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     }
   }
-}
+} ;
 </script>

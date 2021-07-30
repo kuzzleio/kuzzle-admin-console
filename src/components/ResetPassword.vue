@@ -42,7 +42,7 @@
 </style>
 
 <script>
-import ResetPasswordForm from './Common/Login/ResetPasswordForm'
+import ResetPasswordForm from './Common/Login/ResetPasswordForm' ;
 
 export default {
   name: 'ResetPassword',
@@ -63,5 +63,5 @@ export default {
       }
     }
   }
-}
+} ;
 </script>

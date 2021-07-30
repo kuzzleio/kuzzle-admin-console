@@ -60,7 +60,7 @@ export default {
     savedQueries: {}
   },
   data() {
-    return {}
+    return {} ;
   },
   computed: {
     currentQueryIndex() {
@@ -68,9 +68,10 @@ export default {
     },
     paginatedQueries() {
       return this.savedQueries.map((q, index) => {
-        q.idx = index
-        return q
-      })
+        q.idx = index ;
+
+        return q ;
+      }) ;
     }
   },
   methods: {
@@ -93,7 +94,7 @@ export default {
         })
         .catch(err => {
           this.$log.error(err)
-        })
+        }) ;
     },
     loadSavedQuery(savedQueryIdx) {
       this.$emit('loadSavedQuery', savedQueryIdx)
@@ -102,22 +103,22 @@ export default {
   watch: {
     currentQueryIndex: {
       handler(value) {
-        const ref = this.$refs[`saved-query-${value}`]
+        const ref = this.$refs[`saved-query-${value}`] ;
         if (!ref) {
-          return
+          return ;
         }
-        const elem = ref[0]
+        const elem = ref[0] ;
         if (!elem) {
-          return
+          return ;
         }
         this.$refs['leftNav-container'].scrollTo(
           0,
           elem.offsetTop - elem.offsetHeight
-        )
+        ) ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

@@ -47,9 +47,9 @@
 </template>
 
 <script>
-import LoginForm from './Common/Login/Form'
-import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
-import { mapGetters } from 'vuex'
+import LoginForm from './Common/Login/Form' ;
+import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'Login',
@@ -60,12 +60,12 @@ export default {
   data() {
     return {
       environmentId: null
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['currentEnvironment']),
     displayNoAdminWarning() {
-      return !this.$store.direct.getters.auth.adminAlreadyExists
+      return !this.$store.direct.getters.auth.adminAlreadyExists ;
     }
   },
   methods: {
@@ -74,7 +74,7 @@ export default {
       // After login, the index route is pushed to view router and the body overflow is
       // not set to his original state
       // see src/components/Materialize/Modale.vue#62
-      window.document.body.style.overflow = 'visible'
+      window.document.body.style.overflow = 'visible' ;
 
       if (this.$store.getters.routeBeforeRedirect) {
         this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
@@ -93,7 +93,7 @@ export default {
       this.$emit('environment::importEnv')
     }
   }
-}
+} ;
 </script>
 
 <style type="text/css" scoped>

@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import * as filterManager from '../../../services/filterManager'
-import FavoriteFilterItem from './FavoriteFilterItem'
+import * as filterManager from '../../../services/filterManager' ;
+import FavoriteFilterItem from './FavoriteFilterItem' ;
 
 export default {
   name: 'FavoriteFilters',
@@ -39,19 +39,19 @@ export default {
   data() {
     return {
       favorites: []
-    }
+    } ;
   },
   mounted() {
     this.favorites = filterManager.loadFavoritesFromLocalStorage(
       this.index,
       this.collection
-    )
+    ) ;
   },
   methods: {
     onFavoriteDelete(id) {
       let idIndex = this.favorites
         .map(favori => {
-          return favori.id
+          return favori.id ;
         })
         .indexOf(id)
       this.favorites.splice(idIndex, 1)
@@ -64,10 +64,10 @@ export default {
           this.favorites,
           this.index,
           this.collection
-        )
+        ) ;
       },
       deep: true
     }
   }
-}
+} ;
 </script>

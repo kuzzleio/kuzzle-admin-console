@@ -133,11 +133,11 @@
 </template>
 
 <script>
-import DeleteModal from './DeleteModal'
-import ProfileItem from '../Profiles/ProfileItem'
-import Filters from './Filters'
-import PerPageSelector from '@/components/Common/PerPageSelector'
-import { mapGetters } from 'vuex'
+import DeleteModal from './DeleteModal' ;
+import ProfileItem from '../Profiles/ProfileItem' ;
+import Filters from './Filters' ;
+import PerPageSelector from '@/components/Common/PerPageSelector' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'ProfileList',
@@ -170,27 +170,27 @@ export default {
       totalDocuments: 0,
       paginationSize: 25,
       itemsPerPage: [10, 25, 50, 100, 500]
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     displayBulkDelete() {
-      return this.selectedDocuments.length > 0
+      return this.selectedDocuments.length > 0 ;
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
-        return false
+        return false ;
       }
 
-      return this.selectedDocuments.length === this.documents.length
+      return this.selectedDocuments.length === this.documents.length ;
     },
     paginationFrom() {
-      return (this.currentPage - 1) * this.paginationSize || 0
+      return (this.currentPage - 1) * this.paginationSize || 0 ;
     }
   },
   methods: {
     changePaginationSize(e) {
-      this.paginationSize = e
+      this.paginationSize = e ;
       this.fetchProfiles()
     },
     isChecked(id) {
@@ -198,10 +198,11 @@ export default {
     },
     toggleAll() {
       if (this.allChecked) {
-        this.selectedDocuments = []
-        return
+        this.selectedDocuments = [] ;
+
+        return ;
       }
-      this.selectedDocuments = []
+      this.selectedDocuments = [] ;
       this.selectedDocuments = this.documents.map(document => document._id)
     },
     toggleSelectDocuments(id) {
@@ -209,7 +210,8 @@ export default {
 
       if (index === -1) {
         this.selectedDocuments.push(id)
-        return
+
+        return ;
       }
 
       this.selectedDocuments.splice(index, 1)
@@ -226,23 +228,23 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     },
     async fetchProfiles() {
-      this.loading = true
+      this.loading = true ;
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
-      }
+      } ;
 
       try {
         const res = await this.wrapper.performSearchProfiles(
           { roles: this.currentFilter } || {},
           pagination
-        )
-        this.documents = res.documents
-        this.totalDocuments = res.total
+        ) ;
+        this.documents = res.documents ;
+        this.totalDocuments = res.total ;
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast('The complete error has been printed to console', {
@@ -252,29 +254,29 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
-      this.loading = false
+      this.loading = false ;
     },
     editProfile(id) {
       this.$router.push({
         name: 'SecurityProfilesUpdate',
         params: { id }
-      })
+      }) ;
     },
 
     // DELETE
     // =========================================================================
     async onDeleteConfirmed() {
-      this.deleteModalIsLoading = true
+      this.deleteModalIsLoading = true ;
       try {
         await this.wrapper.performDeleteProfiles(
           this.index,
           this.collection,
           this.candidatesForDeletion
-        )
+        ) ;
 
-        this.selectedDocuments = []
+        this.selectedDocuments = [] ;
         this.fetchProfiles()
       } catch (error) {
         this.$log.error(error)
@@ -285,15 +287,15 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
       this.$bvModal.hide('modal-delete-profiles')
-      this.deleteModalIsLoading = false
+      this.deleteModalIsLoading = false ;
     },
     deleteBulk() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(
         this.selectedDocuments
-      )
+      ) ;
       this.$bvModal.show('modal-delete-profiles')
     },
     deleteProfile(id) {
@@ -301,22 +303,22 @@ export default {
       this.$bvModal.show('modal-delete-profiles')
     },
     resetCandidatesForDeletion() {
-      this.candidatesForDeletion = []
+      this.candidatesForDeletion = [] ;
     },
 
     create() {
       this.$router.push({ name: this.routeCreate })
     },
     loadFilterFromRoute() {
-      const filter = this.$route.query.filter
+      const filter = this.$route.query.filter ;
       if (filter && Array.isArray(filter)) {
-        this.currentFilter = filter
+        this.currentFilter = filter ;
       }
     },
     saveFilterToRoute(newFilter) {
       this.$router.push({
         query: { filter: newFilter, from: this.paginationFrom }
-      })
+      }) ;
     }
   },
   watch: {
@@ -337,7 +339,7 @@ export default {
       this.fetchProfiles()
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

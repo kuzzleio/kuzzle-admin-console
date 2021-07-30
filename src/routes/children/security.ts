@@ -104,4 +104,4 @@ export default [
     },
     props: route => ({ id: route.params.id })
   }
-]
+] ;

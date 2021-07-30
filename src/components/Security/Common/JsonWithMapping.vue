@@ -56,7 +56,7 @@
 </style>
 
 <script>
-import JsonEditor from '../../Common/JsonEditor'
+import JsonEditor from '../../Common/JsonEditor' ;
 
 export default {
   name: 'DocumentCreateOrUpdate',
@@ -67,7 +67,7 @@ export default {
     value: {
       type: Object,
       default: () => {
-        return {}
+        return {} ;
       }
     },
     mapping: [Object, Array],
@@ -83,15 +83,15 @@ export default {
   data() {
     return {
       jsonDocument: {}
-    }
+    } ;
   },
   mounted() {
-    this.jsonDocument = this.value || {}
+    this.jsonDocument = this.value || {} ;
   },
   methods: {
     jsonChanged(json) {
       this.$emit('input', json)
     }
   }
-}
+} ;
 </script>

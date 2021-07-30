@@ -57,8 +57,8 @@
 </template>
 
 <script>
-import CreateEnvironment from './CreateEnvironment'
-import { mapGetters } from 'vuex'
+import CreateEnvironment from './CreateEnvironment' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'CreateEnvironmentPage',
@@ -82,7 +82,7 @@ export default {
       this.$emit('environment::importEnv')
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss">

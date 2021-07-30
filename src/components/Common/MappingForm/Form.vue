@@ -50,13 +50,13 @@
 </template>
 
 <script>
-import FormLine from './FormLine'
+import FormLine from './FormLine' ;
 import {
   flattenObjectMapping,
-  getDefaultSchemaForType,
   flattenObjectSchema,
-  formatSchema
-} from '../../../services/collectionHelper'
+  formatSchema,
+  getDefaultSchemaForType
+} from '../../../services/collectionHelper' ;
 
 export default {
   name: 'SchemaForm',
@@ -74,7 +74,7 @@ export default {
     return {
       schema: {},
       allowForm: true
-    }
+    } ;
   },
   computed: {
     flattenMapping() {
@@ -84,25 +84,25 @@ export default {
       return flattenObjectSchema(this.schema)
     },
     flattenSchemaWithType() {
-      let schema = {}
+      let schema = {} ;
 
       Object.keys(this.flattenMapping).forEach(attribute => {
         if (this.flattenSchema && this.flattenSchema[attribute]) {
-          schema[attribute] = { ...this.flattenSchema[attribute] }
+          schema[attribute] = { ...this.flattenSchema[attribute] } ;
         } else {
           schema[attribute] = {
             ...getDefaultSchemaForType(this.flattenMapping[attribute])
-          }
+          } ;
         }
-      })
+      }) ;
 
-      return schema
+      return schema ;
     },
     gatherData() {
       return {
         schema: this.schema,
         allowForm: this.allowForm
-      }
+      } ;
     }
   },
   watch: {
@@ -111,7 +111,7 @@ export default {
     }
   },
   mounted() {
-    this.schema = this.flattenSchemaWithType
+    this.schema = this.flattenSchemaWithType ;
   },
   methods: {
     next() {
@@ -121,14 +121,14 @@ export default {
       this.$emit('cancel')
     },
     changeAllowForm(e) {
-      this.allowForm = e.target.checked
+      this.allowForm = e.target.checked ;
     },
     changeSchema(event) {
       this.schema = formatSchema({
         ...this.schema,
         [event.name]: event.element
-      })
+      }) ;
     }
   }
-}
+} ;
 </script>

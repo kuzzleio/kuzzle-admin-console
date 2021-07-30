@@ -25,9 +25,9 @@
 </template>
 
 <script>
-import JsonFormatter from '../../../directives/json-formatter.directive'
-import { truncateName } from '../../../utils'
-import moment from 'moment'
+import JsonFormatter from '../../../directives/json-formatter.directive' ;
+import { truncateName } from '../../../utils' ;
+import moment from 'moment' ;
 
 export default {
   name: 'Notification',
@@ -38,24 +38,25 @@ export default {
   data() {
     return {
       collapsed: false
-    }
+    } ;
   },
   computed: {
     headerClass() {
       switch (this.notification.action) {
         case 'publish':
-          return 'Notification--publish'
+          return 'Notification--publish' ;
         case 'create':
         case 'createOrReplace':
         case 'replace':
-          return 'Notification--document'
+          return 'Notification--document' ;
         case 'subscribe':
         case 'unsubscribe':
-          return 'Notification--subscribe'
+          return 'Notification--subscribe' ;
         case 'delete':
-          return 'Notification--delete'
+          return 'Notification--delete' ;
       }
-      return ''
+
+      return '' ;
     },
     notificationId() {
       return this.notification.type === 'document' &&
@@ -66,14 +67,15 @@ export default {
     icon() {
       switch (this.notification.action) {
         case 'publish':
-          return 'paper-plane'
+          return 'paper-plane' ;
         case 'subscribe':
         case 'unsubscribe':
-          return 'user'
+          return 'user' ;
         case 'delete':
-          return 'remove'
+          return 'remove' ;
       }
-      return 'file'
+
+      return 'file' ;
     },
     time() {
       return moment(this.notification.timestamp).format('H:mm:ss')
@@ -81,44 +83,45 @@ export default {
     text() {
       switch (this.notification.action) {
         case 'publish':
-          return 'Volatile notification'
+          return 'Volatile notification' ;
 
         case 'mWrite':
         case 'mCreate':
         case 'mCreateOrReplace':
-          return `New documents created (${this.notificationId})`
+          return `New documents created (${this.notificationId})` ;
         case 'write':
         case 'create':
         case 'createOrReplace':
-          return `New document created (${this.notificationId})`
+          return `New document created (${this.notificationId})` ;
 
         case 'mReplace':
-          return `Documents replaced (${this.notificationId})`
+          return `Documents replaced (${this.notificationId})` ;
         case 'replace':
-          return `Document replaced (${this.notificationId})`
+          return `Document replaced (${this.notificationId})` ;
 
         case 'updateByQuery':
         case 'mUpdate':
-          return `Documents updated (${this.notificationId})`
+          return `Documents updated (${this.notificationId})` ;
         case 'update':
-          return `Document updated (${this.notificationId})`
+          return `Document updated (${this.notificationId})` ;
 
         case 'deleteByQuery':
         case 'mDelete':
-          return `Documents deleted (${this.notificationId})`
+          return `Documents deleted (${this.notificationId})` ;
         case 'delete':
-          return `Document deleted (${this.notificationId})`
+          return `Document deleted (${this.notificationId})` ;
 
         case 'subscribe':
-          return 'A new user is listening to this room'
+          return 'A new user is listening to this room' ;
 
         case 'unsubscribe':
-          return 'A user exited this room'
+          return 'A user exited this room' ;
       }
-      return 'New notification'
+
+      return 'New notification' ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

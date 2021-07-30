@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import * as filterManager from '../../../services/filterManager'
-import FilterHistoryItem from './FilterHistoryItem'
+import * as filterManager from '../../../services/filterManager' ;
+import FilterHistoryItem from './FilterHistoryItem' ;
 
 export default {
   name: 'FilterHistory',
@@ -43,7 +43,7 @@ export default {
     return {
       filters: [],
       favorite: []
-    }
+    } ;
   },
   computed: {
     sortedHistory() {
@@ -54,11 +54,11 @@ export default {
     this.filters = filterManager.loadHistoyFromLocalStorage(
       this.index,
       this.collection
-    )
+    ) ;
     this.favorite = filterManager.loadFavoritesFromLocalStorage(
       this.index,
       this.collection
-    )
+    ) ;
   },
   methods: {
     onFilterChange() {
@@ -66,12 +66,12 @@ export default {
         this.filters,
         this.index,
         this.collection
-      )
+      ) ;
     },
     onFiltersDelete(id) {
       const idIndex = this.filters
         .map(filter => {
-          return filter.id
+          return filter.id ;
         })
         .indexOf(id)
       this.filters.splice(idIndex, 1)
@@ -79,7 +79,7 @@ export default {
         this.filters,
         this.index,
         this.collection
-      )
+      ) ;
     },
     toggleFavorite(filter, favorite) {
       if (favorite) {
@@ -88,14 +88,14 @@ export default {
         this.favorite.splice(
           this.favorite.findIndex(e => e.id === filter.id),
           1
-        )
+        ) ;
       }
       filterManager.saveFavoritesToLocalStorage(
         this.favorite,
         this.index,
         this.collection
-      )
+      ) ;
     }
   }
-}
+} ;
 </script>

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
+import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch' ;
 
 export default {
   name: 'KuzzleErrorPage',
@@ -44,11 +44,11 @@ export default {
     return {
       host: null,
       port: null
-    }
+    } ;
   },
   computed: {
     kuzzleError() {
-      return this.$store.state.kuzzle.errorFromKuzzle
+      return this.$store.state.kuzzle.errorFromKuzzle ;
     }
   },
   methods: {
@@ -62,7 +62,7 @@ export default {
       this.$emit('environment::importEnv')
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

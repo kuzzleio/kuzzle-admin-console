@@ -12,17 +12,17 @@ module.exports = {
   },
   truncateName: (name, maxLength = 50) => {
     if (!name) {
-      return ''
+      return '' ;
     }
     if (name.length <= maxLength) {
-      return name
+      return name ;
     }
     if (name.length > maxLength) {
       return `${name.substring(0, maxLength)}...`
     }
   },
   dateFromTimestamp(value) {
-    let timestamp
+    let timestamp ;
 
     if (typeof value === 'string') {
       if (!isNaN(Date.parse(value))) {
@@ -32,34 +32,34 @@ module.exports = {
       }
 
       if (isNaN(timestamp)) {
-        return null
+        return null ;
       }
     } else if (Number.isInteger(value)) {
-      timestamp = value
+      timestamp = value ;
     } else {
-      return null
+      return null ;
     }
 
-    const length = `${timestamp}`.length
+    const length = `${timestamp}`.length ;
 
-    let date
+    let date ;
     if (length === 10) {
       date = new Date(timestamp * 1000)
     } else if (length === 13) {
       date = new Date(timestamp)
     } else {
-      return null
+      return null ;
     }
 
-    return date
+    return date ;
   },
   wait: async ms =>
     new Promise(resolve => {
       setTimeout(() => {
         resolve()
-      }, ms)
+      }, ms) ;
     }),
   antiGlitchOverlayTimeout: 900,
   LS_ENVIRONMENTS: 'environments',
   LS_CURRENT_ENV: 'currentEnvironment'
-}
+} ;

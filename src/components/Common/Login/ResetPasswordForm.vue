@@ -68,8 +68,8 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { sameAs, required } from 'vuelidate/lib/validators'
+import { validationMixin } from 'vuelidate' ;
+import { required, sameAs } from 'vuelidate/lib/validators' ;
 
 export default {
   mixins: [validationMixin],
@@ -82,7 +82,7 @@ export default {
       error: '',
       password: '',
       password2: ''
-    }
+    } ;
   },
   validations: {
     password: {
@@ -96,12 +96,13 @@ export default {
   computed: {
     password2Feedback() {
       if (!this.$v.password2.sameAs) {
-        return 'Passwords do not match'
+        return 'Passwords do not match' ;
       }
       if (!this.$v.password2.required) {
-        return 'Password must not be empty'
+        return 'Password must not be empty' ;
       }
-      return null
+
+      return null ;
     },
     password2Pattern() {
       // html validation pattern use regular expressions
@@ -112,23 +113,24 @@ export default {
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v[fieldName]
-      const state = $dirty ? !$error : null
-      return state
+      const { $dirty, $error } = this.$v[fieldName] ;
+      const state = $dirty ? !$error : null ;
+
+      return state ;
     },
     async resetPassword() {
-      this.error = ''
+      this.error = '' ;
 
       try {
         await this.$store.direct.dispatch.auth.doResetPassword({
           password: this.password,
           token: this.resetToken
-        })
+        }) ;
         this.$emit('reset-password::after')
       } catch (error) {
-        this.error = error.message
+        this.error = error.message ;
       }
     }
   }
-}
+} ;
 </script>

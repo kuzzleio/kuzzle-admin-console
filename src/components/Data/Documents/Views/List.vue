@@ -61,9 +61,9 @@
 </template>
 
 <script>
-import DocumentListItem from '../DocumentListItem'
-import { mapGetters } from 'vuex'
-import PerPageSelector from '@/components/Common/PerPageSelector'
+import DocumentListItem from '../DocumentListItem' ;
+import { mapGetters } from 'vuex' ;
+import PerPageSelector from '@/components/Common/PerPageSelector' ;
 
 export default {
   name: 'DocumentsListView',
@@ -103,18 +103,18 @@ export default {
   data() {
     return {
       itemsPerPage: [10, 25, 50, 100, 500]
-    }
+    } ;
   },
   computed: {
     ...mapGetters('auth', ['canDeleteDocument']),
     hasSelectedDocuments() {
-      return this.selectedDocuments.length > 0
+      return this.selectedDocuments.length > 0 ;
     },
     bulkDeleteEnabled() {
       return (
         this.canDeleteDocument(this.index, this.collection) &&
         this.hasSelectedDocuments
-      )
+      ) ;
     }
   },
   methods: {
@@ -122,7 +122,7 @@ export default {
       return this.selectedDocuments.indexOf(id) > -1
     }
   }
-}
+} ;
 </script>
 
 <style></style>

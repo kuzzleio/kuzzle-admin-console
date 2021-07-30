@@ -66,5 +66,5 @@ export default {
     host: String,
     port: Number
   }
-}
+} ;
 </script>

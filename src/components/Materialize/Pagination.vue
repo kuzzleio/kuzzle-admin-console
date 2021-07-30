@@ -105,20 +105,21 @@ export default {
   computed: {
     pages() {
       let totalPage = Math.max(Math.ceil(this.total / this.size), 1)
-      return totalPage <= this.maxPage ? totalPage : this.maxPage
+
+      return totalPage <= this.maxPage ? totalPage : this.maxPage ;
     },
     pager() {
-      let displayedPages = []
+      let displayedPages = [] ;
       let maximum = Math.min(this.pages, this.displayPages)
-      let start = 1
+      let start = 1 ;
 
       if (this.pages > this.displayPages) {
         if (this.currentPage + Math.ceil(this.displayPages / 2) > this.pages) {
-          start = this.pages - (this.displayPages - 1)
-          maximum = this.pages
+          start = this.pages - (this.displayPages - 1) ;
+          maximum = this.pages ;
         } else if (this.currentPage > Math.ceil(this.displayPages / 2)) {
           start = Math.ceil(this.currentPage - this.displayPages / 2)
-          maximum = start + (this.displayPages - 1)
+          maximum = start + (this.displayPages - 1) ;
         }
       }
 
@@ -126,17 +127,17 @@ export default {
         displayedPages.push(i)
       }
 
-      return displayedPages
+      return displayedPages ;
     },
     currentPage() {
       if (this.from === 0) {
-        return 1
+        return 1 ;
       }
 
-      return this.from / this.size + 1
+      return this.from / this.size + 1 ;
     },
     lastPageLimitation() {
-      return this.currentPage === this.maxPage
+      return this.currentPage === this.maxPage ;
     }
   },
   methods: {
@@ -148,7 +149,7 @@ export default {
         this.$emit(
           'change-page',
           (this.currentPage - 1) * this.size - this.size
-        )
+        ) ;
       }
     },
     nextPage() {
@@ -156,7 +157,7 @@ export default {
         this.$emit(
           'change-page',
           (this.currentPage + 1) * this.size - this.size
-        )
+        ) ;
       }
     },
     firstPage() {
@@ -166,5 +167,5 @@ export default {
       this.setCurrentPage(this.pages)
     }
   }
-}
+} ;
 </script>

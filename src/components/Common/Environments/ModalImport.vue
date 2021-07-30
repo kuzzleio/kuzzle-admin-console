@@ -65,7 +65,7 @@ export default {
       env: {},
       errors: [],
       loading: false
-    }
+    } ;
   },
   computed: {
     envNames() {
@@ -78,23 +78,23 @@ export default {
     },
     reset() {
       this.clearFiles()
-      this.errors = []
-      this.env = {}
-      this.loading = false
+      this.errors = [] ;
+      this.env = {} ;
+      this.loading = false ;
     },
     async importEnv() {
-      let mustSwitch = false
+      let mustSwitch = false ;
       if (
         Object.keys(this.$store.direct.state.kuzzle.environments).length === 0
       ) {
-        mustSwitch = true
+        mustSwitch = true ;
       }
       for (const name in this.env) {
         try {
           this.$store.direct.dispatch.kuzzle.createEnvironment({
             id: name,
             environment: this.env[name]
-          })
+          }) ;
         } catch (e) {
           this.$log.error(e)
           this.errors.push(e)
@@ -111,21 +111,22 @@ export default {
     },
     upload() {
       if (!this.file || this.loading) {
-        return
+        return ;
       }
       this.$log.debug('Uploading!')
 
-      this.errors = []
-      this.env = {}
-      this.loading = true
+      this.errors = [] ;
+      this.env = {} ;
+      this.loading = true ;
       const reader = new FileReader()
 
       if (this.file.type !== 'application/json') {
         this.errors.push(
           `⛔️ Uploaded file type (${this.file.type}) is not supported. Please import .json files only`
-        )
-        this.loading = false
-        return
+        ) ;
+        this.loading = false ;
+
+        return ;
       }
 
       reader.onload = (() => {
@@ -137,8 +138,8 @@ export default {
             this.$log.debug(e.target)
             this.errors.push(error)
           }
-          this.loading = false
-        }
+          this.loading = false ;
+        } ;
       })(this.file)
 
       reader.readAsText(this.file)
@@ -152,7 +153,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style></style>

@@ -1,28 +1,30 @@
-import { IndexState, Index } from './types'
+import { Index, IndexState } from './types' ;
 
 export const getOneIndex = state => (indexName: string) => {
   return state.indexes.find(el => el.name === indexName)
-}
+} ;
 
-export const indexes = (state: IndexState) => state.indexes
+export const indexes = (state: IndexState) => state.indexes ;
 
-export const loadingIndexes = (state: IndexState) => state.loadingIndexes
+export const loadingIndexes = (state: IndexState) => state.loadingIndexes ;
 
 export const loadingCollections = (state: IndexState) => (
   indexName: string
 ) => {
   const index = state.indexes.find(el => el.name === indexName)
-  return index ? index.loading : false
-}
+
+  return index ? index.loading : false ;
+} ;
 
 export const collections = state => (indexName: string) => {
   const index = state.indexes.find(el => el.name === indexName)
-  return index ? index.collections : []
-}
+
+  return index ? index.collections : [] ;
+} ;
 
 export const getOneCollection = state => (
   index: Index,
   collectionName: string
 ) => {
   return index.getOneCollection(collectionName)
-}
+} ;

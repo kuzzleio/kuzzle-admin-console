@@ -19,12 +19,12 @@ export const extractAttributesFromMapping = (
         attributes,
         `${prefix}${name}.`,
         path.concat(name, 'properties')
-      )
+      ) ;
     } else if (value.type) {
       attributes[`${prefix}${name}`] = {
         type: value.type,
         fullPath: path.concat(name).join('.')
-      }
+      } ;
       // Other attribute types are listed in the "fields" property
       if (value.fields) {
         for (const type of Object.keys(value.fields)) {
@@ -33,10 +33,11 @@ export const extractAttributesFromMapping = (
             attributes,
             `${prefix}${name}.`,
             path.concat(name, '')
-          )
+          ) ;
         }
       }
     }
   }
-  return attributes
-}
+
+  return attributes ;
+} ;

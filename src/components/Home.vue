@@ -50,10 +50,10 @@
 </template>
 
 <script>
-import MainMenu from './Common/MainMenu'
-import MainSpinner from './Common/MainSpinner'
-import LoginForm from './Common/Login/Form'
-import { mapGetters } from 'vuex'
+import MainMenu from './Common/MainMenu' ;
+import MainSpinner from './Common/MainSpinner' ;
+import LoginForm from './Common/Login/Form' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'Home',
@@ -67,15 +67,15 @@ export default {
       host: null,
       port: null,
       tokenExpiredIsOpen: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     tokenValid() {
-      return this.$store.direct.state.auth.tokenValid
+      return this.$store.direct.state.auth.tokenValid ;
     },
     authInitializing() {
-      return this.$store.direct.state.auth.initializing
+      return this.$store.direct.state.auth.initializing ;
     }
   },
   methods: {
@@ -86,7 +86,7 @@ export default {
           ...this.currentEnvironment,
           hideAdminWarning: true
         }
-      })
+      }) ;
       this.$bvToast.hide('no-admin-warning')
     },
     onTokenExpired() {
@@ -95,10 +95,10 @@ export default {
     noop() {},
     displayNoAdminWarning() {
       if (this.$store.direct.getters.auth.adminAlreadyExists) {
-        return
+        return ;
       }
       if (this.currentEnvironment.hideAdminWarning) {
-        return
+        return ;
       }
       this.$bvToast.show('no-admin-warning')
     }
@@ -110,20 +110,20 @@ export default {
         switch (e.id) {
           case 'security.token.invalid':
             this.onTokenExpired()
-            break
+            break ;
           default:
-            break
+            break ;
         }
       } else {
         switch (e.id) {
           case 'security.token.expired':
             this.onTokenExpired()
-            break
+            break ;
           default:
-            break
+            break ;
         }
       }
-    })
+    }) ;
     this.displayNoAdminWarning()
   },
   beforeDestroy() {
@@ -134,12 +134,12 @@ export default {
     tokenValid: {
       handler(val) {
         setTimeout(() => {
-          this.tokenExpiredIsOpen = !val
-        }, 500)
+          this.tokenExpiredIsOpen = !val ;
+        }, 500) ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

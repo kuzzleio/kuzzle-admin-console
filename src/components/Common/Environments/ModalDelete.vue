@@ -59,7 +59,7 @@ button {
 </style>
 
 <script>
-import Focus from '../../../directives/focus.directive'
+import Focus from '../../../directives/focus.directive' ;
 
 export default {
   name: 'EnvironmentDeleteModal',
@@ -71,28 +71,29 @@ export default {
   data() {
     return {
       envConfirmation: null
-    }
+    } ;
   },
   computed: {
     environments() {
-      return this.$store.state.kuzzle.environments
+      return this.$store.state.kuzzle.environments ;
     },
     confirmationOk() {
       return (
         this.environmentName !== null &&
         this.environmentName === this.envConfirmation
-      )
+      ) ;
     },
     environmentName() {
       if (this.environmentId && this.environments[this.environmentId]) {
-        return this.environments[this.environmentId].name
+        return this.environments[this.environmentId].name ;
       }
-      return null
+
+      return null ;
     }
   },
   methods: {
     reset() {
-      this.envConfirmation = null
+      this.envConfirmation = null ;
     },
     async confirmDeleteEnvironment() {
       if (this.confirmationOk) {
@@ -112,5 +113,5 @@ export default {
       }
     }
   }
-}
+} ;
 </script>

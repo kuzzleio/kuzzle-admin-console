@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import JsonEditor from '../../../Common/JsonEditor'
+import JsonEditor from '../../../Common/JsonEditor' ;
 
 export default {
   components: {
@@ -33,7 +33,7 @@ export default {
     rawFilter: {
       type: Object,
       default() {
-        return {}
+        return {} ;
       }
     },
     formatFromBasicSearch: Function,
@@ -54,28 +54,29 @@ export default {
         raw: {}
       },
       jsonInvalid: false
-    }
+    } ;
   },
   mounted() {
-    this.filters.raw = this.rawFilter || {}
+    this.filters.raw = this.rawFilter || {} ;
   },
   methods: {
     rawSearch() {
       let json = this.$refs.jsoneditor.getJson()
 
       if (json === null) {
-        this.jsonInvalid = true
-        return
+        this.jsonInvalid = true ;
+
+        return ;
       }
 
-      this.jsonInvalid = false
-      this.filters.raw = json
+      this.jsonInvalid = false ;
+      this.filters.raw = json ;
 
       this.$emit('filters-raw-search', this.filters.raw)
     },
     resetRawSearch() {
-      this.filters.raw = {}
+      this.filters.raw = {} ;
     }
   }
-}
+} ;
 </script>

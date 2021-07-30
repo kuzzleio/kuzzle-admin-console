@@ -1,22 +1,22 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import store from '../vuex/store'
-import { moduleActionContext } from '../vuex/store'
+import Vue from 'vue' ;
+import VueRouter from 'vue-router' ;
+import store from '../vuex/store' ;
+import { moduleActionContext } from '../vuex/store' ;
 
-import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage.vue'
-import SelectEnvironmentPage from '../components/Common/Environments/SelectEnvironmentPage.vue'
-import ConnectionAwareContainer from '../components/ConnectionAwareContainer.vue'
-import Home from '../components/Home.vue'
-import Login from '../components/Login.vue'
-import Signup from '../components/Signup.vue'
-import DataLayout from '../components/Data/Layout.vue'
-import ResetPassword from '../components/ResetPassword.vue'
-import SecurityLayout from '../components/Security/Layout.vue'
-import PageNotFound from '../components/404.vue'
-import ApiAction from '../components/ApiAction.vue'
+import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage.vue' ;
+import SelectEnvironmentPage from '../components/Common/Environments/SelectEnvironmentPage.vue' ;
+import ConnectionAwareContainer from '../components/ConnectionAwareContainer.vue' ;
+import Home from '../components/Home.vue' ;
+import Login from '../components/Login.vue' ;
+import Signup from '../components/Signup.vue' ;
+import DataLayout from '../components/Data/Layout.vue' ;
+import ResetPassword from '../components/ResetPassword.vue' ;
+import SecurityLayout from '../components/Security/Layout.vue' ;
+import PageNotFound from '../components/404.vue' ;
+import ApiAction from '../components/ApiAction.vue' ;
 
-import SecuritySubRoutes from './children/security'
-import DataSubRoutes from './children/data'
+import SecuritySubRoutes from './children/security' ;
+import DataSubRoutes from './children/data' ;
 
 Vue.use(VueRouter)
 
@@ -28,7 +28,7 @@ export default function createRoutes(log) {
     } catch (error) {
       log.error(
         'Something went wrong while loading the connections. The JSON content saved in the LocalStorage seems to be malformed.'
-      )
+      ) ;
       log.error(error.message)
     }
     if (store.getters.kuzzle.hasEnvironment) {
@@ -36,22 +36,25 @@ export default function createRoutes(log) {
 
       if (!store.getters.kuzzle.currentEnvironment) {
         log.debug('No environment selected')
+
         return next({ name: 'SelectEnvironment' })
       }
       if (!store.getters.kuzzle.isCurrentEnvironmentValid) {
         log.debug('Current environment is not valid')
+
         return next({
           name: 'EditEnvironment',
           params: { id: store.state.kuzzle.currentId }
-        })
+        }) ;
       }
+
       return next()
     } else {
       log.debug('No environments')
 
       return next({ name: 'CreateEnvironment' })
     }
-  }
+  } ;
 
   const router = new VueRouter({
     routes: [
@@ -150,7 +153,7 @@ export default function createRoutes(log) {
         component: PageNotFound
       }
     ]
-  })
+  }) ;
 
-  return router
+  return router ;
 }

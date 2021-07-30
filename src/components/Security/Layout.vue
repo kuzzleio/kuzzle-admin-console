@@ -103,7 +103,7 @@
 </style>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'SecurityLayout',
   computed: {
@@ -113,5 +113,5 @@ export default {
       'canManageProfiles'
     ])
   }
-}
+} ;
 </script>

@@ -123,16 +123,16 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { numeric, required } from 'vuelidate/lib/validators'
-import { isValidHostname, notIncludeScheme } from '../../../validators'
+import { validationMixin } from 'vuelidate' ;
+import { numeric, required } from 'vuelidate/lib/validators' ;
+import { isValidHostname, notIncludeScheme } from '../../../validators' ;
 
 import {
-  envColors,
   DEFAULT_COLOR,
-  NO_ADMIN_WARNING_HOSTS
-} from '../../../vuex/modules/kuzzle/store'
-const useHttps = window.location.protocol === 'https:'
+  NO_ADMIN_WARNING_HOSTS,
+  envColors
+} from '../../../vuex/modules/kuzzle/store' ;
+const useHttps = window.location.protocol === 'https:' ;
 
 /**
  * Vuelidate validator.
@@ -141,7 +141,7 @@ const useHttps = window.location.protocol === 'https:'
  */
 function nameIsUnique(value) {
   if (this.environmentId) {
-    return true
+    return true ;
   }
 
   return Object.keys(this.environments).indexOf(value) === -1
@@ -175,7 +175,7 @@ export default {
         hideAdminWarning: false
       },
       submitting: false
-    }
+    } ;
   },
   validations: {
     environment: {
@@ -203,115 +203,121 @@ export default {
   },
   computed: {
     colors() {
-      return envColors
+      return envColors ;
     },
     environments() {
-      return this.$store.direct.state.kuzzle.environments
+      return this.$store.direct.state.kuzzle.environments ;
     },
     useHttps() {
-      return useHttps
+      return useHttps ;
     },
     nameFeedback() {
       if (!this.$v.environment.name.required) {
-        return 'You must enter a non-empty environment name'
+        return 'You must enter a non-empty environment name' ;
       }
       if (!this.$v.environment.name.nameIsUnique) {
-        return 'An environment with the same name already exists'
+        return 'An environment with the same name already exists' ;
       }
-      return null
+
+      return null ;
     },
     hostFeedback() {
       if (!this.$v.environment.host.required) {
-        return 'You must enter a non-empty host name'
+        return 'You must enter a non-empty host name' ;
       }
       if (!this.$v.environment.host.notIncludeScheme) {
-        return 'Do not include the protocol in your host name'
+        return 'Do not include the protocol in your host name' ;
       }
       if (!this.$v.environment.host.isValidHostname) {
-        return 'Must be a valid host name'
+        return 'Must be a valid host name' ;
       }
-      return null
+
+      return null ;
     },
     portFeedback() {
       if (!this.$v.environment.port.required) {
-        return 'You must enter a non-empty port'
+        return 'You must enter a non-empty port' ;
       }
-      return null
+
+      return null ;
     },
     sslFeedback() {
       if (this.useHttps && !this.environment.ssl) {
         return `You are
           using an Admin Console served via HTTPs. Your browser might refuse to
-          open an unsecure connection to Kuzzle`
+          open an unsecure connection to Kuzzle` ;
       }
 
       if (this.environment.ssl) {
-        return `Please ensure your Kuzzle instance supports secure Websocket connections`
+        return `Please ensure your Kuzzle instance supports secure Websocket connections` ;
       }
 
-      return ''
+      return '' ;
     },
     versionFeedback() {
       if (!this.$v.environment.backendMajorVersion.required) {
-        return 'You must select a backend version'
+        return 'You must select a backend version' ;
       }
-      return null
+
+      return null ;
     },
     colorState() {
-      const { $dirty, $error } = this.$v.environment.color
-      const state = $dirty ? !$error : null
-      return state
+      const { $dirty, $error } = this.$v.environment.color ;
+      const state = $dirty ? !$error : null ;
+
+      return state ;
     }
   },
   mounted() {
-    const currentEnv = this.environments[this.environmentId]
+    const currentEnv = this.environments[this.environmentId] ;
     if (this.environmentId && currentEnv) {
-      this.environment.name = currentEnv.name
-      this.environment.host = currentEnv.host
-      this.environment.port = currentEnv.port
-      this.environment.color = currentEnv.color
-      this.environment.ssl = currentEnv.ssl
-      this.environment.backendMajorVersion = currentEnv.backendMajorVersion
-      this.environment.hideAdminWarning = currentEnv.hideAdminWarning
+      this.environment.name = currentEnv.name ;
+      this.environment.host = currentEnv.host ;
+      this.environment.port = currentEnv.port ;
+      this.environment.color = currentEnv.color ;
+      this.environment.ssl = currentEnv.ssl ;
+      this.environment.backendMajorVersion = currentEnv.backendMajorVersion ;
+      this.environment.hideAdminWarning = currentEnv.hideAdminWarning ;
       this.$nextTick(() => this.showValidationErrors())
     } else {
-      this.environment.name = null
-      this.environment.host = null
-      this.environment.port = 7512
-      this.environment.color = DEFAULT_COLOR
-      this.environment.ssl = useHttps
-      this.environment.backendMajorVersion = null
-      this.environment.hideAdminWarning = false
+      this.environment.name = null ;
+      this.environment.host = null ;
+      this.environment.port = 7512 ;
+      this.environment.color = DEFAULT_COLOR ;
+      this.environment.ssl = useHttps ;
+      this.environment.backendMajorVersion = null ;
+      this.environment.hideAdminWarning = false ;
     }
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v.environment[fieldName]
-      const state = $dirty ? !$error : null
-      return state
+      const { $dirty, $error } = this.$v.environment[fieldName] ;
+      const state = $dirty ? !$error : null ;
+
+      return state ;
     },
     showValidationErrors() {
       this.$v.environment.$touch()
       Object.keys(this.$v.environment).forEach(field => {
         if (/^\$/.test(field)) {
-          return
+          return ;
         }
         if (this.$v.environment[field].$anyError === false) {
           this.$v.environment[field].$reset()
         }
-      })
+      }) ;
     },
     checkSSL() {
       if (this.environment.port === 443) {
-        this.environment.ssl = true
+        this.environment.ssl = true ;
       }
     },
     submit() {
       this.$v.environment.$touch()
       if (this.$v.environment.$anyError) {
-        return
+        return ;
       }
-      this.submitting = true
+      this.submitting = true ;
       try {
         if (this.environmentId) {
           return this.$store.direct.dispatch.kuzzle.updateEnvironment({
@@ -325,7 +331,7 @@ export default {
               backendMajorVersion: this.environment.backendMajorVersion,
               hideAdminWarning: this.environment.hideAdminWarning
             }
-          })
+          }) ;
         } else {
           return this.$store.direct.dispatch.kuzzle.createEnvironment({
             id: this.environment.name,
@@ -342,7 +348,7 @@ export default {
                 ? true
                 : false
             }
-          })
+          }) ;
         }
       } catch (error) {
         this.$log.error(error.message)
@@ -354,15 +360,15 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
-      this.submitting = false
+      this.submitting = false ;
     },
     selectColor(index) {
-      this.$v.environment.color.$model = this.colors[index]
+      this.$v.environment.color.$model = this.colors[index] ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

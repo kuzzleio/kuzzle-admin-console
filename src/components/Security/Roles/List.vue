@@ -109,12 +109,12 @@
 </template>
 
 <script>
-import DeleteModal from './DeleteModal'
-import Filters from './Filters'
-import RoleItem from '../Roles/RoleItem'
-import PerPageSelector from '@/components/Common/PerPageSelector'
-import * as filterManager from '../../../services/filterManager'
-import { mapGetters } from 'vuex'
+import DeleteModal from './DeleteModal' ;
+import Filters from './Filters' ;
+import RoleItem from '../Roles/RoleItem' ;
+import PerPageSelector from '@/components/Common/PerPageSelector' ;
+import * as filterManager from '../../../services/filterManager' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'RoleList',
@@ -145,15 +145,15 @@ export default {
       totalDocuments: 0,
       paginationSize: 25,
       itemsPerPage: [10, 25, 50, 100, 500]
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     displayBulkDelete() {
-      return this.selectedDocuments.length > 0
+      return this.selectedDocuments.length > 0 ;
     },
     paginationFrom() {
-      return (this.currentPage - 1) * this.paginationSize || 0
+      return (this.currentPage - 1) * this.paginationSize || 0 ;
     }
   },
   watch: {
@@ -163,7 +163,7 @@ export default {
         this.currentFilter = Object.assign(
           new filterManager.Filter(),
           filterManager.loadFromRoute(this.$route)
-        )
+        ) ;
       }
     },
     currentFilter() {
@@ -177,21 +177,21 @@ export default {
     this.currentFilter = Object.assign(
       new filterManager.Filter(),
       filterManager.loadFromRoute(this.$route)
-    )
+    ) ;
   },
   methods: {
     changePaginationSize(e) {
-      this.paginationSize = e
+      this.paginationSize = e ;
       this.fetchRoles()
     },
     // DELETE
     // =========================================================================
     async onDeleteConfirmed() {
-      this.deleteModalIsLoading = true
+      this.deleteModalIsLoading = true ;
       try {
         await this.wrapper.performDeleteRoles(this.candidatesForDeletion)
         this.$bvModal.hide('modal-delete-roles')
-        this.deleteModalIsLoading = false
+        this.deleteModalIsLoading = false ;
         this.fetchRoles()
       } catch (e) {
         this.$log.error(e)
@@ -204,7 +204,7 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true
           }
-        )
+        ) ;
       }
     },
     deleteRole(id) {
@@ -214,11 +214,11 @@ export default {
     deleteBulk() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(
         this.selectedDocuments
-      )
+      ) ;
       this.$bvModal.show('modal-delete-roles')
     },
     resetCandidatesForDeletion() {
-      this.candidatesForDeletion = []
+      this.candidatesForDeletion = [] ;
     },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
@@ -228,31 +228,32 @@ export default {
 
       if (index === -1) {
         this.selectedDocuments.push(id)
-        return
+
+        return ;
       }
 
       this.selectedDocuments.splice(index, 1)
     },
     onFiltersUpdated(filter) {
-      let newFilters
+      let newFilters ;
       if (filter.controllers && filter.controllers.length) {
         newFilters = Object.assign(this.currentFilter, {
           active: filterManager.ACTIVE_BASIC,
           basic: filter,
           from: 0
-        })
+        }) ;
       } else {
         newFilters = Object.assign(this.currentFilter, {
           active: filterManager.NO_ACTIVE,
           basic: null,
           from: 0
-        })
+        }) ;
       }
       try {
         filterManager.saveToRouter(
           filterManager.stripDefaultValuesFromFilter(newFilters),
           this.$router
-        )
+        ) ;
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast('The complete error has been printed to console', {
@@ -263,27 +264,27 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     },
     fetchRoles() {
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
-      }
-      const filter = {}
+      } ;
+      const filter = {} ;
       if (
         this.currentFilter.active === filterManager.ACTIVE_BASIC &&
         this.currentFilter.basic.controllers &&
         this.currentFilter.basic.controllers.length
       ) {
-        filter.controllers = this.currentFilter.basic.controllers
+        filter.controllers = this.currentFilter.basic.controllers ;
       }
       this.wrapper
         .performSearchRoles(filter, pagination)
         .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
+          this.documents = res.documents ;
+          this.totalDocuments = res.total ;
         })
         .catch(e => {
           this.$log.error(e)
@@ -297,20 +298,20 @@ export default {
               dismissible: true,
               noAutoHide: true
             }
-          )
-        })
+          ) ;
+        }) ;
     },
     editDocument(route, id) {
       this.$router.push({
         name: this.routeUpdate,
         params: { id }
-      })
+      }) ;
     },
     create() {
       this.$router.push({ name: this.routeCreate })
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

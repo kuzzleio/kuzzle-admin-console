@@ -1,6 +1,6 @@
 // import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7'
-import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7'
-import { KuzzleWrapperV1 } from './kuzzleWrapper-v1'
+import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7' ;
+import { KuzzleWrapperV1 } from './kuzzleWrapper-v1' ;
 
 // NOTE - We instantiate a new Kuzzle SDK with Websocket protocol
 // pointing to `localhost` because we cannot instantiate the `WebSocket`
@@ -15,8 +15,8 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
 
   async connectToEnvironment(environment) {
     // fix default port for users that have an old environment settings in their localStorage:
-    if (environment.port === undefined) environment.port = 7512
-    if (typeof environment.ssl !== 'boolean') environment.ssl = false
+    if (environment.port === undefined) environment.port = 7512 ;
+    if (typeof environment.ssl !== 'boolean') environment.ssl = false ;
 
     if (kuzzle.protocol.state === 'connected') {
       this.disconnect()
@@ -25,7 +25,7 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
     kuzzle.protocol = new WebSocket(environment.host, {
       port: parseInt(environment.port),
       sslConnection: environment.ssl
-    })
+    }) ;
 
     return kuzzle.connect()
   }
@@ -39,16 +39,16 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
       index,
       collection,
       includeKuzzleMeta
-    }
+    } ;
 
     const response = await this.kuzzle.query(request)
 
-    return response.result
+    return response.result ;
   }
 
   quickSearchToESQuery(searchTerm): object {
     if (!searchTerm) {
-      return {}
+      return {} ;
     }
 
     return {
@@ -70,7 +70,7 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
           ]
         }
       }
-    }
+    } ;
   }
 
   performCreateUser(kuid, body) {

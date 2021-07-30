@@ -75,9 +75,9 @@
 <style lang="scss"></style>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { not, required } from 'vuelidate/lib/validators'
-import { startsWithSpace, isWhitespace, isUppercase } from '../../../validators'
+import { validationMixin } from 'vuelidate' ;
+import { not, required } from 'vuelidate/lib/validators' ;
+import { isUppercase, isWhitespace, startsWithSpace } from '../../../validators' ;
 
 function includesInvalidIndexChars(value) {
   // eslint-disable-next-line no-useless-escape
@@ -97,7 +97,7 @@ export default {
       error: '',
       index: '',
       modalBusy: false
-    }
+    } ;
   },
   validations() {
     return {
@@ -108,18 +108,19 @@ export default {
         required,
         validChars: not(includesInvalidIndexChars)
       }
-    }
+    } ;
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v[fieldName]
-      return $dirty ? !$error : null
+      const { $dirty, $error } = this.$v[fieldName] ;
+
+      return $dirty ? !$error : null ;
     },
     resetForm() {
       this.$v.$reset()
-      this.index = ''
-      this.error = ''
-      this.modalBusy = false
+      this.index = '' ;
+      this.error = '' ;
+      this.modalBusy = false ;
     },
     async onCreateSuccess() {
       this.resetForm()
@@ -131,20 +132,20 @@ export default {
       this.$bvModal.hide(this.modalId)
     },
     async tryCreateIndex() {
-      this.modalBusy = true
+      this.modalBusy = true ;
       this.$v.$touch()
       if (this.$v.$anyError) {
-        return
+        return ;
       }
 
       try {
         await this.$store.direct.dispatch.index.createIndex(this.index)
         this.onCreateSuccess()
       } catch (err) {
-        this.error = err.message
-        this.modalBusy = false
+        this.error = err.message ;
+        this.modalBusy = false ;
       }
     }
   }
-}
+} ;
 </script>

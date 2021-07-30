@@ -26,8 +26,8 @@
 </template>
 
 <script type="text/javascript">
-import MSelect from '../../Common/MSelect'
-import { mapGetters } from 'vuex'
+import MSelect from '../../Common/MSelect' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'RoleChips',
   components: {
@@ -41,14 +41,14 @@ export default {
   data() {
     return {
       roleList: []
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     availableRoles() {
       return this.roleList.filter(role => {
         return this.addedRoles.indexOf(role.id) === -1
-      })
+      }) ;
     }
   },
   mounted() {
@@ -59,8 +59,8 @@ export default {
       return this.wrapper.performSearchRoles().then(result => {
         result.documents.forEach(role => {
           this.roleList.push(role)
-        })
-      })
+        }) ;
+      }) ;
     },
     onRoleSelected(role) {
       this.$emit('selected-role', role)
@@ -69,7 +69,7 @@ export default {
       this.$emit('remove-role', role)
     }
   }
-}
+} ;
 </script>
 
 <style type="text/css" scoped>

@@ -75,10 +75,10 @@
 </template>
 
 <script>
-import { formatForDom } from '../../../utils'
-import { mapValues, omit } from 'lodash'
-import { isValidEnvironment } from '../../../validators'
-import { mapGetters } from 'vuex'
+import { formatForDom } from '../../../utils' ;
+import { mapValues, omit } from 'lodash' ;
+import { isValidEnvironment } from '../../../validators' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'EnvironmentSwitch',
   props: {
@@ -101,11 +101,11 @@ export default {
       const envWitoutToken = mapValues(
         this.$store.state.kuzzle.environments,
         e => omit(e, 'token')
-      )
+      ) ;
 
       const blob = new Blob([JSON.stringify(envWitoutToken)], {
         type: 'application/json'
-      })
+      }) ;
 
       return URL.createObjectURL(blob)
     }
@@ -126,7 +126,7 @@ export default {
     },
     formatForDom
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss">

@@ -43,7 +43,7 @@
 </template>
 
 <script>
-const BULK_DELETE_CONFIRMATION = 'DELETE'
+const BULK_DELETE_CONFIRMATION = 'DELETE' ;
 
 export default {
   name: 'bulkDeleteIndexModal',
@@ -61,17 +61,17 @@ export default {
     return {
       error: '',
       confirmation: ''
-    }
+    } ;
   },
   computed: {
     isConfirmationValid() {
-      return this.confirmation === BULK_DELETE_CONFIRMATION
+      return this.confirmation === BULK_DELETE_CONFIRMATION ;
     }
   },
   methods: {
     resetForm() {
-      this.confirmation = ''
-      this.error = ''
+      this.confirmation = '' ;
+      this.error = '' ;
     },
     onDeleteSuccess() {
       this.resetForm()
@@ -86,16 +86,16 @@ export default {
 
     async performDelete() {
       if (!this.isConfirmationValid) {
-        return
+        return ;
       }
 
       try {
         await this.$store.direct.dispatch.index.bulkDeleteIndexes(this.indexes)
         this.onDeleteSuccess()
       } catch (err) {
-        this.error = err.message
+        this.error = err.message ;
       }
     }
   }
-}
+} ;
 </script>

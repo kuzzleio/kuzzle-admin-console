@@ -238,13 +238,13 @@
 </template>
 
 <script>
-import DeleteCollectionModal from './DeleteCollectionModal'
-import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal'
-import Headline from '../../Materialize/Headline'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import AutoFocusInput from '../../Common/AutoFocusInput'
-import { truncateName } from '../../../utils'
-import { mapGetters } from 'vuex'
+import DeleteCollectionModal from './DeleteCollectionModal' ;
+import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal' ;
+import Headline from '../../Materialize/Headline' ;
+import ListNotAllowed from '../../Common/ListNotAllowed' ;
+import AutoFocusInput from '../../Common/AutoFocusInput' ;
+import { truncateName } from '../../../utils' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'CollectionList',
@@ -268,7 +268,7 @@ export default {
       rawStoredCollections: [],
       filteredCollections: [],
       selectedCollections: []
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
@@ -281,16 +281,17 @@ export default {
       return this.$store.direct.getters.index.getOneIndex(this.indexName)
     },
     collections() {
-      return this.index ? this.index.collections : []
+      return this.index ? this.index.collections : [] ;
     },
     bulkDeleteEnabled() {
-      return this.selectedCollections.length > 0
+      return this.selectedCollections.length > 0 ;
     },
     allChecked() {
       if (!this.selectedCollections || !this.filteredCollections) {
-        return false
+        return false ;
       }
-      return this.selectedCollections.length === this.filteredCollections.length
+
+      return this.selectedCollections.length === this.filteredCollections.length ;
     },
     tableFields() {
       return [
@@ -315,13 +316,13 @@ export default {
           key: 'actions',
           label: ''
         }
-      ]
+      ] ;
     }
   },
   methods: {
     truncateName,
     onDeleteCollectionClicked(collection) {
-      this.collectionToDelete = collection
+      this.collectionToDelete = collection ;
       this.$bvModal.show(this.deleteCollectionModalId)
     },
     deleteCollections() {
@@ -329,12 +330,13 @@ export default {
     },
     onToggleAllClicked() {
       if (this.allChecked) {
-        this.selectedCollections = []
-        return
+        this.selectedCollections = [] ;
+
+        return ;
       }
 
-      this.selectedCollections = []
-      this.selectedCollections = this.filteredCollections
+      this.selectedCollections = [] ;
+      this.selectedCollections = this.filteredCollections ;
     },
     isChecked(collection) {
       return this.selectedCollections.find(el => el.name === collection.name)
@@ -344,25 +346,26 @@ export default {
     onCheckboxClick(collection) {
       const collectionAlreadySelected = this.selectedCollections.find(
         el => el.name === collection.name
-      )
+      ) ;
 
       if (!collectionAlreadySelected) {
         this.selectedCollections.push(collection)
-        return
+
+        return ;
       }
 
       this.selectedCollections = this.selectedCollections.filter(
         el => el.name !== collection.name
-      )
+      ) ;
     },
     async onDeleteModalSuccess() {
       this.updateFilteredCollections(this.collections)
     },
     navigateToCollection() {
-      const collection = this.filteredCollections[0]
+      const collection = this.filteredCollections[0] ;
 
       if (!collection) {
-        return
+        return ;
       }
 
       const route = {
@@ -372,18 +375,18 @@ export default {
           indexName: this.index.name,
           collectionName: collection.name
         }
-      }
+      } ;
 
       this.$router.push(route)
     },
     updateFilteredCollections(filteredCollections) {
-      this.filteredCollections = filteredCollections
+      this.filteredCollections = filteredCollections ;
     }
   },
   async created() {
     this.updateFilteredCollections(this.collections)
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss">

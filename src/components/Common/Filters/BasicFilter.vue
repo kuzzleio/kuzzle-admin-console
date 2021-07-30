@@ -218,9 +218,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-const emptyBasicFilter = { attribute: null, operator: 'contains', value: null }
-const emptySorting = { attribute: null, order: 'asc' }
+import { mapGetters } from 'vuex' ;
+const emptyBasicFilter = { attribute: null, operator: 'contains', value: null } ;
+const emptySorting = { attribute: null, order: 'asc' } ;
 
 export default {
   name: 'BasicFilter',
@@ -258,7 +258,7 @@ export default {
         basic: null,
         sorting: { ...emptySorting }
       }
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
@@ -269,7 +269,7 @@ export default {
           text: a,
           value: a
         }))
-      ]
+      ] ;
     },
     sortAttributesValues() {
       return Object.keys(this.mappingAttributes)
@@ -277,13 +277,13 @@ export default {
         .map(a => ({
           text: a,
           value: a
-        }))
+        })) ;
     },
     availableOperandsFormatted() {
       return Object.keys(this.availableOperands).map(e => ({
         value: e,
         text: this.availableOperands[e]
-      }))
+      })) ;
     },
     isFilterValid: function() {
       // For each andBlocks in orBlocks, check if attribute and value field are filled
@@ -294,7 +294,7 @@ export default {
               andBlock.operator === 'not_exists') &&
             andBlock.attribute
           ) {
-            return true
+            return true ;
           }
           if (
             (!andBlock.attribute && andBlock.value) ||
@@ -303,12 +303,12 @@ export default {
               !andBlock.lt_value &&
               !andBlock.gt_value)
           ) {
-            return false
+            return false ;
           }
         }
       }
 
-      return true
+      return true ;
     }
   },
   watch: {
@@ -316,9 +316,9 @@ export default {
       immediate: true,
       handler(value) {
         if (value) {
-          this.filters.basic = value
+          this.filters.basic = value ;
         } else {
-          this.filters.basic = [[{ ...emptyBasicFilter }]]
+          this.filters.basic = [[{ ...emptyBasicFilter }]] ;
         }
       }
     },
@@ -326,9 +326,9 @@ export default {
       immediate: true,
       handler(value) {
         if (value) {
-          this.filters.sorting = value
+          this.filters.sorting = value ;
         } else {
-          this.filters.sorting = { ...emptySorting }
+          this.filters.sorting = { ...emptySorting } ;
         }
       }
     }
@@ -338,36 +338,36 @@ export default {
       this.$set(this.filters.sorting, 'attribute', attribute)
     },
     selectAttribute(attribute, groupIndex, filterIndex) {
-      this.filters.basic[groupIndex][filterIndex].attribute = attribute
+      this.filters.basic[groupIndex][filterIndex].attribute = attribute ;
     },
     generateRawFilter() {
       const raw = this.wrapper.basicSearchToESQuery(
         this.filters.basic,
         this.mappingAttributes
-      )
+      ) ;
       this.$log.debug(JSON.stringify(raw, null, 2))
       this.$emit('generate-raw-filter', raw)
     },
     submitSearch() {
       if (!this.isFilterValid) {
-        return
+        return ;
       }
 
-      let filters = this.filters.basic
+      let filters = this.filters.basic ;
 
       if (
         this.filters.basic.length === 1 &&
         this.filters.basic[0].length === 1 &&
         !this.filters.basic[0][0].attribute
       ) {
-        filters = null
+        filters = null ;
       }
 
       if (this.sortingEnabled) {
-        let sorting = this.filters.sorting
+        let sorting = this.filters.sorting ;
 
         if (!this.filters.sorting.attribute) {
-          sorting = null
+          sorting = null ;
         }
 
         this.$emit('filter-submitted', filters, sorting)
@@ -376,8 +376,8 @@ export default {
       }
     },
     resetSearch() {
-      this.filters.basic = [[{ ...emptyBasicFilter }]]
-      this.filters.sorting = { ...emptySorting }
+      this.filters.basic = [[{ ...emptyBasicFilter }]] ;
+      this.filters.sorting = { ...emptySorting } ;
       this.submitSearch()
     },
     addOrCondition() {
@@ -385,7 +385,7 @@ export default {
     },
     addAndCondition(groupIndex) {
       if (!this.filters.basic[groupIndex]) {
-        return false
+        return false ;
       }
 
       this.filters.basic[groupIndex].push({ ...emptyBasicFilter })
@@ -395,7 +395,7 @@ export default {
         !this.filters.basic[groupIndex] ||
         !this.filters.basic[groupIndex][filterIndex]
       ) {
-        return false
+        return false ;
       }
 
       if (
@@ -403,7 +403,8 @@ export default {
         this.filters.basic[0].length === 1
       ) {
         this.$set(this.filters.basic[0], 0, { ...emptyBasicFilter })
-        return
+
+        return ;
       }
 
       if (
@@ -411,13 +412,14 @@ export default {
         this.filters.basic.length > 1
       ) {
         this.filters.basic.splice(groupIndex, 1)
-        return
+
+        return ;
       }
 
       this.filters.basic[groupIndex].splice(filterIndex, 1)
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

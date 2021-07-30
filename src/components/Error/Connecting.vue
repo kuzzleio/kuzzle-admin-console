@@ -33,7 +33,7 @@ export default {
     host: String,
     port: Number
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

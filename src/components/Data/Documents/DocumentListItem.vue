@@ -74,9 +74,9 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import JsonFormatter from '../../../directives/json-formatter.directive'
-import { mapGetters } from 'vuex'
+import _ from 'lodash' ;
+import JsonFormatter from '../../../directives/json-formatter.directive' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'DocumentListItem',
@@ -93,12 +93,12 @@ export default {
     return {
       expanded: false,
       checked: false
-    }
+    } ;
   },
   watch: {
     isChecked: {
       handler(value) {
-        this.checked = value
+        this.checked = value ;
       }
     }
   },
@@ -106,18 +106,20 @@ export default {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     canEdit() {
       if (!this.index || !this.collection) {
-        return false
+        return false ;
       }
+
       return this.canEditDocument(this.index, this.collection)
     },
     canDelete() {
       if (!this.index || !this.collection) {
-        return false
+        return false ;
       }
+
       return this.canDeleteDocument(this.index, this.collection)
     },
     checkboxId() {
-      return `checkbox-${this.document._id}`
+      return `checkbox-${this.document._id}` ;
     },
     /**
      * Deletes the "id" who should not be displayed in the document body.
@@ -125,13 +127,14 @@ export default {
      */
     formattedDocument() {
       const document = _.omit(this.document, ['_id', '_kuzzle_info'])
-      document._kuzzle_info = this.document._kuzzle_info
-      return document
+      document._kuzzle_info = this.document._kuzzle_info ;
+
+      return document ;
     }
   },
   methods: {
     toggleCollapse() {
-      this.expanded = !this.expanded
+      this.expanded = !this.expanded ;
     },
     notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document._id)
@@ -146,11 +149,11 @@ export default {
         this.$router.push({
           name: 'UpdateDocument',
           params: { id: this.document._id }
-        })
+        }) ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style type="scss" rel="stylesheet/scss" scoped>

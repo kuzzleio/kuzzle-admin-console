@@ -34,10 +34,10 @@
 </template>
 
 <script>
-import JsonEditor from '../../../Common/JsonEditor'
-import JsonFormatter from '../../../../directives/json-formatter.directive'
+import JsonEditor from '../../../Common/JsonEditor' ;
+import JsonFormatter from '../../../../directives/json-formatter.directive' ;
 
-import { mergeSchemaMapping } from '../../../../services/collectionHelper'
+import { mergeSchemaMapping } from '../../../../services/collectionHelper' ;
 
 export default {
   name: 'CustomData',
@@ -53,7 +53,7 @@ export default {
     mapping: {
       type: Object,
       default: () => {
-        return {}
+        return {} ;
       }
     }
   },
@@ -61,11 +61,11 @@ export default {
     return {
       viewType: 'form',
       newContent: {}
-    }
+    } ;
   },
   computed: {
     isFormView() {
-      return this.viewType === 'form'
+      return this.viewType === 'form' ;
     },
     schema() {
       return mergeSchemaMapping({}, this.mapping)
@@ -76,5 +76,5 @@ export default {
       this.$emit('input', value)
     }
   }
-}
+} ;
 </script>

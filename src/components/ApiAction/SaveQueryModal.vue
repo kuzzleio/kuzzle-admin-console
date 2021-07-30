@@ -37,34 +37,35 @@ export default {
       name: '',
       nameState: null,
       feedback: ''
-    }
+    } ;
   },
   methods: {
     checkFormValidity() {
       const isPresent = this.$refs.form.checkValidity()
       const isValid = this.isQueryNameValid(this.name)
-      this.nameState = isPresent && isValid
+      this.nameState = isPresent && isValid ;
       if (!this.namestate) {
-        this.feedback = isPresent ? 'Name already used' : 'Name is required'
+        this.feedback = isPresent ? 'Name already used' : 'Name is required' ;
       }
-      return this.nameState
+
+      return this.nameState ;
     },
     reset() {
-      this.name = ''
-      this.nameState = null
-      this.feedback = ''
+      this.name = '' ;
+      this.nameState = null ;
+      this.feedback = '' ;
     },
     handleOk(bvModalEvt) {
       bvModalEvt.preventDefault()
       if (!this.checkFormValidity()) {
-        return
+        return ;
       }
       this.$nextTick(() => {
         this.$bvModal.hide('modal-save-query')
-      })
+      }) ;
       this.$emit('storeNewQuery', this.name)
       this.reset()
     }
   }
-}
+} ;
 </script>

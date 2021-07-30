@@ -41,7 +41,7 @@ export default {
       type: Array,
       required: false,
       default: () => {
-        return []
+        return [] ;
       }
     },
     inputClass: {
@@ -71,13 +71,13 @@ export default {
       results: [],
       isOpen: false,
       selectionCursor: -1
-    }
+    } ;
   },
   watch: {
     value: {
       immediate: true,
       handler(newValue) {
-        this.inputValue = newValue
+        this.inputValue = newValue ;
       }
     }
   },
@@ -94,46 +94,46 @@ export default {
       }
     },
     onInput() {
-      this.isOpen = true
+      this.isOpen = true ;
       this.filterResults()
     },
     filterResults() {
       this.results = this.items.filter(
         item => item.toLowerCase().indexOf(this.inputValue.toLowerCase()) > -1
-      )
+      ) ;
     },
     setResult(result) {
-      this.isOpen = false
-      this.inputValue = result
+      this.isOpen = false ;
+      this.inputValue = result ;
       this.$emit('autocomplete::change', result)
-      this.inputValue = ''
+      this.inputValue = '' ;
     },
     changeResult(result) {
       this.$emit('autocomplete::change', result)
-      this.inputValue = ''
+      this.inputValue = '' ;
     },
     onArrowDown() {
       if (this.selectionCursor + 1 < this.results.length) {
-        this.selectionCursor = this.selectionCursor + 1
+        this.selectionCursor = this.selectionCursor + 1 ;
       }
     },
     onArrowUp() {
       if (this.selectionCursor > 0) {
-        this.selectionCursor = this.selectionCursor - 1
+        this.selectionCursor = this.selectionCursor - 1 ;
       }
     },
     onEnter() {
       this.setResult(this.results[this.selectionCursor])
-      this.selectionCursor = -1
+      this.selectionCursor = -1 ;
     },
     handleClickOutside(evt) {
       if (!this.$el.contains(evt.target)) {
-        this.isOpen = false
-        this.selectionCursor = -1
+        this.isOpen = false ;
+        this.selectionCursor = -1 ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style scoped lang="scss">

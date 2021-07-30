@@ -130,15 +130,15 @@
 </style>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { requiredUnless, not } from 'vuelidate/lib/validators'
-import { startsWithSpace, isWhitespace } from '../../../validators'
+import { validationMixin } from 'vuelidate' ;
+import { not, requiredUnless } from 'vuelidate/lib/validators' ;
+import { isWhitespace, startsWithSpace } from '../../../validators' ;
 
-import Headline from '../../Materialize/Headline'
-import Notice from '../Common/Notice'
-import JsonEditor from '../../Common/JsonEditor'
-import { omit, intersection } from 'lodash'
-import { mapGetters } from 'vuex'
+import Headline from '../../Materialize/Headline' ;
+import Notice from '../Common/Notice' ;
+import JsonEditor from '../../Common/JsonEditor' ;
+import { intersection, omit } from 'lodash' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   mixins: [validationMixin],
@@ -160,7 +160,7 @@ export default {
       loading: false,
       submitting: false,
       attachedProfiles: []
-    }
+    } ;
   },
   validations: {
     idValue: {
@@ -173,9 +173,10 @@ export default {
         try {
           JSON.parse(value)
         } catch (e) {
-          return false
+          return false ;
         }
-        return true
+
+        return true ;
       }
     }
   },
@@ -191,26 +192,27 @@ export default {
       try {
         const res = await this.$kuzzle.security.searchProfiles({
           roles: [this.id]
-        })
+        }) ;
         this.attachedProfiles = res.hits.map(p => p._id)
       } catch (error) {
         this.$log.error(error)
       }
     },
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v[fieldName]
-      return $dirty ? !$error : null
+      const { $dirty, $error } = this.$v[fieldName] ;
+
+      return $dirty ? !$error : null ;
     },
     onContentChange(value) {
-      this.$v.documentValue.$model = value
+      this.$v.documentValue.$model = value ;
     },
     async submit() {
       this.$v.$touch()
       if (this.$v.$anyError) {
-        return
+        return ;
       }
 
-      this.submitting = true
+      this.submitting = true ;
 
       try {
         await this.$kuzzle.security.createOrReplaceRole(
@@ -219,7 +221,7 @@ export default {
           {
             refresh: 'wait_for'
           }
-        )
+        ) ;
         this.$router.push({ name: 'SecurityRolesList' })
       } catch (e) {
         this.$log.error(e)
@@ -230,8 +232,8 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
-        this.submitting = false
+        }) ;
+        this.submitting = false ;
       }
     },
     cancel() {
@@ -244,13 +246,13 @@ export default {
   },
   async mounted() {
     if (!this.id) {
-      return
+      return ;
     }
     try {
-      this.loading = true
+      this.loading = true ;
       this.searchAttachedProfiles()
       const fetchedRole = await this.$kuzzle.security.getRole(this.id)
-      this.idValue = fetchedRole._id
+      this.idValue = fetchedRole._id ;
       const role = omit(fetchedRole, ['_id', '_kuzzle'])
       this.documentValue = JSON.stringify(role, null, 2)
     } catch (e) {
@@ -262,9 +264,9 @@ export default {
         appendToast: true,
         dismissible: true,
         noAutoHide: true
-      })
+      }) ;
     }
-    this.loading = false
+    this.loading = false ;
   }
-}
+} ;
 </script>

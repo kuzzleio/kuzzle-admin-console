@@ -40,9 +40,9 @@
 </template>
 
 <script>
-import IndexBranch from './IndexBranch'
-import { filterIndexesByKeyword } from '../../../services/indexHelpers'
-import { mapGetters } from 'vuex'
+import IndexBranch from './IndexBranch' ;
+import { filterIndexesByKeyword } from '../../../services/indexHelpers' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'Treeview',
@@ -56,7 +56,7 @@ export default {
   data() {
     return {
       filter: ''
-    }
+    } ;
   },
   computed: {
     ...mapGetters('auth', ['canSearchIndex']),
@@ -66,13 +66,13 @@ export default {
       ].sort((a, b) => a.name.localeCompare(b.name))
     },
     isLoading() {
-      return this.$store.direct.getters.index.loadingIndexes
+      return this.$store.direct.getters.index.loadingIndexes ;
     },
     indexes() {
-      return this.$store.direct.getters.index.indexes
+      return this.$store.direct.getters.index.indexes ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

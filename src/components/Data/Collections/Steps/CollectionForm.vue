@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import CollectionFormLine from './CollectionFormLine'
+import CollectionFormLine from './CollectionFormLine' ;
 
 export default {
   name: 'CollectionForm',
@@ -125,14 +125,14 @@ export default {
     return {
       schema: {},
       allowForm: true
-    }
+    } ;
   },
   computed: {
     flattenMapping() {
-      return this.$store.direct.getters.collection.flattenMapping
+      return this.$store.direct.getters.collection.flattenMapping ;
     },
     flattenSchemaWithType() {
-      return this.$store.direct.getters.collection.flattenSchemaWithType
+      return this.$store.direct.getters.collection.flattenSchemaWithType ;
     }
   },
   watch: {
@@ -142,7 +142,7 @@ export default {
       // }
     },
     flattenSchemaWithType() {
-      this.schema = { ...this.flattenSchemaWithType }
+      this.schema = { ...this.flattenSchemaWithType } ;
     },
     flattenMapping(newMapping) {
       if (Object.keys(newMapping).length === 0) {
@@ -165,10 +165,10 @@ export default {
       this.$store.direct.commit.collection.setSchema({
         ...this.schema,
         [event.name]: event.element
-      })
+      }) ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

@@ -26,5 +26,5 @@
 export default {
   name: 'PageNotAllowed',
   components: {}
-}
+} ;
 </script>

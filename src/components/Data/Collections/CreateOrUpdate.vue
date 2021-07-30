@@ -150,21 +150,22 @@
 </style>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { requiredUnless } from 'vuelidate/lib/validators'
-import { mapGetters } from 'vuex'
+import { validationMixin } from 'vuelidate' ;
+import { requiredUnless } from 'vuelidate/lib/validators' ;
+import { mapGetters } from 'vuex' ;
 
-import Headline from '../../Materialize/Headline'
-import Focus from '../../../directives/focus.directive'
-import JsonEditor from '../../Common/JsonEditor'
+import Headline from '../../Materialize/Headline' ;
+import Focus from '../../../directives/focus.directive' ;
+import JsonEditor from '../../Common/JsonEditor' ;
 
 function isValidCollectionName(value) {
   const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(
     value
-  )
+  ) ;
   const containsUpperCase = /[A-Z]/.test(value)
   const isTooLong = new TextEncoder().encode(value).length > 128
-  return !containsDisallowed && !containsUpperCase && !isTooLong
+
+  return !containsDisallowed && !containsUpperCase && !isTooLong ;
 }
 
 export default {
@@ -193,7 +194,7 @@ export default {
       dynamicState: this.dynamic || 'false',
       name: this.collection || '',
       rawMapping: '{}'
-    }
+    } ;
   },
   validations() {
     return {
@@ -206,60 +207,65 @@ export default {
           try {
             JSON.parse(value)
           } catch (e) {
-            return false
+            return false ;
           }
-          return true
+
+          return true ;
         }
       }
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['currentEnvironment']),
     indexName() {
-      return this.$route.params.indexName
+      return this.$route.params.indexName ;
     },
     collectionName() {
-      return this.$route.params.collectionName
+      return this.$route.params.collectionName ;
     },
     mappingFileName() {
-      return `${this.currentEnvironment.name}-${this.indexName}-${this.name}-mapping.json`
+      return `${this.currentEnvironment.name}-${this.indexName}-${this.name}-mapping.json` ;
     },
     nameInputState() {
-      const { $dirty, $error } = this.$v.name
-      const state = $dirty ? !$error : null
-      return state
+      const { $dirty, $error } = this.$v.name ;
+      const state = $dirty ? !$error : null ;
+
+      return state ;
     },
     mappingState() {
       try {
         return JSON.parse(this.rawMapping)
       } catch (error) {
-        return {}
+        return {} ;
       }
     },
     isMappingValid() {
       try {
         JSON.parse(this.rawMapping)
-        return true
+
+        return true ;
       } catch (error) {
-        return false
+        return false ;
       }
     },
     downloadMappingValue() {
       if (this.isMappingValid) {
         const blob = new Blob([JSON.stringify(JSON.parse(this.rawMapping))], {
           type: 'application/json'
-        })
+        }) ;
+
         return window.URL.createObjectURL(blob)
       }
-      return null
+
+      return null ;
     }
   },
   methods: {
     loadMappingValue(event) {
-      let file = event.target.files[0]
+      let file = event.target.files[0] ;
       let reader = new FileReader()
       reader.onload = async e => {
-        this.rawMapping = e.target.result
+        this.rawMapping = e.target.result ;
         this.$refs.jsoneditor.setContent(this.rawMapping)
         this.$bvToast.toast(
           'The file has been written in the json editor. You can still edit it before saving if necessary.',
@@ -271,12 +277,12 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
-      }
+        ) ;
+      } ;
       reader.readAsText(file)
     },
     onMappingChanged(value) {
-      this.rawMapping = value
+      this.rawMapping = value ;
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
@@ -285,13 +291,13 @@ export default {
         this.$router.push({
           name: 'Indexes',
           params: { index: this.index }
-        })
+        }) ;
       }
     },
     onSubmit() {
       this.$v.$touch()
       if (this.$v.$anyError) {
-        return
+        return ;
       }
 
       if (!this.isMappingValid) {
@@ -303,21 +309,21 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true
           }
-        )
+        ) ;
       }
 
       this.$emit('submit', {
         dynamic: this.dynamicState,
         name: this.name,
         mapping: this.mappingState
-      })
+      }) ;
     }
   },
   watch: {
     dynamic: {
       immediate: true,
       handler(v) {
-        this.dynamicState = v
+        this.dynamicState = v ;
       }
     },
     mapping: {
@@ -333,9 +339,9 @@ export default {
     collection: {
       immediate: true,
       handler(v) {
-        this.name = v
+        this.name = v ;
       }
     }
   }
-}
+} ;
 </script>

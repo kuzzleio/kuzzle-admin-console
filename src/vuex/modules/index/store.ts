@@ -1,30 +1,30 @@
-import * as getters from './getters'
-import { getIndexPosition } from '@/services/indexHelpers'
-import Vue from 'vue'
+import * as getters from './getters' ;
+import { getIndexPosition } from '@/services/indexHelpers' ;
+import Vue from 'vue' ;
 import {
-  IndexState,
-  Index,
   Collection,
   CollectionType,
+  CreateCollectionPayload,
+  Index,
   IndexCollectionPayload,
   IndexCollectionsPayload,
   IndexLoadingCollectionsPayload,
-  CreateCollectionPayload,
+  IndexState,
   UpdateCollectionPayload
-} from './types'
-import { createMutations, createModule, createActions } from 'direct-vuex'
-import { moduleActionContext } from '@/vuex/store'
-import _ from 'lodash'
+} from './types' ;
+import { createActions, createModule, createMutations } from 'direct-vuex' ;
+import { moduleActionContext } from '@/vuex/store' ;
+import _ from 'lodash' ;
 
 const state: IndexState = {
   indexes: [],
   loadingIndexes: false
-}
+} ;
 
 const mutations = createMutations<IndexState>()({
   reset(state) {
-    state.indexes = []
-    state.loadingIndexes = false
+    state.indexes = [] ;
+    state.loadingIndexes = false ;
   },
   setLoadingIndexes(state, value: boolean) {
     Vue.set(state, 'loadingIndexes', value)
@@ -37,7 +37,7 @@ const mutations = createMutations<IndexState>()({
       state.indexes[getIndexPosition(state.indexes, index.name)],
       'loading',
       loading
-    )
+    ) ;
   },
   setIndexes(state, indexes: Index[]) {
     Vue.set(state, 'indexes', indexes)
@@ -48,16 +48,16 @@ const mutations = createMutations<IndexState>()({
   addCollection(state, { index, collection }: IndexCollectionPayload) {
     state.indexes[getIndexPosition(state.indexes, index.name)].addCollection(
       collection
-    )
+    ) ;
   },
   updateCollection(state, { index, collection }: IndexCollectionPayload) {
     if (!index.collections) {
-      return
+      return ;
     }
 
     const collectionPosition = index.collections.findIndex(
       el => el.name === collection.name
-    )
+    ) ;
 
     Vue.set(index.collections, collectionPosition, collection)
   },
@@ -74,9 +74,9 @@ const mutations = createMutations<IndexState>()({
   removeCollection(state, { index, collection }: IndexCollectionPayload): void {
     state.indexes[getIndexPosition(state.indexes, index.name)].removeCollection(
       collection
-    )
+    ) ;
   }
-})
+}) ;
 
 const actions = createActions({
   async createIndex(context, name: string) {
@@ -103,7 +103,7 @@ const actions = createActions({
   },
   async fetchIndexList(context) {
     const { commit, rootGetters, state } = indexActionContext(context)
-    const indexes: Index[] = []
+    const indexes: Index[] = [] ;
     commit.setLoadingIndexes(true)
 
     let result = await rootGetters.kuzzle.$kuzzle.index.list()
@@ -115,12 +115,12 @@ const actions = createActions({
     // remove deleted indexes
     _.differenceBy(state.indexes, indexes, 'name').forEach(el => {
       commit.removeIndex(el)
-    })
+    }) ;
 
     // add new indexes
     _.differenceBy(indexes, state.indexes, 'name').forEach(el => {
       commit.addIndex(el)
-    })
+    }) ;
 
     commit.setLoadingIndexes(false)
   },
@@ -139,29 +139,30 @@ const actions = createActions({
               findEl.name === el.name && findEl.type === CollectionType.STORED
           )
         ) {
-          return false
+          return false ;
         }
-        return true
+
+        return true ;
       })
       .map(el => {
         return new Collection(el.name, el.type)
-      })
+      }) ;
 
     if (!index.collections) {
       commit.setCollections({
         index,
         collections
-      })
+      }) ;
     } else {
       // remove deleted collections
       _.differenceBy(index.collections, collections, 'name').forEach(el => {
         commit.removeCollection(el)
-      })
+      }) ;
 
       // add new collections
       _.differenceBy(collections, index.collections, 'name').forEach(el => {
         commit.addCollection(el)
-      })
+      }) ;
     }
 
     commit.setLoadingCollections({ index, loading: false })
@@ -182,15 +183,15 @@ const actions = createActions({
 
     let collection = new Collection(name, CollectionType.STORED)
 
-    collection.mapping = mapping
-    collection.dynamic = dynamic
+    collection.mapping = mapping ;
+    collection.dynamic = dynamic ;
 
     await rootGetters.kuzzle.$kuzzle.collection.create(index.name, name, {
       dynamic,
       properties: {
         ...mapping
       }
-    })
+    }) ;
 
     commit.addCollection({ index, collection })
   },
@@ -206,8 +207,8 @@ const actions = createActions({
 
     let updatedCollection = new Collection(name, CollectionType.STORED)
 
-    updatedCollection.mapping = mapping
-    updatedCollection.dynamic = dynamic
+    updatedCollection.mapping = mapping ;
+    updatedCollection.dynamic = dynamic ;
 
     // TODO: use dedicated SDK method instead of query
     await rootGetters.kuzzle.$kuzzle.query({
@@ -221,7 +222,7 @@ const actions = createActions({
           ...mapping
         }
       }
-    })
+    }) ;
 
     commit.updateCollection({ index, collection: updatedCollection })
   },
@@ -238,7 +239,7 @@ const actions = createActions({
     await rootGetters.kuzzle.$kuzzle.collection.delete(
       index.name,
       collection.name
-    )
+    ) ;
 
     commit.removeCollection({ index, collection })
   },
@@ -254,7 +255,7 @@ const actions = createActions({
       await rootGetters.kuzzle.$kuzzle.collection.delete(
         index.name,
         collection.name
-      )
+      ) ;
 
       commit.removeCollection({ index, collection })
     }
@@ -274,14 +275,14 @@ const actions = createActions({
     const kuzzleMapping = await rootGetters.kuzzle.wrapper.getMappingDocument(
       collection.name,
       index.name
-    )
+    ) ;
 
-    collection.mapping = kuzzleMapping.properties
-    collection.dynamic = kuzzleMapping.dynamic
+    collection.mapping = kuzzleMapping.properties ;
+    collection.dynamic = kuzzleMapping.dynamic ;
 
     commit.updateCollection({ index, collection: collection })
   }
-})
+}) ;
 
 const index = createModule({
   namespaced: true,
@@ -289,9 +290,9 @@ const index = createModule({
   mutations,
   actions,
   getters
-})
+}) ;
 
-export default index
+export default index ;
 
 export const indexActionContext = (context: any) =>
   moduleActionContext(context, index)

@@ -61,10 +61,10 @@
 </template>
 
 <script>
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import RoleList from './List'
-import Headline from '../../Materialize/Headline'
-import { mapGetters } from 'vuex'
+import ListNotAllowed from '../../Common/ListNotAllowed' ;
+import RoleList from './List' ;
+import Headline from '../../Materialize/Headline' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'RolesManagement',
@@ -102,7 +102,7 @@ export default {
             }
           },
           { refresh: 'wait_for' }
-        )
+        ) ;
 
         await this.$kuzzle.security.updateRole(
           'default',
@@ -130,7 +130,7 @@ export default {
             }
           },
           { refresh: 'wait_for' }
-        )
+        ) ;
         this.$router.go(this.$router.currentRoute)
       } catch (err) {
         this.$log.error(err)
@@ -142,7 +142,7 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true
           }
-        )
+        ) ;
       }
     }
   },
@@ -155,8 +155,8 @@ export default {
         this.$store.direct.getters.auth.canEditRole &&
         this.$store.direct.getters.auth.canManageRoles &&
         this.$store.direct.getters.auth.user.id !== -1
-      )
+      ) ;
     }
   }
-}
+} ;
 </script>

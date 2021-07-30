@@ -29,7 +29,7 @@
 <style lang="scss" rel="stylesheet/scss" scoped></style>
 
 <script>
-import CreateEnvironment from './CreateEnvironment'
+import CreateEnvironment from './CreateEnvironment' ;
 
 export default {
   name: 'EnvironmentsCreateModal',
@@ -48,8 +48,8 @@ export default {
         if (submitted) {
           this.$bvModal.hide(this.id)
         }
-      })
+      }) ;
     }
   }
-}
+} ;
 </script>

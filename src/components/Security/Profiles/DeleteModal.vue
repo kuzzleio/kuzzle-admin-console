@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { truncateName } from '../../../utils'
+import { truncateName } from '../../../utils' ;
 
 export default {
   name: 'ProfileDeleteModal',
@@ -55,5 +55,5 @@ export default {
   methods: {
     truncateName
   }
-}
+} ;
 </script>

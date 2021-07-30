@@ -61,11 +61,11 @@
 </template>
 
 <script>
-import List from './List'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import Headline from '../../Materialize/Headline'
-import { mapGetters } from 'vuex'
-import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
+import List from './List' ;
+import ListNotAllowed from '../../Common/ListNotAllowed' ;
+import Headline from '../../Materialize/Headline' ;
+import { mapGetters } from 'vuex' ;
+import { extractAttributesFromMapping } from '../../../services/mappingHelpers' ;
 
 export default {
   name: 'UsersManagement',
@@ -77,7 +77,7 @@ export default {
   data() {
     return {
       userMapping: {}
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
@@ -88,7 +88,7 @@ export default {
   },
   async mounted() {
     const mapping = await this.wrapper.getMappingUsers()
-    this.userMapping = mapping.mapping
+    this.userMapping = mapping.mapping ;
   },
   methods: {
     extractAttributesFromMapping,
@@ -96,7 +96,7 @@ export default {
       this.$router.push({ name: 'SecurityUsersCreate' })
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

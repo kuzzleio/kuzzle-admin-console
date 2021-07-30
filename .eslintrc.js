@@ -11,7 +11,14 @@ module.exports = {
   rules: {
     "no-console": "error",
     "no-debugger": "error",
-    "require-atomic-updates": "off"
+    "require-atomic-updates": "off",
+    "semi": ["error", "always"],
+    "semi-spacing": ["error", {"before": true, "after": false}],
+    "semi-style": ["error", "first"],
+    "operator-linebreak": ["error", "after"],
+    "sort-imports": "error",
+    "newline-before-return": "error",
+    "func-call-spacing": ["error", "always", { "allowNewlines": true }]
   },
 
   parserOptions: {

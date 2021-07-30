@@ -35,18 +35,19 @@
 </template>
 
 <script>
-import Autocomplete from '../../../Common/Autocomplete'
-import { Chrome as ColorPicker } from 'vue-color'
+import Autocomplete from '../../../Common/Autocomplete' ;
+import { Chrome as ColorPicker } from 'vue-color' ;
 
 const getRandomColor = () => {
-  const letters = '0123456789ABCDEF'
-  let color = '#'
+  const letters = '0123456789ABCDEF' ;
+  let color = '#' ;
 
   for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)]
   }
-  return color
-}
+
+  return color ;
+} ;
 
 export default {
   name: 'TimeSeriesItem',
@@ -70,7 +71,7 @@ export default {
     items: {
       type: Array,
       default: () => {
-        return []
+        return [] ;
       }
     },
     newValue: {
@@ -86,12 +87,12 @@ export default {
     return {
       showColorPicker: false,
       newColor: this.color
-    }
+    } ;
   },
   mounted() {
     document.addEventListener('click', this.handleClickOutside)
 
-    this.newColor = this.color
+    this.newColor = this.color ;
   },
   destroyed() {
     document.removeEventListener('click', this.handleClickOutside)
@@ -99,14 +100,14 @@ export default {
   methods: {
     handleClickOutside(evt) {
       if (!this.$el.contains(evt.target)) {
-        this.showColorPicker = false
+        this.showColorPicker = false ;
       }
     },
     togglePicker() {
-      this.showColorPicker = !this.showColorPicker
+      this.showColorPicker = !this.showColorPicker ;
     },
     updateColor(color) {
-      this.newColor = color.hex
+      this.newColor = color.hex ;
       if (this.isUpdatable) {
         this.$emit('update-color', { color: this.newColor, index: this.index })
       }
@@ -116,7 +117,7 @@ export default {
       this.newColor = getRandomColor()
     }
   }
-}
+} ;
 </script>
 
 <style scoped>

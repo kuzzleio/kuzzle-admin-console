@@ -59,8 +59,8 @@
 </template>
 
 <script>
-import * as filterManager from '../../../services/filterManager'
-import { mapGetters } from 'vuex'
+import * as filterManager from '../../../services/filterManager' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'FavoriteFilterItem',
@@ -74,14 +74,14 @@ export default {
     return {
       expanded: false,
       oldName: this.favorite.name
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper'])
   },
   methods: {
     cancelChange() {
-      this.favorite.name = this.oldName
+      this.favorite.name = this.oldName ;
     },
     openModal() {
       this.$bvModal.show('changeNameHistoryFilter-' + this.favorite.id)
@@ -99,20 +99,20 @@ export default {
           this.favorite.basic,
           this.favorite.sorting,
           true
-        )
+        ) ;
       }
     },
     getFilter() {
       let loadedFilter = Object.assign(
         new filterManager.Filter(),
         this.favorite
-      )
-      if (loadedFilter.active == 'basic') return loadedFilter.basic
-      if (loadedFilter.active == 'raw') return loadedFilter.raw
+      ) ;
+      if (loadedFilter.active == 'basic') return loadedFilter.basic ;
+      if (loadedFilter.active == 'raw') return loadedFilter.raw ;
     },
     toggleCollapse() {
-      this.expanded = !this.expanded
+      this.expanded = !this.expanded ;
     }
   }
-}
+} ;
 </script>

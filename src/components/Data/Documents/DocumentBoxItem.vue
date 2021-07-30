@@ -37,9 +37,9 @@
 </template>
 
 <script>
-import Dropdown from '../../Materialize/Dropdown'
-import JsonFormat from '../../../directives/json-formatter.directive'
-import { mapGetters } from 'vuex'
+import Dropdown from '../../Materialize/Dropdown' ;
+import JsonFormat from '../../../directives/json-formatter.directive' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'DocumentBoxItem',
   directives: {
@@ -54,29 +54,32 @@ export default {
     collection: String
   },
   data() {
-    return {}
+    return {} ;
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     documentContent() {
       let content = Object.assign(this.document.content, {})
-      delete content._kuzzle_info
-      return content
+      delete content._kuzzle_info ;
+
+      return content ;
     },
     canEdit() {
       if (!this.index || !this.collection) {
-        return false
+        return false ;
       }
+
       return this.canEditDocument(this.index, this.collection)
     },
     canDelete() {
       if (!this.index || !this.collection) {
-        return false
+        return false ;
       }
+
       return this.canDeleteDocument(this.index, this.collection)
     },
     checkboxId() {
-      return `checkbox-${this.document.id}`
+      return `checkbox-${this.document.id}` ;
     }
   },
   methods: {
@@ -91,7 +94,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss">

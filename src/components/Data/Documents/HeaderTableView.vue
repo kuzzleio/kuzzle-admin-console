@@ -31,11 +31,11 @@ export default {
     }
   },
   data() {
-    return {}
+    return {} ;
   },
   methods: {},
   mounted() {}
-}
+} ;
 </script>
 
 <style lang="scss">

@@ -148,10 +148,10 @@
 </style>
 
 <script>
-import JsonEditor from '../../../Common/JsonEditor'
-import Focus from '../../../../directives/focus.directive'
-import JsonFormatter from '../../../../directives/json-formatter.directive'
-import { formSchemaService, typesCorrespondance } from '@/services/formSchema'
+import JsonEditor from '../../../Common/JsonEditor' ;
+import Focus from '../../../../directives/focus.directive' ;
+import JsonFormatter from '../../../../directives/json-formatter.directive' ;
+import { formSchemaService, typesCorrespondance } from '@/services/formSchema' ;
 export default {
   name: 'DocumentCreateOrUpdate',
   components: {
@@ -174,7 +174,7 @@ export default {
       submitting: false,
       rawDocument: '{}',
       formViewEnabled: false
-    }
+    } ;
   },
   computed: {
     formSchema() {
@@ -187,22 +187,23 @@ export default {
       try {
         return JSON.parse(this.rawDocument)
       } catch (error) {
-        return {}
+        return {} ;
       }
     },
     isDocumentValid() {
       try {
         JSON.parse(this.rawDocument)
-        return true
+
+        return true ;
       } catch (error) {
-        return false
+        return false ;
       }
     }
   },
   methods: {
     onJsonChange(val) {
-      this.rawDocument = val
-      let parsed = {}
+      this.rawDocument = val ;
+      let parsed = {} ;
       try {
         parsed = JSON.parse(val)
         this.$emit('document-change', parsed)
@@ -215,11 +216,11 @@ export default {
     },
     submit(replace = false) {
       if (this.submitting) {
-        return
+        return ;
       }
 
       if (this.isDocumentValid) {
-        this.submitting = true
+        this.submitting = true ;
         this.$emit(
           'submit',
           this.formViewEnabled
@@ -227,8 +228,8 @@ export default {
             : { ...this.documentState },
           this.idValue,
           replace
-        )
-        this.submitting = false
+        ) ;
+        this.submitting = false ;
       } else {
         this.$bvToast.toast(
           'The JSON specification of the document contains errors',
@@ -238,7 +239,7 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true
           }
-        )
+        ) ;
       }
     }
   },
@@ -246,7 +247,7 @@ export default {
     id: {
       immediate: true,
       handler(val) {
-        this.idValue = val
+        this.idValue = val ;
       }
     },
     document: {
@@ -256,7 +257,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss">

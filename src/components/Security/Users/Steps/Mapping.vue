@@ -58,7 +58,7 @@
 </template>
 
 <script type="text/javascript">
-import JsonEditor from '../../../Common/JsonEditor'
+import JsonEditor from '../../../Common/JsonEditor' ;
 
 export default {
   name: 'UserCustomMappingEditor',
@@ -69,7 +69,7 @@ export default {
     mapping: {
       type: Object,
       default: () => {
-        return {}
+        return {} ;
       }
     },
     currentStep: {
@@ -88,5 +88,5 @@ export default {
       this.$emit('submit', newMapping)
     }
   }
-}
+} ;
 </script>

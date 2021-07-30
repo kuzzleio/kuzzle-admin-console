@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import Velocity from 'velocity-animate'
-import Vue from 'vue'
+import Velocity from 'velocity-animate' ;
+import Vue from 'vue' ;
 
 // translated from http://appcomponents.org/material-components/#!/tabs/sources
 export default {
@@ -19,11 +19,11 @@ export default {
   data() {
     return {
       activeTab: null
-    }
+    } ;
   },
   computed: {
     tabsCount() {
-      return this.$children.length
+      return this.$children.length ;
     }
   },
   watch: {
@@ -39,49 +39,49 @@ export default {
   mounted() {
     Vue.nextTick(() => {
       window.addEventListener('resize', this.resizeIndicator)
-    })
+    }) ;
   },
   destroyed() {
     window.removeEventListener('resize', this.resizeIndicator)
   },
   methods: {
     select(tab) {
-      this.activeTab = tab
+      this.activeTab = tab ;
 
-      let target = tab.$el
-      let parent = target.parentElement
+      let target = tab.$el ;
+      let parent = target.parentElement ;
 
       this.moveIndicator(
         target.offsetLeft,
         parent.offsetWidth - target.offsetLeft - target.offsetWidth
-      )
+      ) ;
       this.$emit('tab-changed', tab.name)
     },
     resizeIndicator() {
       if (!this.activeTab) {
-        return
+        return ;
       }
 
-      let indicator = this.$refs.indicator
+      let indicator = this.$refs.indicator ;
 
-      let index = this.activeTab.index
-      let tabs = this.activeTab.$el.parentElement
-      let tabsWidth = tabs.offsetWidth
+      let index = this.activeTab.index ;
+      let tabs = this.activeTab.$el.parentElement ;
+      let tabsWidth = tabs.offsetWidth ;
       let tabWidth = Math.max(tabsWidth, tabs.scrollWidth) / this.tabsCount
 
       if (tabWidth !== 0 && tabsWidth !== 0) {
-        indicator.style.right = tabsWidth - (index + 1) * tabWidth + 'px'
-        indicator.style.left = index * tabWidth + 'px'
+        indicator.style.right = tabsWidth - (index + 1) * tabWidth + 'px' ;
+        indicator.style.left = index * tabWidth + 'px' ;
       }
     },
     moveIndicator(newLeft, newRight) {
-      let indicator = this.$refs.indicator
+      let indicator = this.$refs.indicator ;
       Velocity(
         indicator,
         { left: newLeft, right: newRight },
         { duration: 300, queue: false, easing: 'easeOutQuad' }
-      )
+      ) ;
     }
   }
-}
+} ;
 </script>

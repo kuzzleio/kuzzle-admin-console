@@ -12,9 +12,9 @@
 </template>
 
 <script>
-import PageNotAllowed from '../../Common/PageNotAllowed'
-import CreateOrUpdate from './CreateOrUpdate'
-import { mapGetters } from 'vuex'
+import PageNotAllowed from '../../Common/PageNotAllowed' ;
+import CreateOrUpdate from './CreateOrUpdate' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'CollectionCreate',
   components: {
@@ -41,12 +41,12 @@ export default {
           name: payload.name,
           mapping: payload.mapping,
           dynamic: payload.dynamic
-        })
+        }) ;
 
         this.$router.push({
           name: 'Collections',
           params: { indexName: this.index.name }
-        })
+        }) ;
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(error.message, {
@@ -56,9 +56,9 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     }
   }
-}
+} ;
 </script>

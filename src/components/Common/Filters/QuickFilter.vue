@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import AutoFocusInput from '../AutoFocusInput'
+import AutoFocusInput from '../AutoFocusInput' ;
 
 export default {
   name: 'QuickFilter',
@@ -138,7 +138,7 @@ export default {
   data() {
     return {
       value: this.initialValue
-    }
+    } ;
   },
   methods: {
     submitSearch() {
@@ -163,7 +163,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

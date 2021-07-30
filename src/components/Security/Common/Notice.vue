@@ -20,5 +20,5 @@
 <script>
 export default {
   name: 'SecurityNotice'
-}
+} ;
 </script>

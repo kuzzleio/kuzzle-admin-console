@@ -30,10 +30,10 @@
 </template>
 
 <script>
-import Basic from './Basic'
-import CredentialsSelector from './CredentialsSelector'
-import CustomData from './CustomData'
-import { mapGetters } from 'vuex'
+import Basic from './Basic' ;
+import CredentialsSelector from './CredentialsSelector' ;
+import CustomData from './CustomData' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'StepsContent',
   components: {
@@ -52,13 +52,13 @@ export default {
       credentialsMapping: {},
       customContent: {},
       customContentMapping: {}
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'wrapper'])
   },
   async mounted() {
-    this.loading = true
+    this.loading = true ;
 
     try {
       let credentialsMapping = await this.$kuzzle.security.getAllCredentialFields()
@@ -67,52 +67,52 @@ export default {
       // Clean "kuid" from credentialsMapping
       this.strategies.forEach(strategy => {
         if (credentialsMapping[strategy].kuid) {
-          delete credentialsMapping[strategy].kuid
+          delete credentialsMapping[strategy].kuid ;
         }
-      })
-      this.credentialsMapping = credentialsMapping
+      }) ;
+      this.credentialsMapping = credentialsMapping ;
 
       const { mapping } = await this.wrapper.getMappingUsers()
       if (mapping) {
-        this.customContentMapping = mapping
-        delete this.customContentMapping.profileIds
+        this.customContentMapping = mapping ;
+        delete this.customContentMapping.profileIds ;
       }
 
       if (this.isUpdate) {
-        this.kuid = this.$route.params.id
+        this.kuid = this.$route.params.id ;
 
         await Promise.all(
           this.strategies.map(async strategy => {
             const credentialsExists = await this.$kuzzle.security.hasCredentials(
               strategy,
               this.kuid
-            )
+            ) ;
 
             if (!credentialsExists) {
-              return
+              return ;
             }
 
             let strategyCredentials = await this.$kuzzle.security.getCredentials(
               strategy,
               this.kuid
-            )
+            ) ;
 
             if (strategyCredentials.kuid) {
-              delete strategyCredentials.kuid
+              delete strategyCredentials.kuid ;
             }
 
             this.$set(this.credentials, strategy, strategyCredentials)
           })
-        )
+        ) ;
 
         let { _id, content } = await this.$kuzzle.security.getUser(this.kuid)
-        this.id = _id
-        this.addedProfiles = content.profileIds
-        delete content.profileIds
-        this.customContent = { ...content }
+        this.id = _id ;
+        this.addedProfiles = content.profileIds ;
+        delete content.profileIds ;
+        this.customContent = { ...content } ;
       }
 
-      this.loading = false
+      this.loading = false ;
       this.updateUser()
     } catch (e) {
       this.$store.direct.commit.toaster.setToast({ text: e.message })
@@ -126,7 +126,7 @@ export default {
         addedProfiles: this.addedProfiles,
         credentials: this.credentials,
         customContent: this.customContent
-      })
+      }) ;
     },
     onProfileAdded(profile) {
       this.addedProfiles.push(profile)
@@ -137,21 +137,21 @@ export default {
       this.updateUser()
     },
     setAutoGenerateKuid(value) {
-      this.autoGenerateKuid = value
+      this.autoGenerateKuid = value ;
       this.updateUser()
     },
     setCustomKuid(value) {
-      this.kuid = value
+      this.kuid = value ;
       this.updateUser()
     },
     onCredentialsChanged(payload) {
-      this.credentials[payload.strategy] = { ...payload.credentials }
+      this.credentials[payload.strategy] = { ...payload.credentials } ;
       this.updateUser()
     },
     onCustomContentChanged(value) {
-      this.customContent = value
+      this.customContent = value ;
       this.updateUser()
     }
   }
-}
+} ;
 </script>

@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { truncateName } from '@/utils'
+import { truncateName } from '@/utils' ;
 
 export default {
   name: 'deleteIndexModal',
@@ -68,7 +68,7 @@ export default {
     return {
       error: '',
       confirmation: ''
-    }
+    } ;
   },
   computed: {
     isConfirmationValid() {
@@ -80,8 +80,8 @@ export default {
   methods: {
     truncateName,
     resetForm() {
-      this.confirmation = ''
-      this.error = ''
+      this.confirmation = '' ;
+      this.error = '' ;
     },
     onDeleteSuccess() {
       this.resetForm()
@@ -96,21 +96,21 @@ export default {
 
     async performDelete() {
       if (!this.isConfirmationValid) {
-        return
+        return ;
       }
 
       try {
         await this.$store.direct.dispatch.index.deleteCollection({
           index: this.index,
           collection: this.collection
-        })
+        }) ;
 
         this.onDeleteSuccess()
       } catch (err) {
         this.$log.error(err)
-        this.error = err.message
+        this.error = err.message ;
       }
     }
   }
-}
+} ;
 </script>

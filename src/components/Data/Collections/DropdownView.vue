@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'CollectionDropdown',
   components: {},
@@ -80,17 +80,17 @@ export default {
         Object.keys(this.mappingAttributes).filter(
           a => this.mappingAttributes[a].type === 'integer'
         ).length > 0
-      )
+      ) ;
     },
     mappingHasGeoField() {
       return (
         Object.keys(this.mappingAttributes).filter(a =>
           ['geo_point', 'geo_shape'].includes(this.mappingAttributes[a].type)
         ).length > 0
-      )
+      ) ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

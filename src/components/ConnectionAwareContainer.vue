@@ -45,10 +45,10 @@
 </template>
 
 <script>
-import ErrorPage from './Error/KuzzleErrorPage'
-import OfflineSpinner from './Common/Offline'
-import { antiGlitchOverlayTimeout } from '../utils'
-import { mapGetters } from 'vuex'
+import ErrorPage from './Error/KuzzleErrorPage' ;
+import OfflineSpinner from './Common/Offline' ;
+import { antiGlitchOverlayTimeout } from '../utils' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'ConnectionAwareContainer',
@@ -59,67 +59,67 @@ export default {
   data() {
     return {
       showOfflineSpinner: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     currentEnvironmentId() {
-      return this.$store.state.kuzzle.currentId
+      return this.$store.state.kuzzle.currentId ;
     },
     kuzzleError() {
-      return this.$store.state.kuzzle.errorFromKuzzle
+      return this.$store.state.kuzzle.errorFromKuzzle ;
     },
     online() {
-      return this.$store.direct.state.kuzzle.online
+      return this.$store.direct.state.kuzzle.online ;
     },
     connecting() {
-      return this.$store.direct.state.kuzzle.connecting
+      return this.$store.direct.state.kuzzle.connecting ;
     }
   },
   methods: {
     initListeners() {
       if (!this.$kuzzle) {
-        return
+        return ;
       }
       this.$kuzzle.on('networkError', error => {
         this.$log.error(
           `ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`
-        )
-      })
+        ) ;
+      }) ;
       this.$kuzzle.addListener('connected', async () => {
         this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
         this.$log.debug(
           'ConnectionAwareContainer::initializing auth upon connection...'
-        )
+        ) ;
         try {
           await this.$store.direct.dispatch.auth.init()
         } catch (error) {
           this.$log.error(
             `ConnectionAwareContainer:initializing auth: "${error.message}" - code: ${error.code} - id: ${error.id}`
-          )
+          ) ;
           if (error.id === 'api.process.incompatible_sdk_version') {
             return this.$store.direct.dispatch.kuzzle.onConnectionError(error)
           }
         }
         this.authenticationGuard()
-      })
+      }) ;
       this.$kuzzle.addListener('reconnected', () => {
         this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
         this.$log.debug(
           'ConnectionAwareContainer::checking token after reconnection...'
-        )
+        ) ;
         this.$store.direct.dispatch.auth.checkToken()
-      })
+      }) ;
       this.$kuzzle.addListener('disconnected', () => {
         this.$log.debug('ConnectionAwareContainer::backend went offline...')
         this.$store.direct.commit.kuzzle.setOnline(false)
-      })
+      }) ;
     },
     removeListeners() {
       if (!this.$kuzzle) {
-        return
+        return ;
       }
       this.$kuzzle.removeAllListeners('networkError')
       this.$kuzzle.removeAllListeners('connected')
@@ -149,13 +149,13 @@ export default {
       } catch (error) {
         this.$log.error(
           `ConnectionAwareContainer:onEnvironmentSwitch: ${error.message}`
-        )
+        ) ;
       }
     },
     async authenticationGuard() {
       this.$log.debug('ConnectionAwareContainer::authentication guard')
       if (this.$route.meta.skipLogin) {
-        return
+        return ;
       }
       if (
         this.$route.matched.some(record => record.meta.requiresAuth) &&
@@ -180,7 +180,7 @@ export default {
       immediate: true,
       handler(instance) {
         if (!instance) {
-          return
+          return ;
         }
         this.removeListeners()
         this.initListeners()
@@ -194,7 +194,7 @@ export default {
         } catch (error) {
           this.$log.error(
             `ConnectionAwareContainer:currentEnvironmentWatch: ${error.message}`
-          )
+          ) ;
         }
       }
     },
@@ -207,14 +207,14 @@ export default {
     connecting: {
       immediate: true,
       handler(val) {
-        this.showOfflineSpinner = val
+        this.showOfflineSpinner = val ;
         setTimeout(() => {
-          this.showOfflineSpinner = true
-        }, antiGlitchOverlayTimeout)
+          this.showOfflineSpinner = true ;
+        }, antiGlitchOverlayTimeout) ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style>

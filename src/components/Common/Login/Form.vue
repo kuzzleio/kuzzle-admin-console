@@ -65,8 +65,8 @@
 </template>
 
 <script>
-import Focus from '../../../directives/focus.directive'
-import { mapGetters } from 'vuex'
+import Focus from '../../../directives/focus.directive' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'LoginForm',
   directives: {
@@ -80,22 +80,22 @@ export default {
       username: null,
       password: null,
       error: ''
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle'])
   },
   methods: {
     dismissError() {
-      this.error = ''
+      this.error = '' ;
     },
     async login() {
-      this.error = ''
+      this.error = '' ;
       try {
         await this.$store.direct.dispatch.auth.doLogin({
           username: this.username,
           password: this.password
-        })
+        }) ;
         this.onLogin() // TODO change this to $emit
       } catch (err) {
         if (
@@ -110,24 +110,24 @@ export default {
               showIntro: true,
               token: err.resetToken
             }
-          })
+          }) ;
         } else {
-          this.error = err.message
+          this.error = err.message ;
         }
       }
     },
     async loginAsAnonymous() {
-      this.error = ''
-      this.$kuzzle.jwt = null
+      this.error = '' ;
+      this.$kuzzle.jwt = null ;
       try {
         await this.$store.direct.dispatch.auth.setSession('anonymous')
         await this.onLogin()
       } catch (error) {
-        this.error = error.message
+        this.error = error.message ;
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped></style>

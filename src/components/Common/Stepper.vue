@@ -94,7 +94,7 @@ export default {
     disabledSteps: {
       type: Array,
       default: () => {
-        return []
+        return [] ;
       }
     },
     steps: {
@@ -105,11 +105,11 @@ export default {
   methods: {
     changeStep(number) {
       if (this.disabledSteps.indexOf(number) !== -1) {
-        return
+        return ;
       }
 
       this.$emit('changed-step', number)
     }
   }
-}
+} ;
 </script>

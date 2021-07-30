@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'RolesFilters',
@@ -67,15 +67,15 @@ export default {
       controllers: [],
       availableControllers: [],
       disableDropdown: false
-    }
+    } ;
   },
   methods: {
     resetSearch() {
-      this.controllers = []
+      this.controllers = [] ;
     },
     addControllerTag(controller) {
       if (this.controllers.includes(controller)) {
-        return
+        return ;
       }
       this.controllers.push(controller)
     },
@@ -84,10 +84,10 @@ export default {
         const publicApi = await this.$kuzzle.query({
           controller: 'server',
           action: 'publicApi'
-        })
+        }) ;
         this.availableControllers = Object.keys(publicApi.result)
       } catch (error) {
-        this.disableDropdown = true
+        this.disableDropdown = true ;
         this.$log.error(error)
       }
     }
@@ -106,7 +106,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss">

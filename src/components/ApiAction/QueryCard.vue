@@ -160,10 +160,10 @@
 </template>
 
 <script>
-import jsonEditor from '@/components/Common/JsonEditor'
-import ResponseCard from '@/components/ApiAction/ResponseCard'
-import { Multipane, MultipaneResizer } from 'vue-multipane'
-import _ from 'lodash'
+import jsonEditor from '@/components/Common/JsonEditor' ;
+import ResponseCard from '@/components/ApiAction/ResponseCard' ;
+import { Multipane, MultipaneResizer } from 'vue-multipane' ;
+import _ from 'lodash' ;
 
 export default {
   name: 'QueryCard',
@@ -189,7 +189,7 @@ export default {
         action: null,
         body: {}
       }
-    }
+    } ;
   },
   mounted() {
     this.editedQuery = JSON.parse(JSON.stringify(this.query))
@@ -201,9 +201,10 @@ export default {
     },
     actions() {
       if (!this.api) {
-        return []
+        return [] ;
       }
-      const currentController = this.editedQuery.controller
+      const currentController = this.editedQuery.controller ;
+
       return currentController && this.api[currentController]
         ? Object.keys(this.api[currentController])
         : []
@@ -211,7 +212,7 @@ export default {
   },
   methods: {
     toggleFullscreen() {
-      this.isFullScreen = !this.isFullScreen
+      this.isFullScreen = !this.isFullScreen ;
     },
     saveQuery() {
       this.$emit('saveQuery', this.tabIdx)
@@ -227,49 +228,51 @@ export default {
           controller: query.controller,
           action: query.action,
           body: query.body
-        }
+        } ;
         this.jsonQuery = JSON.stringify(obj, null, 2)
         this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
           this.jsonQuery
-        )
-        return
+        ) ;
+
+        return ;
       }
-      let path = api.http[0].url
+      let path = api.http[0].url ;
       let verb = api.http[0].verb.toLowerCase()
       const openApiPath = path.replaceAll(
         /:[^,/]+/g,
         m => `{${m.replace(':', '')}}`
-      )
+      ) ;
 
       const params = _.get(
         this.openapi,
         `${openApiPath}.${verb}.parameters`,
         null
-      )
+      ) ;
       if (params) {
         for (let param of params) {
           this.$log.debug(param)
-          query[param.name] = ''
+          query[param.name] = '' ;
         }
       }
       this.jsonQuery = JSON.stringify(query, null, 2)
       this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery)
     },
     queryBodyChange($event) {
-      this.jsonQuery = $event
+      this.jsonQuery = $event ;
       if (this.isQueryValid($event)) {
         this.editedQuery = JSON.parse($event)
       }
     },
     isQueryValid(query) {
       if (!query) {
-        return false
+        return false ;
       }
       try {
         JSON.parse(query)
-        return true
+
+        return true ;
       } catch (error) {
-        return false
+        return false ;
       }
     }
   },
@@ -285,11 +288,11 @@ export default {
       handler(value) {
         const tmp = JSON.parse(this.jsonQuery)
         if (value !== tmp.controller) {
-          tmp.controller = value
+          tmp.controller = value ;
           this.jsonQuery = JSON.stringify(tmp, null, 2)
           this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
             this.jsonQuery
-          )
+          ) ;
         }
       }
     },
@@ -298,17 +301,17 @@ export default {
       handler(value) {
         const tmp = JSON.parse(this.jsonQuery)
         if (value !== tmp.action) {
-          tmp.action = value
+          tmp.action = value ;
           this.jsonQuery = JSON.stringify(tmp, null, 2)
           this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
             this.jsonQuery
-          )
+          ) ;
           this.loadQueryParams()
         }
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

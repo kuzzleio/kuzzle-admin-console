@@ -19,10 +19,10 @@
   </b-container>
 </template>
 <script>
-import PageNotAllowed from '../../Common/PageNotAllowed'
-import CreateOrUpdate from './CreateOrUpdate'
-import { mapGetters } from 'vuex'
-import { omit } from 'lodash'
+import PageNotAllowed from '../../Common/PageNotAllowed' ;
+import CreateOrUpdate from './CreateOrUpdate' ;
+import { mapGetters } from 'vuex' ;
+import { omit } from 'lodash' ;
 
 export default {
   name: 'CollectionUpdate',
@@ -39,7 +39,7 @@ export default {
       dynamic: 'false',
       mapping: {},
       realtimeOnly: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('auth', ['canEditCollection']),
@@ -53,7 +53,7 @@ export default {
       return this.$store.direct.getters.index.getOneCollection(
         this.index,
         this.collectionName
-      )
+      ) ;
     },
     mappingAttributes() {
       return this.collection
@@ -63,23 +63,23 @@ export default {
     loading() {
       return this.$store.direct.getters.index.loadingCollections(
         this.index.name
-      )
+      ) ;
     }
   },
   methods: {
     async update(payload) {
-      this.error = ''
+      this.error = '' ;
       try {
         await this.$store.direct.dispatch.index.updateCollection({
           index: this.index,
           name: payload.name,
           mapping: payload.mapping,
           dynamic: payload.dynamic
-        })
+        }) ;
         this.$router.push({
           name: 'Collections',
           params: { indexName: this.index.name }
-        })
+        }) ;
       } catch (e) {
         this.$log.error(e)
         this.$bvToast.toast(e.message, {
@@ -89,12 +89,12 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     },
     setError(payload) {
-      this.error = payload
+      this.error = payload ;
     }
   }
-}
+} ;
 </script>

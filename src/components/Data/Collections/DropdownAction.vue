@@ -70,8 +70,8 @@
 </template>
 
 <script>
-import ModalClear from './ModalClear.vue'
-import { mapGetters } from 'vuex'
+import ModalClear from './ModalClear.vue' ;
+import { mapGetters } from 'vuex' ;
 
 export default {
   name: 'CollectionDropdownAction',
@@ -81,7 +81,7 @@ export default {
   data: function() {
     return {
       deleteConfirmation: ''
-    }
+    } ;
   },
   props: {
     collectionName: {
@@ -101,8 +101,8 @@ export default {
       this.$emit('delete-collection-clicked')
     },
     resetDeletePrompt() {
-      this.collectionToDelete = ''
-      this.deleteConfirmation = ''
+      this.collectionToDelete = '' ;
+      this.deleteConfirmation = '' ;
     },
     openModal() {
       if (this.canTruncateCollection(this.indexName, this.collectionName)) {
@@ -110,7 +110,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

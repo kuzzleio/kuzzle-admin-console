@@ -32,11 +32,11 @@
 </template>
 
 <script>
-import { Multipane, MultipaneResizer } from 'vue-multipane'
-import Treeview from '@/components/Data/Leftnav/Treeview'
-import DataNotFound from './Data404'
-import { mapGetters } from 'vuex'
-import { setPersistedItem, getPersistedItem } from './itemsStorage'
+import { Multipane, MultipaneResizer } from 'vue-multipane' ;
+import Treeview from '@/components/Data/Leftnav/Treeview' ;
+import DataNotFound from './Data404' ;
+import { mapGetters } from 'vuex' ;
+import { getPersistedItem, setPersistedItem } from './itemsStorage' ;
 
 export default {
   name: 'DataLayout',
@@ -52,31 +52,31 @@ export default {
       dataNotFound: false,
       viewIsFetching: false,
       paneSize: ''
-    }
+    } ;
   },
   computed: {
     ...mapGetters('index', ['loadingIndexes', 'loadingCollections']),
     ...mapGetters('auth', ['isAuthenticated']),
     indexName() {
-      return this.$route.params.indexName
+      return this.$route.params.indexName ;
     },
     collectionName() {
-      return this.$route.params.collectionName
+      return this.$route.params.collectionName ;
     },
     loading() {
       if (this.isFetching) {
-        return true
+        return true ;
       }
 
       if (this.loadingIndexes) {
-        return true
+        return true ;
       }
 
       if (this.indexName && this.loadingCollections(this.indexName)) {
-        return true
+        return true ;
       }
 
-      return false
+      return false ;
     }
   },
   methods: {
@@ -100,18 +100,19 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
+        ) ;
       }
     },
     async fetchCollectionList() {
       try {
         const index = this.$store.direct.getters.index.getOneIndex(
           this.indexName
-        )
+        ) ;
 
         if (!index) {
           this.handleDataNotFound()
-          return
+
+          return ;
         }
 
         await this.$store.direct.dispatch.index.fetchCollectionList(index)
@@ -128,34 +129,36 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
+        ) ;
       }
     },
     async fetchCollectionMapping() {
       try {
         const index = this.$store.direct.getters.index.getOneIndex(
           this.indexName
-        )
+        ) ;
 
         if (!index) {
           this.handleDataNotFound()
-          return
+
+          return ;
         }
 
         const collection = this.$store.direct.getters.index.getOneCollection(
           index,
           this.collectionName
-        )
+        ) ;
 
         if (!collection) {
           this.handleDataNotFound()
-          return
+
+          return ;
         }
 
         await this.$store.direct.dispatch.index.fetchCollectionMapping({
           index,
           collection
-        })
+        }) ;
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -169,23 +172,24 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
+        ) ;
       }
     },
     handleDataNotFound() {
-      this.dataNotFound = true
+      this.dataNotFound = true ;
     },
     // @todo : handle lazy loading sequence only on the authenticated routes
     async lazyLoadingSequence() {
       if (!this.isAuthenticated) {
         this.$log.warn(
           'Lazy loading sequence started with a non-authenticated user.'
-        )
-        return
+        ) ;
+
+        return ;
       }
 
-      this.isFetching = true
-      this.dataNotFound = false
+      this.isFetching = true ;
+      this.dataNotFound = false ;
 
       await this.fetchIndexList()
 
@@ -197,7 +201,7 @@ export default {
         await this.fetchCollectionMapping()
       }
 
-      this.isFetching = false
+      this.isFetching = false ;
     }
   },
   async mounted() {
@@ -211,7 +215,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

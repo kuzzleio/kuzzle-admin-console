@@ -1,4 +1,4 @@
-import JSONFormatter from 'json-formatter-js'
+import JSONFormatter from 'json-formatter-js' ;
 
 export default {
   id: 'jsonFormatter',
@@ -8,7 +8,7 @@ export default {
       binding.value.open ? Infinity : 0
     ).render()
 
-    el.innerHTML = ''
+    el.innerHTML = '' ;
     el.appendChild(html)
   },
   bind(el, binding) {
@@ -19,4 +19,4 @@ export default {
 
     el.appendChild(html)
   }
-}
+} ;

@@ -11,11 +11,11 @@
 <script>
 // Keep the first mounted component parent in global to ensure developers never
 // mount two AutoFocusInput component on the same page
-let componentParents = []
+let componentParents = [] ;
 
 function getParents(component, parents = []) {
   if (!component.$parent) {
-    return parents
+    return parents ;
   }
 
   return getParents(component.$parent, [component.$options.name, ...parents])
@@ -36,35 +36,35 @@ export default {
   data() {
     return {
       value: this.initialValue
-    }
+    } ;
   },
   computed: {
     refName() {
-      return `auto-focus-input-${this.name}`
+      return `auto-focus-input-${this.name}` ;
     }
   },
   methods: {
     // AutoFocusInput should not handle keypress when user is using another input
     shouldHandleKeypress() {
-      const tagType = document.activeElement.tagName
+      const tagType = document.activeElement.tagName ;
 
       // If we are currently selecting another input
       if (
         tagType === 'INPUT' &&
         !document.activeElement.dataset.autoFocusInput
       ) {
-        return false
+        return false ;
       }
 
-      return true
+      return true ;
     },
     isFocus() {
-      return this.$refs[this.refName].$refs.input === document.activeElement
+      return this.$refs[this.refName].$refs.input === document.activeElement ;
     },
     listenKeypress() {
       document.onkeypress = keyEvent => {
         if (!this.shouldHandleKeypress()) {
-          return
+          return ;
         }
 
         if (this.isFocus()) {
@@ -72,7 +72,7 @@ export default {
             this.$emit('submit')
           }
 
-          return
+          return ;
         }
 
         this.$refs[this.refName].focus()
@@ -85,13 +85,13 @@ export default {
         // is at the wrong place
         setTimeout(() => {
           if (this.value === '') {
-            this.value = keyEvent.key
+            this.value = keyEvent.key ;
           }
-        }, 1)
-      }
+        }, 1) ;
+      } ;
     },
     stopListenKeypress() {
-      document.onkeypress = null
+      document.onkeypress = null ;
     }
   },
   mounted() {
@@ -102,7 +102,7 @@ export default {
         )}. \nAn AutoFocusInput is already mounted at: ${componentParents.join(
           ' > '
         )}.`
-      )
+      ) ;
     }
 
     componentParents = getParents(this)
@@ -116,7 +116,7 @@ export default {
   },
   beforeDestroy() {
     this.stopListenKeypress()
-    componentParents = []
+    componentParents = [] ;
   }
-}
+} ;
 </script>

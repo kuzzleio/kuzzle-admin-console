@@ -1,38 +1,38 @@
-import _ from 'lodash'
-import moment from 'moment'
-import { MappingAttributes } from './mappingHelpers'
+import _ from 'lodash' ;
+import moment from 'moment' ;
+import { MappingAttributes } from './mappingHelpers' ;
 
-export const NO_ACTIVE = null
-export const ACTIVE_QUICK = 'quick'
-export const ACTIVE_BASIC = 'basic'
-export const ACTIVE_RAW = 'raw'
-export const SORT_ASC = 'asc'
-export const SORT_DESC = 'desc'
-export const DEFAULT_QUICK = ''
+export const NO_ACTIVE = null ;
+export const ACTIVE_QUICK = 'quick' ;
+export const ACTIVE_BASIC = 'basic' ;
+export const ACTIVE_RAW = 'raw' ;
+export const SORT_ASC = 'asc' ;
+export const SORT_DESC = 'desc' ;
+export const DEFAULT_QUICK = '' ;
 
 const DEFAULT_FILTER = {
   '_kuzzle_info.createdAt': 'desc'
-}
+} ;
 
 export function Filter(this: any) {
-  this.active = NO_ACTIVE
-  this.quick = DEFAULT_QUICK
-  this.basic = null
-  this.raw = null
-  this.sorting = null
-  this.from = 0
-  this.size = 25
+  this.active = NO_ACTIVE ;
+  this.quick = DEFAULT_QUICK ;
+  this.basic = null ;
+  this.raw = null ;
+  this.sorting = null ;
+  this.from = 0 ;
+  this.size = 25 ;
 }
 
-const LOCALSTORAGE_PREFIX = 'search-filter-current'
-const HISTORY_LOCALSTORAGE_PREFIX = 'history-filter'
-const FAVORIS_LOCALSTORAGE_PREFIX = 'favoris-filter'
+const LOCALSTORAGE_PREFIX = 'search-filter-current' ;
+const HISTORY_LOCALSTORAGE_PREFIX = 'history-filter' ;
+const FAVORIS_LOCALSTORAGE_PREFIX = 'favoris-filter' ;
 
 export const load = (index, collection, route) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot load filters if no index or collection are specified'
-    )
+    ) ;
   }
 
   let loadedFilterRoute = loadFromRoute(route)
@@ -44,10 +44,10 @@ export const load = (index, collection, route) => {
     new Filter(),
     loadedFilterLS,
     loadedFilterRoute
-  )
+  ) ;
 
-  return loadedFilter
-}
+  return loadedFilter ;
+} ;
 
 export const loadFromRoute = route => {
   if (!route) {
@@ -68,35 +68,35 @@ export const loadFromRoute = route => {
     filter.basic = JSON.parse(filter.basic)
   }
 
-  return filter
-}
+  return filter ;
+} ;
 
 export const loadFromLocalStorage = (index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot load filters from localstorage if no index or collection are specified'
-    )
+    ) ;
   }
   const filterStr = localStorage.getItem(
     `${LOCALSTORAGE_PREFIX}:${index}/${collection}`
-  )
+  ) ;
   if (filterStr) {
     return JSON.parse(filterStr)
   }
 
-  return {}
-}
+  return {} ;
+} ;
 
 export const save = (filter, router, index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot save filters if no index or collection are specified'
-    )
+    ) ;
   }
   const strippedFilter = stripDefaultValuesFromFilter(filter)
   saveToRouter(strippedFilter, router)
   saveToLocalStorage(strippedFilter, index, collection)
-}
+} ;
 
 export const saveToRouter = (filter, router) => {
   const emptyFilter = new Filter()
@@ -114,61 +114,62 @@ export const saveToRouter = (filter, router) => {
   const otherQueryParams = _.omit(
     router.currentRoute.query,
     Object.keys(emptyFilter)
-  )
+  ) ;
   const mergedQuery = _.merge(formattedFilter, otherQueryParams)
 
   router.push({ query: mergedQuery }).catch(() => {})
-}
+} ;
 
 export const saveToLocalStorage = (filter, index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot save filters to localstorage if no index or collection are specified'
-    )
+    ) ;
   }
   localStorage.setItem(
     `${LOCALSTORAGE_PREFIX}:${index}/${collection}`,
     JSON.stringify(filter)
-  )
-}
+  ) ;
+} ;
 
 export const saveFavoritesToLocalStorage = (filters, index, collection) => {
   localStorage.setItem(
     `${FAVORIS_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
     JSON.stringify(filters)
-  )
-}
+  ) ;
+} ;
 
 export const loadFavoritesFromLocalStorage = (index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot load filters from localstorage if no index or collection are specified'
-    )
+    ) ;
   }
   const filterStr = localStorage.getItem(
     `${FAVORIS_LOCALSTORAGE_PREFIX}:${index}/${collection}`
-  )
+  ) ;
   if (filterStr) {
     return JSON.parse(filterStr)
   }
-  return []
-}
+
+  return [] ;
+} ;
 
 export const saveHistoyToLocalStorage = (filters, index, collection) => {
   localStorage.setItem(
     `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
     JSON.stringify(filters)
-  )
-}
+  ) ;
+} ;
 
 export const addNewHistoryItemAndSave = (filter, index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot save filters to localstorage if no index or collection are specified'
-    )
+    ) ;
   }
   if (filter.active === null) {
-    return
+    return ;
   }
   const filters = loadHistoyFromLocalStorage(index, collection)
   const date = moment()
@@ -179,23 +180,23 @@ export const addNewHistoryItemAndSave = (filter, index, collection) => {
   }
   filters.push(filter)
   saveHistoyToLocalStorage(filters, index, collection)
-}
+} ;
 
 export const loadHistoyFromLocalStorage = (index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot load filters from localstorage if no index or collection are specified'
-    )
+    ) ;
   }
   const filterStr = localStorage.getItem(
     `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`
-  )
+  ) ;
   if (filterStr) {
     return JSON.parse(filterStr)
   }
 
-  return []
-}
+  return [] ;
+} ;
 
 export const toSearchQuery = (
   filter,
@@ -223,9 +224,9 @@ export const toSearchQuery = (
       return filter.raw ? rawFilterToSearchQuery(filter.raw) : {}
     case NO_ACTIVE:
     default:
-      return {}
+      return {} ;
   }
-}
+} ;
 
 export const toRealtimeQuery = filter => {
   if (!filter) {
@@ -236,25 +237,26 @@ export const toRealtimeQuery = filter => {
     case ACTIVE_BASIC:
       return filter.basic ? basicFilterToRealtimeQuery(filter.basic) : {}
     case ACTIVE_RAW:
-      return filter.raw || {}
+      return filter.raw || {} ;
     case ACTIVE_QUICK:
     case NO_ACTIVE:
     default:
-      return {}
+      return {} ;
   }
-}
+} ;
 
 export const stripDefaultValuesFromFilter = filter => {
   const defaultFilter = new Filter()
-  let strippedFilter = {}
+  let strippedFilter = {} ;
   Object.keys(filter).forEach(key => {
     if (_.isEqual(defaultFilter[key], filter[key])) {
-      return
+      return ;
     }
-    strippedFilter[key] = filter[key]
-  })
-  return strippedFilter
-}
+    strippedFilter[key] = filter[key] ;
+  }) ;
+
+  return strippedFilter ;
+} ;
 
 export const searchFilterOperands = {
   contains: 'Contains',
@@ -264,7 +266,7 @@ export const searchFilterOperands = {
   range: 'Range',
   exists: 'Exists',
   not_exists: 'Not exists'
-}
+} ;
 
 export const realtimeFilterOperands = {
   contains: 'contains',
@@ -272,57 +274,57 @@ export const realtimeFilterOperands = {
   regexp: 'Regexp',
   exists: 'Exists',
   missing: 'Missing'
-}
+} ;
 
 export const basicFilterToRealtimeQuery = (groups = [[]]) => {
-  let or: any = []
+  let or: any = [] ;
 
   groups.forEach(function(filters) {
     let and = filters
       .filter((filter: any) => {
-        return filter.attribute !== null
+        return filter.attribute !== null ;
       })
       .map(function(filter: any) {
         switch (filter.operator) {
           case 'contains':
-            return { equals: { [filter.attribute]: filter.value } }
+            return { equals: { [filter.attribute]: filter.value } } ;
           case 'not_contains':
-            return { not: { equals: { [filter.attribute]: filter.value } } }
+            return { not: { equals: { [filter.attribute]: filter.value } } } ;
           case 'regexp':
-            return { regexp: { [filter.attribute]: filter.value } }
+            return { regexp: { [filter.attribute]: filter.value } } ;
           case 'exists':
-            return { exists: { field: filter.attribute } }
+            return { exists: { field: filter.attribute } } ;
           case 'missing':
-            return { missing: { field: filter.attribute } }
+            return { missing: { field: filter.attribute } } ;
         }
-      })
+      }) ;
 
     or.push({ and })
-  })
+  }) ;
 
   if (or.length === 0) {
-    return {}
+    return {} ;
   }
 
-  return { or }
-}
+  return { or } ;
+} ;
 
 export const rawFilterToSearchQuery = rawFilter => {
   if (!rawFilter.query) {
-    return null
+    return null ;
   }
 
   if (rawFilter._source && rawFilter._source.indexOf('_kuzzle_info') === -1) {
     rawFilter._source.push('_kuzzle_info')
   }
 
-  return rawFilter
-}
+  return rawFilter ;
+} ;
 
 export const toSort = filter => {
   switch (filter.active) {
     case ACTIVE_QUICK:
-      return DEFAULT_FILTER
+      return DEFAULT_FILTER ;
     case ACTIVE_RAW:
       return filter.raw ? rawFilterToSort(filter.raw) : DEFAULT_FILTER
     case NO_ACTIVE:
@@ -330,26 +332,27 @@ export const toSort = filter => {
     case ACTIVE_BASIC:
       return filter.sorting ? formatSort(filter.sorting) : DEFAULT_FILTER
   }
-}
+} ;
 
 export const rawFilterToSort = rawFilter => {
-  return rawFilter.sort || DEFAULT_FILTER
-}
+  return rawFilter.sort || DEFAULT_FILTER ;
+} ;
 
 export const formatSort = sorting => {
   if (!sorting.attribute) {
-    return DEFAULT_FILTER
+    return DEFAULT_FILTER ;
   }
-  return [{ [sorting.attribute]: { order: sorting.order } }]
-}
+
+  return [{ [sorting.attribute]: { order: sorting.order } }] ;
+} ;
 
 export const formatPagination = (currentPage, limit) => {
   if (currentPage === undefined || limit === undefined) {
-    return {}
+    return {} ;
   }
 
   return {
     from: limit * (currentPage - 1),
     size: limit
-  }
-}
+  } ;
+} ;

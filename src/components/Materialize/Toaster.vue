@@ -13,8 +13,8 @@ export default {
         inDuration: this.$store.state.toaster.toast.duration,
         classes: this.$store.state.toaster.toast.cssClass,
         completeCallback: this.$store.state.toaster.toast.cb
-      })
+      }) ;
     }
   }
-}
+} ;
 </script>

@@ -17,7 +17,7 @@ export default {
   },
   computed: {
     computedClasses() {
-      return this.disabled ? ['disabled'] : []
+      return this.disabled ? ['disabled'] : [] ;
     },
     index() {
       return this.$parent.$children.indexOf(this)
@@ -26,7 +26,7 @@ export default {
   watch: {
     tabSelect(name) {
       if (!name) {
-        return
+        return ;
       }
 
       this.select(name)
@@ -49,5 +49,5 @@ export default {
       }
     }
   }
-}
+} ;
 </script>

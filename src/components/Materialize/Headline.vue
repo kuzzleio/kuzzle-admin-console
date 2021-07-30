@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import Breadcrumb from '../Common/Breadcrumb'
+import Breadcrumb from '../Common/Breadcrumb' ;
 
 export default {
   name: 'Headline',
@@ -18,7 +18,7 @@ export default {
   props: {
     title: String
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

@@ -133,8 +133,8 @@
 </template>
 
 <script>
-import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
-import { mapGetters } from 'vuex'
+import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'Signup',
   components: {
@@ -148,7 +148,7 @@ export default {
       reset: false,
       error: null,
       waiting: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle'])
@@ -160,17 +160,19 @@ export default {
         this.password1 === '' ||
         this.password2 === ''
       ) {
-        this.error = 'All fields are mandatory'
-        return
+        this.error = 'All fields are mandatory' ;
+
+        return ;
       }
 
       if (this.password1 !== this.password2) {
-        this.error = 'Confirmation does not match password'
-        return
+        this.error = 'Confirmation does not match password' ;
+
+        return ;
       }
 
-      this.error = null
-      this.waiting = true
+      this.error = null ;
+      this.waiting = true ;
 
       try {
         await this.$kuzzle.query({
@@ -187,7 +189,7 @@ export default {
               }
             }
           }
-        })
+        }) ;
         this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
         this.$store.direct.commit.auth.setAdminExists(true)
         this.$router.push({ name: 'Login' })
@@ -198,7 +200,7 @@ export default {
             'plugin.kuzzle-plugin-auth-passport-local.weak_password'
           ].includes(err.id)
         ) {
-          this.error = err.message
+          this.error = err.message ;
         } else {
           this.$log.error(err)
           this.$bvToast.toast(
@@ -209,21 +211,21 @@ export default {
               toaster: 'b-toaster-bottom-right',
               appendToast: true
             }
-          )
+          ) ;
         }
       }
-      this.waiting = false
+      this.waiting = false ;
     },
     loginAsGuest() {
-      this.error = null
+      this.error = null ;
       this.$store.direct.dispatch.auth
         .setSession('anonymous')
         .then(() => {
           this.$router.go({ name: 'Data' })
         })
         .catch(err => {
-          this.error = err.message
-        })
+          this.error = err.message ;
+        }) ;
     },
     editEnvironment(id) {
       this.$emit('environment::create', id)
@@ -235,7 +237,7 @@ export default {
       this.$emit('environment::importEnv')
     }
   }
-}
+} ;
 </script>
 
 <style type="text/css" scoped>

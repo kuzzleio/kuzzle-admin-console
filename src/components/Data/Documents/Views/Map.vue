@@ -189,13 +189,13 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LCircle, LPolygon } from 'vue2-leaflet'
-import L from 'leaflet'
-import '@/assets/leaflet.css'
-import JsonFormatter from '@/directives/json-formatter.directive'
-import { mapGetters } from 'vuex'
-import _ from 'lodash'
-import PerPageSelector from '@/components/Common/PerPageSelector'
+import { LCircle, LMap, LMarker, LPolygon, LTileLayer } from 'vue2-leaflet' ;
+import L from 'leaflet' ;
+import '@/assets/leaflet.css' ;
+import JsonFormatter from '@/directives/json-formatter.directive' ;
+import { mapGetters } from 'vuex' ;
+import _ from 'lodash' ;
+import PerPageSelector from '@/components/Common/PerPageSelector' ;
 
 export default {
   name: 'ViewMap',
@@ -290,62 +290,67 @@ export default {
         shadowSize: [41, 41],
         className: 'mapView-marker-selected'
       })
-    }
+    } ;
   },
   computed: {
     totalDocuments() {
-      return this.geoDocuments.length
+      return this.geoDocuments.length ;
     },
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     coordinates() {
       const coordinates = [
         ...this.geoDocuments.map(d => d.coordinates),
         ...this.getShapesCoordinates()
-      ]
-      return coordinates
+      ] ;
+
+      return coordinates ;
     },
     canEdit() {
       if (!this.index || !this.collection) {
-        return false
+        return false ;
       }
+
       return this.canEditDocument(this.index, this.collection)
     },
     canDelete() {
       if (!this.index || !this.collection) {
-        return false
+        return false ;
       }
+
       return this.canDeleteDocument(this.index, this.collection)
     },
     formattedShapes() {
       if (!this.currentDocument) {
-        return {}
+        return {} ;
       }
       const document = _.omit(this.currentDocument, ['_id', '_kuzzle_info'])
-      document._kuzzle_info = this.currentDocument._kuzzle_info
-      return document
+      document._kuzzle_info = this.currentDocument._kuzzle_info ;
+
+      return document ;
     },
     formattedDocument() {
       if (!this.currentDocument) {
-        return {}
+        return {} ;
       }
       const document = _.omit(this.currentDocument, ['_id', '_kuzzle_info'])
-      document._kuzzle_info = this.currentDocument._kuzzle_info
-      return document
+      document._kuzzle_info = this.currentDocument._kuzzle_info ;
+
+      return document ;
     },
     circleShapes() {
       return this.shapesDocuments.filter(
         shape => shape.content.type === 'circle'
-      )
+      ) ;
     },
     polygonShapes() {
       return this.shapesDocuments.filter(
         shape => shape.content.type === 'polygon'
-      )
+      ) ;
     },
     multiPolygonShapes() {
       return this.shapesDocuments.filter(
         shape => shape.content.type === 'multipolygon'
-      )
+      ) ;
     }
   },
   watch: {
@@ -366,11 +371,11 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.map = this.$refs.map.mapObject
+      this.map = this.$refs.map.mapObject ;
       if (L.latLngBounds(this.coordinates).isValid()) {
         this.map.fitBounds(this.coordinates, { maxZoom: 12 })
       }
-    })
+    }) ;
   },
   methods: {
     getShapeCyClasse(shape) {
@@ -386,22 +391,23 @@ export default {
     },
     getRadiusInMeter(radius) {
       if (typeof radius === 'number') {
-        return radius
+        return radius ;
       }
       if (typeof radius !== 'string') {
-        return null
+        return null ;
       }
       const value = parseInt(radius)
       const unit = radius.replace(value.toString(), '')
-      let multiplicator = 1
+      let multiplicator = 1 ;
       switch (unit) {
         case 'km':
-          multiplicator = 1000
-          break
+          multiplicator = 1000 ;
+          break ;
         default:
-          multiplicator = 1
+          multiplicator = 1 ;
       }
-      return value * multiplicator
+
+      return value * multiplicator ;
     },
     flattenShapes(arr) {
       return arr.reduce((a, b) => {
@@ -409,37 +415,39 @@ export default {
           Array.isArray(b) && typeof b[0] !== 'number'
             ? this.flattenShapes(b)
             : [b]
-        )
-      }, [])
+        ) ;
+      }, []) ;
     },
     getShapesCoordinates() {
       const circlePoints = this.circleShapes.map(
         circle => circle.content.coordinates
-      )
+      ) ;
 
       const polygonArrays = this.polygonShapes.map(
         polygon => polygon.content.coordinates
-      )
+      ) ;
 
       const multipolygonArrays = [
         ...this.multiPolygonShapes.map(
           multipolygon => multipolygon.content.coordinates
         )
-      ]
+      ] ;
 
       const points = [
         ...circlePoints,
         ...this.flattenShapes(polygonArrays),
         ...this.flattenShapes(multipolygonArrays)
-      ]
-      return points
+      ] ;
+
+      return points ;
     },
     onItemClicked(document, latlng, type, radius) {
       if (this.currentDocument === document) {
-        this.currentDocument = null
-        return
+        this.currentDocument = null ;
+
+        return ;
       }
-      this.currentDocument = document
+      this.currentDocument = document ;
       if (type === 'array') {
         this.map.fitBounds(latlng, { maxZoom: 14 })
       } else if (type === 'point') {
@@ -451,18 +459,18 @@ export default {
       }
     },
     closeDocument() {
-      this.currentDocument = null
+      this.currentDocument = null ;
     },
     getIcon(document) {
       if (this.currentDocument === document) {
         return new this.LeafSelectedIcon({
           className: `mapView-marker-selected documentId-${document._id}`
-        })
+        }) ;
       }
 
       return new this.LeafDefaultIcon({
         className: `mapView-marker-default documentId-${document._id}`
-      })
+      }) ;
     },
     deleteCurrentDocument() {
       if (this.canDelete) {
@@ -475,7 +483,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style scoped lang="scss">

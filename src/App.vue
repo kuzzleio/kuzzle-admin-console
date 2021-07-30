@@ -35,10 +35,10 @@
 require('ace-builds')
 require('ace-builds/webpack-resolver')
 
-import {} from './assets/global.scss'
-import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
-import ModalDelete from './components/Common/Environments/ModalDelete'
-import ModalImport from './components/Common/Environments/ModalImport'
+import {} from './assets/global.scss' ;
+import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate' ;
+import ModalDelete from './components/Common/Environments/ModalDelete' ;
+import ModalImport from './components/Common/Environments/ModalImport' ;
 
 export default {
   name: 'KuzzleAdminConsole',
@@ -50,22 +50,22 @@ export default {
   data() {
     return {
       environmentId: null
-    }
+    } ;
   },
   methods: {
     editEnvironment(id) {
-      this.environmentId = id
+      this.environmentId = id ;
       this.$bvModal.show('modal-env-create-or-update')
     },
     deleteEnvironment(id) {
-      this.environmentId = id
+      this.environmentId = id ;
       this.$bvModal.show('modal-env-delete')
     },
     importEnvironment() {
       this.$bvModal.show('modal-env-import')
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

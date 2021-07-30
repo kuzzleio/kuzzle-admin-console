@@ -106,10 +106,10 @@
 </template>
 
 <script>
-import jsonFormatter from '../../../directives/json-formatter.directive'
-import { mapGetters } from 'vuex'
+import jsonFormatter from '../../../directives/json-formatter.directive' ;
+import { mapGetters } from 'vuex' ;
 
-const MAX_PROFILES = 5
+const MAX_PROFILES = 5 ;
 
 export default {
   name: 'UserItem',
@@ -125,22 +125,23 @@ export default {
     return {
       expanded: false,
       checked: false
-    }
+    } ;
   },
   computed: {
     ...mapGetters('auth', ['canEditUser', 'canDeleteUser']),
     profileList() {
       if (!this.document.profileIds) {
-        return []
+        return [] ;
       }
       const sorted = [...this.document.profileIds].sort()
-      return sorted
+
+      return sorted ;
     },
     showAllProfiles() {
-      return this.document.profileIds > MAX_PROFILES
+      return this.document.profileIds > MAX_PROFILES ;
     },
     checkboxId() {
-      return `checkbox-${this.document.id}`
+      return `checkbox-${this.document.id}` ;
     },
     localStrategyUsername() {
       return this.document.credentials && this.document.credentials.local
@@ -151,13 +152,13 @@ export default {
   watch: {
     isChecked: {
       handler(value) {
-        this.checked = value
+        this.checked = value ;
       }
     }
   },
   methods: {
     toggleCollapse() {
-      this.expanded = !this.expanded
+      this.expanded = !this.expanded ;
     },
     notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document.id)
@@ -173,7 +174,7 @@ export default {
       }
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

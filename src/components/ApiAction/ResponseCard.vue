@@ -31,8 +31,8 @@
 </template>
 
 <script>
-import jsonEditor from '@/components/Common/JsonEditor'
-import _ from 'lodash'
+import jsonEditor from '@/components/Common/JsonEditor' ;
+import _ from 'lodash' ;
 
 export default {
   components: {
@@ -47,14 +47,14 @@ export default {
   data() {
     return {
       isFullScreen: false
-    }
+    } ;
   },
   watch: {
     response: {
       handler(value) {
         this.$refs[`responseEditorWrapper-${this.tabIdx}`].setContent(
           JSON.stringify(value, null, ' ')
-        )
+        ) ;
       }
     }
   },
@@ -63,21 +63,22 @@ export default {
       return this.response ? _.get(this.response, 'status', 'undefined') : null
     },
     currentErrorMessage() {
-      return this.response ? this.response.message : null
+      return this.response ? this.response.message : null ;
     },
     statusBarVariant() {
       if (this.currentStatus === null || this.currentStatus === 'undefined')
-        return 'secondary'
+        return 'secondary' ;
       if (this.currentStatus.toString().match(/20[0-9]/)) return 'success'
-      return 'danger'
+
+      return 'danger' ;
     }
   },
   methods: {
     toggleFullscreen() {
-      this.isFullScreen = !this.isFullScreen
+      this.isFullScreen = !this.isFullScreen ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" scoped>

@@ -17,11 +17,11 @@
 </template>
 
 <script>
-import Connecting from './Connecting'
-import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
-import { mapGetters } from 'vuex'
-let idConnect
-let idReconnect
+import Connecting from './Connecting' ;
+import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch' ;
+import { mapGetters } from 'vuex' ;
+let idConnect ;
+let idReconnect ;
 
 export default {
   name: 'KuzzleDisconnectedPage',
@@ -33,22 +33,22 @@ export default {
     return {
       host: null,
       port: null
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle'])
   },
   mounted() {
-    this.host = this.$kuzzle.protocol.host
-    this.port = this.$kuzzle.protocol.port
+    this.host = this.$kuzzle.protocol.host ;
+    this.port = this.$kuzzle.protocol.port ;
 
     idReconnect = this.$kuzzle.on('reconnected', () => {
       this.$router.push({ name: 'Home' })
-    })
+    }) ;
 
     idConnect = this.$kuzzle.on('connected', () => {
       this.$router.push({ name: 'Home' })
-    })
+    }) ;
 
     if (
       this.$kuzzle.protocol.state === 'connected' ||
@@ -66,7 +66,7 @@ export default {
       this.$emit('environment::create', id)
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import CreateOrUpdate from './CreateOrUpdate'
-import Headline from '../../Materialize/Headline'
-import Notice from '../Common/Notice'
-import { mapGetters } from 'vuex'
+import CreateOrUpdate from './CreateOrUpdate' ;
+import Headline from '../../Materialize/Headline' ;
+import Notice from '../Common/Notice' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'CreateProfile',
   components: {
@@ -36,8 +36,9 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
-        return
+        ) ;
+
+        return ;
       }
       try {
         await this.$kuzzle.security.createProfile(id, profile)
@@ -51,7 +52,7 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     },
     onCancel() {
@@ -62,8 +63,8 @@ export default {
       }
     },
     setError(payload) {
-      this.error = payload
+      this.error = payload ;
     }
   }
-}
+} ;
 </script>

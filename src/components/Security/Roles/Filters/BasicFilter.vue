@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
+import Multiselect from 'vue-multiselect' ;
+import {} from 'vue-multiselect/dist/vue-multiselect.min.css' ;
 
 export default {
   name: 'BasicFilter',
@@ -41,39 +41,40 @@ export default {
   data() {
     return {
       controllers: []
-    }
+    } ;
   },
   mounted() {
     const controllersInQuery = JSON.parse(
       this.$store.state.route.query.basicFilter || '{}'
-    )
+    ) ;
 
     if (
       controllersInQuery.controllers &&
       controllersInQuery.controllers.length > 0
     ) {
-      this.controllers = []
+      this.controllers = [] ;
 
       controllersInQuery.controllers.forEach(controller => {
         this.controllers.push(controller)
-      })
+      }) ;
     }
   },
   methods: {
     search() {
       if (this.controllers.length === 0) {
         this.$emit('filters-basic-search', {})
-        return
+
+        return ;
       }
 
       this.$emit('filters-basic-search', { controllers: this.controllers })
     },
     resetSearch() {
-      this.controllers = []
+      this.controllers = [] ;
     },
     addController(value) {
       if (this.controllers.indexOf(value) !== -1) {
-        return
+        return ;
       }
 
       this.controllers.push(value)
@@ -81,10 +82,10 @@ export default {
     removeController(removedValue) {
       this.controllers = this.controllers.filter(
         value => value !== removedValue
-      )
+      ) ;
     }
   }
-}
+} ;
 </script>
 
 <style lang="scss">

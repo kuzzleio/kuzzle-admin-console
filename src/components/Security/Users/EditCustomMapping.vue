@@ -89,10 +89,10 @@
  * This feature is currently freezed.
  */
 
-import Headline from '../../Materialize/Headline'
-import JsonEditor from '../../Common/JsonEditor'
-import omit from 'lodash/omit'
-import { mapGetters } from 'vuex'
+import Headline from '../../Materialize/Headline' ;
+import JsonEditor from '../../Common/JsonEditor' ;
+import omit from 'lodash/omit' ;
+import { mapGetters } from 'vuex' ;
 export default {
   name: 'UsersCustomMappingWizard',
   components: {
@@ -104,44 +104,47 @@ export default {
       mappingValue: '{}',
       loading: false,
       error: ''
-    }
+    } ;
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
     isMappingValid() {
       try {
         JSON.parse(this.mappingValue)
-        return true
+
+        return true ;
       } catch (error) {
-        return false
+        return false ;
       }
     },
     downloadMappingValue() {
       if (this.isMappingValid) {
         const blob = new Blob([JSON.stringify(JSON.parse(this.mappingValue))], {
           type: 'application/json'
-        })
+        }) ;
+
         return window.URL.createObjectURL(blob)
       }
-      return null
+
+      return null ;
     }
   },
   async mounted() {
-    this.loading = true
+    this.loading = true ;
     const result = await this.wrapper.getMappingUsers()
     this.mappingValue = JSON.stringify(
       omit(result.mapping, 'profileIds') || {},
       null,
       2
-    )
-    this.loading = false
+    ) ;
+    this.loading = false ;
   },
   methods: {
     loadMappingValue(event) {
-      let file = event.target.files[0]
+      let file = event.target.files[0] ;
       let reader = new FileReader()
       reader.onload = async e => {
-        this.mappingValue = e.target.result
+        this.mappingValue = e.target.result ;
         this.$refs.jsoneditor.setContent(this.mappingValue)
         this.$bvToast.toast(
           'The file has been written in the json editor. You can still edit it before saving if necessary.',
@@ -153,12 +156,12 @@ export default {
             dismissible: true,
             noAutoHide: true
           }
-        )
-      }
+        ) ;
+      } ;
       reader.readAsText(file)
     },
     onMappingChange(value) {
-      this.mappingValue = value
+      this.mappingValue = value ;
     },
     onCancel() {
       this.$router.push({ name: 'SecurityUsersList' })
@@ -176,9 +179,9 @@ export default {
           appendToast: true,
           dismissible: true,
           noAutoHide: true
-        })
+        }) ;
       }
     }
   }
-}
+} ;
 </script>
