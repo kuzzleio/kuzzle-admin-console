@@ -115,7 +115,6 @@ export default {
     async switchEnv(id) {
       try {
         await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id)
-        this.$log.debug(`Switched.`)
         this.$emit('environmentSwitched')
       } catch (error) {
         this.$log.error(error)

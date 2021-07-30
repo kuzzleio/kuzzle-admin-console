@@ -436,7 +436,12 @@ export default {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
     },
     isCollectionEmpty() {
-      return !this.isDocumentListFiltered && this.totalDocuments === 0
+      return (
+        !this.isDocumentListFiltered &&
+        this.totalDocuments === 0 &&
+        this.documents.length === 0 &&
+        this.notifications.length === 0
+      )
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
@@ -459,7 +464,6 @@ export default {
     await this.unsubscribeToCurrentDocs()
   },
   async mounted() {
-    this.$log.debug('page mounted')
     await this.loadAllTheThings()
 
     if (this.paginationFrom) {
@@ -632,7 +636,6 @@ export default {
     },
 
     realtimeNotifCallback(notif) {
-      this.$log.debug(notif)
       this.notifications.push(notif)
       if (this.realtimeSettings[`${notif.action}AutoApply`]) {
         this.applyNotification(notif, true)
@@ -662,7 +665,6 @@ export default {
       return this.getProperty(object[names[0]], names.slice(1).join('.'))
     },
     onSelectGeopoint(selectedGeopoint) {
-      this.$log.debug('selectedGeopoint', selectedGeopoint)
       this.selectedGeopoint = selectedGeopoint
     },
     listMappingGeopoints(mapping, path = []) {
@@ -1020,11 +1022,6 @@ export default {
       findDateFields(this.collectionMapping, null)
 
       formattedDocuments.forEach(changeField)
-      this.$log.debug(
-        'add human readable setting value',
-        JSON.parse(JSON.stringify(this.formattedDocuments)),
-        JSON.parse(JSON.stringify(formattedDocuments))
-      )
       this.$set(this, 'formattedDocuments', formattedDocuments)
       // this.formattedDocuments = formattedDocuments
     },

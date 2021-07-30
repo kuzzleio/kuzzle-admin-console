@@ -30,17 +30,8 @@ export default {
   data() {
     return {}
   },
-  watch: {
-    notification: {
-      deep: true,
-      handler(value) {
-        this.$log.debug('notif', value)
-      }
-    }
-  },
   computed: {
     notificationVariant() {
-      this.$log.debug('NOTIFICATION.ACTION', this.notification)
       if (this.notification.applied) {
         return 'secondary'
       }

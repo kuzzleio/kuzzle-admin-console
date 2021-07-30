@@ -82,9 +82,6 @@ export default {
     }
   },
   computed: {},
-  mounted() {
-    this.$log.debug(this.realtimeSettings)
-  },
   methods: {
     valueChanged(e, key) {
       const realtimeSettings = _.clone(this.realtimeSettings)

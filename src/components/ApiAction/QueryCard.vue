@@ -248,7 +248,6 @@ export default {
       )
       if (params) {
         for (let param of params) {
-          this.$log.debug(param)
           query[param.name] = ''
         }
       }
