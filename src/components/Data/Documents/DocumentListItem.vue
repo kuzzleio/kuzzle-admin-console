@@ -112,9 +112,6 @@ export default {
       if (!this.notifBadge) {
         return 'secondary'
       }
-      if (this.notifBadge.includes('Change available')) {
-        return 'info'
-      }
       switch (this.notifBadge) {
         case 'updated':
           return 'warning'
@@ -138,9 +135,7 @@ export default {
         return null
       }
       const action = this.linkedNotif.action
-      return this.linkedNotif.applied
-        ? `${action}d`
-        : `Change available: ${action}`
+      return `${action}d`
     },
     canEdit() {
       if (!this.index || !this.collection) {

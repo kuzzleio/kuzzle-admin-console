@@ -23,32 +23,19 @@
             }"
             >Create New Document</b-button
           >
-          <div style="display: inline-block" class="ml-2 mt-1">
-            <b-input-group>
-              <b-button
-                @click="enableRealtime = !enableRealtime"
-                variant="primary"
-              >
-                <i
-                  :class="
-                    `far ${
-                      enableRealtime ? 'fa-check-square' : 'fa-square'
-                    } left`
-                  "
-                />
-                Realtime
-              </b-button>
-              <template #append>
-                <RealtimeDropdownSettings
-                  :enableRealtime="enableRealtime"
-                  :realtimeSettings="realtimeSettings"
-                  @realtime-settings-changed="
-                    settings => (realtimeSettings = settings)
-                  "
-                />
-              </template>
-            </b-input-group>
-          </div>
+          <b-button
+            v-if="displayRealtimeButton.includes(listViewType)"
+            class="ml-1"
+            @click="enableRealtime = !enableRealtime"
+            variant="primary"
+          >
+            <i
+              :class="
+                `far ${enableRealtime ? 'fa-check-square' : 'fa-square'} left`
+              "
+            />
+            Realtime
+          </b-button>
           <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"
@@ -97,165 +84,107 @@
           <empty-state v-else :index="indexName" :collection="collectionName" />
         </template>
         <template v-else>
-          <b-row align-v="stretch">
-            <b-col
-              :cols="
-                enableRealtime && realtimeSettings.showNotifications ? 9 : 12
-              "
-            >
-              <b-card
-                class="light-shadow"
-                :bg-variant="documents.length === 0 ? 'light' : 'default'"
-              >
-                <b-card-text class="p-0">
-                  <no-results-empty-state v-if="!documents.length" />
-                  <template v-else>
-                    <List
-                      v-if="listViewType === 'list'"
-                      :all-checked="allChecked"
-                      :collection="collectionName"
-                      :documents="formattedDocuments"
-                      :index="indexName"
-                      :current-page-size="paginationSize"
-                      :selected-documents="selectedDocuments"
-                      :total-documents="totalDocuments"
-                      :notifications="notifications"
-                      @bulk-delete="onBulkDeleteClicked"
-                      @change-page-size="changePaginationSize"
-                      @checkbox-click="toggleSelectDocuments"
-                      @delete="onDeleteClicked"
-                      @refresh="onRefresh"
-                      @toggle-all="onToggleAllClicked"
-                    />
+          <b-card
+            class="light-shadow"
+            :bg-variant="documents.length === 0 ? 'light' : 'default'"
+          >
+            <b-card-text class="p-0">
+              <no-results-empty-state v-if="!documents.length" />
+              <template v-else>
+                <List
+                  v-if="listViewType === 'list'"
+                  :all-checked="allChecked"
+                  :collection="collectionName"
+                  :documents="formattedDocuments"
+                  :index="indexName"
+                  :current-page-size="paginationSize"
+                  :selected-documents="selectedDocuments"
+                  :total-documents="totalDocuments"
+                  :notifications="notifications"
+                  @bulk-delete="onBulkDeleteClicked"
+                  @change-page-size="changePaginationSize"
+                  @checkbox-click="toggleSelectDocuments"
+                  @delete="onDeleteClicked"
+                  @refresh="onRefresh"
+                  @toggle-all="onToggleAllClicked"
+                />
 
-                    <Column
-                      v-if="listViewType === 'column'"
-                      :index="indexName"
-                      :collection="collectionName"
-                      :documents="documents"
-                      :mapping="collectionMapping"
-                      :selected-documents="selectedDocuments"
-                      :all-checked="allChecked"
-                      :current-page-size="paginationSize"
-                      :total-documents="totalDocuments"
-                      @edit="onEditClicked"
-                      @delete="onDeleteClicked"
-                      @bulk-delete="onBulkDeleteClicked"
-                      @change-page-size="changePaginationSize"
-                      @checkbox-click="toggleSelectDocuments"
-                      @refresh="onRefresh"
-                      @toggle-all="onToggleAllClicked"
-                    />
+                <Column
+                  v-if="listViewType === 'column'"
+                  :index="indexName"
+                  :collection="collectionName"
+                  :documents="documents"
+                  :mapping="collectionMapping"
+                  :selected-documents="selectedDocuments"
+                  :all-checked="allChecked"
+                  :current-page-size="paginationSize"
+                  :total-documents="totalDocuments"
+                  :notifications="notifications"
+                  @edit="onEditClicked"
+                  @delete="onDeleteClicked"
+                  @bulk-delete="onBulkDeleteClicked"
+                  @change-page-size="changePaginationSize"
+                  @checkbox-click="toggleSelectDocuments"
+                  @refresh="onRefresh"
+                  @toggle-all="onToggleAllClicked"
+                />
 
-                    <TimeSeries
-                      v-if="listViewType === 'time-series'"
-                      :index="indexName"
-                      :collection="collectionName"
-                      :documents="documents"
-                      :mapping="collectionMapping"
-                      :current-page-size="paginationSize"
-                      :total-documents="totalDocuments"
-                      @change-page-size="changePaginationSize"
-                      @changeDisplayPagination="changeDisplayPagination"
-                    />
+                <TimeSeries
+                  v-if="listViewType === 'time-series'"
+                  :index="indexName"
+                  :collection="collectionName"
+                  :documents="documents"
+                  :mapping="collectionMapping"
+                  :current-page-size="paginationSize"
+                  :total-documents="totalDocuments"
+                  @change-page-size="changePaginationSize"
+                  @changeDisplayPagination="changeDisplayPagination"
+                />
 
-                    <Map
-                      v-if="listViewType === 'map'"
-                      :selected-geopoint="selectedGeopoint"
-                      :selectedGeoshape="selectedGeoshape"
-                      :current-page-size="paginationSize"
-                      :index="indexName"
-                      :geoDocuments="geoDocuments"
-                      :shapesDocuments="shapesDocuments"
-                      :collection="collectionName"
-                      :mappingGeopoints="mappingGeopoints"
-                      :mappingGeoshapes="mappingGeoshapes"
-                      @change-page-size="changePaginationSize"
-                      @on-select-geopoint="onSelectGeopoint"
-                      @on-select-geoshape="onSelectGeoshape"
-                      @edit="onEditClicked"
-                      @delete="onDeleteClicked"
-                    />
+                <Map
+                  v-if="listViewType === 'map'"
+                  :selected-geopoint="selectedGeopoint"
+                  :selectedGeoshape="selectedGeoshape"
+                  :current-page-size="paginationSize"
+                  :index="indexName"
+                  :geoDocuments="geoDocuments"
+                  :shapesDocuments="shapesDocuments"
+                  :collection="collectionName"
+                  :mappingGeopoints="mappingGeopoints"
+                  :mappingGeoshapes="mappingGeoshapes"
+                  @change-page-size="changePaginationSize"
+                  @on-select-geopoint="onSelectGeopoint"
+                  @on-select-geoshape="onSelectGeoshape"
+                  @edit="onEditClicked"
+                  @delete="onDeleteClicked"
+                />
 
-                    <b-row
-                      v-show="
-                        totalDocuments > paginationSize && displayPagination
-                      "
-                      align-h="center"
-                    >
-                      <b-pagination
-                        v-model="currentPage"
-                        aria-controls="my-table"
-                        class="m-2 mt-4"
-                        data-cy="DocumentList-pagination"
-                        :total-rows="totalDocuments"
-                        :per-page="paginationSize"
-                      ></b-pagination>
-                    </b-row>
-                    <div
-                      v-if="totalDocuments > 10000"
-                      class="text-center mt-2"
-                      data-cy="DocumentList-exceedESLimitMsg"
-                    >
-                      <small class="text-secondary"
-                        >Due to limitations imposed by Elasticsearch, you won't
-                        be able to browse documents beyond 10000.</small
-                      >
-                    </div>
-                  </template>
-                </b-card-text>
-              </b-card>
-            </b-col>
-
-            <b-col v-if="enableRealtime && realtimeSettings.showNotifications">
-              <b-card
-                :bg-variant="documents.length === 0 ? 'light' : 'default'"
-                no-body
-                class="light-shadow"
-              >
-                <b-col class="p-0 m-2">
-                  <b-button
-                    variant="outline-success"
-                    class="mr-2"
-                    @click="applyAllNotifications"
-                    :disabled="!hasNotificationsToApply"
+                <b-row
+                  v-show="totalDocuments > paginationSize && displayPagination"
+                  align-h="center"
+                >
+                  <b-pagination
+                    v-model="currentPage"
+                    aria-controls="my-table"
+                    class="m-2 mt-4"
+                    data-cy="DocumentList-pagination"
+                    :total-rows="totalDocuments"
+                    :per-page="paginationSize"
+                  ></b-pagination>
+                </b-row>
+                <div
+                  v-if="totalDocuments > 10000"
+                  class="text-center mt-2"
+                  data-cy="DocumentList-exceedESLimitMsg"
+                >
+                  <small class="text-secondary"
+                    >Due to limitations imposed by Elasticsearch, you won't be
+                    able to browse documents beyond 10000.</small
                   >
-                    <i class="fa fa-check-circle left" />
-                    Apply changes
-                  </b-button>
-                  <b-button
-                    variant="outline-danger"
-                    class="mr-2"
-                    @click="clearNotifications"
-                    :disabled="!notifications.length"
-                  >
-                    <i class="fa fa-minus-circle left" />
-                    Delete notifications
-                  </b-button>
-                </b-col>
-                <b-card-body class="m-0 p-2">
-                  <b-card-text>
-                    <b-row>
-                      <b-col v-if="notifications.length">
-                        <b-list-group>
-                          <notification
-                            v-for="(notification, i) in notifications"
-                            :key="i"
-                            :notification="notification"
-                            @apply="applyNotification(notification, true)"
-                            @clear="clearNotification(notification)"
-                          />
-                        </b-list-group>
-                      </b-col>
-                      <b-col v-else class="m-2">
-                        <h4>Waiting for documents changes...</h4>
-                      </b-col>
-                    </b-row>
-                  </b-card-text>
-                </b-card-body>
-              </b-card>
-            </b-col>
-          </b-row>
+                </div>
+              </template>
+            </b-card-text>
+          </b-card>
         </template>
       </template>
       <DeleteCollectionModal
@@ -271,6 +200,15 @@
         @confirm="onDeleteConfirmed"
         @hide="resetCandidatesForDeletion"
       />
+      <b-toast
+        variant="info"
+        id="realtime-notification-toast"
+        title="toast title"
+        toaster="b-toaster-bottom-right"
+        no-auto-hide
+      >
+        Some documents has changed. Refresh your list plz
+      </b-toast>
     </b-container>
   </div>
 </template>
@@ -287,12 +225,10 @@ import EmptyState from './EmptyState'
 import NoResultsEmptyState from './NoResultsEmptyState'
 import NoGeopointFieldState from './NoGeopointFieldState.vue'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
-import Notification from './Notification.vue'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdownView from '../Collections/DropdownView'
 import CollectionDropdownAction from '../Collections/DropdownAction'
-import RealtimeDropdownSettings from './RealtimeDropdownSettings.vue'
 import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
@@ -324,9 +260,7 @@ export default {
     ListNotAllowed,
     NoResultsEmptyState,
     RealtimeOnlyEmptyState,
-    NoGeopointFieldState,
-    Notification,
-    RealtimeDropdownSettings
+    NoGeopointFieldState
   },
   props: {
     indexName: String,
@@ -335,7 +269,6 @@ export default {
   data() {
     return {
       subscribeRoomId: null,
-      enableRealtime: false,
       isFetching: false,
       loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
@@ -356,18 +289,18 @@ export default {
       modalDeleteId: 'modal-collection-delete',
       displayPagination: true,
       notifications: [],
+      enableRealtime: true,
       realtimeSettings: {
-        autoClearApplied: false,
-        createAutoApply: true,
-        deleteAutoApply: true,
-        updateAutoApply: true,
-        replaceAutoApply: true,
-        showNotifications: false
+        createAutoApply: false,
+        deleteAutoApply: false,
+        updateAutoApply: false,
+        replaceAutoApply: false
       },
       mappingGeoshapes: [],
       selectedGeoshape: '',
       handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon'],
-      handledNotificationActions: ['create', 'update', 'replace', 'delete']
+      handledNotificationActions: ['create', 'update', 'replace', 'delete'],
+      displayRealtimeButton: ['time-series', 'map']
     }
   },
   computed: {
@@ -472,6 +405,39 @@ export default {
     },
     isRealtimeCollection() {
       return this.collection ? this.collection.isRealtime() : false
+    },
+    listViewRealtimeSettings() {
+      return {
+        createAutoApply: false,
+        deleteAutoApply: false,
+        updateAutoApply: false,
+        replaceAutoApply: false,
+        showNotifications: false
+      }
+    },
+    columnViewRealtimeSettings() {
+      return {
+        createAutoApply: false,
+        deleteAutoApply: false,
+        updateAutoApply: false,
+        replaceAutoApply: false
+      }
+    },
+    timeSeriesViewRealtimeSettings() {
+      return {
+        createAutoApply: true,
+        deleteAutoApply: false,
+        updateAutoApply: true,
+        replaceAutoApply: true
+      }
+    },
+    mapViewRealtimeSettings() {
+      return {
+        createAutoApply: false,
+        deleteAutoApply: false,
+        updateAutoApply: true,
+        replaceAutoApply: true
+      }
     }
   },
   async beforeDestroy() {
@@ -520,6 +486,41 @@ export default {
       deep: true,
       handler() {
         this.addHumanReadableDateFields()
+      }
+    },
+    notifications: {
+      deep: true,
+      handler(value) {
+        if (value.length) {
+          this.$bvToast.show('realtime-notification-toast')
+        } else {
+          this.$bvToast.hide('realtime-notification-toast')
+        }
+      }
+    },
+    listViewType: {
+      immediate: true,
+      handler(value) {
+        if (value === 'list') {
+          this.$set(this, 'realtimeSettings', this.listViewRealtimeSettings)
+          this.enableRealtime = true
+        }
+        if (value === 'column') {
+          this.$set(this, 'realtimeSettings', this.columnViewRealtimeSettings)
+          this.enableRealtime = true
+        }
+        if (value === 'time-series') {
+          this.$set(
+            this,
+            'realtimeSettings',
+            this.timeSeriesViewRealtimeSettings
+          )
+          this.enableRealtime = false
+        }
+        if (value === 'map') {
+          this.$set(this, 'realtimeSettings', this.mapViewRealtimeSettings)
+          this.enableRealtime = false
+        }
       }
     }
   },
@@ -636,9 +637,7 @@ export default {
         return
       }
       notifications[notifIdx].applied = true
-      if (this.realtimeSettings.autoClearApplied) {
-        notifications.splice(notifIdx, 1)
-      }
+      notifications.splice(notifIdx, 1)
       if (save) {
         this.$set(this, 'notifications', notifications)
         this.$set(this, 'documents', documents)
@@ -859,6 +858,7 @@ export default {
       this.isFetching = true
       this.$forceUpdate()
       this.selectedDocuments = []
+      this.notifications = []
 
       let pagination = {
         from: this.paginationFrom,

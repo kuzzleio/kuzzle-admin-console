@@ -153,6 +153,12 @@
                         <i class="fa fa-trash" />
                       </b-button>
                     </span>
+                    <b-badge
+                      v-if="getItemBadge(item)"
+                      :variant="getItemBadge(item).variant"
+                      class="mx-2"
+                      >{{ getItemBadge(item).label }}
+                    </b-badge>
                   </div>
                 </template>
                 <template v-else-if="field.key === 'acColumnTableId'">
@@ -190,7 +196,7 @@
             </draggable>
           </b-thead>
           <b-tbody>
-            <b-tr v-for="item of formattedItems" :key="`item-row-${item.id}`">
+            <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`">
               <b-td
                 class="cell"
                 v-for="field of selectedFields"
@@ -234,7 +240,8 @@ export default {
     index: String,
     collection: String,
     mapping: Object,
-    selectedDocuments: Array
+    selectedDocuments: Array,
+    notifications: Array
   },
   data() {
     return {
@@ -313,6 +320,34 @@ export default {
     }
   },
   methods: {
+    getItemBadge(item) {
+      const linkedNotification = this.notifications
+        .slice()
+        .reverse()
+        .find(notif => notif.result._id === item._id)
+      if (!linkedNotification) {
+        return null
+      }
+      const action = linkedNotification.action
+      const label = `${action}d`
+      let variant = null
+      switch (label) {
+        case 'updated':
+          variant = 'warning'
+          break
+        case 'created':
+          variant = 'success'
+          break
+        case 'deleted':
+          variant = 'danger'
+          break
+        case 'replaced':
+          variant = 'warning'
+          break
+      }
+      this.$log.debug(label, variant)
+      return { label, variant }
+    },
     resetColumns() {
       this.selectedFields = []
       this.saveSelectedFieldsToLocalStorage()
