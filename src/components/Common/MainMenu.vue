@@ -161,6 +161,7 @@ export default {
             noAutoHide: true
           }
         )
+        this.$router.push({ name: 'Login' })
       }
     },
 
