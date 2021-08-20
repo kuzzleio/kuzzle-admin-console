@@ -118,4 +118,49 @@ describe('Login', function() {
     cy.wait(700)
     cy.url().should('contain', '/#/login')
   })
+
+  it('Should be able to disconnect from a token expired session', () => {
+    cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
+    cy.request('POST', 'http://localhost:7512/admin/_resetDatabase')
+    cy.request('POST', 'http://localhost:7512/_createFirstAdmin', {
+      content: {},
+      credentials: {
+        local: {
+          username: admin.username,
+          password: admin.password
+        }
+      }
+    })
+    cy.request('POST', 'http://localhost:7512/_login/local', {
+      username: admin.username,
+      password: admin.password
+    }).then(response => {
+      expect(response.body.result).to.have.property('jwt')
+      localStorage.setItem(
+        'environments',
+        JSON.stringify({
+          [validEnvName]: {
+            name: validEnvName,
+            color: 'darkblue',
+            host: 'localhost',
+            ssl: false,
+            port: 7512,
+            backendMajorVersion: Cypress.env('BACKEND_VERSION') || '2',
+            token: response.body.result.jwt
+          }
+        })
+      )
+
+      cy.visit('/')
+      cy.contains('Indexes')
+      cy.request(
+        'DELETE',
+        `http://localhost:7512/users/${admin.username}/tokens`
+      )
+
+      cy.get('[data-cy=MainMenu-logoutBtn]').click()
+      cy.wait(700)
+      cy.url().should('contain', '/#/login')
+    })
+  })
 })
