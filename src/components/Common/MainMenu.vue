@@ -147,9 +147,9 @@ export default {
     async doLogout() {
       try {
         await this.$store.direct.dispatch.auth.doLogout()
-        this.$router.push({ name: 'Login' })
       } catch (error) {
         this.$log.error(error)
+      } finally {
         this.$router.push({ name: 'Login' })
       }
     },
