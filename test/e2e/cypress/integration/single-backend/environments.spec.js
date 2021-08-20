@@ -130,7 +130,7 @@ describe('Environments', function() {
         }
       })
     )
-    localStorage.setItem('currentEnv', envNames[0])
+    sessionStorage.setItem('currentEnv', envNames[0])
     cy.visit('/')
     cy.contains('Connected to')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
@@ -180,7 +180,7 @@ describe('Environments', function() {
       force: true
     })
     cy.wait(1000)
-    localStorage.setItem('currentEnv', envName)
+    sessionStorage.setItem('currentEnv', envName)
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
@@ -207,7 +207,7 @@ describe('Environments', function() {
         }
       })
     )
-    localStorage.setItem('currentEnv', reachableEnvName)
+    sessionStorage.setItem('currentEnv', reachableEnvName)
 
     cy.visit('/')
     cy.contains('Connected to')
@@ -270,7 +270,7 @@ describe('Environments', function() {
         }
       })
     )
-    localStorage.setItem('currentEnv', envNames[0])
+    sessionStorage.setItem('currentEnv', envNames[0])
     cy.visit('/')
     cy.contains('Connected to')
 
@@ -397,7 +397,7 @@ describe('Environments', function() {
         }
       })
     )
-    localStorage.setItem('currentEnv', envName)
+    sessionStorage.setItem('currentEnv', envName)
     cy.visit('/')
     cy.contains('Edit a Connection')
     cy.contains('You must select a backend version')
@@ -436,7 +436,7 @@ describe('Environments', function() {
       force: true
     })
     cy.wait(1000)
-    localStorage.setItem('currentEnv', 'localEnvTestTabTitle')
+    sessionStorage.setItem('currentEnv', 'localEnvTestTabTitle')
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
