@@ -52,7 +52,7 @@ export default {
     }
   },
   methods: {
-    async onSubmit({ profile }) {
+    async onSubmit({ profile, strict }) {
       if (!profile || !profile.policies) {
         this.$bvToast.toast(
           'Please, ensure you submit an object with at least a <code>policies</code> attribute inside',
@@ -71,7 +71,7 @@ export default {
       this.submitted = true
 
       try {
-        await this.$kuzzle.security.updateProfile(this.id, profile)
+        await this.$kuzzle.security.updateProfile(this.id, profile, { strict })
         this.$router.push({ name: 'SecurityProfilesList' })
       } catch (e) {
         this.$log.error(e)

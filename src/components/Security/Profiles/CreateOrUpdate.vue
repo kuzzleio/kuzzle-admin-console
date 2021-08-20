@@ -36,6 +36,18 @@
           <b-input :disabled="true" :value="id"></b-input>
         </b-form-group>
 
+        <b-form-group label="Strict" label-cols-sm="3">
+          <template v-slot:description
+            >If set to true, will only allow the profile to be restricted on
+            existing indexes or collections.
+          </template>
+          <b-form-radio-group
+            class="pt-2"
+            v-model="strictValue"
+            :options="[true, false]"
+          ></b-form-radio-group>
+        </b-form-group>
+
         <json-editor
           class="ProfileCreateOrUpdate-jsonEditor"
           data-cy="ProfileCreateOrUpdate-jsonEditor"
@@ -65,7 +77,7 @@
           <pre class="my-3 ml-3">
 {
   "policies": [{
-      "roleId": "roleId"
+      "roleId": "roleId",
       "restrictedTo": {
         "index": "myindex",
         "collections": [
@@ -150,12 +162,17 @@ export default {
     profile: {
       type: String,
       default: '{}'
+    },
+    strict: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
       profileValue: this.profile || '{}',
       idValue: null,
+      strictValue: true,
       submitting: false
     }
   },
@@ -191,7 +208,8 @@ export default {
       }
       this.$emit('submit', {
         profile: JSON.parse(this.profileValue),
-        id: this.idValue
+        id: this.idValue,
+        strict: this.strictValue
       })
     },
     cancel() {

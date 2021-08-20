@@ -24,7 +24,7 @@ export default {
     ...mapGetters('kuzzle', ['$kuzzle'])
   },
   methods: {
-    async onSubmit({ profile, id }) {
+    async onSubmit({ profile, id, strict }) {
       if (!profile || !profile.policies) {
         this.$bvToast.toast(
           'Please, ensure you submit an object with at least a <code>policies</code> attribute inside',
@@ -40,7 +40,7 @@ export default {
         return
       }
       try {
-        await this.$kuzzle.security.createProfile(id, profile)
+        await this.$kuzzle.security.createProfile(id, profile, { strict })
         this.$router.push({ name: 'SecurityProfilesList' })
       } catch (e) {
         this.$log.error(e)
