@@ -86,7 +86,10 @@ describe('Login', function() {
 
       cy.visit('/')
       cy.contains('Indexes')
-      cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
+      cy.request(
+        'DELETE',
+        `http://localhost:7512/users/${admin.username}/tokens`
+      )
 
       cy.get('[data-cy=IndexesPage-createBtn]').click()
       cy.get('[data-cy=CreateIndexModal-name]').type('newindex')
