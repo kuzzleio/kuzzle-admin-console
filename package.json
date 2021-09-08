@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-admin-console",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "A handy administrative console for Kuzzle",
   "author": "The Kuzzle team <support@kuzzle.io>",
   "scripts": {
