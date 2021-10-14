@@ -122,7 +122,7 @@ describe('Login', function() {
   it('Should be able to disconnect from a token expired session', () => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     cy.request('POST', 'http://localhost:7512/admin/_resetDatabase')
-    cy.request('POST', 'http://localhost:7512/_createFirstAdmin', {
+    cy.request('POST', 'http://localhost:7512/_createFirstAdmin?_id=admin', {
       content: {},
       credentials: {
         local: {
