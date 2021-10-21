@@ -66,13 +66,13 @@
 {
   "policies": [{
       "roleId": "roleId"
-      "restrictedTo": {
+      "restrictedTo": [{
         "index": "myindex",
         "collections": [
           "collection1",
           "collection2"...
         ]
-      }
+      }]
     }]
 }
         </pre
@@ -138,43 +138,43 @@ export default {
   mixins: [validationMixin],
   name: 'ProfileCreateOrUpdate',
   components: {
-    JsonEditor
+    JsonEditor,
   },
   directives: {
-    JsonFormatter
+    JsonFormatter,
   },
   props: {
     id: {
-      type: String
+      type: String,
     },
     profile: {
       type: String,
-      default: '{}'
-    }
+      default: '{}',
+    },
   },
   data() {
     return {
       profileValue: this.profile || '{}',
       idValue: null,
-      submitting: false
+      submitting: false,
     }
   },
   validations: {
     idValue: {
       required: requiredUnless('id'),
       isNotWhitespace: not(isWhitespace),
-      startsWithLetter: not(startsWithSpace)
+      startsWithLetter: not(startsWithSpace),
     },
     profileValue: {
-      syntaxOK: function(value) {
+      syntaxOK: function (value) {
         try {
           JSON.parse(value)
         } catch (e) {
           return false
         }
         return true
-      }
-    }
+      },
+    },
   },
   methods: {
     validateState(fieldName) {
@@ -191,12 +191,12 @@ export default {
       }
       this.$emit('submit', {
         profile: JSON.parse(this.profileValue),
-        id: this.idValue
+        id: this.idValue,
       })
     },
     cancel() {
       this.$router.push({ name: 'SecurityProfilesList' })
-    }
-  }
+    },
+  },
 }
 </script>
