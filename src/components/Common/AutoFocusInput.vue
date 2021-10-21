@@ -66,6 +66,11 @@ export default {
           return
         }
 
+        // Don't auto focus if using keyboard shortcuts, ie. when copy-pasting
+        if (keyEvent.metaKey) {
+          return
+        }
+
         if (this.isFocus()) {
           if (keyEvent.code === 'Enter') {
             this.$emit('submit')
@@ -91,7 +96,7 @@ export default {
     },
     stopListenKeypress() {
       document.onkeypress = null
-    }
+    },
   },
   mounted() {
     if (componentParents.length !== 0) {
