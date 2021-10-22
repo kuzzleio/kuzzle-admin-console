@@ -13,9 +13,9 @@
                 data-cy="QuickFilter-input"
                 debounce="300"
                 type="search"
-                v-model="value"
+                v-model="currentFilter.value.quick"
                 :placeholder="placeholder"
-                @keyup.enter="inputSubmit"
+                @keyup.enter="submit"
               />
             </div>
           </b-input-group>
@@ -98,7 +98,6 @@
 export default {
   name: 'QuickFilter',
   props: {
-    currentFilter: Object,
     advancedFiltersVisible: Boolean,
     advancedQueryLabel: {
       type: String,
@@ -124,46 +123,28 @@ export default {
     submitOnType: {
       type: Boolean,
       default: true
-    },
-    initialValue: {
-      type: String,
-      default: ''
     }
   },
-  data() {
-    return {
-      value: this.initialValue
-    }
-  },
+  inject: ['currentFilter'],
   methods: {
-    submitSearch() {
-      this.$emit('filter-submitted', this.value)
+    submit() {
+      this.$emit('submit') //, this.value
     },
     resetSearch() {
       this.$emit('reset')
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
-    },
-    inputSubmit() {
-      this.$emit('enter-pressed')
     }
   },
   watch: {
-    value() {
-      this.$emit('input', this.value)
-
-      if (this.submitOnType) {
-        this.submitSearch()
-      }
-    },
-    'currentFilter.quick': {
-      handler(newValue) {
-        if (newValue !== this.value) {
-          this.value = newValue
+    'currentFilter.value.quick': {
+      handler() {
+        this.$log.debug('QuickFilter changed')
+        if (this.submitOnType) {
+          this.submit()
         }
-      },
-      deep: true
+      }
     }
   }
 }

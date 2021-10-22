@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import VueCompositionApi from '@vue/composition-api'
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import createRoutes from './routes/index'
 import './plugins/logger'
@@ -20,6 +21,7 @@ Reflect.defineProperty(window, 'kuzzle', {
 
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
+Vue.use(VueCompositionApi)
 
 const router = createRoutes(Vue.prototype.$log)
 

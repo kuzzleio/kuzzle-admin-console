@@ -13,24 +13,19 @@
         <quick-filter
           v-if="!advancedFiltersVisible"
           style="flex-grow: 1"
-          v-model="quickFilter"
           submit-button-label="Quick Search"
           :action-buttons-visible="actionButtonsVisible"
           :advanced-filters-visible="advancedFiltersVisible"
           :advanced-query-label="advancedQueryLabel"
           :complex-filter-active="complexFilterActive"
           :enabled="quickFilterEnabled"
-          :initialValue="quickFilter"
           :placeholder="quickFilterPlaceholder"
           :submit-on-type="quickFilterSubmitOnType"
-          :current-filter="currentFilter"
           @display-advanced-filters="
             advancedFiltersVisible = !advancedFiltersVisible
           "
-          @filter-submitted="onQuickFilterSubmitted"
-          @refresh="onRefresh"
           @reset="onReset"
-          @enter-pressed="onEnterPressed"
+          @submit="onSubmit"
         />
         <template v-if="advancedFiltersVisible">
           <b-nav-item
@@ -158,7 +153,7 @@ import FavoriteFilters from './FavoriteFilters'
 
 import {
   NO_ACTIVE,
-  ACTIVE_QUICK,
+  // ACTIVE_QUICK,
   ACTIVE_BASIC,
   ACTIVE_RAW,
   Filter
@@ -255,9 +250,6 @@ export default {
         }
 
         return this.currentFilter.quick
-      },
-      set(value) {
-        this.currentFilter.quick = value
       }
     },
     basicFilter() {
@@ -281,13 +273,8 @@ export default {
       this.objectTabActive = tab
       this.refreshace = !this.refreshace
     },
-    onQuickFilterSubmitted(term) {
-      this.onSubmit(
-        Object.assign(this.currentFilter, {
-          active: term ? ACTIVE_QUICK : NO_ACTIVE,
-          quick: term
-        })
-      )
+    onQuickFilterSubmitted() {
+      this.onSubmit()
     },
     onBasicFilterSubmitted(filter, sorting) {
       const newFilter = new Filter()
@@ -333,11 +320,11 @@ export default {
       this.$emit('filters-updated', newFilters)
     },
     onSubmit(filter, saveToHistory = true) {
-      this.onFiltersUpdated(
-        Object.assign(filter, {
-          from: 0
-        })
-      )
+      // this.onFiltersUpdated(
+      //   Object.assign(filter, {
+      //     from: 0
+      //   })
+      // )
       this.$emit('submit', saveToHistory)
       this.close()
     },
