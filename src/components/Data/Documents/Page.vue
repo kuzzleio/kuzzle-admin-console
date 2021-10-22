@@ -201,7 +201,6 @@
 
 <script>
 import _ from 'lodash'
-import { computed } from '@vue/composition-api'
 
 import Column from './Views/Column'
 import Map from './Views/Map'
@@ -277,11 +276,6 @@ export default {
       mappingGeoshapes: [],
       selectedGeoshape: '',
       handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon']
-    }
-  },
-  provide() {
-    return {
-      currentFilter: computed(() => this.currentFilter)
     }
   },
   computed: {
@@ -601,7 +595,6 @@ export default {
       this.currentFilter = newFilters
     },
     onFilterSubmit(saveToHistory = true) {
-      this.$log.debug('Filter submitted')
       if (saveToHistory) {
         filterManager.addNewHistoryItemAndSave(
           this.currentFilter,
@@ -692,7 +685,6 @@ export default {
     // PAGINATION
     // =========================================================================
     changePaginationSize(size) {
-      this.$log.debug(`changing pagination to ${size}`)
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           size,

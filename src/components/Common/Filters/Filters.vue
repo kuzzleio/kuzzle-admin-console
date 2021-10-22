@@ -21,11 +21,13 @@
           :enabled="quickFilterEnabled"
           :placeholder="quickFilterPlaceholder"
           :submit-on-type="quickFilterSubmitOnType"
+          :value="quickFilter"
           @display-advanced-filters="
             advancedFiltersVisible = !advancedFiltersVisible
           "
+          @input="onQuickFilterUpdated"
           @reset="onReset"
-          @submit="onSubmit"
+          @submit="onQuickFilterSubmitted"
         />
         <template v-if="advancedFiltersVisible">
           <b-nav-item
@@ -153,7 +155,7 @@ import FavoriteFilters from './FavoriteFilters'
 
 import {
   NO_ACTIVE,
-  // ACTIVE_QUICK,
+  ACTIVE_QUICK,
   ACTIVE_BASIC,
   ACTIVE_RAW,
   Filter
@@ -273,8 +275,18 @@ export default {
       this.objectTabActive = tab
       this.refreshace = !this.refreshace
     },
-    onQuickFilterSubmitted() {
-      this.onSubmit()
+    onQuickFilterUpdated(term) {
+      this.onFiltersUpdated({
+        ...this.currentFilter,
+        quick: term
+      })
+    },
+    onQuickFilterSubmitted(term) {
+      this.onSubmit({
+        ...this.currentFilter,
+        active: ACTIVE_QUICK,
+        quick: term
+      })
     },
     onBasicFilterSubmitted(filter, sorting) {
       const newFilter = new Filter()
@@ -320,11 +332,11 @@ export default {
       this.$emit('filters-updated', newFilters)
     },
     onSubmit(filter, saveToHistory = true) {
-      // this.onFiltersUpdated(
-      //   Object.assign(filter, {
-      //     from: 0
-      //   })
-      // )
+      this.onFiltersUpdated(
+        Object.assign(filter, {
+          from: 0
+        })
+      )
       this.$emit('submit', saveToHistory)
       this.close()
     },

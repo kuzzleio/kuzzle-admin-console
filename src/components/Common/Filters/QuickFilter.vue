@@ -11,10 +11,11 @@
               <b-form-input
                 autofocus
                 data-cy="QuickFilter-input"
-                debounce="300"
+                debounce="600"
                 type="search"
-                v-model="currentFilter.value.quick"
+                :value="value"
                 :placeholder="placeholder"
+                @input="onInput"
                 @keyup.enter="submit"
               />
             </div>
@@ -123,28 +124,23 @@ export default {
     submitOnType: {
       type: Boolean,
       default: true
+    },
+    value: {
+      type: String
     }
   },
-  inject: ['currentFilter'],
   methods: {
     submit() {
-      this.$emit('submit') //, this.value
+      this.$emit('submit', this.value)
     },
     resetSearch() {
       this.$emit('reset')
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
-    }
-  },
-  watch: {
-    'currentFilter.value.quick': {
-      handler() {
-        this.$log.debug('QuickFilter changed')
-        if (this.submitOnType) {
-          this.submit()
-        }
-      }
+    },
+    onInput(term) {
+      this.$emit(this.submitOnType ? 'submit' : 'input', term)
     }
   }
 }
