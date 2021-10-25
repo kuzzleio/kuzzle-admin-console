@@ -51,8 +51,7 @@
           !canSearchDocument(indexName, collectionName) && index && collection
         "
       />
-
-      <template v-else-if="!isFetching">
+      <template v-else>
         <filters
           class="mb-3"
           :available-operands="searchFilterOperands"
@@ -64,115 +63,123 @@
           @filters-updated="onFiltersUpdated"
           @submit="onFilterSubmit"
         />
-        <template v-if="isCollectionEmpty">
-          <realtime-only-empty-state
-            v-if="isRealtimeCollection"
-            :index="indexName"
-            :collection="collectionName"
-          />
-          <no-geopoint-field-state v-else-if="hasGeopoints" />
-          <empty-state v-else :index="indexName" :collection="collectionName" />
-        </template>
-        <template v-else>
-          <b-card
-            class="light-shadow"
-            :bg-variant="documents.length === 0 ? 'light' : 'default'"
-          >
-            <b-card-text class="p-0">
-              <no-results-empty-state v-if="!documents.length" />
-              <template v-else>
-                <List
-                  v-if="listViewType === 'list'"
-                  :all-checked="allChecked"
-                  :collection="collectionName"
-                  :documents="formattedDocuments"
-                  :index="indexName"
-                  :current-page-size="paginationSize"
-                  :selected-documents="selectedDocuments"
-                  :total-documents="totalDocuments"
-                  @bulk-delete="onBulkDeleteClicked"
-                  @change-page-size="changePaginationSize"
-                  @checkbox-click="toggleSelectDocuments"
-                  @delete="onDeleteClicked"
-                  @refresh="onRefresh"
-                  @toggle-all="onToggleAllClicked"
-                />
+        <template v-if="!isFetching">
+          <template v-if="isCollectionEmpty">
+            <realtime-only-empty-state
+              v-if="isRealtimeCollection"
+              :index="indexName"
+              :collection="collectionName"
+            />
+            <no-geopoint-field-state v-else-if="hasGeopoints" />
+            <empty-state
+              v-else
+              :index="indexName"
+              :collection="collectionName"
+            />
+          </template>
+          <template v-else>
+            <b-card
+              class="light-shadow"
+              :bg-variant="documents.length === 0 ? 'light' : 'default'"
+            >
+              <b-card-text class="p-0">
+                <no-results-empty-state v-if="!documents.length" />
+                <template v-else>
+                  <List
+                    v-if="listViewType === 'list'"
+                    :all-checked="allChecked"
+                    :collection="collectionName"
+                    :documents="formattedDocuments"
+                    :index="indexName"
+                    :current-page-size="paginationSize"
+                    :selected-documents="selectedDocuments"
+                    :total-documents="totalDocuments"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @delete="onDeleteClicked"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  />
 
-                <Column
-                  v-if="listViewType === 'column'"
-                  :index="indexName"
-                  :collection="collectionName"
-                  :documents="documents"
-                  :mapping="collectionMapping"
-                  :selected-documents="selectedDocuments"
-                  :all-checked="allChecked"
-                  :current-page-size="paginationSize"
-                  :total-documents="totalDocuments"
-                  @edit="onEditClicked"
-                  @delete="onDeleteClicked"
-                  @bulk-delete="onBulkDeleteClicked"
-                  @change-page-size="changePaginationSize"
-                  @checkbox-click="toggleSelectDocuments"
-                  @refresh="onRefresh"
-                  @toggle-all="onToggleAllClicked"
-                />
+                  <Column
+                    v-if="listViewType === 'column'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :selected-documents="selectedDocuments"
+                    :all-checked="allChecked"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  />
 
-                <TimeSeries
-                  v-if="listViewType === 'time-series'"
-                  :index="indexName"
-                  :collection="collectionName"
-                  :documents="documents"
-                  :mapping="collectionMapping"
-                  :current-page-size="paginationSize"
-                  :total-documents="totalDocuments"
-                  @change-page-size="changePaginationSize"
-                  @changeDisplayPagination="changeDisplayPagination"
-                />
+                  <TimeSeries
+                    v-if="listViewType === 'time-series'"
+                    :index="indexName"
+                    :collection="collectionName"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @change-page-size="changePaginationSize"
+                    @changeDisplayPagination="changeDisplayPagination"
+                  />
 
-                <Map
-                  v-if="listViewType === 'map'"
-                  :selected-geopoint="selectedGeopoint"
-                  :selectedGeoshape="selectedGeoshape"
-                  :current-page-size="paginationSize"
-                  :index="indexName"
-                  :geoDocuments="geoDocuments"
-                  :shapesDocuments="shapesDocuments"
-                  :collection="collectionName"
-                  :mappingGeopoints="mappingGeopoints"
-                  :mappingGeoshapes="mappingGeoshapes"
-                  @change-page-size="changePaginationSize"
-                  @on-select-geopoint="onSelectGeopoint"
-                  @on-select-geoshape="onSelectGeoshape"
-                  @edit="onEditClicked"
-                  @delete="onDeleteClicked"
-                />
+                  <Map
+                    v-if="listViewType === 'map'"
+                    :selected-geopoint="selectedGeopoint"
+                    :selectedGeoshape="selectedGeoshape"
+                    :current-page-size="paginationSize"
+                    :index="indexName"
+                    :geoDocuments="geoDocuments"
+                    :shapesDocuments="shapesDocuments"
+                    :collection="collectionName"
+                    :mappingGeopoints="mappingGeopoints"
+                    :mappingGeoshapes="mappingGeoshapes"
+                    @change-page-size="changePaginationSize"
+                    @on-select-geopoint="onSelectGeopoint"
+                    @on-select-geoshape="onSelectGeoshape"
+                    @edit="onEditClicked"
+                    @delete="onDeleteClicked"
+                  />
 
-                <b-row
-                  v-show="totalDocuments > paginationSize && displayPagination"
-                  align-h="center"
-                >
-                  <b-pagination
-                    v-model="currentPage"
-                    aria-controls="my-table"
-                    class="m-2 mt-4"
-                    data-cy="DocumentList-pagination"
-                    :total-rows="totalDocuments"
-                    :per-page="paginationSize"
-                  ></b-pagination>
-                </b-row>
-                <div
-                  v-if="totalDocuments > 10000"
-                  class="text-center mt-2"
-                  data-cy="DocumentList-exceedESLimitMsg"
-                >
-                  <small class="text-secondary"
-                    >Due to limitations imposed by Elasticsearch, you won't be
-                    able to browse documents beyond 10000.</small
+                  <b-row
+                    v-show="
+                      totalDocuments > paginationSize && displayPagination
+                    "
+                    align-h="center"
                   >
-                </div>
-              </template>
-            </b-card-text>
-          </b-card>
+                    <b-pagination
+                      v-model="currentPage"
+                      aria-controls="my-table"
+                      class="m-2 mt-4"
+                      data-cy="DocumentList-pagination"
+                      :total-rows="totalDocuments"
+                      :per-page="paginationSize"
+                    ></b-pagination>
+                  </b-row>
+                  <div
+                    v-if="totalDocuments > 10000"
+                    class="text-center mt-2"
+                    data-cy="DocumentList-exceedESLimitMsg"
+                  >
+                    <small class="text-secondary"
+                      >Due to limitations imposed by Elasticsearch, you won't be
+                      able to browse documents beyond 10000.</small
+                    >
+                  </div>
+                </template>
+              </b-card-text>
+            </b-card>
+          </template>
         </template>
       </template>
       <DeleteCollectionModal
@@ -678,7 +685,6 @@ export default {
     // PAGINATION
     // =========================================================================
     changePaginationSize(size) {
-      this.$log.debug(`changing pagination to ${size}`)
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           size,

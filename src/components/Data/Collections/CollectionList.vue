@@ -78,12 +78,12 @@
                     <template v-slot:prepend>
                       <b-input-group-text>Filter</b-input-group-text>
                     </template>
-
-                    <auto-focus-input
-                      name="collection"
+                    <b-form-input
+                      autofocus
+                      debounce="300"
                       v-model="filter"
-                      @submit="navigateToCollection"
                       :disabled="collections.length === 0"
+                      @keyup.enter="navigateToCollection"
                     />
                   </b-input-group>
                 </b-col>
@@ -258,7 +258,6 @@ import DeleteCollectionModal from './DeleteCollectionModal'
 import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal'
 import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import AutoFocusInput from '../../Common/AutoFocusInput'
 import { truncateName } from '../../../utils'
 import { mapGetters } from 'vuex'
 
@@ -270,8 +269,7 @@ export default {
     DeleteCollectionModal,
     BulkDeleteCollectionsModal,
     Headline,
-    ListNotAllowed,
-    AutoFocusInput
+    ListNotAllowed
   },
   props: {
     indexName: String

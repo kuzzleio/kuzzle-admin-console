@@ -60,11 +60,12 @@
                   <b-input-group-text>Filter</b-input-group-text>
                 </template>
 
-                <auto-focus-input
-                  name="index"
+                <b-form-input
+                  autofocus
+                  debounce="300"
                   v-model="filter"
                   :disabled="indexes.length === 0"
-                  @submit="navigateToIndex"
+                  @keyup.enter="navigateToIndex"
                 />
               </b-input-group>
             </b-col>
@@ -184,7 +185,6 @@ import CreateIndexModal from './CreateIndexModal'
 import DeleteIndexModal from './DeleteIndexModal'
 import BulkDeleteIndexesModal from './BulkDeleteIndexesModal'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import AutoFocusInput from '../../Common/AutoFocusInput'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -194,8 +194,7 @@ export default {
     CreateIndexModal,
     DeleteIndexModal,
     BulkDeleteIndexesModal,
-    ListNotAllowed,
-    AutoFocusInput
+    ListNotAllowed
   },
   data() {
     return {

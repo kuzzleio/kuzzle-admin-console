@@ -205,7 +205,12 @@ export default {
     this.paneSize = `${getPersistedItem('paneSize')}px`
   },
   watch: {
-    $route: {
+    '$route.params.indexName': {
+      handler() {
+        this.lazyLoadingSequence()
+      }
+    },
+    '$route.params.collectionName': {
       handler() {
         this.lazyLoadingSequence()
       }
