@@ -2,7 +2,7 @@ version: '3'
 
 services:
   kuzzle:
-    image: kuzzleio/kuzzle:2.12.1
+    image: kuzzleio/kuzzle:2
     ports:
       - "${KUZZLE_PORT:-7512}:7512"
     cap_add:
