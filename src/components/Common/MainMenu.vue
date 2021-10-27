@@ -147,20 +147,10 @@ export default {
     async doLogout() {
       try {
         await this.$store.direct.dispatch.auth.doLogout()
-        this.$router.push({ name: 'Login' })
       } catch (error) {
         this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title: 'Ooops! Something went wrong while logging out.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
+      } finally {
+        this.$router.push({ name: 'Login' })
       }
     },
 
