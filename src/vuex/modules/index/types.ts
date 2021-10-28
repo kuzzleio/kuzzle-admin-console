@@ -70,6 +70,7 @@ export class Collection {
   private _name: string
   private _type: CollectionType
   mapping?: object
+  dynamic?: string
 
   constructor(name: string, type: CollectionType) {
     this._type = this.findType(name, type)

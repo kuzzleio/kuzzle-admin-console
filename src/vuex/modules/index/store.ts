@@ -268,7 +268,8 @@ const actions = createActions({
       index.name
     )
 
-    collection.mapping = kuzzleMapping
+    collection.mapping = kuzzleMapping.properties
+    collection.dynamic = kuzzleMapping.dynamic
 
     commit.updateCollection({ index, collection: collection })
   }
