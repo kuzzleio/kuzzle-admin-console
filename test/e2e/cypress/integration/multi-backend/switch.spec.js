@@ -45,7 +45,7 @@ describe('Switch between two backends', () => {
         }
       })
     )
-    localStorage.setItem('currentEnv', backends[0].name)
+    sessionStorage.setItem('currentEnv', backends[0].name)
 
     cy.visit('/')
     cy.wait(5000)

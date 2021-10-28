@@ -60,11 +60,12 @@
                   <b-input-group-text>Filter</b-input-group-text>
                 </template>
 
-                <auto-focus-input
-                  name="index"
+                <b-form-input
+                  autofocus
+                  debounce="300"
                   v-model="filter"
                   :disabled="indexes.length === 0"
-                  @submit="navigateToIndex"
+                  @keyup.enter="navigateToIndex"
                 />
               </b-input-group>
             </b-col>
@@ -164,9 +165,11 @@
       @create-successful="onCreateModalSuccess"
     />
     <DeleteIndexModal
+      ref="deleteIndexModal"
       :index="indexToDelete"
       :modalId="deleteIndexModalId"
-      @delete-successful="onDeleteModalSuccess"
+      @confirm-deletion="onConfirmDeleteModal"
+      @cancel="onCancelDeleteModal"
     />
     <BulkDeleteIndexesModal
       :indexes="selectedIndexes"
@@ -182,7 +185,6 @@ import CreateIndexModal from './CreateIndexModal'
 import DeleteIndexModal from './DeleteIndexModal'
 import BulkDeleteIndexesModal from './BulkDeleteIndexesModal'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import AutoFocusInput from '../../Common/AutoFocusInput'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -192,8 +194,7 @@ export default {
     CreateIndexModal,
     DeleteIndexModal,
     BulkDeleteIndexesModal,
-    ListNotAllowed,
-    AutoFocusInput
+    ListNotAllowed
   },
   data() {
     return {
@@ -261,6 +262,20 @@ export default {
     },
     openBulkDeleteModal() {
       this.$bvModal.show(this.bulkDeleteIndexesModalId)
+    },
+    async onCancelDeleteModal() {
+      this.$refs.deleteIndexModal.resetForm()
+      this.$bvModal.hide(this.deleteIndexModalId)
+      await this.refreshIndexes()
+    },
+    async onConfirmDeleteModal() {
+      try {
+        await this.$store.direct.dispatch.index.deleteIndex(this.indexToDelete)
+        this.$bvModal.hide(this.deleteIndexModalId)
+        await this.refreshIndexes()
+      } catch (err) {
+        this.$refs.deleteIndexModal.setError(err.message)
+      }
     },
     async onDeleteModalSuccess() {
       await this.refreshIndexes()

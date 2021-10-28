@@ -16,9 +16,31 @@
               class="icon-medium icon-black mr-2"
               :index="indexName"
               :collection="collectionName"
-              @list="$router.push({ name: 'DocumentList' })"
-              @column="$router.push({ name: 'DocumentList' })"
-              @time-series="$router.push({ name: 'DocumentList' })"
+              :mappingAttributes="mappingAttributes"
+              @list="
+                $router.push({
+                  name: 'DocumentList',
+                  query: { listViewType: 'list' }
+                })
+              "
+              @column="
+                $router.push({
+                  name: 'DocumentList',
+                  query: { listViewType: 'column' }
+                })
+              "
+              @time-series="
+                $router.push({
+                  name: 'DocumentList',
+                  query: { listViewType: 'time-series' }
+                })
+              "
+              @map="
+                $router.push({
+                  name: 'DocumentList',
+                  query: { listViewType: 'map' }
+                })
+              "
             />
             <b-button
               v-if="isRealtimeCollection"
@@ -269,6 +291,8 @@ import JsonFormatter from '../../../directives/json-formatter.directive'
 import moment from 'moment'
 import { isEqual } from 'lodash'
 import { mapGetters } from 'vuex'
+import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
+
 export default {
   name: 'CollectionWatch',
   directives: {
@@ -311,6 +335,14 @@ export default {
             this.index,
             this.collectionName
           )
+        : null
+    },
+    collectionMapping() {
+      return this.collection ? this.collection.mapping : null
+    },
+    mappingAttributes() {
+      return this.collectionMapping
+        ? this.extractAttributesFromMapping(this.collectionMapping)
         : null
     },
     hasFilter() {
@@ -356,6 +388,7 @@ export default {
   },
   methods: {
     truncateName,
+    extractAttributesFromMapping,
     showDeleteCollectionModal() {
       this.$bvModal.show(this.modalDeleteId)
     },

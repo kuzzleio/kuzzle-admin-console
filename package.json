@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-admin-console",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "A handy administrative console for Kuzzle",
   "author": "The Kuzzle team <support@kuzzle.io>",
   "scripts": {
@@ -30,6 +30,7 @@
     "@vue/cli-plugin-unit-mocha": "^4.1.0",
     "@vue/cli-plugin-vuex": "^4.1.0",
     "@vue/cli-service": "^4.1.0",
+    "@vue/composition-api": "^1.2.4",
     "@vue/eslint-config-prettier": "^4.0.1",
     "@vue/eslint-config-typescript": "^5.0.1",
     "@vue/test-utils": "^1.0.0-beta.30",

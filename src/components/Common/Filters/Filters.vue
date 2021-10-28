@@ -13,23 +13,21 @@
         <quick-filter
           v-if="!advancedFiltersVisible"
           style="flex-grow: 1"
-          v-model="quickFilter"
           submit-button-label="Quick Search"
           :action-buttons-visible="actionButtonsVisible"
           :advanced-filters-visible="advancedFiltersVisible"
           :advanced-query-label="advancedQueryLabel"
           :complex-filter-active="complexFilterActive"
           :enabled="quickFilterEnabled"
-          :initialValue="quickFilter"
           :placeholder="quickFilterPlaceholder"
           :submit-on-type="quickFilterSubmitOnType"
+          :value="quickFilter"
           @display-advanced-filters="
             advancedFiltersVisible = !advancedFiltersVisible
           "
-          @filter-submitted="onQuickFilterSubmitted"
-          @refresh="onRefresh"
+          @input="onQuickFilterUpdated"
           @reset="onReset"
-          @enter-pressed="onEnterPressed"
+          @submit="onQuickFilterSubmitted"
         />
         <template v-if="advancedFiltersVisible">
           <b-nav-item
@@ -254,9 +252,6 @@ export default {
         }
 
         return this.currentFilter.quick
-      },
-      set(value) {
-        this.currentFilter.quick = value
       }
     },
     basicFilter() {
@@ -280,13 +275,18 @@ export default {
       this.objectTabActive = tab
       this.refreshace = !this.refreshace
     },
+    onQuickFilterUpdated(term) {
+      this.onFiltersUpdated({
+        ...this.currentFilter,
+        quick: term
+      })
+    },
     onQuickFilterSubmitted(term) {
-      this.onSubmit(
-        Object.assign(this.currentFilter, {
-          active: term ? ACTIVE_QUICK : NO_ACTIVE,
-          quick: term
-        })
-      )
+      this.onSubmit({
+        ...this.currentFilter,
+        active: ACTIVE_QUICK,
+        quick: term
+      })
     },
     onBasicFilterSubmitted(filter, sorting) {
       const newFilter = new Filter()

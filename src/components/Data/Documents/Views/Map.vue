@@ -196,6 +196,7 @@ import JsonFormatter from '@/directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import PerPageSelector from '@/components/Common/PerPageSelector'
+import get from 'lodash/get'
 
 export default {
   name: 'ViewMap',
@@ -334,17 +335,17 @@ export default {
     },
     circleShapes() {
       return this.shapesDocuments.filter(
-        shape => shape.content.type === 'circle'
+        shape => get(shape, 'content.type') === 'circle'
       )
     },
     polygonShapes() {
       return this.shapesDocuments.filter(
-        shape => shape.content.type === 'polygon'
+        shape => get(shape, 'content.type') === 'polygon'
       )
     },
     multiPolygonShapes() {
       return this.shapesDocuments.filter(
-        shape => shape.content.type === 'multipolygon'
+        shape => get(shape, 'content.type') === 'multipolygon'
       )
     }
   },

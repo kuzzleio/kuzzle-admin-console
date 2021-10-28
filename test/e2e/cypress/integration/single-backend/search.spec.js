@@ -228,7 +228,7 @@ describe('Search', function() {
     )
   })
 
-  it('Should be able to perform a Basic Search on a _kuzzle_info field', function() {
+  it('performs a Basic Search on a _kuzzle_info field', function() {
     cy.skipOnBackendVersion(1)
     cy.request(
       'POST',
@@ -491,7 +491,7 @@ describe('Search', function() {
       .and('contain', 'bar')
   })
 
-  it.skip('should show aggregations in search result when aggregations are specified in the raw filter', function() {
+  it.skip('shows aggregations in search result when aggregations are specified in the raw filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -536,7 +536,7 @@ describe('Search', function() {
     })
   })
 
-  it.skip('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
+  it.skip('does not show aggregations in search result when no aggregations are specified in the raw filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -570,7 +570,7 @@ describe('Search', function() {
     cy.get('[data-cy="RawFilter-submitBtn"]').click()
   })
 
-  it('should properly paginate search results', () => {
+  it('properly paginates search results', () => {
     const docCount = 50
     const documents = []
     for (let i = 0; i < docCount; i++) {
@@ -611,7 +611,7 @@ describe('Search', function() {
     cy.url().should('contain', 'from=30')
   })
 
-  it('should add my search in history', () => {
+  it('adds my search in history', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
@@ -643,7 +643,7 @@ describe('Search', function() {
     cy.get('[data-cy="FilterHistoryItem--0"]')
   })
 
-  it('Should be able to see previous searches in the search history.', () => {
+  it('shows previous searches in the search history.', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
@@ -679,7 +679,7 @@ describe('Search', function() {
     }
   })
 
-  it('Should be able to delete a previous search in the search history', () => {
+  it('deletes a previous search in the search history', () => {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/dummy-0/_create?refresh=wait_for`,
@@ -703,12 +703,10 @@ describe('Search', function() {
     cy.get('[data-cy="FilterHistoryItem-deleteBtn--0"]').click()
     cy.get('[data-cy="FilterHistoryItem--0"]').should('not.exist')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
-    cy.get('[data-cy=Filters-historyTab]').click()
     cy.get('[data-cy="FilterHistoryItem--0"]').should('not.exist')
   })
 
-  it('should be able to add a filter to favorite', () => {
+  it('adds a filter to favorite', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
@@ -744,7 +742,7 @@ describe('Search', function() {
     cy.get('[data-cy="FilterFavoriItem--0"]')
   })
 
-  it('should display message for empty favorite or history', () => {
+  it('displays a message for empty favorite or history', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
@@ -754,7 +752,7 @@ describe('Search', function() {
     cy.contains("You don't have any favorite filters.")
   })
 
-  it('should be able to remove a favorite filter', () => {
+  it('removes a favorite filter', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
@@ -792,7 +790,7 @@ describe('Search', function() {
     cy.contains("You don't have any favorite filters.")
   })
 
-  it('should be able to perform search from history', () => {
+  it('performs a search from history', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
@@ -834,7 +832,7 @@ describe('Search', function() {
     cy.contains('dummy-9').should('not.exist')
   })
 
-  it('should be able to display the range field correctly', function() {
+  it('displays the range field correctly', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -859,7 +857,7 @@ describe('Search', function() {
       .should('be.gt', 100)
   })
 
-  it('should be able to toggle fullscreen filters', () => {
+  it('toggles fullscreen filters', () => {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -901,7 +899,7 @@ describe('Search', function() {
     cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
   })
 
-  it('Should not be able to perform a Basic Search sort by a text field', function() {
+  it('does not perform a Basic Search sort by a text field', function() {
     cy.skipOnBackendVersion(1)
     cy.request(
       'POST',
@@ -928,7 +926,7 @@ describe('Search', function() {
     )
   })
 
-  it('Should be able to perform a Basic Search sort by a text field with keyword as sub type', function() {
+  it('does not perform a Basic Search sort by a text field with keyword as sub type', function() {
     cy.skipOnBackendVersion(1)
     cy.request(
       'POST',
