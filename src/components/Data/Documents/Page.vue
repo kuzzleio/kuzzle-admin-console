@@ -299,7 +299,7 @@ export default {
           return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
         })
         .map(d => ({
-          content: d[this.selectedGeoshape],
+          content: this.getProperty(d, this.selectedGeoshape),
           source: d
         }))
     },
