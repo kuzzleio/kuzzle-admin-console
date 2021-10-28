@@ -138,32 +138,32 @@ export default {
   mixins: [validationMixin],
   name: 'ProfileCreateOrUpdate',
   components: {
-    JsonEditor,
+    JsonEditor
   },
   directives: {
-    JsonFormatter,
+    JsonFormatter
   },
   props: {
     id: {
-      type: String,
+      type: String
     },
     profile: {
       type: String,
-      default: '{}',
-    },
+      default: '{}'
+    }
   },
   data() {
     return {
       profileValue: this.profile || '{}',
       idValue: null,
-      submitting: false,
+      submitting: false
     }
   },
   validations: {
     idValue: {
       required: requiredUnless('id'),
       isNotWhitespace: not(isWhitespace),
-      startsWithLetter: not(startsWithSpace),
+      startsWithLetter: not(startsWithSpace)
     },
     profileValue: {
       syntaxOK: function (value) {
@@ -173,8 +173,8 @@ export default {
           return false
         }
         return true
-      },
-    },
+      }
+    }
   },
   methods: {
     validateState(fieldName) {
@@ -191,12 +191,12 @@ export default {
       }
       this.$emit('submit', {
         profile: JSON.parse(this.profileValue),
-        id: this.idValue,
+        id: this.idValue
       })
     },
     cancel() {
       this.$router.push({ name: 'SecurityProfilesList' })
-    },
-  },
+    }
+  }
 }
 </script>

@@ -96,7 +96,7 @@ export default {
     },
     stopListenKeypress() {
       document.onkeypress = null
-    },
+    }
   },
   mounted() {
     if (componentParents.length !== 0) {
