@@ -27,7 +27,8 @@ import PageNotAllowed from '../../Common/PageNotAllowed'
 import { mapGetters } from 'vuex'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
-import { clone, omit } from 'lodash'
+import omit from 'lodash/omit'
+import get from 'lodash/get'
 
 export default {
   name: 'DocumentCreate',
@@ -59,10 +60,9 @@ export default {
       )
     },
     mappingAttributes() {
-      const mapping = clone(this.collection.mapping)
-        ? omit(this.collection.mapping, '_kuzzle_info', 'dynamic')
+      return get(this, 'collection.mapping', null)
+        ? omit(this.collection.mapping, '_kuzzle_info')
         : null
-      return mapping
     },
     hasRights() {
       return this.canCreateDocument(this.indexName, this.collectionName)

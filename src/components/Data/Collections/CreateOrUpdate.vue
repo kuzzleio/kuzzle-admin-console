@@ -169,7 +169,6 @@ export default {
     mapping: {
       type: Object,
       default: () => ({
-        dynamic: false,
         properties: {}
       })
     }

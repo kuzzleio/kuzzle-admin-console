@@ -93,9 +93,9 @@ describe('Collection management', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-          "dynamic": false,
-        "properties": 
-        {
+"dynamic": false,
+"properties":
+{
 "firstName": {
 "type": "keyword"`,
         {

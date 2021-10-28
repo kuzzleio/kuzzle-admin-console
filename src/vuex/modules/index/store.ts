@@ -184,9 +184,7 @@ const actions = createActions({
 
     collection.mapping = mapping
 
-    await rootGetters.kuzzle.$kuzzle.collection.create(index.name, name, {
-      ...mapping
-    })
+    await rootGetters.kuzzle.$kuzzle.collection.create(index.name, name, mapping)
 
     commit.addCollection({ index, collection })
   },
@@ -210,9 +208,7 @@ const actions = createActions({
       action: 'updateMapping',
       collection: name,
       index: index.name,
-      body: {
-        ...mapping
-      }
+      body: mapping
     })
 
     commit.updateCollection({ index, collection: updatedCollection })
@@ -268,10 +264,7 @@ const actions = createActions({
       index.name
     )
 
-    collection.mapping = {
-      ...kuzzleMapping.properties,
-      dynamic: kuzzleMapping.dynamic
-    }
+    collection.mapping = kuzzleMapping
 
     commit.updateCollection({ index, collection: collection })
   }

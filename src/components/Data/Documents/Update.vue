@@ -65,10 +65,9 @@ export default {
     ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
     ...mapGetters('auth', ['canEditDocument']),
     mappingAttributes() {
-      const mapping = clone(this.collection.mapping)
-        ? omit(this.collection.mapping, '_kuzzle_info', 'dynamic')
+      return get(this, 'collection.mapping', null)
+        ? omit(this.collection.mapping, '_kuzzle_info')
         : null
-      return mapping
     },
     index() {
       return this.$store.direct.getters.index.getOneIndex(this.indexName)
