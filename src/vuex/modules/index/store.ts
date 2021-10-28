@@ -184,7 +184,11 @@ const actions = createActions({
 
     collection.mapping = mapping
 
-    await rootGetters.kuzzle.$kuzzle.collection.create(index.name, name, mapping)
+    await rootGetters.kuzzle.$kuzzle.collection.create(
+      index.name,
+      name,
+      mapping
+    )
 
     commit.addCollection({ index, collection })
   },

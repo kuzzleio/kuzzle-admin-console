@@ -39,7 +39,8 @@ import PageNotAllowed from '../../Common/PageNotAllowed'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 
-import { omit, clone } from 'lodash'
+import omit from 'lodash/omit'
+import get from 'lodash/get'
 import { mapGetters } from 'vuex'
 
 export default {
