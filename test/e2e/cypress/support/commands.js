@@ -51,7 +51,7 @@ Cypress.Commands.add(
         }
       })
     )
-    localStorage.setItem('currentEnv', envName)
+    sessionStorage.setItem('currentEnv', envName)
   }
 )
 
@@ -91,7 +91,7 @@ Cypress.Commands.add('waitForService', (url, state = 'up', tries = 30) => {
 })
 
 Cypress.Commands.add('skipOnBackendVersion', version => {
-  const currentEnvName = localStorage.getItem('currentEnv')
+  const currentEnvName = sessionStorage.getItem('currentEnv')
   const currentEnv = JSON.parse(localStorage.getItem('environments'))[
     currentEnvName
   ]
@@ -103,7 +103,7 @@ Cypress.Commands.add('skipOnBackendVersion', version => {
 })
 
 Cypress.Commands.add('skipUnlessBackendVersion', version => {
-  const currentEnvName = localStorage.getItem('currentEnv')
+  const currentEnvName = sessionStorage.getItem('currentEnv')
   const currentEnv = JSON.parse(localStorage.getItem('environments'))[
     currentEnvName
   ]

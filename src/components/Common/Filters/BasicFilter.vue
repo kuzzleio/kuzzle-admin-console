@@ -12,7 +12,11 @@
               v-if="groupIndex === filters.basic.length - 1"
               v-slot:footer
             >
-              <b-button @click="addOrCondition" variant="outline-secondary">
+              <b-button
+                :disabled="isInvalidBlock(orBlock)"
+                @click="addOrCondition"
+                variant="outline-secondary"
+              >
                 <i class="fa fa-plus left mr-2" />OR
               </b-button>
             </template>
@@ -124,7 +128,7 @@
                   </b-col>
                   <b-col sm="1" class="text-center">
                     <b-button
-                      v-if="filterIndex > 0"
+                      v-if="filterIndex > 0 || groupIndex > 0"
                       @click="removeAndCondition(groupIndex, filterIndex)"
                     >
                       <i class="fa fa-times pointer" />
@@ -136,6 +140,7 @@
                 <b-row align-v="center" align-h="center">
                   <b-button
                     v-if="filterIndex === orBlock.length - 1"
+                    :disabled="isInvalidStatement(filterIndex, orBlock)"
                     variant="outline-secondary"
                     @click="addAndCondition(groupIndex)"
                   >
@@ -146,7 +151,7 @@
             </b-row>
           </b-card>
 
-          <b-row v-if="groupIndex < filters.basic.length - 1">
+          <b-row v-if="groupIndex < filters.basic.length - 1" class="m-0">
             <b-col class="pr-0 mr-0" md="5"><hr /></b-col>
             <b-col
               md="2"
@@ -162,7 +167,7 @@
 
     <b-row align-h="center" align-v="center">
       <b-col md="4">
-        <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sort">
+        <b-input-group v-if="sortingEnabled" prepend="Sort">
           <b-form-select
             data-cy="BasicFilter-sortAttributeSelect"
             placeholder="Attribute"
@@ -263,10 +268,13 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     selectAttributesValues() {
-      return Object.keys(this.mappingAttributes).map(a => ({
-        text: a,
-        value: a
-      }))
+      return [
+        { text: '_id', value: '_id' },
+        ...Object.keys(this.mappingAttributes).map(a => ({
+          text: a,
+          value: a
+        }))
+      ]
     },
     sortAttributesValues() {
       return Object.keys(this.mappingAttributes)
@@ -331,6 +339,28 @@ export default {
     }
   },
   methods: {
+    isInvalidBlock(orBlock) {
+      return this.isInvalidStatement(orBlock.length - 1, orBlock)
+    },
+    isInvalidStatement(filterIndex, orBlock) {
+      const statement = orBlock[filterIndex]
+      const operator = statement.operator
+
+      switch (operator) {
+        case 'contains':
+        case 'not_contains':
+        case 'equal':
+        case 'not_equal':
+          return Boolean(!statement.attribute || !statement.value)
+        case 'exists':
+        case 'not_exists':
+          return Boolean(!statement.attribute)
+        case 'range':
+          return Boolean(
+            !statement.attribute || (!statement.gt_value && !statement.lt_value)
+          )
+      }
+    },
     setSortAttr(attribute) {
       this.$set(this.filters.sorting, 'attribute', attribute)
     },

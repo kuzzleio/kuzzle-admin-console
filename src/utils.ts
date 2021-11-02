@@ -61,5 +61,5 @@ module.exports = {
     }),
   antiGlitchOverlayTimeout: 900,
   LS_ENVIRONMENTS: 'environments',
-  LS_CURRENT_ENV: 'currentEnvironment'
+  SS_CURRENT_ENV: 'currentEnv'
 }

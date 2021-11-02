@@ -46,39 +46,38 @@
           />
         </b-col>
       </b-row>
-
       <list-not-allowed
         v-if="
           !canSearchDocument(indexName, collectionName) && index && collection
         "
       />
-
       <template v-else>
-        <template v-if="isCollectionEmpty">
-          <realtime-only-empty-state
-            v-if="isRealtimeCollection"
-            :index="indexName"
-            :collection="collectionName"
-          />
-          <no-geopoint-field-state v-else-if="hasGeopoints" />
-          <empty-state v-else :index="indexName" :collection="collectionName" />
-        </template>
-
-        <template v-if="!isCollectionEmpty">
-          <filters
-            class="mb-3"
-            :available-operands="searchFilterOperands"
-            :collection="collectionName"
-            :current-filter="currentFilter"
-            :index="indexName"
-            :mapping-attributes="mappingAttributes"
-            @enter-pressed="navigateToDocument"
-            @filters-updated="onFiltersUpdated"
-            @submit="onFilterSubmit"
-          />
-        </template>
-        <template>
-          <template v-if="!isCollectionEmpty">
+        <filters
+          class="mb-3"
+          :available-operands="searchFilterOperands"
+          :collection="collectionName"
+          :current-filter="currentFilter"
+          :index="indexName"
+          :mapping-attributes="mappingAttributes"
+          @enter-pressed="navigateToDocument"
+          @filters-updated="onFiltersUpdated"
+          @submit="onFilterSubmit"
+        />
+        <template v-if="!isFetching">
+          <template v-if="isCollectionEmpty">
+            <realtime-only-empty-state
+              v-if="isRealtimeCollection"
+              :index="indexName"
+              :collection="collectionName"
+            />
+            <no-geopoint-field-state v-else-if="hasGeopoints" />
+            <empty-state
+              v-else
+              :index="indexName"
+              :collection="collectionName"
+            />
+          </template>
+          <template v-else>
             <b-card
               class="light-shadow"
               :bg-variant="documents.length === 0 ? 'light' : 'default'"
@@ -137,13 +136,17 @@
                   <Map
                     v-if="listViewType === 'map'"
                     :selected-geopoint="selectedGeopoint"
+                    :selectedGeoshape="selectedGeoshape"
                     :current-page-size="paginationSize"
                     :index="indexName"
                     :geoDocuments="geoDocuments"
+                    :shapesDocuments="shapesDocuments"
                     :collection="collectionName"
                     :mappingGeopoints="mappingGeopoints"
+                    :mappingGeoshapes="mappingGeoshapes"
                     @change-page-size="changePaginationSize"
                     @on-select-geopoint="onSelectGeopoint"
+                    @on-select-geoshape="onSelectGeoshape"
                     @edit="onEditClicked"
                     @delete="onDeleteClicked"
                   />
@@ -251,6 +254,7 @@ export default {
   },
   data() {
     return {
+      isFetching: false,
       loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
@@ -264,11 +268,14 @@ export default {
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
       mappingGeopoints: [],
-      selectedGeopoint: null,
+      selectedGeopoint: '',
       resultPerPage: [10, 25, 50, 100, 500],
       currentPage: 1,
       modalDeleteId: 'modal-collection-delete',
-      displayPagination: true
+      displayPagination: true,
+      mappingGeoshapes: [],
+      selectedGeoshape: '',
+      handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon']
     }
   },
   computed: {
@@ -281,6 +288,20 @@ export default {
     ]),
     hasGeopoints() {
       return this.listViewType === 'map' && this.mappingGeopoints.length === 0
+    },
+    hasGeoshapes() {
+      return this.listViewType === 'map' && this.mappingGeoshapes.length === 0
+    },
+    shapesDocuments() {
+      return this.documents
+        .filter(document => {
+          const shape = this.getProperty(document, this.selectedGeoshape)
+          return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
+        })
+        .map(d => ({
+          content: d[this.selectedGeoshape],
+          source: d
+        }))
     },
     geoDocuments() {
       return this.documents
@@ -328,7 +349,7 @@ export default {
       return `${this.selectedGeopoint}.lon`
     },
     isCollectionGeo() {
-      return this.mappingGeopoints.length > 0
+      return this.mappingGeopoints.length > 0 || this.mappingGeoshapes > 0
     },
     isDocumentListFiltered() {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
@@ -416,6 +437,9 @@ export default {
     onSelectGeopoint(selectedGeopoint) {
       this.selectedGeopoint = selectedGeopoint
     },
+    onSelectGeoshape(selectedGeoshape) {
+      this.selectedGeoshape = selectedGeoshape
+    },
     listMappingGeopoints(mapping, path = []) {
       let attributes = []
       for (const [attributeName, { type, properties }] of Object.entries(
@@ -430,6 +454,22 @@ export default {
             this.listMappingGeopoints(properties, path.concat(attributeName))
           )
         } else if (type === 'geo_point') {
+          attributes = attributes.concat(path.concat(attributeName).join('.'))
+        }
+      }
+
+      return attributes
+    },
+    listMappingGeoshapes(mapping, path = []) {
+      let attributes = []
+      for (const [attributeName, { type, properties }] of Object.entries(
+        mapping
+      )) {
+        if (properties) {
+          attributes = attributes.concat(
+            this.listMappingGeoshapes(properties, path.concat(attributeName))
+          )
+        } else if (type === 'geo_shape') {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }
@@ -570,6 +610,8 @@ export default {
       this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
+      this.$emit('start-fetch')
+      this.isFetching = true
       this.$forceUpdate()
       this.selectedDocuments = []
 
@@ -636,12 +678,13 @@ export default {
           })
         }
       }
+      this.isFetching = false
+      this.$emit('end-fetch')
     },
 
     // PAGINATION
     // =========================================================================
     changePaginationSize(size) {
-      this.$log.debug(`changing pagination to ${size}`)
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           size,
@@ -732,7 +775,13 @@ export default {
 
     loadMappingInfo() {
       this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
-      this.selectedGeopoint = this.mappingGeopoints[0]
+      this.mappingGeoshapes = this.listMappingGeoshapes(this.collectionMapping)
+      if (this.mappingGeopoints.length) {
+        this.selectedGeopoint = this.mappingGeopoints[0]
+      }
+      if (this.mappingGeoshapes.length) {
+        this.selectedGeoshape = this.mappingGeoshapes[0]
+      }
     },
     // TODO: Refactor this method to avoid
     // cloning document list (computed property??)

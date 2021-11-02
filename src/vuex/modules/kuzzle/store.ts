@@ -5,7 +5,7 @@ import { moduleActionContext } from '@/vuex/store'
 import { getters } from './getters'
 
 export const LS_ENVIRONMENTS = 'environments'
-export const LS_CURRENT_ENV = 'currentEnv'
+export const SS_CURRENT_ENV = 'currentEnv'
 export const state: KuzzleState = {
   environments: {},
   currentId: undefined,
@@ -13,6 +13,7 @@ export const state: KuzzleState = {
   online: false,
   errorFromKuzzle: undefined
 }
+export const NO_ADMIN_WARNING_HOSTS = ['localhost', '127.0.0.1']
 
 export const DEFAULT_COLOR = 'darkblue'
 
@@ -85,7 +86,7 @@ const actions = createActions({
   setCurrentEnvironment(context, payload) {
     const { commit } = kuzzleActionContext(context)
 
-    localStorage.setItem(LS_CURRENT_ENV, payload)
+    sessionStorage.setItem(SS_CURRENT_ENV, payload)
     commit.setCurrentEnvironment(payload)
   },
   createEnvironment(context, payload) {
@@ -108,7 +109,7 @@ const actions = createActions({
 
     if (state.currentId === id) {
       dispatch.setCurrentEnvironment(null)
-      localStorage.removeItem(LS_CURRENT_ENV)
+      sessionStorage.removeItem(SS_CURRENT_ENV)
     }
 
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
@@ -202,13 +203,17 @@ const actions = createActions({
 
     loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
     Object.keys(loadedEnv).forEach(envName => {
+      const env = loadedEnv[envName]
+      if (env.hideAdminWarning === undefined) {
+        env.hideAdminWarning = NO_ADMIN_WARNING_HOSTS.includes(env.host)
+      }
       commit.createEnvironment({
-        environment: loadedEnv[envName],
+        environment: env,
         id: envName
       })
     })
 
-    currentId = localStorage.getItem(LS_CURRENT_ENV)
+    currentId = sessionStorage.getItem(SS_CURRENT_ENV)
     commit.setCurrentEnvironment(currentId)
   }
 })

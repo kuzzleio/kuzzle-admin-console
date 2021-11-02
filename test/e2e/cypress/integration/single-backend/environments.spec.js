@@ -38,7 +38,8 @@ describe('Environments', function() {
           ssl: false,
           port: 7512,
           backendMajorVersion: backendVersion,
-          token: null
+          token: null,
+          hideAdminWarning: true
         }
       })
     )
@@ -114,7 +115,8 @@ describe('Environments', function() {
           ssl: false,
           port: 7512,
           backendMajorVersion: backendVersion || 2,
-          token: null
+          token: null,
+          hideAdminWarning: true
         },
         [envNames[1]]: {
           name: envNames[1],
@@ -123,11 +125,12 @@ describe('Environments', function() {
           ssl: false,
           port: 7512,
           backendMajorVersion: backendVersion || 2,
-          token: null
+          token: null,
+          hideAdminWarning: true
         }
       })
     )
-    localStorage.setItem('currentEnv', envNames[0])
+    sessionStorage.setItem('currentEnv', envNames[0])
     cy.visit('/')
     cy.contains('Connected to')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
@@ -177,7 +180,7 @@ describe('Environments', function() {
       force: true
     })
     cy.wait(1000)
-    localStorage.setItem('currentEnv', envName)
+    sessionStorage.setItem('currentEnv', envName)
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
@@ -199,11 +202,12 @@ describe('Environments', function() {
           ssl: false,
           port: 7512,
           backendMajorVersion: backendVersion,
-          token: null
+          token: null,
+          hideAdminWarning: true
         }
       })
     )
-    localStorage.setItem('currentEnv', reachableEnvName)
+    sessionStorage.setItem('currentEnv', reachableEnvName)
 
     cy.visit('/')
     cy.contains('Connected to')
@@ -261,11 +265,12 @@ describe('Environments', function() {
           ssl: false,
           port: ports[0],
           backendMajorVersion: backendVersion,
-          token: null
+          token: null,
+          hideAdminWarning: true
         }
       })
     )
-    localStorage.setItem('currentEnv', envNames[0])
+    sessionStorage.setItem('currentEnv', envNames[0])
     cy.visit('/')
     cy.contains('Connected to')
 
@@ -314,7 +319,8 @@ describe('Environments', function() {
           host: 'localhost',
           ssl: false,
           port: 7512,
-          token: null
+          token: null,
+          hideAdminWarning: true
           // missing backendMajorVersion
         }
       })
@@ -329,7 +335,7 @@ describe('Environments', function() {
     })
   })
 
-  it('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
+  it.only('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
     cy.initLocalEnv(backendVersion)
     cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
     cy.wait(5000)
@@ -386,11 +392,12 @@ describe('Environments', function() {
           color: 'darkblue',
           host: 'localhost',
           ssl: false,
-          port: 7512
+          port: 7512,
+          hideAdminWarning: true
         }
       })
     )
-    localStorage.setItem('currentEnv', envName)
+    sessionStorage.setItem('currentEnv', envName)
     cy.visit('/')
     cy.contains('Edit a Connection')
     cy.contains('You must select a backend version')
@@ -399,7 +406,7 @@ describe('Environments', function() {
       `v${backendVersion}.x`
     )
     cy.get('[data-cy=Environment-SubmitButton]').click()
-
+    cy.wait(5000)
     cy.url().should('contain', 'login')
   })
 
@@ -429,7 +436,7 @@ describe('Environments', function() {
       force: true
     })
     cy.wait(1000)
-    localStorage.setItem('currentEnv', 'localEnvTestTabTitle')
+    sessionStorage.setItem('currentEnv', 'localEnvTestTabTitle')
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
@@ -447,7 +454,8 @@ describe('Environments', function() {
           ssl: false,
           port: 7512,
           backendMajorVersion: backendVersion,
-          token: null
+          token: null,
+          hideAdminWarning: true
         }
       })
     )
@@ -495,14 +503,13 @@ describe('Import and export environments', function() {
     cy.get('[data-cy="CreateEnvironment-import"]').click()
     cy.contains('Import Connection')
 
-    cy.get('[data-cy="EnvironmentImport-fileInput"]')
-      .attachFile(
-        {
-          filePath: 'environment.json',
-          mimeType: 'application/json'
-        },
-        { subjectType: 'input', force: true }
-      )
+    cy.get('[data-cy="EnvironmentImport-fileInput"]').attachFile(
+      {
+        filePath: 'environment.json',
+        mimeType: 'application/json'
+      },
+      { subjectType: 'input', force: true }
+    )
     cy.get('[data-cy=EnvironmentImport-ok]')
       .should('exist')
       .should('contain', 'Found 2 connections')
@@ -522,14 +529,13 @@ describe('Import and export environments', function() {
     cy.get('[data-cy="CreateEnvironment-import"]').click()
     cy.contains('Import Connection')
 
-    cy.get('[data-cy="EnvironmentImport-fileInput"]')
-      .attachFile(
-        {
-          filePath: 'image.jpg',
-          mimeType: 'image/jpeg'
-        },
-        { subjectType: 'input', force: true }
-      )
+    cy.get('[data-cy="EnvironmentImport-fileInput"]').attachFile(
+      {
+        filePath: 'image.jpg',
+        mimeType: 'image/jpeg'
+      },
+      { subjectType: 'input', force: true }
+    )
     cy.get('[data-cy=EnvironmentImport-err]')
       .should('exist')
       .should('contain', 'Uploaded file type (image/jpeg) is not supported.')
@@ -598,7 +604,7 @@ describe('Import and export environments', function() {
       )
       .should(
         'equal',
-        `{"${newEnvName}":{"name":"${newEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}},"${secondEnvName}":{"name":"${secondEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion}}}`
+        `{"${newEnvName}":{"name":"${newEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion},"hideAdminWarning":true},"${secondEnvName}":{"name":"${secondEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion},"hideAdminWarning":true}}`
       )
   })
 })

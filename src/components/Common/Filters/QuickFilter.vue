@@ -8,15 +8,15 @@
               <i class="fa fa-search search" />
             </b-input-group-prepend>
             <div class="QuickFilter-searchBar-input-wrapper">
-              <auto-focus-input
-                name="quick-filter"
+              <b-form-input
+                autofocus
                 data-cy="QuickFilter-input"
-                debounce="300"
+                debounce="600"
                 type="search"
-                v-model="value"
-                :initialValue="this.initialValue"
+                :value="value"
                 :placeholder="placeholder"
-                @submit="inputSubmit"
+                @input="onInput"
+                @keyup.enter="submit"
               />
             </div>
           </b-input-group>
@@ -96,13 +96,8 @@
 </template>
 
 <script>
-import AutoFocusInput from '../AutoFocusInput'
-
 export default {
   name: 'QuickFilter',
-  components: {
-    AutoFocusInput
-  },
   props: {
     advancedFiltersVisible: Boolean,
     advancedQueryLabel: {
@@ -130,19 +125,13 @@ export default {
       type: Boolean,
       default: true
     },
-    initialValue: {
-      type: String,
-      default: ''
-    }
-  },
-  data() {
-    return {
-      value: this.initialValue
+    value: {
+      type: String
     }
   },
   methods: {
-    submitSearch() {
-      this.$emit('filter-submitted', this.value)
+    submit() {
+      this.$emit('submit', this.value)
     },
     resetSearch() {
       this.$emit('reset')
@@ -150,17 +139,8 @@ export default {
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
     },
-    inputSubmit() {
-      this.$emit('enter-pressed')
-    }
-  },
-  watch: {
-    value() {
-      this.$emit('input', this.value)
-
-      if (this.submitOnType) {
-        this.submitSearch()
-      }
+    onInput(term) {
+      this.$emit(this.submitOnType ? 'submit' : 'input', term)
     }
   }
 }
