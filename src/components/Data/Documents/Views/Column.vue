@@ -7,7 +7,7 @@
           data-cy="SelectField"
           variant="outline-secondary"
           menu-class="dropdownScroll"
-          text="Select columns to display"
+          text="Fields"
           no-flip
         >
           <b-dropdown-item-button
@@ -73,6 +73,15 @@
           <i class="fas fa-sync-alt left" />
           Refresh
         </b-button>
+        <b-button
+          variant="outline-secondary"
+          class="mr-2"
+          title="Export currently visible data to CSV"
+          @click.prevent="exportToCSV"
+        >
+          <i class="fas fa-file-export left" />
+          CSV
+        </b-button>
       </b-col>
 
       <b-col cols="4" class="text-right">
@@ -81,14 +90,6 @@
           :total-documents="totalDocuments"
           @change-page-size="$emit('change-page-size', $event)"
         />
-      </b-col>
-    </b-row>
-    <b-row no-gutters class="mt-3 mb-2">
-      <b-col cols="12">
-        <b-alert :show="true" dismissible fade variant="info" class="m-0">
-          <i class="fas fa-info-circle mr-2"></i> This view does not allow you
-          to see array values.
-        </b-alert>
       </b-col>
     </b-row>
     <b-row class="mt-2 mb-2" no-gutters>
@@ -197,7 +198,27 @@
                 :key="`item-col-${field}`"
                 :id="`col-${item._id}-${field}`"
               >
-                {{ item[field] }}
+                <template v-if="item[field] === null">
+                  <b-badge>null</b-badge>
+                </template>
+                <template v-else-if="item[field] === undefined">
+                  <b-badge>undefined</b-badge>
+                </template>
+                <template v-else-if="Array.isArray(item[field])">
+                  <b-badge
+                    title="Unable to display array values in table cells, use the List view instead"
+                    >array</b-badge
+                  >
+                </template>
+                <template v-else-if="isObject(item[field])">
+                  <b-badge
+                    title="Unable to display object values in table cells, use the List view instead"
+                    >object</b-badge
+                  >
+                </template>
+                <template v-else>
+                  {{ item[field] }}
+                </template>
               </b-td>
             </b-tr>
           </b-tbody>
@@ -215,6 +236,7 @@ import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
 import HeaderTableView from '../HeaderTableView'
 import PerPageSelector from '@/components/Common/PerPageSelector'
+import { convertToCSV } from '@/services/collectionHelper'
 
 export default {
   name: 'Column',
@@ -251,7 +273,6 @@ export default {
           label: 'Id'
         }
       ],
-      tableItems: [],
       displayDragIcon: false,
       tabResizing: null,
       startOffset: null
@@ -279,19 +300,8 @@ export default {
         const doc = {}
         doc._id = d._id
         for (const key of this.selectedFields) {
-          // if there is an array in the current document within the 'path'
-          if (this.documentPathContainsArray(key, d)) {
-            doc[key] = { array: true }
-          } else {
-            const parsed = this.parseDocument(key, d)
-            if (parsed.value === undefined) {
-              doc[key] = { undefined: true }
-            } else if (parsed.value === null) {
-              doc[key] = { null: true }
-            } else {
-              doc[key] = parsed.value
-            }
-          }
+          const value = _.get(d, key)
+          doc[key] = value
         }
         return doc
       })
@@ -313,6 +323,19 @@ export default {
     }
   },
   methods: {
+    isObject: _.isObject,
+    exportToCSV() {
+      const blob = new Blob([
+        convertToCSV(this.formattedItems, this.selectedFields)
+      ])
+      const a = document.createElement('a')
+      a.download = `${this.index}-${this.collection}.csv`
+      a.href = URL.createObjectURL(blob)
+      a.addEventListener('click', () => {
+        setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000)
+      })
+      a.click()
+    },
     resetColumns() {
       this.selectedFields = []
       this.saveSelectedFieldsToLocalStorage()
@@ -320,18 +343,6 @@ export default {
     truncateName,
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
-    },
-    documentPathContainsArray(path, document) {
-      let containsArray = false,
-        str = ''
-      for (const key of path.split('.')) {
-        str += key
-        if (Array.isArray(this.parseDocument(str, document).realValue)) {
-          containsArray = true
-        }
-        str += '.'
-      }
-      return containsArray
     },
     getLastKeyPath(label) {
       const splittedLabel = label.split('.')
@@ -368,24 +379,6 @@ export default {
         this.$refs[id][0].style.visibility = 'visible'
       } else {
         this.$refs[id][0].style.visibility = 'hidden'
-      }
-    },
-    parseDocument(attr, doc) {
-      const ret = attr.includes('.')
-        ? this.getNestedField(doc, attr)
-        : doc[attr]
-
-      if (typeof ret === 'object' && ret !== null) {
-        return {
-          isObject: true,
-          value: JSON.stringify(ret).substring(0, 10),
-          realValue: ret
-        }
-      }
-
-      return {
-        isObject: false,
-        value: ret
       }
     },
     saveSelectedFieldsToLocalStorage() {
