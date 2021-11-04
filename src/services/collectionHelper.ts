@@ -230,7 +230,11 @@ export const convertToCSV = (
 ): string => {
   let res = fields.join(separator)
   return items
-    .map(i => pickValues(i, fields).join(separator))
+    .map(i =>
+      pickValues(i, fields)
+        .map(formatValueForCSV)
+        .join(separator)
+    )
     .reduce(
       (previous: string, current: string): string => `${previous}\n${current}`,
       res
@@ -246,4 +250,12 @@ export const convertToCSV = (
  */
 export function pickValues(object: Object, fields: string[]): any[] {
   return fields.map(f => object[f])
+}
+
+export function formatValueForCSV(value) {
+  if (_.isObject(value)) {
+    return JSON.stringify(value)
+  }
+
+  return value
 }
