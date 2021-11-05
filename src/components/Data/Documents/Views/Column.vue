@@ -76,6 +76,7 @@
         <b-button
           variant="outline-secondary"
           class="mr-2"
+          data-cy="Column-btnExportCSV"
           title="Export currently visible data to CSV"
           @click.prevent="promptExportCSV"
         >
