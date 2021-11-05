@@ -226,7 +226,7 @@ const checkPathSchemaRecursive = (document, schema, path) => {
 export const convertToCSV = (
   items: Array<Object>,
   fields: string[],
-  separator = ', '
+  separator = ','
 ): string => {
   let res = fields.join(separator)
   return items
@@ -254,7 +254,7 @@ export function pickValues(object: Object, fields: string[]): any[] {
 
 export function formatValueForCSV(value) {
   if (_.isObject(value)) {
-    return JSON.stringify(value)
+    return '[NOT_SCALAR]'
   }
 
   return value
