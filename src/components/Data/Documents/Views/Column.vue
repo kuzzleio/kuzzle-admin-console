@@ -200,10 +200,10 @@
                 :id="`col-${item._id}-${field}`"
               >
                 <template v-if="item[field] === null">
-                  <b-badge>null</b-badge>
+                  <code>null</code>
                 </template>
                 <template v-else-if="item[field] === undefined">
-                  <b-badge>undefined</b-badge>
+                  <code>undefined</code>
                 </template>
                 <template v-else-if="Array.isArray(item[field])">
                   <b-badge
