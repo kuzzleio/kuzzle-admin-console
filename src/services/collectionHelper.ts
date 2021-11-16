@@ -222,3 +222,40 @@ const checkPathSchemaRecursive = (document, schema, path) => {
 
   return true
 }
+
+export const convertToCSV = (
+  items: Array<Object>,
+  fields: string[],
+  separator = ','
+): string => {
+  let res = fields.join(separator)
+  return items
+    .map(i =>
+      pickValues(i, fields)
+        .map(formatValueForCSV)
+        .join(separator)
+    )
+    .reduce(
+      (previous: string, current: string): string => `${previous}\n${current}`,
+      res
+    )
+}
+/**
+ * An iteration-order-safe version of lodash.values
+ *
+ * @param object The object containing the values
+ * @param fields The field names to pick in the right order
+ * @returns The values in the same order as the fields
+ * @see https://lodash.com/docs/4.17.15#values
+ */
+export function pickValues(object: Object, fields: string[]): any[] {
+  return fields.map(f => object[f])
+}
+
+export function formatValueForCSV(value) {
+  if (_.isObject(value)) {
+    return '[NOT_SCALAR]'
+  }
+
+  return value
+}
