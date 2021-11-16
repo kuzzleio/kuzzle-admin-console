@@ -130,7 +130,6 @@ export interface CreateCollectionPayload {
   name: string
   isRealtime: boolean
   mapping: object
-  dynamic: string
 }
 
 export interface UpdateCollectionPayload {
@@ -138,5 +137,4 @@ export interface UpdateCollectionPayload {
   name: string
   isRealtime: boolean
   mapping: object
-  dynamic: string
 }

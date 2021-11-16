@@ -61,22 +61,6 @@
       </b-form-group>
 
       <template>
-        <b-form-group label="Dynamic mapping" label-cols-sm="3">
-          <template v-slot:description
-            >Set the type of dynamic policy for this collection.
-            <a
-              target="_blank"
-              href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
-              >Read more about Dynamic Mappings</a
-            >.
-          </template>
-          <b-form-radio-group
-            class="pt-2"
-            v-model="dynamicState"
-            :options="['true', 'false', 'strict']"
-          ></b-form-radio-group>
-        </b-form-group>
-        <hr />
         <b-row class="mb-3">
           <b-col cols="12">
             <b-form-file
@@ -184,13 +168,13 @@ export default {
     submitLabel: { type: String, default: 'OK' },
     mapping: {
       type: Object,
-      default: () => ({})
-    },
-    dynamic: { type: String, default: 'false' }
+      default: () => ({
+        properties: {}
+      })
+    }
   },
   data() {
     return {
-      dynamicState: this.dynamic || 'false',
       name: this.collection || '',
       rawMapping: '{}'
     }
@@ -307,19 +291,12 @@ export default {
       }
 
       this.$emit('submit', {
-        dynamic: this.dynamicState,
         name: this.name,
         mapping: this.mappingState
       })
     }
   },
   watch: {
-    dynamic: {
-      immediate: true,
-      handler(v) {
-        this.dynamicState = v
-      }
-    },
     mapping: {
       immediate: true,
       handler(val) {

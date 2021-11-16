@@ -7,7 +7,6 @@
         submit-label="Update"
         :collection="collection.name"
         :index="index.name"
-        :dynamic="collection.dynamic"
         :mapping="mappingAttributes"
         :realtime-only="collection.isRealtime()"
         @submit="update"
@@ -36,7 +35,6 @@ export default {
   },
   data() {
     return {
-      dynamic: 'false',
       mapping: {},
       realtimeOnly: false
     }
@@ -73,8 +71,7 @@ export default {
         await this.$store.direct.dispatch.index.updateCollection({
           index: this.index,
           name: payload.name,
-          mapping: payload.mapping,
-          dynamic: payload.dynamic
+          mapping: payload.mapping
         })
         this.$router.push({
           name: 'Collections',

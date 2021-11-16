@@ -93,6 +93,9 @@ describe('Collection management', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
+"dynamic": false,
+"properties":
+{
 "firstName": {
 "type": "keyword"`,
         {
@@ -159,7 +162,6 @@ describe('Collection management', function() {
     cy.visit(`/#/data/`)
 
     cy.visit(`/#/data/${indexName}/`)
-
 
     cy.get(`[data-cy="CollectionList-checkbox--${collectionName}1"]`).click({
       force: true

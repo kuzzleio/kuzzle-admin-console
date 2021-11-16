@@ -168,7 +168,7 @@ const actions = createActions({
   },
   async createCollection(
     context,
-    { index, name, mapping, dynamic }: CreateCollectionPayload
+    { index, name, mapping }: CreateCollectionPayload
   ) {
     const { commit, rootGetters } = indexActionContext(context)
 
@@ -183,20 +183,18 @@ const actions = createActions({
     let collection = new Collection(name, CollectionType.STORED)
 
     collection.mapping = mapping
-    collection.dynamic = dynamic
 
-    await rootGetters.kuzzle.$kuzzle.collection.create(index.name, name, {
-      dynamic,
-      properties: {
-        ...mapping
-      }
-    })
+    await rootGetters.kuzzle.$kuzzle.collection.create(
+      index.name,
+      name,
+      mapping
+    )
 
     commit.addCollection({ index, collection })
   },
   async updateCollection(
     context,
-    { index, name, mapping, dynamic }: UpdateCollectionPayload
+    { index, name, mapping }: UpdateCollectionPayload
   ) {
     const { commit, rootGetters } = indexActionContext(context)
 
@@ -207,7 +205,6 @@ const actions = createActions({
     let updatedCollection = new Collection(name, CollectionType.STORED)
 
     updatedCollection.mapping = mapping
-    updatedCollection.dynamic = dynamic
 
     // TODO: use dedicated SDK method instead of query
     await rootGetters.kuzzle.$kuzzle.query({
@@ -215,12 +212,7 @@ const actions = createActions({
       action: 'updateMapping',
       collection: name,
       index: index.name,
-      body: {
-        dynamic,
-        properties: {
-          ...mapping
-        }
-      }
+      body: mapping
     })
 
     commit.updateCollection({ index, collection: updatedCollection })
