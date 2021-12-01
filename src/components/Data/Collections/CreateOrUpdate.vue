@@ -178,7 +178,7 @@ export default {
   data() {
     return {
       name: this.collection || '',
-      rawMapping: `{}`
+      rawMapping: '{}'
     }
   },
   validations() {
