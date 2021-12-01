@@ -9,7 +9,7 @@ module.exports = {
   extends: ["plugin:vue/essential", "@vue/prettier", '@vue/typescript'],
 
   rules: {
-    "no-console": "warn",
+    "no-console": "error",
     "no-debugger": "error",
     "require-atomic-updates": "off"
   },
