@@ -7,7 +7,7 @@
         submit-label="Update"
         :collection="collection.name"
         :index="index.name"
-        :mapping="mappingAttributes"
+        :mapping="getFullMappings"
         :realtime-only="collection.isRealtime()"
         @submit="update"
       />
@@ -53,10 +53,16 @@ export default {
         this.collectionName
       )
     },
-    mappingAttributes() {
-      return this.collection
-        ? omit(this.collection.mapping, '_kuzzle_info')
-        : null
+    getFullMappings() {
+      if (! this.collection) {
+        alert('wTF')
+      }
+      const mappings = {
+        dynamic: this.collection.dynamic,
+        properties: omit(this.collection.mapping, '_kuzzle_info'),
+      }
+
+      return mappings
     },
     loading() {
       return this.$store.direct.getters.index.loadingCollections(
