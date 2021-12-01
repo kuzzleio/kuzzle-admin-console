@@ -106,7 +106,7 @@
                     v-if="listViewType === 'column'"
                     :index="indexName"
                     :collection="collectionName"
-                    :documents="documents"
+                    :documents="formattedDocuments"
                     :mapping="collectionMapping"
                     :selected-documents="selectedDocuments"
                     :all-checked="allChecked"
@@ -293,7 +293,7 @@ export default {
       return this.listViewType === 'map' && this.mappingGeoshapes.length === 0
     },
     shapesDocuments() {
-      return this.documents
+      return this.formattedDocuments
         .filter(document => {
           const shape = this.getProperty(document, this.selectedGeoshape)
           return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
@@ -304,7 +304,7 @@ export default {
         }))
     },
     geoDocuments() {
-      return this.documents
+      return this.formattedDocuments
         .filter(document => {
           const [lat, lng] = this.getCoordinates(document)
           const latFloat = parseFloat(lat)
@@ -792,8 +792,9 @@ export default {
 
       const dateFields = []
       const formattedDocuments = _.cloneDeep(this.documents)
-      const findDateFields = (mapping, previousKey) => {
-        for (const [field, value] of Object.entries(mapping)) {
+
+      const findDateFields = (mappings, previousKey) => {
+        for (const [field, value] of Object.entries(mappings)) {
           if (typeof value === 'object') {
             findDateFields(value, field)
           } else if (field === 'type' && value === 'date') {
