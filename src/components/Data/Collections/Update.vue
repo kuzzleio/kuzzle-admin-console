@@ -56,7 +56,7 @@ export default {
     fullMappings() {
       const mappings = {
         dynamic: this.collection.dynamic,
-        properties: omit(this.collection.mapping, '_kuzzle_info'),
+        properties: omit(this.collection.mapping, '_kuzzle_info')
       }
 
       return mappings
