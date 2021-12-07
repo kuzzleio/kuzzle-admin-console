@@ -192,7 +192,7 @@
             </draggable>
           </b-thead>
           <b-tbody>
-            <b-tr v-for="item of formattedItems" :key="`item-row-${item.id}`">
+            <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`">
               <b-td
                 class="cell"
                 v-for="field of selectedFields"

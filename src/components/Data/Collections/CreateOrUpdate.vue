@@ -67,7 +67,7 @@
               class="float-left mr-3 w-50"
               ref="file-input"
               @change="loadMappingValue($event)"
-              placeholder="Import mapping"
+              placeholder="Select a JSON file to import mappings.."
             />
             <b-button
               class="float-left"
@@ -95,23 +95,25 @@
           <b-col cols="4">
             <div class="d-flex flex-column h-100 text-secondary">
               <div class="CollectionCreateOrUpdate-help">
-                You can (optionally) use this editor to define the mapping for
+                You can (optionally) use this editor to define the mappings for
                 this collection.
                 <br />
-                The mapping of a collection is the definition of how each
+                The mappings of a collection is the definition of how each
                 document in the collection (and its fields) are stored and
                 indexed.
                 <a
                   href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
                   target="_blank"
-                  >Read more about mapping</a
+                  >Read more about mappings</a
                 >
                 <br /><br />
                 For example:
                 <pre>
 {
-  "age": { "type": "integer" },
-  "name": { "type": "text" }
+  "properties": {
+    "age": { "type": "integer" },
+    "name": { "type": "keyword" }
+  }
 }
               </pre
                 >
