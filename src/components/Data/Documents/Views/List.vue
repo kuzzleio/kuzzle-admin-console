@@ -52,7 +52,7 @@
           :collection="collection"
           :index="index"
           :is-checked="isChecked(document._id)"
-          :notifications="notifications"
+          :notification="notifications[document._id]"
           @checkbox-click="$emit('checkbox-click', $event)"
           @delete="$emit('delete', $event)"
         />
@@ -101,7 +101,8 @@ export default {
       type: Number
     },
     notifications: {
-      type: Array
+      type: Object,
+      default: () => ({})
     }
   },
   data() {

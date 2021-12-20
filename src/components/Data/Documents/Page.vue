@@ -29,15 +29,17 @@
           <b-button
             v-if="displayRealtimeButton.includes(listViewType)"
             class="ml-1"
-            @click="enableRealtime = !enableRealtime"
+            @click="notificationAutoApply = !notificationAutoApply"
             variant="primary"
           >
             <i
               :class="
-                `far ${enableRealtime ? 'fa-check-square' : 'fa-square'} left`
+                `far ${
+                  notificationAutoApply ? 'fa-check-square' : 'fa-square'
+                } left`
               "
             />
-            Realtime
+            Realtime auto-update
           </b-button>
           <collection-dropdown-view
             class="icon-medium icon-black ml-2"
@@ -103,7 +105,7 @@
                   :current-page-size="paginationSize"
                   :selected-documents="selectedDocuments"
                   :total-documents="totalDocuments"
-                  :notifications="notifications"
+                  :notifications="notificationsById"
                   @bulk-delete="onBulkDeleteClicked"
                   @change-page-size="changePaginationSize"
                   @checkbox-click="toggleSelectDocuments"
@@ -122,7 +124,7 @@
                   :all-checked="allChecked"
                   :current-page-size="paginationSize"
                   :total-documents="totalDocuments"
-                  :notifications="notifications"
+                  :notifications="notificationsById"
                   @edit="onEditClicked"
                   @delete="onDeleteClicked"
                   @bulk-delete="onBulkDeleteClicked"
@@ -291,18 +293,18 @@ export default {
       currentPage: 1,
       modalDeleteId: 'modal-collection-delete',
       displayPagination: true,
-      notifications: [],
+      notificationsById: {},
       enableRealtime: true,
-      realtimeSettings: {
-        createAutoApply: false,
-        updateAutoApply: false,
-        replaceAutoApply: false
-      },
       mappingGeoshapes: [],
       selectedGeoshape: '',
       handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon'],
-      handledNotificationActions: ['create', 'update', 'replace'],
-      displayRealtimeButton: ['time-series', 'map']
+      handledNotificationActions: ['create', 'update', 'replace', 'delete'],
+      notificationAutoApply: false, // TODO fetch this value from localStorage
+      displayRealtimeButton: [
+        LIST_VIEW_LIST,
+        LIST_VIEW_TIME_SERIES,
+        LIST_VIEW_MAP
+      ]
     }
   },
   computed: {
@@ -399,35 +401,45 @@ export default {
     },
     isRealtimeCollection() {
       return this.collection ? this.collection.isRealtime() : false
-    },
-    listViewRealtimeSettings() {
-      return {
-        createAutoApply: false,
-        updateAutoApply: false,
-        replaceAutoApply: false
-      }
-    },
-    columnViewRealtimeSettings() {
-      return {
-        createAutoApply: false,
-        updateAutoApply: false,
-        replaceAutoApply: false
-      }
-    },
-    timeSeriesViewRealtimeSettings() {
-      return {
-        createAutoApply: true,
-        updateAutoApply: true,
-        replaceAutoApply: true
-      }
-    },
-    mapViewRealtimeSettings() {
-      return {
-        createAutoApply: false,
-        updateAutoApply: true,
-        replaceAutoApply: true
-      }
     }
+    // realtimeSettings() {
+    //   switch (this.listViewType) {
+    //     case LIST_VIEW_LIST:
+
+    //       break;
+
+    //     default:
+    //       break;
+    //   }
+    // }
+    // listViewRealtimeSettings() {
+    //   return {
+    //     createAutoApply: false,
+    //     updateAutoApply: false,
+    //     replaceAutoApply: false
+    //   }
+    // },
+    // columnViewRealtimeSettings() {
+    //   return {
+    //     createAutoApply: false,
+    //     updateAutoApply: false,
+    //     replaceAutoApply: false
+    //   }
+    // },
+    // timeSeriesViewRealtimeSettings() {
+    //   return {
+    //     createAutoApply: true,
+    //     updateAutoApply: true,
+    //     replaceAutoApply: true
+    //   }
+    // },
+    // mapViewRealtimeSettings() {
+    //   return {
+    //     createAutoApply: false,
+    //     updateAutoApply: true,
+    //     replaceAutoApply: true
+    //   }
+    // }
   },
   async beforeDestroy() {
     await this.unsubscribeToCurrentDocs()
@@ -440,15 +452,15 @@ export default {
     }
   },
   watch: {
-    enableRealtime: {
-      async handler(value) {
-        if (value) {
-          await this.subscribeToCurrentDocs()
-        } else {
-          await this.unsubscribeToCurrentDocs()
-        }
-      }
-    },
+    // enableRealtime: {
+    //   async handler(value) {
+    // if (value) {
+    //   await this.subscribeToCurrentDocs()
+    // } else {
+    //   await this.unsubscribeToCurrentDocs()
+    // }
+    //   }
+    // },
     currentPage: {
       handler(value) {
         const from = (value - 1) * this.paginationSize
@@ -476,42 +488,42 @@ export default {
       handler() {
         this.addHumanReadableDateFields()
       }
-    },
-    notifications: {
-      deep: true,
-      handler(value) {
-        if (value.length) {
-          this.$bvToast.show('realtime-notification-toast')
-        } else {
-          this.$bvToast.hide('realtime-notification-toast')
-        }
-      }
-    },
-    listViewType: {
-      immediate: true,
-      handler(value) {
-        if (value === 'list') {
-          this.$set(this, 'realtimeSettings', this.listViewRealtimeSettings)
-          this.enableRealtime = true
-        }
-        if (value === 'column') {
-          this.$set(this, 'realtimeSettings', this.columnViewRealtimeSettings)
-          this.enableRealtime = true
-        }
-        if (value === 'time-series') {
-          this.$set(
-            this,
-            'realtimeSettings',
-            this.timeSeriesViewRealtimeSettings
-          )
-          this.enableRealtime = false
-        }
-        if (value === 'map') {
-          this.$set(this, 'realtimeSettings', this.mapViewRealtimeSettings)
-          this.enableRealtime = false
-        }
-      }
     }
+    // notifications: {
+    //   deep: true,
+    //   handler(value) {
+    //     if (value.length) {
+    //       this.$bvToast.show('realtime-notification-toast')
+    //     } else {
+    //       this.$bvToast.hide('realtime-notification-toast')
+    //     }
+    //   }
+    // }
+    // listViewType: {
+    //   immediate: true,
+    //   handler(value) {
+    //     if (value === 'list') {
+    //       this.$set(this, 'realtimeSettings', this.listViewRealtimeSettings)
+    //       this.enableRealtime = true
+    //     }
+    //     if (value === 'column') {
+    //       this.$set(this, 'realtimeSettings', this.columnViewRealtimeSettings)
+    //       this.enableRealtime = true
+    //     }
+    //     if (value === 'time-series') {
+    //       this.$set(
+    //         this,
+    //         'realtimeSettings',
+    //         this.timeSeriesViewRealtimeSettings
+    //       )
+    //       this.enableRealtime = false
+    //     }
+    //     if (value === 'map') {
+    //       this.$set(this, 'realtimeSettings', this.mapViewRealtimeSettings)
+    //       this.enableRealtime = false
+    //     }
+    //   }
+    // }
   },
   methods: {
     async unsubscribeToCurrentDocs() {
@@ -572,10 +584,17 @@ export default {
       if (!this.handledNotificationActions.includes(notif.action)) {
         return
       }
-      this.notifications.push(notif)
-      if (this.realtimeSettings[`${notif.action}AutoApply`]) {
+      if (this.notificationAutoApply) {
         this.applyNotification(notif)
+      } else {
+        this.addNotification(notif)
       }
+    },
+    addNotification(notif) {
+      this.$set(this.notificationsById, notif.result._id, notif)
+    },
+    resetNotifications() {
+      this.notificationsById = {}
     },
     extractAttributesFromMapping,
     truncateName,
@@ -819,9 +838,7 @@ export default {
         )
         this.documents = res.documents
         this.totalDocuments = res.total
-        if (this.enableRealtime) {
-          await this.subscribeToCurrentDocs()
-        }
+        await this.subscribeToCurrentDocs()
       } catch (e) {
         this.$log.error(e)
         if (e.message.includes('failed to create query')) {
@@ -998,10 +1015,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cursor {
-  cursor: pointer;
-}
-
 .DocumentList {
   margin-bottom: 5em;
 }

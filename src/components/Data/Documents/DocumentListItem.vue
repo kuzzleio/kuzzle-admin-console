@@ -25,7 +25,7 @@
           @click="toggleCollapse"
           >{{ document._id }}</a
         >
-        <b-badge :variant="badgeVariant" class="mx-2" v-if="linkedNotif"
+        <b-badge :variant="badgeVariant" class="mx-2" v-if="notification"
           >{{ notifBadge }}
         </b-badge>
       </b-col>
@@ -77,7 +77,8 @@
 </template>
 
 <script>
-import _ from 'lodash'
+import omit from 'lodash/omit'
+import get from 'lodash/get'
 import JsonFormatter from '../../../directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
 
@@ -91,7 +92,7 @@ export default {
     collection: String,
     document: Object,
     isChecked: Boolean,
-    notifications: Array
+    notification: Object
   },
   data() {
     return {
@@ -109,33 +110,36 @@ export default {
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     badgeVariant() {
-      if (!this.notifBadge) {
-        return 'secondary'
+      // TODO make this composable
+      if (!get(this.notification, 'action')) {
+        return ''
       }
-      switch (this.notifBadge) {
-        case 'updated':
+      switch (get(this.notification, 'action')) {
+        case 'update':
           return 'warning'
-        case 'created':
-          return 'success'
-        case 'deleted':
+        case 'delete':
           return 'danger'
-        case 'replaced':
+        case 'replace':
           return 'warning'
+        default:
+          return ''
       }
-      return 'secondary'
-    },
-    linkedNotif() {
-      return this.notifications
-        .slice()
-        .reverse()
-        .find(notif => notif.result._id === this.document._id)
     },
     notifBadge() {
-      if (!this.linkedNotif) {
-        return null
+      // TODO make this composable
+      if (!get(this.notification, 'action')) {
+        return ''
       }
-      const action = this.linkedNotif.action
-      return `${action}d`
+      switch (get(this.notification, 'action')) {
+        case 'update':
+          return 'updated'
+        case 'delete':
+          return 'deleted'
+        case 'replace':
+          return 'replaced'
+        default:
+          return ''
+      }
     },
     canEdit() {
       if (!this.index || !this.collection) {
@@ -157,7 +161,7 @@ export default {
      * Also put the "_kuzzle_info" field in last position
      */
     formattedDocument() {
-      const document = _.omit(this.document, ['_id', '_kuzzle_info'])
+      const document = omit(this.document, ['_id', '_kuzzle_info'])
       document._kuzzle_info = this.document._kuzzle_info
       return document
     }
