@@ -582,11 +582,11 @@ export default {
     // NOTIFICATIONS
     // =========================================================================
     addNotification(notification) {
-      if (notification.action === 'create') {
-        this.hasNewDocuments = true
-        return
-      }
-      if (isUndefined(this.notificationsById[notification.result._id])) {
+      if (isUndefined(this.documentsById[notification.result._id])) {
+        if (notification.action === 'create') {
+          this.hasNewDocuments = true
+          return
+        }
         return
       }
       this.$set(this.notificationsById, notification.result._id, notification)
