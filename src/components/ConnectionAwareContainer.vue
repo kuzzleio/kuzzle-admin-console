@@ -170,7 +170,7 @@ export default {
     this.removeListeners()
   },
   watch: {
-    $route: {
+    '$route.path': {
       immediate: false,
       handler() {
         this.authenticationGuard()

@@ -133,41 +133,6 @@ describe('Document List', function() {
     cy.get('[data-cy=DocumentList-exceedESLimitMsg]').should('exist')
   })
 
-  it('Should handle the column view properly', function() {
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
-      {
-        jsonObject: {
-          foo: 'bar'
-        }
-      }
-    )
-    cy.waitOverlay()
-
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.wait(500)
-    cy.contains(collectionName)
-
-    cy.get('[data-cy="CollectionDropdownView"').click()
-    cy.wait(500)
-    cy.get('[data-cy="CollectionDropdown-column"]').click()
-    cy.url().should('contain', 'listViewType=column')
-
-    cy.get('[data-cy="SelectField"]').click()
-    cy.get('[data-cy="SelectField--date"]').click({ force: true })
-    cy.get('[data-cy="ColumnViewHead--date"]').should('exist')
-    cy.get('[data-cy="SelectField"]').click()
-    cy.get('[data-cy="SelectField--date"]').click({ force: true })
-    cy.get('[data-cy="ColumnViewHead--date"]').should('not.exist')
-    cy.get('[data-cy="SelectField"]').click()
-    cy.get('[data-cy="SelectField--value"]').click({ force: true })
-    cy.get('[data-cy="SelectField"]').click()
-    cy.get('[data-cy="SelectField--value2"]').click({ force: true })
-    cy.get('[data-cy="ColumnViewHead--value"]').should('exist')
-    cy.get('[data-cy="ColumnViewHead--value2"]').should('exist')
-  })
-
   it.skip('Should handle the time series view properly', function() {
     cy.request(
       'POST',

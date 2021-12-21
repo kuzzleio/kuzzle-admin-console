@@ -5,7 +5,8 @@ import { moduleActionContext } from '@/vuex/store'
 import { getters } from './getters'
 
 export const LS_ENVIRONMENTS = 'environments'
-export const LS_CURRENT_ENV = 'currentEnv'
+export const SS_CURRENT_ENV = 'currentEnv'
+export const LS_LAST_ENV = 'lastEnv'
 export const state: KuzzleState = {
   environments: {},
   currentId: undefined,
@@ -27,13 +28,6 @@ export const envColors = [
   'grey',
   'magenta'
 ]
-
-const wait = async ms =>
-  new Promise(resolve => {
-    setTimeout(() => {
-      resolve()
-    }, ms)
-  })
 
 const mutations = createMutations<KuzzleState>()({
   createEnvironment(state, payload) {
@@ -83,11 +77,12 @@ const mutations = createMutations<KuzzleState>()({
 })
 
 const actions = createActions({
-  setCurrentEnvironment(context, payload) {
+  setCurrentEnvironment(context, id) {
     const { commit } = kuzzleActionContext(context)
 
-    localStorage.setItem(LS_CURRENT_ENV, payload)
-    commit.setCurrentEnvironment(payload)
+    sessionStorage.setItem(SS_CURRENT_ENV, id)
+
+    commit.setCurrentEnvironment(id)
   },
   createEnvironment(context, payload) {
     const { dispatch, commit, state } = kuzzleActionContext(context)
@@ -109,7 +104,7 @@ const actions = createActions({
 
     if (state.currentId === id) {
       dispatch.setCurrentEnvironment(null)
-      localStorage.removeItem(LS_CURRENT_ENV)
+      sessionStorage.removeItem(SS_CURRENT_ENV)
     }
 
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
@@ -187,6 +182,7 @@ const actions = createActions({
       throw new Error(`Id ${id} does not match any environment`)
     }
     await dispatch.setCurrentEnvironment(id)
+    localStorage.setItem(LS_LAST_ENV, id)
     return await dispatch.connectToCurrentEnvironment()
   },
   onConnectionError(context, error: Error) {
@@ -198,8 +194,7 @@ const actions = createActions({
   },
   loadEnvironments(context) {
     let loadedEnv
-    let currentId
-    const { commit } = kuzzleActionContext(context)
+    const { commit, dispatch } = kuzzleActionContext(context)
 
     loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
     Object.keys(loadedEnv).forEach(envName => {
@@ -213,8 +208,13 @@ const actions = createActions({
       })
     })
 
-    currentId = localStorage.getItem(LS_CURRENT_ENV)
-    commit.setCurrentEnvironment(currentId)
+    let currentId = sessionStorage.getItem(SS_CURRENT_ENV)
+    if (currentId) {
+      commit.setCurrentEnvironment(currentId)
+    } else {
+      currentId = localStorage.getItem(LS_LAST_ENV)
+      dispatch.setCurrentEnvironment(currentId)
+    }
   }
 })
 

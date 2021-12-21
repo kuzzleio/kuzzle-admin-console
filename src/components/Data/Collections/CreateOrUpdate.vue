@@ -61,29 +61,13 @@
       </b-form-group>
 
       <template>
-        <b-form-group label="Dynamic mapping" label-cols-sm="3">
-          <template v-slot:description
-            >Set the type of dynamic policy for this collection.
-            <a
-              target="_blank"
-              href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
-              >Read more about Dynamic Mappings</a
-            >.
-          </template>
-          <b-form-radio-group
-            class="pt-2"
-            v-model="dynamicState"
-            :options="['true', 'false', 'strict']"
-          ></b-form-radio-group>
-        </b-form-group>
-        <hr />
         <b-row class="mb-3">
           <b-col cols="12">
             <b-form-file
               class="float-left mr-3 w-50"
               ref="file-input"
               @change="loadMappingValue($event)"
-              placeholder="Import mapping"
+              placeholder="Select a JSON file to import mappings.."
             />
             <b-button
               class="float-left"
@@ -111,23 +95,25 @@
           <b-col cols="4">
             <div class="d-flex flex-column h-100 text-secondary">
               <div class="CollectionCreateOrUpdate-help">
-                You can (optionally) use this editor to define the mapping for
+                You can (optionally) use this editor to define the mappings for
                 this collection.
                 <br />
-                The mapping of a collection is the definition of how each
+                The mappings of a collection is the definition of how each
                 document in the collection (and its fields) are stored and
                 indexed.
                 <a
                   href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
                   target="_blank"
-                  >Read more about mapping</a
+                  >Read more about mappings</a
                 >
                 <br /><br />
                 For example:
                 <pre>
 {
-  "age": { "type": "integer" },
-  "name": { "type": "text" }
+  "properties": {
+    "age": { "type": "integer" },
+    "name": { "type": "keyword" }
+  }
 }
               </pre
                 >
@@ -184,13 +170,13 @@ export default {
     submitLabel: { type: String, default: 'OK' },
     mapping: {
       type: Object,
-      default: () => ({})
-    },
-    dynamic: { type: String, default: 'false' }
+      default: () => ({
+        properties: {}
+      })
+    }
   },
   data() {
     return {
-      dynamicState: this.dynamic || 'false',
       name: this.collection || '',
       rawMapping: '{}'
     }
@@ -307,19 +293,12 @@ export default {
       }
 
       this.$emit('submit', {
-        dynamic: this.dynamicState,
         name: this.name,
         mapping: this.mappingState
       })
     }
   },
   watch: {
-    dynamic: {
-      immediate: true,
-      handler(v) {
-        this.dynamicState = v
-      }
-    },
     mapping: {
       immediate: true,
       handler(val) {

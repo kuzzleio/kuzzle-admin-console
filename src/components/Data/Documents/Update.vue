@@ -22,7 +22,7 @@
         :index="indexName"
         :collection="collectionName"
         :document="document"
-        :mapping="collection.mapping"
+        :mapping="mappingAttributes"
         @cancel="onCancel"
         @submit="onSubmit"
         @document-change="onDocumentChange"
@@ -39,7 +39,8 @@ import PageNotAllowed from '../../Common/PageNotAllowed'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
+import get from 'lodash/get'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -64,6 +65,11 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
     ...mapGetters('auth', ['canEditDocument']),
+    mappingAttributes() {
+      return get(this, 'collection.mapping', null)
+        ? omit(this.collection.mapping, '_kuzzle_info')
+        : null
+    },
     index() {
       return this.$store.direct.getters.index.getOneIndex(this.indexName)
     },

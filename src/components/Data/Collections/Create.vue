@@ -39,8 +39,7 @@ export default {
         await this.$store.direct.dispatch.index.createCollection({
           index: this.index,
           name: payload.name,
-          mapping: payload.mapping,
-          dynamic: payload.dynamic
+          mapping: payload.mapping
         })
 
         this.$router.push({

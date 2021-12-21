@@ -323,7 +323,7 @@ describe('Roles', () => {
         })
       )
 
-      localStorage.setItem('currentEnv', 'testEnv')
+      sessionStorage.setItem('currentEnv', 'testEnv')
 
       cy.visit('#/security/roles')
 
