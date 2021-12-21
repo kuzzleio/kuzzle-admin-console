@@ -32,8 +32,8 @@
           variant="info"
           title="New documents have been created in the collection. Click to refresh."
           @click="$emit('refresh')"
-          >New documents</b-button
-        >
+          ><i class="fas fa-file-alt"></i
+        ></b-button>
       </div>
       <PerPageSelector
         :current-page-size="currentPageSize"

@@ -1,7 +1,7 @@
 <template>
   <div class="Column" data-cy="DocumentList-Column">
-    <b-row no-gutters>
-      <b-col cols="8">
+    <div class="d-flex flex-row">
+      <div class="flex-grow-1">
         <b-dropdown
           class="mr-2"
           data-cy="SelectField"
@@ -68,14 +68,6 @@
         <b-button
           variant="outline-secondary"
           class="mr-2"
-          @click.prevent="$emit('refresh')"
-        >
-          <i class="fas fa-sync-alt left" />
-          Refresh
-        </b-button>
-        <b-button
-          variant="outline-secondary"
-          class="mr-2"
           data-cy="Column-btnExportCSV"
           title="Export currently visible data to CSV"
           @click.prevent="promptExportCSV"
@@ -83,17 +75,25 @@
           <i class="fas fa-file-export left" />
           CSV
         </b-button>
-        >>>>>>> 4-dev
-      </b-col>
+      </div>
 
-      <b-col cols="4" class="text-right">
-        <PerPageSelector
-          :current-page-size="currentPageSize"
-          :total-documents="totalDocuments"
-          @change-page-size="$emit('change-page-size', $event)"
-        />
-      </b-col>
-    </b-row>
+      <div v-if="hasNewDocuments">
+        <b-button
+          class="mr-2"
+          data-cy="DocumentListView-newDocsBtn"
+          pill
+          variant="info"
+          title="New documents have been created in the collection. Click to refresh."
+          @click="$emit('refresh')"
+          ><i class="fas fa-file-alt"></i
+        ></b-button>
+      </div>
+      <PerPageSelector
+        :current-page-size="currentPageSize"
+        :total-documents="totalDocuments"
+        @change-page-size="$emit('change-page-size', $event)"
+      />
+    </div>
     <b-row class="mt-2 mb-2" no-gutters>
       <b-col cols="3">
         <b-table-simple
