@@ -64,15 +64,6 @@
           <i class="fa fa-minus-circle left" />
           Delete
         </b-button>
-
-        <b-button
-          variant="outline-secondary"
-          class="mr-2"
-          @click.prevent="$emit('refresh')"
-        >
-          <i class="fas fa-sync-alt left" />
-          Refresh
-        </b-button>
       </b-col>
 
       <b-col cols="4" class="text-right">
@@ -215,6 +206,8 @@
 
 <script>
 import JsonFormatter from '../../../../directives/json-formatter.directive'
+import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
+
 import _ from 'lodash'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
@@ -287,10 +280,10 @@ export default {
         doc._id = d._id
         for (const key of this.selectedFields) {
           // if there is an array in the current document within the 'path'
-          if (this.documentPathContainsArray(key, d)) {
+          if (this.documentPathContainsArray(key, d._source)) {
             doc[key] = { array: true }
           } else {
-            const parsed = this.parseDocument(key, d)
+            const parsed = this.parseDocument(key, d._source)
             if (parsed.value === undefined) {
               doc[key] = { undefined: true }
             } else if (parsed.value === null) {
@@ -321,32 +314,40 @@ export default {
   },
   methods: {
     getItemBadge(item) {
-      const linkedNotification = this.notifications
-        .slice()
-        .reverse()
-        .find(notif => notif.result._id === item._id)
-      if (!linkedNotification) {
+      const n = this.notifications[item._id]
+      if (!n) {
         return null
       }
-      const action = linkedNotification.action
-      const label = `${action}d`
-      let variant = null
-      switch (label) {
-        case 'updated':
-          variant = 'warning'
-          break
-        case 'created':
-          variant = 'success'
-          break
-        case 'deleted':
-          variant = 'danger'
-          break
-        case 'replaced':
-          variant = 'warning'
-          break
+      return {
+        label: getBadgeText(n.action),
+        variant: getBadgeVariant(n.action)
       }
-      this.$log.debug(label, variant)
-      return { label, variant }
+      // const linkedNotification = this.notifications
+      //   .slice()
+      //   .reverse()
+      //   .find(notif => notif.result._id === item._id)
+      // if (!linkedNotification) {
+      //   return null
+      // }
+      // const action = linkedNotification.action
+      // const label = `${action}d`
+      // let variant = null
+      // switch (label) {
+      //   case 'updated':
+      //     variant = 'warning'
+      //     break
+      //   case 'created':
+      //     variant = 'success'
+      //     break
+      //   case 'deleted':
+      //     variant = 'danger'
+      //     break
+      //   case 'replaced':
+      //     variant = 'warning'
+      //     break
+      // }
+      // this.$log.debug(label, variant)
+      // return { label, variant }
     },
     resetColumns() {
       this.selectedFields = []

@@ -80,7 +80,9 @@
 <script>
 import omit from 'lodash/omit'
 import get from 'lodash/get'
+
 import JsonFormatter from '../../../directives/json-formatter.directive'
+import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -111,36 +113,16 @@ export default {
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     badgeVariant() {
-      // TODO make this composable
       if (!get(this.notification, 'action')) {
         return ''
       }
-      switch (get(this.notification, 'action')) {
-        case 'update':
-          return 'warning'
-        case 'delete':
-          return 'danger'
-        case 'replace':
-          return 'warning'
-        default:
-          return ''
-      }
+      return getBadgeVariant(get(this.notification, 'action'))
     },
     notifBadge() {
-      // TODO make this composable
       if (!get(this.notification, 'action')) {
         return ''
       }
-      switch (get(this.notification, 'action')) {
-        case 'update':
-          return 'updated'
-        case 'delete':
-          return 'deleted'
-        case 'replace':
-          return 'replaced'
-        default:
-          return ''
-      }
+      return getBadgeText(get(this.notification, 'action'))
     },
     canEdit() {
       if (!this.index || !this.collection) {

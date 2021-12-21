@@ -146,6 +146,7 @@
                   :current-page-size="paginationSize"
                   :total-documents="totalDocuments"
                   :notifications="notificationsById"
+                  :has-new-documents="hasNewDocuments"
                   @edit="onEditClicked"
                   @delete="onDeleteClicked"
                   @bulk-delete="onBulkDeleteClicked"
