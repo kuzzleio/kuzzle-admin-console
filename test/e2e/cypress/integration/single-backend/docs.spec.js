@@ -713,7 +713,7 @@ describe.only('Realtime notifications', () => {
     )
     cy.get(`[data-cy=DocumentListItem-${documentId}]`).should('not.exist')
   })
-  it.only('Shows the new documents badges when new documents are added to the collection and refreshes when clicked', function() {
+  it('Shows the new documents badges when new documents are added to the collection and refreshes when clicked (List View)', function() {
     const newDocId = 'new-doc'
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
@@ -732,10 +732,30 @@ describe.only('Realtime notifications', () => {
     cy.get('[data-cy="DocumentListView-newDocsBtn"]').click()
     cy.get(`[data-cy=DocumentListItem-${newDocId}]`).should('exist')
   })
+  it.only('Shows the new documents badges when new documents are added to the collection and refreshes when clicked (Column View)', function() {
+    const newDocId = 'new-doc'
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      JSON.stringify({ listViewType: 'column' })
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get(`[data-cy="ColumnItem-${documentId}-acColumnTableId"]`).should(
+      'exist'
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${newDocId}/_create?refresh=wait_for`,
+      {
+        firstName: 'Steve',
+        lastName: 'Ballmer'
+      }
+    )
+    cy.get('[data-cy="ColumnView-newDocsBtn"]').click()
+    cy.get(`[data-cy="ColumnItem-${newDocId}-acColumnTableId"]`).should('exist')
+  })
   it.skip(
     '[auto-update OFF] Shows badges for pending notifications (Column view)'
   )
-  it.skip('[auto-update OFF] Refreshes the page to apply pending notifications')
   it.skip(
     '[auto-update ON] Automatically applies realtime-notifications (Column view)'
   )

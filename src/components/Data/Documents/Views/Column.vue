@@ -80,7 +80,7 @@
       <div v-if="hasNewDocuments">
         <b-button
           class="mr-2"
-          data-cy="DocumentListView-newDocsBtn"
+          data-cy="ColumnView-newDocsBtn"
           pill
           variant="info"
           title="New documents have been created in the collection. Click to refresh."
@@ -120,8 +120,9 @@
                 class="cell"
                 colspan="1"
                 v-for="field of tableDefaultHeaders"
+                :data-cy="`ColumnItem-${item._id}-${field.key}`"
                 :key="`item-col-${field.key}`"
-                :id="`col-${item._id}-${field}`"
+                :id="`col-${item._id}-${field.key}`"
               >
                 <template v-if="field.key === 'acColumnTableActions'">
                   <div class="inlineDisplay">
@@ -267,7 +268,8 @@ export default {
     collection: String,
     mapping: Object,
     selectedDocuments: Array,
-    notifications: Array
+    notifications: Array,
+    hasNewDocuments: Boolean
   },
   data() {
     return {
