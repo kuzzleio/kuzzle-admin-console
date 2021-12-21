@@ -64,7 +64,6 @@
           <i class="fa fa-minus-circle left" />
           Delete
         </b-button>
-        <<<<<<< HEAD =======
 
         <b-button
           variant="outline-secondary"

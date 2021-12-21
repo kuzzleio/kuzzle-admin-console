@@ -251,6 +251,7 @@
 import isUndefined from 'lodash/isUndefined'
 import mapValues from 'lodash/mapValues'
 import defaults from 'lodash/defaults'
+import cloneDeep from 'lodash/cloneDeep'
 
 import Column from './Views/Column'
 import Map from './Views/Map'
@@ -970,7 +971,7 @@ export default {
         return
       }
       const dateFields = []
-      const formattedDocuments = _.cloneDeep(this.documents)
+      const formattedDocuments = cloneDeep(this.documents)
 
       const findDateFields = (mappings, previousKey) => {
         for (const [field, value] of Object.entries(mappings)) {
