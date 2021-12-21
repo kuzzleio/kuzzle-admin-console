@@ -22,15 +22,6 @@
           <i class="fa fa-minus-circle left" />
           Delete
         </b-button>
-
-        <b-button
-          variant="outline-secondary"
-          class="mr-2"
-          @click.prevent="$emit('refresh')"
-        >
-          <i class="fas fa-sync-alt left" />
-          Refresh
-        </b-button>
       </b-col>
       <b-col cols="4" class="text-right">
         <PerPageSelector

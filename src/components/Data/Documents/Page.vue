@@ -1,7 +1,9 @@
 <template>
   <div class="DocumentList">
     <b-container
-      :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
+      :class="{
+        'DocumentList--containerFluid': listViewType !== LIST_VIEW_LIST
+      }"
       class="DocumentList--container"
     >
       <b-row>
@@ -26,21 +28,36 @@
             }"
             >Create New Document</b-button
           >
-          <b-button
-            v-if="displayRealtimeButton.includes(listViewType)"
+          <b-dropdown
             class="ml-1"
-            @click="notificationAutoApply = !notificationAutoApply"
-            variant="primary"
+            split
+            variant="outline-primary"
+            :title="
+              autoSync
+                ? 'Documents are updated in real-time'
+                : 'Refresh the list to apply pending notifications'
+            "
+            @click="fetchDocuments"
           >
-            <i
-              :class="
-                `far ${
-                  notificationAutoApply ? 'fa-check-square' : 'fa-square'
-                } left`
-              "
-            />
-            Realtime auto-update
-          </b-button>
+            <template #button-content>
+              <i
+                class="fas fa-sync mr-1"
+                :class="{ 'fa-spin': autoSync, 'text-secondary': !autoSync }"
+              ></i>
+              Refresh
+            </template>
+            <b-dropdown-item
+              :disabled="!displayRealtimeButton.includes(listViewType)"
+              @click="autoSync = !autoSync"
+            >
+              <i
+                :class="
+                  `far ${autoSync ? 'fa-check-square' : 'fa-square'} left`
+                "
+              />
+              Toggle auto-sync
+            </b-dropdown-item>
+          </b-dropdown>
           <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"
@@ -97,7 +114,7 @@
               <no-results-empty-state v-if="!documents.length" />
               <template v-else>
                 <List
-                  v-if="listViewType === 'list'"
+                  v-if="listViewType === LIST_VIEW_LIST"
                   :all-checked="allChecked"
                   :collection="collectionName"
                   :documents="formattedDocuments"
@@ -115,7 +132,7 @@
                 />
 
                 <Column
-                  v-if="listViewType === 'column'"
+                  v-if="listViewType === LIST_VIEW_COLUMN"
                   :index="indexName"
                   :collection="collectionName"
                   :documents="documents"
@@ -135,7 +152,7 @@
                 />
 
                 <TimeSeries
-                  v-if="listViewType === 'time-series'"
+                  v-if="listViewType === LIST_VIEW_TIME_SERIES"
                   :index="indexName"
                   :collection="collectionName"
                   :documents="documents"
@@ -147,7 +164,7 @@
                 />
 
                 <Map
-                  v-if="listViewType === 'map'"
+                  v-if="listViewType === LIST_VIEW_MAP"
                   :selected-geopoint="selectedGeopoint"
                   :selectedGeoshape="selectedGeoshape"
                   :current-page-size="paginationSize"
@@ -219,7 +236,9 @@
 </template>
 
 <script>
-import _ from 'lodash'
+import isUndefined from 'lodash/isUndefined'
+import defaults from 'lodash/defaults'
+import get from 'lodash/get'
 
 import Column from './Views/Column'
 import Map from './Views/Map'
@@ -236,17 +255,19 @@ import CollectionDropdownView from '../Collections/DropdownView'
 import CollectionDropdownAction from '../Collections/DropdownAction'
 import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
-import * as filterManager from '../../../services/filterManager'
-import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
+import * as filterManager from '@/services/filterManager'
+import { extractAttributesFromMapping } from '@/services/mappingHelpers'
 import { truncateName, dateFromTimestamp } from '@/utils'
 import { mapGetters } from 'vuex'
-
-const LOCALSTORAGE_PREFIX = 'current-list-view'
-const LIST_VIEW_LIST = 'list'
-const LIST_VIEW_BOXES = 'boxes'
-const LIST_VIEW_MAP = 'map'
-const LIST_VIEW_COLUMN = 'column'
-const LIST_VIEW_TIME_SERIES = 'time-series'
+import {
+  LIST_VIEW_COLUMN,
+  LIST_VIEW_LIST,
+  LIST_VIEW_TIME_SERIES,
+  LIST_VIEW_MAP,
+  LIST_VIEW_BOXES,
+  loadSettingsForCollection,
+  saveSettingsForCollection
+} from '@/services/localSettings'
 
 export default {
   name: 'DocumentsPage',
@@ -283,7 +304,7 @@ export default {
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
-      listViewType: LIST_VIEW_LIST,
+      collectionSettings: {},
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
@@ -299,9 +320,9 @@ export default {
       selectedGeoshape: '',
       handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon'],
       handledNotificationActions: ['create', 'update', 'replace', 'delete'],
-      notificationAutoApply: false, // TODO fetch this value from localStorage
       displayRealtimeButton: [
         LIST_VIEW_LIST,
+        LIST_VIEW_COLUMN,
         LIST_VIEW_TIME_SERIES,
         LIST_VIEW_MAP
       ]
@@ -315,11 +336,41 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    listViewType: {
+      get() {
+        return get(this.collectionSettings, 'listViewType', LIST_VIEW_LIST)
+      },
+      set(value) {
+        this.collectionSettings.listViewType = value
+
+        // TODO: this behavior currently breaks the animated transition
+        // between views. This can be fixed by leveraging the route transitions.
+        this.$router.push({
+          query: defaults({ listViewType: value }, this.$route.query)
+        })
+        this.saveSettingsForCollection()
+      }
+    },
+    autoSync: {
+      get() {
+        return get(this.collectionSettings, 'autoSync', false)
+      },
+      set(value) {
+        this.collectionSettings.autoSync = value
+        this.saveSettingsForCollection()
+      }
+    },
     hasGeopoints() {
-      return this.listViewType === 'map' && this.mappingGeopoints.length === 0
+      return (
+        this.listViewType === LIST_VIEW_MAP &&
+        this.mappingGeopoints.length === 0
+      )
     },
     hasGeoshapes() {
-      return this.listViewType === 'map' && this.mappingGeoshapes.length === 0
+      return (
+        this.listViewType === LIST_VIEW_MAP &&
+        this.mappingGeoshapes.length === 0
+      )
     },
     shapesDocuments() {
       return this.documents
@@ -402,47 +453,16 @@ export default {
     isRealtimeCollection() {
       return this.collection ? this.collection.isRealtime() : false
     }
-    // realtimeSettings() {
-    //   switch (this.listViewType) {
-    //     case LIST_VIEW_LIST:
-
-    //       break;
-
-    //     default:
-    //       break;
-    //   }
-    // }
-    // listViewRealtimeSettings() {
-    //   return {
-    //     createAutoApply: false,
-    //     updateAutoApply: false,
-    //     replaceAutoApply: false
-    //   }
-    // },
-    // columnViewRealtimeSettings() {
-    //   return {
-    //     createAutoApply: false,
-    //     updateAutoApply: false,
-    //     replaceAutoApply: false
-    //   }
-    // },
-    // timeSeriesViewRealtimeSettings() {
-    //   return {
-    //     createAutoApply: true,
-    //     updateAutoApply: true,
-    //     replaceAutoApply: true
-    //   }
-    // },
-    // mapViewRealtimeSettings() {
-    //   return {
-    //     createAutoApply: false,
-    //     updateAutoApply: true,
-    //     replaceAutoApply: true
-    //   }
-    // }
   },
   async beforeDestroy() {
     await this.unsubscribeToCurrentDocs()
+  },
+  created() {
+    // Make constants available in the template
+    this.LIST_VIEW_COLUMN = LIST_VIEW_COLUMN
+    this.LIST_VIEW_MAP = LIST_VIEW_MAP
+    this.LIST_VIEW_TIME_SERIES = LIST_VIEW_TIME_SERIES
+    this.LIST_VIEW_LIST = LIST_VIEW_LIST
   },
   async mounted() {
     await this.loadAllTheThings()
@@ -452,15 +472,6 @@ export default {
     }
   },
   watch: {
-    // enableRealtime: {
-    //   async handler(value) {
-    // if (value) {
-    //   await this.subscribeToCurrentDocs()
-    // } else {
-    //   await this.unsubscribeToCurrentDocs()
-    // }
-    //   }
-    // },
     currentPage: {
       handler(value) {
         const from = (value - 1) * this.paginationSize
@@ -489,41 +500,6 @@ export default {
         this.addHumanReadableDateFields()
       }
     }
-    // notifications: {
-    //   deep: true,
-    //   handler(value) {
-    //     if (value.length) {
-    //       this.$bvToast.show('realtime-notification-toast')
-    //     } else {
-    //       this.$bvToast.hide('realtime-notification-toast')
-    //     }
-    //   }
-    // }
-    // listViewType: {
-    //   immediate: true,
-    //   handler(value) {
-    //     if (value === 'list') {
-    //       this.$set(this, 'realtimeSettings', this.listViewRealtimeSettings)
-    //       this.enableRealtime = true
-    //     }
-    //     if (value === 'column') {
-    //       this.$set(this, 'realtimeSettings', this.columnViewRealtimeSettings)
-    //       this.enableRealtime = true
-    //     }
-    //     if (value === 'time-series') {
-    //       this.$set(
-    //         this,
-    //         'realtimeSettings',
-    //         this.timeSeriesViewRealtimeSettings
-    //       )
-    //       this.enableRealtime = false
-    //     }
-    //     if (value === 'map') {
-    //       this.$set(this, 'realtimeSettings', this.mapViewRealtimeSettings)
-    //       this.enableRealtime = false
-    //     }
-    //   }
-    // }
   },
   methods: {
     async unsubscribeToCurrentDocs() {
@@ -584,20 +560,27 @@ export default {
       if (!this.handledNotificationActions.includes(notif.action)) {
         return
       }
-      if (this.notificationAutoApply) {
+      if (this.autoSync) {
         this.applyNotification(notif)
       } else {
         this.addNotification(notif)
       }
     },
+    extractAttributesFromMapping,
+    truncateName,
+    // NOTIFICATIONS
+    // =========================================================================
     addNotification(notif) {
+      if (isUndefined(this.notificationsById[notif.result._id])) {
+        return
+      }
       this.$set(this.notificationsById, notif.result._id, notif)
     },
     resetNotifications() {
-      this.notificationsById = {}
+      this.documents
+        .map(d => d._id)
+        .forEach(_id => this.$set(this.notificationsById, _id, null))
     },
-    extractAttributesFromMapping,
-    truncateName,
     // VIEW MAP - GEOPOINTS
     // =========================================================================
     getCoordinates(document) {
@@ -733,8 +716,8 @@ export default {
     async loadAllTheThings() {
       try {
         this.loading = true
-        this.loadListView()
-        this.saveListView()
+        this.loadSettingsForCollection()
+        this.saveSettingsForCollection()
         this.loadMappingInfo()
 
         this.currentFilter = filterManager.load(
@@ -838,6 +821,7 @@ export default {
         )
         this.documents = res.documents
         this.totalDocuments = res.total
+        this.resetNotifications()
         await this.subscribeToCurrentDocs()
       } catch (e) {
         this.$log.error(e)
@@ -910,56 +894,36 @@ export default {
     // =========================================================================
     onListViewClicked() {
       this.listViewType = LIST_VIEW_LIST
-      this.saveListView()
     },
     onColumnViewClicked() {
       this.listViewType = LIST_VIEW_COLUMN
-      this.saveListView()
     },
     onBoxesViewClicked() {
       this.listViewType = LIST_VIEW_BOXES
-      this.saveListView()
     },
     onTimeSeriesClicked() {
       this.listViewType = LIST_VIEW_TIME_SERIES
-      this.saveListView()
     },
     onMapViewClicked() {
       this.listViewType = LIST_VIEW_MAP
-      this.saveListView()
     },
     // Collection Metadata management
     // =========================================================================
-    loadListView() {
-      if (this.$route.query.listViewType) {
-        this.listViewType = this.$route.query.listViewType
-      } else {
-        const typeFromLS = localStorage.getItem(
-          `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`
-        )
-        if (typeFromLS) {
-          this.listViewType = typeFromLS
-        } else {
-          this.listViewType = LIST_VIEW_LIST
-        }
-      }
+    loadSettingsForCollection() {
+      this.collectionSettings = defaults(
+        {
+          listViewType: this.$route.query.listViewType
+        },
+        loadSettingsForCollection(this.indexName, this.collectionName)
+      )
     },
-    saveListView() {
-      localStorage.setItem(
-        `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`,
-        this.listViewType
+    saveSettingsForCollection() {
+      return saveSettingsForCollection(
+        this.indexName,
+        this.collectionName,
+        this.collectionSettings
       )
-      const otherQueryParams = _.omit(
-        this.$router.currentRoute.query,
-        'listViewType'
-      )
-      const mergedQuery = _.merge(
-        { listViewType: this.listViewType },
-        otherQueryParams
-      )
-      this.$router.push({ query: mergedQuery }).catch(() => {})
     },
-
     loadMappingInfo() {
       this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
       this.mappingGeoshapes = this.listMappingGeoshapes(this.collectionMapping)

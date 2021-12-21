@@ -1,8 +1,8 @@
-describe('Document List', function() {
-  const kuzzleUrl = 'http://localhost:7512'
-  const indexName = 'testindex'
-  const collectionName = 'testcollection'
+const kuzzleUrl = 'http://localhost:7512'
+const indexName = 'testindex'
+const collectionName = 'testcollection'
 
+describe('Document List', function() {
   beforeEach(() => {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
@@ -465,9 +465,6 @@ describe('Document List', function() {
 })
 
 describe('Document update/replace', () => {
-  const kuzzleUrl = 'http://localhost:7512'
-  const indexName = 'testindex'
-  const collectionName = 'testcollection'
   const documentId = 'myId'
 
   beforeEach(() => {
@@ -577,4 +574,55 @@ describe('Document update/replace', () => {
     cy.wait(500)
     cy.contains('Edit document')
   })
+})
+
+describe('Realtime notifications', () => {
+  beforeEach(() => {
+    // reset database and setup
+    cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
+    cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
+      properties: {
+        date: {
+          type: 'date'
+        },
+        value: {
+          type: 'integer'
+        },
+        value2: {
+          type: 'integer'
+        },
+        id: {
+          type: 'keyword'
+        }
+      }
+    })
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'Luca',
+        lastName: 'Marchesini',
+        job: 'Blockchain as a Service',
+        id: 'Luca Marchesini'
+      }
+    )
+
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+  })
+
+  it.skip('Remembers auto-update settings through page reload')
+  it.skip(
+    '[auto-update OFF] Shows badges for pending notifications (List view)'
+  )
+  it.skip(
+    '[auto-update OFF] Shows badges for pending notifications (Column view)'
+  )
+  it.skip('[auto-update OFF] Refreshes the page to apply pending notifications')
+  it.skip(
+    '[auto-update ON] Automatically applies realtime-notifications (List view)'
+  )
+  it.skip(
+    '[auto-update ON] Automatically applies realtime-notifications (Column view)'
+  )
 })
