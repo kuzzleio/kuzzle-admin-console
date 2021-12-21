@@ -732,7 +732,7 @@ describe.only('Realtime notifications', () => {
     cy.get('[data-cy="DocumentListView-newDocsBtn"]').click()
     cy.get(`[data-cy=DocumentListItem-${newDocId}]`).should('exist')
   })
-  it.only('Shows the new documents badges when new documents are added to the collection and refreshes when clicked (Column View)', function() {
+  it('Shows the new documents badges when new documents are added to the collection and refreshes when clicked (Column View)', function() {
     const newDocId = 'new-doc'
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
