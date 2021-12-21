@@ -30,6 +30,7 @@
           >
           <b-dropdown
             class="ml-1"
+            data-cy="Refresh-dropdown"
             split
             variant="outline-primary"
             :title="
@@ -42,11 +43,13 @@
             <template #button-content>
               <i
                 class="fas fa-sync mr-1"
+                data-cy="Autosync-icon"
                 :class="{ 'fa-spin': autoSync, 'text-secondary': !autoSync }"
               ></i>
               Refresh
             </template>
             <b-dropdown-item
+              data-cy="Autosync-toggle"
               :disabled="!displayRealtimeButton.includes(listViewType)"
               @click="autoSync = !autoSync"
             >
@@ -64,10 +67,10 @@
             :index="indexName"
             :collection="collectionName"
             :mappingAttributes="mappingAttributes"
-            @list="onListViewClicked"
-            @map="onMapViewClicked"
-            @column="onColumnViewClicked"
-            @time-series="onTimeSeriesClicked"
+            @list="switchListView(LIST_VIEW_LIST)"
+            @map="switchListView(LIST_VIEW_MAP)"
+            @column="switchListView(LIST_VIEW_COLUMN)"
+            @time-series="switchListView(LIST_VIEW_TIME_SERIES)"
           />
           <collection-dropdown-action
             class="icon-medium icon-black ml-2"
@@ -123,6 +126,7 @@
                   :selected-documents="selectedDocuments"
                   :total-documents="totalDocuments"
                   :notifications="notificationsById"
+                  :has-new-documents="hasNewDocuments"
                   @bulk-delete="onBulkDeleteClicked"
                   @change-page-size="changePaginationSize"
                   @checkbox-click="toggleSelectDocuments"
@@ -237,8 +241,8 @@
 
 <script>
 import isUndefined from 'lodash/isUndefined'
+import mapValues from 'lodash/mapValues'
 import defaults from 'lodash/defaults'
-import get from 'lodash/get'
 
 import Column from './Views/Column'
 import Map from './Views/Map'
@@ -264,7 +268,6 @@ import {
   LIST_VIEW_LIST,
   LIST_VIEW_TIME_SERIES,
   LIST_VIEW_MAP,
-  LIST_VIEW_BOXES,
   loadSettingsForCollection,
   saveSettingsForCollection
 } from '@/services/localSettings'
@@ -300,6 +303,7 @@ export default {
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
+      documentsById: {},
       formattedDocuments: [],
       totalDocuments: 0,
       documentToDelete: null,
@@ -315,6 +319,7 @@ export default {
       modalDeleteId: 'modal-collection-delete',
       displayPagination: true,
       notificationsById: {},
+      hasNewDocuments: false,
       enableRealtime: true,
       mappingGeoshapes: [],
       selectedGeoshape: '',
@@ -337,27 +342,26 @@ export default {
       'canEditDocument'
     ]),
     listViewType: {
-      get() {
-        return get(this.collectionSettings, 'listViewType', LIST_VIEW_LIST)
+      get: function() {
+        if (!this.collectionSettings.listViewType) {
+          return LIST_VIEW_LIST
+        }
+        return this.collectionSettings.listViewType
       },
-      set(value) {
-        this.collectionSettings.listViewType = value
-
-        // TODO: this behavior currently breaks the animated transition
-        // between views. This can be fixed by leveraging the route transitions.
-        this.$router.push({
-          query: defaults({ listViewType: value }, this.$route.query)
-        })
-        this.saveSettingsForCollection()
+      set: function(value) {
+        this.$set(this.collectionSettings, 'listViewType', value)
       }
     },
     autoSync: {
-      get() {
-        return get(this.collectionSettings, 'autoSync', false)
+      get: function() {
+        if (!this.collectionSettings.autoSync) {
+          return false
+        }
+        return this.collectionSettings.autoSync
       },
-      set(value) {
-        this.collectionSettings.autoSync = value
-        this.saveSettingsForCollection()
+      set: function(value) {
+        this.$set(this.collectionSettings, 'autoSync', value)
+        // this.saveSettingsForCollection()
       }
     },
     hasGeopoints() {
@@ -499,6 +503,11 @@ export default {
       handler() {
         this.addHumanReadableDateFields()
       }
+    },
+    collectionSettings: {
+      handler() {
+        this.saveSettingsForCollection()
+      }
     }
   },
   methods: {
@@ -535,26 +544,28 @@ export default {
       }
     },
     applyNotification(notification) {
-      let documents = JSON.parse(JSON.stringify(this.documents))
-      const payload = {
-        _id: notification.result._id,
-        ...notification.result._source,
-        _kuzzle_info: notification.result._source._kuzzle_info
-          ? this.formatMeta(notification.result._source._kuzzle_info)
-          : undefined
-      }
       if (['update', 'replace'].includes(notification.action)) {
-        const documentIdx = documents.findIndex(
-          doc => doc._id === notification.result._id
+        this.$set(
+          this.documentsById[notification.result._id],
+          '_source',
+          notification.result._source
+        )
+        this.$set(
+          this.documentsById[notification.result._id],
+          '_source',
+          notification.result._source
+        )
+      }
+      if (notification.action === 'delete') {
+        this.$delete(this.documentsById, notification.result._id)
+        const docIdx = this.documents.findIndex(
+          d => d._id === notification.result._id
         )
 
-        if (documentIdx !== -1) {
-          documents[documentIdx] = payload
+        if (docIdx !== -1) {
+          this.$delete(this.documents, docIdx)
         }
-      } else if (notification.action === 'create') {
-        documents.push(payload)
       }
-      this.$set(this, 'documents', documents)
     },
     realtimeNotifCallback(notif) {
       if (!this.handledNotificationActions.includes(notif.action)) {
@@ -570,16 +581,19 @@ export default {
     truncateName,
     // NOTIFICATIONS
     // =========================================================================
-    addNotification(notif) {
-      if (isUndefined(this.notificationsById[notif.result._id])) {
+    addNotification(notification) {
+      if (notification.action === 'create') {
+        this.hasNewDocuments = true
         return
       }
-      this.$set(this.notificationsById, notif.result._id, notif)
+      if (isUndefined(this.notificationsById[notification.result._id])) {
+        return
+      }
+      this.$set(this.notificationsById, notification.result._id, notification)
     },
     resetNotifications() {
-      this.documents
-        .map(d => d._id)
-        .forEach(_id => this.$set(this.notificationsById, _id, null))
+      this.notificationsById = mapValues(this.documentsById, () => null)
+      this.hasNewDocuments = false
     },
     // VIEW MAP - GEOPOINTS
     // =========================================================================
@@ -756,8 +770,8 @@ export default {
         params: { id: document._id }
       })
     },
-    onRefresh() {
-      this.fetchDocuments()
+    async onRefresh() {
+      await this.fetchDocuments()
     },
     async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
@@ -812,14 +826,25 @@ export default {
 
         // TODO: refactor how search is done
         // Execute search with corresponding searchQuery
-        const res = await this.wrapper.performSearchDocuments(
-          this.collectionName,
+        const res = await this.$kuzzle.document.search(
           this.indexName,
-          searchQuery,
-          pagination,
-          sorting
+          this.collectionName,
+          {
+            query: searchQuery,
+            sort: sorting
+          },
+          pagination
         )
-        this.documents = res.documents
+        // this.wrapper.performSearchDocuments(
+        //   this.collectionName,
+        //   this.indexName,
+        //   searchQuery,
+        //   pagination,
+        //   sorting
+        // )
+        this.documents = res.hits
+        this.documentsById = {}
+        this.documents.forEach(d => this.$set(this.documentsById, d._id, d))
         this.totalDocuments = res.total
         this.resetNotifications()
         await this.subscribeToCurrentDocs()
@@ -892,20 +917,16 @@ export default {
 
     // LIST VIEW TYPES
     // =========================================================================
-    onListViewClicked() {
-      this.listViewType = LIST_VIEW_LIST
+    switchListView(listViewType) {
+      this.listViewType = listViewType
+      this.setListViewTypeInRoute(listViewType)
     },
-    onColumnViewClicked() {
-      this.listViewType = LIST_VIEW_COLUMN
-    },
-    onBoxesViewClicked() {
-      this.listViewType = LIST_VIEW_BOXES
-    },
-    onTimeSeriesClicked() {
-      this.listViewType = LIST_VIEW_TIME_SERIES
-    },
-    onMapViewClicked() {
-      this.listViewType = LIST_VIEW_MAP
+    setListViewTypeInRoute(listViewType) {
+      // TODO: this behavior currently breaks the animated transition
+      // between views. This can be fixed by leveraging the route transitions.
+      this.$router.push({
+        query: defaults({ listViewType: listViewType }, this.$route.query)
+      })
     },
     // Collection Metadata management
     // =========================================================================

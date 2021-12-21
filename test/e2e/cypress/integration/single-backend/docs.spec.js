@@ -1,6 +1,8 @@
 const kuzzleUrl = 'http://localhost:7512'
 const indexName = 'testindex'
 const collectionName = 'testcollection'
+const LOCALSTORAGE_PREFIX = 'kuz-ac-settings'
+const documentId = 'my-doc'
 
 describe('Document List', function() {
   beforeEach(() => {
@@ -576,7 +578,7 @@ describe('Document update/replace', () => {
   })
 })
 
-describe('Realtime notifications', () => {
+describe.only('Realtime notifications', () => {
   beforeEach(() => {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
@@ -599,7 +601,7 @@ describe('Realtime notifications', () => {
     })
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_create?refresh=wait_for`,
       {
         firstName: 'Luca',
         lastName: 'Marchesini',
@@ -611,17 +613,164 @@ describe('Realtime notifications', () => {
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
-  it.skip('Remembers auto-update settings through page reload')
-  it.skip(
-    '[auto-update OFF] Shows badges for pending notifications (List view)'
-  )
+  it('Remembers auto-update settings through page reload', function() {
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy="Autosync-icon"]').should('have.class', 'text-secondary')
+
+    cy.get('[data-cy="Refresh-dropdown"] .dropdown-toggle').click()
+    cy.wait(1000)
+    cy.get('[data-cy="Autosync-toggle"]').click()
+    cy.get('[data-cy="Autosync-icon"]').should(
+      'not.have.class',
+      'text-secondary'
+    )
+
+    cy.reload()
+    cy.get('[data-cy="Autosync-icon"]').should(
+      'not.have.class',
+      'text-secondary'
+    )
+  })
+  it('[auto-update OFF] Shows badges for pending notifications (List view)', function() {
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.request(
+      'PATCH',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_update?refresh=wait_for`,
+      {
+        firstName: 'Bombi',
+        lastName: 'Bombi'
+      }
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      'updated'
+    )
+    cy.request(
+      'PUT',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_replace?refresh=wait_for`,
+      {
+        job: 'CSS selector'
+      }
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      'replaced'
+    )
+    cy.request(
+      'DELETE',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}?refresh=wait_for`
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      'deleted'
+    )
+  })
+  it('[auto-update OFF] Refreshes list when Refresh button is hit', function() {
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.request(
+      'PATCH',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_update?refresh=wait_for`,
+      {
+        firstName: 'Bombi',
+        lastName: 'Bombi'
+      }
+    )
+    cy.get(
+      `[data-cy=DocumentListItem-${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
+    ).click()
+
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"Luca"'
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"Marchesini"'
+    )
+    cy.get('[data-cy=Autosync-icon]').click()
+    cy.get(
+      `[data-cy=DocumentListItem-${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
+    ).click()
+
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"Bombi"'
+    )
+  })
+  it('[auto-update ON] Automatically applies realtime-notifications (List view)', function() {
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      JSON.stringify({ autoSync: true })
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.request(
+      'PATCH',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_update?refresh=wait_for`,
+      {
+        firstName: 'Bombi',
+        lastName: 'Bombi'
+      }
+    )
+    cy.get(
+      `[data-cy=DocumentListItem-${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
+    ).click()
+
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"Bombi"'
+    )
+    cy.request(
+      'PUT',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_replace?refresh=wait_for`,
+      {
+        job: 'CSS selector'
+      }
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"CSS selector"'
+    )
+    cy.request(
+      'DELETE',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}?refresh=wait_for`
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should('not.exist')
+  })
+  it.only('Shows the new documents badges when new documents are added to the collection and refreshes when clicked', function() {
+    const newDocId = 'new-doc'
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should('exist')
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${newDocId}/_create?refresh=wait_for`,
+      {
+        firstName: 'Steve',
+        lastName: 'Ballmer'
+      }
+    )
+    cy.get('[data-cy="DocumentListView-newDocsBtn"]').click()
+    cy.get(`[data-cy=DocumentListItem-${newDocId}]`).should('exist')
+  })
   it.skip(
     '[auto-update OFF] Shows badges for pending notifications (Column view)'
   )
   it.skip('[auto-update OFF] Refreshes the page to apply pending notifications')
-  it.skip(
-    '[auto-update ON] Automatically applies realtime-notifications (List view)'
-  )
   it.skip(
     '[auto-update ON] Automatically applies realtime-notifications (Column view)'
   )

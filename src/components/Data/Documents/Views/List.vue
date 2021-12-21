@@ -1,7 +1,7 @@
 <template>
   <div class="DocumentsListView">
-    <b-row no-gutters class="mb-2">
-      <b-col cols="8">
+    <div class="mb-3 d-flex flex-row">
+      <div class="flex-grow-1">
         <b-button
           variant="outline-dark"
           class="mr-2"
@@ -22,15 +22,25 @@
           <i class="fa fa-minus-circle left" />
           Delete
         </b-button>
-      </b-col>
-      <b-col cols="4" class="text-right">
-        <PerPageSelector
-          :current-page-size="currentPageSize"
-          :total-documents="totalDocuments"
-          @change-page-size="$emit('change-page-size', $event)"
-        />
-      </b-col>
-    </b-row>
+      </div>
+
+      <div v-if="hasNewDocuments">
+        <b-button
+          class="mr-2"
+          data-cy="DocumentListView-newDocsBtn"
+          pill
+          variant="info"
+          title="New documents have been created in the collection. Click to refresh."
+          @click="$emit('refresh')"
+          >New documents</b-button
+        >
+      </div>
+      <PerPageSelector
+        :current-page-size="currentPageSize"
+        :total-documents="totalDocuments"
+        @change-page-size="$emit('change-page-size', $event)"
+      />
+    </div>
     <b-list-group class="w-100">
       <b-list-group-item
         v-for="document in documents"
@@ -94,7 +104,8 @@ export default {
     notifications: {
       type: Object,
       default: () => ({})
-    }
+    },
+    hasNewDocuments: Boolean
   },
   data() {
     return {

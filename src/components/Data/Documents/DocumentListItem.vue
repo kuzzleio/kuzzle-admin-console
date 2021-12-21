@@ -1,15 +1,16 @@
 <template>
-  <b-container fluid data-cy="DocumentListItem">
+  <b-container fluid :data-cy="`DocumentListItem-${document._id}`">
     <b-row align-h="between" no-gutters>
       <b-col cols="10" class="py-1">
         <i
-          @click="toggleCollapse"
+          aria-hidden="true"
+          data-cy="DocumentListItem-toggleCollapse"
           :class="
             `fa fa-caret-${
               expanded ? 'down' : 'right'
             } mr-2  d-inline-block align-middle`
           "
-          aria-hidden="true"
+          @click="toggleCollapse"
         />
         <b-form-checkbox
           class="d-inline-block align-middle"
@@ -161,8 +162,12 @@ export default {
      * Also put the "_kuzzle_info" field in last position
      */
     formattedDocument() {
-      const document = omit(this.document, ['_id', '_kuzzle_info'])
-      document._kuzzle_info = this.document._kuzzle_info
+      const document = omit(this.document._source, [
+        '_score',
+        '_id',
+        '_kuzzle_info'
+      ])
+      document._kuzzle_info = this.document._source._kuzzle_info
       return document
     }
   },
