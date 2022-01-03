@@ -15,6 +15,9 @@ enum ListViewType {
 export type CollectionSettings = {
   listViewType?: ListViewType
   autoSync?: boolean
+  columnView?: {
+    fields: string[]
+  }
 }
 
 export function loadSettingsForCollection(

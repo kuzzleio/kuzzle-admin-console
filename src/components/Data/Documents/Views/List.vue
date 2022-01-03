@@ -27,10 +27,10 @@
       <div v-if="hasNewDocuments">
         <b-button
           class="mr-2"
-          data-cy="DocumentListView-newDocsBtn"
+          data-cy="DocumentListView-newDocsBadge"
           pill
           variant="info"
-          title="New documents have been created in the collection. Click to refresh."
+          title="The number of document in the collection has changed. Click to refresh."
           @click="$emit('refresh')"
           ><i class="fas fa-file-alt"></i
         ></b-button>

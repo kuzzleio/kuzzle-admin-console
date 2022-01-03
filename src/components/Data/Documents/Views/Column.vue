@@ -80,10 +80,10 @@
       <div v-if="hasNewDocuments">
         <b-button
           class="mr-2"
-          data-cy="ColumnView-newDocsBtn"
+          data-cy="ColumnView-newDocsBadge"
           pill
           variant="info"
-          title="New documents have been created in the collection. Click to refresh."
+          title="The number of document in the collection has changed. Click to refresh."
           @click="$emit('refresh')"
           ><i class="fas fa-file-alt"></i
         ></b-button>
@@ -241,7 +241,9 @@
 import JsonFormatter from '../../../../directives/json-formatter.directive'
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
 
-import _ from 'lodash'
+import get from 'lodash/get'
+import defaultsDeep from 'lodash/defaultsDeep'
+import isObject from 'lodash/isObject'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
@@ -262,13 +264,14 @@ export default {
   props: {
     allChecked: Boolean,
     currentPageSize: Number,
+    collectionSettings: Object,
     totalDocuments: Number,
     documents: Array,
     index: String,
     collection: String,
     mapping: Object,
     selectedDocuments: Array,
-    notifications: Array,
+    notifications: Object,
     hasNewDocuments: Boolean
   },
   data() {
@@ -313,7 +316,7 @@ export default {
         const doc = {}
         doc._id = d._id
         for (const key of this.selectedFields) {
-          const value = _.get(d._source, key)
+          const value = get(d._source, key)
           doc[key] = value
         }
         return doc
@@ -346,33 +349,7 @@ export default {
         variant: getBadgeVariant(n.action)
       }
     },
-    // const linkedNotification = this.notifications
-    //   .slice()
-    //   .reverse()
-    //   .find(notif => notif.result._id === item._id)
-    // if (!linkedNotification) {
-    //   return null
-    // }
-    // const action = linkedNotification.action
-    // const label = `${action}d`
-    // let variant = null
-    // switch (label) {
-    //   case 'updated':
-    //     variant = 'warning'
-    //     break
-    //   case 'created':
-    //     variant = 'success'
-    //     break
-    //   case 'deleted':
-    //     variant = 'danger'
-    //     break
-    //   case 'replaced':
-    //     variant = 'warning'
-    //     break
-    // }
-    // this.$log.debug(label, variant)
-    // return { label, variant }
-    isObject: _.isObject,
+    isObject: isObject,
     promptExportCSV() {
       this.$bvModal
         .msgBoxConfirm(
@@ -407,7 +384,6 @@ export default {
     },
     resetColumns() {
       this.selectedFields = []
-      this.saveSelectedFieldsToLocalStorage()
     },
     truncateName,
     isChecked(id) {
@@ -423,15 +399,11 @@ export default {
       this.$emit('checkbox-click', id)
     },
     initSelectedFields() {
-      const columnViewConfig = JSON.parse(
-        localStorage.getItem('columnViewConfig') || '{}'
+      this.selectedFields = get(
+        this.collectionSettings,
+        'columnView.fields',
+        []
       )
-      if (
-        columnViewConfig[this.index] &&
-        columnViewConfig[this.index][this.collection]
-      ) {
-        this.selectedFields = columnViewConfig[this.index][this.collection]
-      }
     },
     toggleColumn(field, value) {
       this.$log.debug(`Toggling field ${field}`)
@@ -441,7 +413,6 @@ export default {
       if (!value) {
         this.$delete(this.selectedFields, this.selectedFields.indexOf(field))
       }
-      this.saveSelectedFieldsToLocalStorage()
     },
     toggleJsonFormatter(id) {
       if (this.$refs[id][0].style.visibility === 'hidden') {
@@ -450,20 +421,8 @@ export default {
         this.$refs[id][0].style.visibility = 'hidden'
       }
     },
-    saveSelectedFieldsToLocalStorage() {
-      if (this.index && this.collection) {
-        const config = JSON.parse(
-          localStorage.getItem('columnViewConfig') || '{}'
-        )
-        if (!config[this.index]) {
-          config[this.index] = {}
-        }
-        config[this.index][this.collection] = this.selectedFields
-        localStorage.setItem('columnViewConfig', JSON.stringify(config))
-      }
-    },
     getNestedField(doc, customField) {
-      return _.get(doc, customField, null)
+      return get(doc, customField, null)
     },
     deleteDocument(id) {
       if (this.canDelete) {
@@ -516,6 +475,12 @@ export default {
       handler() {
         this.initFields()
       }
+    },
+    selectedFields(value) {
+      this.$emit(
+        'settings-updated',
+        defaultsDeep({ columnView: { fields: value } }, this.collectionSettings)
+      )
     }
   }
 }

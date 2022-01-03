@@ -143,6 +143,7 @@
                     v-if="listViewType === LIST_VIEW_COLUMN"
                     :index="indexName"
                     :collection="collectionName"
+                    :collection-settings="collectionSettings"
                     :documents="documents"
                     :mapping="collectionMapping"
                     :selected-documents="selectedDocuments"
@@ -156,6 +157,7 @@
                     @bulk-delete="onBulkDeleteClicked"
                     @change-page-size="changePaginationSize"
                     @checkbox-click="toggleSelectDocuments"
+                    @settings-updated="onSettingsUpdated"
                     @refresh="onRefresh"
                     @toggle-all="onToggleAllClicked"
                   />
@@ -252,6 +254,7 @@ import isUndefined from 'lodash/isUndefined'
 import mapValues from 'lodash/mapValues'
 import defaults from 'lodash/defaults'
 import cloneDeep from 'lodash/cloneDeep'
+import get from 'lodash/get'
 
 import Column from './Views/Column'
 import Map from './Views/Map'
@@ -358,6 +361,7 @@ export default {
         return this.collectionSettings.listViewType
       },
       set: function(value) {
+        this.$log.debug(`Setting listViewType to ${value}`)
         this.$set(this.collectionSettings, 'listViewType', value)
       }
     },
@@ -370,7 +374,6 @@ export default {
       },
       set: function(value) {
         this.$set(this.collectionSettings, 'autoSync', value)
-        // this.saveSettingsForCollection()
       }
     },
     hasGeopoints() {
@@ -388,18 +391,19 @@ export default {
     shapesDocuments() {
       return this.formattedDocuments
         .filter(document => {
-          const shape = this.getProperty(document, this.selectedGeoshape)
+          const shape = get(document._source, this.selectedGeoshape)
           return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
         })
         .map(d => ({
-          content: this.getProperty(d, this.selectedGeoshape),
-          source: d
+          _id: d._id,
+          content: get(d._source, this.selectedGeoshape),
+          source: d._source
         }))
     },
     geoDocuments() {
       return this.formattedDocuments
         .filter(document => {
-          const [lat, lng] = this.getCoordinates(document)
+          const [lat, lng] = this.getCoordinates(document._source)
           const latFloat = parseFloat(lat)
           const lngFloat = parseFloat(lng)
 
@@ -407,10 +411,11 @@ export default {
         })
         .map(d => ({
           coordinates: [
-            this.getProperty(d, this.latFieldPath),
-            this.getProperty(d, this.lngFieldPath)
+            get(d._source, this.latFieldPath),
+            get(d._source, this.lngFieldPath)
           ],
-          source: d
+          _id: d._id,
+          source: d._source
         }))
     },
     index() {
@@ -514,8 +519,10 @@ export default {
       }
     },
     collectionSettings: {
+      deep: true,
       handler() {
         this.saveSettingsForCollection()
+        this.setListViewTypeInRoute(this.listViewType)
       }
     }
   },
@@ -608,23 +615,23 @@ export default {
     // =========================================================================
     getCoordinates(document) {
       return [
-        this.getProperty(document, this.latFieldPath),
-        this.getProperty(document, this.lngFieldPath)
+        get(document, this.latFieldPath),
+        get(document, this.lngFieldPath)
       ]
     },
-    getProperty(object, path) {
-      if (!object) {
-        return object
-      }
+    // getProperty(object, path) {
+    //   if (!object) {
+    //     return object
+    //   }
 
-      const names = path.split('.')
+    //   const names = path.split('.')
 
-      if (names.length === 1) {
-        return object[names[0]]
-      }
+    //   if (names.length === 1) {
+    //     return object[names[0]]
+    //   }
 
-      return this.getProperty(object[names[0]], names.slice(1).join('.'))
-    },
+    //   return this.getProperty(object[names[0]], names.slice(1).join('.'))
+    // },
     onSelectGeopoint(selectedGeopoint) {
       this.selectedGeopoint = selectedGeopoint
     },
@@ -833,8 +840,6 @@ export default {
 
         const sorting = filterManager.toSort(this.currentFilter)
 
-        // TODO: refactor how search is done
-        // Execute search with corresponding searchQuery
         const res = await this.$kuzzle.document.search(
           this.indexName,
           this.collectionName,
@@ -844,13 +849,6 @@ export default {
           },
           pagination
         )
-        // this.wrapper.performSearchDocuments(
-        //   this.collectionName,
-        //   this.indexName,
-        //   searchQuery,
-        //   pagination,
-        //   sorting
-        // )
         this.documents = res.hits
         this.documentsById = {}
         this.documents.forEach(d => this.$set(this.documentsById, d._id, d))
@@ -928,11 +926,8 @@ export default {
     // =========================================================================
     switchListView(listViewType) {
       this.listViewType = listViewType
-      this.setListViewTypeInRoute(listViewType)
     },
     setListViewTypeInRoute(listViewType) {
-      // TODO: this behavior currently breaks the animated transition
-      // between views. This can be fixed by leveraging the route transitions.
       this.$router.push({
         query: defaults({ listViewType: listViewType }, this.$route.query)
       })
@@ -948,11 +943,15 @@ export default {
       )
     },
     saveSettingsForCollection() {
+      this.$log.debug('saveSettingsForCollection')
       return saveSettingsForCollection(
         this.indexName,
         this.collectionName,
         this.collectionSettings
       )
+    },
+    onSettingsUpdated(newSettings) {
+      this.collectionSettings = newSettings
     },
     loadMappingInfo() {
       this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)

@@ -41,25 +41,23 @@
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
             v-for="document in geoDocuments"
-            :key="document.source._id"
+            :key="document._id"
             :lat-lng="document.coordinates"
-            :icon="getIcon(document.source)"
-            @click="
-              onItemClicked(document.source, document.coordinates, 'point')
-            "
+            :icon="getIcon(document)"
+            @click="onItemClicked(document, document.coordinates, 'point')"
           />
           <l-circle
             v-for="shape of circleShapes"
-            :ref="`circle-${shape.source_id}`"
-            :key="shape.source_id"
+            :ref="`circle-${shape._id}`"
+            :key="shape._id"
             :lat-lng="shape.content.coordinates"
             :radius="getRadiusInMeter(shape.content.radius)"
-            :color="getShapeColor(shape.source._id)"
-            :className="`data-cy-shape data-cy-shape-${shape.source._id}`"
+            :color="getShapeColor(shape._id)"
+            :className="`data-cy-shape data-cy-shape-${shape._id}`"
             :class="getShapeCyClasse(shape)"
             @click="
               onItemClicked(
-                shape.source,
+                shape,
                 shape.content.coordinates,
                 'circle',
                 shape.content.radius
@@ -68,26 +66,24 @@
           />
           <l-polygon
             v-for="shape of polygonShapes"
-            :ref="`polygon-${shape.source_id}`"
-            :key="shape.source_id"
+            :ref="`polygon-${shape._id}`"
+            :key="shape._id"
             :lat-lngs="shape.content.coordinates"
-            :color="getShapeColor(shape.source._id)"
+            :color="getShapeColor(shape._id)"
             :class="getShapeCyClasse(shape)"
-            :className="`data-cy-shape data-cy-shape-${shape.source._id}`"
-            @click="
-              onItemClicked(shape.source, shape.content.coordinates, 'array')
-            "
+            :className="`data-cy-shape data-cy-shape-${shape._id}`"
+            @click="onItemClicked(shape, shape.content.coordinates, 'array')"
           />
-          <div v-for="shape of multiPolygonShapes" :key="shape.source_id">
+          <div v-for="shape of multiPolygonShapes" :key="shape._id">
             <l-polygon
               v-for="(polygon, index) in shape.content.coordinates"
-              :ref="`polygon-${shape.source_id}-${index}`"
-              :key="`${shape.source_id}-${index}`"
+              :ref="`polygon-${shape._id}-${index}`"
+              :key="`${shape._id}-${index}`"
               :lat-lngs="polygon"
-              :color="getShapeColor(shape.source._id)"
+              :color="getShapeColor(shape._id)"
               :class="getShapeCyClasse(shape)"
-              :className="`data-cy-shape data-cy-shape-${shape.source._id}`"
-              @click="onItemClicked(shape.source, polygon, 'array')"
+              :className="`data-cy-shape data-cy-shape-${shape._id}`"
+              @click="onItemClicked(shape, polygon, 'array')"
             />
           </div>
         </l-map>
@@ -151,7 +147,10 @@
             <b-row class="viewMap-document-json">
               <pre
                 class="json-formatter"
-                v-json-formatter="{ content: formattedDocument, open: true }"
+                v-json-formatter="{
+                  content: currentDocument,
+                  open: true
+                }"
               />
             </b-row>
           </b-card-body>
@@ -194,7 +193,6 @@ import L from 'leaflet'
 import '@/assets/leaflet.css'
 import JsonFormatter from '@/directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
-import _ from 'lodash'
 import PerPageSelector from '@/components/Common/PerPageSelector'
 import get from 'lodash/get'
 
@@ -317,22 +315,22 @@ export default {
       }
       return this.canDeleteDocument(this.index, this.collection)
     },
-    formattedShapes() {
-      if (!this.currentDocument) {
-        return {}
-      }
-      const document = _.omit(this.currentDocument, ['_id', '_kuzzle_info'])
-      document._kuzzle_info = this.currentDocument._kuzzle_info
-      return document
-    },
-    formattedDocument() {
-      if (!this.currentDocument) {
-        return {}
-      }
-      const document = _.omit(this.currentDocument, ['_id', '_kuzzle_info'])
-      document._kuzzle_info = this.currentDocument._kuzzle_info
-      return document
-    },
+    // formattedShapes() {
+    //   if (!this.currentDocument) {
+    //     return {}
+    //   }
+    //   const document = omit(this.currentDocument, ['_id', '_kuzzle_info'])
+    //   document._kuzzle_info = this.currentDocument._kuzzle_info
+    //   return document
+    // },
+    // formattedDocument() {
+    //   if (!this.currentDocument) {
+    //     return {}
+    //   }
+    //   const document = _.omit(this.currentDocument, ['_id', '_kuzzle_info'])
+    //   document._kuzzle_info = this.currentDocument._kuzzle_info
+    //   return document
+    // },
     circleShapes() {
       return this.shapesDocuments.filter(
         shape => get(shape, 'content.type') === 'circle'
@@ -375,8 +373,7 @@ export default {
   },
   methods: {
     getShapeCyClasse(shape) {
-      return this.currentDocument &&
-        this.currentDocument._id === shape.source._id
+      return this.currentDocument && this.currentDocument._id === shape._id
         ? 'data-cy-shape-selected'
         : ''
     },
@@ -455,7 +452,7 @@ export default {
       this.currentDocument = null
     },
     getIcon(document) {
-      if (this.currentDocument === document) {
+      if (get(this.currentDocument, '_id') === document._id) {
         return new this.LeafSelectedIcon({
           className: `mapView-marker-selected documentId-${document._id}`
         })
