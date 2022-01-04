@@ -835,8 +835,6 @@ export default {
           searchQuery = searchQuery.query
         }
 
-        this.$log.debug('Search query ', JSON.stringify(searchQuery))
-
         const res = await this.$kuzzle.document.search(
           this.indexName,
           this.collectionName,

@@ -230,21 +230,23 @@ export class KuzzleWrapperV1 {
     }
 
     return {
-      bool: {
-        should: [
-          {
-            match_phrase_prefix: {
-              _all: {
-                query: searchTerm
+      query: {
+        bool: {
+          should: [
+            {
+              match_phrase_prefix: {
+                _all: {
+                  query: searchTerm
+                }
+              }
+            },
+            {
+              match: {
+                _id: searchTerm
               }
             }
-          },
-          {
-            match: {
-              _id: searchTerm
-            }
-          }
-        ]
+          ]
+        }
       }
     }
   }
@@ -335,7 +337,7 @@ export class KuzzleWrapperV1 {
       return {}
     }
 
-    return { bool }
+    return { query: { bool } }
   }
 
   async performSearchDocuments(
