@@ -925,6 +925,9 @@ export default {
       this.listViewType = listViewType
     },
     setListViewTypeInRoute(listViewType) {
+      if (this.$route.query.listViewType === listViewType) {
+        return
+      }
       this.$router.push({
         query: defaults({ listViewType: listViewType }, this.$route.query)
       })
