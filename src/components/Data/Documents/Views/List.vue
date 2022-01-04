@@ -45,11 +45,12 @@
       <document-list-item
         v-for="document in documents"
         :auto-sync="autoSync"
-        :key="document._id"
-        :document="document"
         :collection="collection"
+        :date-fields="dateFields"
+        :document="document"
         :index="index"
         :is-checked="isChecked(document._id)"
+        :key="document._id"
         :notification="notifications[document._id]"
         @checkbox-click="$emit('checkbox-click', $event)"
         @delete="$emit('delete', $event)"
@@ -83,6 +84,10 @@ export default {
       default: 25
     },
     documents: {
+      type: Array,
+      required: true
+    },
+    dateFields: {
       type: Array,
       required: true
     },

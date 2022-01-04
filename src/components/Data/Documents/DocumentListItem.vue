@@ -83,11 +83,13 @@
 </template>
 
 <script>
-import omit from 'lodash/omit'
 import get from 'lodash/get'
+import set from 'lodash/set'
+import cloneDeep from 'lodash/cloneDeep'
 
 import JsonFormatter from '../../../directives/json-formatter.directive'
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
+import { dateFromTimestamp } from '@/utils'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -101,7 +103,11 @@ export default {
     collection: String,
     document: Object,
     isChecked: Boolean,
-    notification: Object
+    notification: Object,
+    dateFields: {
+      type: Array,
+      required: true
+    }
   },
   data() {
     return {
@@ -116,15 +122,16 @@ export default {
       }
     },
     document: {
-      handler() {
+      deep: true,
+      handler(newValue, oldValue) {
         if (!this.autoSync) {
           return
         }
-        this.$el.classList.add('DocumentListView-item--changed')
-        setTimeout(
-          () => this.$el.classList.remove('DocumentListView-item--changed'),
-          200
-        )
+        this.$log.debug(`Document ${this.document._id} has changed`)
+        this.$log.debug('Old Value', JSON.stringify(oldValue))
+        this.$log.debug('New Value', JSON.stringify(newValue))
+        this.$el.classList.add('changed')
+        setTimeout(() => this.$el.classList.remove('changed'), 200)
       }
     }
   },
@@ -157,18 +164,20 @@ export default {
     checkboxId() {
       return `checkbox-${this.document._id}`
     },
-    /**
-     * Deletes the "id" who should not be displayed in the document body.
-     * Also put the "_kuzzle_info" field in last position
-     */
     formattedDocument() {
-      const document = omit(this.document._source, [
-        '_score',
-        '_id',
-        '_kuzzle_info'
-      ])
-      document._kuzzle_info = this.document._source._kuzzle_info
-      return document
+      // NOTE: This solution (cloning the object) is shitty.
+      // The good way to do this is to define a renderer function to apply
+      // directly in the JSON formatter. Unfortunately this is not supporter.
+      // I strongly encourage to reimplement the JSON formatter in a
+      // way that each field can be rendered via a custom renderer function.
+      const formatted = cloneDeep(this.document._source)
+      this.dateFields.forEach(fieldPath => {
+        const dateObj = dateFromTimestamp(get(formatted, fieldPath))
+        if (dateObj) {
+          set(formatted, fieldPath, dateObj.toLocaleString('en-GB'))
+        }
+      })
+      return formatted
     }
   },
   methods: {
@@ -197,16 +206,17 @@ export default {
 }
 </script>
 
-<style type="scss" scoped>
+<style lang="scss" scoped>
 pre {
   font-size: 16px;
 }
 
 .DocumentListView-item {
   transition: background-color 1.2s ease;
-}
-.DocumentListView-item--changed {
-  transition: background-color 0.1s ease;
-  background-color: rgb(255, 238, 161);
+
+  &.changed {
+    transition: background-color 0.1s ease;
+    background-color: rgb(255, 238, 161);
+  }
 }
 </style>

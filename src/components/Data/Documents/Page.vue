@@ -126,7 +126,8 @@
                     :auto-sync="autoSync"
                     :collection="collectionName"
                     :current-page-size="paginationSize"
-                    :documents="formattedDocuments"
+                    :documents="documents"
+                    :date-fields="dateFields"
                     :has-new-documents="hasNewDocuments"
                     :index="indexName"
                     :notifications="notificationsById"
@@ -255,8 +256,8 @@
 import isUndefined from 'lodash/isUndefined'
 import mapValues from 'lodash/mapValues'
 import defaults from 'lodash/defaults'
-import cloneDeep from 'lodash/cloneDeep'
 import get from 'lodash/get'
+import pickBy from 'lodash/pickBy'
 
 import Column from './Views/Column'
 import Map from './Views/Map'
@@ -275,7 +276,8 @@ import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '@/services/filterManager'
 import { extractAttributesFromMapping } from '@/services/mappingHelpers'
-import { truncateName, dateFromTimestamp } from '@/utils'
+import { flattenObjectMapping } from '@/services/collectionHelper'
+import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 import {
   LIST_VIEW_COLUMN,
@@ -318,7 +320,6 @@ export default {
       selectedDocuments: [],
       documents: [],
       documentsById: {},
-      formattedDocuments: [],
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
@@ -391,7 +392,7 @@ export default {
       )
     },
     shapesDocuments() {
-      return this.formattedDocuments
+      return this.documents
         .filter(document => {
           const shape = get(document._source, this.selectedGeoshape)
           return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
@@ -403,7 +404,7 @@ export default {
         }))
     },
     geoDocuments() {
-      return this.formattedDocuments
+      return this.documents
         .filter(document => {
           const [lat, lng] = this.getCoordinates(document._source)
           const latFloat = parseFloat(lat)
@@ -441,6 +442,17 @@ export default {
       return this.collectionMapping
         ? this.extractAttributesFromMapping(this.collectionMapping)
         : null
+    },
+    dateFields() {
+      if (!this.collectionMapping) {
+        return {}
+      }
+      return Object.keys(
+        pickBy(
+          flattenObjectMapping(this.collectionMapping),
+          value => value === 'date'
+        )
+      )
     },
     latFieldPath() {
       return `${this.selectedGeopoint}.lat`
@@ -513,13 +525,6 @@ export default {
         this.loadAllTheThings()
       }
     },
-    documents: {
-      immediate: true,
-      deep: true,
-      handler() {
-        this.addHumanReadableDateFields()
-      }
-    },
     collectionSettings: {
       deep: true,
       handler() {
@@ -566,11 +571,6 @@ export default {
         if (isUndefined(this.documentsById[notification.result._id])) {
           return
         }
-        this.$set(
-          this.documentsById[notification.result._id],
-          '_source',
-          notification.result._source
-        )
         this.$set(
           this.documentsById[notification.result._id],
           '_source',
@@ -953,44 +953,6 @@ export default {
       if (this.mappingGeoshapes.length) {
         this.selectedGeoshape = this.mappingGeoshapes[0]
       }
-    },
-    // TODO: Refactor this method to avoid
-    // cloning document list (computed property??)
-    addHumanReadableDateFields() {
-      if (!this.collectionMapping) {
-        return
-      }
-      const dateFields = []
-      const formattedDocuments = cloneDeep(this.documents)
-
-      const findDateFields = (mappings, previousKey) => {
-        for (const [field, value] of Object.entries(mappings)) {
-          if (typeof value === 'object') {
-            findDateFields(value, field)
-          } else if (field === 'type' && value === 'date') {
-            dateFields.push(previousKey)
-          }
-        }
-      }
-
-      const changeField = document => {
-        for (const [field, value] of Object.entries(document)) {
-          if (dateFields.includes(field)) {
-            const date = dateFromTimestamp(value)
-
-            if (date) {
-              document[field] += ` (${date.toLocaleString('en-GB')})`
-            }
-          } else if (value && typeof value === 'object') {
-            changeField(value)
-          }
-        }
-      }
-
-      findDateFields(this.collectionMapping, null)
-
-      formattedDocuments.forEach(changeField)
-      this.$set(this, 'formattedDocuments', formattedDocuments)
     },
     changeDisplayPagination(value) {
       this.displayPagination = value

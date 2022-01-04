@@ -19,13 +19,14 @@
       >
     </template>
     <template v-else>
-      {{ data }}
+      {{ formattedData }}
     </template>
   </b-td>
 </template>
 
 <script>
 import isObject from 'lodash/isObject'
+import { dateFromTimestamp } from '@/utils'
 
 export default {
   name: 'ColumnViewTableCell',
@@ -41,6 +42,25 @@ export default {
     rowId: {
       type: String,
       required: true
+    },
+    fieldType: {
+      type: String
+    }
+  },
+  computed: {
+    formattedData() {
+      if (
+        this.data &&
+        this.fieldType === 'date' &&
+        !Array.isArray(this.data) &&
+        !isObject(this.data)
+      ) {
+        const dateObj = dateFromTimestamp(this.data)
+        if (dateObj) {
+          return dateObj.toLocaleString('en-GB')
+        }
+      }
+      return this.data
     }
   },
   methods: {
@@ -51,11 +71,8 @@ export default {
       if (!this.autoSync) {
         return
       }
-      this.$el.classList.add('ColumnViewTableCell--changed')
-      setTimeout(
-        () => this.$el.classList.remove('ColumnViewTableCell--changed'),
-        200
-      )
+      this.$el.classList.add('changed')
+      setTimeout(() => this.$el.classList.remove('changed'), 200)
     }
   }
 }
@@ -64,9 +81,10 @@ export default {
 <style lang="scss" scoped>
 .ColumnViewTableCell {
   transition: background-color 1.2s ease;
-}
-.ColumnViewTableCell--changed {
-  transition: background-color 0.1s ease;
-  background-color: rgb(255, 238, 161);
+
+  &.changed {
+    transition: background-color 0.1s ease;
+    background-color: rgb(255, 238, 161);
+  }
 }
 </style>

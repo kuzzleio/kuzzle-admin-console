@@ -206,6 +206,7 @@
                 :auto-sync="autoSync"
                 :data="item[field]"
                 :field-name="field"
+                :field-type="flatMapping[field]"
                 :key="`item-col-${field}`"
                 :rowId="item._id"
               />
@@ -229,7 +230,7 @@ import draggable from 'vuedraggable'
 import HeaderTableView from '../HeaderTableView'
 import TableCell from './TableCell.vue'
 import PerPageSelector from '@/components/Common/PerPageSelector'
-import { convertToCSV } from '@/services/collectionHelper'
+import { convertToCSV, flattenObjectMapping } from '@/services/collectionHelper'
 
 export default {
   name: 'Column',
@@ -260,7 +261,6 @@ export default {
     return {
       itemsPerPage: [10, 25, 50, 100, 500],
       selectedFields: [],
-      fieldList: [],
       tableDefaultHeaders: [
         {
           key: 'acColumnTableActions',
@@ -318,6 +318,16 @@ export default {
     },
     checkboxId() {
       return `checkbox-${this.document._id}`
+    },
+    flatMapping() {
+      if (!this.mapping) {
+        return {}
+      }
+
+      return flattenObjectMapping(this.mapping)
+    },
+    fieldList() {
+      return Object.keys(this.flatMapping)
     }
   },
   methods: {
@@ -415,30 +425,30 @@ export default {
         this.$emit('edit', id)
       }
     },
-    buildFieldList(mapping, path = []) {
-      let attributes = []
+    // buildFieldList(mapping, path = []) {
+    //   let attributes = []
 
-      for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (
-          Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
-        ) {
-          attributes = attributes.concat(
-            this.buildFieldList(
-              attributeValue.properties,
-              path.concat(attributeName)
-            )
-          )
-        } else if (
-          Object.prototype.hasOwnProperty.call(attributeValue, 'type')
-        ) {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
-        }
-      }
-      return attributes
-    },
+    //   for (const [attributeName, attributeValue] of Object.entries(mapping)) {
+    //     if (
+    //       Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
+    //     ) {
+    //       attributes = attributes.concat(
+    //         this.buildFieldList(
+    //           attributeValue.properties,
+    //           path.concat(attributeName)
+    //         )
+    //       )
+    //     } else if (
+    //       Object.prototype.hasOwnProperty.call(attributeValue, 'type')
+    //     ) {
+    //       attributes = attributes.concat(path.concat(attributeName).join('.'))
+    //     }
+    //   }
+    //   return attributes
+    // },
     initFields() {
       this.initSelectedFields()
-      this.fieldList = this.buildFieldList(this.mapping)
+      // this.fieldList = this.buildFieldList(this.mapping)
     }
   },
   mounted() {
