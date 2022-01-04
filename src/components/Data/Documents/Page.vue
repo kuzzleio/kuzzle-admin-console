@@ -123,14 +123,15 @@
                   <List
                     v-if="listViewType === LIST_VIEW_LIST"
                     :all-checked="allChecked"
+                    :auto-sync="autoSync"
                     :collection="collectionName"
-                    :documents="formattedDocuments"
-                    :index="indexName"
                     :current-page-size="paginationSize"
+                    :documents="formattedDocuments"
+                    :has-new-documents="hasNewDocuments"
+                    :index="indexName"
+                    :notifications="notificationsById"
                     :selected-documents="selectedDocuments"
                     :total-documents="totalDocuments"
-                    :notifications="notificationsById"
-                    :has-new-documents="hasNewDocuments"
                     @bulk-delete="onBulkDeleteClicked"
                     @change-page-size="changePaginationSize"
                     @checkbox-click="toggleSelectDocuments"
@@ -561,6 +562,9 @@ export default {
     },
     applyNotification(notification) {
       if (['update', 'replace'].includes(notification.action)) {
+        if (isUndefined(this.documentsById[notification.result._id])) {
+          return
+        }
         this.$set(
           this.documentsById[notification.result._id],
           '_source',
@@ -587,6 +591,9 @@ export default {
       if (!this.handledNotificationActions.includes(notif.action)) {
         return
       }
+      if (notif.action === 'create') {
+        this.hasNewDocuments = true
+      }
       if (this.autoSync) {
         this.applyNotification(notif)
       } else {
@@ -599,10 +606,6 @@ export default {
     // =========================================================================
     addNotification(notification) {
       if (isUndefined(this.documentsById[notification.result._id])) {
-        if (notification.action === 'create') {
-          this.hasNewDocuments = true
-          return
-        }
         return
       }
       this.$set(this.notificationsById, notification.result._id, notification)
@@ -619,19 +622,6 @@ export default {
         get(document, this.lngFieldPath)
       ]
     },
-    // getProperty(object, path) {
-    //   if (!object) {
-    //     return object
-    //   }
-
-    //   const names = path.split('.')
-
-    //   if (names.length === 1) {
-    //     return object[names[0]]
-    //   }
-
-    //   return this.getProperty(object[names[0]], names.slice(1).join('.'))
-    // },
     onSelectGeopoint(selectedGeopoint) {
       this.selectedGeopoint = selectedGeopoint
     },

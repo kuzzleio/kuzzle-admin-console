@@ -1,80 +1,85 @@
 <template>
-  <b-container fluid :data-cy="`DocumentListItem-${document._id}`">
-    <b-row align-h="between" no-gutters>
-      <b-col cols="10" class="py-1">
-        <i
-          aria-hidden="true"
-          data-cy="DocumentListItem-toggleCollapse"
-          :class="
-            `fa fa-caret-${
-              expanded ? 'down' : 'right'
-            } mr-2  d-inline-block align-middle`
-          "
-          @click="toggleCollapse"
-        />
-        <b-form-checkbox
-          class="d-inline-block align-middle"
-          type="checkbox"
-          value="true"
-          unchecked-value="false"
-          v-model="checked"
-          :id="checkboxId"
-          @change="notifyCheckboxClick"
-        />
-        <a
-          class="d-inline-block align-middle code pointer"
-          @click="toggleCollapse"
-          >{{ document._id }}</a
+  <b-list-group-item
+    class="DocumentListView-item p-2"
+    :data-cy="`DocumentListItem-${document._id}`"
+  >
+    <b-container fluid>
+      <b-row align-h="between" no-gutters>
+        <b-col cols="10" class="py-1">
+          <i
+            aria-hidden="true"
+            data-cy="DocumentListItem-toggleCollapse"
+            :class="
+              `fa fa-caret-${
+                expanded ? 'down' : 'right'
+              } mr-2  d-inline-block align-middle`
+            "
+            @click="toggleCollapse"
+          />
+          <b-form-checkbox
+            class="d-inline-block align-middle"
+            type="checkbox"
+            value="true"
+            unchecked-value="false"
+            v-model="checked"
+            :id="checkboxId"
+            @change="notifyCheckboxClick"
+          />
+          <a
+            class="d-inline-block align-middle code pointer"
+            @click="toggleCollapse"
+            >{{ document._id }}</a
+          >
+          <b-badge :variant="badgeVariant" class="mx-2" v-if="notification"
+            >{{ notifBadge }}
+          </b-badge>
+        </b-col>
+        <b-col cols="2">
+          <div class="float-right">
+            <b-button
+              class="DocumentListItem-update"
+              href=""
+              variant="link"
+              :data-cy="`DocumentListItem-update--${document._id}`"
+              :disabled="!canEdit"
+              :title="
+                canEdit
+                  ? 'Edit Document'
+                  : 'You are not allowed to edit this Document'
+              "
+              @click.prevent="editDocument"
+            >
+              <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
+            </b-button>
+            <b-button
+              class="DocumentListItem-delete"
+              href=""
+              variant="link"
+              :data-cy="`DocumentListItem-delete--${document._id}`"
+              :disabled="!canDelete"
+              :title="
+                canDelete
+                  ? 'Delete Document'
+                  : 'You are not allowed to delete this Document'
+              "
+              @click.prevent="deleteDocument"
+            >
+              <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
+            </b-button>
+          </div>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-collapse
+          :id="`collapse-${document._id}`"
+          v-model="expanded"
+          class="ml-3 DocumentListItem-content w-100"
         >
-        <b-badge :variant="badgeVariant" class="mx-2" v-if="notification"
-          >{{ notifBadge }}
-        </b-badge>
-      </b-col>
-      <b-col cols="2">
-        <div class="float-right">
-          <b-button
-            class="DocumentListItem-update"
-            href=""
-            variant="link"
-            :data-cy="`DocumentListItem-update--${document._id}`"
-            :disabled="!canEdit"
-            :title="
-              canEdit
-                ? 'Edit Document'
-                : 'You are not allowed to edit this Document'
-            "
-            @click.prevent="editDocument"
-          >
-            <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
-          </b-button>
-          <b-button
-            class="DocumentListItem-delete"
-            href=""
-            variant="link"
-            :data-cy="`DocumentListItem-delete--${document._id}`"
-            :disabled="!canDelete"
-            :title="
-              canDelete
-                ? 'Delete Document'
-                : 'You are not allowed to delete this Document'
-            "
-            @click.prevent="deleteDocument"
-          >
-            <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
-          </b-button>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-collapse
-        :id="`collapse-${document._id}`"
-        v-model="expanded"
-        class="ml-3 DocumentListItem-content w-100"
-      >
-        <pre v-json-formatter="{ content: formattedDocument, open: true }" />
-      </b-collapse>
-    </b-row>
-  </b-container>
+          <pre v-json-formatter="{ content: formattedDocument, open: true }" />
+        </b-collapse>
+      </b-row>
+    </b-container>
+  </b-list-group-item>
 </template>
 
 <script>
@@ -91,6 +96,7 @@ export default {
     JsonFormatter
   },
   props: {
+    autoSync: Boolean,
     index: String,
     collection: String,
     document: Object,
@@ -107,6 +113,18 @@ export default {
     isChecked: {
       handler(value) {
         this.checked = value
+      }
+    },
+    document: {
+      handler() {
+        if (!this.autoSync) {
+          return
+        }
+        this.$el.classList.add('DocumentListView-item--changed')
+        setTimeout(
+          () => this.$el.classList.remove('DocumentListView-item--changed'),
+          200
+        )
       }
     }
   },
@@ -173,12 +191,22 @@ export default {
         })
       }
     }
-  }
+  },
+  beforeUpdate() {},
+  updated() {}
 }
 </script>
 
-<style type="scss" rel="stylesheet/scss" scoped>
+<style type="scss" scoped>
 pre {
   font-size: 16px;
+}
+
+.DocumentListView-item {
+  transition: background-color 1.2s ease;
+}
+.DocumentListView-item--changed {
+  transition: background-color 0.1s ease;
+  background-color: rgb(255, 238, 161);
 }
 </style>

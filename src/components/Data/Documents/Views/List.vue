@@ -42,22 +42,18 @@
       />
     </div>
     <b-list-group class="w-100">
-      <b-list-group-item
+      <document-list-item
         v-for="document in documents"
-        class="p-2"
-        data-cy="DocumentList-item"
+        :auto-sync="autoSync"
         :key="document._id"
-      >
-        <document-list-item
-          :document="document"
-          :collection="collection"
-          :index="index"
-          :is-checked="isChecked(document._id)"
-          :notification="notifications[document._id]"
-          @checkbox-click="$emit('checkbox-click', $event)"
-          @delete="$emit('delete', $event)"
-        />
-      </b-list-group-item>
+        :document="document"
+        :collection="collection"
+        :index="index"
+        :is-checked="isChecked(document._id)"
+        :notification="notifications[document._id]"
+        @checkbox-click="$emit('checkbox-click', $event)"
+        @delete="$emit('delete', $event)"
+      />
     </b-list-group>
   </div>
 </template>
@@ -105,7 +101,8 @@ export default {
       type: Object,
       default: () => ({})
     },
-    hasNewDocuments: Boolean
+    hasNewDocuments: Boolean,
+    autoSync: Boolean
   },
   data() {
     return {
@@ -132,4 +129,4 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss"></style>

@@ -51,7 +51,7 @@ describe('Document List', function() {
 
   it('Should show list items when viewType is set to list', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy="DocumentList-item"]').should('exist')
+    cy.get('.DocumentListView-item').should('exist')
   })
 
   it('Should show the the _id even if collection has id field', function() {
@@ -66,7 +66,7 @@ describe('Document List', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy="DocumentList-item"]').within(() => {
+    cy.get('.DocumentListView-item').within(() => {
       cy.get('a').contains('documentId')
       cy.get('a')
         .not()
@@ -115,7 +115,7 @@ describe('Document List', function() {
 
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('contain', 'listViewType=list')
-    cy.get('[data-cy="DocumentList-item"]').should('exist')
+    cy.get('.DocumentsListView').should('exist')
   })
 
   it('Should handle collections with more than 10k documents', () => {
@@ -469,7 +469,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
 
-    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('.DocumentListView-item').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('exist')
@@ -508,7 +508,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
 
-    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('.DocumentListView-item').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('exist')
@@ -531,7 +531,7 @@ describe('Document update/replace', () => {
       )
     cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
     cy.wait(1000)
-    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('.DocumentListView-item').should('be.visible')
 
     cy.request(
       'GET',
