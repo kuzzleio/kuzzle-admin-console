@@ -592,6 +592,7 @@ describe('Realtime', () => {
   })
 
   it('Remembers auto-update settings through page reload', function() {
+    cy.skipOnBackendVersion(1)
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
       null
@@ -614,6 +615,7 @@ describe('Realtime', () => {
     )
   })
   it('[auto-update OFF] Shows badges for pending notifications (List view)', function() {
+    cy.skipOnBackendVersion(1)
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
       null
@@ -652,6 +654,7 @@ describe('Realtime', () => {
     )
   })
   it('[auto-update OFF] Refreshes list when Refresh button is hit', function() {
+    cy.skipOnBackendVersion(1)
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
       null
@@ -688,6 +691,7 @@ describe('Realtime', () => {
     )
   })
   it('[auto-update ON] Automatically applies realtime-notifications (List view)', function() {
+    cy.skipOnBackendVersion(1)
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
       JSON.stringify({ autoSync: true })
@@ -727,6 +731,7 @@ describe('Realtime', () => {
     cy.get(`[data-cy=DocumentListItem-${documentId}]`).should('not.exist')
   })
   it('Shows the new documents badge when new documents are added to the collection and refreshes when clicked (List View)', function() {
+    cy.skipOnBackendVersion(1)
     const newDocId = 'new-doc'
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
@@ -746,6 +751,7 @@ describe('Realtime', () => {
     cy.get(`[data-cy=DocumentListItem-${newDocId}]`).should('exist')
   })
   it('Shows the new documents badge when new documents are added to the collection and refreshes when clicked (Column View)', function() {
+    cy.skipOnBackendVersion(1)
     const newDocId = 'new-doc'
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
@@ -767,6 +773,7 @@ describe('Realtime', () => {
     cy.get(`[data-cy="ColumnItem-${newDocId}-acColumnTableId"]`).should('exist')
   })
   it('[auto-update OFF] Shows badges for pending notifications (Column view)', function() {
+    cy.skipOnBackendVersion(1)
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
       JSON.stringify({ listViewType: 'column' })
@@ -804,6 +811,7 @@ describe('Realtime', () => {
     ).should('contain', 'deleted')
   })
   it('[auto-update ON] Automatically applies realtime-notifications (Column view)', function() {
+    cy.skipOnBackendVersion(1)
     localStorage.setItem(
       `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
       JSON.stringify({
