@@ -201,34 +201,14 @@
           </b-thead>
           <b-tbody>
             <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`">
-              <b-td
-                class="cell"
+              <table-cell
                 v-for="field of selectedFields"
+                :auto-sync="autoSync"
+                :data="item[field]"
+                :field-name="field"
                 :key="`item-col-${field}`"
-                :id="`col-${item._id}-${field}`"
-              >
-                <template v-if="item[field] === null">
-                  <code>null</code>
-                </template>
-                <template v-else-if="item[field] === undefined">
-                  <code>undefined</code>
-                </template>
-                <template v-else-if="Array.isArray(item[field])">
-                  <b-badge
-                    title="Unable to display array values in table cells, use the List view instead"
-                    >array</b-badge
-                  >
-                </template>
-                <template v-else-if="isObject(item[field])">
-                  <b-badge
-                    title="Unable to display object values in table cells, use the List view instead"
-                    >object</b-badge
-                  >
-                </template>
-                <template v-else>
-                  {{ item[field] }}
-                </template>
-              </b-td>
+                :rowId="item._id"
+              />
             </b-tr>
           </b-tbody>
         </b-table-simple>
@@ -243,11 +223,11 @@ import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
 
 import get from 'lodash/get'
 import defaultsDeep from 'lodash/defaultsDeep'
-import isObject from 'lodash/isObject'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
 import HeaderTableView from '../HeaderTableView'
+import TableCell from './TableCell.vue'
 import PerPageSelector from '@/components/Common/PerPageSelector'
 import { convertToCSV } from '@/services/collectionHelper'
 
@@ -259,9 +239,11 @@ export default {
   components: {
     draggable,
     HeaderTableView,
-    PerPageSelector
+    PerPageSelector,
+    TableCell
   },
   props: {
+    autoSync: Boolean,
     allChecked: Boolean,
     currentPageSize: Number,
     collectionSettings: Object,
@@ -349,7 +331,6 @@ export default {
         variant: getBadgeVariant(n.action)
       }
     },
-    isObject: isObject,
     promptExportCSV() {
       this.$bvModal
         .msgBoxConfirm(
