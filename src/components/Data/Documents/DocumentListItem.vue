@@ -123,13 +123,10 @@ export default {
     },
     document: {
       deep: true,
-      handler(newValue, oldValue) {
+      handler() {
         if (!this.autoSync) {
           return
         }
-        this.$log.debug(`Document ${this.document._id} has changed`)
-        this.$log.debug('Old Value', JSON.stringify(oldValue))
-        this.$log.debug('New Value', JSON.stringify(newValue))
         this.$el.classList.add('changed')
         setTimeout(() => this.$el.classList.remove('changed'), 200)
       }

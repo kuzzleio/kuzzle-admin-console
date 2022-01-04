@@ -487,7 +487,7 @@ export default {
     }
   },
   async beforeDestroy() {
-    await this.unsubscribeToCurrentDocs()
+    await this.unsubscribeFromCurrentDocs()
   },
   created() {
     // Make constants available in the template
@@ -534,7 +534,7 @@ export default {
     }
   },
   methods: {
-    async unsubscribeToCurrentDocs() {
+    async unsubscribeFromCurrentDocs() {
       if (this.subscribeRoomId) {
         await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
         this.subscribeRoomId = null
@@ -542,7 +542,7 @@ export default {
     },
     async subscribeToCurrentDocs() {
       try {
-        await this.unsubscribeToCurrentDocs()
+        await this.unsubscribeFromCurrentDocs()
         const roomId = await this.$kuzzle.realtime.subscribe(
           this.indexName,
           this.collectionName,
@@ -830,6 +830,12 @@ export default {
         }
 
         const sorting = filterManager.toSort(this.currentFilter)
+
+        if (searchQuery.query) {
+          searchQuery = searchQuery.query
+        }
+
+        this.$log.debug('Search query ', JSON.stringify(searchQuery))
 
         const res = await this.$kuzzle.document.search(
           this.indexName,

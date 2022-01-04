@@ -52,23 +52,21 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
     }
 
     return {
-      query: {
-        bool: {
-          should: [
-            {
-              multi_match: {
-                query: searchTerm,
-                type: 'phrase_prefix',
-                fields: ['*']
-              }
-            },
-            {
-              match: {
-                _id: searchTerm
-              }
+      bool: {
+        should: [
+          {
+            multi_match: {
+              query: searchTerm,
+              type: 'phrase_prefix',
+              fields: ['*']
             }
-          ]
-        }
+          },
+          {
+            match: {
+              _id: searchTerm
+            }
+          }
+        ]
       }
     }
   }
