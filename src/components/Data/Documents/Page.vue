@@ -36,7 +36,7 @@
             :title="
               autoSync
                 ? 'Documents are updated in real-time'
-                : 'Refresh the list to apply pending notifications'
+                : 'Refresh the list to apply pending changes'
             "
             @click="fetchDocuments"
           >
