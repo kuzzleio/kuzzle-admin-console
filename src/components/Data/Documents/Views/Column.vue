@@ -425,30 +425,8 @@ export default {
         this.$emit('edit', id)
       }
     },
-    // buildFieldList(mapping, path = []) {
-    //   let attributes = []
-
-    //   for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-    //     if (
-    //       Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
-    //     ) {
-    //       attributes = attributes.concat(
-    //         this.buildFieldList(
-    //           attributeValue.properties,
-    //           path.concat(attributeName)
-    //         )
-    //       )
-    //     } else if (
-    //       Object.prototype.hasOwnProperty.call(attributeValue, 'type')
-    //     ) {
-    //       attributes = attributes.concat(path.concat(attributeName).join('.'))
-    //     }
-    //   }
-    //   return attributes
-    // },
     initFields() {
       this.initSelectedFields()
-      // this.fieldList = this.buildFieldList(this.mapping)
     }
   },
   mounted() {

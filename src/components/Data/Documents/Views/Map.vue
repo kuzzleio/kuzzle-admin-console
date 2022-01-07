@@ -315,22 +315,6 @@ export default {
       }
       return this.canDeleteDocument(this.index, this.collection)
     },
-    // formattedShapes() {
-    //   if (!this.currentDocument) {
-    //     return {}
-    //   }
-    //   const document = omit(this.currentDocument, ['_id', '_kuzzle_info'])
-    //   document._kuzzle_info = this.currentDocument._kuzzle_info
-    //   return document
-    // },
-    // formattedDocument() {
-    //   if (!this.currentDocument) {
-    //     return {}
-    //   }
-    //   const document = _.omit(this.currentDocument, ['_id', '_kuzzle_info'])
-    //   document._kuzzle_info = this.currentDocument._kuzzle_info
-    //   return document
-    // },
     circleShapes() {
       return this.shapesDocuments.filter(
         shape => get(shape, 'content.type') === 'circle'
