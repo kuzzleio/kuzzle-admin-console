@@ -98,8 +98,8 @@
           @filters-updated="onFiltersUpdated"
           @submit="onFilterSubmit"
         />
-        <template v-if="!isFetching">
-          <template v-if="isCollectionEmpty">
+        <template v-if="isCollectionEmpty">
+          <template v-if="!isFetching">
             <realtime-only-empty-state
               v-if="isRealtimeCollection"
               :index="indexName"
@@ -112,118 +112,118 @@
               :collection="collectionName"
             />
           </template>
-          <template v-else>
-            <b-card
-              class="light-shadow"
-              :bg-variant="documents.length === 0 ? 'light' : 'default'"
-            >
-              <b-card-text class="p-0">
-                <no-results-empty-state v-if="!documents.length" />
-                <template v-else>
-                  <List
-                    v-if="listViewType === LIST_VIEW_LIST"
-                    :all-checked="allChecked"
-                    :auto-sync="autoSync"
-                    :collection="collectionName"
-                    :current-page-size="paginationSize"
-                    :documents="documents"
-                    :date-fields="dateFields"
-                    :has-new-documents="hasNewDocuments"
-                    :index="indexName"
-                    :notifications="notificationsById"
-                    :selected-documents="selectedDocuments"
-                    :total-documents="totalDocuments"
-                    @bulk-delete="onBulkDeleteClicked"
-                    @change-page-size="changePaginationSize"
-                    @checkbox-click="toggleSelectDocuments"
-                    @delete="onDeleteClicked"
-                    @refresh="onRefresh"
-                    @toggle-all="onToggleAllClicked"
-                  />
+        </template>
+        <template v-else>
+          <b-card
+            class="light-shadow"
+            :bg-variant="documents.length === 0 ? 'light' : 'default'"
+          >
+            <b-card-text class="p-0">
+              <no-results-empty-state v-if="!documents.length" />
+              <template v-else>
+                <List
+                  v-if="listViewType === LIST_VIEW_LIST"
+                  :all-checked="allChecked"
+                  :auto-sync="autoSync"
+                  :collection="collectionName"
+                  :current-page-size="paginationSize"
+                  :documents="documents"
+                  :date-fields="dateFields"
+                  :has-new-documents="hasNewDocuments"
+                  :index="indexName"
+                  :is-fetching="isFetching"
+                  :notifications="notificationsById"
+                  :selected-documents="selectedDocuments"
+                  :total-documents="totalDocuments"
+                  @bulk-delete="onBulkDeleteClicked"
+                  @change-page-size="changePaginationSize"
+                  @checkbox-click="toggleSelectDocuments"
+                  @delete="onDeleteClicked"
+                  @refresh="onRefresh"
+                  @toggle-all="onToggleAllClicked"
+                />
 
-                  <Column
-                    v-if="listViewType === LIST_VIEW_COLUMN"
-                    :all-checked="allChecked"
-                    :auto-sync="autoSync"
-                    :current-page-size="paginationSize"
-                    :collection="collectionName"
-                    :collection-settings="collectionSettings"
-                    :documents="documents"
-                    :has-new-documents="hasNewDocuments"
-                    :index="indexName"
-                    :mapping="collectionMapping"
-                    :notifications="notificationsById"
-                    :selected-documents="selectedDocuments"
-                    :total-documents="totalDocuments"
-                    @edit="onEditClicked"
-                    @delete="onDeleteClicked"
-                    @bulk-delete="onBulkDeleteClicked"
-                    @change-page-size="changePaginationSize"
-                    @checkbox-click="toggleSelectDocuments"
-                    @settings-updated="onSettingsUpdated"
-                    @refresh="onRefresh"
-                    @toggle-all="onToggleAllClicked"
-                  />
+                <Column
+                  v-if="listViewType === LIST_VIEW_COLUMN"
+                  :all-checked="allChecked"
+                  :auto-sync="autoSync"
+                  :current-page-size="paginationSize"
+                  :collection="collectionName"
+                  :collection-settings="collectionSettings"
+                  :documents="documents"
+                  :has-new-documents="hasNewDocuments"
+                  :index="indexName"
+                  :is-fetching="isFetching"
+                  :mapping="collectionMapping"
+                  :notifications="notificationsById"
+                  :selected-documents="selectedDocuments"
+                  :total-documents="totalDocuments"
+                  @edit="onEditClicked"
+                  @delete="onDeleteClicked"
+                  @bulk-delete="onBulkDeleteClicked"
+                  @change-page-size="changePaginationSize"
+                  @checkbox-click="toggleSelectDocuments"
+                  @settings-updated="onSettingsUpdated"
+                  @refresh="onRefresh"
+                  @toggle-all="onToggleAllClicked"
+                />
 
-                  <TimeSeries
-                    v-if="listViewType === LIST_VIEW_TIME_SERIES"
-                    :index="indexName"
-                    :collection="collectionName"
-                    :documents="documents"
-                    :mapping="collectionMapping"
-                    :current-page-size="paginationSize"
-                    :total-documents="totalDocuments"
-                    @change-page-size="changePaginationSize"
-                    @changeDisplayPagination="changeDisplayPagination"
-                  />
+                <TimeSeries
+                  v-if="listViewType === LIST_VIEW_TIME_SERIES"
+                  :index="indexName"
+                  :collection="collectionName"
+                  :documents="documents"
+                  :mapping="collectionMapping"
+                  :current-page-size="paginationSize"
+                  :total-documents="totalDocuments"
+                  @change-page-size="changePaginationSize"
+                  @changeDisplayPagination="changeDisplayPagination"
+                />
 
-                  <Map
-                    v-if="listViewType === LIST_VIEW_MAP"
-                    :selected-geopoint="selectedGeopoint"
-                    :selectedGeoshape="selectedGeoshape"
-                    :current-page-size="paginationSize"
-                    :index="indexName"
-                    :geoDocuments="geoDocuments"
-                    :shapesDocuments="shapesDocuments"
-                    :collection="collectionName"
-                    :mappingGeopoints="mappingGeopoints"
-                    :mappingGeoshapes="mappingGeoshapes"
-                    @change-page-size="changePaginationSize"
-                    @on-select-geopoint="onSelectGeopoint"
-                    @on-select-geoshape="onSelectGeoshape"
-                    @edit="onEditClicked"
-                    @delete="onDeleteClicked"
-                  />
-
-                  <b-row
-                    v-show="
-                      totalDocuments > paginationSize && displayPagination
-                    "
-                    align-h="center"
+                <Map
+                  v-if="listViewType === LIST_VIEW_MAP"
+                  :selected-geopoint="selectedGeopoint"
+                  :selectedGeoshape="selectedGeoshape"
+                  :current-page-size="paginationSize"
+                  :index="indexName"
+                  :geoDocuments="geoDocuments"
+                  :shapesDocuments="shapesDocuments"
+                  :collection="collectionName"
+                  :mappingGeopoints="mappingGeopoints"
+                  :mappingGeoshapes="mappingGeoshapes"
+                  @change-page-size="changePaginationSize"
+                  @on-select-geopoint="onSelectGeopoint"
+                  @on-select-geoshape="onSelectGeoshape"
+                  @edit="onEditClicked"
+                  @delete="onDeleteClicked"
+                />
+                <b-row
+                  v-show="totalDocuments > paginationSize && displayPagination"
+                  align-h="center"
+                >
+                  <b-pagination
+                    v-model="currentPage"
+                    aria-controls="my-table"
+                    class="m-2 mt-4"
+                    data-cy="DocumentList-pagination"
+                    :total-rows="totalDocuments"
+                    :per-page="paginationSize"
+                  ></b-pagination>
+                </b-row>
+                <div
+                  v-if="totalDocuments > 10000"
+                  class="text-center mt-2"
+                  data-cy="DocumentList-exceedESLimitMsg"
+                >
+                  <small class="text-secondary"
+                    >Due to limitations imposed by Elasticsearch, you won't be
+                    able to browse documents beyond 10000.</small
                   >
-                    <b-pagination
-                      v-model="currentPage"
-                      aria-controls="my-table"
-                      class="m-2 mt-4"
-                      data-cy="DocumentList-pagination"
-                      :total-rows="totalDocuments"
-                      :per-page="paginationSize"
-                    ></b-pagination>
-                  </b-row>
-                  <div
-                    v-if="totalDocuments > 10000"
-                    class="text-center mt-2"
-                    data-cy="DocumentList-exceedESLimitMsg"
-                  >
-                    <small class="text-secondary"
-                      >Due to limitations imposed by Elasticsearch, you won't be
-                      able to browse documents beyond 10000.</small
-                    >
-                  </div>
-                </template>
-              </b-card-text>
-            </b-card>
-          </template>
+                  &lcub;&lcub;totalDocuments&rcub;&rcub;
+                </div>
+              </template>
+            </b-card-text>
+          </b-card>
         </template>
       </template>
       <DeleteCollectionModal
@@ -258,6 +258,9 @@ import mapValues from 'lodash/mapValues'
 import defaults from 'lodash/defaults'
 import get from 'lodash/get'
 import pickBy from 'lodash/pickBy'
+import debounce from 'lodash/debounce'
+import isEqual from 'lodash/isEqual'
+import values from 'lodash/values'
 
 import Column from './Views/Column'
 import Map from './Views/Map'
@@ -318,7 +321,6 @@ export default {
       loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
-      documents: [],
       documentsById: {},
       totalDocuments: 0,
       documentToDelete: null,
@@ -356,6 +358,12 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    documents() {
+      if (!this.documentsById) {
+        return []
+      }
+      return values(this.documentsById)
+    },
     listViewType: {
       get: function() {
         if (!this.collectionSettings.listViewType) {
@@ -495,15 +503,25 @@ export default {
     this.LIST_VIEW_MAP = LIST_VIEW_MAP
     this.LIST_VIEW_TIME_SERIES = LIST_VIEW_TIME_SERIES
     this.LIST_VIEW_LIST = LIST_VIEW_LIST
+
+    this.debouncedFetchDocuments = debounce(this.fetchDocuments, 1000, {
+      maxWait: 2500
+    })
   },
   async mounted() {
     await this.loadAllTheThings()
+    await this.subscribeToCurrentDocs()
 
     if (this.paginationFrom) {
       this.setCurrentPage()
     }
   },
   watch: {
+    async autoSync(newValue) {
+      if (newValue === true) {
+        await this.fetchDocuments()
+      }
+    },
     currentPage: {
       handler(value) {
         const from = (value - 1) * this.paginationSize
@@ -546,7 +564,7 @@ export default {
         const roomId = await this.$kuzzle.realtime.subscribe(
           this.indexName,
           this.collectionName,
-          {},
+          {}, // TODO should use the query
           this.realtimeNotifCallback
         )
         this.subscribeRoomId = roomId
@@ -567,6 +585,10 @@ export default {
       }
     },
     applyNotification(notification) {
+      if (notification.action === 'create') {
+        this.debouncedFetchDocuments()
+        return
+      }
       if (['update', 'replace'].includes(notification.action)) {
         if (isUndefined(this.documentsById[notification.result._id])) {
           return
@@ -579,21 +601,11 @@ export default {
       }
       if (notification.action === 'delete') {
         this.$delete(this.documentsById, notification.result._id)
-        const docIdx = this.documents.findIndex(
-          d => d._id === notification.result._id
-        )
-
-        if (docIdx !== -1) {
-          this.$delete(this.documents, docIdx)
-        }
       }
     },
     realtimeNotifCallback(notif) {
       if (!this.handledNotificationActions.includes(notif.action)) {
         return
-      }
-      if (notif.action === 'create') {
-        this.hasNewDocuments = true
       }
       if (this.autoSync) {
         this.applyNotification(notif)
@@ -606,6 +618,10 @@ export default {
     // NOTIFICATIONS
     // =========================================================================
     addNotification(notification) {
+      if (notification.action === 'create') {
+        this.hasNewDocuments = true
+        return
+      }
       if (isUndefined(this.documentsById[notification.result._id])) {
         return
       }
@@ -682,11 +698,9 @@ export default {
           this.collectionName,
           documentsToDelete
         )
+        documentsToDelete.forEach(id => this.$delete(this.documentsById, id))
         this.$bvModal.hide('modal-delete')
         this.resetCandidatesForDeletion()
-        this.fetchDocuments()
-        this.deleteModalIsLoading = false
-        this.$bvModal.hide('documentsDeleteModal')
       } catch (e) {
         this.$log.error(e)
         this.$bvToast.toast(
@@ -700,6 +714,7 @@ export default {
           }
         )
       }
+      this.deleteModalIsLoading = false
     },
     resetCandidatesForDeletion() {
       this.candidatesForDeletion.splice(0, this.candidatesForDeletion.length)
@@ -736,7 +751,7 @@ export default {
     // =========================================================================
     async loadAllTheThings() {
       try {
-        this.loading = true
+        this.$emit('start-init')
         this.loadSettingsForCollection()
         this.saveSettingsForCollection()
         this.loadMappingInfo()
@@ -753,7 +768,7 @@ export default {
           this.collectionName
         )
         this.displayPagination = true
-        this.loading = false
+        this.$emit('end-init')
         await this.fetchDocuments()
       } catch (err) {
         this.$log.error(err)
@@ -762,7 +777,7 @@ export default {
           variant: 'warning',
           toaster: 'b-toaster-bottom-right'
         })
-        this.loading = false
+        this.$emit('end-init')
       }
     },
     navigateToDocument() {
@@ -799,7 +814,6 @@ export default {
       this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
-      this.$emit('start-fetch')
       this.isFetching = true
       this.$forceUpdate()
       this.selectedDocuments = []
@@ -844,12 +858,17 @@ export default {
           },
           pagination
         )
-        this.documents = res.hits
-        this.documentsById = {}
-        this.documents.forEach(d => this.$set(this.documentsById, d._id, d))
+        res.hits.forEach(d => {
+          if (
+            this.documentsById[d._id] &&
+            isEqual(d, this.documentsById[d._id])
+          ) {
+            return
+          }
+          this.$set(this.documentsById, d._id, d)
+        })
         this.totalDocuments = res.total
         this.resetNotifications()
-        await this.subscribeToCurrentDocs()
       } catch (e) {
         this.$log.error(e)
         if (e.message.includes('failed to create query')) {
@@ -877,7 +896,6 @@ export default {
         }
       }
       this.isFetching = false
-      this.$emit('end-fetch')
     },
 
     // PAGINATION

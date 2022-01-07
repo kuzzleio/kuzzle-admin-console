@@ -65,7 +65,7 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
-  name: 'CollectionDropdown',
+  name: 'CollectionDropdownView',
   components: {},
   props: {
     mappingAttributes: Object,

@@ -16,15 +16,19 @@
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
-      <b-overlay :show="loading || viewIsFetching" opacity="0" class="h-100">
+      <b-overlay
+        :show="loading || viewIsInitializing"
+        opacity="0"
+        class="h-100"
+      >
         <data-not-found
           v-if="!loading && dataNotFound"
           class="mt-3"
         ></data-not-found>
         <router-view
           v-if="!loading"
-          @start-fetch="viewIsFetching = true"
-          @end-fetch="viewIsFetching = false"
+          @start-init="viewIsInitializing = true"
+          @end-init="viewIsInitializing = false"
         />
       </b-overlay>
     </div>
@@ -50,7 +54,7 @@ export default {
     return {
       isFetching: true,
       dataNotFound: false,
-      viewIsFetching: false,
+      viewIsInitializing: false,
       paneSize: ''
     }
   },

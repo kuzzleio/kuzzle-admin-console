@@ -1,6 +1,6 @@
 <template>
   <div class="DocumentsListView">
-    <div class="mb-3 d-flex flex-row">
+    <div class="mb-3 d-flex flex-row align-items-center">
       <div class="flex-grow-1">
         <b-button
           variant="outline-dark"
@@ -23,23 +23,35 @@
           Delete
         </b-button>
       </div>
-
-      <div v-if="hasNewDocuments">
-        <b-button
-          class="mr-2"
-          data-cy="DocumentListView-newDocsBadge"
-          pill
-          variant="info"
-          title="The number of document in the collection has changed. Click to refresh."
-          @click="$emit('refresh')"
-          ><i class="fas fa-file-alt"></i
-        ></b-button>
-      </div>
+      <b-spinner
+        v-if="isFetching"
+        class="mr-3"
+        variant="info"
+        small
+      ></b-spinner>
       <PerPageSelector
         :current-page-size="currentPageSize"
         :total-documents="totalDocuments"
         @change-page-size="$emit('change-page-size', $event)"
       />
+      <i
+        class="fa-circle ml-2"
+        data-cy="DocumentListView-newDocsBadge"
+        variant="info"
+        :title="
+          hasNewDocuments
+            ? 'The number of document in the collection has changed. Click to refresh.'
+            : 'This circle will turn green when new documents are added to this collection'
+        "
+        :class="{
+          fas: hasNewDocuments,
+          far: !hasNewDocuments,
+          'text-info': hasNewDocuments,
+          pointer: hasNewDocuments,
+          'text-secondary': !hasNewDocuments
+        }"
+        @click="hasNewDocuments ? $emit('refresh') : $emit('noop')"
+      ></i>
     </div>
     <b-list-group class="w-100">
       <document-list-item
@@ -94,6 +106,9 @@ export default {
     index: {
       type: String,
       required: true
+    },
+    isFetching: {
+      type: Boolean
     },
     selectedDocuments: {
       type: Array,
