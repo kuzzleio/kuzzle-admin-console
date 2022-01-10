@@ -515,6 +515,8 @@ export default {
     async autoSync(newValue) {
       if (newValue === true) {
         await this.fetchDocuments()
+      } else {
+        this.resetNotifications()
       }
     },
     currentPage: {
@@ -859,6 +861,8 @@ export default {
           searchQuery = searchQuery.query
         }
 
+        this.resetNotifications()
+
         const res = await this.$kuzzle.document.search(
           this.indexName,
           this.collectionName,
@@ -868,8 +872,6 @@ export default {
           },
           pagination
         )
-
-        this.resetNotifications()
 
         this.documents = res.hits
         this.totalDocuments = res.total
