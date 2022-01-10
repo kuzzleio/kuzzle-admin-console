@@ -1,5 +1,9 @@
 <template>
-  <b-card class="EmptyState text-center" bg-variant="light">
+  <b-card
+    bg-variant="light"
+    class="EmptyState text-center"
+    data-cy="DocumentsEmptyState"
+  >
     <i
       class="text-secondary fas fa-6x mb-3"
       :class="{

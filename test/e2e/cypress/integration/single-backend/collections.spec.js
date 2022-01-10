@@ -130,7 +130,7 @@ describe('Collection management', function() {
       collectionName
     )
     cy.get('[data-cy="CollectionClearModal-submit"]').click()
-    cy.contains('This collection is empty')
+    cy.get('[data-cy=DocumentsEmptyState]').should('exist')
   })
 
   it('Should be able to delete a stored collection from the collection list', function() {
@@ -245,7 +245,7 @@ describe('Collection management', function() {
 
     cy.url().should('contain', 'foobar')
     cy.contains('foobar')
-    cy.contains('This collection is empty')
+    cy.get('[data-cy=DocumentsEmptyState]').should('exist')
   })
 
   it('Should be able to export a collection mapping', function() {
