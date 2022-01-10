@@ -1,5 +1,8 @@
 <template>
-  <b-td class="ColumnViewTableCell cell" :id="`col-${rowId}-${fieldName}`">
+  <b-td
+    class="ColumnViewTableCell cell realtime-highlight"
+    :id="`col-${rowId}-${fieldName}`"
+  >
     <template v-if="data === null">
       <code>null</code>
     </template>
@@ -45,7 +48,8 @@ export default {
     },
     fieldType: {
       type: String
-    }
+    },
+    notification: Object
   },
   computed: {
     formattedData() {
@@ -77,14 +81,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.ColumnViewTableCell {
-  transition: background-color 1.2s ease;
-
-  &.changed {
-    transition: background-color 0.1s ease;
-    background-color: rgb(255, 238, 161);
-  }
-}
-</style>

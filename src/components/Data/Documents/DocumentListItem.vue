@@ -1,6 +1,6 @@
 <template>
   <b-list-group-item
-    class="DocumentListView-item p-2"
+    class="DocumentListView-item p-2 realtime-highlight"
     :data-cy="`DocumentListItem-${document._id}`"
   >
     <b-container fluid>
@@ -30,8 +30,11 @@
             @click="toggleCollapse"
             >{{ document._id }}</a
           >
-          <b-badge :variant="badgeVariant" class="mx-2" v-if="notification"
-            >{{ notifBadge }}
+          <b-badge
+            v-if="!autoSync && notifBadgeText && notifBadgeText !== 'created'"
+            :variant="notifBadgeVariant"
+            class="mx-2"
+            >{{ notifBadgeText }}
           </b-badge>
         </b-col>
         <b-col cols="2">
@@ -121,26 +124,25 @@ export default {
         this.checked = value
       }
     },
-    document: {
-      deep: true,
-      handler() {
-        if (!this.autoSync) {
+    notification: {
+      handler(n) {
+        if (!this.autoSync || !n) {
           return
         }
-        this.$el.classList.add('changed')
-        setTimeout(() => this.$el.classList.remove('changed'), 200)
+        this.$el.classList.add(getBadgeText(n.action))
+        setTimeout(() => this.$el.classList.remove(getBadgeText(n.action)), 200)
       }
     }
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
-    badgeVariant() {
+    notifBadgeVariant() {
       if (!get(this.notification, 'action')) {
         return ''
       }
       return getBadgeVariant(get(this.notification, 'action'))
     },
-    notifBadge() {
+    notifBadgeText() {
       if (!get(this.notification, 'action')) {
         return ''
       }
@@ -208,12 +210,22 @@ pre {
   font-size: 16px;
 }
 
-.DocumentListView-item {
-  transition: background-color 1.2s ease;
+// .DocumentListView-item {
+//   transition: background-color 1.2s ease;
 
-  &.changed {
-    transition: background-color 0.1s ease;
-    background-color: rgb(255, 238, 161);
-  }
-}
+//   &.updated,
+//   &.replaced {
+//     transition: background-color 0.1s ease;
+//     background-color: rgb(255, 238, 161);
+//   }
+
+//   &.deleted {
+//     transition: background-color 0.1s ease;
+//     background-color: rgb(251, 119, 148);
+//   }
+//   &.created {
+//     transition: background-color 0.1s ease;
+//     background-color: rgb(153, 230, 123);
+//   }
+// }
 </style>

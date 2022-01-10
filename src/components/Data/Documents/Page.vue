@@ -110,6 +110,7 @@
               v-else
               :index="indexName"
               :collection="collectionName"
+              :has-new-documents="hasNewDocuments"
             />
           </template>
         </template>
@@ -119,7 +120,10 @@
             :bg-variant="documents.length === 0 ? 'light' : 'default'"
           >
             <b-card-text class="p-0">
-              <no-results-empty-state v-if="!documents.length" />
+              <no-results-empty-state
+                v-if="!documents.length"
+                :has-new-documents="hasNewDocuments"
+              />
               <template v-else>
                 <List
                   v-if="listViewType === LIST_VIEW_LIST"
@@ -259,10 +263,8 @@ import defaults from 'lodash/defaults'
 import get from 'lodash/get'
 import pickBy from 'lodash/pickBy'
 import debounce from 'lodash/debounce'
-import isEqual from 'lodash/isEqual'
-import values from 'lodash/values'
 
-import Column from './Views/Column'
+import Column from './Views/Column/Column'
 import Map from './Views/Map'
 import List from './Views/List'
 import TimeSeries from './Views/TimeSeries'
@@ -321,7 +323,7 @@ export default {
       loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
-      documentsById: {},
+      documents: [],
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
@@ -336,6 +338,7 @@ export default {
       modalDeleteId: 'modal-collection-delete',
       displayPagination: true,
       notificationsById: {},
+      newDocumentNotifications: [],
       hasNewDocuments: false,
       enableRealtime: true,
       mappingGeoshapes: [],
@@ -358,11 +361,20 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
-    documents() {
-      if (!this.documentsById) {
-        return []
+    documentsIdxById() {
+      if (!this.documents) {
+        return {}
       }
-      return values(this.documentsById)
+      const r = {}
+      this.documents.forEach((d, idx) => {
+        r[d._id] = idx
+      })
+      return r
+      //  transform(
+      //   this.documents,
+      //   (documentsIdxById, d) => (documentsIdxById[d._id] = d),
+      //   {}
+      // )
     },
     listViewType: {
       get: function() {
@@ -565,7 +577,7 @@ export default {
           this.indexName,
           this.collectionName,
           {}, // TODO should use the query
-          this.realtimeNotifCallback
+          this.handleNotification
         )
         this.subscribeRoomId = roomId
       } catch (error) {
@@ -584,51 +596,61 @@ export default {
         updatedAt: _kuzzle_info.updatedAt
       }
     },
+    extractAttributesFromMapping,
+    truncateName,
+    // NOTIFICATIONS
+    // =========================================================================
+    handleNotification(notification) {
+      if (!this.handledNotificationActions.includes(notification.action)) {
+        return
+      }
+      this.addNotification(notification)
+      if (this.autoSync) {
+        this.applyNotification(notification)
+      }
+    },
     applyNotification(notification) {
       if (notification.action === 'create') {
+        this.newDocumentNotifications.push(notification)
         this.debouncedFetchDocuments()
         return
       }
+      if (isUndefined(this.documentsIdxById[notification.result._id])) {
+        return
+      }
+      const docIdx = this.documentsIdxById[notification.result._id]
       if (['update', 'replace'].includes(notification.action)) {
-        if (isUndefined(this.documentsById[notification.result._id])) {
-          return
-        }
         this.$set(
-          this.documentsById[notification.result._id],
+          this.documents[docIdx],
           '_source',
           notification.result._source
         )
       }
       if (notification.action === 'delete') {
-        this.$delete(this.documentsById, notification.result._id)
+        setTimeout(() => this.$delete(this.documents, docIdx), 500)
+
+        this.debouncedFetchDocuments()
       }
     },
-    realtimeNotifCallback(notif) {
-      if (!this.handledNotificationActions.includes(notif.action)) {
-        return
-      }
-      if (this.autoSync) {
-        this.applyNotification(notif)
-      } else {
-        this.addNotification(notif)
-      }
-    },
-    extractAttributesFromMapping,
-    truncateName,
-    // NOTIFICATIONS
-    // =========================================================================
     addNotification(notification) {
-      if (notification.action === 'create') {
+      if (notification.action === 'create' && !this.autoSync) {
         this.hasNewDocuments = true
         return
       }
-      if (isUndefined(this.documentsById[notification.result._id])) {
+      if (isUndefined(this.documentsIdxById[notification.result._id])) {
         return
       }
       this.$set(this.notificationsById, notification.result._id, notification)
     },
+    addNewDocumentNotifications() {
+      let notification = this.newDocumentNotifications.pop()
+      while (notification) {
+        this.addNotification(notification)
+        notification = this.newDocumentNotifications.pop()
+      }
+    },
     resetNotifications() {
-      this.notificationsById = mapValues(this.documentsById, () => null)
+      this.notificationsById = mapValues(this.documentsIdxById, () => null)
       this.hasNewDocuments = false
     },
     // VIEW MAP - GEOPOINTS
@@ -698,7 +720,9 @@ export default {
           this.collectionName,
           documentsToDelete
         )
-        documentsToDelete.forEach(id => this.$delete(this.documentsById, id))
+        if (!this.autoSync) {
+          this.fetchDocuments()
+        }
         this.$bvModal.hide('modal-delete')
         this.resetCandidatesForDeletion()
       } catch (e) {
@@ -858,17 +882,13 @@ export default {
           },
           pagination
         )
-        res.hits.forEach(d => {
-          if (
-            this.documentsById[d._id] &&
-            isEqual(d, this.documentsById[d._id])
-          ) {
-            return
-          }
-          this.$set(this.documentsById, d._id, d)
-        })
-        this.totalDocuments = res.total
+
         this.resetNotifications()
+
+        this.documents = res.hits
+        this.totalDocuments = res.total
+
+        this.$nextTick(() => this.addNewDocumentNotifications())
       } catch (e) {
         this.$log.error(e)
         if (e.message.includes('failed to create query')) {

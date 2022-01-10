@@ -1,6 +1,6 @@
 <template>
   <div class="Column" data-cy="DocumentList-Column">
-    <div class="d-flex flex-row">
+    <div class="d-flex flex-row align-items-center">
       <div class="flex-grow-1">
         <b-dropdown
           class="mr-2"
@@ -77,32 +77,19 @@
         </b-button>
       </div>
 
-      <div v-if="hasNewDocuments">
-        <b-button
-          class="mr-2"
-          data-cy="ColumnView-newDocsBadge"
-          pill
-          variant="info"
-          title="The number of document in the collection has changed. Click to refresh."
-          @click="$emit('refresh')"
-          ><i class="fas fa-file-alt"></i
-        ></b-button>
-      </div>
       <PerPageSelector
         :current-page-size="currentPageSize"
         :total-documents="totalDocuments"
         @change-page-size="$emit('change-page-size', $event)"
       />
+      <new-documents-badge
+        :has-new-documents="hasNewDocuments"
+        @refresh="$emit('refresh')"
+      />
     </div>
     <b-row class="mt-2 mb-2" no-gutters>
       <b-col cols="3">
-        <b-table-simple
-          responsive
-          striped
-          hover
-          bordered
-          data-cy="ColumnView-table-id"
-        >
+        <b-table-simple responsive bordered data-cy="ColumnView-table-id">
           <b-thead>
             <b-tr>
               <b-th
@@ -115,7 +102,13 @@
             </b-tr>
           </b-thead>
           <b-tbody>
-            <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`">
+            <highlightable-row
+              v-for="item of formattedItems"
+              :key="`item-row-${item._id}`"
+              :auto-sync="autoSync"
+              :notification="notifications[item._id]"
+            >
+              <!-- <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`"> -->
               <b-td
                 class="cell"
                 colspan="1"
@@ -158,7 +151,11 @@
                       </b-button>
                     </span>
                     <b-badge
-                      v-if="getItemBadge(item)"
+                      v-if="
+                        getItemBadge(item) &&
+                          !autoSync &&
+                          getItemBadge(item).label !== 'created'
+                      "
                       :variant="getItemBadge(item).variant"
                       class="mx-2"
                       >{{ getItemBadge(item).label }}
@@ -169,18 +166,12 @@
                   {{ item._id }}
                 </template>
               </b-td>
-            </b-tr>
+            </highlightable-row>
           </b-tbody>
         </b-table-simple>
       </b-col>
       <b-col cols="9">
-        <b-table-simple
-          responsive
-          striped
-          hover
-          bordered
-          data-cy="ColumnView-table-data"
-        >
+        <b-table-simple responsive bordered data-cy="ColumnView-table-data">
           <b-thead>
             <draggable
               v-model="selectedFields"
@@ -200,17 +191,22 @@
             </draggable>
           </b-thead>
           <b-tbody>
-            <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`">
+            <highlightable-row
+              v-for="item of formattedItems"
+              :key="`item-row-${item._id}`"
+              :auto-sync="autoSync"
+              :notification="notifications[item._id]"
+            >
               <table-cell
                 v-for="field of selectedFields"
+                :key="`item-col-${field}`"
                 :auto-sync="autoSync"
                 :data="item[field]"
                 :field-name="field"
                 :field-type="flatMapping[field]"
-                :key="`item-col-${field}`"
                 :rowId="item._id"
               />
-            </b-tr>
+            </highlightable-row>
           </b-tbody>
         </b-table-simple>
       </b-col>
@@ -219,7 +215,7 @@
 </template>
 
 <script>
-import JsonFormatter from '../../../../directives/json-formatter.directive'
+import JsonFormatter from '../../../../../directives/json-formatter.directive'
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
 
 import get from 'lodash/get'
@@ -227,9 +223,12 @@ import defaultsDeep from 'lodash/defaultsDeep'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
-import HeaderTableView from '../HeaderTableView'
+import HeaderTableView from './HeaderTableView'
 import TableCell from './TableCell.vue'
+import HighlightableRow from './HighlightableRow.vue'
 import PerPageSelector from '@/components/Common/PerPageSelector'
+import NewDocumentsBadge from '../../Common/NewDocumentsBadge.vue'
+
 import { convertToCSV, flattenObjectMapping } from '@/services/collectionHelper'
 
 export default {
@@ -241,7 +240,9 @@ export default {
     draggable,
     HeaderTableView,
     PerPageSelector,
-    TableCell
+    TableCell,
+    HighlightableRow,
+    NewDocumentsBadge
   },
   props: {
     autoSync: Boolean,
@@ -492,7 +493,8 @@ export default {
 }
 
 .cell {
-  height: 70px;
+  height: 65px;
+  vertical-align: middle !important;
   white-space: nowrap;
 }
 </style>

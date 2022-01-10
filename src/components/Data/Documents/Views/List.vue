@@ -34,24 +34,10 @@
         :total-documents="totalDocuments"
         @change-page-size="$emit('change-page-size', $event)"
       />
-      <i
-        class="fa-circle ml-2"
-        data-cy="DocumentListView-newDocsBadge"
-        variant="info"
-        :title="
-          hasNewDocuments
-            ? 'The number of document in the collection has changed. Click to refresh.'
-            : 'This circle will turn green when new documents are added to this collection'
-        "
-        :class="{
-          fas: hasNewDocuments,
-          far: !hasNewDocuments,
-          'text-info': hasNewDocuments,
-          pointer: hasNewDocuments,
-          'text-secondary': !hasNewDocuments
-        }"
-        @click="hasNewDocuments ? $emit('refresh') : $emit('noop')"
-      ></i>
+      <new-documents-badge
+        :has-new-documents="hasNewDocuments"
+        @refresh="$emit('refresh')"
+      />
     </div>
     <b-list-group class="w-100">
       <document-list-item
@@ -73,6 +59,7 @@
 
 <script>
 import DocumentListItem from '../DocumentListItem'
+import NewDocumentsBadge from '../Common/NewDocumentsBadge.vue'
 import { mapGetters } from 'vuex'
 import PerPageSelector from '@/components/Common/PerPageSelector'
 
@@ -80,7 +67,8 @@ export default {
   name: 'DocumentsListView',
   components: {
     DocumentListItem,
-    PerPageSelector
+    PerPageSelector,
+    NewDocumentsBadge
   },
   props: {
     allChecked: {

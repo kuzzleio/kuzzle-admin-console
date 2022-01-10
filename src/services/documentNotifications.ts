@@ -13,6 +13,8 @@ export function getBadgeVariant(action) {
 
 export function getBadgeText(action) {
   switch (action) {
+    case 'create':
+      return 'created'
     case 'update':
       return 'updated'
     case 'delete':
