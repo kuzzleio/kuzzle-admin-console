@@ -1,7 +1,7 @@
 <template>
   <i
     class="fa-circle ml-2"
-    data-cy="DocumentListView-newDocsBadge"
+    data-cy="NewDocumentsBadge"
     variant="info"
     :title="
       hasNewDocuments

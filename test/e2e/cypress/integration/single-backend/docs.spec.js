@@ -556,7 +556,7 @@ describe('Document update/replace', () => {
   })
 })
 
-describe('Realtime', () => {
+describe.only('Realtime', () => {
   beforeEach(() => {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
@@ -747,7 +747,7 @@ describe('Realtime', () => {
         lastName: 'Ballmer'
       }
     )
-    cy.get('[data-cy="DocumentListView-newDocsBadge"]').click()
+    cy.get('[data-cy="NewDocumentsBadge"]').click()
     cy.get(`[data-cy=DocumentListItem-${newDocId}]`).should('exist')
   })
   it('Shows the new documents badge when new documents are added to the collection and refreshes when clicked (Column View)', function() {
@@ -769,7 +769,7 @@ describe('Realtime', () => {
         lastName: 'Ballmer'
       }
     )
-    cy.get('[data-cy="ColumnView-newDocsBadge"]').click()
+    cy.get('[data-cy="NewDocumentsBadge"]').click()
     cy.get(`[data-cy="ColumnItem-${newDocId}-acColumnTableId"]`).should('exist')
   })
   it('[auto-update OFF] Shows badges for pending notifications (Column view)', function() {
