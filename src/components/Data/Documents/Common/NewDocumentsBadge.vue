@@ -5,7 +5,7 @@
     variant="info"
     :title="
       hasNewDocuments
-        ? 'The number of document in the collection has changed. Click to refresh.'
+        ? 'New documents that might match your filters have been created. Click to refresh.'
         : 'This circle will turn green when new documents are added to this collection'
     "
     :class="{

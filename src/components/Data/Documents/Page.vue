@@ -58,7 +58,7 @@
                   `far ${autoSync ? 'fa-check-square' : 'fa-square'} left`
                 "
               />
-              Toggle auto-sync
+              Auto-Sync
             </b-dropdown-item>
           </b-dropdown>
           <collection-dropdown-view
@@ -98,14 +98,12 @@
           @filters-updated="onFiltersUpdated"
           @submit="onFilterSubmit"
         />
-        <template v-if="isCollectionEmpty">
-          <template v-if="!isFetching">
-            <realtime-only-empty-state
-              v-if="isRealtimeCollection"
-              :index="indexName"
-              :collection="collectionName"
-            />
-            <no-geopoint-field-state v-else-if="hasGeopoints" />
+        <template v-if="documents.length === 0">
+          <div v-if="isFetching" class="mt-5 text-center">
+            <b-spinner />
+          </div>
+          <template v-else>
+            <no-geopoint-field-state v-if="hasGeopoints" />
             <empty-state
               v-else
               :index="indexName"
@@ -120,112 +118,106 @@
             :bg-variant="documents.length === 0 ? 'light' : 'default'"
           >
             <b-card-text class="p-0">
-              <no-results-empty-state
-                v-if="!documents.length"
+              <List
+                v-if="listViewType === LIST_VIEW_LIST"
+                :all-checked="allChecked"
+                :auto-sync="autoSync"
+                :collection="collectionName"
+                :current-page-size="paginationSize"
+                :documents="documents"
+                :date-fields="dateFields"
                 :has-new-documents="hasNewDocuments"
+                :index="indexName"
+                :is-fetching="isFetching"
+                :notifications="notificationsById"
+                :selected-documents="selectedDocuments"
+                :total-documents="totalDocuments"
+                @bulk-delete="onBulkDeleteClicked"
+                @change-page-size="changePaginationSize"
+                @checkbox-click="toggleSelectDocuments"
+                @delete="onDeleteClicked"
+                @refresh="onRefresh"
+                @toggle-all="onToggleAllClicked"
               />
-              <template v-else>
-                <List
-                  v-if="listViewType === LIST_VIEW_LIST"
-                  :all-checked="allChecked"
-                  :auto-sync="autoSync"
-                  :collection="collectionName"
-                  :current-page-size="paginationSize"
-                  :documents="documents"
-                  :date-fields="dateFields"
-                  :has-new-documents="hasNewDocuments"
-                  :index="indexName"
-                  :is-fetching="isFetching"
-                  :notifications="notificationsById"
-                  :selected-documents="selectedDocuments"
-                  :total-documents="totalDocuments"
-                  @bulk-delete="onBulkDeleteClicked"
-                  @change-page-size="changePaginationSize"
-                  @checkbox-click="toggleSelectDocuments"
-                  @delete="onDeleteClicked"
-                  @refresh="onRefresh"
-                  @toggle-all="onToggleAllClicked"
-                />
 
-                <Column
-                  v-if="listViewType === LIST_VIEW_COLUMN"
-                  :all-checked="allChecked"
-                  :auto-sync="autoSync"
-                  :current-page-size="paginationSize"
-                  :collection="collectionName"
-                  :collection-settings="collectionSettings"
-                  :documents="documents"
-                  :has-new-documents="hasNewDocuments"
-                  :index="indexName"
-                  :is-fetching="isFetching"
-                  :mapping="collectionMapping"
-                  :notifications="notificationsById"
-                  :selected-documents="selectedDocuments"
-                  :total-documents="totalDocuments"
-                  @edit="onEditClicked"
-                  @delete="onDeleteClicked"
-                  @bulk-delete="onBulkDeleteClicked"
-                  @change-page-size="changePaginationSize"
-                  @checkbox-click="toggleSelectDocuments"
-                  @settings-updated="onSettingsUpdated"
-                  @refresh="onRefresh"
-                  @toggle-all="onToggleAllClicked"
-                />
+              <Column
+                v-if="listViewType === LIST_VIEW_COLUMN"
+                :all-checked="allChecked"
+                :auto-sync="autoSync"
+                :current-page-size="paginationSize"
+                :collection="collectionName"
+                :collection-settings="collectionSettings"
+                :documents="documents"
+                :has-new-documents="hasNewDocuments"
+                :index="indexName"
+                :is-fetching="isFetching"
+                :mapping="collectionMapping"
+                :notifications="notificationsById"
+                :selected-documents="selectedDocuments"
+                :total-documents="totalDocuments"
+                @edit="onEditClicked"
+                @delete="onDeleteClicked"
+                @bulk-delete="onBulkDeleteClicked"
+                @change-page-size="changePaginationSize"
+                @checkbox-click="toggleSelectDocuments"
+                @settings-updated="onSettingsUpdated"
+                @refresh="onRefresh"
+                @toggle-all="onToggleAllClicked"
+              />
 
-                <TimeSeries
-                  v-if="listViewType === LIST_VIEW_TIME_SERIES"
-                  :index="indexName"
-                  :collection="collectionName"
-                  :documents="documents"
-                  :mapping="collectionMapping"
-                  :current-page-size="paginationSize"
-                  :total-documents="totalDocuments"
-                  @change-page-size="changePaginationSize"
-                  @changeDisplayPagination="changeDisplayPagination"
-                />
+              <TimeSeries
+                v-if="listViewType === LIST_VIEW_TIME_SERIES"
+                :index="indexName"
+                :collection="collectionName"
+                :documents="documents"
+                :mapping="collectionMapping"
+                :current-page-size="paginationSize"
+                :total-documents="totalDocuments"
+                @change-page-size="changePaginationSize"
+                @changeDisplayPagination="changeDisplayPagination"
+              />
 
-                <Map
-                  v-if="listViewType === LIST_VIEW_MAP"
-                  :selected-geopoint="selectedGeopoint"
-                  :selectedGeoshape="selectedGeoshape"
-                  :current-page-size="paginationSize"
-                  :index="indexName"
-                  :geoDocuments="geoDocuments"
-                  :shapesDocuments="shapesDocuments"
-                  :collection="collectionName"
-                  :mappingGeopoints="mappingGeopoints"
-                  :mappingGeoshapes="mappingGeoshapes"
-                  @change-page-size="changePaginationSize"
-                  @on-select-geopoint="onSelectGeopoint"
-                  @on-select-geoshape="onSelectGeoshape"
-                  @edit="onEditClicked"
-                  @delete="onDeleteClicked"
-                />
-                <b-row
-                  v-show="totalDocuments > paginationSize && displayPagination"
-                  align-h="center"
+              <Map
+                v-if="listViewType === LIST_VIEW_MAP"
+                :selected-geopoint="selectedGeopoint"
+                :selectedGeoshape="selectedGeoshape"
+                :current-page-size="paginationSize"
+                :index="indexName"
+                :geoDocuments="geoDocuments"
+                :shapesDocuments="shapesDocuments"
+                :collection="collectionName"
+                :mappingGeopoints="mappingGeopoints"
+                :mappingGeoshapes="mappingGeoshapes"
+                @change-page-size="changePaginationSize"
+                @on-select-geopoint="onSelectGeopoint"
+                @on-select-geoshape="onSelectGeoshape"
+                @edit="onEditClicked"
+                @delete="onDeleteClicked"
+              />
+              <b-row
+                v-show="totalDocuments > paginationSize && displayPagination"
+                align-h="center"
+              >
+                <b-pagination
+                  v-model="currentPage"
+                  aria-controls="my-table"
+                  class="m-2 mt-4"
+                  data-cy="DocumentList-pagination"
+                  :total-rows="totalDocuments"
+                  :per-page="paginationSize"
+                ></b-pagination>
+              </b-row>
+              <div
+                v-if="totalDocuments > 10000"
+                class="text-center mt-2"
+                data-cy="DocumentList-exceedESLimitMsg"
+              >
+                <small class="text-secondary"
+                  >Due to limitations imposed by Elasticsearch, you won't be
+                  able to browse documents beyond 10000.</small
                 >
-                  <b-pagination
-                    v-model="currentPage"
-                    aria-controls="my-table"
-                    class="m-2 mt-4"
-                    data-cy="DocumentList-pagination"
-                    :total-rows="totalDocuments"
-                    :per-page="paginationSize"
-                  ></b-pagination>
-                </b-row>
-                <div
-                  v-if="totalDocuments > 10000"
-                  class="text-center mt-2"
-                  data-cy="DocumentList-exceedESLimitMsg"
-                >
-                  <small class="text-secondary"
-                    >Due to limitations imposed by Elasticsearch, you won't be
-                    able to browse documents beyond 10000.</small
-                  >
-                  &lcub;&lcub;totalDocuments&rcub;&rcub;
-                </div>
-              </template>
+                &lcub;&lcub;totalDocuments&rcub;&rcub;
+              </div>
             </b-card-text>
           </b-card>
         </template>
@@ -270,9 +262,7 @@ import List from './Views/List'
 import TimeSeries from './Views/TimeSeries'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
-import NoResultsEmptyState from './NoResultsEmptyState'
 import NoGeopointFieldState from './NoGeopointFieldState.vue'
-import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdownView from '../Collections/DropdownView'
@@ -308,8 +298,6 @@ export default {
     Headline,
     Filters,
     ListNotAllowed,
-    NoResultsEmptyState,
-    RealtimeOnlyEmptyState,
     NoGeopointFieldState
   },
   props: {
@@ -370,11 +358,6 @@ export default {
         r[d._id] = idx
       })
       return r
-      //  transform(
-      //   this.documents,
-      //   (documentsIdxById, d) => (documentsIdxById[d._id] = d),
-      //   {}
-      // )
     },
     listViewType: {
       get: function() {

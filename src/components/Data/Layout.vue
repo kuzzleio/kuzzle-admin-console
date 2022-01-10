@@ -16,11 +16,7 @@
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
-      <b-overlay
-        :show="loading || viewIsInitializing"
-        opacity="0"
-        class="h-100"
-      >
+      <b-overlay :show="loading" opacity="0" class="h-100">
         <data-not-found
           v-if="!loading && dataNotFound"
           class="mt-3"
