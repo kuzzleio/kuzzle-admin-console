@@ -340,24 +340,6 @@ export default {
     isObject: _.isObject,
     promptExportCSV() {
       this.$bvModal.show(this.csvExportPromptModalID)
-      // this.$bvModal
-      //   .msgBoxConfirm(
-      //     'Please, be aware that the documents that will be exported, are ONLY the ones that are currently displayed and NOT the whole collection.',
-      //     {
-      //       title: 'Please Confirm',
-      //       okVariant: 'primary',
-      //       okTitle: 'Export displayed documents',
-      //       cancelTitle: 'Cancel',
-      //       footerClass: 'p-2',
-      //       hideHeaderClose: false,
-      //       centered: true
-      //     }
-      //   )
-      //   .then(value => {
-      //     if (value) {
-      //       this.exportToCSV()
-      //     }
-      //   })
     },
     exportToCSV() {
       const blob = new Blob([
