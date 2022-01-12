@@ -226,6 +226,16 @@
         </b-table-simple>
       </b-col>
     </b-row>
+    <export-csv-modal
+      :modal-id="csvExportPromptModalID"
+      :index="index"
+      :collection="collection"
+      :selected-fields="selectedFields"
+      :host="currentEnvironment.host"
+      :port="currentEnvironment.port"
+      :ssl="currentEnvironment.ssl"
+      :token="user.token"
+    />
   </div>
 </template>
 
@@ -237,6 +247,7 @@ import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
 import HeaderTableView from '../HeaderTableView'
 import PerPageSelector from '@/components/Common/PerPageSelector'
+import ExportCsvModal from '@/components/Data/Documents/Common/ExportCSVModal'
 import { convertToCSV } from '@/services/collectionHelper'
 
 export default {
@@ -247,7 +258,8 @@ export default {
   components: {
     draggable,
     HeaderTableView,
-    PerPageSelector
+    PerPageSelector,
+    ExportCsvModal
   },
   props: {
     allChecked: Boolean,
@@ -280,7 +292,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
+    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument', 'user']),
+    ...mapGetters('kuzzle', ['currentEnvironment']),
     hasSelectedDocuments() {
       return this.selectedDocuments.length > 0
     },
@@ -326,24 +339,7 @@ export default {
   methods: {
     isObject: _.isObject,
     promptExportCSV() {
-      this.$bvModal
-        .msgBoxConfirm(
-          'Please, be aware that the documents that will be exported, are ONLY the ones that are currently displayed and NOT the whole collection.',
-          {
-            title: 'Please Confirm',
-            okVariant: 'primary',
-            okTitle: 'Export displayed documents',
-            cancelTitle: 'Cancel',
-            footerClass: 'p-2',
-            hideHeaderClose: false,
-            centered: true
-          }
-        )
-        .then(value => {
-          if (value) {
-            this.exportToCSV()
-          }
-        })
+      this.$bvModal.show(this.csvExportPromptModalID)
     },
     exportToCSV() {
       const blob = new Blob([
@@ -452,6 +448,9 @@ export default {
       this.initSelectedFields()
       this.fieldList = this.buildFieldList(this.mapping)
     }
+  },
+  created() {
+    this.csvExportPromptModalID = 'export-csv-prompt'
   },
   mounted() {
     this.initFields()
