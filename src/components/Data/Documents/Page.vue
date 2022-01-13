@@ -1,7 +1,9 @@
 <template>
   <div class="DocumentList">
     <b-container
-      :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
+      :class="{
+        'DocumentList--containerFluid': listViewType !== LIST_VIEW_LIST
+      }"
       class="DocumentList--container"
     >
       <b-row>
@@ -26,16 +28,49 @@
             }"
             >Create New Document</b-button
           >
+          <b-dropdown
+            class="ml-1"
+            data-cy="Refresh-dropdown"
+            split
+            variant="outline-primary"
+            :title="
+              autoSync
+                ? 'Documents are updated in real-time'
+                : 'Refresh the list to apply pending changes'
+            "
+            @click="fetchDocuments"
+          >
+            <template #button-content>
+              <i
+                class="fas fa-sync mr-1"
+                data-cy="Autosync-icon"
+                :class="{ 'fa-spin': autoSync, 'text-secondary': !autoSync }"
+              ></i>
+              Refresh
+            </template>
+            <b-dropdown-item
+              data-cy="Autosync-toggle"
+              :disabled="!displayRealtimeButton.includes(listViewType)"
+              @click="autoSync = !autoSync"
+            >
+              <i
+                :class="
+                  `far ${autoSync ? 'fa-check-square' : 'fa-square'} left`
+                "
+              />
+              Auto-Sync
+            </b-dropdown-item>
+          </b-dropdown>
           <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"
             :index="indexName"
             :collection="collectionName"
             :mappingAttributes="mappingAttributes"
-            @list="onListViewClicked"
-            @map="onMapViewClicked"
-            @column="onColumnViewClicked"
-            @time-series="onTimeSeriesClicked"
+            @list="switchListView(LIST_VIEW_LIST)"
+            @map="switchListView(LIST_VIEW_MAP)"
+            @column="switchListView(LIST_VIEW_COLUMN)"
+            @time-series="switchListView(LIST_VIEW_TIME_SERIES)"
           />
           <collection-dropdown-action
             class="icon-medium icon-black ml-2"
@@ -63,123 +98,128 @@
           @filters-updated="onFiltersUpdated"
           @submit="onFilterSubmit"
         />
-        <template v-if="!isFetching">
-          <template v-if="isCollectionEmpty">
-            <realtime-only-empty-state
-              v-if="isRealtimeCollection"
-              :index="indexName"
-              :collection="collectionName"
-            />
-            <no-geopoint-field-state v-else-if="hasGeopoints" />
+        <template v-if="documents.length === 0">
+          <div v-if="isFetching" class="mt-5 text-center">
+            <b-spinner />
+          </div>
+          <template v-else>
+            <no-geopoint-field-state v-if="hasGeopoints" />
             <empty-state
               v-else
               :index="indexName"
               :collection="collectionName"
+              :has-new-documents="hasNewDocuments"
             />
           </template>
-          <template v-else>
-            <b-card
-              class="light-shadow"
-              :bg-variant="documents.length === 0 ? 'light' : 'default'"
-            >
-              <b-card-text class="p-0">
-                <no-results-empty-state v-if="!documents.length" />
-                <template v-else>
-                  <List
-                    v-if="listViewType === 'list'"
-                    :all-checked="allChecked"
-                    :collection="collectionName"
-                    :documents="formattedDocuments"
-                    :index="indexName"
-                    :current-page-size="paginationSize"
-                    :selected-documents="selectedDocuments"
-                    :total-documents="totalDocuments"
-                    @bulk-delete="onBulkDeleteClicked"
-                    @change-page-size="changePaginationSize"
-                    @checkbox-click="toggleSelectDocuments"
-                    @delete="onDeleteClicked"
-                    @refresh="onRefresh"
-                    @toggle-all="onToggleAllClicked"
-                  />
+        </template>
+        <template v-else>
+          <b-card
+            class="light-shadow"
+            :bg-variant="documents.length === 0 ? 'light' : 'default'"
+          >
+            <b-card-text class="p-0">
+              <List
+                v-if="listViewType === LIST_VIEW_LIST"
+                :all-checked="allChecked"
+                :auto-sync="autoSync"
+                :collection="collectionName"
+                :current-page-size="paginationSize"
+                :documents="documents"
+                :date-fields="dateFields"
+                :has-new-documents="hasNewDocuments"
+                :index="indexName"
+                :is-fetching="isFetching"
+                :notifications="notificationsById"
+                :selected-documents="selectedDocuments"
+                :total-documents="totalDocuments"
+                @bulk-delete="onBulkDeleteClicked"
+                @change-page-size="changePaginationSize"
+                @checkbox-click="toggleSelectDocuments"
+                @delete="onDeleteClicked"
+                @refresh="onRefresh"
+                @toggle-all="onToggleAllClicked"
+              />
 
-                  <Column
-                    v-if="listViewType === 'column'"
-                    :index="indexName"
-                    :collection="collectionName"
-                    :documents="formattedDocuments"
-                    :mapping="collectionMapping"
-                    :selected-documents="selectedDocuments"
-                    :all-checked="allChecked"
-                    :current-page-size="paginationSize"
-                    :total-documents="totalDocuments"
-                    @edit="onEditClicked"
-                    @delete="onDeleteClicked"
-                    @bulk-delete="onBulkDeleteClicked"
-                    @change-page-size="changePaginationSize"
-                    @checkbox-click="toggleSelectDocuments"
-                    @refresh="onRefresh"
-                    @toggle-all="onToggleAllClicked"
-                  />
+              <Column
+                v-if="listViewType === LIST_VIEW_COLUMN"
+                :all-checked="allChecked"
+                :auto-sync="autoSync"
+                :current-page-size="paginationSize"
+                :collection="collectionName"
+                :collection-settings="collectionSettings"
+                :documents="documents"
+                :has-new-documents="hasNewDocuments"
+                :index="indexName"
+                :is-fetching="isFetching"
+                :mapping="collectionMapping"
+                :notifications="notificationsById"
+                :selected-documents="selectedDocuments"
+                :total-documents="totalDocuments"
+                @edit="onEditClicked"
+                @delete="onDeleteClicked"
+                @bulk-delete="onBulkDeleteClicked"
+                @change-page-size="changePaginationSize"
+                @checkbox-click="toggleSelectDocuments"
+                @settings-updated="onSettingsUpdated"
+                @refresh="onRefresh"
+                @toggle-all="onToggleAllClicked"
+              />
 
-                  <TimeSeries
-                    v-if="listViewType === 'time-series'"
-                    :index="indexName"
-                    :collection="collectionName"
-                    :documents="documents"
-                    :mapping="collectionMapping"
-                    :current-page-size="paginationSize"
-                    :total-documents="totalDocuments"
-                    @change-page-size="changePaginationSize"
-                    @changeDisplayPagination="changeDisplayPagination"
-                  />
+              <TimeSeries
+                v-if="listViewType === LIST_VIEW_TIME_SERIES"
+                :index="indexName"
+                :collection="collectionName"
+                :documents="documents"
+                :mapping="collectionMapping"
+                :current-page-size="paginationSize"
+                :total-documents="totalDocuments"
+                @change-page-size="changePaginationSize"
+                @changeDisplayPagination="changeDisplayPagination"
+              />
 
-                  <Map
-                    v-if="listViewType === 'map'"
-                    :selected-geopoint="selectedGeopoint"
-                    :selectedGeoshape="selectedGeoshape"
-                    :current-page-size="paginationSize"
-                    :index="indexName"
-                    :geoDocuments="geoDocuments"
-                    :shapesDocuments="shapesDocuments"
-                    :collection="collectionName"
-                    :mappingGeopoints="mappingGeopoints"
-                    :mappingGeoshapes="mappingGeoshapes"
-                    @change-page-size="changePaginationSize"
-                    @on-select-geopoint="onSelectGeopoint"
-                    @on-select-geoshape="onSelectGeoshape"
-                    @edit="onEditClicked"
-                    @delete="onDeleteClicked"
-                  />
-
-                  <b-row
-                    v-show="
-                      totalDocuments > paginationSize && displayPagination
-                    "
-                    align-h="center"
-                  >
-                    <b-pagination
-                      v-model="currentPage"
-                      aria-controls="my-table"
-                      class="m-2 mt-4"
-                      data-cy="DocumentList-pagination"
-                      :total-rows="totalDocuments"
-                      :per-page="paginationSize"
-                    ></b-pagination>
-                  </b-row>
-                  <div
-                    v-if="totalDocuments > 10000"
-                    class="text-center mt-2"
-                    data-cy="DocumentList-exceedESLimitMsg"
-                  >
-                    <small class="text-secondary"
-                      >Due to limitations imposed by Elasticsearch, you won't be
-                      able to browse documents beyond 10000.</small
-                    >
-                  </div>
-                </template>
-              </b-card-text>
-            </b-card>
-          </template>
+              <Map
+                v-if="listViewType === LIST_VIEW_MAP"
+                :selected-geopoint="selectedGeopoint"
+                :selectedGeoshape="selectedGeoshape"
+                :current-page-size="paginationSize"
+                :index="indexName"
+                :geoDocuments="geoDocuments"
+                :shapesDocuments="shapesDocuments"
+                :collection="collectionName"
+                :mappingGeopoints="mappingGeopoints"
+                :mappingGeoshapes="mappingGeoshapes"
+                @change-page-size="changePaginationSize"
+                @on-select-geopoint="onSelectGeopoint"
+                @on-select-geoshape="onSelectGeoshape"
+                @edit="onEditClicked"
+                @delete="onDeleteClicked"
+              />
+              <b-row
+                v-show="totalDocuments > paginationSize && displayPagination"
+                align-h="center"
+              >
+                <b-pagination
+                  v-model="currentPage"
+                  aria-controls="my-table"
+                  class="m-2 mt-4"
+                  data-cy="DocumentList-pagination"
+                  :total-rows="totalDocuments"
+                  :per-page="paginationSize"
+                ></b-pagination>
+              </b-row>
+              <div
+                v-if="totalDocuments > 10000"
+                class="text-center mt-2"
+                data-cy="DocumentList-exceedESLimitMsg"
+              >
+                <small class="text-secondary"
+                  >Due to limitations imposed by Elasticsearch, you won't be
+                  able to browse documents beyond 10000.</small
+                >
+                &lcub;&lcub;totalDocuments&rcub;&rcub;
+              </div>
+            </b-card-text>
+          </b-card>
         </template>
       </template>
       <DeleteCollectionModal
@@ -195,39 +235,53 @@
         @confirm="onDeleteConfirmed"
         @hide="resetCandidatesForDeletion"
       />
+      <b-toast
+        variant="info"
+        id="realtime-notification-toast"
+        title="toast title"
+        toaster="b-toaster-bottom-right"
+        no-auto-hide
+      >
+        Some documents has changed. Refresh your list plz
+      </b-toast>
     </b-container>
   </div>
 </template>
 
 <script>
-import _ from 'lodash'
+import isUndefined from 'lodash/isUndefined'
+import mapValues from 'lodash/mapValues'
+import defaults from 'lodash/defaults'
+import get from 'lodash/get'
+import pickBy from 'lodash/pickBy'
+import debounce from 'lodash/debounce'
 
-import Column from './Views/Column'
+import Column from './Views/Column/Column'
 import Map from './Views/Map'
 import List from './Views/List'
 import TimeSeries from './Views/TimeSeries'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
-import NoResultsEmptyState from './NoResultsEmptyState'
 import NoGeopointFieldState from './NoGeopointFieldState.vue'
-import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdownView from '../Collections/DropdownView'
 import CollectionDropdownAction from '../Collections/DropdownAction'
 import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
 import Headline from '../../Materialize/Headline'
-import * as filterManager from '../../../services/filterManager'
-import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
-import { truncateName, dateFromTimestamp } from '@/utils'
+import * as filterManager from '@/services/filterManager'
+import { extractAttributesFromMapping } from '@/services/mappingHelpers'
+import { flattenObjectMapping } from '@/services/collectionHelper'
+import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
-
-const LOCALSTORAGE_PREFIX = 'current-list-view'
-const LIST_VIEW_LIST = 'list'
-const LIST_VIEW_BOXES = 'boxes'
-const LIST_VIEW_MAP = 'map'
-const LIST_VIEW_COLUMN = 'column'
-const LIST_VIEW_TIME_SERIES = 'time-series'
+import {
+  LIST_VIEW_COLUMN,
+  LIST_VIEW_LIST,
+  LIST_VIEW_TIME_SERIES,
+  LIST_VIEW_MAP,
+  loadSettingsForCollection,
+  saveSettingsForCollection
+} from '@/services/localSettings'
 
 export default {
   name: 'DocumentsPage',
@@ -244,8 +298,6 @@ export default {
     Headline,
     Filters,
     ListNotAllowed,
-    NoResultsEmptyState,
-    RealtimeOnlyEmptyState,
     NoGeopointFieldState
   },
   props: {
@@ -254,16 +306,16 @@ export default {
   },
   data() {
     return {
+      subscribeRoomId: null,
       isFetching: false,
       loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
-      formattedDocuments: [],
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
-      listViewType: LIST_VIEW_LIST,
+      collectionSettings: {},
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
@@ -273,40 +325,91 @@ export default {
       currentPage: 1,
       modalDeleteId: 'modal-collection-delete',
       displayPagination: true,
+      notificationsById: {},
+      newDocumentNotifications: [],
+      hasNewDocuments: false,
+      enableRealtime: true,
       mappingGeoshapes: [],
       selectedGeoshape: '',
-      handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon']
+      handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon'],
+      handledNotificationActions: ['create', 'update', 'replace', 'delete'],
+      displayRealtimeButton: [
+        LIST_VIEW_LIST,
+        LIST_VIEW_COLUMN,
+        LIST_VIEW_TIME_SERIES,
+        LIST_VIEW_MAP
+      ]
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapGetters('kuzzle', ['wrapper', '$kuzzle']),
     ...mapGetters('auth', [
       'canSearchDocument',
       'canCreateDocument',
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    documentsIdxById() {
+      if (!this.documents) {
+        return {}
+      }
+      const r = {}
+      this.documents.forEach((d, idx) => {
+        r[d._id] = idx
+      })
+      return r
+    },
+    listViewType: {
+      get: function() {
+        if (!this.collectionSettings.listViewType) {
+          return LIST_VIEW_LIST
+        }
+        return this.collectionSettings.listViewType
+      },
+      set: function(value) {
+        this.$log.debug(`Setting listViewType to ${value}`)
+        this.$set(this.collectionSettings, 'listViewType', value)
+      }
+    },
+    autoSync: {
+      get: function() {
+        if (!this.collectionSettings.autoSync) {
+          return false
+        }
+        return this.collectionSettings.autoSync
+      },
+      set: function(value) {
+        this.$set(this.collectionSettings, 'autoSync', value)
+      }
+    },
     hasGeopoints() {
-      return this.listViewType === 'map' && this.mappingGeopoints.length === 0
+      return (
+        this.listViewType === LIST_VIEW_MAP &&
+        this.mappingGeopoints.length === 0
+      )
     },
     hasGeoshapes() {
-      return this.listViewType === 'map' && this.mappingGeoshapes.length === 0
+      return (
+        this.listViewType === LIST_VIEW_MAP &&
+        this.mappingGeoshapes.length === 0
+      )
     },
     shapesDocuments() {
-      return this.formattedDocuments
+      return this.documents
         .filter(document => {
-          const shape = this.getProperty(document, this.selectedGeoshape)
+          const shape = get(document._source, this.selectedGeoshape)
           return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
         })
         .map(d => ({
-          content: this.getProperty(d, this.selectedGeoshape),
-          source: d
+          _id: d._id,
+          content: get(d._source, this.selectedGeoshape),
+          source: d._source
         }))
     },
     geoDocuments() {
-      return this.formattedDocuments
+      return this.documents
         .filter(document => {
-          const [lat, lng] = this.getCoordinates(document)
+          const [lat, lng] = this.getCoordinates(document._source)
           const latFloat = parseFloat(lat)
           const lngFloat = parseFloat(lng)
 
@@ -314,10 +417,11 @@ export default {
         })
         .map(d => ({
           coordinates: [
-            this.getProperty(d, this.latFieldPath),
-            this.getProperty(d, this.lngFieldPath)
+            get(d._source, this.latFieldPath),
+            get(d._source, this.lngFieldPath)
           ],
-          source: d
+          _id: d._id,
+          source: d._source
         }))
     },
     index() {
@@ -341,6 +445,17 @@ export default {
       return this.collectionMapping
         ? this.extractAttributesFromMapping(this.collectionMapping)
         : null
+    },
+    dateFields() {
+      if (!this.collectionMapping) {
+        return {}
+      }
+      return Object.keys(
+        pickBy(
+          flattenObjectMapping(this.collectionMapping),
+          value => value === 'date'
+        )
+      )
     },
     latFieldPath() {
       return `${this.selectedGeopoint}.lat`
@@ -374,14 +489,36 @@ export default {
       return this.collection ? this.collection.isRealtime() : false
     }
   },
+  async beforeDestroy() {
+    await this.unsubscribeFromCurrentDocs()
+  },
+  created() {
+    // Make constants available in the template
+    this.LIST_VIEW_COLUMN = LIST_VIEW_COLUMN
+    this.LIST_VIEW_MAP = LIST_VIEW_MAP
+    this.LIST_VIEW_TIME_SERIES = LIST_VIEW_TIME_SERIES
+    this.LIST_VIEW_LIST = LIST_VIEW_LIST
+
+    this.debouncedFetchDocuments = debounce(this.fetchDocuments, 1000, {
+      maxWait: 2500
+    })
+  },
   async mounted() {
     await this.loadAllTheThings()
+    await this.subscribeToCurrentDocs()
 
     if (this.paginationFrom) {
       this.setCurrentPage()
     }
   },
   watch: {
+    async autoSync(newValue) {
+      if (newValue === true) {
+        await this.fetchDocuments()
+      } else {
+        this.resetNotifications()
+      }
+    },
     currentPage: {
       handler(value) {
         const from = (value - 1) * this.paginationSize
@@ -403,36 +540,114 @@ export default {
         this.loadAllTheThings()
       }
     },
-    documents: {
-      immediate: true,
+    collectionSettings: {
+      deep: true,
       handler() {
-        this.addHumanReadableDateFields()
+        this.saveSettingsForCollection()
+        this.setListViewTypeInRoute(this.listViewType)
       }
     }
   },
   methods: {
+    formatMeta(_kuzzle_info) {
+      return {
+        author:
+          _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
+        updater:
+          _kuzzle_info.updater === '-1'
+            ? 'Anonymous (-1)'
+            : _kuzzle_info.updater,
+        createdAt: _kuzzle_info.createdAt,
+        updatedAt: _kuzzle_info.updatedAt
+      }
+    },
     extractAttributesFromMapping,
     truncateName,
+    // NOTIFICATIONS
+    // =========================================================================
+    async unsubscribeFromCurrentDocs() {
+      if (this.subscribeRoomId) {
+        await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
+        this.subscribeRoomId = null
+      }
+    },
+    async subscribeToCurrentDocs() {
+      try {
+        await this.unsubscribeFromCurrentDocs()
+        const roomId = await this.$kuzzle.realtime.subscribe(
+          this.indexName,
+          this.collectionName,
+          // TODO -- The aim here is to use a Koncorde filter generated by
+          // the user. Currently, the filters are all generated to ES DSL so,
+          // we'll have a whole tech-story to migrate everything to Koncorde.
+          {},
+          this.handleNotification
+        )
+        this.subscribeRoomId = roomId
+      } catch (error) {
+        this.$log.error(error)
+      }
+    },
+    handleNotification(notification) {
+      if (!this.handledNotificationActions.includes(notification.action)) {
+        return
+      }
+      this.addNotification(notification)
+      if (this.autoSync) {
+        this.applyNotification(notification)
+      }
+    },
+    applyNotification(notification) {
+      if (notification.action === 'create') {
+        this.newDocumentNotifications.push(notification)
+        this.debouncedFetchDocuments()
+        return
+      }
+      if (isUndefined(this.documentsIdxById[notification.result._id])) {
+        return
+      }
+      const docIdx = this.documentsIdxById[notification.result._id]
+      if (['update', 'replace'].includes(notification.action)) {
+        this.$set(
+          this.documents[docIdx],
+          '_source',
+          notification.result._source
+        )
+      }
+      if (notification.action === 'delete') {
+        setTimeout(() => this.$delete(this.documents, docIdx), 500)
+
+        this.debouncedFetchDocuments()
+      }
+    },
+    addNotification(notification) {
+      if (notification.action === 'create' && !this.autoSync) {
+        this.hasNewDocuments = true
+        return
+      }
+      if (isUndefined(this.documentsIdxById[notification.result._id])) {
+        return
+      }
+      this.$set(this.notificationsById, notification.result._id, notification)
+    },
+    addNewDocumentNotifications() {
+      let notification = this.newDocumentNotifications.pop()
+      while (notification) {
+        this.addNotification(notification)
+        notification = this.newDocumentNotifications.pop()
+      }
+    },
+    resetNotifications() {
+      this.notificationsById = mapValues(this.documentsIdxById, () => null)
+      this.hasNewDocuments = false
+    },
     // VIEW MAP - GEOPOINTS
     // =========================================================================
     getCoordinates(document) {
       return [
-        this.getProperty(document, this.latFieldPath),
-        this.getProperty(document, this.lngFieldPath)
+        get(document, this.latFieldPath),
+        get(document, this.lngFieldPath)
       ]
-    },
-    getProperty(object, path) {
-      if (!object) {
-        return object
-      }
-
-      const names = path.split('.')
-
-      if (names.length === 1) {
-        return object[names[0]]
-      }
-
-      return this.getProperty(object[names[0]], names.slice(1).join('.'))
     },
     onSelectGeopoint(selectedGeopoint) {
       this.selectedGeopoint = selectedGeopoint
@@ -493,11 +708,11 @@ export default {
           this.collectionName,
           documentsToDelete
         )
+        if (!this.autoSync) {
+          this.fetchDocuments()
+        }
         this.$bvModal.hide('modal-delete')
         this.resetCandidatesForDeletion()
-        this.fetchDocuments()
-        this.deleteModalIsLoading = false
-        this.$bvModal.hide('documentsDeleteModal')
       } catch (e) {
         this.$log.error(e)
         this.$bvToast.toast(
@@ -511,6 +726,7 @@ export default {
           }
         )
       }
+      this.deleteModalIsLoading = false
     },
     resetCandidatesForDeletion() {
       this.candidatesForDeletion.splice(0, this.candidatesForDeletion.length)
@@ -547,9 +763,9 @@ export default {
     // =========================================================================
     async loadAllTheThings() {
       try {
-        this.loading = true
-        this.loadListView()
-        this.saveListView()
+        this.$emit('start-init')
+        this.loadSettingsForCollection()
+        this.saveSettingsForCollection()
         this.loadMappingInfo()
 
         this.currentFilter = filterManager.load(
@@ -564,7 +780,7 @@ export default {
           this.collectionName
         )
         this.displayPagination = true
-        this.loading = false
+        this.$emit('end-init')
         await this.fetchDocuments()
       } catch (err) {
         this.$log.error(err)
@@ -573,7 +789,7 @@ export default {
           variant: 'warning',
           toaster: 'b-toaster-bottom-right'
         })
-        this.loading = false
+        this.$emit('end-init')
       }
     },
     navigateToDocument() {
@@ -588,8 +804,8 @@ export default {
         params: { id: document._id }
       })
     },
-    onRefresh() {
-      this.fetchDocuments()
+    async onRefresh() {
+      await this.fetchDocuments()
     },
     async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
@@ -610,10 +826,10 @@ export default {
       this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
-      this.$emit('start-fetch')
       this.isFetching = true
       this.$forceUpdate()
       this.selectedDocuments = []
+      this.notifications = []
 
       let pagination = {
         from: this.paginationFrom,
@@ -641,17 +857,26 @@ export default {
 
         const sorting = filterManager.toSort(this.currentFilter)
 
-        // TODO: refactor how search is done
-        // Execute search with corresponding searchQuery
-        const res = await this.wrapper.performSearchDocuments(
-          this.collectionName,
+        if (searchQuery.query) {
+          searchQuery = searchQuery.query
+        }
+
+        this.resetNotifications()
+
+        const res = await this.$kuzzle.document.search(
           this.indexName,
-          searchQuery,
-          pagination,
-          sorting
+          this.collectionName,
+          {
+            query: searchQuery,
+            sort: sorting
+          },
+          pagination
         )
-        this.documents = res.documents
+
+        this.documents = res.hits
         this.totalDocuments = res.total
+
+        this.$nextTick(() => this.addNewDocumentNotifications())
       } catch (e) {
         this.$log.error(e)
         if (e.message.includes('failed to create query')) {
@@ -679,7 +904,6 @@ export default {
         }
       }
       this.isFetching = false
-      this.$emit('end-fetch')
     },
 
     // PAGINATION
@@ -721,58 +945,38 @@ export default {
 
     // LIST VIEW TYPES
     // =========================================================================
-    onListViewClicked() {
-      this.listViewType = LIST_VIEW_LIST
-      this.saveListView()
+    switchListView(listViewType) {
+      this.listViewType = listViewType
     },
-    onColumnViewClicked() {
-      this.listViewType = LIST_VIEW_COLUMN
-      this.saveListView()
-    },
-    onBoxesViewClicked() {
-      this.listViewType = LIST_VIEW_BOXES
-      this.saveListView()
-    },
-    onTimeSeriesClicked() {
-      this.listViewType = LIST_VIEW_TIME_SERIES
-      this.saveListView()
-    },
-    onMapViewClicked() {
-      this.listViewType = LIST_VIEW_MAP
-      this.saveListView()
+    setListViewTypeInRoute(listViewType) {
+      if (this.$route.query.listViewType === listViewType) {
+        return
+      }
+      this.$router.push({
+        query: defaults({ listViewType: listViewType }, this.$route.query)
+      })
     },
     // Collection Metadata management
     // =========================================================================
-    loadListView() {
-      if (this.$route.query.listViewType) {
-        this.listViewType = this.$route.query.listViewType
-      } else {
-        const typeFromLS = localStorage.getItem(
-          `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`
-        )
-        if (typeFromLS) {
-          this.listViewType = typeFromLS
-        } else {
-          this.listViewType = LIST_VIEW_LIST
-        }
-      }
+    loadSettingsForCollection() {
+      this.collectionSettings = defaults(
+        {
+          listViewType: this.$route.query.listViewType
+        },
+        loadSettingsForCollection(this.indexName, this.collectionName)
+      )
     },
-    saveListView() {
-      localStorage.setItem(
-        `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`,
-        this.listViewType
+    saveSettingsForCollection() {
+      this.$log.debug('saveSettingsForCollection')
+      return saveSettingsForCollection(
+        this.indexName,
+        this.collectionName,
+        this.collectionSettings
       )
-      const otherQueryParams = _.omit(
-        this.$router.currentRoute.query,
-        'listViewType'
-      )
-      const mergedQuery = _.merge(
-        { listViewType: this.listViewType },
-        otherQueryParams
-      )
-      this.$router.push({ query: mergedQuery }).catch(() => {})
     },
-
+    onSettingsUpdated(newSettings) {
+      this.collectionSettings = newSettings
+    },
     loadMappingInfo() {
       this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
       this.mappingGeoshapes = this.listMappingGeoshapes(this.collectionMapping)
@@ -782,45 +986,6 @@ export default {
       if (this.mappingGeoshapes.length) {
         this.selectedGeoshape = this.mappingGeoshapes[0]
       }
-    },
-    // TODO: Refactor this method to avoid
-    // cloning document list (computed property??)
-    addHumanReadableDateFields() {
-      if (!this.collectionMapping) {
-        return
-      }
-
-      const dateFields = []
-      const formattedDocuments = _.cloneDeep(this.documents)
-
-      const findDateFields = (mappings, previousKey) => {
-        for (const [field, value] of Object.entries(mappings)) {
-          if (typeof value === 'object') {
-            findDateFields(value, field)
-          } else if (field === 'type' && value === 'date') {
-            dateFields.push(previousKey)
-          }
-        }
-      }
-
-      const changeField = document => {
-        for (const [field, value] of Object.entries(document)) {
-          if (dateFields.includes(field)) {
-            const date = dateFromTimestamp(value)
-
-            if (date) {
-              document[field] += ` (${date.toLocaleString('en-GB')})`
-            }
-          } else if (value && typeof value === 'object') {
-            changeField(value)
-          }
-        }
-      }
-
-      findDateFields(this.collectionMapping, null)
-
-      formattedDocuments.forEach(changeField)
-      this.formattedDocuments = formattedDocuments
     },
     changeDisplayPagination(value) {
       this.displayPagination = value

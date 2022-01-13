@@ -52,17 +52,13 @@ export const flattenObjectMapping = (mapping, path = '', level = 1) => {
 
   Object.keys(mapping).forEach(attribute => {
     if (mapping[attribute].properties) {
-      if (level > 1) {
-        flattenObj[path + attribute] = 'force-json'
-      } else {
-        flattenObj = {
-          ...flattenObj,
-          ...flattenObjectMapping(
-            mapping[attribute].properties,
-            path + attribute,
-            level + 1
-          )
-        }
+      flattenObj = {
+        ...flattenObj,
+        ...flattenObjectMapping(
+          mapping[attribute].properties,
+          path + attribute,
+          level + 1
+        )
       }
     } else {
       flattenObj[path + attribute] = mapping[attribute].type

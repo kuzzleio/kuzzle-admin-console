@@ -1,8 +1,11 @@
-describe('Document List', function() {
-  const kuzzleUrl = 'http://localhost:7512'
-  const indexName = 'testindex'
-  const collectionName = 'testcollection'
+const kuzzleUrl = 'http://localhost:7512'
+const indexName = 'testindex'
+const collectionName = 'testcollection'
+const LOCALSTORAGE_PREFIX = 'kuz-ac-settings'
+const documentId = 'my-doc'
+const mapCollectionName = 'mapcollectiontest'
 
+describe('Document List', function() {
   beforeEach(() => {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
@@ -37,14 +40,18 @@ describe('Document List', function() {
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
-  it('Should be able to set and persist the listViewType param accessing a collection', function() {
+  it('Should default to List view if no settings are specified', function() {
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.url().should('contain', 'listViewType=list')
+    cy.get('.DocumentsListView').should('exist')
   })
 
   it('Should show list items when viewType is set to list', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy="DocumentList-item"]').should('exist')
+    cy.get('.DocumentListView-item').should('exist')
   })
 
   it('Should show the the _id even if collection has id field', function() {
@@ -59,7 +66,7 @@ describe('Document List', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy="DocumentList-item"]').within(() => {
+    cy.get('.DocumentListView-item').within(() => {
       cy.get('a').contains('documentId')
       cy.get('a')
         .not()
@@ -82,6 +89,10 @@ describe('Document List', function() {
   })
 
   it('Should remember the list view settings when navigating from one collection to another', function() {
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
@@ -104,7 +115,7 @@ describe('Document List', function() {
 
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('contain', 'listViewType=list')
-    cy.get('[data-cy="DocumentList-item"]').should('exist')
+    cy.get('.DocumentsListView').should('exist')
   })
 
   it('Should handle collections with more than 10k documents', () => {
@@ -207,7 +218,7 @@ describe('Document List', function() {
   })
 
   it('Should handle the map view properly for markers', function() {
-    cy.request('PUT', `${kuzzleUrl}/${indexName}/mapcollectiontest`, {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${mapCollectionName}`, {
       properties: {
         location: {
           type: 'geo_point'
@@ -216,7 +227,7 @@ describe('Document List', function() {
     })
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc1/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc1/_create?refresh=wait_for`,
       {
         location: {
           lat: 1,
@@ -226,7 +237,7 @@ describe('Document List', function() {
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc2/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc2/_create?refresh=wait_for`,
       {
         location: {
           lat: 2,
@@ -236,7 +247,7 @@ describe('Document List', function() {
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc3/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc3/_create?refresh=wait_for`,
       {
         location: {
           lat: 3,
@@ -244,16 +255,16 @@ describe('Document List', function() {
         }
       }
     )
-    cy.waitOverlay()
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${mapCollectionName}`,
+      JSON.stringify({
+        listViewType: 'map'
+      })
+    )
 
-    cy.visit(`/#/data/${indexName}/mapcollectiontest`)
+    cy.visit(`/#/data/${indexName}/${mapCollectionName}`)
     cy.wait(500)
-    cy.contains('mapcollectiontest')
-
-    cy.get('[data-cy="CollectionDropdownView"').click()
-    cy.wait(500)
-    cy.get('[data-cy="CollectionDropdown-map"]').click()
-    cy.url().should('contain', 'listViewType=map')
+    cy.contains(mapCollectionName)
 
     cy.get('[data-cy="mapView-map"').should('exist')
 
@@ -281,7 +292,7 @@ describe('Document List', function() {
   })
 
   it('Should handle the map view properly for shapes', function() {
-    cy.request('PUT', `${kuzzleUrl}/${indexName}/mapcollectiontest`, {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${mapCollectionName}`, {
       properties: {
         location: {
           type: 'geo_point'
@@ -294,7 +305,7 @@ describe('Document List', function() {
     })
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc1/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc1/_create?refresh=wait_for`,
       {
         location: {
           lat: 43.64326358211144,
@@ -304,7 +315,7 @@ describe('Document List', function() {
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc2/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc2/_create?refresh=wait_for`,
       {
         location: {
           lat: 43.664501944601604,
@@ -314,7 +325,7 @@ describe('Document List', function() {
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc3/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc3/_create?refresh=wait_for`,
       {
         location: {
           lat: 43.67120723541598,
@@ -325,7 +336,7 @@ describe('Document List', function() {
 
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc4/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc4/_create?refresh=wait_for`,
       {
         shapeLocation: {
           type: 'circle',
@@ -337,7 +348,7 @@ describe('Document List', function() {
 
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc5/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc5/_create?refresh=wait_for`,
       {
         shapeLocation: {
           type: 'polygon',
@@ -356,7 +367,7 @@ describe('Document List', function() {
 
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/mapcollectiontest/mapViewTestDoc6/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc6/_create?refresh=wait_for`,
       {
         shapeLocation: {
           type: 'multipolygon',
@@ -390,12 +401,16 @@ describe('Document List', function() {
         }
       }
     )
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${mapCollectionName}`,
+      JSON.stringify({
+        listViewType: 'map'
+      })
+    )
 
-    cy.waitOverlay()
-
-    cy.visit(`/#/data/${indexName}/mapcollectiontest`)
+    cy.visit(`/#/data/${indexName}/${mapCollectionName}`)
     cy.wait(500)
-    cy.contains('mapcollectiontest')
+    cy.contains(mapCollectionName)
 
     cy.get('[data-cy="CollectionDropdownView"').click()
     cy.wait(500)
@@ -430,9 +445,6 @@ describe('Document List', function() {
 })
 
 describe('Document update/replace', () => {
-  const kuzzleUrl = 'http://localhost:7512'
-  const indexName = 'testindex'
-  const collectionName = 'testcollection'
   const documentId = 'myId'
 
   beforeEach(() => {
@@ -457,7 +469,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
 
-    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('.DocumentListView-item').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('exist')
@@ -496,7 +508,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
 
-    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('.DocumentListView-item').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('exist')
@@ -519,7 +531,7 @@ describe('Document update/replace', () => {
       )
     cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
     cy.wait(1000)
-    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('.DocumentListView-item').should('be.visible')
 
     cy.request(
       'GET',
@@ -541,5 +553,296 @@ describe('Document update/replace', () => {
     cy.get(`[data-cy="ColumnView-table-edit-btn--${documentId}"]`).click()
     cy.wait(500)
     cy.contains('Edit document')
+  })
+})
+
+describe.only('Realtime', () => {
+  beforeEach(() => {
+    // reset database and setup
+    cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
+    cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
+      properties: {
+        date: {
+          type: 'date'
+        },
+        value: {
+          type: 'integer'
+        },
+        value2: {
+          type: 'integer'
+        },
+        id: {
+          type: 'keyword'
+        }
+      }
+    })
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_create?refresh=wait_for`,
+      {
+        firstName: 'Luca',
+        lastName: 'Marchesini',
+        job: 'Blockchain as a Service',
+        id: 'Luca Marchesini'
+      }
+    )
+
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+  })
+
+  it('Remembers auto-update settings through page reload', function() {
+    cy.skipOnBackendVersion(1)
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy="Autosync-icon"]').should('have.class', 'text-secondary')
+
+    cy.get('[data-cy="Refresh-dropdown"] .dropdown-toggle').click()
+    cy.wait(1000)
+    cy.get('[data-cy="Autosync-toggle"]').click()
+    cy.get('[data-cy="Autosync-icon"]').should(
+      'not.have.class',
+      'text-secondary'
+    )
+
+    cy.reload()
+    cy.get('[data-cy="Autosync-icon"]').should(
+      'not.have.class',
+      'text-secondary'
+    )
+  })
+  it('[auto-update OFF] Shows badges for pending notifications (List view)', function() {
+    cy.skipOnBackendVersion(1)
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.request(
+      'PATCH',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_update?refresh=wait_for`,
+      {
+        firstName: 'Bombi',
+        lastName: 'Bombi'
+      }
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      'updated'
+    )
+    cy.request(
+      'PUT',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_replace?refresh=wait_for`,
+      {
+        job: 'CSS selector'
+      }
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      'replaced'
+    )
+    cy.request(
+      'DELETE',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}?refresh=wait_for`
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      'deleted'
+    )
+  })
+  it('[auto-update OFF] Refreshes list when Refresh button is hit', function() {
+    cy.skipOnBackendVersion(1)
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.request(
+      'PATCH',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_update?refresh=wait_for`,
+      {
+        firstName: 'Bombi',
+        lastName: 'Bombi'
+      }
+    )
+    cy.get(
+      `[data-cy=DocumentListItem-${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
+    ).click()
+
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"Luca"'
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"Marchesini"'
+    )
+    cy.get('[data-cy=Autosync-icon]').click()
+    cy.get(
+      `[data-cy=DocumentListItem-${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
+    ).click()
+
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"Bombi"'
+    )
+  })
+  it('[auto-update ON] Automatically applies realtime-notifications (List view)', function() {
+    cy.skipOnBackendVersion(1)
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      JSON.stringify({ autoSync: true })
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.request(
+      'PATCH',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_update?refresh=wait_for`,
+      {
+        firstName: 'Bombi',
+        lastName: 'Bombi'
+      }
+    )
+    cy.get(
+      `[data-cy=DocumentListItem-${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
+    ).click()
+
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"Bombi"'
+    )
+    cy.request(
+      'PUT',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_replace?refresh=wait_for`,
+      {
+        job: 'CSS selector'
+      }
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+      'contain',
+      '"CSS selector"'
+    )
+    cy.request(
+      'DELETE',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}?refresh=wait_for`
+    )
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should('not.exist')
+  })
+  it('Shows the new documents badge when new documents are added to the collection and refreshes when clicked (List View)', function() {
+    cy.skipOnBackendVersion(1)
+    const newDocId = 'new-doc'
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      null
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should('exist')
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${newDocId}/_create?refresh=wait_for`,
+      {
+        firstName: 'Steve',
+        lastName: 'Ballmer'
+      }
+    )
+    cy.get('[data-cy="NewDocumentsBadge"]').click()
+    cy.get(`[data-cy=DocumentListItem-${newDocId}]`).should('exist')
+  })
+  it('Shows the new documents badge when new documents are added to the collection and refreshes when clicked (Column View)', function() {
+    cy.skipOnBackendVersion(1)
+    const newDocId = 'new-doc'
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      JSON.stringify({ listViewType: 'column' })
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get(`[data-cy="ColumnItem-${documentId}-acColumnTableId"]`).should(
+      'exist'
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${newDocId}/_create?refresh=wait_for`,
+      {
+        firstName: 'Steve',
+        lastName: 'Ballmer'
+      }
+    )
+    cy.get('[data-cy="NewDocumentsBadge"]').click()
+    cy.get(`[data-cy="ColumnItem-${newDocId}-acColumnTableId"]`).should('exist')
+  })
+  it('[auto-update OFF] Shows badges for pending notifications (Column view)', function() {
+    cy.skipOnBackendVersion(1)
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      JSON.stringify({ listViewType: 'column' })
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.request(
+      'PATCH',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_update?refresh=wait_for`,
+      {
+        firstName: 'Bombi',
+        lastName: 'Bombi'
+      }
+    )
+    cy.get(
+      `[data-cy=ColumnItem-${documentId}-acColumnTableActions] .badge`
+    ).should('contain', 'updated')
+
+    cy.request(
+      'PUT',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_replace?refresh=wait_for`,
+      {
+        job: 'CSS selector'
+      }
+    )
+    cy.get(
+      `[data-cy=ColumnItem-${documentId}-acColumnTableActions] .badge`
+    ).should('contain', 'replaced')
+
+    cy.request(
+      'DELETE',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}?refresh=wait_for`
+    )
+    cy.get(
+      `[data-cy=ColumnItem-${documentId}-acColumnTableActions] .badge`
+    ).should('contain', 'deleted')
+  })
+  it('[auto-update ON] Automatically applies realtime-notifications (Column view)', function() {
+    cy.skipOnBackendVersion(1)
+    localStorage.setItem(
+      `${LOCALSTORAGE_PREFIX}:${indexName}/${collectionName}`,
+      JSON.stringify({
+        autoSync: true,
+        listViewType: 'column',
+        columnView: { fields: ['firstName', 'job'] }
+      })
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.request(
+      'PATCH',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_update?refresh=wait_for`,
+      {
+        firstName: 'Bombi',
+        lastName: 'Bombi'
+      }
+    )
+
+    cy.get(`#col-${documentId}-firstName`).should('contain', 'Bombi')
+    cy.request(
+      'PUT',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_replace?refresh=wait_for`,
+      {
+        job: 'CSS selector'
+      }
+    )
+    cy.get(`#col-${documentId}-job`).should('contain', 'CSS selector')
+    cy.request(
+      'DELETE',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}?refresh=wait_for`
+    )
+    cy.get(`col--${documentId}-acColumnTableId`).should('not.exist')
   })
 })

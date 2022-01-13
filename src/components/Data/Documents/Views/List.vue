@@ -1,7 +1,7 @@
 <template>
   <div class="DocumentsListView">
-    <b-row no-gutters class="mb-2">
-      <b-col cols="8">
+    <div class="mb-3 d-flex flex-row align-items-center">
+      <div class="flex-grow-1">
         <b-button
           variant="outline-dark"
           class="mr-2"
@@ -22,46 +22,44 @@
           <i class="fa fa-minus-circle left" />
           Delete
         </b-button>
-
-        <b-button
-          variant="outline-secondary"
-          class="mr-2"
-          @click.prevent="$emit('refresh')"
-        >
-          <i class="fas fa-sync-alt left" />
-          Refresh
-        </b-button>
-      </b-col>
-      <b-col cols="4" class="text-right">
-        <PerPageSelector
-          :current-page-size="currentPageSize"
-          :total-documents="totalDocuments"
-          @change-page-size="$emit('change-page-size', $event)"
-        />
-      </b-col>
-    </b-row>
+      </div>
+      <b-spinner
+        v-if="isFetching"
+        class="mr-3"
+        variant="info"
+        small
+      ></b-spinner>
+      <PerPageSelector
+        :current-page-size="currentPageSize"
+        :total-documents="totalDocuments"
+        @change-page-size="$emit('change-page-size', $event)"
+      />
+      <new-documents-badge
+        :has-new-documents="hasNewDocuments"
+        @refresh="$emit('refresh')"
+      />
+    </div>
     <b-list-group class="w-100">
-      <b-list-group-item
+      <document-list-item
         v-for="document in documents"
-        class="p-2"
-        data-cy="DocumentList-item"
+        :auto-sync="autoSync"
+        :collection="collection"
+        :date-fields="dateFields"
+        :document="document"
+        :index="index"
+        :is-checked="isChecked(document._id)"
         :key="document._id"
-      >
-        <document-list-item
-          :document="document"
-          :collection="collection"
-          :index="index"
-          :is-checked="isChecked(document._id)"
-          @checkbox-click="$emit('checkbox-click', $event)"
-          @delete="$emit('delete', $event)"
-        />
-      </b-list-group-item>
+        :notification="notifications[document._id]"
+        @checkbox-click="$emit('checkbox-click', $event)"
+        @delete="$emit('delete', $event)"
+      />
     </b-list-group>
   </div>
 </template>
 
 <script>
 import DocumentListItem from '../DocumentListItem'
+import NewDocumentsBadge from '../Common/NewDocumentsBadge.vue'
 import { mapGetters } from 'vuex'
 import PerPageSelector from '@/components/Common/PerPageSelector'
 
@@ -69,7 +67,8 @@ export default {
   name: 'DocumentsListView',
   components: {
     DocumentListItem,
-    PerPageSelector
+    PerPageSelector,
+    NewDocumentsBadge
   },
   props: {
     allChecked: {
@@ -88,9 +87,16 @@ export default {
       type: Array,
       required: true
     },
+    dateFields: {
+      type: Array,
+      required: true
+    },
     index: {
       type: String,
       required: true
+    },
+    isFetching: {
+      type: Boolean
     },
     selectedDocuments: {
       type: Array,
@@ -98,7 +104,13 @@ export default {
     },
     totalDocuments: {
       type: Number
-    }
+    },
+    notifications: {
+      type: Object,
+      default: () => ({})
+    },
+    hasNewDocuments: Boolean,
+    autoSync: Boolean
   },
   data() {
     return {
@@ -125,4 +137,4 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss"></style>

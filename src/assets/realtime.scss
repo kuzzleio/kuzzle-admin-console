@@ -23,3 +23,23 @@ $notif-user-clr: #917fc3;
 .message-user {
   color: $notif-user-clr;
 }
+
+.realtime-highlight {
+  transition: background-color 1.2s ease;
+
+  &.updated,
+  &.replaced,
+  &.changed {
+    transition: background-color 0.1s ease;
+    background-color: rgb(255, 238, 161);
+  }
+
+  &.deleted {
+    transition: background-color 0.1s ease;
+    background-color: rgb(251, 119, 148);
+  }
+  &.created {
+    transition: background-color 0.1s ease;
+    background-color: rgb(153, 230, 123);
+  }
+}

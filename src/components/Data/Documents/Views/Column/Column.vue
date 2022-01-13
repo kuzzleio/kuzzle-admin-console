@@ -1,7 +1,7 @@
 <template>
   <div class="Column" data-cy="DocumentList-Column">
-    <b-row no-gutters>
-      <b-col cols="8">
+    <div class="d-flex flex-row align-items-center">
+      <div class="flex-grow-1">
         <b-dropdown
           class="mr-2"
           data-cy="SelectField"
@@ -68,14 +68,6 @@
         <b-button
           variant="outline-secondary"
           class="mr-2"
-          @click.prevent="$emit('refresh')"
-        >
-          <i class="fas fa-sync-alt left" />
-          Refresh
-        </b-button>
-        <b-button
-          variant="outline-secondary"
-          class="mr-2"
           data-cy="Column-btnExportCSV"
           title="Export currently visible data to CSV"
           @click.prevent="promptExportCSV"
@@ -83,25 +75,21 @@
           <i class="fas fa-file-export left" />
           CSV
         </b-button>
-      </b-col>
+      </div>
 
-      <b-col cols="4" class="text-right">
-        <PerPageSelector
-          :current-page-size="currentPageSize"
-          :total-documents="totalDocuments"
-          @change-page-size="$emit('change-page-size', $event)"
-        />
-      </b-col>
-    </b-row>
+      <PerPageSelector
+        :current-page-size="currentPageSize"
+        :total-documents="totalDocuments"
+        @change-page-size="$emit('change-page-size', $event)"
+      />
+      <new-documents-badge
+        :has-new-documents="hasNewDocuments"
+        @refresh="$emit('refresh')"
+      />
+    </div>
     <b-row class="mt-2 mb-2" no-gutters>
       <b-col cols="3">
-        <b-table-simple
-          responsive
-          striped
-          hover
-          bordered
-          data-cy="ColumnView-table-id"
-        >
+        <b-table-simple responsive bordered data-cy="ColumnView-table-id">
           <b-thead>
             <b-tr>
               <b-th
@@ -114,13 +102,20 @@
             </b-tr>
           </b-thead>
           <b-tbody>
-            <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`">
+            <highlightable-row
+              v-for="item of formattedItems"
+              :key="`item-row-${item._id}`"
+              :auto-sync="autoSync"
+              :notification="notifications[item._id]"
+            >
+              <!-- <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`"> -->
               <b-td
                 class="cell"
                 colspan="1"
                 v-for="field of tableDefaultHeaders"
+                :data-cy="`ColumnItem-${item._id}-${field.key}`"
                 :key="`item-col-${field.key}`"
-                :id="`col-${item._id}-${field}`"
+                :id="`col-${item._id}-${field.key}`"
               >
                 <template v-if="field.key === 'acColumnTableActions'">
                   <div class="inlineDisplay">
@@ -155,24 +150,28 @@
                         <i class="fa fa-trash" />
                       </b-button>
                     </span>
+                    <b-badge
+                      v-if="
+                        getItemBadge(item) &&
+                          !autoSync &&
+                          getItemBadge(item).label !== 'created'
+                      "
+                      :variant="getItemBadge(item).variant"
+                      class="mx-2"
+                      >{{ getItemBadge(item).label }}
+                    </b-badge>
                   </div>
                 </template>
                 <template v-else-if="field.key === 'acColumnTableId'">
                   {{ item._id }}
                 </template>
               </b-td>
-            </b-tr>
+            </highlightable-row>
           </b-tbody>
         </b-table-simple>
       </b-col>
       <b-col cols="9">
-        <b-table-simple
-          responsive
-          striped
-          hover
-          bordered
-          data-cy="ColumnView-table-data"
-        >
+        <b-table-simple responsive bordered data-cy="ColumnView-table-data">
           <b-thead>
             <draggable
               v-model="selectedFields"
@@ -192,36 +191,22 @@
             </draggable>
           </b-thead>
           <b-tbody>
-            <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`">
-              <b-td
-                class="cell"
+            <highlightable-row
+              v-for="item of formattedItems"
+              :key="`item-row-${item._id}`"
+              :auto-sync="autoSync"
+              :notification="notifications[item._id]"
+            >
+              <table-cell
                 v-for="field of selectedFields"
                 :key="`item-col-${field}`"
-                :id="`col-${item._id}-${field}`"
-              >
-                <template v-if="item[field] === null">
-                  <code>null</code>
-                </template>
-                <template v-else-if="item[field] === undefined">
-                  <code>undefined</code>
-                </template>
-                <template v-else-if="Array.isArray(item[field])">
-                  <b-badge
-                    title="Unable to display array values in table cells, use the List view instead"
-                    >array</b-badge
-                  >
-                </template>
-                <template v-else-if="isObject(item[field])">
-                  <b-badge
-                    title="Unable to display object values in table cells, use the List view instead"
-                    >object</b-badge
-                  >
-                </template>
-                <template v-else>
-                  {{ item[field] }}
-                </template>
-              </b-td>
-            </b-tr>
+                :auto-sync="autoSync"
+                :data="item[field]"
+                :field-name="field"
+                :field-type="flatMapping[field]"
+                :rowId="item._id"
+              />
+            </highlightable-row>
           </b-tbody>
         </b-table-simple>
       </b-col>
@@ -240,15 +225,22 @@
 </template>
 
 <script>
-import JsonFormatter from '../../../../directives/json-formatter.directive'
-import _ from 'lodash'
+import JsonFormatter from '../../../../../directives/json-formatter.directive'
+import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
+
+import get from 'lodash/get'
+import defaultsDeep from 'lodash/defaultsDeep'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
-import HeaderTableView from '../HeaderTableView'
+import HeaderTableView from './HeaderTableView'
+import TableCell from './TableCell.vue'
+import HighlightableRow from './HighlightableRow.vue'
 import PerPageSelector from '@/components/Common/PerPageSelector'
+import NewDocumentsBadge from '../../Common/NewDocumentsBadge.vue'
+
+import { convertToCSV, flattenObjectMapping } from '@/services/collectionHelper'
 import ExportCsvModal from '@/components/Data/Documents/Common/ExportCSVModal'
-import { convertToCSV } from '@/services/collectionHelper'
 
 export default {
   name: 'Column',
@@ -259,23 +251,29 @@ export default {
     draggable,
     HeaderTableView,
     PerPageSelector,
+    TableCell,
+    HighlightableRow,
+    NewDocumentsBadge,
     ExportCsvModal
   },
   props: {
+    autoSync: Boolean,
     allChecked: Boolean,
     currentPageSize: Number,
+    collectionSettings: Object,
     totalDocuments: Number,
     documents: Array,
     index: String,
     collection: String,
     mapping: Object,
-    selectedDocuments: Array
+    selectedDocuments: Array,
+    notifications: Object,
+    hasNewDocuments: Boolean
   },
   data() {
     return {
       itemsPerPage: [10, 25, 50, 100, 500],
       selectedFields: [],
-      fieldList: [],
       tableDefaultHeaders: [
         {
           key: 'acColumnTableActions',
@@ -314,7 +312,7 @@ export default {
         const doc = {}
         doc._id = d._id
         for (const key of this.selectedFields) {
-          const value = _.get(d, key)
+          const value = get(d._source, key)
           doc[key] = value
         }
         return doc
@@ -334,10 +332,29 @@ export default {
     },
     checkboxId() {
       return `checkbox-${this.document._id}`
+    },
+    flatMapping() {
+      if (!this.mapping) {
+        return {}
+      }
+
+      return flattenObjectMapping(this.mapping)
+    },
+    fieldList() {
+      return Object.keys(this.flatMapping)
     }
   },
   methods: {
-    isObject: _.isObject,
+    getItemBadge(item) {
+      const n = this.notifications[item._id]
+      if (!n) {
+        return null
+      }
+      return {
+        label: getBadgeText(n.action),
+        variant: getBadgeVariant(n.action)
+      }
+    },
     promptExportCSV() {
       this.$bvModal.show(this.csvExportPromptModalID)
     },
@@ -355,7 +372,6 @@ export default {
     },
     resetColumns() {
       this.selectedFields = []
-      this.saveSelectedFieldsToLocalStorage()
     },
     truncateName,
     isChecked(id) {
@@ -371,15 +387,11 @@ export default {
       this.$emit('checkbox-click', id)
     },
     initSelectedFields() {
-      const columnViewConfig = JSON.parse(
-        localStorage.getItem('columnViewConfig') || '{}'
+      this.selectedFields = get(
+        this.collectionSettings,
+        'columnView.fields',
+        []
       )
-      if (
-        columnViewConfig[this.index] &&
-        columnViewConfig[this.index][this.collection]
-      ) {
-        this.selectedFields = columnViewConfig[this.index][this.collection]
-      }
     },
     toggleColumn(field, value) {
       this.$log.debug(`Toggling field ${field}`)
@@ -389,7 +401,6 @@ export default {
       if (!value) {
         this.$delete(this.selectedFields, this.selectedFields.indexOf(field))
       }
-      this.saveSelectedFieldsToLocalStorage()
     },
     toggleJsonFormatter(id) {
       if (this.$refs[id][0].style.visibility === 'hidden') {
@@ -398,20 +409,8 @@ export default {
         this.$refs[id][0].style.visibility = 'hidden'
       }
     },
-    saveSelectedFieldsToLocalStorage() {
-      if (this.index && this.collection) {
-        const config = JSON.parse(
-          localStorage.getItem('columnViewConfig') || '{}'
-        )
-        if (!config[this.index]) {
-          config[this.index] = {}
-        }
-        config[this.index][this.collection] = this.selectedFields
-        localStorage.setItem('columnViewConfig', JSON.stringify(config))
-      }
-    },
     getNestedField(doc, customField) {
-      return _.get(doc, customField, null)
+      return get(doc, customField, null)
     },
     deleteDocument(id) {
       if (this.canDelete) {
@@ -423,30 +422,8 @@ export default {
         this.$emit('edit', id)
       }
     },
-    buildFieldList(mapping, path = []) {
-      let attributes = []
-
-      for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (
-          Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
-        ) {
-          attributes = attributes.concat(
-            this.buildFieldList(
-              attributeValue.properties,
-              path.concat(attributeName)
-            )
-          )
-        } else if (
-          Object.prototype.hasOwnProperty.call(attributeValue, 'type')
-        ) {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
-        }
-      }
-      return attributes
-    },
     initFields() {
       this.initSelectedFields()
-      this.fieldList = this.buildFieldList(this.mapping)
     }
   },
   created() {
@@ -467,6 +444,12 @@ export default {
       handler() {
         this.initFields()
       }
+    },
+    selectedFields(value) {
+      this.$emit(
+        'settings-updated',
+        defaultsDeep({ columnView: { fields: value } }, this.collectionSettings)
+      )
     }
   }
 }
@@ -509,7 +492,8 @@ export default {
 }
 
 .cell {
-  height: 70px;
+  height: 65px;
+  vertical-align: middle !important;
   white-space: nowrap;
 }
 </style>

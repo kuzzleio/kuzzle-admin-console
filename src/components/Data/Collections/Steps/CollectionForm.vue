@@ -1,6 +1,6 @@
 <template>
   <div class="CollectionForm wrapper">
-    <div v-if="Object.keys(flattenMapping).length > 0">
+    <div v-if="Object.keys(flatMapping).length > 0">
       <h4>Set up the document-creation form.</h4>
       <p>
         Here, you'll be able to associate mapping fields to form fields to setup
@@ -40,14 +40,14 @@
         </div>
 
         <collection-form-line
-          v-for="(type, attributeName, index) in flattenMapping"
+          v-for="(type, attributeName, index) in flatMapping"
           :key="index"
           :name="attributeName"
           :type="type"
           :index="index"
-          :choose-values="flattenSchemaWithType[attributeName].chooseValues"
-          :values="flattenSchemaWithType[attributeName].values"
-          :value="flattenSchemaWithType[attributeName]"
+          :choose-values="flatSchemaWithType[attributeName].chooseValues"
+          :values="flatSchemaWithType[attributeName].values"
+          :value="flatSchemaWithType[attributeName]"
           @input="changeSchema"
         />
       </div>
@@ -111,6 +111,7 @@
 
 <script>
 import CollectionFormLine from './CollectionFormLine'
+import mapValues from 'lodash/mapValues'
 
 export default {
   name: 'CollectionForm',
@@ -128,23 +129,26 @@ export default {
     }
   },
   computed: {
-    flattenMapping() {
-      return this.$store.direct.getters.collection.flattenMapping
+    flatMapping() {
+      return mapValues(
+        this.$store.direct.getters.collection.flattenMapping,
+        (value, key) => {
+          if (key.split('.').length > 1) {
+            return 'force-json'
+          }
+          return value
+        }
+      )
     },
-    flattenSchemaWithType() {
+    flatSchemaWithType() {
       return this.$store.direct.getters.collection.flattenSchemaWithType
     }
   },
   watch: {
-    step() {
-      // if (Object.keys(this.schema).length) {
-      //   this.$store.commit(SET_SCHEMA, this.schema)
-      // }
+    flatSchemaWithType() {
+      this.schema = { ...this.flatSchemaWithType }
     },
-    flattenSchemaWithType() {
-      this.schema = { ...this.flattenSchemaWithType }
-    },
-    flattenMapping(newMapping) {
+    flatMapping(newMapping) {
       if (Object.keys(newMapping).length === 0) {
         this.$store.direct.commit.collection.setAllowForm(false)
       }

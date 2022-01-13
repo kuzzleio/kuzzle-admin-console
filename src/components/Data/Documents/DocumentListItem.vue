@@ -1,81 +1,98 @@
 <template>
-  <b-container fluid data-cy="DocumentListItem">
-    <b-row align-h="between" no-gutters>
-      <b-col cols="10" class="py-1">
-        <i
-          @click="toggleCollapse"
-          :class="
-            `fa fa-caret-${
-              expanded ? 'down' : 'right'
-            } mr-2  d-inline-block align-middle`
-          "
-          aria-hidden="true"
-        />
-        <b-form-checkbox
-          class="d-inline-block align-middle"
-          type="checkbox"
-          value="true"
-          unchecked-value="false"
-          v-model="checked"
-          :id="checkboxId"
-          @change="notifyCheckboxClick"
-        />
-        <a
-          class="d-inline-block align-middle code pointer"
-          @click="toggleCollapse"
-          >{{ document._id }}</a
+  <b-list-group-item
+    class="DocumentListView-item p-2 realtime-highlight"
+    :data-cy="`DocumentListItem-${document._id}`"
+  >
+    <b-container fluid>
+      <b-row align-h="between" no-gutters>
+        <b-col cols="10" class="py-1">
+          <i
+            aria-hidden="true"
+            data-cy="DocumentListItem-toggleCollapse"
+            :class="
+              `fa fa-caret-${
+                expanded ? 'down' : 'right'
+              } mr-2  d-inline-block align-middle`
+            "
+            @click="toggleCollapse"
+          />
+          <b-form-checkbox
+            class="d-inline-block align-middle"
+            type="checkbox"
+            value="true"
+            unchecked-value="false"
+            v-model="checked"
+            :id="checkboxId"
+            @change="notifyCheckboxClick"
+          />
+          <a
+            class="d-inline-block align-middle code pointer"
+            @click="toggleCollapse"
+            >{{ document._id }}</a
+          >
+          <b-badge
+            v-if="!autoSync && notifBadgeText && notifBadgeText !== 'created'"
+            :variant="notifBadgeVariant"
+            class="mx-2"
+            >{{ notifBadgeText }}
+          </b-badge>
+        </b-col>
+        <b-col cols="2">
+          <div class="float-right">
+            <b-button
+              class="DocumentListItem-update"
+              href=""
+              variant="link"
+              :data-cy="`DocumentListItem-update--${document._id}`"
+              :disabled="!canEdit"
+              :title="
+                canEdit
+                  ? 'Edit Document'
+                  : 'You are not allowed to edit this Document'
+              "
+              @click.prevent="editDocument"
+            >
+              <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
+            </b-button>
+            <b-button
+              class="DocumentListItem-delete"
+              href=""
+              variant="link"
+              :data-cy="`DocumentListItem-delete--${document._id}`"
+              :disabled="!canDelete"
+              :title="
+                canDelete
+                  ? 'Delete Document'
+                  : 'You are not allowed to delete this Document'
+              "
+              @click.prevent="deleteDocument"
+            >
+              <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
+            </b-button>
+          </div>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-collapse
+          :id="`collapse-${document._id}`"
+          v-model="expanded"
+          class="ml-3 DocumentListItem-content w-100"
         >
-      </b-col>
-      <b-col cols="2">
-        <div class="float-right">
-          <b-button
-            class="DocumentListItem-update"
-            href=""
-            variant="link"
-            :data-cy="`DocumentListItem-update--${document._id}`"
-            :disabled="!canEdit"
-            :title="
-              canEdit
-                ? 'Edit Document'
-                : 'You are not allowed to edit this Document'
-            "
-            @click.prevent="editDocument"
-          >
-            <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
-          </b-button>
-          <b-button
-            class="DocumentListItem-delete"
-            href=""
-            variant="link"
-            :data-cy="`DocumentListItem-delete--${document._id}`"
-            :disabled="!canDelete"
-            :title="
-              canDelete
-                ? 'Delete Document'
-                : 'You are not allowed to delete this Document'
-            "
-            @click.prevent="deleteDocument"
-          >
-            <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
-          </b-button>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-collapse
-        :id="`collapse-${document._id}`"
-        v-model="expanded"
-        class="ml-3 DocumentListItem-content w-100"
-      >
-        <pre v-json-formatter="{ content: formattedDocument, open: true }" />
-      </b-collapse>
-    </b-row>
-  </b-container>
+          <pre v-json-formatter="{ content: formattedDocument, open: true }" />
+        </b-collapse>
+      </b-row>
+    </b-container>
+  </b-list-group-item>
 </template>
 
 <script>
-import _ from 'lodash'
+import get from 'lodash/get'
+import set from 'lodash/set'
+import cloneDeep from 'lodash/cloneDeep'
+
 import JsonFormatter from '../../../directives/json-formatter.directive'
+import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
+import { dateFromTimestamp } from '@/utils'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -84,10 +101,16 @@ export default {
     JsonFormatter
   },
   props: {
+    autoSync: Boolean,
     index: String,
     collection: String,
     document: Object,
-    isChecked: Boolean
+    isChecked: Boolean,
+    notification: Object,
+    dateFields: {
+      type: Array,
+      required: true
+    }
   },
   data() {
     return {
@@ -100,10 +123,31 @@ export default {
       handler(value) {
         this.checked = value
       }
+    },
+    notification: {
+      handler(n) {
+        if (!this.autoSync || !n) {
+          return
+        }
+        this.$el.classList.add(getBadgeText(n.action))
+        setTimeout(() => this.$el.classList.remove(getBadgeText(n.action)), 200)
+      }
     }
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
+    notifBadgeVariant() {
+      if (!get(this.notification, 'action')) {
+        return ''
+      }
+      return getBadgeVariant(get(this.notification, 'action'))
+    },
+    notifBadgeText() {
+      if (!get(this.notification, 'action')) {
+        return ''
+      }
+      return getBadgeText(get(this.notification, 'action'))
+    },
     canEdit() {
       if (!this.index || !this.collection) {
         return false
@@ -119,14 +163,20 @@ export default {
     checkboxId() {
       return `checkbox-${this.document._id}`
     },
-    /**
-     * Deletes the "id" who should not be displayed in the document body.
-     * Also put the "_kuzzle_info" field in last position
-     */
     formattedDocument() {
-      const document = _.omit(this.document, ['_id', '_kuzzle_info'])
-      document._kuzzle_info = this.document._kuzzle_info
-      return document
+      // NOTE: This solution (cloning the object) is shitty.
+      // The good way to do this is to define a renderer function to apply
+      // directly in the JSON formatter. Unfortunately this is not supporter.
+      // I strongly encourage to reimplement the JSON formatter in a
+      // way that each field can be rendered via a custom renderer function.
+      const formatted = cloneDeep(this.document._source)
+      this.dateFields.forEach(fieldPath => {
+        const dateObj = dateFromTimestamp(get(formatted, fieldPath))
+        if (dateObj) {
+          set(formatted, fieldPath, dateObj.toLocaleString('en-GB'))
+        }
+      })
+      return formatted
     }
   },
   methods: {
@@ -149,12 +199,33 @@ export default {
         })
       }
     }
-  }
+  },
+  beforeUpdate() {},
+  updated() {}
 }
 </script>
 
-<style type="scss" rel="stylesheet/scss" scoped>
+<style lang="scss" scoped>
 pre {
   font-size: 16px;
 }
+
+// .DocumentListView-item {
+//   transition: background-color 1.2s ease;
+
+//   &.updated,
+//   &.replaced {
+//     transition: background-color 0.1s ease;
+//     background-color: rgb(255, 238, 161);
+//   }
+
+//   &.deleted {
+//     transition: background-color 0.1s ease;
+//     background-color: rgb(251, 119, 148);
+//   }
+//   &.created {
+//     transition: background-color 0.1s ease;
+//     background-color: rgb(153, 230, 123);
+//   }
+// }
 </style>
