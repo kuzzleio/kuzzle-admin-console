@@ -257,7 +257,6 @@ export default {
       this.$bvModal.show(this.createIndexModalId)
     },
     openDeleteModal(index) {
-      this.$log.error('IndexesPage::openDeleteModal', index.name)
       this.indexToDelete = index
       this.$bvModal.show(this.deleteIndexModalId)
     },
