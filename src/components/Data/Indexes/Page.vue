@@ -133,7 +133,7 @@
               :data-cy="`IndexesPage-browse--${row.item.name}`"
               :to="{
                 name: 'Collections',
-                params: { index: row.item.name }
+                params: { indexName: row.item.name }
               }"
               ><i class="fa fa-eye"></i
             ></b-button>
@@ -144,7 +144,7 @@
               :data-cy="`IndexesPage-createCollection--${row.item.name}`"
               :to="{
                 name: 'CreateCollection',
-                params: { index: row.item.name }
+                params: { indexName: row.item.name }
               }"
               ><i class="fa fa-plus"></i
             ></b-button>
@@ -257,6 +257,7 @@ export default {
       this.$bvModal.show(this.createIndexModalId)
     },
     openDeleteModal(index) {
+      this.$log.error('IndexesPage::openDeleteModal', index.name)
       this.indexToDelete = index
       this.$bvModal.show(this.deleteIndexModalId)
     },
