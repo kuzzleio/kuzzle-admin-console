@@ -21,7 +21,6 @@ describe('Treeview', () => {
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-
     cy.get(`[data-cy=Treeview-item-index--${indexName}]`).click()
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).should('be.visible')
   })
@@ -48,6 +47,7 @@ describe('Treeview', () => {
   })
 
   it('Should be able to resize the LeftBar', () => {
+    cy.visit(`/#/data/`)
     cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should(
       'not.have.attr',
       'style'
@@ -56,10 +56,7 @@ describe('Treeview', () => {
     cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should(
       'have.css',
       'width',
-      '287px'
+      '294px'
     )
-    cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should('have.attr', 'style')
-    movePiece(`[data-cy=sidebarResizer]`, 240, 200)
-    cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should('have.attr', 'style')
   })
 })
