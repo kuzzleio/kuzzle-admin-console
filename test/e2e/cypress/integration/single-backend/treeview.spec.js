@@ -56,7 +56,7 @@ describe('Treeview', () => {
     cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should(
       'have.css',
       'width',
-      '294px'
+      '287px'
     )
   })
 })
