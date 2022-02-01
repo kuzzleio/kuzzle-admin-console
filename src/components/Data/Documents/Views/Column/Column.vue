@@ -220,6 +220,7 @@
       :port="currentEnvironment.port"
       :ssl="currentEnvironment.ssl"
       :token="user.token"
+      @ok="exportToCSV"
     />
   </div>
 </template>
