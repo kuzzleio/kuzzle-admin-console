@@ -11,6 +11,7 @@ import 'leaflet/dist/leaflet.css'
 
 import App from './App.vue'
 import store from './vuex/store'
+import KeplerCompanion from 'kepler-companion'
 
 Reflect.defineProperty(window, 'kuzzle', {
   get() {
@@ -21,7 +22,16 @@ Reflect.defineProperty(window, 'kuzzle', {
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
+const analytics = new KeplerCompanion()
 const router = createRoutes(Vue.prototype.$log)
+
+router.afterEach(async (to, _) => {
+  await analytics.track({
+    action: to.name as string,
+    product: 'admin-console',
+    version: require('../package.json').version
+  })
+})
 
 Vue.component('fieldJsonFormInput', JsonFormInput)
 Vue.component('fieldDateTimeFormInput', DateTimeFormInput)
