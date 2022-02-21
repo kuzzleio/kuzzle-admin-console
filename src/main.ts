@@ -26,11 +26,14 @@ const analytics = new KeplerCompanion()
 const router = createRoutes(Vue.prototype.$log)
 
 router.afterEach(async (to, _) => {
-  ;(analytics.track({
+  await analytics.track({
     action: to.name as string,
     product: 'admin-console',
-    version: require('../package.json').version
-  }) as Promise<unknown>).catch(() => {})
+    version: require('../package.json').version,
+    tags: {
+      environment: window.location.hostname
+    }
+  })
 })
 
 Vue.component('fieldJsonFormInput', JsonFormInput)
