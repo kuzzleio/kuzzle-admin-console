@@ -15,19 +15,7 @@
     />
     <modal-delete id="modal-env-delete" :environment-id="environmentId" />
     <modal-import id="modal-env-import" />
-
-    <b-toast
-      id="discarded-toast"
-      title="Request Discarded"
-      no-auto-hide
-      no-close-button
-      variant="danger"
-      toaster="b-toaster-bottom-right"
-      append="true"
-    >
-      Your request could not be sent to Kuzzle. Check the browser console for
-      more details.
-    </b-toast>
+    <telemetry-banner />
   </div>
 </template>
 
@@ -39,13 +27,15 @@ import {} from './assets/global.scss'
 import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
+import TelemetryBanner from './components/TelemetryBanner'
 
 export default {
   name: 'KuzzleAdminConsole',
   components: {
     ModalCreateOrUpdate,
     ModalDelete,
-    ModalImport
+    ModalImport,
+    TelemetryBanner
   },
   data() {
     return {

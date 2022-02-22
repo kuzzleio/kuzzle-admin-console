@@ -17,6 +17,8 @@ import ApiAction from '../components/ApiAction.vue'
 
 import SecuritySubRoutes from './children/security'
 import DataSubRoutes from './children/data'
+import KeplerCompanion from 'kepler-companion'
+import telemetryCookies from '../services/telemetryCookies'
 
 Vue.use(VueRouter)
 
@@ -150,6 +152,25 @@ export default function createRoutes(log) {
         component: PageNotFound
       }
     ]
+  })
+
+  const analytics = new KeplerCompanion()
+  router.afterEach(async (to, _) => {
+    const shouldAddTelemetry =
+      telemetryCookies.get() === null || telemetryCookies.get() === 'false'
+        ? false
+        : true
+
+    if (shouldAddTelemetry) {
+      await analytics.add({
+        action: to.name as string,
+        product: 'admin-console',
+        version: require('../../package.json').version,
+        tags: {
+          environment: window.location.hostname
+        }
+      })
+    }
   })
 
   return router
