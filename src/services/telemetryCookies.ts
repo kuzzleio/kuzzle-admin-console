@@ -8,9 +8,12 @@ export default {
     )}; expires=${date.toUTCString()}`
   },
   get: () => {
-    return document.cookie
-      ? JSON.parse(document.cookie.split('telemetry=')[1])
-      : null
+    const telemetrySetting = document.cookie.split('telemetry=')[1]
+    if (telemetrySetting) {
+      return JSON.parse(telemetrySetting)
+    }
+
+    return null
   },
   delete: () => {
     document.cookie = 'telemetry=; expires=Thu, 01 Jan 1970 00:00:00 UTC'
