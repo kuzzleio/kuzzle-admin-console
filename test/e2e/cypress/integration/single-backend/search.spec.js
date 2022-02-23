@@ -58,6 +58,7 @@ describe('Search', function() {
       `search-filter-current:${indexName}/${collectionName}`,
       '{}'
     )
+    cy.setCookie('telemetry', 'false')
   })
 
   it('perists the Quick Search query in the URL', function() {

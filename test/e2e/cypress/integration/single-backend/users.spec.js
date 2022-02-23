@@ -12,6 +12,7 @@ describe('Users', function() {
   beforeEach(function() {
     cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.setCookie('telemetry', 'false')
   })
 
   it('Should be able to search users via the quick search', () => {

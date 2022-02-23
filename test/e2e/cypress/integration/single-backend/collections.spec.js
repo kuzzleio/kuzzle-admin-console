@@ -9,6 +9,7 @@ describe('Collection management', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
 
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.setCookie('telemetry', 'false')
   })
 
   it('Should render a visual feedback and prevent submitting when input is not valid', () => {
