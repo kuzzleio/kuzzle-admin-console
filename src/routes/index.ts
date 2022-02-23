@@ -162,14 +162,16 @@ export default function createRoutes(log) {
         : true
 
     if (shouldAddTelemetry) {
-      await analytics.add({
-        action: to.name as string,
-        product: 'admin-console',
-        version: require('../../package.json').version,
-        tags: {
-          environment: window.location.hostname
-        }
-      })
+      analytics
+        .add({
+          action: to.name as string,
+          product: 'admin-console',
+          version: require('../../package.json').version,
+          tags: {
+            environment: window.location.hostname
+          }
+        })
+        .catch(() => {})
     }
   })
 
