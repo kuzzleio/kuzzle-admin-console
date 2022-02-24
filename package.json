@@ -44,7 +44,7 @@
     "eslint-plugin-vue": "^6.0.0",
     "execa": "^4.0.2",
     "json-formatter-js": "^1.3.0",
-    "kepler-companion": "^1.1.4",
+    "kepler-companion": "^1.1.5",
     "kuzzle-sdk-v6": "npm:kuzzle-sdk@^6.2.7",
     "kuzzle-sdk-v7": "npm:kuzzle-sdk@^7.7.6",
     "leaflet": "^1.7.1",

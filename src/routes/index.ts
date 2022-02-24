@@ -155,7 +155,7 @@ export default function createRoutes(log) {
   })
 
   const analytics = new KeplerCompanion()
-  router.afterEach(async (to, _) => {
+  router.afterEach((to, _) => {
     const shouldAddTelemetry =
       telemetryCookies.get() === null || telemetryCookies.get() === 'false'
         ? false
