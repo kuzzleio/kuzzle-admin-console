@@ -6,6 +6,7 @@ const validEnvName = 'valid'
 describe('Login', function() {
   beforeEach(() => {
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'), null)
+    cy.setCookie('telemetry', 'false')
   })
 
   it('Should be able to login as anonymous', () => {

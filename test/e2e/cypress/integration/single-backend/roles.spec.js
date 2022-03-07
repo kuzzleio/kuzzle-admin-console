@@ -13,6 +13,7 @@ describe('Roles', () => {
       }
     })
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.setCookie('telemetry', 'false')
   })
 
   afterEach(() => {
