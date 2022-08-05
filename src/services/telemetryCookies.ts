@@ -10,7 +10,11 @@ export default {
   get: () => {
     const telemetrySetting = document.cookie.split('telemetry=')[1]
     if (telemetrySetting !== undefined) {
-      return JSON.parse(telemetrySetting)
+      try {
+        return JSON.parse(telemetrySetting)
+      } catch (error) {
+        return null
+      }
     }
 
     return null
