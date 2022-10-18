@@ -129,6 +129,10 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
+.dropdown-menu {
+  max-height: 98vh;
+  overflow-x: auto;
+}
 .EnvironmentSwitch--blendColor,
 .EnvironmentSwitch--blendColor.show {
   .dropdown-toggle {
