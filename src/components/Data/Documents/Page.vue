@@ -845,7 +845,6 @@ export default {
         this.collectionName
       )
 
-      console.log({ filterManage: this.currentFilter }) // eslint-disable-line no-console
 
       try {
         this.searchQuery = filterManager.toSearchQuery(
@@ -858,10 +857,7 @@ export default {
           this.mappingAttributes,
           this.wrapper
         )
-        console.log({ search : s}) // eslint-disable-line no-console
-        console.log({ searchQuery: this.searchQuery }) // eslint-disable-line no-console
-        console.log({ mappingAttributes: this.mappingAttributes }) // eslint-disable-line no-console
-        console.log({ wrapper: this.wrapper }) // eslint-disable-line no-console
+        
         if (!this.searchQuery) {
           this.searchQuery = {}
         }
