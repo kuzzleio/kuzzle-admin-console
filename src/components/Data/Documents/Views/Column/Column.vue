@@ -39,9 +39,7 @@
             >
           </b-dropdown-text>
           <b-dropdown-item v-if="dropdownFields.length === 0">
-            <span class="inlineDisplay-item">
-              No searchable field
-            </span>
+            <span class="inlineDisplay-item"> No searchable field </span>
           </b-dropdown-item>
         </b-dropdown>
         <b-button
@@ -75,6 +73,7 @@
           <i class="fas fa-file-export left" />
           CSV
         </b-button>
+        <b-button @click="exportToCSV">Export to csv</b-button>
       </div>
 
       <PerPageSelector
@@ -153,8 +152,8 @@
                     <b-badge
                       v-if="
                         getItemBadge(item) &&
-                          !autoSync &&
-                          getItemBadge(item).label !== 'created'
+                        !autoSync &&
+                        getItemBadge(item).label !== 'created'
                       "
                       :variant="getItemBadge(item).variant"
                       class="mx-2"
@@ -211,7 +210,7 @@
         </b-table-simple>
       </b-col>
     </b-row>
-    <export-csv-modal
+    <!-- <export-csv-modal
       :modal-id="csvExportPromptModalID"
       :index="index"
       :collection="collection"
@@ -221,7 +220,7 @@
       :ssl="currentEnvironment.ssl"
       :token="user.token"
       @ok="exportToCSV"
-    />
+    /> -->
   </div>
 </template>
 
@@ -240,13 +239,13 @@ import HighlightableRow from './HighlightableRow.vue'
 import PerPageSelector from '@/components/Common/PerPageSelector'
 import NewDocumentsBadge from '../../Common/NewDocumentsBadge.vue'
 
-import { convertToCSV, flattenObjectMapping } from '@/services/collectionHelper'
-import ExportCsvModal from '@/components/Data/Documents/Common/ExportCSVModal'
+import { flattenObjectMapping } from '@/services/collectionHelper'
+// import ExportCsvModal from '@/components/Data/Documents/Common/ExportCSVModal'
 
 export default {
   name: 'Column',
   directives: {
-    JsonFormatter
+    JsonFormatter,
   },
   components: {
     draggable,
@@ -255,9 +254,10 @@ export default {
     TableCell,
     HighlightableRow,
     NewDocumentsBadge,
-    ExportCsvModal
+    // ExportCsvModal,
   },
   props: {
+    searchQuery: Object,
     autoSync: Boolean,
     allChecked: Boolean,
     currentPageSize: Number,
@@ -269,7 +269,7 @@ export default {
     mapping: Object,
     selectedDocuments: Array,
     notifications: Object,
-    hasNewDocuments: Boolean
+    hasNewDocuments: Boolean,
   },
   data() {
     return {
@@ -278,21 +278,21 @@ export default {
       tableDefaultHeaders: [
         {
           key: 'acColumnTableActions',
-          label: ''
+          label: '',
         },
         {
           key: 'acColumnTableId',
-          label: 'Id'
-        }
+          label: 'Id',
+        },
       ],
       displayDragIcon: false,
       tabResizing: null,
-      startOffset: null
+      startOffset: null,
     }
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument', 'user']),
-    ...mapGetters('kuzzle', ['currentEnvironment']),
+    ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
     hasSelectedDocuments() {
       return this.selectedDocuments.length > 0
     },
@@ -303,13 +303,13 @@ export default {
       )
     },
     dropdownFields() {
-      return this.fieldList.map(field => ({
+      return this.fieldList.map((field) => ({
         text: field,
-        displayed: this.selectedFields.includes(field)
+        displayed: this.selectedFields.includes(field),
       }))
     },
     formattedItems() {
-      return this.documents.map(d => {
+      return this.documents.map((d) => {
         const doc = {}
         doc._id = d._id
         for (const key of this.selectedFields) {
@@ -343,7 +343,7 @@ export default {
     },
     fieldList() {
       return Object.keys(this.flatMapping)
-    }
+    },
   },
   methods: {
     getItemBadge(item) {
@@ -353,23 +353,43 @@ export default {
       }
       return {
         label: getBadgeText(n.action),
-        variant: getBadgeVariant(n.action)
+        variant: getBadgeVariant(n.action),
       }
     },
     promptExportCSV() {
       this.$bvModal.show(this.csvExportPromptModalID)
     },
     exportToCSV() {
-      const blob = new Blob([
-        convertToCSV(this.formattedItems, this.selectedFields)
-      ])
-      const a = document.createElement('a')
-      a.download = `${this.index}-${this.collection}.csv`
-      a.href = URL.createObjectURL(blob)
-      a.addEventListener('click', () => {
-        setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000)
+
+      // Request to the export api endopoint
+      let request = new XMLHttpRequest()
+      request.open(
+        'POST',
+        `http://localhost:7512/${this.index}/${this.collection}/_export?format=csv`
+      )
+      request.setRequestHeader('Content-Type', 'application/json')
+      request.responseType = 'text'
+
+      // Request body with the selected fields and the current querry
+      let body = JSON.stringify({
+        query: this.searchQuery,
+        fields: this.selectedFields,
       })
-      a.click()
+
+      // Send the request
+      request.send(body)
+
+      let filename = `${this.index}-${this.collection}-export.csv`
+      // When the request is done, download the file
+      request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status === 200) {
+          const blob = new Blob([request.response])
+          let link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = filename
+          link.click()
+        }
+      }
     },
     resetColumns() {
       this.selectedFields = []
@@ -425,7 +445,7 @@ export default {
     },
     initFields() {
       this.initSelectedFields()
-    }
+    },
   },
   created() {
     this.csvExportPromptModalID = 'export-csv-prompt'
@@ -438,21 +458,21 @@ export default {
       immediate: false,
       handler() {
         this.initFields()
-      }
+      },
     },
     mapping: {
       immediate: false,
       handler() {
         this.initFields()
-      }
+      },
     },
     selectedFields(value) {
       this.$emit(
         'settings-updated',
         defaultsDeep({ columnView: { fields: value } }, this.collectionSettings)
       )
-    }
-  }
+    },
+  },
 }
 </script>
 

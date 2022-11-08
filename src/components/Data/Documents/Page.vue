@@ -2,7 +2,7 @@
   <div class="DocumentList">
     <b-container
       :class="{
-        'DocumentList--containerFluid': listViewType !== LIST_VIEW_LIST
+        'DocumentList--containerFluid': listViewType !== LIST_VIEW_LIST,
       }"
       class="DocumentList--container"
     >
@@ -20,11 +20,11 @@
             data-cy="CreateDocument-btn"
             :disabled="
               indexOrCollectionNotFound ||
-                !canCreateDocument(indexName, collectionName)
+              !canCreateDocument(indexName, collectionName)
             "
             :to="{
               name: 'CreateDocument',
-              params: { indexName, collectionName }
+              params: { indexName, collectionName },
             }"
             >Create New Document</b-button
           >
@@ -54,9 +54,9 @@
               @click="autoSync = !autoSync"
             >
               <i
-                :class="
-                  `far ${autoSync ? 'fa-check-square' : 'fa-square'} left`
-                "
+                :class="`far ${
+                  autoSync ? 'fa-check-square' : 'fa-square'
+                } left`"
               />
               Auto-Sync
             </b-dropdown-item>
@@ -142,6 +142,7 @@
 
               <Column
                 v-if="listViewType === LIST_VIEW_COLUMN"
+                :searchQuery="searchQuery"
                 :all-checked="allChecked"
                 :auto-sync="autoSync"
                 :current-page-size="paginationSize"
@@ -280,7 +281,7 @@ import {
   LIST_VIEW_TIME_SERIES,
   LIST_VIEW_MAP,
   loadSettingsForCollection,
-  saveSettingsForCollection
+  saveSettingsForCollection,
 } from '@/services/localSettings'
 
 export default {
@@ -298,14 +299,15 @@ export default {
     Headline,
     Filters,
     ListNotAllowed,
-    NoGeopointFieldState
+    NoGeopointFieldState,
   },
   props: {
     indexName: String,
-    collectionName: String
+    collectionName: String,
   },
   data() {
     return {
+      searchQuery: null,
       subscribeRoomId: null,
       isFetching: false,
       loading: false,
@@ -337,8 +339,8 @@ export default {
         LIST_VIEW_LIST,
         LIST_VIEW_COLUMN,
         LIST_VIEW_TIME_SERIES,
-        LIST_VIEW_MAP
-      ]
+        LIST_VIEW_MAP,
+      ],
     }
   },
   computed: {
@@ -347,7 +349,7 @@ export default {
       'canSearchDocument',
       'canCreateDocument',
       'canDeleteDocument',
-      'canEditDocument'
+      'canEditDocument',
     ]),
     documentsIdxById() {
       if (!this.documents) {
@@ -360,27 +362,27 @@ export default {
       return r
     },
     listViewType: {
-      get: function() {
+      get: function () {
         if (!this.collectionSettings.listViewType) {
           return LIST_VIEW_LIST
         }
         return this.collectionSettings.listViewType
       },
-      set: function(value) {
+      set: function (value) {
         this.$log.debug(`Setting listViewType to ${value}`)
         this.$set(this.collectionSettings, 'listViewType', value)
-      }
+      },
     },
     autoSync: {
-      get: function() {
+      get: function () {
         if (!this.collectionSettings.autoSync) {
           return false
         }
         return this.collectionSettings.autoSync
       },
-      set: function(value) {
+      set: function (value) {
         this.$set(this.collectionSettings, 'autoSync', value)
-      }
+      },
     },
     hasGeopoints() {
       return (
@@ -396,32 +398,32 @@ export default {
     },
     shapesDocuments() {
       return this.documents
-        .filter(document => {
+        .filter((document) => {
           const shape = get(document._source, this.selectedGeoshape)
           return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
         })
-        .map(d => ({
+        .map((d) => ({
           _id: d._id,
           content: get(d._source, this.selectedGeoshape),
-          source: d._source
+          source: d._source,
         }))
     },
     geoDocuments() {
       return this.documents
-        .filter(document => {
+        .filter((document) => {
           const [lat, lng] = this.getCoordinates(document._source)
           const latFloat = parseFloat(lat)
           const lngFloat = parseFloat(lng)
 
           return !isNaN(latFloat) && !isNaN(lngFloat)
         })
-        .map(d => ({
+        .map((d) => ({
           coordinates: [
             get(d._source, this.latFieldPath),
-            get(d._source, this.lngFieldPath)
+            get(d._source, this.lngFieldPath),
           ],
           _id: d._id,
-          source: d._source
+          source: d._source,
         }))
     },
     index() {
@@ -453,7 +455,7 @@ export default {
       return Object.keys(
         pickBy(
           flattenObjectMapping(this.collectionMapping),
-          value => value === 'date'
+          (value) => value === 'date'
         )
       )
     },
@@ -487,7 +489,7 @@ export default {
     },
     isRealtimeCollection() {
       return this.collection ? this.collection.isRealtime() : false
-    }
+    },
   },
   async beforeDestroy() {
     await this.unsubscribeFromCurrentDocs()
@@ -500,7 +502,7 @@ export default {
     this.LIST_VIEW_LIST = LIST_VIEW_LIST
 
     this.debouncedFetchDocuments = debounce(this.fetchDocuments, 1000, {
-      maxWait: 2500
+      maxWait: 2500,
     })
   },
   async mounted() {
@@ -524,29 +526,29 @@ export default {
         const from = (value - 1) * this.paginationSize
         this.onFiltersUpdated(
           Object.assign(this.currentFilter, {
-            from
+            from,
           })
         )
         this.fetchDocuments()
-      }
+      },
     },
     collectionName: {
       handler() {
         this.loadAllTheThings()
-      }
+      },
     },
     indexName: {
       handler() {
         this.loadAllTheThings()
-      }
+      },
     },
     collectionSettings: {
       deep: true,
       handler() {
         this.saveSettingsForCollection()
         this.setListViewTypeInRoute(this.listViewType)
-      }
-    }
+      },
+    },
   },
   methods: {
     formatMeta(_kuzzle_info) {
@@ -558,7 +560,7 @@ export default {
             ? 'Anonymous (-1)'
             : _kuzzle_info.updater,
         createdAt: _kuzzle_info.createdAt,
-        updatedAt: _kuzzle_info.updatedAt
+        updatedAt: _kuzzle_info.updatedAt,
       }
     },
     extractAttributesFromMapping,
@@ -646,7 +648,7 @@ export default {
     getCoordinates(document) {
       return [
         get(document, this.latFieldPath),
-        get(document, this.lngFieldPath)
+        get(document, this.lngFieldPath),
       ]
     },
     onSelectGeopoint(selectedGeopoint) {
@@ -722,7 +724,7 @@ export default {
               'Ooops! Something went wrong while deleting the document(s).',
             variant: 'danger',
             toaster: 'b-toaster-bottom-right',
-            appendToast: true
+            appendToast: true,
           }
         )
       }
@@ -744,7 +746,7 @@ export default {
     onEditClicked(id) {
       this.$router.push({
         name: 'UpdateDocument',
-        params: { id }
+        params: { id },
       })
     },
 
@@ -756,7 +758,7 @@ export default {
     afterDeleteCollection() {
       this.$router.push({
         name: 'Collections',
-        params: { indexName: this.indexName }
+        params: { indexName: this.indexName },
       })
     },
     // LIST (FETCH & SEARCH)
@@ -787,7 +789,7 @@ export default {
         this.$bvToast.toast('The complete error has been printed to console.', {
           title: 'Ooops! Something went wrong.',
           variant: 'warning',
-          toaster: 'b-toaster-bottom-right'
+          toaster: 'b-toaster-bottom-right',
         })
         this.$emit('end-init')
       }
@@ -801,7 +803,7 @@ export default {
 
       this.$router.push({
         name: 'UpdateDocument',
-        params: { id: document._id }
+        params: { id: document._id },
       })
     },
     async onRefresh() {
@@ -833,7 +835,7 @@ export default {
 
       let pagination = {
         from: this.paginationFrom,
-        size: this.paginationSize
+        size: this.paginationSize,
       }
 
       filterManager.save(
@@ -843,22 +845,31 @@ export default {
         this.collectionName
       )
 
+      console.log({ filterManage: this.currentFilter }) // eslint-disable-line no-console
+
       try {
-        let searchQuery = null
-        searchQuery = filterManager.toSearchQuery(
+        this.searchQuery = filterManager.toSearchQuery(
           this.currentFilter,
           this.mappingAttributes,
           this.wrapper
         )
-
-        if (!searchQuery) {
-          searchQuery = {}
+        let s = filterManager.toSearchQuery(
+          this.currentFilter,
+          this.mappingAttributes,
+          this.wrapper
+        )
+        console.log({ search : s}) // eslint-disable-line no-console
+        console.log({ searchQuery: this.searchQuery }) // eslint-disable-line no-console
+        console.log({ mappingAttributes: this.mappingAttributes }) // eslint-disable-line no-console
+        console.log({ wrapper: this.wrapper }) // eslint-disable-line no-console
+        if (!this.searchQuery) {
+          this.searchQuery = {}
         }
 
         const sorting = filterManager.toSort(this.currentFilter)
 
-        if (searchQuery.query) {
-          searchQuery = searchQuery.query
+        if (this.searchQuery.query) {
+          this.searchQuery = this.searchQuery.query
         }
 
         this.resetNotifications()
@@ -867,8 +878,8 @@ export default {
           this.indexName,
           this.collectionName,
           {
-            query: searchQuery,
-            sort: sorting
+            query: this.searchQuery,
+            sort: sorting,
           },
           pagination
         )
@@ -889,7 +900,7 @@ export default {
               toaster: 'b-toaster-bottom-right',
               appendTouast: true,
               dismissible: true,
-              noAutoHide: true
+              noAutoHide: true,
             }
           )
         } else {
@@ -899,7 +910,7 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true,
             dismissible: true,
-            noAutoHide: true
+            noAutoHide: true,
           })
         }
       }
@@ -913,7 +924,7 @@ export default {
         Object.assign(this.currentFilter, {
           size,
           currentPage: 0,
-          from: 0
+          from: 0,
         })
       )
       this.fetchDocuments()
@@ -930,7 +941,7 @@ export default {
         return
       }
       this.selectedDocuments = []
-      this.selectedDocuments = this.documents.map(document => document._id)
+      this.selectedDocuments = this.documents.map((document) => document._id)
     },
     toggleSelectDocuments(id) {
       let index = this.selectedDocuments.indexOf(id)
@@ -953,7 +964,7 @@ export default {
         return
       }
       this.$router.push({
-        query: defaults({ listViewType: listViewType }, this.$route.query)
+        query: defaults({ listViewType: listViewType }, this.$route.query),
       })
     },
     // Collection Metadata management
@@ -961,7 +972,7 @@ export default {
     loadSettingsForCollection() {
       this.collectionSettings = defaults(
         {
-          listViewType: this.$route.query.listViewType
+          listViewType: this.$route.query.listViewType,
         },
         loadSettingsForCollection(this.indexName, this.collectionName)
       )
@@ -989,8 +1000,8 @@ export default {
     },
     changeDisplayPagination(value) {
       this.displayPagination = value
-    }
-  }
+    },
+  },
 }
 </script>
 
