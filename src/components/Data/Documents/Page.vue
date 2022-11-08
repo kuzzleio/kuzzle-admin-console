@@ -845,19 +845,13 @@ export default {
         this.collectionName
       )
 
-
       try {
         this.searchQuery = filterManager.toSearchQuery(
           this.currentFilter,
           this.mappingAttributes,
           this.wrapper
         )
-        let s = filterManager.toSearchQuery(
-          this.currentFilter,
-          this.mappingAttributes,
-          this.wrapper
-        )
-        
+
         if (!this.searchQuery) {
           this.searchQuery = {}
         }
