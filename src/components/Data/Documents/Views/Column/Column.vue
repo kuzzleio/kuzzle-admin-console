@@ -63,17 +63,9 @@
           Delete
         </b-button>
 
-        <b-button
-          variant="outline-secondary"
-          class="mr-2"
-          data-cy="Column-btnExportCSV"
-          title="Export currently visible data to CSV"
-          @click.prevent="promptExportCSV"
+        <b-button @click="exportToCSV"
+          ><i class="fas fa-file-export left" /> CSV</b-button
         >
-          <i class="fas fa-file-export left" />
-          CSV
-        </b-button>
-        <b-button @click="exportToCSV">Export to csv</b-button>
       </div>
 
       <PerPageSelector
@@ -210,17 +202,6 @@
         </b-table-simple>
       </b-col>
     </b-row>
-    <!-- <export-csv-modal
-      :modal-id="csvExportPromptModalID"
-      :index="index"
-      :collection="collection"
-      :selected-fields="selectedFields"
-      :host="currentEnvironment.host"
-      :port="currentEnvironment.port"
-      :ssl="currentEnvironment.ssl"
-      :token="user.token"
-      @ok="exportToCSV"
-    /> -->
   </div>
 </template>
 
@@ -240,7 +221,6 @@ import PerPageSelector from '@/components/Common/PerPageSelector'
 import NewDocumentsBadge from '../../Common/NewDocumentsBadge.vue'
 
 import { flattenObjectMapping } from '@/services/collectionHelper'
-// import ExportCsvModal from '@/components/Data/Documents/Common/ExportCSVModal'
 
 export default {
   name: 'Column',
@@ -254,7 +234,6 @@ export default {
     TableCell,
     HighlightableRow,
     NewDocumentsBadge,
-    // ExportCsvModal,
   },
   props: {
     searchQuery: Object,
@@ -356,22 +335,21 @@ export default {
         variant: getBadgeVariant(n.action),
       }
     },
-    promptExportCSV() {
-      this.$bvModal.show(this.csvExportPromptModalID)
-    },
-    exportToCSV() {
 
+    exportToCSV() {
+      const base = this.currentEnvironment.ssl ? 'https://' : 'http://'
+      const urlBase = `${base}${this.currentEnvironment.host}:${this.currentEnvironment.port}`
       // Request to the export api endopoint
       let request = new XMLHttpRequest()
       request.open(
         'POST',
-        `http://localhost:7512/${this.index}/${this.collection}/_export?format=csv`
+        `${urlBase}/${this.index}/${this.collection}/_export?format=csv`
       )
       request.setRequestHeader('Content-Type', 'application/json')
       request.responseType = 'text'
 
-      // Request body with the selected fields and the current querry
-      let body = JSON.stringify({
+      // Request body with the selected fields and the current query
+      const body = JSON.stringify({
         query: this.searchQuery,
         fields: this.selectedFields,
       })
@@ -379,12 +357,12 @@ export default {
       // Send the request
       request.send(body)
 
-      let filename = `${this.index}-${this.collection}-export.csv`
+      const filename = `${this.index}-${this.collection}-export.csv`
       // When the request is done, download the file
       request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
           const blob = new Blob([request.response])
-          let link = document.createElement('a')
+          const link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
           link.download = filename
           link.click()

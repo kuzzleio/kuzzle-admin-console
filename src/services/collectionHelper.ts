@@ -219,7 +219,6 @@ const checkPathSchemaRecursive = (document, schema, path) => {
   return true
 }
 
-
 /**
  * An iteration-order-safe version of lodash.values
  *
