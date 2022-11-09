@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { config, elementJson, elements } from '../config/schemaMapping'
 
-const isObject = (item) => {
+const isObject = item => {
   return item && typeof item === 'object' && !Array.isArray(item)
 }
 
@@ -14,7 +14,7 @@ const isObject = (item) => {
 
 export const mergeSchemaMapping = (target, source, propertiesCounter = 0) => {
   if (isObject(target) && isObject(source)) {
-    Object.keys(source).forEach((key) => {
+    Object.keys(source).forEach(key => {
       if (!target[key]) {
         if (source[key].type) {
           target[key] = config[source[key].type]
@@ -33,7 +33,7 @@ export const mergeSchemaMapping = (target, source, propertiesCounter = 0) => {
               {},
               source[key].properties,
               propertiesCounter
-            ),
+            )
           }
           propertiesCounter = 0
         }
@@ -50,7 +50,7 @@ export const flattenObjectMapping = (mapping, path = '', level = 1) => {
     path += '.'
   }
 
-  Object.keys(mapping).forEach((attribute) => {
+  Object.keys(mapping).forEach(attribute => {
     if (mapping[attribute].properties) {
       flattenObj = {
         ...flattenObj,
@@ -58,7 +58,7 @@ export const flattenObjectMapping = (mapping, path = '', level = 1) => {
           mapping[attribute].properties,
           path + attribute,
           level + 1
-        ),
+        )
       }
     } else {
       flattenObj[path + attribute] = mapping[attribute].type
@@ -82,7 +82,7 @@ export const flattenObjectSchema = (schema, path = '', level = 1) => {
     path += '.'
   }
 
-  Object.keys(schema).forEach((attribute) => {
+  Object.keys(schema).forEach(attribute => {
     if (schema[attribute].properties) {
       if (level > 1) {
         flattenObj[path + attribute] = { ...elementJson }
@@ -93,7 +93,7 @@ export const flattenObjectSchema = (schema, path = '', level = 1) => {
             schema[attribute].properties,
             path + attribute,
             level + 1
-          ),
+          )
         }
       }
     } else {
@@ -104,19 +104,19 @@ export const flattenObjectSchema = (schema, path = '', level = 1) => {
   return flattenObj
 }
 
-export const getSchemaForType = (type) => {
+export const getSchemaForType = type => {
   if (!config[type] || !config[type].elements) {
     return [{ ...elementJson }]
   }
 
   return config[type].elements
-    .map((element) => {
+    .map(element => {
       return { ...element }
     })
     .concat([{ ...elementJson }])
 }
 
-export const getDefaultSchemaForType = (type) => {
+export const getDefaultSchemaForType = type => {
   if (!config[type] || !config[type].default) {
     return { ...elementJson }
   }
@@ -124,7 +124,7 @@ export const getDefaultSchemaForType = (type) => {
   return { ...config[type].default }
 }
 
-export const getElementDefinition = (id) => {
+export const getElementDefinition = id => {
   return elements[id]
 }
 
@@ -149,9 +149,9 @@ export const castByElementId = (id, value) => {
  * @param schema {Object}
  * @returns {Object} the formatted schema ready to be stored
  */
-export const formatSchema = (schema) => {
+export const formatSchema = schema => {
   let formattedSchema = {}
-  Object.keys(schema).map((attributeName) => {
+  Object.keys(schema).map(attributeName => {
     let fullPath = attributeName
 
     if (attributeName.indexOf('.') !== -1) {
@@ -179,10 +179,10 @@ export const mergeMetaAttributes = ({ mapping, schema, dynamic }) => {
  * @param mapping {Object}
  * @returns the cleaned mapping
  */
-export const cleanMapping = (mapping) => {
+export const cleanMapping = mapping => {
   let _mapping = {}
 
-  Object.keys(mapping).forEach((attr) => {
+  Object.keys(mapping).forEach(attr => {
     if (mapping[attr].properties) {
       _mapping[attr] = cleanMapping(mapping[attr].properties)
     } else {
@@ -199,7 +199,7 @@ export const cleanMapping = (mapping) => {
  * @param schema {Object}
  */
 export const hasSameSchema = (document, schema) => {
-  return Object.keys(document).every((attribute) => {
+  return Object.keys(document).every(attribute => {
     return checkPathSchemaRecursive(document, schema, attribute)
   })
 }
@@ -211,7 +211,7 @@ const checkPathSchemaRecursive = (document, schema, path) => {
   }
 
   if (_.get(schema, pathSchema).properties) {
-    return Object.keys(_.get(document, path)).every((attribute) => {
+    return Object.keys(_.get(document, path)).every(attribute => {
       return checkPathSchemaRecursive(document, schema, path + '.' + attribute)
     })
   }
@@ -228,7 +228,7 @@ const checkPathSchemaRecursive = (document, schema, path) => {
  * @see https://lodash.com/docs/4.17.15#values
  */
 export function pickValues(object: Object, fields: string[]): any[] {
-  return fields.map((f) => object[f])
+  return fields.map(f => object[f])
 }
 
 export function formatValueForCSV(value) {

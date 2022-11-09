@@ -144,8 +144,8 @@
                     <b-badge
                       v-if="
                         getItemBadge(item) &&
-                        !autoSync &&
-                        getItemBadge(item).label !== 'created'
+                          !autoSync &&
+                          getItemBadge(item).label !== 'created'
                       "
                       :variant="getItemBadge(item).variant"
                       class="mx-2"
@@ -225,7 +225,7 @@ import { flattenObjectMapping } from '@/services/collectionHelper'
 export default {
   name: 'Column',
   directives: {
-    JsonFormatter,
+    JsonFormatter
   },
   components: {
     draggable,
@@ -233,7 +233,7 @@ export default {
     PerPageSelector,
     TableCell,
     HighlightableRow,
-    NewDocumentsBadge,
+    NewDocumentsBadge
   },
   props: {
     searchQuery: Object,
@@ -248,7 +248,7 @@ export default {
     mapping: Object,
     selectedDocuments: Array,
     notifications: Object,
-    hasNewDocuments: Boolean,
+    hasNewDocuments: Boolean
   },
   data() {
     return {
@@ -257,16 +257,16 @@ export default {
       tableDefaultHeaders: [
         {
           key: 'acColumnTableActions',
-          label: '',
+          label: ''
         },
         {
           key: 'acColumnTableId',
-          label: 'Id',
-        },
+          label: 'Id'
+        }
       ],
       displayDragIcon: false,
       tabResizing: null,
-      startOffset: null,
+      startOffset: null
     }
   },
   computed: {
@@ -282,13 +282,13 @@ export default {
       )
     },
     dropdownFields() {
-      return this.fieldList.map((field) => ({
+      return this.fieldList.map(field => ({
         text: field,
-        displayed: this.selectedFields.includes(field),
+        displayed: this.selectedFields.includes(field)
       }))
     },
     formattedItems() {
-      return this.documents.map((d) => {
+      return this.documents.map(d => {
         const doc = {}
         doc._id = d._id
         for (const key of this.selectedFields) {
@@ -322,7 +322,7 @@ export default {
     },
     fieldList() {
       return Object.keys(this.flatMapping)
-    },
+    }
   },
   methods: {
     getItemBadge(item) {
@@ -332,7 +332,7 @@ export default {
       }
       return {
         label: getBadgeText(n.action),
-        variant: getBadgeVariant(n.action),
+        variant: getBadgeVariant(n.action)
       }
     },
 
@@ -351,7 +351,7 @@ export default {
       // Request body with the selected fields and the current query
       const body = JSON.stringify({
         query: this.searchQuery,
-        fields: this.selectedFields,
+        fields: this.selectedFields
       })
 
       // Send the request
@@ -359,7 +359,7 @@ export default {
 
       const filename = `${this.index}-${this.collection}-export.csv`
       // When the request is done, download the file
-      request.onreadystatechange = function () {
+      request.onreadystatechange = function() {
         if (request.readyState === 4 && request.status === 200) {
           const blob = new Blob([request.response])
           const link = document.createElement('a')
@@ -423,7 +423,7 @@ export default {
     },
     initFields() {
       this.initSelectedFields()
-    },
+    }
   },
   created() {
     this.csvExportPromptModalID = 'export-csv-prompt'
@@ -436,21 +436,21 @@ export default {
       immediate: false,
       handler() {
         this.initFields()
-      },
+      }
     },
     mapping: {
       immediate: false,
       handler() {
         this.initFields()
-      },
+      }
     },
     selectedFields(value) {
       this.$emit(
         'settings-updated',
         defaultsDeep({ columnView: { fields: value } }, this.collectionSettings)
       )
-    },
-  },
+    }
+  }
 }
 </script>
 
