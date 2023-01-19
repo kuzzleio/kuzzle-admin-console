@@ -63,9 +63,16 @@
           Delete
         </b-button>
 
-        <b-button @click="exportToCSV"
-          ><i class="fas fa-file-export left" /> CSV</b-button
+        <b-button
+          variant="outline-secondary"
+          class="mr-2"
+          data-cy="Column-btnExportCSV"
+          title="Export columns to CSV"
+          @click.prevent="displayModalExportCSV"
         >
+          <i class="fas fa-file-export left" />
+          CSV
+        </b-button>
       </div>
 
       <PerPageSelector
@@ -202,6 +209,29 @@
         </b-table-simple>
       </b-col>
     </b-row>
+
+    <b-modal
+      id="export-csv-modal"
+      size="lg"
+      @shown="fetchSingleUseToken"
+      @hide="clearSingleUseToken"
+    >
+      <p>
+        CLick the following link to download your CSV export
+      </p>
+
+      <a
+        v-if="singleUseToken"
+        class="fas fa-file-export left"
+        @click="clearSingleUseToken"
+        :href="exportUrl"
+        target="_blank"
+      >
+        Download
+      </a>
+      <p v-else >Preparing download..</p>
+
+    </b-modal>
   </div>
 </template>
 
@@ -266,12 +296,27 @@ export default {
       ],
       displayDragIcon: false,
       tabResizing: null,
-      startOffset: null
+      startOffset: null,
+      singleUseToken: null
     }
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument', 'user']),
     ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
+    exportUrl() {
+      const protocol = this.currentEnvironment.ssl ? 'https' : 'http'
+      const baseUrl = `${protocol}://${this.currentEnvironment.host}:${this.currentEnvironment.port}`
+      const query = JSON.stringify(this.searchQuery)
+      const fields = JSON.stringify(this.selectedFields)
+
+      const exportUrl = `${baseUrl}/${this.index}/${this.collection}/_export?format=csv&query=${query}&fields=${fields}`
+
+      if (this.singleUseToken) {
+        return `${exportUrl}&jwt=${this.singleUseToken}`
+      }
+
+      return exportUrl
+    },
     hasSelectedDocuments() {
       return this.selectedDocuments.length > 0
     },
@@ -325,6 +370,17 @@ export default {
     }
   },
   methods: {
+    async fetchSingleUseToken() {
+      this.singleUseToken = await this.$store.direct.dispatch.auth.createSingleUseToken()
+      this.$log.debug('fetchSingleUseToken')
+    },
+    clearSingleUseToken() {
+      this.$log.debug('Clearing single use token')
+      this.singleUseToken = null
+    },
+    displayModalExportCSV() {
+      this.$bvModal.show('export-csv-modal')
+    },
     getItemBadge(item) {
       const n = this.notifications[item._id]
       if (!n) {
@@ -333,40 +389,6 @@ export default {
       return {
         label: getBadgeText(n.action),
         variant: getBadgeVariant(n.action)
-      }
-    },
-
-    exportToCSV() {
-      const base = this.currentEnvironment.ssl ? 'https://' : 'http://'
-      const urlBase = `${base}${this.currentEnvironment.host}:${this.currentEnvironment.port}`
-      // Request to the export api endopoint
-      let request = new XMLHttpRequest()
-      request.open(
-        'POST',
-        `${urlBase}/${this.index}/${this.collection}/_export?format=csv`
-      )
-      request.setRequestHeader('Content-Type', 'application/json')
-      request.responseType = 'text'
-
-      // Request body with the selected fields and the current query
-      const body = JSON.stringify({
-        query: this.searchQuery,
-        fields: this.selectedFields
-      })
-
-      // Send the request
-      request.send(body)
-
-      const filename = `${this.index}-${this.collection}-export.csv`
-      // When the request is done, download the file
-      request.onreadystatechange = function() {
-        if (request.readyState === 4 && request.status === 200) {
-          const blob = new Blob([request.response])
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = filename
-          link.click()
-        }
       }
     },
     resetColumns() {
@@ -424,9 +446,6 @@ export default {
     initFields() {
       this.initSelectedFields()
     }
-  },
-  created() {
-    this.csvExportPromptModalID = 'export-csv-prompt'
   },
   mounted() {
     this.initFields()
