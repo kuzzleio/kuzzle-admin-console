@@ -372,10 +372,8 @@ export default {
   methods: {
     async fetchSingleUseToken() {
       this.singleUseToken = await this.$store.direct.dispatch.auth.createSingleUseToken()
-      this.$log.debug('fetchSingleUseToken')
     },
     clearSingleUseToken() {
-      this.$log.debug('Clearing single use token')
       this.singleUseToken = null
     },
     displayModalExportCSV() {
@@ -415,7 +413,6 @@ export default {
       )
     },
     toggleColumn(field, value) {
-      this.$log.debug(`Toggling field ${field}`)
       if (value && !this.selectedFields.includes(field)) {
         this.selectedFields.push(field)
       }
