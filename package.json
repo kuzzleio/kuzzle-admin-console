@@ -96,7 +96,7 @@
     "cypress-file-upload": "^5.0.0",
     "cypress-wait-until": "^1.7.1",
     "eslint-plugin-cypress": "^2.7.0",
-    "kuzzle": "^2.9.1",
+    "kuzzle": "^2.20.0",
     "prettier-eslint": "^9.0.1"
   }
 }

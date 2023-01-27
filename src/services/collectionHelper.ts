@@ -219,23 +219,6 @@ const checkPathSchemaRecursive = (document, schema, path) => {
   return true
 }
 
-export const convertToCSV = (
-  items: Array<Object>,
-  fields: string[],
-  separator = ','
-): string => {
-  let res = fields.join(separator)
-  return items
-    .map(i =>
-      pickValues(i, fields)
-        .map(formatValueForCSV)
-        .join(separator)
-    )
-    .reduce(
-      (previous: string, current: string): string => `${previous}\n${current}`,
-      res
-    )
-}
 /**
  * An iteration-order-safe version of lodash.values
  *

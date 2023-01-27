@@ -142,6 +142,7 @@
 
               <Column
                 v-if="listViewType === LIST_VIEW_COLUMN"
+                :searchQuery="searchQuery"
                 :all-checked="allChecked"
                 :auto-sync="autoSync"
                 :current-page-size="paginationSize"
@@ -306,6 +307,7 @@ export default {
   },
   data() {
     return {
+      searchQuery: null,
       subscribeRoomId: null,
       isFetching: false,
       loading: false,
@@ -844,21 +846,20 @@ export default {
       )
 
       try {
-        let searchQuery = null
-        searchQuery = filterManager.toSearchQuery(
+        this.searchQuery = filterManager.toSearchQuery(
           this.currentFilter,
           this.mappingAttributes,
           this.wrapper
         )
 
-        if (!searchQuery) {
-          searchQuery = {}
+        if (!this.searchQuery) {
+          this.searchQuery = {}
         }
 
         const sorting = filterManager.toSort(this.currentFilter)
 
-        if (searchQuery.query) {
-          searchQuery = searchQuery.query
+        if (this.searchQuery.query) {
+          this.searchQuery = this.searchQuery.query
         }
 
         this.resetNotifications()
@@ -867,7 +868,7 @@ export default {
           this.indexName,
           this.collectionName,
           {
-            query: searchQuery,
+            query: this.searchQuery,
             sort: sorting
           },
           pagination
