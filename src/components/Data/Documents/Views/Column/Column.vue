@@ -39,9 +39,7 @@
             >
           </b-dropdown-text>
           <b-dropdown-item v-if="dropdownFields.length === 0">
-            <span class="inlineDisplay-item">
-              No searchable field
-            </span>
+            <span class="inlineDisplay-item"> No searchable field </span>
           </b-dropdown-item>
         </b-dropdown>
         <b-button
@@ -69,8 +67,8 @@
           variant="outline-secondary"
           class="mr-2"
           data-cy="Column-btnExportCSV"
-          title="Export currently visible data to CSV"
-          @click.prevent="promptExportCSV"
+          title="Export columns to CSV"
+          @click.prevent="displayModalExportCSV"
         >
           <i class="fas fa-file-export left" />
           CSV
@@ -211,17 +209,29 @@
         </b-table-simple>
       </b-col>
     </b-row>
-    <export-csv-modal
-      :modal-id="csvExportPromptModalID"
-      :index="index"
-      :collection="collection"
-      :selected-fields="selectedFields"
-      :host="currentEnvironment.host"
-      :port="currentEnvironment.port"
-      :ssl="currentEnvironment.ssl"
-      :token="user.token"
-      @ok="exportToCSV"
-    />
+
+    <b-modal
+      id="export-csv-modal"
+      size="lg"
+      @shown="fetchSingleUseToken"
+      @hide="clearSingleUseToken"
+    >
+      <p>
+        Click the following link to download your CSV export
+      </p>
+
+      <a
+        v-if="singleUseToken"
+        class="left p-2 rounded bg-info text-light downloadCSVLink"
+        @click="clearSingleUseToken"
+        :href="exportUrl"
+        target="_blank"
+      >
+        <i class="fas fa-file-export "></i>
+        Download
+      </a>
+      <p v-else>Preparing download..</p>
+    </b-modal>
   </div>
 </template>
 
@@ -240,8 +250,7 @@ import HighlightableRow from './HighlightableRow.vue'
 import PerPageSelector from '@/components/Common/PerPageSelector'
 import NewDocumentsBadge from '../../Common/NewDocumentsBadge.vue'
 
-import { convertToCSV, flattenObjectMapping } from '@/services/collectionHelper'
-import ExportCsvModal from '@/components/Data/Documents/Common/ExportCSVModal'
+import { flattenObjectMapping } from '@/services/collectionHelper'
 
 export default {
   name: 'Column',
@@ -254,10 +263,10 @@ export default {
     PerPageSelector,
     TableCell,
     HighlightableRow,
-    NewDocumentsBadge,
-    ExportCsvModal
+    NewDocumentsBadge
   },
   props: {
+    searchQuery: Object,
     autoSync: Boolean,
     allChecked: Boolean,
     currentPageSize: Number,
@@ -287,12 +296,27 @@ export default {
       ],
       displayDragIcon: false,
       tabResizing: null,
-      startOffset: null
+      startOffset: null,
+      singleUseToken: null
     }
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument', 'user']),
-    ...mapGetters('kuzzle', ['currentEnvironment']),
+    ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
+    exportUrl() {
+      const protocol = this.currentEnvironment.ssl ? 'https' : 'http'
+      const baseUrl = `${protocol}://${this.currentEnvironment.host}:${this.currentEnvironment.port}`
+      const query = JSON.stringify(this.searchQuery)
+      const fields = JSON.stringify(this.selectedFields)
+
+      const exportUrl = `${baseUrl}/${this.index}/${this.collection}/_export?format=csv&query=${query}&fields=${fields}`
+
+      if (this.singleUseToken) {
+        return `${exportUrl}&jwt=${this.singleUseToken}`
+      }
+
+      return exportUrl
+    },
     hasSelectedDocuments() {
       return this.selectedDocuments.length > 0
     },
@@ -346,6 +370,19 @@ export default {
     }
   },
   methods: {
+    async fetchSingleUseToken() {
+      this.singleUseToken = await this.$store.direct.dispatch.auth.createSingleUseToken()
+    },
+    clearSingleUseToken() {
+      this.singleUseToken = null
+      this.hideModalExportCSV()
+    },
+    displayModalExportCSV() {
+      this.$bvModal.show('export-csv-modal')
+    },
+    hideModalExportCSV() {
+      this.$bvModal.hide('export-csv-modal')
+    },
     getItemBadge(item) {
       const n = this.notifications[item._id]
       if (!n) {
@@ -355,21 +392,6 @@ export default {
         label: getBadgeText(n.action),
         variant: getBadgeVariant(n.action)
       }
-    },
-    promptExportCSV() {
-      this.$bvModal.show(this.csvExportPromptModalID)
-    },
-    exportToCSV() {
-      const blob = new Blob([
-        convertToCSV(this.formattedItems, this.selectedFields)
-      ])
-      const a = document.createElement('a')
-      a.download = `${this.index}-${this.collection}.csv`
-      a.href = URL.createObjectURL(blob)
-      a.addEventListener('click', () => {
-        setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000)
-      })
-      a.click()
     },
     resetColumns() {
       this.selectedFields = []
@@ -395,7 +417,6 @@ export default {
       )
     },
     toggleColumn(field, value) {
-      this.$log.debug(`Toggling field ${field}`)
       if (value && !this.selectedFields.includes(field)) {
         this.selectedFields.push(field)
       }
@@ -426,9 +447,6 @@ export default {
     initFields() {
       this.initSelectedFields()
     }
-  },
-  created() {
-    this.csvExportPromptModalID = 'export-csv-prompt'
   },
   mounted() {
     this.initFields()
@@ -496,5 +514,11 @@ export default {
   height: 65px;
   vertical-align: middle !important;
   white-space: nowrap;
+}
+
+.downloadCSVLink {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 </style>

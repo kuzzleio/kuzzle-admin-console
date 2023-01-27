@@ -45,6 +45,17 @@ const actions = createActions({
     await dispatch.checkFirstAdmin()
     await dispatch.loginByToken()
   },
+  async createSingleUseToken(context): Promise<string> {
+    const { rootGetters } = authActionContext(context)
+
+    const { result } = await rootGetters.kuzzle.$kuzzle.query({
+      controller: 'auth',
+      action: 'createToken',
+      singleUse: true
+    })
+
+    return result.token
+  },
   async setSession(context, token) {
     const { rootDispatch, commit, rootGetters } = authActionContext(context)
     await rootDispatch.kuzzle.updateTokenCurrentEnvironment(token)
