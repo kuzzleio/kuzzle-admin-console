@@ -217,20 +217,20 @@
       @hide="clearSingleUseToken"
     >
       <p>
-        CLick the following link to download your CSV export
+        Click the following link to download your CSV export
       </p>
 
       <a
         v-if="singleUseToken"
-        class="fas fa-file-export left"
+        class="left p-2 rounded bg-info text-light downloadCSVLink"
         @click="clearSingleUseToken"
         :href="exportUrl"
         target="_blank"
       >
+        <i class="fas fa-file-export "></i>
         Download
       </a>
-      <p v-else >Preparing download..</p>
-
+      <p v-else>Preparing download..</p>
     </b-modal>
   </div>
 </template>
@@ -375,9 +375,13 @@ export default {
     },
     clearSingleUseToken() {
       this.singleUseToken = null
+      this.hideModalExportCSV()
     },
     displayModalExportCSV() {
       this.$bvModal.show('export-csv-modal')
+    },
+    hideModalExportCSV() {
+      this.$bvModal.hide('export-csv-modal')
     },
     getItemBadge(item) {
       const n = this.notifications[item._id]
@@ -510,5 +514,11 @@ export default {
   height: 65px;
   vertical-align: middle !important;
   white-space: nowrap;
+}
+
+.downloadCSVLink {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 </style>
