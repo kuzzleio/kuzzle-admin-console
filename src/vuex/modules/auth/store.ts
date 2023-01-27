@@ -49,10 +49,10 @@ const actions = createActions({
     const { rootGetters } = authActionContext(context)
 
     const { result } = await rootGetters.kuzzle.$kuzzle.query({
-      controller: "auth",
-      action: "createToken",
+      controller: 'auth',
+      action: 'createToken',
       singleUse: true
-    });
+    })
 
     return result.token
   },
