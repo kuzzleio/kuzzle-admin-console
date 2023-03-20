@@ -22,7 +22,7 @@
       </template>
     </template>
     <b-dropdown-item
-      v-for="(env, index) in $store.direct.getters.kuzzle.environments"
+      v-for="(env, index) in sortEnv($store.direct.getters.kuzzle.environments)"
       class="EnvironmentSwitch-env environment"
       :key="env.name"
       :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
@@ -122,6 +122,14 @@ export default {
           this.$store.direct.dispatch.kuzzle.onConnectionError(error)
         }
       }
+    },
+    sortEnv(envObject) {
+      return Object.keys(envObject)
+        .sort()
+        .reduce(function(result, key) {
+          result[key] = envObject[key]
+          return result
+        }, {})
     },
     formatForDom
   }
