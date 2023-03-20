@@ -10,6 +10,14 @@ module.exports = {
   formatForDom: word => {
     return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
   },
+  sortObject(object) {
+    return Object.keys(object)
+      .sort()
+      .reduce(function(result, key) {
+        result[key] = object[key]
+        return result
+      }, {})
+  },
   truncateName: (name, maxLength = 50) => {
     if (!name) {
       return ''

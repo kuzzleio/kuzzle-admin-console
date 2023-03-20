@@ -22,7 +22,9 @@
       </template>
     </template>
     <b-dropdown-item
-      v-for="(env, index) in sortEnv($store.direct.getters.kuzzle.environments)"
+      v-for="(env, index) in sortObject(
+        $store.direct.getters.kuzzle.environments
+      )"
       class="EnvironmentSwitch-env environment"
       :key="env.name"
       :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
@@ -75,7 +77,7 @@
 </template>
 
 <script>
-import { formatForDom } from '../../../utils'
+import { formatForDom, sortObject } from '../../../utils'
 import { mapValues, omit } from 'lodash'
 import { isValidEnvironment } from '../../../validators'
 import { mapGetters } from 'vuex'
@@ -123,14 +125,7 @@ export default {
         }
       }
     },
-    sortEnv(envObject) {
-      return Object.keys(envObject)
-        .sort()
-        .reduce(function(result, key) {
-          result[key] = envObject[key]
-          return result
-        }, {})
-    },
+    sortObject,
     formatForDom
   }
 }
