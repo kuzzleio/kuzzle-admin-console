@@ -13,7 +13,7 @@ module.exports = {
   sortObject(object) {
     return Object.keys(object)
       .sort()
-      .reduce(function(result, key) {
+      .reduce((result, key) => {
         result[key] = object[key]
         return result
       }, {})
