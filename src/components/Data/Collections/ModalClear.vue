@@ -68,7 +68,11 @@ export default {
       this.confirmation = ''
     },
     async clearCollection() {
-      if (!this.index.trim() || !this.collection.trim()) {
+      if (
+        !this.index.trim() ||
+        !this.collection.trim() ||
+        !this.confirmationOk
+      ) {
         return
       }
 
