@@ -5,7 +5,7 @@ on: [pull_request]
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
@@ -33,7 +33,7 @@ jobs:
       matrix:
         backend_config: ['1', '2', 'multi']
       fail-fast: false
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
