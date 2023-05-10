@@ -69,8 +69,8 @@ export default {
     },
     async clearCollection() {
       if (
-        !this.index.trim() ||
-        !this.collection.trim() ||
+        this.index.trim() !== '' ||
+        this.collection.trim() !== '' ||
         !this.confirmationOk
       ) {
         return
