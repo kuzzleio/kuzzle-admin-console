@@ -8,7 +8,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         backend_config: ['1', '2', 'multi']
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
@@ -63,7 +63,7 @@ jobs:
   deploy-staging:
     name: Deploy Admin Console to staging - next-console.kuzzle.io
     needs: ['e2e-tests']
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
