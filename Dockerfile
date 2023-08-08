@@ -1,4 +1,4 @@
-FROM kuzzleio/kuzzle-runner:16 as build-stage
+FROM kuzzleio/kuzzle-runner:12 as build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN NODE_ENV=production npm install
