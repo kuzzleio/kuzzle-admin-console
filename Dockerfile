@@ -1,5 +1,4 @@
-FROM node:lts-alpine as build-stage
-RUN apk add git
+FROM kuzzleio/kuzzle-runner:16 as build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN NODE_ENV=production npm install
