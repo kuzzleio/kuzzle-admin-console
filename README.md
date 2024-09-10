@@ -16,6 +16,16 @@ The Kuzzle Admin Console is a web application that connects to your Kuzzle insta
 
 We host a running Admin Console [here](http://console.kuzzle.io) (or if you're using Kuzzle through SSL, you can use the [https](https://console.kuzzle.io) version), but you can also build your own local copy (see below).
 
+## Docker image
+
+An official Docker image is available on Dockerhub, to use it locally run:
+
+```sh
+docker run -it -p 8080:80 kuzzleio/admin-console
+```
+
+This will expose the Admin Console on [http://localhost:8080](http://localhost:8080), you're free to adapt the exposed port to your needs.
+
 ## Local build
 
 To build the Kuzzle Admin Console on your computer, follow these instructions:
