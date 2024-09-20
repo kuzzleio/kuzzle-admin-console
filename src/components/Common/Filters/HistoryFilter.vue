@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import * as filterManager from '../../../services/filterManager'
-import FilterHistoryItem from './FilterHistoryItem'
+import * as filterManager from '@/services/filterManager'
+import FilterHistoryItem from './FilterHistoryItem.vue'
 
 export default {
   name: 'FilterHistory',

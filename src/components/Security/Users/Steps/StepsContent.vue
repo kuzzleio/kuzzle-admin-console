@@ -30,10 +30,12 @@
 </template>
 
 <script>
-import Basic from './Basic'
-import CredentialsSelector from './CredentialsSelector'
-import CustomData from './CustomData'
 import { mapGetters } from 'vuex'
+
+import Basic from './Basic.vue'
+import CredentialsSelector from './CredentialsSelector.vue'
+import CustomData from './CustomData.vue'
+
 export default {
   name: 'StepsContent',
   components: {

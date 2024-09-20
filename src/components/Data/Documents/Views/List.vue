@@ -58,10 +58,11 @@
 </template>
 
 <script>
-import DocumentListItem from '../DocumentListItem'
-import NewDocumentsBadge from '../Common/NewDocumentsBadge.vue'
 import { mapGetters } from 'vuex'
-import PerPageSelector from '@/components/Common/PerPageSelector'
+
+import PerPageSelector from '@/components/Common/PerPageSelector.vue'
+import DocumentListItem from '../DocumentListItem.vue'
+import NewDocumentsBadge from '../Common/NewDocumentsBadge.vue'
 
 export default {
   name: 'DocumentsListView',

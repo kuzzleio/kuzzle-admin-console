@@ -160,10 +160,11 @@
 </template>
 
 <script>
-import jsonEditor from '@/components/Common/JsonEditor'
-import ResponseCard from '@/components/ApiAction/ResponseCard'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import _ from 'lodash'
+
+import ResponseCard from '@/components/ApiAction/ResponseCard.vue'
+import jsonEditor from '@/components/Common/JsonEditor.vue'
 
 export default {
   name: 'QueryCard',

@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import * as filterManager from '../../../services/filterManager'
-import FavoriteFilterItem from './FavoriteFilterItem'
+import * as filterManager from '@/services/filterManager'
+import FavoriteFilterItem from './FavoriteFilterItem.vue'
 
 export default {
   name: 'FavoriteFilters',

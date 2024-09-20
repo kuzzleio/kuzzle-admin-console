@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import MSelect from '../../Common/MSelect'
+import MSelect from '@/components/Common/MSelect.vue'
 
 export default {
   name: 'ListActions',

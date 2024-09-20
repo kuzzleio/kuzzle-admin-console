@@ -50,10 +50,11 @@
 </template>
 
 <script>
-import MainMenu from './Common/MainMenu'
-import MainSpinner from './Common/MainSpinner'
-import LoginForm from './Common/Login/Form'
 import { mapGetters } from 'vuex'
+
+import MainMenu from './Common/MainMenu.vue'
+import MainSpinner from './Common/MainSpinner.vue'
+import LoginForm from './Common/Login/Form.vue'
 
 export default {
   name: 'Home',

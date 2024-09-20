@@ -147,11 +147,11 @@
 </style>
 
 <script>
-import QuickFilter from './QuickFilter'
-import BasicFilter from './BasicFilter'
-import RawFilter from './RawFilter'
-import HistoryFilter from './HistoryFilter'
-import FavoriteFilters from './FavoriteFilters'
+import QuickFilter from './QuickFilter.vue'
+import BasicFilter from './BasicFilter.vue'
+import RawFilter from './RawFilter.vue'
+import HistoryFilter from './HistoryFilter.vue'
+import FavoriteFilters from './FavoriteFilters.vue'
 
 import {
   NO_ACTIVE,

@@ -252,14 +252,15 @@
 </template>
 
 <script>
-import IndexDropdownAction from '../Indexes/DropdownActions.vue'
-import DeleteIndexModal from '../Indexes/DeleteIndexModal'
-import DeleteCollectionModal from './DeleteCollectionModal'
-import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal'
-import Headline from '../../Materialize/Headline'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import { truncateName } from '../../../utils'
 import { mapGetters } from 'vuex'
+
+import { truncateName } from '@/utils'
+import DeleteCollectionModal from './DeleteCollectionModal.vue'
+import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal.vue'
+import IndexDropdownAction from '../Indexes/DropdownActions.vue'
+import DeleteIndexModal from '../Indexes/DeleteIndexModal.vue'
+import ListNotAllowed from '../../Common/ListNotAllowed.vue'
+import Headline from '../../Materialize/Headline.vue'
 
 export default {
   name: 'CollectionList',

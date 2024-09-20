@@ -25,9 +25,10 @@
 </template>
 
 <script>
-import JsonFormatter from '../../../directives/json-formatter.directive'
-import { truncateName } from '../../../utils'
 import moment from 'moment'
+
+import JsonFormatter from '@/directives/json-formatter.directive'
+import { truncateName } from '@/utils'
 
 export default {
   name: 'Notification',

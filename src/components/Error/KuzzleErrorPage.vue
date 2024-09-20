@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
+import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue'
 
 export default {
   name: 'KuzzleErrorPage',

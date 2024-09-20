@@ -149,12 +149,14 @@
 </template>
 
 <script>
-import DeleteModal from './DeleteModal'
-import Filters from '../../Common/Filters/Filters'
-import UserItem from './UserItem'
-import PerPageSelector from '@/components/Common/PerPageSelector'
-import * as filterManager from '../../../services/filterManager'
 import { mapGetters } from 'vuex'
+
+import PerPageSelector from '@/components/Common/PerPageSelector.vue'
+import * as filterManager from '@/services/filterManager'
+
+import DeleteModal from './DeleteModal.vue'
+import UserItem from './UserItem.vue'
+import Filters from '../../Common/Filters/Filters.vue'
 
 export default {
   name: 'UserList',

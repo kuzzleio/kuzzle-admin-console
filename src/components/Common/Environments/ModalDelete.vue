@@ -59,7 +59,7 @@ button {
 </style>
 
 <script>
-import Focus from '../../../directives/focus.directive'
+import Focus from '@/directives/focus.directive'
 
 export default {
   name: 'EnvironmentDeleteModal',

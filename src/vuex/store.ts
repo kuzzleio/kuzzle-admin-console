@@ -17,7 +17,7 @@ const { store, rootActionContext, moduleActionContext } = createDirectStore({
     toaster,
     index
   },
-  strict: process.env.NODE_ENV !== 'production'
+  strict: import.meta.env.NODE_ENV !== 'production'
 })
 
 // export default new Vuex.Store(store)

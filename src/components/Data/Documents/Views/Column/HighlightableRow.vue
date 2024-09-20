@@ -6,6 +6,7 @@
 
 <script>
 import { getBadgeText } from '@/services/documentNotifications'
+
 export default {
   name: 'HighlightableRow',
   props: {

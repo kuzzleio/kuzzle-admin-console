@@ -1,4 +1,11 @@
-/* istanbul ignore next */
+import UsersPage from '@/components/Security/Users/Page.vue';
+import UsersEditCustomMapping from '@/components/Security/Users/EditCustomMapping.vue';
+import UsersCreateOrUpdate from '@/components/Security/Users/CreateOrUpdate.vue';
+import ProfilesPage from '@/components/Security/Profiles/Page.vue';
+import ProfilesCreate from '@/components/Security/Profiles/Create.vue';
+import ProfilesUpdate from '@/components/Security/Profiles/Update.vue';
+import RolesPage from '@/components/Security/Roles/Page.vue';
+import RolesCreateOrUpdate from '@/components/Security/Roles/CreateOrUpdate.vue';
 
 export default [
   {
@@ -7,9 +14,7 @@ export default [
     meta: {
       section: 'users'
     },
-    component(resolve) {
-      require(['../../components/Security/Users/Page'], resolve)
-    }
+    component: UsersPage,
   },
   {
     path: '/security/users/custom-mapping',
@@ -17,9 +22,7 @@ export default [
     meta: {
       section: 'users'
     },
-    component(resolve) {
-      require(['../../components/Security/Users/EditCustomMapping'], resolve)
-    }
+    component: UsersEditCustomMapping,
   },
   {
     path: '/security/users/create',
@@ -27,9 +30,7 @@ export default [
     meta: {
       section: 'users'
     },
-    component(resolve) {
-      require(['../../components/Security/Users/CreateOrUpdate'], resolve)
-    }
+    component: UsersCreateOrUpdate,
   },
   {
     path: '/security/users/:id',
@@ -37,9 +38,7 @@ export default [
     meta: {
       section: 'users'
     },
-    component(resolve) {
-      require(['../../components/Security/Users/CreateOrUpdate'], resolve)
-    },
+    component: UsersCreateOrUpdate,
     props: route => ({ id: route.params.id })
   },
   {
@@ -48,9 +47,7 @@ export default [
     meta: {
       section: 'profiles'
     },
-    component(resolve) {
-      require(['../../components/Security/Profiles/Page'], resolve)
-    }
+    component: ProfilesPage,
   },
   {
     path: '/security/profiles/create',
@@ -58,9 +55,7 @@ export default [
     meta: {
       section: 'profiles'
     },
-    component(resolve) {
-      require(['../../components/Security/Profiles/Create'], resolve)
-    }
+    component: ProfilesCreate,
   },
   {
     path: '/security/profiles/:id',
@@ -68,9 +63,7 @@ export default [
     meta: {
       section: 'profiles'
     },
-    component(resolve) {
-      require(['../../components/Security/Profiles/Update'], resolve)
-    },
+    component: ProfilesUpdate,
     props: route => ({ id: route.params.id })
   },
   {
@@ -79,9 +72,7 @@ export default [
     meta: {
       section: 'roles'
     },
-    component(resolve) {
-      require(['../../components/Security/Roles/Page'], resolve)
-    }
+    component: RolesPage,
   },
   {
     path: '/security/roles/create',
@@ -89,9 +80,7 @@ export default [
     meta: {
       section: 'roles'
     },
-    component(resolve) {
-      require(['../../components/Security/Roles/CreateOrUpdate'], resolve)
-    }
+    component: RolesCreateOrUpdate,
   },
   {
     path: '/security/roles/:id',
@@ -99,9 +88,7 @@ export default [
     meta: {
       section: 'roles'
     },
-    component(resolve) {
-      require(['../../components/Security/Roles/CreateOrUpdate'], resolve)
-    },
+    component: RolesCreateOrUpdate,
     props: route => ({ id: route.params.id })
   }
 ]

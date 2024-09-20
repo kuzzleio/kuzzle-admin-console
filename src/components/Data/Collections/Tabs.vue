@@ -84,6 +84,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'CollectionTabs',
   computed: {

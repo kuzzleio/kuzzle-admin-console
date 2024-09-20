@@ -86,14 +86,14 @@
 </template>
 
 <script>
+import cloneDeep from 'lodash/cloneDeep'
 import get from 'lodash/get'
 import set from 'lodash/set'
-import cloneDeep from 'lodash/cloneDeep'
+import { mapGetters } from 'vuex'
 
-import JsonFormatter from '../../../directives/json-formatter.directive'
+import JsonFormatter from '@/directives/json-formatter.directive'
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
 import { dateFromTimestamp } from '@/utils'
-import { mapGetters } from 'vuex'
 
 export default {
   name: 'DocumentListItem',

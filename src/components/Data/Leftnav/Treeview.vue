@@ -40,9 +40,10 @@
 </template>
 
 <script>
-import IndexBranch from './IndexBranch'
-import { filterIndexesByKeyword } from '../../../services/indexHelpers'
 import { mapGetters } from 'vuex'
+
+import { filterIndexesByKeyword } from '@/services/indexHelpers'
+import IndexBranch from './IndexBranch.vue'
 
 export default {
   name: 'Treeview',

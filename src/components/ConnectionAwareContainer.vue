@@ -45,10 +45,11 @@
 </template>
 
 <script>
-import ErrorPage from './Error/KuzzleErrorPage'
-import OfflineSpinner from './Common/Offline'
-import { antiGlitchOverlayTimeout } from '../utils'
 import { mapGetters } from 'vuex'
+
+import OfflineSpinner from './Common/Offline.vue'
+import ErrorPage from './Error/KuzzleErrorPage.vue'
+import { antiGlitchOverlayTimeout } from '../utils'
 
 export default {
   name: 'ConnectionAwareContainer',

@@ -27,6 +27,9 @@
 </style>
 
 <script>
+import ace from 'ace-builds';
+import 'ace-builds/src-noconflict/theme-tomorrow';
+import 'ace-builds/src-noconflict/mode-json';
 import Vue from 'vue'
 
 export default {
@@ -43,6 +46,12 @@ export default {
     },
     readonly: Boolean,
     height: { type: Number, default: 250 }
+  },
+  setup() {
+    ace.config.setModuleUrl(
+      'ace/mode/json_worker',
+      `https://cdn.jsdelivr.net/npm/ace-builds@${ace.version}/src-min-noconflict/worker-json.js`,
+    );
   },
   data() {
     return {

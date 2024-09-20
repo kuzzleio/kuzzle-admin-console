@@ -279,19 +279,21 @@
 </template>
 
 <script>
-import Headline from '../../Materialize/Headline'
-import Notification from '../Realtime/Notification'
-import CollectionDropdownView from './DropdownView'
-import CollectionDropdownAction from './DropdownAction'
-import DeleteCollectionModal from './DeleteCollectionModal'
-import JsonEditor from '../../Common/JsonEditor'
-import * as filterManager from '../../../services/filterManager'
-import { truncateName } from '@/utils'
-import JsonFormatter from '../../../directives/json-formatter.directive'
 import moment from 'moment'
 import { isEqual } from 'lodash'
 import { mapGetters } from 'vuex'
-import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
+
+import JsonFormatter from '@/directives/json-formatter.directive'
+import * as filterManager from '@/services/filterManager'
+import { extractAttributesFromMapping } from '@/services/mappingHelpers'
+import { truncateName } from '@/utils'
+
+import CollectionDropdownView from './DropdownView.vue'
+import CollectionDropdownAction from './DropdownAction.vue'
+import DeleteCollectionModal from './DeleteCollectionModal.vue'
+import Notification from '../Realtime/Notification.vue'
+import JsonEditor from '../../Common/JsonEditor.vue'
+import Headline from '../../Materialize/Headline.vue'
 
 export default {
   name: 'CollectionWatch',

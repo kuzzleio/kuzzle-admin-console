@@ -145,9 +145,9 @@
 </template>
 
 <script>
-import Pagination from '../Materialize/Pagination'
-import Modal from '../Materialize/Modal'
-import Filters from './Filters/Filters'
+import Filters from './Filters/Filters.vue'
+import Pagination from '../Materialize/Pagination.vue'
+import Modal from '../Materialize/Modal.vue'
 
 export default {
   name: 'CrudlDocument',

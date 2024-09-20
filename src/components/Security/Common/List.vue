@@ -1,4 +1,4 @@
-.<template>
+<template>
   <div>
     <slot
       v-if="
@@ -59,12 +59,13 @@
 </style>
 
 <script>
-import CrudlDocument from './CrudlDocument'
-import UserItem from '../Users/UserItem'
-import RoleItem from '../Roles/RoleItem'
-import ProfileItem from '../Profiles/ProfileItem'
-import DocumentItem from '../../Data/Documents/DocumentItem'
-import { availableFilters } from '../../../services/filterManager'
+import { availableFilters } from '@/services/filterManager'
+
+import CrudlDocument from './CrudlDocument.vue'
+import UserItem from '../Users/UserItem.vue'
+import RoleItem from '../Roles/RoleItem.vue'
+import ProfileItem from '../Profiles/ProfileItem.vue'
+import DocumentItem from '../../Data/Documents/DocumentItem.vue'
 
 export default {
   name: 'SecurityCommonList',

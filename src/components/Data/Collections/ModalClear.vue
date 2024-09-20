@@ -39,8 +39,9 @@
 </template>
 
 <script>
-import Focus from '../../../directives/focus.directive'
 import { mapGetters } from 'vuex'
+
+import Focus from '@/directives/focus.directive'
 
 export default {
   name: 'ClearCollectionModal',

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import EnvironmentSelector from './EnvironmentsSwitch'
+import EnvironmentSelector from './EnvironmentsSwitch.vue'
 
 export default {
   name: 'SelectEnvironmentPage',

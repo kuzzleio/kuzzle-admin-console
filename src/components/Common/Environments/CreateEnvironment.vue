@@ -12,7 +12,7 @@
       >
         <b-form-input
           id="input-env-name"
-          v-model="$v.environment.name.$model"
+          v-model="v$.environment.name.$model"
           data-cy="CreateEnvironment-name"
           :state="validateState('name')"
         ></b-form-input>
@@ -34,7 +34,7 @@
         <b-form-input
           data-cy="CreateEnvironment-host"
           id="input-env-host"
-          v-model="$v.environment.host.$model"
+          v-model="v$.environment.host.$model"
           :state="validateState('host')"
         ></b-form-input>
       </b-form-group>
@@ -52,7 +52,7 @@
         <b-form-input
           data-cy="CreateEnvironment-port"
           id="input-env-port"
-          v-model="$v.environment.port.$model"
+          v-model="v$.environment.port.$model"
           type="number"
           :state="validateState('port')"
         ></b-form-input>
@@ -84,7 +84,7 @@
       >
         <b-form-select
           data-cy="CreateEnvironment-backendVersion"
-          v-model="$v.environment.backendMajorVersion.$model"
+          v-model="v$.environment.backendMajorVersion.$model"
           :state="validateState('backendMajorVersion')"
           :options="majorVersions"
         ></b-form-select>
@@ -123,9 +123,10 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { numeric, required } from 'vuelidate/lib/validators'
-import { isValidHostname, notIncludeScheme } from '../../../validators'
+import { useVuelidate } from '@vuelidate/core'
+import { numeric, required } from '@vuelidate/validators'
+
+import { isValidHostname, notIncludeScheme } from '@/validators'
 
 import {
   envColors,
@@ -151,10 +152,10 @@ function nameIsUnique(value) {
 // }
 
 export default {
-  mixins: [validationMixin],
   name: 'CreateEnvironment',
   components: {},
   props: ['environmentId'],
+  setup() { return { v$: useVuelidate() } },
   data() {
     return {
       majorVersions: [
@@ -212,28 +213,28 @@ export default {
       return useHttps
     },
     nameFeedback() {
-      if (!this.$v.environment.name.required) {
+      if (!this.v$.environment.name.required) {
         return 'You must enter a non-empty environment name'
       }
-      if (!this.$v.environment.name.nameIsUnique) {
+      if (!this.v$.environment.name.nameIsUnique) {
         return 'An environment with the same name already exists'
       }
       return null
     },
     hostFeedback() {
-      if (!this.$v.environment.host.required) {
+      if (!this.v$.environment.host.required) {
         return 'You must enter a non-empty host name'
       }
-      if (!this.$v.environment.host.notIncludeScheme) {
+      if (!this.v$.environment.host.notIncludeScheme) {
         return 'Do not include the protocol in your host name'
       }
-      if (!this.$v.environment.host.isValidHostname) {
+      if (!this.v$.environment.host.isValidHostname) {
         return 'Must be a valid host name'
       }
       return null
     },
     portFeedback() {
-      if (!this.$v.environment.port.required) {
+      if (!this.v$.environment.port.required) {
         return 'You must enter a non-empty port'
       }
       return null
@@ -252,13 +253,13 @@ export default {
       return ''
     },
     versionFeedback() {
-      if (!this.$v.environment.backendMajorVersion.required) {
+      if (!this.v$.environment.backendMajorVersion.required) {
         return 'You must select a backend version'
       }
       return null
     },
     colorState() {
-      const { $dirty, $error } = this.$v.environment.color
+      const { $dirty, $error } = this.v$.environment.color
       const state = $dirty ? !$error : null
       return state
     }
@@ -286,18 +287,18 @@ export default {
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v.environment[fieldName]
+      const { $dirty, $error } = this.v$.environment[fieldName]
       const state = $dirty ? !$error : null
       return state
     },
     showValidationErrors() {
-      this.$v.environment.$touch()
-      Object.keys(this.$v.environment).forEach(field => {
+      this.v$.environment.$touch()
+      Object.keys(this.v$.environment).forEach(field => {
         if (/^\$/.test(field)) {
           return
         }
-        if (this.$v.environment[field].$anyError === false) {
-          this.$v.environment[field].$reset()
+        if (this.v$.environment[field].$anyError === false) {
+          this.v$.environment[field].$reset()
         }
       })
     },
@@ -307,8 +308,8 @@ export default {
       }
     },
     submit() {
-      this.$v.environment.$touch()
-      if (this.$v.environment.$anyError) {
+      this.v$.environment.$touch()
+      if (this.v$.environment.$anyError) {
         return
       }
       this.submitting = true
@@ -359,7 +360,7 @@ export default {
       this.submitting = false
     },
     selectColor(index) {
-      this.$v.environment.color.$model = this.colors[index]
+      this.v$.environment.color.$model = this.colors[index]
     }
   }
 }

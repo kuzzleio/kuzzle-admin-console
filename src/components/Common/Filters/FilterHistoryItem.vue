@@ -76,8 +76,9 @@
 </template>
 
 <script>
-import * as filterManager from '../../../services/filterManager'
 import { mapGetters } from 'vuex'
+
+import * as filterManager from '@/services/filterManager'
 
 export default {
   name: 'FilterHistoryItem',

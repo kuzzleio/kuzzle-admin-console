@@ -9,7 +9,7 @@
         alt="Kuzzle.io"
         src="~../../assets/logo-white.svg"
         v-b-tooltip.hover
-        :title="`Admin Console v${adminConsoleVersion}`"
+        :title="`Admin Console v${adminConsoleVersion} (${adminConsoleCommitHash})`"
       />
     </b-navbar-brand>
     <b-navbar-toggle target="nav-collapse" type="light"></b-navbar-toggle>
@@ -92,8 +92,10 @@
 </template>
 
 <script>
-import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
 import { mapGetters } from 'vuex'
+
+import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue'
+
 export default {
   name: 'MainMenu',
   components: {
@@ -140,7 +142,10 @@ export default {
       return this.user.id
     },
     adminConsoleVersion() {
-      return require('../../../package.json').version
+      return __APP_VERSION__;
+    },
+    adminConsoleCommitHash() {
+      return __COMMIT_HASH__;
     }
   },
   methods: {

@@ -34,10 +34,10 @@
 </template>
 
 <script>
-import JsonEditor from '../../../Common/JsonEditor'
-import JsonFormatter from '../../../../directives/json-formatter.directive'
+import JsonFormatter from '@/directives/json-formatter.directive'
+import { mergeSchemaMapping } from '@/services/collectionHelper'
 
-import { mergeSchemaMapping } from '../../../../services/collectionHelper'
+import JsonEditor from '@/components/Common/JsonEditor.vue'
 
 export default {
   name: 'CustomData',

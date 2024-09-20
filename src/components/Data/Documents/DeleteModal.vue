@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { truncateName } from '../../../utils'
+import { truncateName } from '@/utils'
 
 export default {
   name: 'DeleteModal',

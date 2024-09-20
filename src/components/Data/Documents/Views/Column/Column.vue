@@ -236,21 +236,21 @@
 </template>
 
 <script>
-import JsonFormatter from '../../../../../directives/json-formatter.directive'
-import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
-
 import get from 'lodash/get'
 import defaultsDeep from 'lodash/defaultsDeep'
-import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
-import HeaderTableView from './HeaderTableView'
+
+import NewDocumentsBadge from '@/components/Data/Documents/Common/NewDocumentsBadge.vue'
+import PerPageSelector from '@/components/Common/PerPageSelector.vue'
+import JsonFormatter from '@/directives/json-formatter.directive'
+import { flattenObjectMapping } from '@/services/collectionHelper'
+import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
+import { truncateName } from '@/utils'
+
+import HeaderTableView from './HeaderTableView.vue'
 import TableCell from './TableCell.vue'
 import HighlightableRow from './HighlightableRow.vue'
-import PerPageSelector from '@/components/Common/PerPageSelector'
-import NewDocumentsBadge from '../../Common/NewDocumentsBadge.vue'
-
-import { flattenObjectMapping } from '@/services/collectionHelper'
 
 export default {
   name: 'Column',

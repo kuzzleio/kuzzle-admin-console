@@ -26,18 +26,18 @@
               :description="!id ? 'This field is mandatory' : ''"
             >
               <template v-slot:invalid-feedback id="profile-id-feedback">
-                <span v-if="!$v.idValue.required"
+                <span v-if="!v$.idValue.required"
                   >This field cannot be empty</span
                 >
-                <span v-else-if="!$v.idValue.isNotWhitespace"
+                <span v-else-if="!v$.idValue.isNotWhitespace"
                   >This field cannot contain just whitespaces</span
                 >
-                <span v-else-if="!$v.idValue.startsWithLetter"
+                <span v-else-if="!v$.idValue.startsWithLetter"
                   >This field cannot start with a whitespace</span
                 >
               </template>
               <b-input
-                v-model="$v.idValue.$model"
+                v-model="v$.idValue.$model"
                 :disabled="id"
                 :state="validateState('idValue')"
               ></b-input>
@@ -130,18 +130,18 @@
 </style>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { requiredUnless, not } from 'vuelidate/lib/validators'
-import { startsWithSpace, isWhitespace } from '../../../validators'
-
-import Headline from '../../Materialize/Headline'
-import Notice from '../Common/Notice'
-import JsonEditor from '../../Common/JsonEditor'
 import { omit, intersection } from 'lodash'
+import { useVuelidate } from '@vuelidate/core'
+import { not, requiredUnless } from '@vuelidate/validators'
 import { mapGetters } from 'vuex'
 
+import { startsWithSpace, isWhitespace } from '@/validators'
+
+import Notice from '../Common/Notice.vue'
+import Headline from '../../Materialize/Headline.vue'
+import JsonEditor from '../../Common/JsonEditor.vue'
+
 export default {
-  mixins: [validationMixin],
   name: 'CreateOrUpdateRole',
   components: {
     Headline,
@@ -153,6 +153,7 @@ export default {
       type: String
     }
   },
+  setup() { return { v$: useVuelidate() } },
   data() {
     return {
       documentValue: '{}',
@@ -198,15 +199,15 @@ export default {
       }
     },
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v[fieldName]
+      const { $dirty, $error } = this.v$[fieldName]
       return $dirty ? !$error : null
     },
     onContentChange(value) {
-      this.$v.documentValue.$model = value
+      this.v$.documentValue.$model = value
     },
     async submit() {
-      this.$v.$touch()
-      if (this.$v.$anyError) {
+      this.v$.$touch()
+      if (this.v$.$anyError) {
         return
       }
 

@@ -66,7 +66,10 @@
     </div>
   </div>
 </template>
+
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 .activeItemClass {
   font-weight: 600;
   opacity: 1;
@@ -85,9 +88,9 @@
 }
 .SecurityLayout-sidebarWrapper {
   padding-top: 1em;
-  background-color: $light-grey-color;
-  flex-basis: $sidebar-width;
-  min-width: $sidebar-width;
+  background-color: variables.$light-grey-color;
+  flex-basis: variables.$sidebar-width;
+  min-width: variables.$sidebar-width;
   height: 100%;
   overflow: auto;
   box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
@@ -98,12 +101,13 @@
   flex-grow: 1;
   height: 100%;
   overflow: auto;
-  padding: $content-gutter;
+  padding: variables.$content-gutter;
 }
 </style>
 
 <script>
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'SecurityLayout',
   computed: {

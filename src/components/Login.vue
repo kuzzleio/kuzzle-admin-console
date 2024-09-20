@@ -47,9 +47,10 @@
 </template>
 
 <script>
-import LoginForm from './Common/Login/Form'
-import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
 import { mapGetters } from 'vuex'
+
+import LoginForm from './Common/Login/Form.vue'
+import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue'
 
 export default {
   name: 'Login',

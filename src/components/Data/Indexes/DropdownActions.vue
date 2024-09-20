@@ -58,8 +58,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 ::v-deep .indexDropdown {
-  background-color: $light-grey-color;
+  background-color: variables.$light-grey-color;
   border: none;
 }
 

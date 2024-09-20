@@ -90,11 +90,12 @@
 </template>
 
 <script>
-import TimeSeriesItem from './TimeSeriesItem'
 import VueApexCharts from 'vue-apexcharts'
 import _ from 'lodash'
+
 import { dateFromTimestamp } from '@/utils'
-import PerPageSelector from '@/components/Common/PerPageSelector'
+import PerPageSelector from '@/components/Common/PerPageSelector.vue'
+import TimeSeriesItem from './TimeSeriesItem.vue'
 
 const ES_NUMBER_DATA_TYPE = [
   'short',

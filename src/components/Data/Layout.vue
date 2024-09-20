@@ -33,9 +33,10 @@
 
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import Treeview from '@/components/Data/Leftnav/Treeview'
-import DataNotFound from './Data404'
 import { mapGetters } from 'vuex'
+
+import Treeview from '@/components/Data/Leftnav/Treeview.vue'
+import DataNotFound from './Data404.vue'
 import { setPersistedItem, getPersistedItem } from './itemsStorage'
 
 export default {
@@ -220,6 +221,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 .DataLayout {
   height: 100%;
   display: flex;
@@ -228,8 +231,8 @@ export default {
 }
 
 .DataLayout-sidebarWrapper {
-  background-color: $light-grey-color;
-  min-width: $sidebar-width;
+  background-color: variables.$light-grey-color;
+  min-width: variables.$sidebar-width;
   height: 100%;
   overflow: auto;
   z-index: 1;
@@ -240,7 +243,7 @@ export default {
   flex-grow: 1;
   height: 100%;
   overflow: auto;
-  padding: $content-gutter;
+  padding: variables.$content-gutter;
 }
 
 .Custom-resizer > .multipane-resizer {

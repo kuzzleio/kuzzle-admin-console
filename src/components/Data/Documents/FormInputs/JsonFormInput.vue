@@ -22,7 +22,7 @@
 <script>
 // https://vue-generators.gitbook.io/vue-generators/fields/custom_fields
 import { abstractField } from 'vue-form-generator'
-import JsonEditor from '@/components/Common/JsonEditor'
+import JsonEditor from '@/components/Common/JsonEditor.vue'
 import JsonFormatter from '@/directives/json-formatter.directive'
 
 export default {

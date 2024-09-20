@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
+import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue'
 
 export default {
   name: 'OfflinePage',

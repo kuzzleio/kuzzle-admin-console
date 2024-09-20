@@ -1,5 +1,4 @@
-import { createMutations, createModule } from 'direct-vuex'
-import { createActions } from 'direct-vuex'
+import { defineActions, defineModule, defineMutations } from 'direct-vuex'
 
 import Vue from 'vue'
 
@@ -15,8 +14,8 @@ export const state: AuthState = {
   initializing: true
 }
 
-const mutations = createMutations<AuthState>()({
-  setCurrentUser(state, user: SessionUser) {
+const mutations = defineMutations<AuthState>()({
+  setCurrentUser(state, user: SessionUser | null) {
     state.user = user
   },
   setTokenValid(state, valid: boolean) {
@@ -36,7 +35,7 @@ const mutations = createMutations<AuthState>()({
   }
 })
 
-const actions = createActions({
+const actions = defineActions({
   async init(context) {
     const { commit, dispatch } = authActionContext(context)
 
@@ -130,7 +129,7 @@ const actions = createActions({
 
       return commit.setAdminExists(true)
     } catch (error) {
-      if (error.status === 403 || error.status === 401) {
+      if (typeof error === 'object' && error !== null && 'status' in error && (error.status === 403 || error.status === 401)) {
         return commit.setAdminExists(true)
       } else {
         throw error
@@ -192,7 +191,7 @@ const actions = createActions({
   }
 })
 
-const auth = createModule({
+const auth = defineModule({
   namespaced: true,
   state,
   mutations,

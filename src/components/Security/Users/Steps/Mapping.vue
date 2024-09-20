@@ -58,7 +58,7 @@
 </template>
 
 <script type="text/javascript">
-import JsonEditor from '../../../Common/JsonEditor'
+import JsonEditor from '@/components/Common/JsonEditor.vue'
 
 export default {
   name: 'UserCustomMappingEditor',

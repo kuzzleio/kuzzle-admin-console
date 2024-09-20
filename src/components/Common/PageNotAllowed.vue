@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <div class="PageNotAllowed">
     <b-jumbotron header="Sorry" lead="You are not allowed to access this page">
       <em

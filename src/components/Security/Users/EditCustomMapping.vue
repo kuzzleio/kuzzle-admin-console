@@ -88,11 +88,12 @@
 /**
  * This feature is currently freezed.
  */
-
-import Headline from '../../Materialize/Headline'
-import JsonEditor from '../../Common/JsonEditor'
 import omit from 'lodash/omit'
 import { mapGetters } from 'vuex'
+
+import JsonEditor from '../../Common/JsonEditor.vue'
+import Headline from '../../Materialize/Headline.vue'
+
 export default {
   name: 'UsersCustomMappingWizard',
   components: {

@@ -35,8 +35,9 @@
 </template>
 
 <script>
-import Autocomplete from '../../../Common/Autocomplete'
 import { Chrome as ColorPicker } from 'vue-color'
+
+import Autocomplete from '@/components/Common/Autocomplete.vue'
 
 const getRandomColor = () => {
   const letters = '0123456789ABCDEF'

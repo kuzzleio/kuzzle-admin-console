@@ -31,8 +31,9 @@
 </template>
 
 <script>
-import jsonEditor from '@/components/Common/JsonEditor'
 import _ from 'lodash'
+
+import jsonEditor from '@/components/Common/JsonEditor.vue'
 
 export default {
   components: {

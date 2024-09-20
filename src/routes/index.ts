@@ -166,7 +166,7 @@ export default function createRoutes(log) {
         .add({
           action: to.name as string,
           product: 'admin-console',
-          version: require('../../package.json').version,
+          version: __APP_VERSION__,
           tags: {
             environment: window.location.hostname
           }

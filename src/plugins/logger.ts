@@ -5,7 +5,7 @@ import Vue from 'vue'
 import VueLogger from 'vuejs-logger/dist/vue-logger'
 import { LogLevels } from 'vuejs-logger/dist/enum/log-levels'
 import { ILoggerOptions } from 'vuejs-logger/dist/interfaces/logger-options'
-const isProduction = process.env.NODE_ENV === 'production'
+const isProduction = import.meta.env.NODE_ENV === 'production'
 
 const loggerOptions: ILoggerOptions = {
   isEnabled: true,

@@ -70,8 +70,9 @@
 </template>
 
 <script>
-import ModalClear from './ModalClear.vue'
 import { mapGetters } from 'vuex'
+
+import ModalClear from './ModalClear.vue'
 
 export default {
   name: 'CollectionDropdownAction',
@@ -114,8 +115,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 ::v-deep .collectionDropdown {
-  background-color: $light-grey-color;
+  background-color: variables.$light-grey-color;
   border: none;
 }
 

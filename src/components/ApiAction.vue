@@ -92,13 +92,13 @@
 </template>
 
 <script>
-import SaveQueryModal from '@/components/ApiAction/SaveQueryModal'
-import QueryList from '@/components/ApiAction/QueryList'
-import QueryCard from '@/components/ApiAction/QueryCard'
-
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
+
+import SaveQueryModal from '@/components/ApiAction/SaveQueryModal.vue'
+import QueryList from '@/components/ApiAction/QueryList.vue'
+import QueryCard from '@/components/ApiAction/QueryCard.vue'
 import { truncateName } from '@/utils'
 
 export default {
@@ -382,6 +382,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 ::v-deep .tabsHeight {
   height: calc(100% - 100px) !important;
 }
@@ -400,7 +402,7 @@ export default {
   height: 100%;
 }
 .backgroundCard {
-  background-color: $light-grey-color;
+  background-color: variables.$light-grey-color;
 }
 
 .DataLayout-vertical {
@@ -411,8 +413,8 @@ export default {
 }
 
 .DataLayout-sidebarWrapper-vertical {
-  min-width: $sidebar-width;
-  width: $sidebar-width;
+  min-width: variables.$sidebar-width;
+  width: variables.$sidebar-width;
   height: 100%;
   z-index: 1;
 }
@@ -421,7 +423,7 @@ export default {
   flex-grow: 1;
   height: 100%;
   overflow: auto;
-  padding: $content-gutter;
+  padding: variables.$content-gutter;
 }
 
 .Custom-resizer-vertical > .multipane-resizer {

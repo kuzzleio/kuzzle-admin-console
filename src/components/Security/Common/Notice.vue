@@ -12,8 +12,10 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 .SecurityNotice {
-  max-width: $container-width;
+  max-width: variables.$container-width;
 }
 </style>
 

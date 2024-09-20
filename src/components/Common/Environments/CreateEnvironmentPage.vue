@@ -57,8 +57,9 @@
 </template>
 
 <script>
-import CreateEnvironment from './CreateEnvironment'
 import { mapGetters } from 'vuex'
+
+import CreateEnvironment from './CreateEnvironment.vue'
 
 export default {
   name: 'CreateEnvironmentPage',

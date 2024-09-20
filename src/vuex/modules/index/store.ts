@@ -12,7 +12,7 @@ import {
   CreateCollectionPayload,
   UpdateCollectionPayload
 } from './types'
-import { createMutations, createModule, createActions } from 'direct-vuex'
+import { defineMutations, defineModule, defineActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
 import _ from 'lodash'
 
@@ -21,7 +21,7 @@ const state: IndexState = {
   loadingIndexes: false
 }
 
-const mutations = createMutations<IndexState>()({
+const mutations = defineMutations<IndexState>()({
   reset(state) {
     state.indexes = []
     state.loadingIndexes = false
@@ -78,7 +78,7 @@ const mutations = createMutations<IndexState>()({
   }
 })
 
-const actions = createActions({
+const actions = defineActions({
   async createIndex(context, name: string) {
     const { commit, rootGetters } = indexActionContext(context)
 
@@ -263,19 +263,21 @@ const actions = createActions({
       throw new Error(`Collection "${collection.name}" doesn't exist`)
     }
 
-    const kuzzleMapping = await rootGetters.kuzzle.wrapper.getMappingDocument(
+    const kuzzleMapping = await rootGetters.kuzzle.wrapper?.getMappingDocument(
       collection.name,
       index.name
     )
 
-    collection.mapping = kuzzleMapping.properties
-    collection.dynamic = kuzzleMapping.dynamic
+    let updatedCollection = new Collection(collection.name, CollectionType.STORED)
 
-    commit.updateCollection({ index, collection: collection })
+    updatedCollection.mapping = kuzzleMapping.properties
+    updatedCollection.dynamic = kuzzleMapping.dynamic
+
+    commit.updateCollection({ index, collection: updatedCollection })
   }
 })
 
-const index = createModule({
+const index = defineModule({
   namespaced: true,
   state,
   mutations,

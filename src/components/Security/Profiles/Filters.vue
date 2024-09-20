@@ -64,8 +64,10 @@
 </template>
 
 <script>
-import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
+
+import { truncateName } from '@/utils'
+
 export default {
   name: 'Filters',
   components: {},

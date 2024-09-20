@@ -256,25 +256,16 @@ import defaults from 'lodash/defaults'
 import get from 'lodash/get'
 import pickBy from 'lodash/pickBy'
 import debounce from 'lodash/debounce'
+import { mapGetters } from 'vuex'
 
-import Column from './Views/Column/Column'
-import Map from './Views/Map'
-import List from './Views/List'
-import TimeSeries from './Views/TimeSeries'
-import DeleteModal from './DeleteModal'
-import EmptyState from './EmptyState'
-import NoGeopointFieldState from './NoGeopointFieldState.vue'
-import Filters from '../../Common/Filters/Filters'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import CollectionDropdownView from '../Collections/DropdownView'
-import CollectionDropdownAction from '../Collections/DropdownAction'
-import DeleteCollectionModal from '../Collections/DeleteCollectionModal'
-import Headline from '../../Materialize/Headline'
+import Filters from '@/components/Common/Filters/Filters.vue'
+import ListNotAllowed from '@/components/Common/ListNotAllowed.vue'
+import CollectionDropdownView from '@/components/Data/Collections/DropdownView.vue'
+import Headline from '@/components/Materialize/Headline.vue'
 import * as filterManager from '@/services/filterManager'
 import { extractAttributesFromMapping } from '@/services/mappingHelpers'
 import { flattenObjectMapping } from '@/services/collectionHelper'
 import { truncateName } from '@/utils'
-import { mapGetters } from 'vuex'
 import {
   LIST_VIEW_COLUMN,
   LIST_VIEW_LIST,
@@ -283,6 +274,16 @@ import {
   loadSettingsForCollection,
   saveSettingsForCollection
 } from '@/services/localSettings'
+
+import DeleteModal from './DeleteModal.vue'
+import EmptyState from './EmptyState.vue'
+import NoGeopointFieldState from './NoGeopointFieldState.vue'
+import Column from './Views/Column/Column.vue'
+import Map from './Views/Map.vue'
+import List from './Views/List.vue'
+import TimeSeries from './Views/TimeSeries.vue'
+import CollectionDropdownAction from '../Collections/DropdownAction.vue'
+import DeleteCollectionModal from '../Collections/DeleteCollectionModal.vue'
 
 export default {
   name: 'DocumentsPage',

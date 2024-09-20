@@ -12,16 +12,16 @@
           :description="!id ? 'This field is mandatory' : ''"
         >
           <template v-slot:invalid-feedback id="profile-id-feedback">
-            <span v-if="!$v.idValue.required">This field cannot be empty</span>
-            <span v-else-if="!$v.idValue.isNotWhitespace"
+            <span v-if="!v$.idValue.required">This field cannot be empty</span>
+            <span v-else-if="!v$.idValue.isNotWhitespace"
               >This field cannot contain just whitespaces</span
             >
-            <span v-else-if="!$v.idValue.startsWithLetter"
+            <span v-else-if="!v$.idValue.startsWithLetter"
               >This field cannot start with a whitespace</span
             >
           </template>
           <b-input
-            v-model="$v.idValue.$model"
+            v-model="v$.idValue.$model"
             id="profile-id"
             :disabled="id"
             :state="validateState('idValue')"
@@ -127,15 +127,15 @@
 </style>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { requiredUnless, not } from 'vuelidate/lib/validators'
-import { startsWithSpace, isWhitespace } from '../../../validators'
+import { useVuelidate } from '@vuelidate/core'
+import { not, requiredUnless } from '@vuelidate/validators'
 
-import JsonEditor from '../../Common/JsonEditor'
-import JsonFormatter from '../../../directives/json-formatter.directive'
+import { startsWithSpace, isWhitespace } from '@/validators'
+
+import JsonEditor from '@/components/Common/JsonEditor.vue'
+import JsonFormatter from '@/directives/json-formatter.directive'
 
 export default {
-  mixins: [validationMixin],
   name: 'ProfileCreateOrUpdate',
   components: {
     JsonEditor
@@ -152,6 +152,7 @@ export default {
       default: '{}'
     }
   },
+  setup() { return { v$: useVuelidate() } },
   data() {
     return {
       profileValue: this.profile || '{}',
@@ -178,15 +179,15 @@ export default {
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v[fieldName]
+      const { $dirty, $error } = this.v$[fieldName]
       return $dirty ? !$error : null
     },
     onContentChange(value) {
       this.profileValue = value
     },
     submit() {
-      this.$v.$touch()
-      if (this.$v.$anyError) {
+      this.v$.$touch()
+      if (this.v$.$anyError) {
         return
       }
       this.$emit('submit', {

@@ -28,6 +28,7 @@
 
 <script>
 import Vue from 'vue'
+
 // translated from https://github.com/appcomponents/material-components/tree/master/src/components/modal
 const ESC_KEY = 27
 

@@ -180,12 +180,14 @@
 </template>
 
 <script>
-import Headline from '../../Materialize/Headline'
-import CreateIndexModal from './CreateIndexModal'
-import DeleteIndexModal from './DeleteIndexModal'
-import BulkDeleteIndexesModal from './BulkDeleteIndexesModal'
-import ListNotAllowed from '../../Common/ListNotAllowed'
 import { mapGetters } from 'vuex'
+
+import ListNotAllowed from '@/components/Common/ListNotAllowed.vue'
+import Headline from '@/components/Materialize/Headline.vue'
+
+import CreateIndexModal from './CreateIndexModal.vue'
+import DeleteIndexModal from './DeleteIndexModal.vue'
+import BulkDeleteIndexesModal from './BulkDeleteIndexesModal.vue'
 
 export default {
   name: 'IndexesPage',

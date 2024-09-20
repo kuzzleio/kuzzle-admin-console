@@ -37,17 +37,17 @@
             <code>&</code>, <code>.</code>
           </template>
           <template v-slot:invalid-feedback id="profile-id-feedback">
-            <span v-if="!$v.index.required">This field cannot be empty</span>
-            <span v-else-if="!$v.index.isNotWhitespace"
+            <span v-if="!v$.index.required">This field cannot be empty</span>
+            <span v-else-if="!v$.index.isNotWhitespace"
               >This field cannot contain just whitespaces</span
             >
-            <span v-else-if="!$v.index.startsWithLetter"
+            <span v-else-if="!v$.index.startsWithLetter"
               >This field cannot start with a whitespace</span
             >
-            <span v-else-if="!$v.index.isLowercase"
+            <span v-else-if="!v$.index.isLowercase"
               >This field cannot contain uppercase letters</span
             >
-            <span v-else-if="!$v.index.validChars"
+            <span v-else-if="!v$.index.validChars"
               >This field cannnot contain invalid chars</span
             >
           </template>
@@ -56,7 +56,7 @@
             autofocus
             required
             type="text"
-            v-model="$v.index.$model"
+            v-model="v$.index.$model"
             :state="validateState('index')"
           ></b-form-input>
         </b-form-group>
@@ -75,16 +75,17 @@
 <style lang="scss"></style>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { not, required } from 'vuelidate/lib/validators'
-import { startsWithSpace, isWhitespace, isUppercase } from '../../../validators'
+import { useVuelidate } from '@vuelidate/core'
+import { not, required } from '@vuelidate/validators'
+
+import { startsWithSpace, isWhitespace, isUppercase } from '@/validators'
 
 function includesInvalidIndexChars(value) {
   // eslint-disable-next-line no-useless-escape
   return /[@\\\/\*\?"<>,#:%&\|\.]/.test(value)
 }
+
 export default {
-  mixins: [validationMixin],
   name: 'CreateIndexModal',
   props: {
     modalId: {
@@ -92,6 +93,7 @@ export default {
       required: true
     }
   },
+  setup() { return { v$: useVuelidate() } },
   data() {
     return {
       error: '',
@@ -112,11 +114,11 @@ export default {
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v[fieldName]
+      const { $dirty, $error } = this.v$[fieldName]
       return $dirty ? !$error : null
     },
     resetForm() {
-      this.$v.$reset()
+      this.v$.$reset()
       this.index = ''
       this.error = ''
       this.modalBusy = false
@@ -132,8 +134,8 @@ export default {
     },
     async tryCreateIndex() {
       this.modalBusy = true
-      this.$v.$touch()
-      if (this.$v.$anyError) {
+      this.v$.$touch()
+      if (this.v$.$anyError) {
         return
       }
 

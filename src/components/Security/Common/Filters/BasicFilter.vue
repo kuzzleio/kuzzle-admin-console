@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import MSelect from '../../../Common/MSelect'
+import MSelect from '@/components/Common/MSelect.vue'
 
 const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
 const emptySorting = { attribute: null, order: 'asc' }

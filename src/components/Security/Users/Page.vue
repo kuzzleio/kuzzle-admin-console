@@ -61,11 +61,13 @@
 </template>
 
 <script>
-import List from './List'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import Headline from '../../Materialize/Headline'
 import { mapGetters } from 'vuex'
-import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
+
+import { extractAttributesFromMapping } from '@/services/mappingHelpers'
+
+import List from './List.vue'
+import ListNotAllowed from '../../Common/ListNotAllowed.vue'
+import Headline from '../../Materialize/Headline.vue'
 
 export default {
   name: 'UsersManagement',
@@ -100,11 +102,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 .UserManagement {
   margin-bottom: 3em;
 }
 ::v-deep .usersDropdown {
-  background-color: $light-grey-color;
+  background-color: variables.$light-grey-color;
   border: none;
 }
 .UserList--container {

@@ -83,9 +83,10 @@
 </template>
 
 <script>
-import { truncateName } from '../../../utils'
-import HighlightedSpan from '../../Common/HighlightedSpan'
 import { mapActions, mapGetters } from 'vuex'
+
+import HighlightedSpan from '@/components/Common/HighlightedSpan.vue'
+import { truncateName } from '@/utils'
 
 export default {
   components: {

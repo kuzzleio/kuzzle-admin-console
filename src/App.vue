@@ -20,14 +20,11 @@
 </template>
 
 <script>
-require('ace-builds')
-require('ace-builds/webpack-resolver')
-
-import {} from './assets/global.scss'
-import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
-import ModalDelete from './components/Common/Environments/ModalDelete'
-import ModalImport from './components/Common/Environments/ModalImport'
-import TelemetryBanner from './components/TelemetryBanner'
+import '@/assets/style.scss'
+import ModalCreateOrUpdate from '@/components/Common/Environments/ModalCreateOrUpdate.vue'
+import ModalDelete from '@/components/Common/Environments/ModalDelete.vue'
+import ModalImport from '@/components/Common/Environments/ModalImport.vue'
+import TelemetryBanner from '@/components/TelemetryBanner.vue'
 
 export default {
   name: 'KuzzleAdminConsole',

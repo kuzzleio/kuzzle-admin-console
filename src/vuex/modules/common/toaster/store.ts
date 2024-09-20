@@ -1,11 +1,11 @@
 import { ToasterState } from './types'
-import { createMutations, createModule } from 'direct-vuex'
+import { defineMutations, defineModule } from 'direct-vuex'
 
 const state: ToasterState = {
   toast: {}
 }
 
-export const mutations = createMutations<ToasterState>()({
+export const mutations = defineMutations<ToasterState>()({
   setToast(state, payload) {
     state.toast = {
       text: null,
@@ -17,7 +17,7 @@ export const mutations = createMutations<ToasterState>()({
   }
 })
 
-const toaster = createModule({
+const toaster = defineModule({
   namespaced: true,
   state,
   mutations

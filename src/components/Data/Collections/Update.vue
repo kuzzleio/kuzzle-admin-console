@@ -18,10 +18,11 @@
   </b-container>
 </template>
 <script>
-import PageNotAllowed from '../../Common/PageNotAllowed'
-import CreateOrUpdate from './CreateOrUpdate'
-import { mapGetters } from 'vuex'
 import { omit } from 'lodash'
+import { mapGetters } from 'vuex'
+
+import CreateOrUpdate from './CreateOrUpdate.vue'
+import PageNotAllowed from '../../Common/PageNotAllowed.vue'
 
 export default {
   name: 'CollectionUpdate',

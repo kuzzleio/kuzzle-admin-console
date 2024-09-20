@@ -46,7 +46,8 @@ a.dropdown-button {
 
 <script>
 import Vue from 'vue'
-import { formatForDom } from '../../utils'
+
+import { formatForDom } from '@/utils'
 
 export default {
   props: ['id', 'myclass'],

@@ -1,5 +1,7 @@
+@use 'variables';
+
 .error {
-  color: $error-color;
+  color: variables.$error-color;
   font-weight: bold;
 }
 

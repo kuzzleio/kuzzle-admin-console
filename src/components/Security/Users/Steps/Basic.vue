@@ -48,7 +48,7 @@
 </template>
 
 <script type="text/javascript">
-import UserProfileList from './UserProfileList'
+import UserProfileList from './UserProfileList.vue'
 
 export default {
   name: 'UserBasicData',

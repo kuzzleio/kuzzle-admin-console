@@ -1,11 +1,18 @@
+import IndexesPage from "@/components/Data/Indexes/Page.vue";
+import CollectionList from "@/components/Data/Collections/CollectionList.vue";
+import CollectionsCreate from "@/components/Data/Collections/Create.vue";
+import CollectionsWatch from "@/components/Data/Collections/Watch.vue";
+import CollectionsUpdate from "@/components/Data/Collections/Update.vue";
+import DocumentsPage from "@/components/Data/Documents/Page.vue";
+import DocumentsCreate from "@/components/Data/Documents/Create.vue";
+import DocumentsUpdate from "@/components/Data/Documents/Update.vue";
+
 export default [
   // Indexes routes
   {
     path: '/data',
     name: 'Indexes',
-    component(resolve) {
-      require(['../../components/Data/Indexes/Page'], resolve)
-    }
+    component: IndexesPage,
   },
   {
     path: '/data/:indexName',
@@ -13,9 +20,7 @@ export default [
     meta: {
       auth: true
     },
-    component(resolve) {
-      require(['../../components/Data/Collections/CollectionList'], resolve)
-    },
+    component: CollectionList,
     props: route => ({
       indexName: route.params.indexName
     })
@@ -23,9 +28,7 @@ export default [
   {
     path: '/data/:indexName/create',
     name: 'CreateCollection',
-    component(resolve) {
-      require(['../../components/Data/Collections/Create'], resolve)
-    },
+    component: CollectionsCreate,
     props: route => ({
       indexName: route.params.indexName
     })
@@ -33,9 +36,7 @@ export default [
   {
     path: '/data/:indexName/:collectionName/watch',
     name: 'WatchCollection',
-    component(resolve) {
-      require(['../../components/Data/Collections/Watch'], resolve)
-    },
+    component: CollectionsWatch,
     props: route => ({
       indexName: route.params.indexName,
       collectionName: route.params.collectionName
@@ -44,9 +45,7 @@ export default [
   {
     path: '/data/:indexName/:collectionName/edit',
     name: 'EditCollection',
-    component(resolve) {
-      require(['../../components/Data/Collections/Update'], resolve)
-    },
+    component: CollectionsUpdate,
     props: route => ({
       indexName: route.params.indexName,
       collectionName: route.params.collectionName
@@ -55,9 +54,7 @@ export default [
   {
     path: '/data/:indexName/:collectionName',
     name: 'DocumentList',
-    component(resolve) {
-      require(['../../components/Data/Documents/Page'], resolve)
-    },
+    component: DocumentsPage,
     props: route => ({
       indexName: route.params.indexName,
       collectionName: route.params.collectionName
@@ -66,9 +63,7 @@ export default [
   {
     path: '/data/:indexName/:collectionName/create',
     name: 'CreateDocument',
-    component(resolve) {
-      require(['../../components/Data/Documents/Create'], resolve)
-    },
+    component: DocumentsCreate,
     props: route => ({
       indexName: route.params.indexName,
       collectionName: route.params.collectionName
@@ -77,9 +72,7 @@ export default [
   {
     path: '/data/:indexName/:collectionName/update/:id',
     name: 'UpdateDocument',
-    component(resolve) {
-      require(['../../components/Data/Documents/Update'], resolve)
-    },
+    component: DocumentsUpdate,
     props: route => ({
       id: route.params.id,
       indexName: route.params.indexName,

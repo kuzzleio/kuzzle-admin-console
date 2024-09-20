@@ -29,7 +29,7 @@
 <style lang="scss" rel="stylesheet/scss" scoped></style>
 
 <script>
-import CreateEnvironment from './CreateEnvironment'
+import CreateEnvironment from './CreateEnvironment.vue'
 
 export default {
   name: 'EnvironmentsCreateModal',

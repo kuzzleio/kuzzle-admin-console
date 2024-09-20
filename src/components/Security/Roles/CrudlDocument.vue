@@ -135,14 +135,15 @@
 </template>
 
 <script>
-import Pagination from '../../Materialize/Pagination'
-import Modal from '../../Materialize/Modal'
-import Filters from './Filters'
 import {
   formatFromBasicSearch,
   ACTIVE_BASIC,
   NO_ACTIVE
-} from '../../../services/filterManager'
+} from '@/services/filterManager'
+
+import Filters from './Filters.vue'
+import Pagination from '../../Materialize/Pagination.vue'
+import Modal from '../../Materialize/Modal.vue'
 
 export default {
   name: 'CrudlDocument',

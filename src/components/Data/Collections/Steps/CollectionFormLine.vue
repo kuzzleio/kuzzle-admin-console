@@ -44,14 +44,15 @@
 </template>
 
 <script>
+import Multiselect from 'vue-multiselect'
+import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
+
+import MSelect from '@/components/Common/MSelect.vue'
 import {
   getSchemaForType,
   getElementDefinition,
   castByElementId
-} from '../../../../services/collectionHelper'
-import Multiselect from 'vue-multiselect'
-import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
-import MSelect from '../../../Common/MSelect'
+} from '@/services/collectionHelper'
 
 export default {
   name: 'CollectionFormLine',

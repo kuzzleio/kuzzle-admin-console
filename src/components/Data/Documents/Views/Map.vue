@@ -188,13 +188,14 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LCircle, LPolygon } from 'vue2-leaflet'
 import L from 'leaflet'
-import '@/assets/leaflet.css'
-import JsonFormatter from '@/directives/json-formatter.directive'
-import { mapGetters } from 'vuex'
-import PerPageSelector from '@/components/Common/PerPageSelector'
 import get from 'lodash/get'
+import { mapGetters } from 'vuex'
+import { LMap, LTileLayer, LMarker, LCircle, LPolygon } from 'vue2-leaflet'
+
+import '@/assets/leaflet.css'
+import PerPageSelector from '@/components/Common/PerPageSelector.vue'
+import JsonFormatter from '@/directives/json-formatter.directive'
 
 export default {
   name: 'ViewMap',

@@ -18,11 +18,12 @@
 </template>
 
 <script>
-import CreateOrUpdate from './CreateOrUpdate'
-import Headline from '../../Materialize/Headline'
-import Notice from '../Common/Notice'
-import { mapGetters } from 'vuex'
 import omit from 'lodash/omit'
+import { mapGetters } from 'vuex'
+
+import CreateOrUpdate from './CreateOrUpdate.vue'
+import Notice from '../Common/Notice.vue'
+import Headline from '../../Materialize/Headline.vue'
 
 export default {
   name: 'UpdateProfile',

@@ -147,6 +147,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 .QuickFilter {
   margin-bottom: 0;
   color: #002835;
@@ -195,7 +197,7 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   text-decoration: underline;
-  color: $primary-color;
+  color: variables.$primary-color;
 }
 
 .QuickFilter-actions {

@@ -23,12 +23,14 @@
 </template>
 
 <script>
-import PageNotAllowed from '../../Common/PageNotAllowed'
-import { mapGetters } from 'vuex'
-import Headline from '../../Materialize/Headline'
-import CreateOrUpdate from './Common/CreateOrUpdate'
 import omit from 'lodash/omit'
 import get from 'lodash/get'
+import { mapGetters } from 'vuex'
+
+import PageNotAllowed from '@/components/Common/PageNotAllowed.vue'
+import Headline from '@/components/Materialize/Headline.vue'
+
+import CreateOrUpdate from './Common/CreateOrUpdate.vue'
 
 export default {
   name: 'DocumentCreate',

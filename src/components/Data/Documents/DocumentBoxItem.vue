@@ -37,9 +37,11 @@
 </template>
 
 <script>
-import Dropdown from '../../Materialize/Dropdown'
-import JsonFormat from '../../../directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
+
+import JsonFormat from '@/directives/json-formatter.directive'
+import Dropdown from '@/components/Materialize/Dropdown'
+
 export default {
   name: 'DocumentBoxItem',
   directives: {

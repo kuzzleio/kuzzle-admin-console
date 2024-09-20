@@ -224,6 +224,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+
 const emptyBasicFilter = { attribute: null, operator: 'contains', value: null }
 const emptySorting = { attribute: null, order: 'asc' }
 

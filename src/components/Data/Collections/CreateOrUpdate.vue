@@ -35,11 +35,11 @@
           <span v-if="collection">This field cannot be updated</span>
           <span v-else>This field is mandatory</span>
         </template>
-        <template v-if="!$v.name.required" v-slot:invalid-feedback
+        <template v-if="!v$.name.required" v-slot:invalid-feedback
           >Please fill-in a valid collection name.
         </template>
         <template
-          v-else-if="!$v.name.isValidCollectionName"
+          v-else-if="!v$.name.isValidCollectionName"
           v-slot:invalid-feedback
           >The name you entered is invalid.
           <a
@@ -54,7 +54,7 @@
           type="text"
           name="collection"
           tabindex="1"
-          v-model="$v.name.$model"
+          v-model="v$.name.$model"
           :disabled="!!collection"
           :state="nameInputState"
         />
@@ -136,13 +136,13 @@
 </style>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { requiredUnless } from 'vuelidate/lib/validators'
+import { useVuelidate } from '@vuelidate/core'
+import { requiredUnless } from '@vuelidate/validators'
 import { mapGetters } from 'vuex'
 
-import Headline from '../../Materialize/Headline'
-import Focus from '../../../directives/focus.directive'
-import JsonEditor from '../../Common/JsonEditor'
+import Focus from '@/directives/focus.directive'
+import JsonEditor from '../../Common/JsonEditor.vue'
+import Headline from '../../Materialize/Headline.vue'
 
 function isValidCollectionName(value) {
   const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(
@@ -154,7 +154,6 @@ function isValidCollectionName(value) {
 }
 
 export default {
-  mixins: [validationMixin],
   name: 'CollectionCreateOrUpdate',
   components: {
     Headline,
@@ -175,6 +174,7 @@ export default {
       })
     }
   },
+  setup() { return { v$: useVuelidate() } },
   data() {
     return {
       name: this.collection || '',
@@ -211,7 +211,7 @@ export default {
       return `${this.currentEnvironment.name}-${this.indexName}-${this.name}-mapping.json`
     },
     nameInputState() {
-      const { $dirty, $error } = this.$v.name
+      const { $dirty, $error } = this.v$.name
       const state = $dirty ? !$error : null
       return state
     },
@@ -275,8 +275,8 @@ export default {
       }
     },
     onSubmit() {
-      this.$v.$touch()
-      if (this.$v.$anyError) {
+      this.v$.$touch()
+      if (this.v$.$anyError) {
         return
       }
 

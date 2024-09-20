@@ -133,8 +133,10 @@
 </template>
 
 <script>
-import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
 import { mapGetters } from 'vuex'
+
+import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue'
+
 export default {
   name: 'Signup',
   components: {

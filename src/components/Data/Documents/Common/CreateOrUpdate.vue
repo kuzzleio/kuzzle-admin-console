@@ -148,10 +148,11 @@
 </style>
 
 <script>
-import JsonEditor from '../../../Common/JsonEditor'
-import Focus from '../../../../directives/focus.directive'
-import JsonFormatter from '../../../../directives/json-formatter.directive'
+import JsonEditor from '@/components/Common/JsonEditor.vue'
+import Focus from '@/directives/focus.directive'
+import JsonFormatter from '@/directives/json-formatter.directive'
 import { formSchemaService, typesCorrespondance } from '@/services/formSchema'
+
 export default {
   name: 'DocumentCreateOrUpdate',
   components: {

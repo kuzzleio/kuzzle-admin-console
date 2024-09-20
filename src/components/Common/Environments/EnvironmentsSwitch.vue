@@ -77,10 +77,12 @@
 </template>
 
 <script>
-import { formatForDom, sortObject } from '../../../utils'
 import { mapValues, omit } from 'lodash'
-import { isValidEnvironment } from '../../../validators'
 import { mapGetters } from 'vuex'
+
+import { formatForDom, sortObject } from '@/utils'
+import { isValidEnvironment } from '@/validators'
+
 export default {
   name: 'EnvironmentSwitch',
   props: {

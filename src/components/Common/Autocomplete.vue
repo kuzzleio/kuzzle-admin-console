@@ -137,16 +137,18 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/variables.scss';
+
 .Autocomplete-results {
   padding: 0;
   margin: 0;
-  border: 1px solid $dropdown-border-color;
+  border: 1px solid variables.$dropdown-border-color;
   height: 120px;
   overflow: auto;
 }
 
 .Autocomplete-result.is-active {
-  background-color: $blue-color;
+  background-color: variables.$blue-color;
   color: white;
 }
 
@@ -158,7 +160,7 @@ export default {
 }
 
 .Autocomplete-result:hover {
-  background-color: $blue-color;
+  background-color: variables.$blue-color;
   color: white;
 }
 </style>

@@ -61,10 +61,11 @@
 </template>
 
 <script>
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import RoleList from './List'
-import Headline from '../../Materialize/Headline'
 import { mapGetters } from 'vuex'
+
+import RoleList from './List.vue'
+import ListNotAllowed from '../../Common/ListNotAllowed.vue'
+import Headline from '../../Materialize/Headline.vue'
 
 export default {
   name: 'RolesManagement',

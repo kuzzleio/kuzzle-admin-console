@@ -110,8 +110,9 @@
 </template>
 
 <script>
-import CollectionFormLine from './CollectionFormLine'
 import mapValues from 'lodash/mapValues'
+
+import CollectionFormLine from './CollectionFormLine.vue'
 
 export default {
   name: 'CollectionForm',

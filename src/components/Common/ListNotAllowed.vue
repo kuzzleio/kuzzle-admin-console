@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <b-card>
     <b-row>
       <b-col cols="2">

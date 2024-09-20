@@ -68,8 +68,9 @@
 </template>
 
 <script>
-import jsonFormatter from '../../../directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
+
+import jsonFormatter from '@/directives/json-formatter.directive'
 
 export default {
   name: 'RoleItem',

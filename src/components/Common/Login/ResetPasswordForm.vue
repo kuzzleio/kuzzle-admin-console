@@ -19,7 +19,7 @@
           required
           tabindex="1"
           type="password"
-          v-model="$v.password.$model"
+          v-model="v$.password.$model"
           :state="validateState('password')"
         />
       </b-form-group>
@@ -41,7 +41,7 @@
           required
           tabindex="2"
           type="password"
-          v-model="$v.password2.$model"
+          v-model="v$.password2.$model"
           :pattern="password2Pattern"
           :state="validateState('password2')"
         />
@@ -68,15 +68,15 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { sameAs, required } from 'vuelidate/lib/validators'
+import { useVuelidate } from '@vuelidate/core'
+import { sameAs, required } from '@vuelidate/validators'
 
 export default {
-  mixins: [validationMixin],
   name: 'ResetPasswordForm',
   props: {
     resetToken: String
   },
+  setup() { return { v$: useVuelidate() } },
   data() {
     return {
       error: '',
@@ -95,10 +95,10 @@ export default {
   },
   computed: {
     password2Feedback() {
-      if (!this.$v.password2.sameAs) {
+      if (!this.v$.password2.sameAs) {
         return 'Passwords do not match'
       }
-      if (!this.$v.password2.required) {
+      if (!this.v$.password2.required) {
         return 'Password must not be empty'
       }
       return null
@@ -112,7 +112,7 @@ export default {
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v[fieldName]
+      const { $dirty, $error } = this.v$[fieldName]
       const state = $dirty ? !$error : null
       return state
     },

@@ -48,12 +48,12 @@
 </template>
 
 <script>
-import CrudlDocument from './CrudlDocument'
-import UserItem from '../Security/Users/UserItem'
-import RoleItem from '../Security/Roles/RoleItem'
-import ProfileItem from '../Security/Profiles/ProfileItem'
-import DocumentItem from '../Data/Documents/DocumentListItem'
-import * as filterManager from '../../services/filterManager'
+import * as filterManager from '@/services/filterManager'
+import CrudlDocument from './CrudlDocument.vue'
+import UserItem from '../Security/Users/UserItem.vue'
+import RoleItem from '../Security/Roles/RoleItem.vue'
+import ProfileItem from '../Security/Profiles/ProfileItem.vue'
+import DocumentItem from '../Data/Documents/DocumentListItem.vue'
 
 export default {
   name: 'CommonList',

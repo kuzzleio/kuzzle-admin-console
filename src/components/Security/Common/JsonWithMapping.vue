@@ -56,7 +56,7 @@
 </style>
 
 <script>
-import JsonEditor from '../../Common/JsonEditor'
+import JsonEditor from '@/components/Common/JsonEditor.vue'
 
 export default {
   name: 'DocumentCreateOrUpdate',

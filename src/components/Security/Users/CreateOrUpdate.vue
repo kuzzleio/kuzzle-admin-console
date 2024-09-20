@@ -25,7 +25,7 @@
             <b-tab id="UserUpdate-basicTab">
               <template v-slot:title>
                 <i
-                  v-if="$v.basic.$anyError"
+                  v-if="v$.basic.$anyError"
                   class="fas fa-exclamation-circle text-danger"
                   data-cy="UserUpdate-basicTab--dangerIcon"
                 />
@@ -35,7 +35,7 @@
                 :edit-kuid="!id"
                 :added-profiles="addedProfiles"
                 :kuid="kuid"
-                :validations="$v.basic"
+                :validations="v$.basic"
                 @set-custom-kuid="setCustomKuid"
                 @profile-add="onProfileAdded"
                 @profile-remove="onProfileRemoved"
@@ -54,7 +54,7 @@
             >
               <template v-slot:title>
                 <i
-                  v-if="$v.customContentValue.$anyError"
+                  v-if="v$.customContentValue.$anyError"
                   class="fas fa-exclamation-circle text-danger"
                   data-cy="UserUpdate-customTab--dangerIcon"
                 />
@@ -95,21 +95,21 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { startsWithSpace, isWhitespace } from '../../../validators'
-import { not } from 'vuelidate/lib/validators'
-
-import Basic from './Steps/Basic'
-import CredentialsSelector from './Steps/CredentialsSelector'
-import CustomData from './Steps/CustomData'
-import Headline from '../../Materialize/Headline'
-import Notice from '../Common/Notice'
-import MainSpinner from '../../Common/MainSpinner'
 import Promise from 'bluebird'
+import { useVuelidate } from '@vuelidate/core'
+import { not } from '@vuelidate/validators'
 import { mapGetters } from 'vuex'
 
+import { startsWithSpace, isWhitespace } from '@/validators'
+
+import Basic from './Steps/Basic.vue'
+import CredentialsSelector from './Steps/CredentialsSelector.vue'
+import CustomData from './Steps/CustomData.vue'
+import Notice from '../Common/Notice.vue'
+import Headline from '../../Materialize/Headline.vue'
+import MainSpinner from '../../Common/MainSpinner.vue'
+
 export default {
-  mixins: [validationMixin],
   name: 'CreateOrUpdateUser',
   components: {
     Basic,
@@ -119,6 +119,7 @@ export default {
     MainSpinner,
     Notice
   },
+  setup() { return { v$: useVuelidate() } },
   data() {
     return {
       loading: false,
@@ -171,24 +172,24 @@ export default {
   },
   methods: {
     onProfileAdded(profile) {
-      this.$v.addedProfiles.$model.push(profile)
-      this.$v.addedProfiles.$touch()
+      this.v$.addedProfiles.$model.push(profile)
+      this.v$.addedProfiles.$touch()
     },
     onProfileRemoved(profile) {
-      this.$v.addedProfiles.$model.splice(
-        this.$v.addedProfiles.$model.indexOf(profile),
+      this.v$.addedProfiles.$model.splice(
+        this.v$.addedProfiles.$model.indexOf(profile),
         1
       )
-      this.$v.addedProfiles.$touch()
+      this.v$.addedProfiles.$touch()
     },
     setCustomKuid(value) {
-      this.$v.kuid.$model = value
+      this.v$.kuid.$model = value
     },
     onCredentialsChanged(payload) {
       this.credentials[payload.strategy] = { ...payload.credentials }
     },
     onCustomContentChanged(value) {
-      this.$v.customContentValue.$model = value
+      this.v$.customContentValue.$model = value
     },
     switchTab(name) {
       this.activeTab = name
@@ -197,8 +198,8 @@ export default {
       this.activeTabObject = tab
     },
     async submit() {
-      this.$v.$touch()
-      if (this.$v.$anyError) {
+      this.v$.$touch()
+      if (this.v$.$anyError) {
         return
       }
       for (const strategy of Object.keys(this.credentials)) {

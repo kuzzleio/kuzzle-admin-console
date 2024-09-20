@@ -109,12 +109,14 @@
 </template>
 
 <script>
-import DeleteModal from './DeleteModal'
-import Filters from './Filters'
-import RoleItem from '../Roles/RoleItem'
-import PerPageSelector from '@/components/Common/PerPageSelector'
-import * as filterManager from '../../../services/filterManager'
 import { mapGetters } from 'vuex'
+
+import PerPageSelector from '@/components/Common/PerPageSelector.vue'
+
+import DeleteModal from './DeleteModal.vue'
+import Filters from './Filters.vue'
+import RoleItem from '../Roles/RoleItem.vue'
+import * as filterManager from '@/services/filterManager'
 
 export default {
   name: 'RoleList',

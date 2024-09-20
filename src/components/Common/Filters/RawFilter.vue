@@ -36,8 +36,9 @@
 </template>
 
 <script>
-import JsonEditor from '../../Common/JsonEditor'
 import { mapGetters } from 'vuex'
+
+import JsonEditor from '@/components/Common/JsonEditor.vue'
 
 export default {
   components: {

@@ -26,8 +26,10 @@
 </template>
 
 <script type="text/javascript">
-import MSelect from '../../Common/MSelect'
 import { mapGetters } from 'vuex'
+
+import MSelect from '../../Common/MSelect.vue'
+
 export default {
   name: 'RoleChips',
   components: {

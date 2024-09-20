@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { createMutations, createModule, createActions } from 'direct-vuex'
+import { defineMutations, defineModule, defineActions } from 'direct-vuex'
 import { KuzzleState } from './types'
 import { moduleActionContext } from '@/vuex/store'
 import { getters } from './getters'
@@ -29,7 +29,7 @@ export const envColors = [
   'magenta'
 ]
 
-const mutations = createMutations<KuzzleState>()({
+const mutations = defineMutations<KuzzleState>()({
   createEnvironment(state, payload) {
     if (!payload) {
       return
@@ -76,7 +76,7 @@ const mutations = createMutations<KuzzleState>()({
   }
 })
 
-const actions = createActions({
+const actions = defineActions({
   setCurrentEnvironment(context, id) {
     const { commit } = kuzzleActionContext(context)
 
@@ -218,7 +218,7 @@ const actions = createActions({
   }
 })
 
-const kuzzle = createModule({
+const kuzzle = defineModule({
   namespaced: true,
   state,
   mutations,

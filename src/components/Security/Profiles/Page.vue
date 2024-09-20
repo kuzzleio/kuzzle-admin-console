@@ -40,10 +40,11 @@
 </template>
 
 <script>
-import List from './List'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import Headline from '../../Materialize/Headline'
 import { mapGetters } from 'vuex'
+
+import List from './List.vue'
+import ListNotAllowed from '../../Common/ListNotAllowed.vue'
+import Headline from '../../Materialize/Headline.vue'
 
 export default {
   name: 'ProfileManagement',

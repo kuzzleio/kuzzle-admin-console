@@ -62,6 +62,7 @@
 
 <script type="text/javascript">
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'UserProfileList',
   components: {},

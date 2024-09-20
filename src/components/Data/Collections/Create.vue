@@ -12,9 +12,11 @@
 </template>
 
 <script>
-import PageNotAllowed from '../../Common/PageNotAllowed'
-import CreateOrUpdate from './CreateOrUpdate'
 import { mapGetters } from 'vuex'
+
+import PageNotAllowed from '../../Common/PageNotAllowed.vue'
+import CreateOrUpdate from './CreateOrUpdate.vue'
+
 export default {
   name: 'CollectionCreate',
   components: {

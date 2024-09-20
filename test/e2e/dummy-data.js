@@ -1,4 +1,4 @@
-const { Kuzzle, Http } = require('kuzzle-sdk')
+const { Kuzzle, Http } = require('kuzzle-sdk-v7')
 
 const kuzzle = new Kuzzle(new Http('localhost'))
 const INDEX_COUNT = 30

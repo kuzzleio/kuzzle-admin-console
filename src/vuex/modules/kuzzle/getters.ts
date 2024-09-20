@@ -1,10 +1,10 @@
 import { KuzzleState } from './types'
-import { createGetters } from 'direct-vuex'
+import { defineGetters } from 'direct-vuex'
 import { isValidEnvironment } from '../../../validators'
 import * as kuzzleV1 from '../../../services/kuzzleWrapper-v1'
 import * as kuzzleV2 from '../../../services/kuzzleWrapper-v2'
 
-export const getters = createGetters<KuzzleState>()({
+export const getters = defineGetters<KuzzleState>()({
   wrapper(state, getters) {
     if (!getters.currentEnvironment) {
       return null

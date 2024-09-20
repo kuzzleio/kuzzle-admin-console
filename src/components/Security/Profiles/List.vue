@@ -133,11 +133,13 @@
 </template>
 
 <script>
-import DeleteModal from './DeleteModal'
-import ProfileItem from '../Profiles/ProfileItem'
-import Filters from './Filters'
-import PerPageSelector from '@/components/Common/PerPageSelector'
 import { mapGetters } from 'vuex'
+
+import PerPageSelector from '@/components/Common/PerPageSelector.vue'
+
+import DeleteModal from './DeleteModal.vue'
+import Filters from './Filters.vue'
+import ProfileItem from '../Profiles/ProfileItem.vue'
 
 export default {
   name: 'ProfileList',

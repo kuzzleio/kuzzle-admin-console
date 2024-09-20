@@ -2,7 +2,7 @@ To start the Kuzzle Admin Console in development-mode with hot-reload run the fo
 
 ```
 $ npm install
-$ npm run serve
+$ npm run dev
 ```
 
 The Kuzzle Admin Console will then be accessible at the following URL: http://localhost:8080
@@ -28,7 +28,7 @@ to it. Each subsection must contain a `Page.vue` file, used as the entry-point t
 
 ## Javascript
 
-We use ESLint to enforce coding style conventions. ESLint triggers errors at build whenever conventions are not respected. See also `.eslintrc.js`.
+We use ESLint to enforce coding style conventions. ESLint triggers errors at build whenever conventions are not respected. See also `.eslintrc.cjs`.
 
 ## CSS / Sass
 
@@ -36,13 +36,13 @@ This section is strongly inspired by https://kaliop.github.io/frontend-style-gui
 
 ### Formatting
 
-Follow the formatting style used by [Prettier](https://prettier.io/) (with default settings).
+Follow the formatting style used by [Prettier](https://prettier.io/).
 
 - Indent with 2 spaces
 - One selector per line
 - One line per declaration (`property: value;`)
 - Always use `;` at the end of a declaration
-- Prefer double quotes (`"hello"`), and quote attribute values (`input[type="text"]`)
+- Prefer single quotes (`'hello'`), and quote attribute values (`input[type='text']`)
 
 ```css
 body {
@@ -145,13 +145,13 @@ If you do use `!important` in your code, always write a comment explaining why.
 We use the Sass preprocessor, with the SCSS syntax.
 Sass files should have a `.scss` extension.
 
-We use `node-sass` (via the Webpack `sass-loader`) to compile `.scss` files to CSS.
+We use `sass` (and its Vite plugin) to compile `.scss` files to CSS.
 
 #### Variables and mixins
 
 Use lowercase names with hyphens (not underscores), and follow an general-to-particular progression:
 
-Global variables and mixins: `$type-name`, `@mixin some-name` must be declared in `src/assets/variables.scss/`
+Global variables and mixins: `$type-name`, `@mixin some-name` must be declared in `src/assets/styles/_variables.scss`
 
 Variables and mixins specific to a component: must be declared inside the component-scoped stylesheets (see below).
 

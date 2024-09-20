@@ -1,6 +1,6 @@
 import { AuthState } from './types'
 import { SessionUser } from '@/models/SessionUser'
-import { createGetters } from 'direct-vuex'
+import { defineGetters } from 'direct-vuex'
 
 const isActionAllowed = (
   user,
@@ -64,15 +64,15 @@ const isActionAllowed = (
   return false
 }
 
-export const getters = createGetters<AuthState>()({
+export const getters = defineGetters<AuthState>()({
   isAuthenticated(state): boolean {
     return !!state?.user?.id
   },
-  user(state): SessionUser {
+  user(state): SessionUser | null {
     return state.user
   },
   userProfiles(state) {
-    return state.user.params.profileIds
+    return state.user?.params.profileIds ?? []
   },
   tokenValid(state): boolean {
     return state.tokenValid

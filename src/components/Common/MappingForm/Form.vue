@@ -50,13 +50,13 @@
 </template>
 
 <script>
-import FormLine from './FormLine'
 import {
   flattenObjectMapping,
   getDefaultSchemaForType,
   flattenObjectSchema,
   formatSchema
-} from '../../../services/collectionHelper'
+} from '@/services/collectionHelper'
+import FormLine from './FormLine.vue'
 
 export default {
   name: 'SchemaForm',

@@ -42,7 +42,7 @@
 </style>
 
 <script>
-import ResetPasswordForm from './Common/Login/ResetPasswordForm'
+import ResetPasswordForm from './Common/Login/ResetPasswordForm.vue'
 
 export default {
   name: 'ResetPassword',

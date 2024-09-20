@@ -17,9 +17,11 @@
 </template>
 
 <script>
-import Connecting from './Connecting'
-import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
 import { mapGetters } from 'vuex'
+
+import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue'
+import Connecting from './Connecting.vue'
+
 let idConnect
 let idReconnect
 
