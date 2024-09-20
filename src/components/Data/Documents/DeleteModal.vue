@@ -1,6 +1,6 @@
 <template>
-  <b-modal @hide="$emit('hide')" :id="id" class="BulkDeleteModal">
-    <template v-slot:modal-header>
+  <b-modal :id="id" class="BulkDeleteModal" @hide="$emit('hide')">
+    <template #modal-header>
       <h4>Document deletion</h4>
     </template>
 
@@ -11,19 +11,15 @@
       </p>
       <p v-if="candidatesForDeletion.length === 1">
         Do you really want to delete
-        <span :title="candidatesForDeletion[0]">{{
-          truncateName(candidatesForDeletion[0])
-        }}</span
+        <span :title="candidatesForDeletion[0]">{{ truncateName(candidatesForDeletion[0]) }}</span
         >?
       </p>
     </template>
     <template v-else>
-      <b-spinner label="Spinning"></b-spinner>
+      <b-spinner label="Spinning" />
     </template>
-    <template v-slot:modal-footer="{ close }">
-      <b-button @click.prevent="close">
-        Cancel
-      </b-button>
+    <template #modal-footer="{ close }">
+      <b-button @click.prevent="close"> Cancel </b-button>
       <b-button
         variant="danger"
         :disabled="isLoading"
@@ -36,7 +32,7 @@
 </template>
 
 <script>
-import { truncateName } from '@/utils'
+import { truncateName } from '@/utils';
 
 export default {
   name: 'DeleteModal',
@@ -44,13 +40,13 @@ export default {
   props: {
     id: {
       type: String,
-      required: true
+      required: true,
     },
     candidatesForDeletion: Array,
-    isLoading: Boolean
+    isLoading: Boolean,
   },
   methods: {
-    truncateName
-  }
-}
+    truncateName,
+  },
+};
 </script>

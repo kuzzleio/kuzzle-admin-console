@@ -1,10 +1,7 @@
 <template>
   <div class="RealtimeOnlyEmptySet row valign-bottom empty-set">
     <div class="col s1 offset-s1">
-      <i
-        class="fa fa-6x fa-file-text-o grey-text text-lighten-1"
-        aria-hidden="true"
-      />
+      <i class="fa fa-6x fa-file-text-o grey-text text-lighten-1" aria-hidden="true" />
     </div>
     <div class="col s8 m9 l10">
       <p>
@@ -15,14 +12,12 @@
       <router-link
         :disabled="!canEditCollection(index, collection)"
         :title="
-          !canEditCollection(index, collection)
-            ? 'You are not allowed to edit this collection'
-            : ''
+          !canEditCollection(index, collection) ? 'You are not allowed to edit this collection' : ''
         "
         :class="!canEditCollection(index, collection) ? 'disabled' : ''"
         :to="{
           name: 'EditCollection',
-          params: { index: index, collection: collection }
+          params: { index: index, collection: collection },
         }"
         class="btn primary waves-effect waves-light"
       >
@@ -34,15 +29,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
 export default {
   props: {
     index: String,
-    collection: String
+    collection: String,
   },
   computed: {
-    ...mapGetters('auth', ['canEditCollection'])
-  }
-}
+    ...mapGetters('auth', ['canEditCollection']),
+  },
+};
 </script>

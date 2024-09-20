@@ -30,18 +30,18 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import Basic from './Basic.vue'
-import CredentialsSelector from './CredentialsSelector.vue'
-import CustomData from './CustomData.vue'
+import Basic from './Basic.vue';
+import CredentialsSelector from './CredentialsSelector.vue';
+import CustomData from './CustomData.vue';
 
 export default {
   name: 'StepsContent',
   components: {
     Basic,
     CredentialsSelector,
-    CustomData
+    CustomData,
   },
   props: ['step', 'isUpdate'],
   data() {
@@ -53,71 +53,71 @@ export default {
       strategies: [],
       credentialsMapping: {},
       customContent: {},
-      customContentMapping: {}
-    }
+      customContentMapping: {},
+    };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper'])
+    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
   },
   async mounted() {
-    this.loading = true
+    this.loading = true;
 
     try {
-      let credentialsMapping = await this.$kuzzle.security.getAllCredentialFields()
-      this.strategies = Object.keys(credentialsMapping)
+      const credentialsMapping = await this.$kuzzle.security.getAllCredentialFields();
+      this.strategies = Object.keys(credentialsMapping);
 
       // Clean "kuid" from credentialsMapping
-      this.strategies.forEach(strategy => {
+      this.strategies.forEach((strategy) => {
         if (credentialsMapping[strategy].kuid) {
-          delete credentialsMapping[strategy].kuid
+          delete credentialsMapping[strategy].kuid;
         }
-      })
-      this.credentialsMapping = credentialsMapping
+      });
+      this.credentialsMapping = credentialsMapping;
 
-      const { mapping } = await this.wrapper.getMappingUsers()
+      const { mapping } = await this.wrapper.getMappingUsers();
       if (mapping) {
-        this.customContentMapping = mapping
-        delete this.customContentMapping.profileIds
+        this.customContentMapping = mapping;
+        delete this.customContentMapping.profileIds;
       }
 
       if (this.isUpdate) {
-        this.kuid = this.$route.params.id
+        this.kuid = this.$route.params.id;
 
         await Promise.all(
-          this.strategies.map(async strategy => {
+          this.strategies.map(async (strategy) => {
             const credentialsExists = await this.$kuzzle.security.hasCredentials(
               strategy,
-              this.kuid
-            )
+              this.kuid,
+            );
 
             if (!credentialsExists) {
-              return
+              return;
             }
 
-            let strategyCredentials = await this.$kuzzle.security.getCredentials(
+            const strategyCredentials = await this.$kuzzle.security.getCredentials(
               strategy,
-              this.kuid
-            )
+              this.kuid,
+            );
 
             if (strategyCredentials.kuid) {
-              delete strategyCredentials.kuid
+              delete strategyCredentials.kuid;
             }
 
-            this.$set(this.credentials, strategy, strategyCredentials)
-          })
-        )
+            this.$set(this.credentials, strategy, strategyCredentials);
+          }),
+        );
 
-        let { _id, content } = await this.$kuzzle.security.getUser(this.kuid)
-        this.id = _id
-        this.addedProfiles = content.profileIds
-        delete content.profileIds
-        this.customContent = { ...content }
+        const { _id, content } = await this.$kuzzle.security.getUser(this.kuid);
+        this.id = _id;
+        this.addedProfiles = content.profileIds;
+        delete content.profileIds;
+        this.customContent = { ...content };
       }
 
-      this.loading = false
-      this.updateUser()
+      this.loading = false;
+      this.updateUser();
     } catch (e) {
-      this.$store.direct.commit.toaster.setToast({ text: e.message })
+      this.$store.direct.commit.toaster.setToast({ text: e.message });
     }
   },
   methods: {
@@ -127,33 +127,33 @@ export default {
         autoGenerateKuid: this.autoGenerateKuid,
         addedProfiles: this.addedProfiles,
         credentials: this.credentials,
-        customContent: this.customContent
-      })
+        customContent: this.customContent,
+      });
     },
     onProfileAdded(profile) {
-      this.addedProfiles.push(profile)
-      this.updateUser()
+      this.addedProfiles.push(profile);
+      this.updateUser();
     },
     onProfileRemoved(profile) {
-      this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
-      this.updateUser()
+      this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1);
+      this.updateUser();
     },
     setAutoGenerateKuid(value) {
-      this.autoGenerateKuid = value
-      this.updateUser()
+      this.autoGenerateKuid = value;
+      this.updateUser();
     },
     setCustomKuid(value) {
-      this.kuid = value
-      this.updateUser()
+      this.kuid = value;
+      this.updateUser();
     },
     onCredentialsChanged(payload) {
-      this.credentials[payload.strategy] = { ...payload.credentials }
-      this.updateUser()
+      this.credentials[payload.strategy] = { ...payload.credentials };
+      this.updateUser();
     },
     onCustomContentChanged(value) {
-      this.customContent = value
-      this.updateUser()
-    }
-  }
-}
+      this.customContent = value;
+      this.updateUser();
+    },
+  },
+};
 </script>

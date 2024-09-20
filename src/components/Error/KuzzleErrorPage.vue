@@ -2,7 +2,7 @@
   <div class="KuzzleErrorPage">
     <b-container>
       <b-jumbotron>
-        <template v-slot:header>
+        <template #header>
           <img
             alt="Welcome to the Kuzzle Admin Console"
             class="mb-3"
@@ -33,36 +33,36 @@
 </template>
 
 <script>
-import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue'
+import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue';
 
 export default {
   name: 'KuzzleErrorPage',
   components: {
-    EnvironmentSwitch
+    EnvironmentSwitch,
   },
   data() {
     return {
       host: null,
-      port: null
-    }
+      port: null,
+    };
   },
   computed: {
     kuzzleError() {
-      return this.$store.state.kuzzle.errorFromKuzzle
-    }
+      return this.$store.state.kuzzle.errorFromKuzzle;
+    },
   },
   methods: {
     editEnvironment(id) {
-      this.$emit('environment::create', id)
+      this.$emit('environment::create', id);
     },
     deleteEnvironment(id) {
-      this.$emit('environment::delete', id)
+      this.$emit('environment::delete', id);
     },
     importEnv() {
-      this.$emit('environment::importEnv')
-    }
-  }
-}
+      this.$emit('environment::importEnv');
+    },
+  },
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

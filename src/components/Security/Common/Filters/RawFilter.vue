@@ -1,81 +1,70 @@
 <template>
   <form>
-    <json-editor
-      id="rawsearch"
-      ref="jsoneditor"
-      myclass="pre_ace"
-      :content="filters.raw"
-    />
+    <json-editor id="rawsearch" ref="jsoneditor" myclass="pre_ace" :content="filters.raw" />
     <div class="row card-action">
-      <button
-        type="submit"
-        class="btn primary waves-effect waves-light"
-        @click.prevent="rawSearch"
-      >
+      <button type="submit" class="btn primary waves-effect waves-light" @click.prevent="rawSearch">
         {{ labelSearchButton }}
       </button>
-      <button class="btn-flat waves-effect waves-light" @click="resetRawSearch">
-        Reset
-      </button>
+      <button class="btn-flat waves-effect waves-light" @click="resetRawSearch">Reset</button>
       <span v-if="jsonInvalid" class="error">Your JSON is not valid</span>
     </div>
   </form>
 </template>
 
 <script>
-import JsonEditor from '@/components/Common/JsonEditor.vue'
+import JsonEditor from '@/components/Common/JsonEditor.vue';
 
 export default {
   components: {
-    JsonEditor
+    JsonEditor,
   },
   props: {
     rawFilter: {
       type: Object,
       default() {
-        return {}
-      }
+        return {};
+      },
     },
     formatFromBasicSearch: Function,
     labelSearchButton: {
       type: String,
       required: false,
-      default: 'search'
+      default: 'search',
     },
     sortingEnabled: {
       type: Boolean,
       required: false,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
       filters: {
-        raw: {}
+        raw: {},
       },
-      jsonInvalid: false
-    }
+      jsonInvalid: false,
+    };
   },
   mounted() {
-    this.filters.raw = this.rawFilter || {}
+    this.filters.raw = this.rawFilter || {};
   },
   methods: {
     rawSearch() {
-      let json = this.$refs.jsoneditor.getJson()
+      const json = this.$refs.jsoneditor.getJson();
 
       if (json === null) {
-        this.jsonInvalid = true
-        return
+        this.jsonInvalid = true;
+        return;
       }
 
-      this.jsonInvalid = false
-      this.filters.raw = json
+      this.jsonInvalid = false;
+      this.filters.raw = json;
 
-      this.$emit('filters-raw-search', this.filters.raw)
+      this.$emit('filters-raw-search', this.filters.raw);
     },
     resetRawSearch() {
-      this.filters.raw = {}
-    }
-  }
-}
+      this.filters.raw = {};
+    },
+  },
+};
 </script>

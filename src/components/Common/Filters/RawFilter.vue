@@ -2,8 +2,8 @@
   <form class="RawFilter">
     <json-editor
       id="rawsearch"
-      class="JsonEditor"
       ref="jsoneditor"
+      class="JsonEditor"
       myclass="pre_ace"
       :content="rawFilter"
       @change="onFilterChange"
@@ -11,7 +11,7 @@
     <b-alert :show="!isFilterValid && showError" variant="danger" class="mt-2"
       >Your JSON filter contains errors.</b-alert
     >
-    <b-row no-gutters v-if="actionButtonsVisible">
+    <b-row v-if="actionButtonsVisible" no-gutters>
       <b-col sm="12" class="text-right">
         <b-button
           class="mr-2"
@@ -36,37 +36,37 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import JsonEditor from '@/components/Common/JsonEditor.vue'
+import JsonEditor from '@/components/Common/JsonEditor.vue';
 
 export default {
   components: {
-    JsonEditor
+    JsonEditor,
   },
   props: {
     submitButtonLabel: {
       type: String,
       required: false,
-      default: 'Search'
+      default: 'Search',
     },
     actionButtonsVisible: {
       type: Boolean,
       required: false,
-      default: true
+      default: true,
     },
     sortingEnabled: {
       type: Boolean,
       required: false,
-      default: true
+      default: true,
     },
     currentFilter: {
       type: Object,
       required: false,
       default: () => {
-        return {}
-      }
-    }
+        return {};
+      },
+    },
   },
   data() {
     return {
@@ -74,58 +74,58 @@ export default {
   "query": {},
   "sort": {}
 }`,
-      showError: false
-    }
+      showError: false,
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     filterState() {
       try {
-        return JSON.parse(this.rawFilter)
+        return JSON.parse(this.rawFilter);
       } catch (error) {
-        return {}
+        return {};
       }
     },
     isFilterValid() {
       try {
-        JSON.parse(this.rawFilter)
-        return true
+        JSON.parse(this.rawFilter);
+        return true;
       } catch (error) {
-        return false
-      }
-    }
-  },
-  methods: {
-    onFilterChange(val) {
-      this.rawFilter = val
-    },
-    submit() {
-      if (this.isFilterValid) {
-        this.showError = false
-        this.$emit('filter-submitted', this.filterState)
-      } else {
-        this.showError = true
+        return false;
       }
     },
-    reset() {
-      this.$emit('reset')
-    }
   },
   watch: {
     currentFilter: {
       immediate: true,
       handler(val) {
         if (!val) {
-          return
+          return;
         }
         if (!val.raw) {
-          return
+          return;
         }
-        this.rawFilter = JSON.stringify(val.raw, null, 2)
+        this.rawFilter = JSON.stringify(val.raw, null, 2);
+      },
+    },
+  },
+  methods: {
+    onFilterChange(val) {
+      this.rawFilter = val;
+    },
+    submit() {
+      if (this.isFilterValid) {
+        this.showError = false;
+        this.$emit('filter-submitted', this.filterState);
+      } else {
+        this.showError = true;
       }
-    }
-  }
-}
+    },
+    reset() {
+      this.$emit('reset');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

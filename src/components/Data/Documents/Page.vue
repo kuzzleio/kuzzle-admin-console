@@ -2,29 +2,24 @@
   <div class="DocumentList">
     <b-container
       :class="{
-        'DocumentList--containerFluid': listViewType !== LIST_VIEW_LIST
+        'DocumentList--containerFluid': listViewType !== LIST_VIEW_LIST,
       }"
       class="DocumentList--container"
     >
       <b-row>
         <b-col>
           <headline>
-            <span class="code" :title="collectionName">{{
-              truncateName(collectionName, 20)
-            }}</span>
+            <span class="code" :title="collectionName">{{ truncateName(collectionName, 20) }}</span>
           </headline>
         </b-col>
         <b-col sm="6" class="text-right mt-3">
           <b-button
             variant="primary"
             data-cy="CreateDocument-btn"
-            :disabled="
-              indexOrCollectionNotFound ||
-                !canCreateDocument(indexName, collectionName)
-            "
+            :disabled="indexOrCollectionNotFound || !canCreateDocument(indexName, collectionName)"
             :to="{
               name: 'CreateDocument',
-              params: { indexName, collectionName }
+              params: { indexName, collectionName },
             }"
             >Create New Document</b-button
           >
@@ -45,7 +40,7 @@
                 class="fas fa-sync mr-1"
                 data-cy="Autosync-icon"
                 :class="{ 'fa-spin': autoSync, 'text-secondary': !autoSync }"
-              ></i>
+              />
               Refresh
             </template>
             <b-dropdown-item
@@ -53,11 +48,7 @@
               :disabled="!displayRealtimeButton.includes(listViewType)"
               @click="autoSync = !autoSync"
             >
-              <i
-                :class="
-                  `far ${autoSync ? 'fa-check-square' : 'fa-square'} left`
-                "
-              />
+              <i :class="`far ${autoSync ? 'fa-check-square' : 'fa-square'} left`" />
               Auto-Sync
             </b-dropdown-item>
           </b-dropdown>
@@ -66,7 +57,7 @@
             :active-view="listViewType"
             :index="indexName"
             :collection="collectionName"
-            :mappingAttributes="mappingAttributes"
+            :mapping-attributes="mappingAttributes"
             @list="switchListView(LIST_VIEW_LIST)"
             @map="switchListView(LIST_VIEW_MAP)"
             @column="switchListView(LIST_VIEW_COLUMN)"
@@ -74,17 +65,15 @@
           />
           <collection-dropdown-action
             class="icon-medium icon-black ml-2"
-            :indexName="indexName"
-            :collectionName="collectionName"
+            :index-name="indexName"
+            :collection-name="collectionName"
             @delete-collection-clicked="showDeleteCollectionModal"
             @clear="afterCollectionClear"
           />
         </b-col>
       </b-row>
       <list-not-allowed
-        v-if="
-          !canSearchDocument(indexName, collectionName) && index && collection
-        "
+        v-if="!canSearchDocument(indexName, collectionName) && index && collection"
       />
       <template v-else>
         <filters
@@ -113,10 +102,7 @@
           </template>
         </template>
         <template v-else>
-          <b-card
-            class="light-shadow"
-            :bg-variant="documents.length === 0 ? 'light' : 'default'"
-          >
+          <b-card class="light-shadow" :bg-variant="documents.length === 0 ? 'light' : 'default'">
             <b-card-text class="p-0">
               <List
                 v-if="listViewType === LIST_VIEW_LIST"
@@ -142,7 +128,7 @@
 
               <Column
                 v-if="listViewType === LIST_VIEW_COLUMN"
-                :searchQuery="searchQuery"
+                :search-query="searchQuery"
                 :all-checked="allChecked"
                 :auto-sync="autoSync"
                 :current-page-size="paginationSize"
@@ -181,24 +167,21 @@
               <Map
                 v-if="listViewType === LIST_VIEW_MAP"
                 :selected-geopoint="selectedGeopoint"
-                :selectedGeoshape="selectedGeoshape"
+                :selected-geoshape="selectedGeoshape"
                 :current-page-size="paginationSize"
                 :index="indexName"
-                :geoDocuments="geoDocuments"
-                :shapesDocuments="shapesDocuments"
+                :geo-documents="geoDocuments"
+                :shapes-documents="shapesDocuments"
                 :collection="collectionName"
-                :mappingGeopoints="mappingGeopoints"
-                :mappingGeoshapes="mappingGeoshapes"
+                :mapping-geopoints="mappingGeopoints"
+                :mapping-geoshapes="mappingGeoshapes"
                 @change-page-size="changePaginationSize"
                 @on-select-geopoint="onSelectGeopoint"
                 @on-select-geoshape="onSelectGeoshape"
                 @edit="onEditClicked"
                 @delete="onDeleteClicked"
               />
-              <b-row
-                v-show="totalDocuments > paginationSize && displayPagination"
-                align-h="center"
-              >
+              <b-row v-show="totalDocuments > paginationSize && displayPagination" align-h="center">
                 <b-pagination
                   v-model="currentPage"
                   aria-controls="my-table"
@@ -206,7 +189,7 @@
                   data-cy="DocumentList-pagination"
                   :total-rows="totalDocuments"
                   :per-page="paginationSize"
-                ></b-pagination>
+                />
               </b-row>
               <div
                 v-if="totalDocuments > 10000"
@@ -214,8 +197,8 @@
                 data-cy="DocumentList-exceedESLimitMsg"
               >
                 <small class="text-secondary"
-                  >Due to limitations imposed by Elasticsearch, you won't be
-                  able to browse documents beyond 10000.</small
+                  >Due to limitations imposed by Elasticsearch, you won't be able to browse
+                  documents beyond 10000.</small
                 >
                 &lcub;&lcub;totalDocuments&rcub;&rcub;
               </div>
@@ -226,7 +209,7 @@
       <DeleteCollectionModal
         :index="index"
         :collection="collection"
-        :modalId="modalDeleteId"
+        :modal-id="modalDeleteId"
         @delete-successful="afterDeleteCollection"
       />
       <delete-modal
@@ -237,8 +220,8 @@
         @hide="resetCandidatesForDeletion"
       />
       <b-toast
-        variant="info"
         id="realtime-notification-toast"
+        variant="info"
         title="toast title"
         toaster="b-toaster-bottom-right"
         no-auto-hide
@@ -250,40 +233,40 @@
 </template>
 
 <script>
-import isUndefined from 'lodash/isUndefined'
-import mapValues from 'lodash/mapValues'
-import defaults from 'lodash/defaults'
-import get from 'lodash/get'
-import pickBy from 'lodash/pickBy'
-import debounce from 'lodash/debounce'
-import { mapGetters } from 'vuex'
+import debounce from 'lodash/debounce';
+import defaults from 'lodash/defaults';
+import get from 'lodash/get';
+import isUndefined from 'lodash/isUndefined';
+import mapValues from 'lodash/mapValues';
+import pickBy from 'lodash/pickBy';
+import { mapGetters } from 'vuex';
 
-import Filters from '@/components/Common/Filters/Filters.vue'
-import ListNotAllowed from '@/components/Common/ListNotAllowed.vue'
-import CollectionDropdownView from '@/components/Data/Collections/DropdownView.vue'
-import Headline from '@/components/Materialize/Headline.vue'
-import * as filterManager from '@/services/filterManager'
-import { extractAttributesFromMapping } from '@/services/mappingHelpers'
-import { flattenObjectMapping } from '@/services/collectionHelper'
-import { truncateName } from '@/utils'
+import DeleteCollectionModal from '../Collections/DeleteCollectionModal.vue';
+import CollectionDropdownAction from '../Collections/DropdownAction.vue';
+import { flattenObjectMapping } from '@/services/collectionHelper';
+import * as filterManager from '@/services/filterManager';
 import {
   LIST_VIEW_COLUMN,
   LIST_VIEW_LIST,
   LIST_VIEW_TIME_SERIES,
   LIST_VIEW_MAP,
   loadSettingsForCollection,
-  saveSettingsForCollection
-} from '@/services/localSettings'
+  saveSettingsForCollection,
+} from '@/services/localSettings';
+import { extractAttributesFromMapping } from '@/services/mappingHelpers';
+import { truncateName } from '@/utils';
 
-import DeleteModal from './DeleteModal.vue'
-import EmptyState from './EmptyState.vue'
-import NoGeopointFieldState from './NoGeopointFieldState.vue'
-import Column from './Views/Column/Column.vue'
-import Map from './Views/Map.vue'
-import List from './Views/List.vue'
-import TimeSeries from './Views/TimeSeries.vue'
-import CollectionDropdownAction from '../Collections/DropdownAction.vue'
-import DeleteCollectionModal from '../Collections/DeleteCollectionModal.vue'
+import Filters from '@/components/Common/Filters/Filters.vue';
+import ListNotAllowed from '@/components/Common/ListNotAllowed.vue';
+import CollectionDropdownView from '@/components/Data/Collections/DropdownView.vue';
+import Headline from '@/components/Materialize/Headline.vue';
+import DeleteModal from './DeleteModal.vue';
+import EmptyState from './EmptyState.vue';
+import NoGeopointFieldState from './NoGeopointFieldState.vue';
+import Column from './Views/Column/Column.vue';
+import List from './Views/List.vue';
+import Map from './Views/Map.vue';
+import TimeSeries from './Views/TimeSeries.vue';
 
 export default {
   name: 'DocumentsPage',
@@ -300,11 +283,11 @@ export default {
     Headline,
     Filters,
     ListNotAllowed,
-    NoGeopointFieldState
+    NoGeopointFieldState,
   },
   props: {
     indexName: String,
-    collectionName: String
+    collectionName: String,
   },
   data() {
     return {
@@ -340,9 +323,9 @@ export default {
         LIST_VIEW_LIST,
         LIST_VIEW_COLUMN,
         LIST_VIEW_TIME_SERIES,
-        LIST_VIEW_MAP
-      ]
-    }
+        LIST_VIEW_MAP,
+      ],
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper', '$kuzzle']),
@@ -350,219 +333,200 @@ export default {
       'canSearchDocument',
       'canCreateDocument',
       'canDeleteDocument',
-      'canEditDocument'
+      'canEditDocument',
     ]),
     documentsIdxById() {
       if (!this.documents) {
-        return {}
+        return {};
       }
-      const r = {}
+      const r = {};
       this.documents.forEach((d, idx) => {
-        r[d._id] = idx
-      })
-      return r
+        r[d._id] = idx;
+      });
+      return r;
     },
     listViewType: {
-      get: function() {
+      get: function () {
         if (!this.collectionSettings.listViewType) {
-          return LIST_VIEW_LIST
+          return LIST_VIEW_LIST;
         }
-        return this.collectionSettings.listViewType
+        return this.collectionSettings.listViewType;
       },
-      set: function(value) {
-        this.$log.debug(`Setting listViewType to ${value}`)
-        this.$set(this.collectionSettings, 'listViewType', value)
-      }
+      set: function (value) {
+        this.$log.debug(`Setting listViewType to ${value}`);
+        this.$set(this.collectionSettings, 'listViewType', value);
+      },
     },
     autoSync: {
-      get: function() {
+      get: function () {
         if (!this.collectionSettings.autoSync) {
-          return false
+          return false;
         }
-        return this.collectionSettings.autoSync
+        return this.collectionSettings.autoSync;
       },
-      set: function(value) {
-        this.$set(this.collectionSettings, 'autoSync', value)
-      }
+      set: function (value) {
+        this.$set(this.collectionSettings, 'autoSync', value);
+      },
     },
     hasGeopoints() {
-      return (
-        this.listViewType === LIST_VIEW_MAP &&
-        this.mappingGeopoints.length === 0
-      )
+      return this.listViewType === LIST_VIEW_MAP && this.mappingGeopoints.length === 0;
     },
     hasGeoshapes() {
-      return (
-        this.listViewType === LIST_VIEW_MAP &&
-        this.mappingGeoshapes.length === 0
-      )
+      return this.listViewType === LIST_VIEW_MAP && this.mappingGeoshapes.length === 0;
     },
     shapesDocuments() {
       return this.documents
-        .filter(document => {
-          const shape = get(document._source, this.selectedGeoshape)
-          return shape ? this.handledGeoShapesTypes.includes(shape.type) : false
+        .filter((document) => {
+          const shape = get(document._source, this.selectedGeoshape);
+          return shape ? this.handledGeoShapesTypes.includes(shape.type) : false;
         })
-        .map(d => ({
+        .map((d) => ({
           _id: d._id,
           content: get(d._source, this.selectedGeoshape),
-          source: d._source
-        }))
+          source: d._source,
+        }));
     },
     geoDocuments() {
       return this.documents
-        .filter(document => {
-          const [lat, lng] = this.getCoordinates(document._source)
-          const latFloat = parseFloat(lat)
-          const lngFloat = parseFloat(lng)
+        .filter((document) => {
+          const [lat, lng] = this.getCoordinates(document._source);
+          const latFloat = parseFloat(lat);
+          const lngFloat = parseFloat(lng);
 
-          return !isNaN(latFloat) && !isNaN(lngFloat)
+          return !isNaN(latFloat) && !isNaN(lngFloat);
         })
-        .map(d => ({
-          coordinates: [
-            get(d._source, this.latFieldPath),
-            get(d._source, this.lngFieldPath)
-          ],
+        .map((d) => ({
+          coordinates: [get(d._source, this.latFieldPath), get(d._source, this.lngFieldPath)],
           _id: d._id,
-          source: d._source
-        }))
+          source: d._source,
+        }));
     },
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+      return this.$store.direct.getters.index.getOneIndex(this.indexName);
     },
     collection() {
       return this.index
-        ? this.$store.direct.getters.index.getOneCollection(
-            this.index,
-            this.collectionName
-          )
-        : null
+        ? this.$store.direct.getters.index.getOneCollection(this.index, this.collectionName)
+        : null;
     },
     collectionMapping() {
-      return this.collection ? this.collection.mapping : null
+      return this.collection ? this.collection.mapping : null;
     },
     indexOrCollectionNotFound() {
-      return !this.index || !this.collection ? true : false
+      return !!(!this.index || !this.collection);
     },
     mappingAttributes() {
       return this.collectionMapping
         ? this.extractAttributesFromMapping(this.collectionMapping)
-        : null
+        : null;
     },
     dateFields() {
       if (!this.collectionMapping) {
-        return {}
+        return {};
       }
       return Object.keys(
-        pickBy(
-          flattenObjectMapping(this.collectionMapping),
-          value => value === 'date'
-        )
-      )
+        pickBy(flattenObjectMapping(this.collectionMapping), (value) => value === 'date'),
+      );
     },
     latFieldPath() {
-      return `${this.selectedGeopoint}.lat`
+      return `${this.selectedGeopoint}.lat`;
     },
     lngFieldPath() {
-      return `${this.selectedGeopoint}.lon`
+      return `${this.selectedGeopoint}.lon`;
     },
     isCollectionGeo() {
-      return this.mappingGeopoints.length > 0 || this.mappingGeoshapes > 0
+      return this.mappingGeopoints.length > 0 || this.mappingGeoshapes > 0;
     },
     isDocumentListFiltered() {
-      return this.currentFilter.active !== filterManager.NO_ACTIVE
+      return this.currentFilter.active !== filterManager.NO_ACTIVE;
     },
     isCollectionEmpty() {
-      return !this.isDocumentListFiltered && this.totalDocuments === 0
+      return !this.isDocumentListFiltered && this.totalDocuments === 0;
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
-        return false
+        return false;
       }
 
-      return this.selectedDocuments.length === this.documents.length
+      return this.selectedDocuments.length === this.documents.length;
     },
     paginationFrom() {
-      return parseInt(this.currentFilter.from) || 0
+      return parseInt(this.currentFilter.from) || 0;
     },
     paginationSize() {
-      return parseInt(this.currentFilter.size) || 25
+      return parseInt(this.currentFilter.size) || 25;
     },
     isRealtimeCollection() {
-      return this.collection ? this.collection.isRealtime() : false
-    }
-  },
-  async beforeDestroy() {
-    await this.unsubscribeFromCurrentDocs()
-  },
-  created() {
-    // Make constants available in the template
-    this.LIST_VIEW_COLUMN = LIST_VIEW_COLUMN
-    this.LIST_VIEW_MAP = LIST_VIEW_MAP
-    this.LIST_VIEW_TIME_SERIES = LIST_VIEW_TIME_SERIES
-    this.LIST_VIEW_LIST = LIST_VIEW_LIST
-
-    this.debouncedFetchDocuments = debounce(this.fetchDocuments, 1000, {
-      maxWait: 2500
-    })
-  },
-  async mounted() {
-    await this.loadAllTheThings()
-    await this.subscribeToCurrentDocs()
-
-    if (this.paginationFrom) {
-      this.setCurrentPage()
-    }
+      return this.collection ? this.collection.isRealtime() : false;
+    },
   },
   watch: {
     async autoSync(newValue) {
       if (newValue === true) {
-        await this.fetchDocuments()
+        await this.fetchDocuments();
       } else {
-        this.resetNotifications()
+        this.resetNotifications();
       }
     },
     currentPage: {
       handler(value) {
-        const from = (value - 1) * this.paginationSize
+        const from = (value - 1) * this.paginationSize;
         this.onFiltersUpdated(
           Object.assign(this.currentFilter, {
-            from
-          })
-        )
-        this.fetchDocuments()
-      }
+            from,
+          }),
+        );
+        this.fetchDocuments();
+      },
     },
     collectionName: {
       handler() {
-        this.loadAllTheThings()
-      }
+        this.loadAllTheThings();
+      },
     },
     indexName: {
       handler() {
-        this.loadAllTheThings()
-      }
+        this.loadAllTheThings();
+      },
     },
     collectionSettings: {
       deep: true,
       handler() {
-        this.saveSettingsForCollection()
-        this.setListViewTypeInRoute(this.listViewType)
-      }
+        this.saveSettingsForCollection();
+        this.setListViewTypeInRoute(this.listViewType);
+      },
+    },
+  },
+  async beforeDestroy() {
+    await this.unsubscribeFromCurrentDocs();
+  },
+  created() {
+    // Make constants available in the template
+    this.LIST_VIEW_COLUMN = LIST_VIEW_COLUMN;
+    this.LIST_VIEW_MAP = LIST_VIEW_MAP;
+    this.LIST_VIEW_TIME_SERIES = LIST_VIEW_TIME_SERIES;
+    this.LIST_VIEW_LIST = LIST_VIEW_LIST;
+
+    this.debouncedFetchDocuments = debounce(this.fetchDocuments, 1000, {
+      maxWait: 2500,
+    });
+  },
+  async mounted() {
+    await this.loadAllTheThings();
+    await this.subscribeToCurrentDocs();
+
+    if (this.paginationFrom) {
+      this.setCurrentPage();
     }
   },
   methods: {
     formatMeta(_kuzzle_info) {
       return {
-        author:
-          _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
-        updater:
-          _kuzzle_info.updater === '-1'
-            ? 'Anonymous (-1)'
-            : _kuzzle_info.updater,
+        author: _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
+        updater: _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
         createdAt: _kuzzle_info.createdAt,
-        updatedAt: _kuzzle_info.updatedAt
-      }
+        updatedAt: _kuzzle_info.updatedAt,
+      };
     },
     extractAttributesFromMapping,
     truncateName,
@@ -570,13 +534,13 @@ export default {
     // =========================================================================
     async unsubscribeFromCurrentDocs() {
       if (this.subscribeRoomId) {
-        await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId)
-        this.subscribeRoomId = null
+        await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId);
+        this.subscribeRoomId = null;
       }
     },
     async subscribeToCurrentDocs() {
       try {
-        await this.unsubscribeFromCurrentDocs()
+        await this.unsubscribeFromCurrentDocs();
         const roomId = await this.$kuzzle.realtime.subscribe(
           this.indexName,
           this.collectionName,
@@ -584,316 +548,284 @@ export default {
           // the user. Currently, the filters are all generated to ES DSL so,
           // we'll have a whole tech-story to migrate everything to Koncorde.
           {},
-          this.handleNotification
-        )
-        this.subscribeRoomId = roomId
+          this.handleNotification,
+        );
+        this.subscribeRoomId = roomId;
       } catch (error) {
-        this.$log.error(error)
+        this.$log.error(error);
       }
     },
     handleNotification(notification) {
       if (!this.handledNotificationActions.includes(notification.action)) {
-        return
+        return;
       }
-      this.addNotification(notification)
+      this.addNotification(notification);
       if (this.autoSync) {
-        this.applyNotification(notification)
+        this.applyNotification(notification);
       }
     },
     applyNotification(notification) {
       if (notification.action === 'create') {
-        this.newDocumentNotifications.push(notification)
-        this.debouncedFetchDocuments()
-        return
+        this.newDocumentNotifications.push(notification);
+        this.debouncedFetchDocuments();
+        return;
       }
       if (isUndefined(this.documentsIdxById[notification.result._id])) {
-        return
+        return;
       }
-      const docIdx = this.documentsIdxById[notification.result._id]
+      const docIdx = this.documentsIdxById[notification.result._id];
       if (['update', 'replace'].includes(notification.action)) {
-        this.$set(
-          this.documents[docIdx],
-          '_source',
-          notification.result._source
-        )
+        this.$set(this.documents[docIdx], '_source', notification.result._source);
       }
       if (notification.action === 'delete') {
-        setTimeout(() => this.$delete(this.documents, docIdx), 500)
+        setTimeout(() => this.$delete(this.documents, docIdx), 500);
 
-        this.debouncedFetchDocuments()
+        this.debouncedFetchDocuments();
       }
     },
     addNotification(notification) {
       if (notification.action === 'create' && !this.autoSync) {
-        this.hasNewDocuments = true
-        return
+        this.hasNewDocuments = true;
+        return;
       }
       if (isUndefined(this.documentsIdxById[notification.result._id])) {
-        return
+        return;
       }
-      this.$set(this.notificationsById, notification.result._id, notification)
+      this.$set(this.notificationsById, notification.result._id, notification);
     },
     addNewDocumentNotifications() {
-      let notification = this.newDocumentNotifications.pop()
+      let notification = this.newDocumentNotifications.pop();
       while (notification) {
-        this.addNotification(notification)
-        notification = this.newDocumentNotifications.pop()
+        this.addNotification(notification);
+        notification = this.newDocumentNotifications.pop();
       }
     },
     resetNotifications() {
-      this.notificationsById = mapValues(this.documentsIdxById, () => null)
-      this.hasNewDocuments = false
+      this.notificationsById = mapValues(this.documentsIdxById, () => null);
+      this.hasNewDocuments = false;
     },
     // VIEW MAP - GEOPOINTS
     // =========================================================================
     getCoordinates(document) {
-      return [
-        get(document, this.latFieldPath),
-        get(document, this.lngFieldPath)
-      ]
+      return [get(document, this.latFieldPath), get(document, this.lngFieldPath)];
     },
     onSelectGeopoint(selectedGeopoint) {
-      this.selectedGeopoint = selectedGeopoint
+      this.selectedGeopoint = selectedGeopoint;
     },
     onSelectGeoshape(selectedGeoshape) {
-      this.selectedGeoshape = selectedGeoshape
+      this.selectedGeoshape = selectedGeoshape;
     },
     listMappingGeopoints(mapping, path = []) {
-      let attributes = []
-      for (const [attributeName, { type, properties }] of Object.entries(
-        mapping
-      )) {
+      let attributes = [];
+      for (const [attributeName, { type, properties }] of Object.entries(mapping)) {
         if (properties) {
           if (properties.lat && properties.lon) {
-            attributes = attributes.concat(path.concat(attributeName).join('.'))
+            attributes = attributes.concat(path.concat(attributeName).join('.'));
           }
 
           attributes = attributes.concat(
-            this.listMappingGeopoints(properties, path.concat(attributeName))
-          )
+            this.listMappingGeopoints(properties, path.concat(attributeName)),
+          );
         } else if (type === 'geo_point') {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
+          attributes = attributes.concat(path.concat(attributeName).join('.'));
         }
       }
 
-      return attributes
+      return attributes;
     },
     listMappingGeoshapes(mapping, path = []) {
-      let attributes = []
-      for (const [attributeName, { type, properties }] of Object.entries(
-        mapping
-      )) {
+      let attributes = [];
+      for (const [attributeName, { type, properties }] of Object.entries(mapping)) {
         if (properties) {
           attributes = attributes.concat(
-            this.listMappingGeoshapes(properties, path.concat(attributeName))
-          )
+            this.listMappingGeoshapes(properties, path.concat(attributeName)),
+          );
         } else if (type === 'geo_shape') {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
+          attributes = attributes.concat(path.concat(attributeName).join('.'));
         }
       }
 
-      return attributes
+      return attributes;
     },
 
     // CREATE
     // =========================================================================
     onCreateClicked() {
-      this.$router.push({ name: 'CreateDocument' })
+      this.$router.push({ name: 'CreateDocument' });
     },
 
     // DELETE
     // =========================================================================
     async onDeleteConfirmed(documentsToDelete) {
-      this.deleteModalIsLoading = true
+      this.deleteModalIsLoading = true;
       try {
         await this.wrapper.performDeleteDocuments(
           this.indexName,
           this.collectionName,
-          documentsToDelete
-        )
+          documentsToDelete,
+        );
         if (!this.autoSync) {
-          this.fetchDocuments()
+          this.fetchDocuments();
         }
-        this.$bvModal.hide('modal-delete')
-        this.resetCandidatesForDeletion()
+        this.$bvModal.hide('modal-delete');
+        this.resetCandidatesForDeletion();
       } catch (e) {
-        this.$log.error(e)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while deleting the document(s).',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true
-          }
-        )
+        this.$log.error(e);
+        this.$bvToast.toast('The complete error has been printed to the console.', {
+          title: 'Ooops! Something went wrong while deleting the document(s).',
+          variant: 'danger',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+        });
       }
-      this.deleteModalIsLoading = false
+      this.deleteModalIsLoading = false;
     },
     resetCandidatesForDeletion() {
-      this.candidatesForDeletion.splice(0, this.candidatesForDeletion.length)
+      this.candidatesForDeletion.splice(0, this.candidatesForDeletion.length);
     },
     onBulkDeleteClicked() {
-      this.candidatesForDeletion = this.candidatesForDeletion.concat(
-        this.selectedDocuments
-      )
-      this.$bvModal.show('modal-delete')
+      this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
+      this.$bvModal.show('modal-delete');
     },
     onDeleteClicked(id) {
-      this.candidatesForDeletion.push(id)
-      this.$bvModal.show('modal-delete')
+      this.candidatesForDeletion.push(id);
+      this.$bvModal.show('modal-delete');
     },
     onEditClicked(id) {
       this.$router.push({
         name: 'UpdateDocument',
-        params: { id }
-      })
+        params: { id },
+      });
     },
 
     // DELETE COLLECTION
     // =========================================================================
     showDeleteCollectionModal() {
-      this.$bvModal.show(this.modalDeleteId)
+      this.$bvModal.show(this.modalDeleteId);
     },
     afterDeleteCollection() {
       this.$router.push({
         name: 'Collections',
-        params: { indexName: this.indexName }
-      })
+        params: { indexName: this.indexName },
+      });
     },
     // LIST (FETCH & SEARCH)
     // =========================================================================
     async loadAllTheThings() {
       try {
-        this.$emit('start-init')
-        this.loadSettingsForCollection()
-        this.saveSettingsForCollection()
-        this.loadMappingInfo()
+        this.$emit('start-init');
+        this.loadSettingsForCollection();
+        this.saveSettingsForCollection();
+        this.loadMappingInfo();
 
-        this.currentFilter = filterManager.load(
-          this.indexName,
-          this.collectionName,
-          this.$route
-        )
-        filterManager.save(
-          this.currentFilter,
-          this.$router,
-          this.indexName,
-          this.collectionName
-        )
-        this.displayPagination = true
-        this.$emit('end-init')
-        await this.fetchDocuments()
+        this.currentFilter = filterManager.load(this.indexName, this.collectionName, this.$route);
+        filterManager.save(this.currentFilter, this.$router, this.indexName, this.collectionName);
+        this.displayPagination = true;
+        this.$emit('end-init');
+        await this.fetchDocuments();
       } catch (err) {
-        this.$log.error(err)
+        this.$log.error(err);
         this.$bvToast.toast('The complete error has been printed to console.', {
           title: 'Ooops! Something went wrong.',
           variant: 'warning',
-          toaster: 'b-toaster-bottom-right'
-        })
-        this.$emit('end-init')
+          toaster: 'b-toaster-bottom-right',
+        });
+        this.$emit('end-init');
       }
     },
     navigateToDocument() {
-      const document = this.documents[0]
+      const document = this.documents[0];
 
       if (!document) {
-        return
+        return;
       }
 
       this.$router.push({
         name: 'UpdateDocument',
-        params: { id: document._id }
-      })
+        params: { id: document._id },
+      });
     },
     async onRefresh() {
-      await this.fetchDocuments()
+      await this.fetchDocuments();
     },
     async onFiltersUpdated(newFilters) {
-      this.currentFilter = newFilters
+      this.currentFilter = newFilters;
     },
     onFilterSubmit(saveToHistory = true) {
       if (saveToHistory) {
         filterManager.addNewHistoryItemAndSave(
           this.currentFilter,
           this.indexName,
-          this.collectionName
-        )
+          this.collectionName,
+        );
       }
-      this.fetchDocuments()
+      this.fetchDocuments();
     },
     afterCollectionClear() {
-      this.documents = []
-      this.totalDocuments = 0
-      this.currentFilter = new filterManager.Filter()
+      this.documents = [];
+      this.totalDocuments = 0;
+      this.currentFilter = new filterManager.Filter();
     },
     async fetchDocuments() {
-      this.isFetching = true
-      this.$forceUpdate()
-      this.selectedDocuments = []
-      this.notifications = []
+      this.isFetching = true;
+      this.$forceUpdate();
+      this.selectedDocuments = [];
+      this.notifications = [];
 
-      let pagination = {
+      const pagination = {
         from: this.paginationFrom,
-        size: this.paginationSize
-      }
+        size: this.paginationSize,
+      };
 
-      filterManager.save(
-        this.currentFilter,
-        this.$router,
-        this.indexName,
-        this.collectionName
-      )
+      filterManager.save(this.currentFilter, this.$router, this.indexName, this.collectionName);
 
       try {
         this.searchQuery = filterManager.toSearchQuery(
           this.currentFilter,
           this.mappingAttributes,
-          this.wrapper
-        )
+          this.wrapper,
+        );
 
         if (!this.searchQuery) {
-          this.searchQuery = {}
+          this.searchQuery = {};
         }
 
-        const sorting = filterManager.toSort(this.currentFilter)
+        const sorting = filterManager.toSort(this.currentFilter);
 
         if (this.searchQuery.query) {
-          this.searchQuery = this.searchQuery.query
+          this.searchQuery = this.searchQuery.query;
         }
 
-        this.resetNotifications()
+        this.resetNotifications();
 
         const res = await this.$kuzzle.document.search(
           this.indexName,
           this.collectionName,
           {
             query: this.searchQuery,
-            sort: sorting
+            sort: sorting,
           },
-          pagination
-        )
+          pagination,
+        );
 
-        this.documents = res.hits
-        this.totalDocuments = res.total
+        this.documents = res.hits;
+        this.totalDocuments = res.total;
 
-        this.$nextTick(() => this.addNewDocumentNotifications())
+        this.$nextTick(() => this.addNewDocumentNotifications());
       } catch (e) {
-        this.$log.error(e)
+        this.$log.error(e);
         if (e.message.includes('failed to create query')) {
           this.$bvToast.toast(
             'Your query is ill-formed. The complete error has been dumped to the console.',
             {
-              title:
-                'Ooops! Something went wrong while fetching the documents.',
+              title: 'Ooops! Something went wrong while fetching the documents.',
               variant: 'warning',
               toaster: 'b-toaster-bottom-right',
               appendTouast: true,
               dismissible: true,
-              noAutoHide: true
-            }
-          )
+              noAutoHide: true,
+            },
+          );
         } else {
           this.$bvToast.toast(e.message, {
             title: 'Ooops! Something went wrong while fetching the documents.',
@@ -901,11 +833,11 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true,
             dismissible: true,
-            noAutoHide: true
-          })
+            noAutoHide: true,
+          });
         }
       }
-      this.isFetching = false
+      this.isFetching = false;
     },
 
     // PAGINATION
@@ -915,85 +847,85 @@ export default {
         Object.assign(this.currentFilter, {
           size,
           currentPage: 0,
-          from: 0
-        })
-      )
-      this.fetchDocuments()
+          from: 0,
+        }),
+      );
+      this.fetchDocuments();
     },
     setCurrentPage() {
-      this.currentPage = parseInt(this.paginationFrom / this.paginationSize + 1)
+      this.currentPage = parseInt(this.paginationFrom / this.paginationSize + 1);
     },
 
     // SELECT ITEMS
     // =========================================================================
     onToggleAllClicked() {
       if (this.allChecked) {
-        this.selectedDocuments = []
-        return
+        this.selectedDocuments = [];
+        return;
       }
-      this.selectedDocuments = []
-      this.selectedDocuments = this.documents.map(document => document._id)
+      this.selectedDocuments = [];
+      this.selectedDocuments = this.documents.map((document) => document._id);
     },
     toggleSelectDocuments(id) {
-      let index = this.selectedDocuments.indexOf(id)
+      const index = this.selectedDocuments.indexOf(id);
 
       if (index === -1) {
-        this.selectedDocuments.push(id)
-        return
+        this.selectedDocuments.push(id);
+        return;
       }
 
-      this.selectedDocuments.splice(index, 1)
+      this.selectedDocuments.splice(index, 1);
     },
 
     // LIST VIEW TYPES
     // =========================================================================
     switchListView(listViewType) {
-      this.listViewType = listViewType
+      this.listViewType = listViewType;
     },
     setListViewTypeInRoute(listViewType) {
       if (this.$route.query.listViewType === listViewType) {
-        return
+        return;
       }
       this.$router.push({
-        query: defaults({ listViewType: listViewType }, this.$route.query)
-      })
+        query: defaults({ listViewType }, this.$route.query),
+      });
     },
     // Collection Metadata management
     // =========================================================================
     loadSettingsForCollection() {
       this.collectionSettings = defaults(
         {
-          listViewType: this.$route.query.listViewType
+          listViewType: this.$route.query.listViewType,
         },
-        loadSettingsForCollection(this.indexName, this.collectionName)
-      )
+        loadSettingsForCollection(this.indexName, this.collectionName),
+      );
     },
     saveSettingsForCollection() {
-      this.$log.debug('saveSettingsForCollection')
+      this.$log.debug('saveSettingsForCollection');
       return saveSettingsForCollection(
         this.indexName,
         this.collectionName,
-        this.collectionSettings
-      )
+        this.collectionSettings,
+      );
     },
     onSettingsUpdated(newSettings) {
-      this.collectionSettings = newSettings
+      this.collectionSettings = newSettings;
     },
     loadMappingInfo() {
-      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
-      this.mappingGeoshapes = this.listMappingGeoshapes(this.collectionMapping)
+      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping);
+      this.mappingGeoshapes = this.listMappingGeoshapes(this.collectionMapping);
       if (this.mappingGeopoints.length) {
-        this.selectedGeopoint = this.mappingGeopoints[0]
+        this.selectedGeopoint = this.mappingGeopoints[0];
       }
       if (this.mappingGeoshapes.length) {
-        this.selectedGeoshape = this.mappingGeoshapes[0]
+        this.selectedGeoshape = this.mappingGeoshapes[0];
       }
     },
     changeDisplayPagination(value) {
-      this.displayPagination = value
-    }
-  }
-}
+      this.displayPagination = value;
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

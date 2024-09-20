@@ -4,8 +4,8 @@
       <b-row>
         <b-col lg="8">
           <json-editor
-            class="h-100"
             :id="schema.label"
+            class="h-100"
             :content="JSON.stringify(value, null, 2) || '{}'"
             @change="onChange"
           />
@@ -21,28 +21,29 @@
 
 <script>
 // https://vue-generators.gitbook.io/vue-generators/fields/custom_fields
-import { abstractField } from 'vue-form-generator'
-import JsonEditor from '@/components/Common/JsonEditor.vue'
-import JsonFormatter from '@/directives/json-formatter.directive'
+import { abstractField } from 'vue-form-generator';
+
+import JsonFormatter from '@/directives/json-formatter.directive';
+
+import JsonEditor from '@/components/Common/JsonEditor.vue';
 
 export default {
   directives: {
-    JsonFormatter
+    JsonFormatter,
   },
   components: {
-    JsonEditor
+    JsonEditor,
   },
   mixins: [abstractField],
   methods: {
     onChange(jsonString) {
       try {
-        this.value = JSON.parse(jsonString)
+        this.value = JSON.parse(jsonString);
       } catch (err) {
         // do nothing...
         // if the JSON is invalid, no need to trigger form change event
-        return
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

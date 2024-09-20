@@ -3,7 +3,7 @@
     <b-container class="SelectEnvironmentPage-container h-100">
       <b-card class="my-3">
         <b-jumbotron lead="Please select a Kuzzle instance to connect to.">
-          <template v-slot:header
+          <template #header
             ><img
               src="../../../assets/logo.svg"
               alt="Welcome to the Kuzzle Admin Console"
@@ -33,17 +33,17 @@
 </template>
 
 <script>
-import EnvironmentSelector from './EnvironmentsSwitch.vue'
+import EnvironmentSelector from './EnvironmentsSwitch.vue';
 
 export default {
   name: 'SelectEnvironmentPage',
   components: { EnvironmentSelector },
   methods: {
     onEnvSwitched() {
-      this.$router.push({ path: '/' })
-    }
-  }
-}
+      this.$router.push({ path: '/' });
+    },
+  },
+};
 </script>
 
 <style>

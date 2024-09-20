@@ -1,9 +1,10 @@
-import { ToasterState } from './types'
-import { defineMutations, defineModule } from 'direct-vuex'
+import { defineMutations, defineModule } from 'direct-vuex';
+
+import type { ToasterState } from './types';
 
 const state: ToasterState = {
-  toast: {}
-}
+  toast: {},
+};
 
 export const mutations = defineMutations<ToasterState>()({
   setToast(state, payload) {
@@ -12,15 +13,15 @@ export const mutations = defineMutations<ToasterState>()({
       duration: 5000,
       cssClass: 'error',
       cb: null,
-      ...payload
-    }
-  }
-})
+      ...payload,
+    };
+  },
+});
 
 const toaster = defineModule({
   namespaced: true,
   state,
-  mutations
-})
+  mutations,
+});
 
-export default toaster
+export default toaster;

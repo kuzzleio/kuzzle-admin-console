@@ -1,12 +1,6 @@
 <template>
   <div>
-    <div
-      v-if="isOpen"
-      :id="id"
-      class="modal"
-      :class="computedClasses"
-      data-modal="true"
-    >
+    <div v-if="isOpen" :id="id" class="modal" :class="computedClasses" data-modal="true">
       <slot name="content">
         <div class="modal-content">
           <slot />
@@ -20,17 +14,17 @@
     <div
       v-if="isOpen"
       class="lean-overlay"
-      style="z-index: 1002; display: block; opacity: 0.5;"
+      style="z-index: 1002; display: block; opacity: 0.5"
       @click="canClose && close()"
     />
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
+import Vue from 'vue';
 
 // translated from https://github.com/appcomponents/material-components/tree/master/src/components/modal
-const ESC_KEY = 27
+const ESC_KEY = 27;
 
 export default {
   props: {
@@ -38,39 +32,39 @@ export default {
     additionalClass: {
       type: String,
       default: '',
-      required: false
+      required: false,
     },
     canClose: {
       type: Boolean,
       default: true,
-      required: false
+      required: false,
     },
     hasFooter: {
       type: Boolean,
       default: true,
-      required: false
+      required: false,
     },
     footerFixed: {
       type: Boolean,
-      default: false
+      default: false,
     },
     close: {
-      type: Function
+      type: Function,
     },
     bottom: Boolean,
     isOpen: Boolean,
-    loading: Boolean
+    loading: Boolean,
   },
   computed: {
     computedClasses() {
-      let cssClass = ''
+      let cssClass = '';
 
       if (!this.isOpen) {
-        return null
+        return null;
       }
 
       if (this.footerFixed) {
-        cssClass = 'modal-fixed-footer '
+        cssClass = 'modal-fixed-footer ';
       }
 
       if (this.bottom) {
@@ -79,53 +73,48 @@ export default {
           'bottom-modal bottom-sheet ' +
           this.additionalClass +
           (this.loading ? ' grey' : '')
-        )
+        );
       }
 
-      return (
-        cssClass +
-        'normal-modal ' +
-        this.additionalClass +
-        (this.loading ? ' grey' : '')
-      )
+      return cssClass + 'normal-modal ' + this.additionalClass + (this.loading ? ' grey' : '');
     },
     transition() {
-      return this.bottom ? 'modal-bottom' : 'modal'
-    }
+      return this.bottom ? 'modal-bottom' : 'modal';
+    },
   },
   watch: {
-    isOpen: function(active) {
+    isOpen: function (active) {
       if (active) {
-        window.document.body.style.overflow = 'hidden'
+        window.document.body.style.overflow = 'hidden';
       } else {
-        window.document.body.style.overflow = 'visible'
+        window.document.body.style.overflow = 'visible';
       }
-    }
+    },
   },
   mounted() {
     Vue.nextTick(() => {
-      window.document.addEventListener('keydown', this.handleEsc)
-    })
+      window.document.addEventListener('keydown', this.handleEsc);
+    });
   },
   destroyed() {
-    window.document.removeEventListener('keydown', this.handleEsc)
+    window.document.removeEventListener('keydown', this.handleEsc);
   },
   methods: {
     handleEsc(evt) {
-      evt = evt || window.event
+      evt = evt || window.event;
 
       if (this.canClose && evt.keyCode === ESC_KEY) {
-        this.close()
+        this.close();
       }
     },
     closeModal(id) {
       if (this.id === id) {
-        this.close()
-        return true
+        this.close();
+        return true;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss">

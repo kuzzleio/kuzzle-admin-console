@@ -3,17 +3,13 @@
     <b-container class="Signup-flexContainer">
       <b-card class="my-3">
         <b-jumbotron class="p-5">
-          <template v-slot:header>
-            <img
-              src="../assets/logo.svg"
-              alt="Welcome to the Kuzzle Admin Console"
-              height="60"
-            />
+          <template #header>
+            <img src="../assets/logo.svg" alt="Welcome to the Kuzzle Admin Console" height="60" />
             <h2>Create an Admin Account</h2>
           </template>
-          Your Kuzzle instance does not seem to have an administrator user. To
-          continue using an insecure installation and skip the Admin Account
-          creation, click the "Login as Anonymous" button below.
+          Your Kuzzle instance does not seem to have an administrator user. To continue using an
+          insecure installation and skip the Admin Account creation, click the "Login as Anonymous"
+          button below.
 
           <hr class="my-4" />
 
@@ -30,7 +26,7 @@
             </b-col>
           </b-row>
         </b-jumbotron>
-        <div class="text-center"></div>
+        <div class="text-center" />
         <b-alert variant="danger" :show="error">{{ error }}</b-alert>
 
         <b-form-group
@@ -41,9 +37,9 @@
           label-for="username"
         >
           <b-input
-            data-cy="Signup-username"
             id="username"
             v-model="username"
+            data-cy="Signup-username"
             type="text"
             name="username"
             required
@@ -57,9 +53,9 @@
           label-for="pass1"
         >
           <b-input
-            data-cy="Signup-password1"
             id="pass1"
             v-model="password1"
+            data-cy="Signup-password1"
             type="password"
             name="password1"
             required
@@ -73,18 +69,17 @@
           label-for="pass2"
         >
           <b-input
-            data-cy="Signup-password2"
             id="pass2"
             v-model="password2"
+            data-cy="Signup-password2"
             type="password"
             name="password2"
             required
           />
         </b-form-group>
         <b-alert show variant="info"
-          ><i class="fa fa-exclamation-triangle"></i> To secure your Kuzzle
-          installation we recommend you select the “Remove anonymous user
-          credentials” checkbox below.</b-alert
+          ><i class="fa fa-exclamation-triangle" /> To secure your Kuzzle installation we recommend
+          you select the “Remove anonymous user credentials” checkbox below.</b-alert
         >
         <b-form-group
           label="Remove anonymous user credentials."
@@ -92,15 +87,10 @@
           label-cols-sm="4"
           label-cols-lg="3"
         >
-          <b-form-checkbox
-            id="reset"
-            v-model="reset"
-            :value="true"
-            :unchecked-value="false"
-          ></b-form-checkbox>
+          <b-form-checkbox id="reset" v-model="reset" :value="true" :unchecked-value="false" />
         </b-form-group>
 
-        <template v-slot:footer>
+        <template #footer>
           <div class="text-right">
             <b-button
               class="mr-3"
@@ -133,14 +123,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue'
+import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
 
 export default {
   name: 'Signup',
   components: {
-    EnvironmentSwitch
+    EnvironmentSwitch,
   },
   data() {
     return {
@@ -149,30 +139,26 @@ export default {
       password2: '',
       reset: false,
       error: null,
-      waiting: false
-    }
+      waiting: false,
+    };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle'])
+    ...mapGetters('kuzzle', ['$kuzzle']),
   },
   methods: {
     async signup() {
-      if (
-        this.username === '' ||
-        this.password1 === '' ||
-        this.password2 === ''
-      ) {
-        this.error = 'All fields are mandatory'
-        return
+      if (this.username === '' || this.password1 === '' || this.password2 === '') {
+        this.error = 'All fields are mandatory';
+        return;
       }
 
       if (this.password1 !== this.password2) {
-        this.error = 'Confirmation does not match password'
-        return
+        this.error = 'Confirmation does not match password';
+        return;
       }
 
-      this.error = null
-      this.waiting = true
+      this.error = null;
+      this.waiting = true;
 
       try {
         await this.$kuzzle.query({
@@ -185,59 +171,56 @@ export default {
             credentials: {
               local: {
                 username: this.username,
-                password: this.password1
-              }
-            }
-          }
-        })
-        this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
-        this.$store.direct.commit.auth.setAdminExists(true)
-        this.$router.push({ name: 'Login' })
+                password: this.password1,
+              },
+            },
+          },
+        });
+        this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null);
+        this.$store.direct.commit.auth.setAdminExists(true);
+        this.$router.push({ name: 'Login' });
       } catch (err) {
         if (
           [
             'plugin.kuzzle-plugin-auth-passport-local.login_in_password',
-            'plugin.kuzzle-plugin-auth-passport-local.weak_password'
+            'plugin.kuzzle-plugin-auth-passport-local.weak_password',
           ].includes(err.id)
         ) {
-          this.error = err.message
+          this.error = err.message;
         } else {
-          this.$log.error(err)
-          this.$bvToast.toast(
-            'The complete error has been printed to the console.',
-            {
-              title: err.message,
-              variant: 'danger',
-              toaster: 'b-toaster-bottom-right',
-              appendToast: true
-            }
-          )
+          this.$log.error(err);
+          this.$bvToast.toast('The complete error has been printed to the console.', {
+            title: err.message,
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+          });
         }
       }
-      this.waiting = false
+      this.waiting = false;
     },
     loginAsGuest() {
-      this.error = null
+      this.error = null;
       this.$store.direct.dispatch.auth
         .setSession('anonymous')
         .then(() => {
-          this.$router.go({ name: 'Data' })
+          this.$router.go({ name: 'Data' });
         })
-        .catch(err => {
-          this.error = err.message
-        })
+        .catch((err) => {
+          this.error = err.message;
+        });
     },
     editEnvironment(id) {
-      this.$emit('environment::create', id)
+      this.$emit('environment::create', id);
     },
     deleteEnvironment(id) {
-      this.$emit('environment::delete', id)
+      this.$emit('environment::delete', id);
     },
     importEnv() {
-      this.$emit('environment::importEnv')
-    }
-  }
-}
+      this.$emit('environment::importEnv');
+    },
+  },
+};
 </script>
 
 <style type="text/css" scoped>

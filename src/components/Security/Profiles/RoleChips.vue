@@ -26,52 +26,52 @@
 </template>
 
 <script type="text/javascript">
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import MSelect from '../../Common/MSelect.vue'
+import MSelect from '../../Common/MSelect.vue';
 
 export default {
   name: 'RoleChips',
   components: {
-    MSelect
+    MSelect,
   },
   props: {
     addedRoles: {
-      type: Array
-    }
+      type: Array,
+    },
   },
   data() {
     return {
-      roleList: []
-    }
+      roleList: [],
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     availableRoles() {
-      return this.roleList.filter(role => {
-        return this.addedRoles.indexOf(role.id) === -1
-      })
-    }
+      return this.roleList.filter((role) => {
+        return this.addedRoles.indexOf(role.id) === -1;
+      });
+    },
   },
   mounted() {
-    return this.fetchRoleList()
+    return this.fetchRoleList();
   },
   methods: {
     fetchRoleList() {
-      return this.wrapper.performSearchRoles().then(result => {
-        result.documents.forEach(role => {
-          this.roleList.push(role)
-        })
-      })
+      return this.wrapper.performSearchRoles().then((result) => {
+        result.documents.forEach((role) => {
+          this.roleList.push(role);
+        });
+      });
     },
     onRoleSelected(role) {
-      this.$emit('selected-role', role)
+      this.$emit('selected-role', role);
     },
     removeRole(role) {
-      this.$emit('remove-role', role)
-    }
-  }
-}
+      this.$emit('remove-role', role);
+    },
+  },
+};
 </script>
 
 <style type="text/css" scoped>

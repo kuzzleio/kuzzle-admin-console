@@ -17,8 +17,8 @@
       <div class="col s4">
         <div class="row">
           <div class="help">
-            Mapping is the process of defining how a document, and the fields it
-            contains, are stored and indexed.
+            Mapping is the process of defining how a document, and the fields it contains, are
+            stored and indexed.
             <a
               href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
               target="_blank"
@@ -40,12 +40,7 @@
     <!-- Actions -->
     <div class="row">
       <div class="col s12">
-        <a
-          tabindex="6"
-          class="btn-flat waves-effect"
-          @click.prevent="$emit('cancel')"
-          >Cancel</a
-        >
+        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="$emit('cancel')">Cancel</a>
         <button
           type="submit"
           class="UserCustomMappingEditor-submit btn primary waves-effect waves-light"
@@ -58,35 +53,35 @@
 </template>
 
 <script type="text/javascript">
-import JsonEditor from '@/components/Common/JsonEditor.vue'
+import JsonEditor from '@/components/Common/JsonEditor.vue';
 
 export default {
   name: 'UserCustomMappingEditor',
   components: {
-    JsonEditor
+    JsonEditor,
   },
   props: {
     mapping: {
       type: Object,
       default: () => {
-        return {}
-      }
+        return {};
+      },
     },
     currentStep: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   watch: {
     currentStep() {
-      let newMapping = this.$refs.jsoneditor.getJson()
-      this.$emit('submit', newMapping)
-    }
+      const newMapping = this.$refs.jsoneditor.getJson();
+      this.$emit('submit', newMapping);
+    },
   },
   methods: {
     submit() {
-      let newMapping = this.$refs.jsoneditor.getJson()
-      this.$emit('submit', newMapping)
-    }
-  }
-}
+      const newMapping = this.$refs.jsoneditor.getJson();
+      this.$emit('submit', newMapping);
+    },
+  },
+};
 </script>

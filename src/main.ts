@@ -1,31 +1,34 @@
-import Vue from 'vue'
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
-import createRoutes from './routes/index'
-import './plugins/logger'
+import Vue from 'vue';
+import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
 
-import VueFormGenerator from 'vue-form-generator'
-import 'vue-form-generator/dist/vfg.css'
-import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue'
-import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue'
-import 'leaflet/dist/leaflet.css'
+import createRoutes from './routes/index';
+import './plugins/logger';
 
-import App from './App.vue'
-import store from './vuex/store'
+import VueFormGenerator from 'vue-form-generator';
+
+import 'vue-form-generator/dist/vfg.css';
+import store from './vuex/store';
+
+import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue';
+import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue';
+import 'leaflet/dist/leaflet.css';
+
+import App from './App.vue';
 
 Reflect.defineProperty(window, 'kuzzle', {
   get() {
-    return store.getters.kuzzle.$kuzzle
-  }
-})
+    return store.getters.kuzzle.$kuzzle;
+  },
+});
 
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
-const router = createRoutes(Vue.prototype.$log)
+const router = createRoutes(Vue.prototype.$log);
 
-Vue.component('fieldJsonFormInput', JsonFormInput)
-Vue.component('fieldDateTimeFormInput', DateTimeFormInput)
-Vue.use(VueFormGenerator)
+Vue.component('FieldJsonFormInput', JsonFormInput);
+Vue.component('FieldDateTimeFormInput', DateTimeFormInput);
+Vue.use(VueFormGenerator);
 
 // Vue.config.errorHandler = (err, vm, info) => {
 //   // TODO : use vue-logger instead of console.error,
@@ -47,5 +50,5 @@ new Vue({
   el: '#app',
   router,
   store: store.original,
-  render: h => h(App)
-})
+  render: (h) => h(App),
+});

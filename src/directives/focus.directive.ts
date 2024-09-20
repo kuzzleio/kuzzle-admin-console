@@ -1,12 +1,12 @@
-import Vue from 'vue'
+import Vue from 'vue';
 
 export default {
   id: 'focus',
   bind(el) {
     Vue.nextTick(() => {
       if (el) {
-        el.focus()
+        el.focus();
       }
-    }, 0)
-  }
-}
+    }, 0);
+  },
+};

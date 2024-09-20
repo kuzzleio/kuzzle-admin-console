@@ -10,11 +10,7 @@
             :key="groupIndex"
             class="row block-content"
           >
-            <div
-              v-for="(filter, filterIndex) in group"
-              :key="filterIndex"
-              class="row dots group"
-            >
+            <div v-for="(filter, filterIndex) in group" :key="filterIndex" class="row dots group">
               <div class="col s4">
                 <input
                   placeholder="Attribute"
@@ -36,12 +32,7 @@
                 </m-select>
               </div>
               <div class="col s3">
-                <input
-                  v-model="filter.value"
-                  placeholder="Value"
-                  type="text"
-                  class="validate"
-                />
+                <input v-model="filter.value" placeholder="Value" type="text" class="validate" />
               </div>
               <div class="col s2">
                 <i
@@ -57,17 +48,12 @@
                 </a>
               </div>
             </div>
-            <p v-if="groupIndex < filters.basic.length - 1">
-              Or
-            </p>
+            <p v-if="groupIndex < filters.basic.length - 1">Or</p>
           </div>
         </div>
 
         <div class="row button-or">
-          <a
-            class="btn btn-small waves-effect waves-light"
-            @click="addGroupBasicFilter"
-          >
+          <a class="btn btn-small waves-effect waves-light" @click="addGroupBasicFilter">
             <i class="fa fa-plus left" />Or
           </a>
         </div>
@@ -85,12 +71,8 @@
             </div>
             <div class="col s2">
               <m-select v-model="filters.sorting.order">
-                <option value="asc">
-                  asc
-                </option>
-                <option value="desc">
-                  desc
-                </option>
+                <option value="asc">asc</option>
+                <option value="desc">desc</option>
               </m-select>
             </div>
           </div>
@@ -105,120 +87,106 @@
       >
         {{ labelSearchButton }}
       </button>
-      <button
-        class="btn-flat waves-effect waves-light"
-        @click="resetBasicSearch"
-      >
-        Reset
-      </button>
+      <button class="btn-flat waves-effect waves-light" @click="resetBasicSearch">Reset</button>
     </div>
   </form>
 </template>
 
 <script>
-import MSelect from '@/components/Common/MSelect.vue'
+import MSelect from '@/components/Common/MSelect.vue';
 
-const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
-const emptySorting = { attribute: null, order: 'asc' }
+const emptyBasicFilter = { attribute: null, operator: 'match', value: null };
+const emptySorting = { attribute: null, order: 'asc' };
 
 export default {
   components: {
-    MSelect
+    MSelect,
   },
   props: {
     basicFilter: Array,
     sorting: Object,
     availableFilters: {
       type: Object,
-      required: true
+      required: true,
     },
     labelSearchButton: {
       type: String,
       required: false,
-      default: 'search'
+      default: 'search',
     },
     sortingEnabled: {
       type: Boolean,
       required: false,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
       filters: {
         basic: null,
-        sorting: { ...emptySorting }
-      }
-    }
+        sorting: { ...emptySorting },
+      },
+    };
   },
   mounted() {
-    this.filters.basic = this.basicFilter || [[{ ...emptyBasicFilter }]]
-    this.filters.sorting = this.sorting || { ...emptySorting }
+    this.filters.basic = this.basicFilter || [[{ ...emptyBasicFilter }]];
+    this.filters.sorting = this.sorting || { ...emptySorting };
   },
   methods: {
     basicSearch() {
-      let filters = this.filters.basic
+      let filters = this.filters.basic;
 
       if (
         this.filters.basic.length === 1 &&
         this.filters.basic[0].length === 1 &&
         !this.filters.basic[0][0].attribute
       ) {
-        filters = null
+        filters = null;
       }
 
       if (this.sortingEnabled) {
-        let sorting = this.filters.sorting
+        let sorting = this.filters.sorting;
 
         if (!this.filters.sorting.attribute) {
-          sorting = null
+          sorting = null;
         }
 
-        this.$emit('filters-basic-search', filters, sorting)
+        this.$emit('filters-basic-search', filters, sorting);
       } else {
-        this.$emit('filters-basic-search', filters)
+        this.$emit('filters-basic-search', filters);
       }
     },
     resetBasicSearch() {
-      this.filters.basic = [[{ ...emptyBasicFilter }]]
-      this.filters.sorting = { ...emptySorting }
+      this.filters.basic = [[{ ...emptyBasicFilter }]];
+      this.filters.sorting = { ...emptySorting };
     },
     addGroupBasicFilter() {
-      this.filters.basic.push([{ ...emptyBasicFilter }])
+      this.filters.basic.push([{ ...emptyBasicFilter }]);
     },
     addAndBasicFilter(groupIndex) {
       if (!this.filters.basic[groupIndex]) {
-        return false
+        return false;
       }
 
-      this.filters.basic[groupIndex].push({ ...emptyBasicFilter })
+      this.filters.basic[groupIndex].push({ ...emptyBasicFilter });
     },
     removeAndBasicFilter(groupIndex, filterIndex) {
-      if (
-        !this.filters.basic[groupIndex] ||
-        !this.filters.basic[groupIndex][filterIndex]
-      ) {
-        return false
+      if (!this.filters.basic[groupIndex] || !this.filters.basic[groupIndex][filterIndex]) {
+        return false;
       }
 
-      if (
-        this.filters.basic.length === 1 &&
-        this.filters.basic[0].length === 1
-      ) {
-        this.$set(this.filters.basic[0], 0, { ...emptyBasicFilter })
-        return
+      if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1) {
+        this.$set(this.filters.basic[0], 0, { ...emptyBasicFilter });
+        return;
       }
 
-      if (
-        this.filters.basic[groupIndex].length === 1 &&
-        this.filters.basic.length > 1
-      ) {
-        this.filters.basic.splice(groupIndex, 1)
-        return
+      if (this.filters.basic[groupIndex].length === 1 && this.filters.basic.length > 1) {
+        this.filters.basic.splice(groupIndex, 1);
+        return;
       }
 
-      this.filters.basic[groupIndex].splice(filterIndex, 1)
-    }
-  }
-}
+      this.filters.basic[groupIndex].splice(filterIndex, 1);
+    },
+  },
+};
 </script>

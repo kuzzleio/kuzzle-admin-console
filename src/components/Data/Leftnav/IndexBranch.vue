@@ -20,48 +20,40 @@
         >&nbsp;({{ index.collectionsCount }})</template
       >
     </router-link>
-    <b-spinner small v-if="isLoading"></b-spinner>
-    <div class="collections" v-if="collectionsFetched">
+    <b-spinner v-if="isLoading" small />
+    <div v-if="collectionsFetched" class="collections">
       <template v-if="orderedFilteredCollections.length">
         <div
           v-for="collection in orderedFilteredCollections"
+          :key="`${collection.name}-${collection.type}`"
           class="tree-item truncate mt-2"
           :class="{ active: isCollectionActive(index.name, collection.name) }"
           :data-cy="`Treeview-item--${collection.name}`"
-          :key="`${collection.name}-${collection.type}`"
           :title="collection.name"
         >
           <template v-if="collection.isRealtime()">
-            <i
-              class="fa fa-bolt ml-1 mr-2"
-              aria-hidden="true"
-              title="Volatile collection"
-            />
+            <i class="fa fa-bolt ml-1 mr-2" aria-hidden="true" title="Volatile collection" />
             <router-link
               :to="{
                 name: 'WatchCollection',
                 params: {
                   indexName: index.name,
-                  collectionName: collection.name
-                }
+                  collectionName: collection.name,
+                },
               }"
             >
               <HighlightedSpan :value="collection.name" :filter="filter" />
             </router-link>
           </template>
           <template v-else>
-            <i
-              class="fa fa-th-list"
-              aria-hidden="true"
-              title="Persisted collection"
-            />
+            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection" />
             <router-link
               :to="{
                 name: 'DocumentList',
                 params: {
                   indexName: index.name,
-                  collectionName: collection.name
-                }
+                  collectionName: collection.name,
+                },
               }"
             >
               <HighlightedSpan :value="collection.name" :filter="filter" />
@@ -72,8 +64,8 @@
       <template v-else><span class="text-muted">no collections</span></template>
       <b-link
         v-if="showMoreCollectionsDisplay"
-        @click="toggleShowMoreCollections"
         class="tree-item truncate"
+        @click="toggleShowMoreCollections"
       >
         <u v-if="!showMoreCollections">Show More</u>
         <u v-else>Show only results</u>
@@ -83,33 +75,34 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex';
 
-import HighlightedSpan from '@/components/Common/HighlightedSpan.vue'
-import { truncateName } from '@/utils'
+import { truncateName } from '@/utils';
+
+import HighlightedSpan from '@/components/Common/HighlightedSpan.vue';
 
 export default {
   components: {
-    HighlightedSpan
+    HighlightedSpan,
   },
   props: {
     forceOpen: {
       type: Boolean,
-      default: false
+      default: false,
     },
     index: Object,
     browsedIndexName: String,
     browsedCollectionName: String,
     filter: String,
-    routeName: String
+    routeName: String,
   },
-  data: function() {
+  data: function () {
     return {
       open: false,
       showMoreCollections: false,
       collectionsFetched: false,
-      isLoading: false
-    }
+      isLoading: false,
+    };
   },
   computed: {
     ...mapGetters('index', ['loadingCollections']),
@@ -117,52 +110,46 @@ export default {
       if (
         this.filter.length > 0 &&
         this.index.collections &&
-        this.index.collections.filter(
-          col => col.name.indexOf(this.filter) !== -1
-        ).length !== this.index.collections.length
+        this.index.collections.filter((col) => col.name.indexOf(this.filter) !== -1).length !==
+          this.index.collections.length
       ) {
-        return 1
+        return 1;
       }
-      return 0
+      return 0;
     },
     orderedFilteredCollections() {
       if (!this.index.collections) {
-        return []
+        return [];
       }
 
       return this.index.collections
-        .filter(
-          col =>
-            col.name.indexOf(this.filter) !== -1 || this.showMoreCollections
-        )
-        .sort()
-    }
+        .filter((col) => col.name.indexOf(this.filter) !== -1 || this.showMoreCollections)
+        .sort();
+    },
   },
   watch: {
     browsedIndexName() {
-      this.testOpen()
+      this.testOpen();
     },
     browsedCollectionName() {
-      this.testOpen()
+      this.testOpen();
     },
     filter() {
       if (
         this.index.collections &&
-        this.index.collections.filter(
-          col => col.name.indexOf(this.filter) !== -1
-        ).length > 0
+        this.index.collections.filter((col) => col.name.indexOf(this.filter) !== -1).length > 0
       ) {
-        this.open = true
+        this.open = true;
       }
 
       if (this.filter == '') {
-        this.open = false
+        this.open = false;
       }
-    }
+    },
   },
   async mounted() {
     if (this.index) {
-      await this.testOpen()
+      await this.testOpen();
     }
   },
   methods: {
@@ -170,81 +157,74 @@ export default {
     truncateName,
     async onToggleBranchClicked() {
       if (!this.open) {
-        await this.fetchCollections()
+        await this.fetchCollections();
       }
-      this.toggleBranch()
+      this.toggleBranch();
     },
     async fetchCollections() {
       try {
-        this.isLoading = true
-        await this.fetchCollectionList(this.index)
-        this.collectionsFetched = true
+        this.isLoading = true;
+        await this.fetchCollectionList(this.index);
+        this.collectionsFetched = true;
       } catch (error) {
-        this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while fetching the collections.',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true
-          }
-        )
+        this.$log.error(error);
+        this.$bvToast.toast('The complete error has been printed to the console.', {
+          title: 'Ooops! Something went wrong while fetching the collections.',
+          variant: 'danger',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+        });
       }
-      this.isLoading = false
+      this.isLoading = false;
     },
     toggleBranch() {
       // TODO This state should be one day persistent across page refreshes
       // NJE edit: not today...
-      this.open = !this.open
+      this.open = !this.open;
     },
     // TODO get rid of this ESTEBAAAAAAAAN
     getRelativeLink(isRealtime) {
       switch (this.routeName) {
         case 'WatchCollection':
-          return this.routeName
+          return this.routeName;
         case 'DocumentList':
-          return isRealtime ? 'WatchCollection' : this.routeName
+          return isRealtime ? 'WatchCollection' : this.routeName;
         default:
-          return 'DocumentList'
+          return 'DocumentList';
       }
     },
     toggleShowMoreCollections() {
-      this.showMoreCollections = !this.showMoreCollections
+      this.showMoreCollections = !this.showMoreCollections;
     },
     async testOpen() {
       if (this.browsedIndexName === this.index.name) {
-        await this.fetchCollections()
-        this.open = true
+        await this.fetchCollections();
+        this.open = true;
       }
     },
     isIndexActive(indexName) {
-      return this.browsedIndexName === indexName && !this.browsedCollectionName
+      return this.browsedIndexName === indexName && !this.browsedCollectionName;
     },
     isCollectionActive(indexName, collectionName) {
-      return (
-        this.browsedIndexName === indexName &&
-        this.browsedCollectionName === collectionName
-      )
+      return this.browsedIndexName === indexName && this.browsedCollectionName === collectionName;
     },
     removeRealtimeCollection(indexName, collectionName) {
       this.$store.direct.dispatch.index.removeRealtimeCollection({
         index: indexName,
-        collection: collectionName
-      })
+        collection: collectionName,
+      });
       if (
         this.$route.params.index === indexName &&
         this.$route.params.collection === collectionName
       ) {
         this.$router.push({
           name: 'Indexes',
-          params: { index: indexName }
-        })
+          params: { index: indexName },
+        });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">

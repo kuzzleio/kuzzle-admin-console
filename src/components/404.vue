@@ -8,10 +8,7 @@
               <b-card-text>
                 <p>There is nothing here...</p>
               </b-card-text>
-              <b-button
-                :to="{ name: 'Data' }"
-                class="404BackToHome-link"
-                variant="primary"
+              <b-button :to="{ name: 'Data' }" class="404BackToHome-link" variant="primary"
                 >Go back to the main page</b-button
               >
             </b-card>
@@ -24,8 +21,8 @@
 
 <script>
 export default {
-  name: 'NotFound'
-}
+  name: 'NotFound',
+};
 </script>
 
 <style scoped>

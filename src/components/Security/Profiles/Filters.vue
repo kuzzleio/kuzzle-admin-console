@@ -1,6 +1,6 @@
 <template>
   <b-card no-body data-cy="ProfileFilters">
-    <template v-slot:header>
+    <template #header>
       <b-row>
         <b-col cols="9" class="vertical-align">
           Search by role
@@ -13,30 +13,25 @@
             no-flip
           >
             <b-dropdown-text
-              class="dropdown-text inlineDisplay pointer p-0"
-              :data-cy="`RoleSelect--${role}`"
               v-for="role of roleList"
               :key="`dropdown-${role}`"
+              class="dropdown-text inlineDisplay pointer p-0"
+              :data-cy="`RoleSelect--${role}`"
             >
               <span class="inlineDisplay-item">
                 <b-form-checkbox
+                  :id="role"
                   class="mx-2"
                   :checked="roleIsSelected(role)"
-                  :id="role"
                   @change="toggleRole(role, $event)"
                 />
               </span>
-              <label
-                class="inlineDisplay-item code pointer"
-                :for="role"
-                :title="role"
-                >{{ role }}</label
-              >
+              <label class="inlineDisplay-item code pointer" :for="role" :title="role">{{
+                role
+              }}</label>
             </b-dropdown-text>
             <b-dropdown-item v-if="roleList.length === 0">
-              <span class="inlineDisplay-item">
-                No roles found.
-              </span>
+              <span class="inlineDisplay-item"> No roles found. </span>
             </b-dropdown-item>
           </b-dropdown>
           <b-badge
@@ -64,9 +59,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import { truncateName } from '@/utils'
+import { truncateName } from '@/utils';
 
 export default {
   name: 'Filters',
@@ -75,56 +70,56 @@ export default {
     labelSearchButton: {
       type: String,
       required: false,
-      default: 'search'
+      default: 'search',
     },
     currentFilter: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
       roleList: [],
-      selectedRoles: []
-    }
+      selectedRoles: [],
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     hasFilter() {
-      return this.selectedRoles.length > 0
-    }
+      return this.selectedRoles.length > 0;
+    },
+  },
+  watch: {
+    selectedRoles() {
+      this.$emit('filters-updated', this.selectedRoles);
+    },
+  },
+  mounted() {
+    this.fetchRoleList();
+    this.selectedRoles = this.currentFilter.map((role) => role);
   },
   methods: {
     truncateName,
     async fetchRoleList() {
-      const res = await this.wrapper.performSearchRoles()
-      this.roleList = res.documents.map(role => role._id)
+      const res = await this.wrapper.performSearchRoles();
+      this.roleList = res.documents.map((role) => role._id);
     },
     roleIsSelected(role) {
-      return this.selectedRoles.includes(role)
+      return this.selectedRoles.includes(role);
     },
     toggleRole(role, value) {
       if (!value) {
-        this.selectedRoles.splice(this.selectedRoles.indexOf(role), 1)
+        this.selectedRoles.splice(this.selectedRoles.indexOf(role), 1);
       } else {
-        this.selectedRoles.push(role)
+        this.selectedRoles.push(role);
       }
     },
     reset() {
-      this.selectedRoles = []
-      this.$emit('reset')
-    }
+      this.selectedRoles = [];
+      this.$emit('reset');
+    },
   },
-  mounted() {
-    this.fetchRoleList()
-    this.selectedRoles = this.currentFilter.map(role => role)
-  },
-  watch: {
-    selectedRoles() {
-      this.$emit('filters-updated', this.selectedRoles)
-    }
-  }
-}
+};
 </script>
 
 <style lang="scss" scoped>

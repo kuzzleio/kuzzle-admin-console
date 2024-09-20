@@ -1,13 +1,13 @@
 <template>
   <span>
     <b-dropdown
+      :id="`collection-${collectionName}`"
       data-cy="CollectionDropdownAction"
       no-caret
       toggle-class="collectionDropdown"
       variant="light"
-      :id="`collection-${collectionName}`"
     >
-      <template v-slot:button-content>
+      <template #button-content>
         <i class="fas fa-ellipsis-v" />
       </template>
 
@@ -25,8 +25,8 @@
                   name: 'EditCollection',
                   params: {
                     collectionName: collectionName,
-                    indexName: indexName
-                  }
+                    indexName: indexName,
+                  },
                 }
               : ''
           "
@@ -34,11 +34,8 @@
           Edit collection
         </b-dropdown-item>
         <b-dropdown-item
+          v-if="$store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !== 1"
           data-cy="CollectionDropdown-delete"
-          v-if="
-            $store.direct.getters.kuzzle.currentEnvironment
-              .backendMajorVersion !== 1
-          "
           @click="onDeleteCollectionClicked"
         >
           Delete collection
@@ -70,48 +67,48 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import ModalClear from './ModalClear.vue'
+import ModalClear from './ModalClear.vue';
 
 export default {
   name: 'CollectionDropdownAction',
   components: {
-    ModalClear
-  },
-  data: function() {
-    return {
-      deleteConfirmation: ''
-    }
+    ModalClear,
   },
   props: {
     collectionName: {
       type: String,
-      required: true
+      required: true,
     },
     indexName: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
+  },
+  data: function () {
+    return {
+      deleteConfirmation: '',
+    };
   },
   computed: {
-    ...mapGetters('auth', ['canEditCollection', 'canTruncateCollection'])
+    ...mapGetters('auth', ['canEditCollection', 'canTruncateCollection']),
   },
   methods: {
     onDeleteCollectionClicked() {
-      this.$emit('delete-collection-clicked')
+      this.$emit('delete-collection-clicked');
     },
     resetDeletePrompt() {
-      this.collectionToDelete = ''
-      this.deleteConfirmation = ''
+      this.collectionToDelete = '';
+      this.deleteConfirmation = '';
     },
     openModal() {
       if (this.canTruncateCollection(this.indexName, this.collectionName)) {
-        this.$bvModal.show(`collection-clear-${this.collectionName}`)
+        this.$bvModal.show(`collection-clear-${this.collectionName}`);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

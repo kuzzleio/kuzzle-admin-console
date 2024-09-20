@@ -1,13 +1,14 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import { createDirectStore } from 'direct-vuex'
-import auth from './modules/auth/store'
-import kuzzle from './modules/kuzzle/store'
-import routing from './modules/common/routing/store'
-import toaster from './modules/common/toaster/store'
-import index from './modules/index/store'
+import Vue from 'vue';
+import { createDirectStore } from 'direct-vuex';
+import Vuex from 'vuex';
 
-Vue.use(Vuex)
+import auth from './modules/auth/store';
+import routing from './modules/common/routing/store';
+import toaster from './modules/common/toaster/store';
+import index from './modules/index/store';
+import kuzzle from './modules/kuzzle/store';
+
+Vue.use(Vuex);
 
 const { store, rootActionContext, moduleActionContext } = createDirectStore({
   modules: {
@@ -15,19 +16,19 @@ const { store, rootActionContext, moduleActionContext } = createDirectStore({
     kuzzle,
     routing,
     toaster,
-    index
+    index,
   },
-  strict: import.meta.env.NODE_ENV !== 'production'
-})
+  strict: import.meta.env.NODE_ENV !== 'production',
+});
 
 // export default new Vuex.Store(store)
-export default store
+export default store;
 
-export { rootActionContext, moduleActionContext }
+export { rootActionContext, moduleActionContext };
 
-export type AppStore = typeof store
+export type AppStore = typeof store;
 declare module 'vuex' {
   interface Store<S> {
-    direct: AppStore
+    direct: AppStore;
   }
 }

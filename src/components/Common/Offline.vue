@@ -2,7 +2,7 @@
   <div class="OfflinePage">
     <b-container>
       <b-jumbotron>
-        <template v-slot:header>
+        <template #header>
           <img
             alt="Welcome to the Kuzzle Admin Console"
             class="mb-3"
@@ -18,10 +18,8 @@
         <hr class="my-4" />
 
         <b-row align-v="center">
-          <b-col sm="1">
-            <b-spinner variant="secondary" label="Spinning"> </b-spinner
-          ></b-col>
-          <b-col sm="6" class="align-middle"> </b-col>
+          <b-col sm="1"> <b-spinner variant="secondary" label="Spinning" /></b-col>
+          <b-col sm="6" class="align-middle" />
           <b-col sm="2" class="text-right">
             <span class="text-muted align-middle">Connection:</span>
           </b-col>
@@ -39,39 +37,39 @@
 </template>
 
 <script>
-import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue'
+import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue';
 
 export default {
   name: 'OfflinePage',
   components: {
-    EnvironmentSwitch
+    EnvironmentSwitch,
   },
   computed: {
     currentEnvironment() {
-      return this.$store.direct.getters.kuzzle.currentEnvironment
+      return this.$store.direct.getters.kuzzle.currentEnvironment;
     },
     host() {
-      return this.currentEnvironment ? this.currentEnvironment.host : ''
+      return this.currentEnvironment ? this.currentEnvironment.host : '';
     },
     port() {
-      return this.currentEnvironment ? this.currentEnvironment.port : ''
+      return this.currentEnvironment ? this.currentEnvironment.port : '';
     },
     errorInternalMessage() {
-      return this.$store.state.kuzzle.errorFromKuzzle
-    }
+      return this.$store.state.kuzzle.errorFromKuzzle;
+    },
   },
   methods: {
     editEnvironment(id) {
-      this.$emit('environment::create', id)
+      this.$emit('environment::create', id);
     },
     deleteEnvironment(id) {
-      this.$emit('environment::delete', id)
+      this.$emit('environment::delete', id);
     },
     importEnv() {
-      this.$emit('environment::importEnv')
-    }
-  }
-}
+      this.$emit('environment::importEnv');
+    },
+  },
+};
 </script>
 
 <style lang="sass" scoped>

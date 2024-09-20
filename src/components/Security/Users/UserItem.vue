@@ -9,39 +9,32 @@
           @click="toggleCollapse"
         />
         <b-form-checkbox
+          :id="checkboxId"
+          v-model="checked"
           type="checkbox"
           value="true"
           unchecked-value="false"
-          v-model="checked"
           :data-cy="`UserListItem-checkbox--${document.id}`"
-          :id="checkboxId"
           @change="notifyCheckboxClick"
         />
       </div>
       <div class="UserItem-title">
         <div class="UserItem-title-info">
-          <a
-            class="d-inline-block align-middle code pointer mr-2"
-            @click="toggleCollapse"
-            >{{ document.id }}</a
-          >
+          <a class="d-inline-block align-middle code pointer mr-2" @click="toggleCollapse">{{
+            document.id
+          }}</a>
           <span
             v-if="localStrategyUsername"
             :data-cy="`local-strategy-username-${localStrategyUsername}`"
             class="d-inline-block align-middle code ml-2 mr-2"
           >
-            <i
-              class="fas fa-user text-secondary"
-              title="Username (local strategy)"
-            />
+            <i class="fas fa-user text-secondary" title="Username (local strategy)" />
             {{ localStrategyUsername }}
           </span>
           <label
-            @click="toggleCollapse"
-            v-if="
-              document.additionalAttribute && document.additionalAttribute.value
-            "
+            v-if="document.additionalAttribute && document.additionalAttribute.value"
             class="UserItem-title-additionalAttribute"
+            @click="toggleCollapse"
             >({{ document.additionalAttribute.name }}:
             {{ document.additionalAttribute.value }})</label
           >
@@ -56,7 +49,7 @@
             <router-link
               :to="{
                 name: 'SecurityProfilesUpdate',
-                params: { id: profile }
+                params: { id: profile },
               }"
               class="truncate text-white"
               >{{ profile }}</router-link
@@ -71,9 +64,7 @@
           variant="link"
           :data-cy="`UserListItem-update--${document.id}`"
           :disabled="!canEditUser"
-          :title="
-            canEditUser ? 'Edit User' : 'You are not allowed to edit this user'
-          "
+          :title="canEditUser ? 'Edit User' : 'You are not allowed to edit this user'"
           @click.prevent="update"
         >
           <i class="fa fa-pencil-alt" :class="{ disabled: !canEditUser }" />
@@ -84,11 +75,7 @@
           variant="link"
           :data-cy="`UserListItem-delete--${document.id}`"
           :disabled="!canDeleteUser"
-          :title="
-            canDeleteUser
-              ? 'Delete user'
-              : 'You are not allowed to delete this user'
-          "
+          :title="canDeleteUser ? 'Delete user' : 'You are not allowed to delete this user'"
           @click.prevent="deleteDocument(document.id)"
         >
           <i class="fa fa-trash" :class="{ disabled: !canDeleteUser }" />
@@ -106,75 +93,75 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import jsonFormatter from '@/directives/json-formatter.directive'
+import jsonFormatter from '@/directives/json-formatter.directive';
 
-const MAX_PROFILES = 5
+const MAX_PROFILES = 5;
 
 export default {
   name: 'UserItem',
   components: {},
   directives: {
-    jsonFormatter
+    jsonFormatter,
   },
   props: {
     document: Object,
-    isChecked: Boolean
+    isChecked: Boolean,
   },
   data() {
     return {
       expanded: false,
-      checked: false
-    }
+      checked: false,
+    };
   },
   computed: {
     ...mapGetters('auth', ['canEditUser', 'canDeleteUser']),
     profileList() {
       if (!this.document.profileIds) {
-        return []
+        return [];
       }
-      const sorted = [...this.document.profileIds].sort()
-      return sorted
+      const sorted = [...this.document.profileIds].sort();
+      return sorted;
     },
     showAllProfiles() {
-      return this.document.profileIds > MAX_PROFILES
+      return this.document.profileIds > MAX_PROFILES;
     },
     checkboxId() {
-      return `checkbox-${this.document.id}`
+      return `checkbox-${this.document.id}`;
     },
     localStrategyUsername() {
       return this.document.credentials && this.document.credentials.local
         ? this.document.credentials.local.username
-        : null
-    }
+        : null;
+    },
   },
   watch: {
     isChecked: {
       handler(value) {
-        this.checked = value
-      }
-    }
+        this.checked = value;
+      },
+    },
   },
   methods: {
     toggleCollapse() {
-      this.expanded = !this.expanded
+      this.expanded = !this.expanded;
     },
     notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document.id)
+      this.$emit('checkbox-click', this.document.id);
     },
     deleteDocument() {
       if (this.canDeleteUser) {
-        this.$emit('delete', this.document.id)
+        this.$emit('delete', this.document.id);
       }
     },
     update() {
       if (this.canEditUser) {
-        this.$emit('edit', this.document.id)
+        this.$emit('edit', this.document.id);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

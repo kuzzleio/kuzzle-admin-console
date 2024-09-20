@@ -1,10 +1,7 @@
 <template>
   <div>
     <slot
-      v-if="
-        !(basicFilter || rawFilter || $route.query.searchTerm) &&
-          totalDocuments === 0
-      "
+      v-if="!(basicFilter || rawFilter || $route.query.searchTerm) && totalDocuments === 0"
       name="emptySet"
     />
     <crudl-document
@@ -52,20 +49,14 @@
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-.collection {
-  overflow: visible;
-}
-</style>
-
 <script>
-import { availableFilters } from '@/services/filterManager'
+import DocumentItem from '../../Data/Documents/DocumentItem.vue';
+import ProfileItem from '../Profiles/ProfileItem.vue';
+import RoleItem from '../Roles/RoleItem.vue';
+import UserItem from '../Users/UserItem.vue';
+import { availableFilters } from '@/services/filterManager';
 
-import CrudlDocument from './CrudlDocument.vue'
-import UserItem from '../Users/UserItem.vue'
-import RoleItem from '../Roles/RoleItem.vue'
-import ProfileItem from '../Profiles/ProfileItem.vue'
-import DocumentItem from '../../Data/Documents/DocumentItem.vue'
+import CrudlDocument from './CrudlDocument.vue';
 
 export default {
   name: 'SecurityCommonList',
@@ -74,7 +65,7 @@ export default {
     UserItem,
     RoleItem,
     ProfileItem,
-    DocumentItem
+    DocumentItem,
   },
   props: {
     index: String,
@@ -82,12 +73,12 @@ export default {
     itemName: String,
     displayCreate: {
       type: Boolean,
-      default: false
+      default: false,
     },
     performSearch: Function,
     performDelete: Function,
     routeCreate: String,
-    routeUpdate: String
+    routeUpdate: String,
   },
   data() {
     return {
@@ -95,115 +86,117 @@ export default {
       selectedDocuments: [],
       documents: [],
       totalDocuments: 0,
-      documentToDelete: null
-    }
+      documentToDelete: null,
+    };
   },
   computed: {
     displayBulkDelete() {
-      return this.selectedDocuments.length > 0
+      return this.selectedDocuments.length > 0;
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
-        return false
+        return false;
       }
 
-      return this.selectedDocuments.length === this.documents.length
+      return this.selectedDocuments.length === this.documents.length;
     },
     basicFilter() {
       try {
-        return JSON.parse(this.$route.query.basicFilter)
+        return JSON.parse(this.$route.query.basicFilter);
       } catch (e) {
-        return null
+        return null;
       }
     },
     rawFilter() {
       try {
-        return JSON.parse(this.$route.query.rawFilter)
+        return JSON.parse(this.$route.query.rawFilter);
       } catch (e) {
-        return null
+        return null;
       }
     },
     paginationFrom() {
-      return parseInt(this.$route.query.from) || 0
+      return parseInt(this.$route.query.from) || 0;
     },
     paginationSize() {
-      return parseInt(this.$route.query.size) || 25
-    }
+      return parseInt(this.$route.query.size) || 25;
+    },
   },
   watch: {
     $route() {
-      this.refreshSearch()
-    }
+      this.refreshSearch();
+    },
   },
   mounted() {
-    this.fetchData()
+    this.fetchData();
   },
   methods: {
     isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1
+      return this.selectedDocuments.indexOf(id) > -1;
     },
     toggleAll() {
       if (this.allChecked) {
-        this.selectedDocuments = []
-        return
+        this.selectedDocuments = [];
+        return;
       }
-      this.selectedDocuments = []
-      this.selectedDocuments = this.documents.map(document => document.id)
+      this.selectedDocuments = [];
+      this.selectedDocuments = this.documents.map((document) => document.id);
     },
     toggleSelectDocuments(id) {
-      let index = this.selectedDocuments.indexOf(id)
+      const index = this.selectedDocuments.indexOf(id);
 
       if (index === -1) {
-        this.selectedDocuments.push(id)
-        return
+        this.selectedDocuments.push(id);
+        return;
       }
 
-      this.selectedDocuments.splice(index, 1)
+      this.selectedDocuments.splice(index, 1);
     },
     hasSearchFilters() {
       return (
         this.$route.query.searchTerm !== '' ||
         this.basicFilter.length > 0 ||
         this.rawFilter.length > 0
-      )
+      );
     },
     fetchData() {
-      let pagination = {
+      const pagination = {
         from: this.paginationFrom,
-        size: this.paginationSize
-      }
+        size: this.paginationSize,
+      };
 
       // Execute search with corresponding filters
-      this.performSearch(
-        JSON.parse(this.$route.query.basicFilter || '{}'),
-        pagination
-      )
-        .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
+      this.performSearch(JSON.parse(this.$route.query.basicFilter || '{}'), pagination)
+        .then((res) => {
+          this.documents = res.documents;
+          this.totalDocuments = res.total;
         })
-        .catch(e => {
+        .catch((e) => {
           this.$store.direct.commit.toaster.setToast({
-            text:
-              'An error occurred while performing search: <br />' + e.message
-          })
-        })
+            text: 'An error occurred while performing search: <br />' + e.message,
+          });
+        });
     },
     editDocument(route, id) {
       this.$router.push({
         name: this.routeUpdate,
-        params: { id }
-      })
+        params: { id },
+      });
     },
     deleteDocument(id) {
-      this.documentToDelete = id
+      this.documentToDelete = id;
     },
     refreshSearch() {
-      this.fetchData()
+      this.fetchData();
     },
     create() {
-      this.$router.push({ name: this.routeCreate })
-    }
-  }
-}
+      this.$router.push({ name: this.routeCreate });
+    },
+  },
+};
 </script>
+
+<style lang="scss" rel="stylesheet/scss" scoped>
+.collection {
+  overflow: visible;
+}
+</style>

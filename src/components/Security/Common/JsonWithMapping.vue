@@ -33,6 +33,47 @@
   </form>
 </template>
 
+<script>
+import JsonEditor from '@/components/Common/JsonEditor.vue';
+
+export default {
+  name: 'DocumentCreateOrUpdate',
+  components: {
+    JsonEditor,
+  },
+  props: {
+    value: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
+    mapping: [Object, Array],
+    idContent: {
+      type: String,
+      default: 'content',
+    },
+    idMapping: {
+      type: String,
+      default: 'mapping',
+    },
+  },
+  data() {
+    return {
+      jsonDocument: {},
+    };
+  },
+  mounted() {
+    this.jsonDocument = this.value || {};
+  },
+  methods: {
+    jsonChanged(json) {
+      this.$emit('input', json);
+    },
+  },
+};
+</script>
+
 <style rel="stylesheet/scss" lang="scss">
 .input-id {
   margin-bottom: 0;
@@ -54,44 +95,3 @@
   }
 }
 </style>
-
-<script>
-import JsonEditor from '@/components/Common/JsonEditor.vue'
-
-export default {
-  name: 'DocumentCreateOrUpdate',
-  components: {
-    JsonEditor
-  },
-  props: {
-    value: {
-      type: Object,
-      default: () => {
-        return {}
-      }
-    },
-    mapping: [Object, Array],
-    idContent: {
-      type: String,
-      default: 'content'
-    },
-    idMapping: {
-      type: String,
-      default: 'mapping'
-    }
-  },
-  data() {
-    return {
-      jsonDocument: {}
-    }
-  },
-  mounted() {
-    this.jsonDocument = this.value || {}
-  },
-  methods: {
-    jsonChanged(json) {
-      this.$emit('input', json)
-    }
-  }
-}
-</script>

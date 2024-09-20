@@ -1,23 +1,12 @@
 <template>
-  <div
-    class="CollectionFormLine row valign-wrapper"
-    :class="{ odd: index % 2 === 0 }"
-  >
+  <div class="CollectionFormLine row valign-wrapper" :class="{ odd: index % 2 === 0 }">
     <div class="CollectionFormLine-name col s3 attribute-title truncate">
       {{ name }} <code>(type: {{ type }})</code>
     </div>
     <div class="col s3 attribute-type">
       <div class="">
-        <m-select
-          :value="value.id"
-          :options="optionsForAttribute"
-          @input="changeSchema"
-        >
-          <option
-            v-for="option in optionsForAttribute"
-            :key="option.id"
-            :value="option.id"
-          >
+        <m-select :value="value.id" :options="optionsForAttribute" @input="changeSchema">
+          <option v-for="option in optionsForAttribute" :key="option.id" :value="option.id">
             {{ option.name }}
           </option>
         </m-select>
@@ -44,21 +33,22 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
+import Multiselect from 'vue-multiselect';
+import {} from 'vue-multiselect/dist/vue-multiselect.min.css';
 
-import MSelect from '@/components/Common/MSelect.vue'
 import {
   getSchemaForType,
   getElementDefinition,
-  castByElementId
-} from '@/services/collectionHelper'
+  castByElementId,
+} from '@/services/collectionHelper';
+
+import MSelect from '@/components/Common/MSelect.vue';
 
 export default {
   name: 'CollectionFormLine',
   components: {
     Multiselect,
-    MSelect
+    MSelect,
   },
   props: {
     name: String,
@@ -66,70 +56,70 @@ export default {
     index: Number,
     value: Object,
     values: Array,
-    chooseValues: Boolean
+    chooseValues: Boolean,
   },
   data() {
     return {
-      elementDefinition: { ...this.value }
-    }
+      elementDefinition: { ...this.value },
+    };
   },
   computed: {
     optionsForAttribute() {
-      return getSchemaForType(this.type)
+      return getSchemaForType(this.type);
     },
     placeholder() {
-      return `${this.name} values (${this.type} only)`
-    }
+      return `${this.name} values (${this.type} only)`;
+    },
   },
   methods: {
     changeSchema(element) {
-      this.elementDefinition = getElementDefinition(element)
+      this.elementDefinition = getElementDefinition(element);
       if (!this.elementDefinition) {
-        return
+        return;
       }
 
-      let elementDefinition = { ...this.elementDefinition }
+      const elementDefinition = { ...this.elementDefinition };
       if (elementDefinition.chooseValues) {
-        elementDefinition.values = this.values || []
+        elementDefinition.values = this.values || [];
       }
-      this.$emit('input', { name: this.name, element: elementDefinition })
+      this.$emit('input', { name: this.name, element: elementDefinition });
     },
     addValue(value) {
-      let castValue = castByElementId(this.elementDefinition.id, value)
+      const castValue = castByElementId(this.elementDefinition.id, value);
 
       if (!castValue) {
-        return
+        return;
       }
 
-      let _values = this.values ? [...this.values] : []
+      const _values = this.values ? [...this.values] : [];
 
-      if (_values.some(value => value === castValue)) {
-        return
+      if (_values.some((value) => value === castValue)) {
+        return;
       }
 
       this.$emit('input', {
         name: this.name,
         element: {
           ...this.elementDefinition,
-          values: _values.concat([castValue])
-        }
-      })
+          values: _values.concat([castValue]),
+        },
+      });
     },
     removeValue(removedValue) {
-      let castValue = castByElementId(this.elementDefinition.id, removedValue)
+      const castValue = castByElementId(this.elementDefinition.id, removedValue);
 
       if (!castValue) {
-        return
+        return;
       }
 
-      let _values = this.values.filter(value => value !== castValue)
+      const _values = this.values.filter((value) => value !== castValue);
       this.$emit('input', {
         name: this.name,
-        element: { ...this.elementDefinition, values: _values }
-      })
-    }
-  }
-}
+        element: { ...this.elementDefinition, values: _values },
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss">

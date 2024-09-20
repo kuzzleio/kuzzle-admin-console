@@ -8,14 +8,11 @@
         @filters-updated="onFiltersUpdated"
         @reset="onFiltersUpdated"
       />
-      <b-card
-        class="light-shadow"
-        :bg-variant="documents.length === 0 ? 'light' : 'default'"
-      >
+      <b-card class="light-shadow" :bg-variant="documents.length === 0 ? 'light' : 'default'">
         <template v-if="loading">
           <b-row class="text-center">
             <b-col>
-              <b-spinner variant="primary" class="mt-5"></b-spinner>
+              <b-spinner variant="primary" class="mt-5" />
             </b-col>
           </b-row>
         </template>
@@ -24,15 +21,11 @@
           <div v-show="!documents.length" class="row valign-center empty-set">
             <b-row align-h="center" class="valign-center empty-set">
               <b-col cols="2" class="text-center">
-                <i
-                  class="fa fa-5x fa-search text-secondary mt-3"
-                  aria-hidden="true"
-                />
+                <i class="fa fa-5x fa-search text-secondary mt-3" aria-hidden="true" />
               </b-col>
               <b-col md="6">
                 <h3 class="text-secondary font-weight-bold">
-                  There is no result matching your query. Please try with
-                  another filter.
+                  There is no result matching your query. Please try with another filter.
                 </h3>
                 <p>
                   <em
@@ -73,8 +66,8 @@
           <b-list-group class="RoleList-list collection">
             <b-list-group-item
               v-for="document in documents"
-              data-cy="RoleList-list"
               :key="document.id"
+              data-cy="RoleList-list"
               class="p-2"
             >
               <RoleItem
@@ -90,12 +83,12 @@
       </b-card>
       <b-row align-h="center">
         <b-pagination
+          v-model="currentPage"
           class="m-2 mt-4"
           data-cy="RolesManagement-pagination"
-          v-model="currentPage"
           :total-rows="totalDocuments"
           :per-page="paginationSize"
-        ></b-pagination>
+        />
       </b-row>
     </template>
     <delete-modal
@@ -109,14 +102,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import PerPageSelector from '@/components/Common/PerPageSelector.vue'
+import RoleItem from '../Roles/RoleItem.vue';
+import * as filterManager from '@/services/filterManager';
 
-import DeleteModal from './DeleteModal.vue'
-import Filters from './Filters.vue'
-import RoleItem from '../Roles/RoleItem.vue'
-import * as filterManager from '@/services/filterManager'
+import PerPageSelector from '@/components/Common/PerPageSelector.vue';
+import DeleteModal from './DeleteModal.vue';
+import Filters from './Filters.vue';
 
 export default {
   name: 'RoleList',
@@ -124,15 +117,15 @@ export default {
     DeleteModal,
     Filters,
     RoleItem,
-    PerPageSelector
+    PerPageSelector,
   },
   props: {
     displayCreate: {
       type: Boolean,
-      default: false
+      default: false,
     },
     routeCreate: String,
-    routeUpdate: String
+    routeUpdate: String,
   },
   data() {
     return {
@@ -146,17 +139,17 @@ export default {
       selectedDocuments: [],
       totalDocuments: 0,
       paginationSize: 25,
-      itemsPerPage: [10, 25, 50, 100, 500]
-    }
+      itemsPerPage: [10, 25, 50, 100, 500],
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     displayBulkDelete() {
-      return this.selectedDocuments.length > 0
+      return this.selectedDocuments.length > 0;
     },
     paginationFrom() {
-      return (this.currentPage - 1) * this.paginationSize || 0
-    }
+      return (this.currentPage - 1) * this.paginationSize || 0;
+    },
   },
   watch: {
     $route: {
@@ -164,155 +157,145 @@ export default {
       handler() {
         this.currentFilter = Object.assign(
           new filterManager.Filter(),
-          filterManager.loadFromRoute(this.$route)
-        )
-      }
+          filterManager.loadFromRoute(this.$route),
+        );
+      },
     },
     currentFilter() {
-      this.fetchRoles()
+      this.fetchRoles();
     },
     currentPage() {
-      this.fetchRoles()
-    }
+      this.fetchRoles();
+    },
   },
   mounted() {
     this.currentFilter = Object.assign(
       new filterManager.Filter(),
-      filterManager.loadFromRoute(this.$route)
-    )
+      filterManager.loadFromRoute(this.$route),
+    );
   },
   methods: {
     changePaginationSize(e) {
-      this.paginationSize = e
-      this.fetchRoles()
+      this.paginationSize = e;
+      this.fetchRoles();
     },
     // DELETE
     // =========================================================================
     async onDeleteConfirmed() {
-      this.deleteModalIsLoading = true
+      this.deleteModalIsLoading = true;
       try {
-        await this.wrapper.performDeleteRoles(this.candidatesForDeletion)
-        this.$bvModal.hide('modal-delete-roles')
-        this.deleteModalIsLoading = false
-        this.fetchRoles()
+        await this.wrapper.performDeleteRoles(this.candidatesForDeletion);
+        this.$bvModal.hide('modal-delete-roles');
+        this.deleteModalIsLoading = false;
+        this.fetchRoles();
       } catch (e) {
-        this.$log.error(e)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while deleting the document(s).',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true
-          }
-        )
+        this.$log.error(e);
+        this.$bvToast.toast('The complete error has been printed to the console.', {
+          title: 'Ooops! Something went wrong while deleting the document(s).',
+          variant: 'danger',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+        });
       }
     },
     deleteRole(id) {
-      this.candidatesForDeletion.push(id)
-      this.$bvModal.show('modal-delete-roles')
+      this.candidatesForDeletion.push(id);
+      this.$bvModal.show('modal-delete-roles');
     },
     deleteBulk() {
-      this.candidatesForDeletion = this.candidatesForDeletion.concat(
-        this.selectedDocuments
-      )
-      this.$bvModal.show('modal-delete-roles')
+      this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
+      this.$bvModal.show('modal-delete-roles');
     },
     resetCandidatesForDeletion() {
-      this.candidatesForDeletion = []
+      this.candidatesForDeletion = [];
     },
     isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1
+      return this.selectedDocuments.indexOf(id) > -1;
     },
     toggleSelectDocuments(id) {
-      let index = this.selectedDocuments.indexOf(id)
+      const index = this.selectedDocuments.indexOf(id);
 
       if (index === -1) {
-        this.selectedDocuments.push(id)
-        return
+        this.selectedDocuments.push(id);
+        return;
       }
 
-      this.selectedDocuments.splice(index, 1)
+      this.selectedDocuments.splice(index, 1);
     },
     onFiltersUpdated(filter) {
-      let newFilters
+      let newFilters;
       if (filter.controllers && filter.controllers.length) {
         newFilters = Object.assign(this.currentFilter, {
           active: filterManager.ACTIVE_BASIC,
           basic: filter,
-          from: 0
-        })
+          from: 0,
+        });
       } else {
         newFilters = Object.assign(this.currentFilter, {
           active: filterManager.NO_ACTIVE,
           basic: null,
-          from: 0
-        })
+          from: 0,
+        });
       }
       try {
         filterManager.saveToRouter(
           filterManager.stripDefaultValuesFromFilter(newFilters),
-          this.$router
-        )
+          this.$router,
+        );
       } catch (error) {
-        this.$log.error(error)
+        this.$log.error(error);
         this.$bvToast.toast('The complete error has been printed to console', {
-          title:
-            'Ooops! Something went wrong while updating the search filters',
+          title: 'Ooops! Something went wrong while updating the search filters',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
           appendToast: true,
           dismissible: true,
-          noAutoHide: true
-        })
+          noAutoHide: true,
+        });
       }
     },
     fetchRoles() {
-      let pagination = {
+      const pagination = {
         from: this.paginationFrom,
-        size: this.paginationSize
-      }
-      const filter = {}
+        size: this.paginationSize,
+      };
+      const filter = {};
       if (
         this.currentFilter.active === filterManager.ACTIVE_BASIC &&
         this.currentFilter.basic.controllers &&
         this.currentFilter.basic.controllers.length
       ) {
-        filter.controllers = this.currentFilter.basic.controllers
+        filter.controllers = this.currentFilter.basic.controllers;
       }
       this.wrapper
         .performSearchRoles(filter, pagination)
-        .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
+        .then((res) => {
+          this.documents = res.documents;
+          this.totalDocuments = res.total;
         })
-        .catch(e => {
-          this.$log.error(e)
-          this.$bvToast.toast(
-            'The complete error has been printed to console',
-            {
-              title: 'Ooops! Something went wrong while fetching the role list',
-              variant: 'warning',
-              toaster: 'b-toaster-bottom-right',
-              appendToast: true,
-              dismissible: true,
-              noAutoHide: true
-            }
-          )
-        })
+        .catch((e) => {
+          this.$log.error(e);
+          this.$bvToast.toast('The complete error has been printed to console', {
+            title: 'Ooops! Something went wrong while fetching the role list',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true,
+          });
+        });
     },
     editDocument(route, id) {
       this.$router.push({
         name: this.routeUpdate,
-        params: { id }
-      })
+        params: { id },
+      });
     },
     create() {
-      this.$router.push({ name: this.routeCreate })
-    }
-  }
-}
+      this.$router.push({ name: this.routeCreate });
+    },
+  },
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

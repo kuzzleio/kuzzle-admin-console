@@ -1,6 +1,6 @@
 <template>
   <b-container class="center-screen">
-    <b-spinner variant="primary" data-cy="main-spinner"></b-spinner>
+    <b-spinner variant="primary" data-cy="main-spinner" />
   </b-container>
 </template>
 

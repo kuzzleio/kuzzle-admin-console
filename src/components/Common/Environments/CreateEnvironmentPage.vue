@@ -3,10 +3,8 @@
     <form class="CreateEnvironmentPage-form" @submit.prevent="submit">
       <b-container>
         <b-card>
-          <b-jumbotron
-            lead="Please provide the details below to connect to your Kuzzle instance."
-          >
-            <template v-slot:header
+          <b-jumbotron lead="Please provide the details below to connect to your Kuzzle instance.">
+            <template #header
               ><img
                 src="../../../assets/logo.svg"
                 alt="Welcome to the Kuzzle Admin Console"
@@ -23,7 +21,7 @@
             @environment::importEnv="importEnv"
           />
 
-          <template v-slot:footer>
+          <template #footer>
             <div class="text-right">
               <b-button
                 v-if="hasEnvironment"
@@ -41,11 +39,7 @@
               >
                 Import connections
               </b-button>
-              <b-button
-                data-cy="Environment-SubmitButton"
-                variant="primary"
-                type="submit"
-              >
+              <b-button data-cy="Environment-SubmitButton" variant="primary" type="submit">
                 {{ $attrs.id ? 'Save' : 'Create' }} connection
               </b-button>
             </div>
@@ -57,33 +51,33 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import CreateEnvironment from './CreateEnvironment.vue'
+import CreateEnvironment from './CreateEnvironment.vue';
 
 export default {
   name: 'CreateEnvironmentPage',
   components: {
-    CreateEnvironment
+    CreateEnvironment,
   },
   computed: {
-    ...mapGetters('kuzzle', ['hasEnvironment', 'environments'])
+    ...mapGetters('kuzzle', ['hasEnvironment', 'environments']),
   },
   methods: {
     async submit() {
-      const id = await this.$refs.createEnvironmentComponent.submit()
+      const id = await this.$refs.createEnvironmentComponent.submit();
       if (Object.keys(this.environments).length > 1) {
-        this.$router.push({ name: 'SelectEnvironment' })
+        this.$router.push({ name: 'SelectEnvironment' });
       } else {
-        await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id)
-        this.$router.push('/')
+        await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id);
+        this.$router.push('/');
       }
     },
     importEnv() {
-      this.$emit('environment::importEnv')
-    }
-  }
-}
+      this.$emit('environment::importEnv');
+    },
+  },
+};
 </script>
 
 <style lang="scss">

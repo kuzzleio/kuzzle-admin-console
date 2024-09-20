@@ -1,15 +1,39 @@
 <template>
   <span :class="myclass">
-    <a
-      class="action dropdown-button fa fa-ellipsis-v"
-      :data-target="parsedId"
-    />
+    <a class="action dropdown-button fa fa-ellipsis-v" :data-target="parsedId" />
 
     <ul :id="parsedId" class="dropdown-content">
       <slot />
     </ul>
   </span>
 </template>
+
+<script>
+import Vue from 'vue';
+
+import { formatForDom } from '@/utils';
+
+export default {
+  props: ['id', 'myclass'],
+  computed: {
+    parsedId() {
+      if (!this.id) {
+        return null;
+      }
+
+      const parsed = this.id + this._id;
+
+      return formatForDom(parsed);
+    },
+  },
+  mounted() {
+    Vue.nextTick(() => {
+      /* eslint no-undef: 0 */
+      $(this.$el).find('.dropdown-button').dropdown({ constrainWidth: false, belowOrigin: true });
+    });
+  },
+};
+</script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
 span {
@@ -43,32 +67,3 @@ a.dropdown-button {
   }
 }
 </style>
-
-<script>
-import Vue from 'vue'
-
-import { formatForDom } from '@/utils'
-
-export default {
-  props: ['id', 'myclass'],
-  computed: {
-    parsedId() {
-      if (!this.id) {
-        return null
-      }
-
-      let parsed = this.id + this._id
-
-      return formatForDom(parsed)
-    }
-  },
-  mounted() {
-    Vue.nextTick(() => {
-      /* eslint no-undef: 0 */
-      $(this.$el)
-        .find('.dropdown-button')
-        .dropdown({ constrainWidth: false, belowOrigin: true })
-    })
-  }
-}
-</script>

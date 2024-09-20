@@ -1,6 +1,6 @@
 <template>
   <div class="QuickFilter">
-    <b-row no-gutters v-if="!complexFilterActive">
+    <b-row v-if="!complexFilterActive" no-gutters>
       <b-col cols="6">
         <div class="QuickFilter-searchBar">
           <b-input-group>
@@ -31,22 +31,13 @@
           @click.prevent="displayAdvancedFilters"
           >{{ advancedQueryLabel }}</a
         >
-        <a
-          v-else
-          class="QuickFilter-optionBtn"
-          href="#"
-          @click.prevent="displayAdvancedFilters"
+        <a v-else class="QuickFilter-optionBtn" href="#" @click.prevent="displayAdvancedFilters"
           >Less query options</a
         >
       </b-col>
 
       <b-col v-if="actionButtonsVisible" class="text-right" cols="4">
-        <b-button
-          type="submit"
-          class="m-2"
-          variant="primary"
-          @click.prevent="submitSearch"
-        >
+        <b-button type="submit" class="m-2" variant="primary" @click.prevent="submitSearch">
           {{ submitButtonLabel }}
         </b-button>
         <b-button
@@ -71,12 +62,7 @@
               advancedFiltersVisible ? 'Hide filters' : 'Show filters'
             }}</b-button
           >
-          <b-badge
-            v-if="!advancedFiltersVisible"
-            pill
-            variant="info"
-            class="ml-2 py-2 px-3"
-            align-v
+          <b-badge v-if="!advancedFiltersVisible" pill variant="info" class="ml-2 py-2 px-3" align-v
             >Filters are being applied</b-badge
           >
         </b-row>
@@ -103,47 +89,47 @@ export default {
     advancedQueryLabel: {
       type: String,
       required: false,
-      default: 'Advanced query...'
+      default: 'Advanced query...',
     },
     complexFilterActive: Boolean,
     enabled: Boolean,
     submitButtonLabel: {
       type: String,
       required: false,
-      default: 'Search'
+      default: 'Search',
     },
     actionButtonsVisible: {
       type: Boolean,
       required: false,
-      default: true
+      default: true,
     },
     placeholder: {
       type: String,
-      default: 'Search everywhere...'
+      default: 'Search everywhere...',
     },
     submitOnType: {
       type: Boolean,
-      default: true
+      default: true,
     },
     value: {
-      type: String
-    }
+      type: String,
+    },
   },
   methods: {
     submit() {
-      this.$emit('submit', this.value)
+      this.$emit('submit', this.value);
     },
     resetSearch() {
-      this.$emit('reset')
+      this.$emit('reset');
     },
     displayAdvancedFilters() {
-      this.$emit('display-advanced-filters')
+      this.$emit('display-advanced-filters');
     },
     onInput(term) {
-      this.$emit(this.submitOnType ? 'submit' : 'input', term)
-    }
-  }
-}
+      this.$emit(this.submitOnType ? 'submit' : 'input', term);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

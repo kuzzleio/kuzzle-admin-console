@@ -1,31 +1,28 @@
-import { Index } from '@/vuex/modules/index/types'
+import type { Index } from '@/vuex/modules/index/types';
 
 export const filterIndexesByKeyword = (indexes: Index[], word: string) => {
   if (!word || word === '') {
-    return indexes
+    return indexes;
   }
 
-  let lowerCaseWord = word.toLowerCase()
+  const lowerCaseWord = word.toLowerCase();
 
-  return indexes.filter(element => {
-    if (element.name.toLowerCase().indexOf(lowerCaseWord) >= 0) {
-      return true
+  return indexes.filter((element) => {
+    if (element.name.toLowerCase().includes(lowerCaseWord)) {
+      return true;
     }
 
     if (
-      element.collections &&
-      element.collections.some(
-        collection => collection.name.toLowerCase().indexOf(lowerCaseWord) >= 0
+      element.collections != null &&
+      element.collections.some((collection) =>
+        collection.name.toLowerCase().includes(lowerCaseWord),
       )
     ) {
-      return true
+      return true;
     }
-  })
-}
+  });
+};
 
-export const getIndexPosition = (
-  indexes: Index[],
-  indexName: string
-): number => {
-  return indexes.findIndex(el => el.name === indexName)
-}
+export const getIndexPosition = (indexes: Index[], indexName: string): number => {
+  return indexes.findIndex((el) => el.name === indexName);
+};

@@ -6,11 +6,7 @@
           <b-col cols="8">
             <b-row>
               <b-col>
-                <b-input-group
-                  prepend="Controller"
-                  id="query-input-controller"
-                  append=""
-                >
+                <b-input-group id="query-input-controller" prepend="Controller" append="">
                   <b-tooltip
                     v-if="!isQueryValid(jsonQuery)"
                     target="query-input-controller"
@@ -19,29 +15,24 @@
                     The query is invalid.
                   </b-tooltip>
                   <b-form-input
-                    :data-cy="`api-actions-controller-input-${tabIdx}`"
                     v-model="editedQuery.controller"
+                    :data-cy="`api-actions-controller-input-${tabIdx}`"
                     :disabled="!isQueryValid(jsonQuery)"
                     placeholder="Select or type your controller"
                     list="controllersList"
-                  ></b-form-input>
-                  <b-input-group-append
-                    is-text
-                    @click="editedQuery.controller = ''"
-                  >
+                  />
+                  <b-input-group-append is-text @click="editedQuery.controller = ''">
                     <i class="fas fa-times" />
                   </b-input-group-append>
                 </b-input-group>
                 <datalist id="controllersList">
-                  <option
-                    v-for="controller of controllers"
-                    :key="`${tabIdx}-${controller}`"
-                    >{{ controller }}</option
-                  >
+                  <option v-for="controller of controllers" :key="`${tabIdx}-${controller}`">
+                    {{ controller }}
+                  </option>
                 </datalist>
               </b-col>
               <b-col>
-                <b-input-group prepend="Action" id="query-input-action">
+                <b-input-group id="query-input-action" prepend="Action">
                   <b-tooltip
                     v-if="!isQueryValid(jsonQuery)"
                     target="query-input-action"
@@ -50,46 +41,33 @@
                     The query is invalid.
                   </b-tooltip>
                   <b-form-input
-                    :data-cy="`api-actions-action-input-${tabIdx}`"
                     v-model="editedQuery.action"
+                    :data-cy="`api-actions-action-input-${tabIdx}`"
                     list="actionsList"
                     placeholder="Select or type your action"
                     :disabled="!isQueryValid(jsonQuery)"
-                  ></b-form-input>
-                  <b-input-group-append
-                    is-text
-                    @click="editedQuery.action = ''"
-                  >
+                  />
+                  <b-input-group-append is-text @click="editedQuery.action = ''">
                     <i class="fas fa-times" />
                   </b-input-group-append>
                 </b-input-group>
                 <datalist id="actionsList">
-                  <option
-                    v-for="action of actions"
-                    :key="`${tabIdx}-${action}`"
-                    >{{ action }}</option
-                  >
+                  <option v-for="action of actions" :key="`${tabIdx}-${action}`">
+                    {{ action }}
+                  </option>
                 </datalist>
               </b-col>
               <b-button id="popover-target-1" variant="link">
-                <i color="primary" class="fas fa-question-circle fa-lg"></i>
+                <i color="primary" class="fas fa-question-circle fa-lg" />
               </b-button>
-              <b-popover
-                target="popover-target-1"
-                triggers="hover"
-                placement="top"
-              >
+              <b-popover target="popover-target-1" triggers="hover" placement="top">
                 Here, you'll be able to perform custom
-                <a
-                  href="https://docs.kuzzle.io/sdk/js/7/core-classes/kuzzle/query/"
-                  target="_blank"
+                <a href="https://docs.kuzzle.io/sdk/js/7/core-classes/kuzzle/query/" target="_blank"
                   >query
                   <i class="fa fa-external-link-alt" />
                 </a>
                 to Kuzzle following the
-                <a
-                  href="https://docs.kuzzle.io/core/2/api/payloads/request/"
-                  target="_blank"
+                <a href="https://docs.kuzzle.io/core/2/api/payloads/request/" target="_blank"
                   >API Documentation
                   <i class="fa fa-external-link-alt" />
                 </a>
@@ -97,7 +75,7 @@
               </b-popover>
             </b-row>
           </b-col>
-          <b-col class="text-right" id="query-button-actions" cols="4">
+          <b-col id="query-button-actions" class="text-right" cols="4">
             <b-tooltip
               v-if="!isQueryValid(jsonQuery)"
               target="query-button-actions"
@@ -107,21 +85,21 @@
             </b-tooltip>
 
             <b-button
-              @click="performQuery"
               :disabled="!isQueryValid(jsonQuery)"
               variant="success"
               :data-cy="`api-actions-run-button-${tabIdx}`"
               class="mr-3 pointer"
+              @click="performQuery"
             >
               <i class="fas fa-rocket mr-2" />
               RUN
             </b-button>
             <b-button
-              @click="saveQuery"
               :disabled="!isQueryValid(jsonQuery)"
               :data-cy="`api-actions-save-button-${tabIdx}`"
               variant="outline-primary"
               class="pointer"
+              @click="saveQuery"
             >
               <i class="fas fa-save mr-2" />
               SAVE
@@ -129,14 +107,8 @@
           </b-col>
         </b-row>
         <b-row align-v="stretch" class="multipaneRow px-3">
-          <Multipane
-            class="QueryLayout-vertical Query-Custom-resizer-vertical"
-            layout="vertical"
-          >
-            <div
-              class="QueryLayout-sidebarWrapper-vertical"
-              data-cy="QueryLayout-sidebarWrapper"
-            >
+          <Multipane class="QueryLayout-vertical Query-Custom-resizer-vertical" layout="vertical">
+            <div class="QueryLayout-sidebarWrapper-vertical" data-cy="QueryLayout-sidebarWrapper">
               <b-card no-body class="h-100">
                 <json-editor
                   :id="`queryEditorWrapper-${tabIdx}`"
@@ -150,7 +122,7 @@
             </div>
             <MultipaneResizer data-cy="sidebarResizer" />
             <div class="QueryLayout-contentWrapper-vertical">
-              <ResponseCard :tabIdx="tabIdx" :response="response" />
+              <ResponseCard :tab-idx="tabIdx" :response="response" />
             </div>
           </Multipane>
         </b-row>
@@ -160,26 +132,26 @@
 </template>
 
 <script>
-import { Multipane, MultipaneResizer } from 'vue-multipane'
-import _ from 'lodash'
+import _ from 'lodash';
+import { Multipane, MultipaneResizer } from 'vue-multipane';
 
-import ResponseCard from '@/components/ApiAction/ResponseCard.vue'
-import jsonEditor from '@/components/Common/JsonEditor.vue'
+import ResponseCard from '@/components/ApiAction/ResponseCard.vue';
+import jsonEditor from '@/components/Common/JsonEditor.vue';
 
 export default {
   name: 'QueryCard',
+  components: {
+    jsonEditor,
+    ResponseCard,
+    Multipane,
+    MultipaneResizer,
+  },
   props: {
     query: {},
     tabIdx: {},
     api: {},
     openapi: {},
-    response: {}
-  },
-  components: {
-    jsonEditor,
-    ResponseCard,
-    Multipane,
-    MultipaneResizer
+    response: {},
   },
   data() {
     return {
@@ -188,127 +160,114 @@ export default {
       editedQuery: {
         controller: null,
         action: null,
-        body: {}
-      }
-    }
-  },
-  mounted() {
-    this.editedQuery = JSON.parse(JSON.stringify(this.query))
-    this.jsonQuery = JSON.stringify(this.editedQuery, null, 2)
+        body: {},
+      },
+    };
   },
   computed: {
     controllers() {
-      return this.api ? Object.keys(this.api) : []
+      return this.api ? Object.keys(this.api) : [];
     },
     actions() {
       if (!this.api) {
-        return []
+        return [];
       }
-      const currentController = this.editedQuery.controller
+      const currentController = this.editedQuery.controller;
       return currentController && this.api[currentController]
         ? Object.keys(this.api[currentController])
-        : []
-    }
-  },
-  methods: {
-    toggleFullscreen() {
-      this.isFullScreen = !this.isFullScreen
+        : [];
     },
-    saveQuery() {
-      this.$emit('saveQuery', this.tabIdx)
-    },
-    performQuery() {
-      this.$emit('performQuery', this.tabIdx)
-    },
-    loadQueryParams() {
-      const query = JSON.parse(JSON.stringify(this.editedQuery))
-      const api = _.get(this.api, `${query.controller}.${query.action}`, null)
-      if (!api) {
-        let obj = {
-          controller: query.controller,
-          action: query.action,
-          body: query.body
-        }
-        this.jsonQuery = JSON.stringify(obj, null, 2)
-        this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
-          this.jsonQuery
-        )
-        return
-      }
-      let path = api.http[0].url
-      let verb = api.http[0].verb.toLowerCase()
-      const openApiPath = path.replaceAll(
-        /:[^,/]+/g,
-        m => `{${m.replace(':', '')}}`
-      )
-
-      const params = _.get(
-        this.openapi,
-        `${openApiPath}.${verb}.parameters`,
-        null
-      )
-      if (params) {
-        for (let param of params) {
-          query[param.name] = ''
-        }
-      }
-      this.jsonQuery = JSON.stringify(query, null, 2)
-      this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery)
-    },
-    queryBodyChange($event) {
-      this.jsonQuery = $event
-      if (this.isQueryValid($event)) {
-        this.editedQuery = JSON.parse($event)
-      }
-    },
-    isQueryValid(query) {
-      if (!query) {
-        return false
-      }
-      try {
-        JSON.parse(query)
-        return true
-      } catch (error) {
-        return false
-      }
-    }
   },
   watch: {
     editedQuery: {
       deep: true,
       handler(value) {
-        this.$emit('queryChanged', { query: value, tabIdx: this.tabIdx })
-      }
+        this.$emit('queryChanged', { query: value, tabIdx: this.tabIdx });
+      },
     },
     'editedQuery.controller': {
       deep: true,
       handler(value) {
-        const tmp = JSON.parse(this.jsonQuery)
+        const tmp = JSON.parse(this.jsonQuery);
         if (value !== tmp.controller) {
-          tmp.controller = value
-          this.jsonQuery = JSON.stringify(tmp, null, 2)
-          this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
-            this.jsonQuery
-          )
+          tmp.controller = value;
+          this.jsonQuery = JSON.stringify(tmp, null, 2);
+          this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery);
         }
-      }
+      },
     },
     'editedQuery.action': {
       deep: true,
       handler(value) {
-        const tmp = JSON.parse(this.jsonQuery)
+        const tmp = JSON.parse(this.jsonQuery);
         if (value !== tmp.action) {
-          tmp.action = value
-          this.jsonQuery = JSON.stringify(tmp, null, 2)
-          this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(
-            this.jsonQuery
-          )
-          this.loadQueryParams()
+          tmp.action = value;
+          this.jsonQuery = JSON.stringify(tmp, null, 2);
+          this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery);
+          this.loadQueryParams();
+        }
+      },
+    },
+  },
+  mounted() {
+    this.editedQuery = JSON.parse(JSON.stringify(this.query));
+    this.jsonQuery = JSON.stringify(this.editedQuery, null, 2);
+  },
+  methods: {
+    toggleFullscreen() {
+      this.isFullScreen = !this.isFullScreen;
+    },
+    saveQuery() {
+      this.$emit('saveQuery', this.tabIdx);
+    },
+    performQuery() {
+      this.$emit('performQuery', this.tabIdx);
+    },
+    loadQueryParams() {
+      const query = JSON.parse(JSON.stringify(this.editedQuery));
+      const api = _.get(this.api, `${query.controller}.${query.action}`, null);
+      if (!api) {
+        const obj = {
+          controller: query.controller,
+          action: query.action,
+          body: query.body,
+        };
+        this.jsonQuery = JSON.stringify(obj, null, 2);
+        this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery);
+        return;
+      }
+      const path = api.http[0].url;
+      const verb = api.http[0].verb.toLowerCase();
+      const openApiPath = path.replaceAll(/:[^,/]+/g, (m) => `{${m.replace(':', '')}}`);
+
+      const params = _.get(this.openapi, `${openApiPath}.${verb}.parameters`, null);
+      if (params) {
+        for (const param of params) {
+          query[param.name] = '';
         }
       }
-    }
-  }
-}
+      this.jsonQuery = JSON.stringify(query, null, 2);
+      this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery);
+    },
+    queryBodyChange($event) {
+      this.jsonQuery = $event;
+      if (this.isQueryValid($event)) {
+        this.editedQuery = JSON.parse($event);
+      }
+    },
+    isQueryValid(query) {
+      if (!query) {
+        return false;
+      }
+      try {
+        JSON.parse(query);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

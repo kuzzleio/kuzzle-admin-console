@@ -16,8 +16,8 @@
     <ul v-show="isOpen" class="Autocomplete-results">
       <li
         v-for="(result, i) in results"
-        :data-cy="`autocomplete-item--${result}`"
         :key="result"
+        :data-cy="`autocomplete-item--${result}`"
         class="Autocomplete-result"
         :class="{ 'is-active': i === selectionCursor }"
         @click="setResult(result)"
@@ -35,105 +35,105 @@ export default {
     item: {
       type: String,
       required: false,
-      default: ''
+      default: '',
     },
     items: {
       type: Array,
       required: false,
       default: () => {
-        return []
-      }
+        return [];
+      },
     },
     inputClass: {
       type: String,
       required: false,
-      default: ''
+      default: '',
     },
     placeholder: {
       type: String,
       required: false,
-      default: ''
+      default: '',
     },
     value: {
       type: String,
       required: false,
-      default: ''
+      default: '',
     },
     notifyChange: {
       type: Boolean,
       required: false,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
       inputValue: '',
       results: [],
       isOpen: false,
-      selectionCursor: -1
-    }
+      selectionCursor: -1,
+    };
   },
   watch: {
     value: {
       immediate: true,
       handler(newValue) {
-        this.inputValue = newValue
-      }
-    }
+        this.inputValue = newValue;
+      },
+    },
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside)
+    document.addEventListener('click', this.handleClickOutside);
   },
   destroyed() {
-    document.removeEventListener('click', this.handleClickOutside)
+    document.removeEventListener('click', this.handleClickOutside);
   },
   methods: {
     onChange(evt) {
       if (this.notifyChange) {
-        return this.changeResult(evt.target.value)
+        return this.changeResult(evt.target.value);
       }
     },
     onInput() {
-      this.isOpen = true
-      this.filterResults()
+      this.isOpen = true;
+      this.filterResults();
     },
     filterResults() {
       this.results = this.items.filter(
-        item => item.toLowerCase().indexOf(this.inputValue.toLowerCase()) > -1
-      )
+        (item) => item.toLowerCase().indexOf(this.inputValue.toLowerCase()) > -1,
+      );
     },
     setResult(result) {
-      this.isOpen = false
-      this.inputValue = result
-      this.$emit('autocomplete::change', result)
-      this.inputValue = ''
+      this.isOpen = false;
+      this.inputValue = result;
+      this.$emit('autocomplete::change', result);
+      this.inputValue = '';
     },
     changeResult(result) {
-      this.$emit('autocomplete::change', result)
-      this.inputValue = ''
+      this.$emit('autocomplete::change', result);
+      this.inputValue = '';
     },
     onArrowDown() {
       if (this.selectionCursor + 1 < this.results.length) {
-        this.selectionCursor = this.selectionCursor + 1
+        this.selectionCursor = this.selectionCursor + 1;
       }
     },
     onArrowUp() {
       if (this.selectionCursor > 0) {
-        this.selectionCursor = this.selectionCursor - 1
+        this.selectionCursor = this.selectionCursor - 1;
       }
     },
     onEnter() {
-      this.setResult(this.results[this.selectionCursor])
-      this.selectionCursor = -1
+      this.setResult(this.results[this.selectionCursor]);
+      this.selectionCursor = -1;
     },
     handleClickOutside(evt) {
       if (!this.$el.contains(evt.target)) {
-        this.isOpen = false
-        this.selectionCursor = -1
+        this.isOpen = false;
+        this.selectionCursor = -1;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">

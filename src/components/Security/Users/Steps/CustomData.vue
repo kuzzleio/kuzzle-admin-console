@@ -1,16 +1,16 @@
 <template>
   <div class="document-create-update">
     <form class="wrapper" @submit.prevent="submit">
-      Here, you can define the custom content of your users. The fields you
-      define here will appear in the <code>content</code> field of your user
-      object, along with <code>profileIds</code> and <code>_kuzzle_info</code>.
+      Here, you can define the custom content of your users. The fields you define here will appear
+      in the <code>content</code> field of your user object, along with <code>profileIds</code> and
+      <code>_kuzzle_info</code>.
       <!-- Json view -->
       <b-row class="mt-3">
         <b-col cols="8">
           <h3>Custom content</h3>
           <json-editor
-            data-cy="UserCustomContent-jsonEditor"
             ref="jsoneditor"
+            data-cy="UserCustomContent-jsonEditor"
             class="document-json"
             :content="value"
             :height="300"
@@ -24,7 +24,7 @@
           <pre
             v-json-formatter="{
               content: mapping,
-              open: true
+              open: true,
             }"
           />
         </b-col>
@@ -34,47 +34,47 @@
 </template>
 
 <script>
-import JsonFormatter from '@/directives/json-formatter.directive'
-import { mergeSchemaMapping } from '@/services/collectionHelper'
+import JsonFormatter from '@/directives/json-formatter.directive';
+import { mergeSchemaMapping } from '@/services/collectionHelper';
 
-import JsonEditor from '@/components/Common/JsonEditor.vue'
+import JsonEditor from '@/components/Common/JsonEditor.vue';
 
 export default {
   name: 'CustomData',
   components: {
-    JsonEditor
+    JsonEditor,
   },
   directives: { JsonFormatter },
   props: {
     value: {
       type: String,
-      default: ''
+      default: '',
     },
     mapping: {
       type: Object,
       default: () => {
-        return {}
-      }
-    }
+        return {};
+      },
+    },
   },
   data() {
     return {
       viewType: 'form',
-      newContent: {}
-    }
+      newContent: {},
+    };
   },
   computed: {
     isFormView() {
-      return this.viewType === 'form'
+      return this.viewType === 'form';
     },
     schema() {
-      return mergeSchemaMapping({}, this.mapping)
-    }
+      return mergeSchemaMapping({}, this.mapping);
+    },
   },
   methods: {
     jsonChanged(value) {
-      this.$emit('input', value)
-    }
-  }
-}
+      this.$emit('input', value);
+    },
+  },
+};
 </script>

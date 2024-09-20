@@ -4,28 +4,22 @@
       <b-col cols="10" class="py-1 vertical-align">
         <i
           aria-hidden="true"
-          :class="
-            `fa fa-caret-${
-              expanded ? 'down' : 'right'
-            } mr-2  d-inline-block align-middle`
-          "
+          :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2  d-inline-block align-middle`"
           :data-cy="`RoleItem-${document._id}--toggle`"
           @click="toggleCollapse"
         />
         <b-form-checkbox
+          v-model="checked"
           class="d-inline-block align-middle"
           type="checkbox"
           value="true"
           unchecked-value="false"
-          v-model="checked"
           :data-cy="`RoleItem-checkbox--${document._id}`"
           @change="notifyCheckboxClick"
         />
-        <a
-          class="d-inline-block align-middle code pointer mr-2"
-          @click="toggleCollapse"
-          >{{ document._id }}</a
-        >
+        <a class="d-inline-block align-middle code pointer mr-2" @click="toggleCollapse">{{
+          document._id
+        }}</a>
       </b-col>
       <b-col class="text-right">
         <b-button
@@ -34,9 +28,7 @@
           variant="link"
           :data-cy="`RoleItem-update--${document._id}`"
           :disabled="!canEditRole"
-          :title="
-            canEditRole ? 'Edit Role' : 'You are not allowed to edit this role'
-          "
+          :title="canEditRole ? 'Edit Role' : 'You are not allowed to edit this role'"
           @click.prevent="update"
         >
           <i class="fa fa-pencil-alt" :class="{ disabled: !canEditRole }" />
@@ -47,11 +39,7 @@
           variant="link"
           :data-cy="`RoleItem-delete--${document._id}`"
           :disabled="!canDeleteRole"
-          :title="
-            canDeleteRole
-              ? 'Delete role'
-              : 'You are not allowed to delete this role'
-          "
+          :title="canDeleteRole ? 'Delete role' : 'You are not allowed to delete this role'"
           @click.prevent="deleteDocument(document._id)"
         >
           <i class="fa fa-trash" :class="{ disabled: !canDeleteRole }" />
@@ -68,57 +56,53 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import jsonFormatter from '@/directives/json-formatter.directive'
+import jsonFormatter from '@/directives/json-formatter.directive';
 
 export default {
   name: 'RoleItem',
   components: {},
   directives: {
-    jsonFormatter
+    jsonFormatter,
   },
   props: {
     document: Object,
-    isChecked: Boolean
+    isChecked: Boolean,
   },
   data() {
     return {
       expanded: false,
-      checked: false
-    }
+      checked: false,
+    };
   },
   computed: {
-    ...mapGetters('auth', ['canEditRole', 'canDeleteRole'])
-  },
-  methods: {
-    toggleCollapse() {
-      this.expanded = !this.expanded
-    },
-    notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document._id)
-    },
-    deleteDocument() {
-      if (this.canDeleteRole) {
-        this.$emit('delete-document', this.document._id)
-      }
-    },
-    update() {
-      if (this.canEditRole) {
-        this.$emit(
-          'common-list::edit-document',
-          'SecurityRolesUpdate',
-          this.document._id
-        )
-      }
-    }
+    ...mapGetters('auth', ['canEditRole', 'canDeleteRole']),
   },
   watch: {
     isChecked: {
       handler(value) {
-        this.checked = value
+        this.checked = value;
+      },
+    },
+  },
+  methods: {
+    toggleCollapse() {
+      this.expanded = !this.expanded;
+    },
+    notifyCheckboxClick() {
+      this.$emit('checkbox-click', this.document._id);
+    },
+    deleteDocument() {
+      if (this.canDeleteRole) {
+        this.$emit('delete-document', this.document._id);
       }
-    }
-  }
-}
+    },
+    update() {
+      if (this.canEditRole) {
+        this.$emit('common-list::edit-document', 'SecurityRolesUpdate', this.document._id);
+      }
+    },
+  },
+};
 </script>

@@ -1,8 +1,5 @@
 <template>
-  <b-td
-    class="ColumnViewTableCell cell realtime-highlight"
-    :id="`col-${rowId}-${fieldName}`"
-  >
+  <b-td :id="`col-${rowId}-${fieldName}`" class="ColumnViewTableCell cell realtime-highlight">
     <template v-if="data === null">
       <code>null</code>
     </template>
@@ -10,14 +7,12 @@
       <code>undefined</code>
     </template>
     <template v-else-if="Array.isArray(data)">
-      <b-badge
-        title="Unable to display array values in table cells, use the List view instead"
+      <b-badge title="Unable to display array values in table cells, use the List view instead"
         >array</b-badge
       >
     </template>
     <template v-else-if="isObject(data)">
-      <b-badge
-        title="Unable to display object values in table cells, use the List view instead"
+      <b-badge title="Unable to display object values in table cells, use the List view instead"
         >object</b-badge
       >
     </template>
@@ -28,28 +23,29 @@
 </template>
 
 <script>
-import isObject from 'lodash/isObject'
-import { dateFromTimestamp } from '@/utils'
+import isObject from 'lodash/isObject';
+
+import { dateFromTimestamp } from '@/utils';
 
 export default {
   name: 'ColumnViewTableCell',
   props: {
     autoSync: Boolean,
     data: {
-      required: true
+      required: true,
     },
     fieldName: {
       type: String,
-      required: true
+      required: true,
     },
     rowId: {
       type: String,
-      required: true
+      required: true,
     },
     fieldType: {
-      type: String
+      type: String,
     },
-    notification: Object
+    notification: Object,
   },
   computed: {
     formattedData() {
@@ -59,25 +55,25 @@ export default {
         !Array.isArray(this.data) &&
         !isObject(this.data)
       ) {
-        const dateObj = dateFromTimestamp(this.data)
+        const dateObj = dateFromTimestamp(this.data);
         if (dateObj) {
-          return dateObj.toLocaleString('en-GB')
+          return dateObj.toLocaleString('en-GB');
         }
       }
-      return this.data
-    }
-  },
-  methods: {
-    isObject: isObject
+      return this.data;
+    },
   },
   watch: {
     data() {
       if (!this.autoSync) {
-        return
+        return;
       }
-      this.$el.classList.add('changed')
-      setTimeout(() => this.$el.classList.remove('changed'), 200)
-    }
-  }
-}
+      this.$el.classList.add('changed');
+      setTimeout(() => this.$el.classList.remove('changed'), 200);
+    },
+  },
+  methods: {
+    isObject,
+  },
+};
 </script>

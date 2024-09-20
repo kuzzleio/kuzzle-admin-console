@@ -12,42 +12,42 @@ export default {
     name: String,
     tabSelect: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
   computed: {
     computedClasses() {
-      return this.disabled ? ['disabled'] : []
+      return this.disabled ? ['disabled'] : [];
     },
     index() {
-      return this.$parent.$children.indexOf(this)
-    }
+      return this.$parent.$children.indexOf(this);
+    },
   },
   watch: {
     tabSelect(name) {
       if (!name) {
-        return
+        return;
       }
 
-      this.select(name)
-    }
+      this.select(name);
+    },
   },
   mounted() {
     if (this.tabSelect) {
-      this.select(this.tabSelect)
+      this.select(this.tabSelect);
     }
   },
   methods: {
     setAsSelected() {
       if (!this.disabled) {
-        this.$emit('tabs-on-select', this)
+        this.$emit('tabs-on-select', this);
       }
     },
     select(name) {
       if (this.name === name) {
-        this.setAsSelected()
+        this.setAsSelected();
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

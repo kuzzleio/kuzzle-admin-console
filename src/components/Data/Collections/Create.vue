@@ -1,5 +1,5 @@
 <template>
-  <b-container class="CollectionCreate h-100" v-if="index">
+  <b-container v-if="index" class="CollectionCreate h-100">
     <create-or-update
       v-if="hasRights"
       headline="Create a new collection"
@@ -12,28 +12,29 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import PageNotAllowed from '../../Common/PageNotAllowed.vue'
-import CreateOrUpdate from './CreateOrUpdate.vue'
+import PageNotAllowed from '../../Common/PageNotAllowed.vue';
+
+import CreateOrUpdate from './CreateOrUpdate.vue';
 
 export default {
   name: 'CollectionCreate',
   components: {
     CreateOrUpdate,
-    PageNotAllowed
+    PageNotAllowed,
   },
   props: {
-    indexName: String
+    indexName: String,
   },
   computed: {
     ...mapGetters('auth', ['canCreateCollection']),
     hasRights() {
-      return this.canCreateCollection(this.index.name)
+      return this.canCreateCollection(this.index.name);
     },
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName)
-    }
+      return this.$store.direct.getters.index.getOneIndex(this.indexName);
+    },
   },
   methods: {
     async create(payload) {
@@ -41,25 +42,25 @@ export default {
         await this.$store.direct.dispatch.index.createCollection({
           index: this.index,
           name: payload.name,
-          mapping: payload.mapping
-        })
+          mapping: payload.mapping,
+        });
 
         this.$router.push({
           name: 'Collections',
-          params: { indexName: this.index.name }
-        })
+          params: { indexName: this.index.name },
+        });
       } catch (error) {
-        this.$log.error(error)
+        this.$log.error(error);
         this.$bvToast.toast(error.message, {
           title: 'Ooops! Something went wrong while creating the collection.',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
           appendToast: true,
           dismissible: true,
-          noAutoHide: true
-        })
+          noAutoHide: true,
+        });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

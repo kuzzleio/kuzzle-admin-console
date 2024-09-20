@@ -1,8 +1,8 @@
-import { SessionUser } from '@/models/SessionUser'
+import type { SessionUser } from '@/models/SessionUser';
 
 export interface AuthState {
-  user: SessionUser | null
-  tokenValid: boolean
-  adminAlreadyExists: boolean
-  initializing: boolean
+  user: SessionUser | null;
+  tokenValid: boolean;
+  adminAlreadyExists: boolean;
+  initializing: boolean;
 }

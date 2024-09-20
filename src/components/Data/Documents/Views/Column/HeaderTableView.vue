@@ -7,11 +7,7 @@
     @mouseleave="$emit('mouseleave')"
   >
     <div class="table-head">
-      <i
-        :class="
-          `handle fas fa-arrows-alt ${displayDragIcon ? '' : 'hideDragIcon'}`
-        "
-      />
+      <i :class="`handle fas fa-arrows-alt ${displayDragIcon ? '' : 'hideDragIcon'}`" />
       <span class="pr-2">{{ field }}</span>
     </div>
   </b-th>
@@ -23,19 +19,19 @@ export default {
   props: {
     field: {
       type: String,
-      default: ''
+      default: '',
     },
     displayDragIcon: {
       default: false,
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
   data() {
-    return {}
+    return {};
   },
+  mounted() {},
   methods: {},
-  mounted() {}
-}
+};
 </script>
 
 <style lang="scss">

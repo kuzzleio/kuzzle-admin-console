@@ -7,14 +7,11 @@
             class="Stepper-step col s1"
             :class="{
               disabled: disabledSteps.indexOf(index) != -1,
-              'offset-s4': index === 0
+              'offset-s4': index === 0,
             }"
           >
             <div class="left Stepper-stepContent" @click="changeStep(index)">
-              <div
-                class="Stepper-circle"
-                :class="{ active: currentStep === index }"
-              >
+              <div class="Stepper-circle" :class="{ active: currentStep === index }">
                 {{ index + 1 }}
               </div>
               <p>{{ step }}</p>
@@ -26,6 +23,37 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'Stepper',
+  props: {
+    currentStep: {
+      type: Number,
+      default: 0,
+    },
+    disabledSteps: {
+      type: Array,
+      default: () => {
+        return [];
+      },
+    },
+    steps: {
+      type: Array,
+      required: true,
+    },
+  },
+  methods: {
+    changeStep(number) {
+      if (this.disabledSteps.indexOf(number) !== -1) {
+        return;
+      }
+
+      this.$emit('changed-step', number);
+    },
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 // @TODO pass this code to BEM
@@ -82,34 +110,3 @@
   margin-top: 25px;
 }
 </style>
-
-<script>
-export default {
-  name: 'Stepper',
-  props: {
-    currentStep: {
-      type: Number,
-      default: 0
-    },
-    disabledSteps: {
-      type: Array,
-      default: () => {
-        return []
-      }
-    },
-    steps: {
-      type: Array,
-      required: true
-    }
-  },
-  methods: {
-    changeStep(number) {
-      if (this.disabledSteps.indexOf(number) !== -1) {
-        return
-      }
-
-      this.$emit('changed-step', number)
-    }
-  }
-}
-</script>

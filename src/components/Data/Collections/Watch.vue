@@ -16,29 +16,29 @@
               class="icon-medium icon-black mr-2"
               :index="indexName"
               :collection="collectionName"
-              :mappingAttributes="mappingAttributes"
+              :mapping-attributes="mappingAttributes"
               @list="
                 $router.push({
                   name: 'DocumentList',
-                  query: { listViewType: 'list' }
+                  query: { listViewType: 'list' },
                 })
               "
               @column="
                 $router.push({
                   name: 'DocumentList',
-                  query: { listViewType: 'column' }
+                  query: { listViewType: 'column' },
                 })
               "
               @time-series="
                 $router.push({
                   name: 'DocumentList',
-                  query: { listViewType: 'time-series' }
+                  query: { listViewType: 'time-series' },
                 })
               "
               @map="
                 $router.push({
                   name: 'DocumentList',
-                  query: { listViewType: 'map' }
+                  query: { listViewType: 'map' },
                 })
               "
             />
@@ -48,13 +48,13 @@
               title="Delete this collection"
               @click="onDeleteCollectionClicked"
             >
-              <i class="fa fa-trash"></i>
+              <i class="fa fa-trash" />
             </b-button>
             <collection-dropdown-action
               v-else
               class="icon-medium icon-black"
-              :indexName="indexName"
-              :collectionName="collectionName"
+              :index-name="indexName"
+              :collection-name="collectionName"
               @delete-collection-clicked="showDeleteCollectionModal"
             />
           </b-col>
@@ -67,8 +67,7 @@
             <b-col cols="10">
               <h2>
                 You are not allowed to watch realtime messages on collection
-                <strong>{{ collectionName }}</strong> of index
-                <strong>{{ indexName }}</strong
+                <strong>{{ collectionName }}</strong> of index <strong>{{ indexName }}</strong
                 ><br />
               </h2>
               <p>
@@ -87,7 +86,7 @@
 
         <div v-else class="Watch-container">
           <b-card class="Filters" :no-body="!advancedFiltersVisible">
-            <template v-slot:header>
+            <template #header>
               <b-row>
                 <b-col cols="8">
                   <b-button
@@ -128,9 +127,7 @@
                     <template v-if="!subscribed">
                       <i class="fa left fa-play mr-2" />Subscribe
                     </template>
-                    <template v-else
-                      ><i class="fa left fa-pause mr-2" />Unsubscribe</template
-                    >
+                    <template v-else><i class="fa left fa-pause mr-2" />Unsubscribe</template>
                   </b-button>
                   <b-button
                     class="ml-2 d-inline-block"
@@ -145,19 +142,13 @@
               </b-row>
             </template>
             <template v-if="advancedFiltersVisible">
-              <json-editor
-                ref="filter"
-                :content="rawFilter"
-                @change="onFilterChanged"
+              <json-editor ref="filter" :content="rawFilter" @change="onFilterChanged"
             /></template>
           </b-card>
           <b-card class="mt-3">
             <b-row v-if="!subscribed && !notifications.length">
               <b-col cols="4" class="text-center">
-                <i
-                  class="fa fa-5x fa-paper-plane text-secondary mt-3"
-                  aria-hidden="true"
-                />
+                <i class="fa fa-5x fa-paper-plane text-secondary mt-3" aria-hidden="true" />
               </b-col>
               <b-col cols="6">
                 <h3>
@@ -168,9 +159,7 @@
                 <p>
                   <em
                     >Learn more about real-time filtering syntax on
-                    <a href="https://docs.kuzzle.io/koncorde/" target="_blank"
-                      >Koncorde</a
-                    ></em
+                    <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Koncorde</a></em
                   >
                 </p>
                 <br />
@@ -183,32 +172,22 @@
 
             <b-row v-if="subscribed && !notifications.length">
               <b-col cols="4" class="text-center">
-                <i
-                  class="fa fa-5x fa-hourglass-half text-secondary"
-                  aria-hidden="true"
-                />
+                <i class="fa fa-5x fa-hourglass-half text-secondary" aria-hidden="true" />
               </b-col>
               <b-col cols="6"
-                ><h2>
-                  Waiting for notifications matching your filters ...
-                </h2>
+                ><h2>Waiting for notifications matching your filters ...</h2>
                 <p>
                   <em
                     >Learn more about real-time filtering syntax on
-                    <a href="https://docs.kuzzle.io/koncorde/" target="_blank"
-                      >Koncorde</a
-                    ></em
+                    <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Koncorde</a></em
                   >
                 </p></b-col
               >
             </b-row>
 
-            <b-alert
-              data-cy="Watch-alert"
-              variant="warning"
-              :show="!!warning.message"
-              >{{ warning.message }}</b-alert
-            >
+            <b-alert data-cy="Watch-alert" variant="warning" :show="!!warning.message">{{
+              warning.message
+            }}</b-alert>
             <template v-if="notifications.length">
               <b-row class="mb-3">
                 <b-col cols="8" class="text-secondary vertical-align">
@@ -220,17 +199,16 @@
                     title="Clear messages"
                     variant="outline-secondary"
                     @click="resetNotifications"
-                    ><i class="fas fa-trash-alt mr-2"></i>Clear all
-                    notifications</b-button
+                    ><i class="fas fa-trash-alt mr-2" />Clear all notifications</b-button
                   ></b-col
                 ></b-row
               >
 
               <b-row>
                 <b-col
-                  cols="8"
                   id="notification-container"
                   ref="notificationContainer"
+                  cols="8"
                   class="Watch--notifications pr-1"
                 >
                   <notification
@@ -245,20 +223,15 @@
                       Latest notification ({{ lastNotificationTime }})
                     </b-card-header>
                     <b-card-body class="overflow-auto">
-                      <b-badge
-                        pill
-                        variant="info"
-                        class="mr-2"
-                        title="controller : action"
-                        >{{ lastNotification.controller }} :
-                        {{ lastNotification.action }}</b-badge
+                      <b-badge pill variant="info" class="mr-2" title="controller : action"
+                        >{{ lastNotification.controller }} : {{ lastNotification.action }}</b-badge
                       >
                       <p
-                        class="mt-3"
                         v-json-formatter="{
                           content: lastNotification.result,
-                          open: true
+                          open: true,
                         }"
+                        class="mt-3"
                       />
                     </b-card-body>
                   </b-card>
@@ -272,33 +245,33 @@
     <DeleteCollectionModal
       :index="index"
       :collection="collection"
-      :modalId="modalDeleteId"
+      :modal-id="modalDeleteId"
       @delete-successful="afterDeleteCollection"
     />
   </div>
 </template>
 
 <script>
-import moment from 'moment'
-import { isEqual } from 'lodash'
-import { mapGetters } from 'vuex'
+import { isEqual } from 'lodash';
+import moment from 'moment';
+import { mapGetters } from 'vuex';
 
-import JsonFormatter from '@/directives/json-formatter.directive'
-import * as filterManager from '@/services/filterManager'
-import { extractAttributesFromMapping } from '@/services/mappingHelpers'
-import { truncateName } from '@/utils'
+import JsonEditor from '../../Common/JsonEditor.vue';
+import Headline from '../../Materialize/Headline.vue';
+import Notification from '../Realtime/Notification.vue';
+import JsonFormatter from '@/directives/json-formatter.directive';
+import * as filterManager from '@/services/filterManager';
+import { extractAttributesFromMapping } from '@/services/mappingHelpers';
+import { truncateName } from '@/utils';
 
-import CollectionDropdownView from './DropdownView.vue'
-import CollectionDropdownAction from './DropdownAction.vue'
-import DeleteCollectionModal from './DeleteCollectionModal.vue'
-import Notification from '../Realtime/Notification.vue'
-import JsonEditor from '../../Common/JsonEditor.vue'
-import Headline from '../../Materialize/Headline.vue'
+import DeleteCollectionModal from './DeleteCollectionModal.vue';
+import CollectionDropdownAction from './DropdownAction.vue';
+import CollectionDropdownView from './DropdownView.vue';
 
 export default {
   name: 'CollectionWatch',
   directives: {
-    JsonFormatter
+    JsonFormatter,
   },
   components: {
     CollectionDropdownAction,
@@ -306,11 +279,11 @@ export default {
     DeleteCollectionModal,
     Headline,
     JsonEditor,
-    Notification
+    Notification,
   },
   props: {
     indexName: String,
-    collectionName: String
+    collectionName: String,
   },
   data() {
     return {
@@ -322,200 +295,192 @@ export default {
       notificationsLengthLimit: 50,
       subscribed: false,
       subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
-      warning: { message: '', count: 0, lastTime: null, info: false }
-    }
+      warning: { message: '', count: 0, lastTime: null, info: false },
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['canSubscribe']),
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+      return this.$store.direct.getters.index.getOneIndex(this.indexName);
     },
     collection() {
       return this.index
-        ? this.$store.direct.getters.index.getOneCollection(
-            this.index,
-            this.collectionName
-          )
-        : null
+        ? this.$store.direct.getters.index.getOneCollection(this.index, this.collectionName)
+        : null;
     },
     collectionMapping() {
-      return this.collection ? this.collection.mapping : null
+      return this.collection ? this.collection.mapping : null;
     },
     mappingAttributes() {
       return this.collectionMapping
         ? this.extractAttributesFromMapping(this.collectionMapping)
-        : null
+        : null;
     },
     hasFilter() {
-      return (
-        !!this.realtimeQuery &&
-        !isEqual(this.realtimeQuery, {}) &&
-        this.isFilterValid
-      )
+      return !!this.realtimeQuery && !isEqual(this.realtimeQuery, {}) && this.isFilterValid;
     },
     lastNotification() {
       if (this.notifications.length) {
-        return this.notifications[0]
+        return this.notifications[0];
       }
-      return {}
+      return {};
     },
     lastNotificationTime() {
       if (!this.notifications.length) {
-        return null
+        return null;
       }
-      return moment(this.lastNotification.timestamp).format('H:mm:ss')
+      return moment(this.lastNotification.timestamp).format('H:mm:ss');
     },
     realtimeQuery() {
       try {
-        return JSON.parse(this.rawFilter)
+        return JSON.parse(this.rawFilter);
       } catch (error) {
-        return {}
+        return {};
       }
     },
     isFilterValid() {
       if (!this.rawFilter) {
-        return true
+        return true;
       }
       try {
-        JSON.parse(this.rawFilter)
-        return true
+        JSON.parse(this.rawFilter);
+        return true;
       } catch (error) {
-        return false
+        return false;
       }
     },
     isRealtimeCollection() {
-      return this.collection ? this.collection.isRealtime() : false
+      return this.collection ? this.collection.isRealtime() : false;
+    },
+  },
+  watch: {
+    index() {
+      this.reset();
+    },
+    collection() {
+      this.reset();
+    },
+    $route() {
+      this.reset();
+      this.currentFilter = filterManager.loadFromRoute(this.$route);
+    },
+  },
+  async destroyed() {
+    this.reset();
+    if (this.room) {
+      await this.$kuzzle.realtime.unsubscribe(this.room);
     }
   },
   methods: {
     truncateName,
     extractAttributesFromMapping,
     showDeleteCollectionModal() {
-      this.$bvModal.show(this.modalDeleteId)
+      this.$bvModal.show(this.modalDeleteId);
     },
     onDeleteCollectionClicked() {
-      this.$bvModal.show(this.modalDeleteId)
+      this.$bvModal.show(this.modalDeleteId);
     },
     afterDeleteCollection() {
       this.$router.push({
         name: 'Collections',
-        params: { indexName: this.indexName }
-      })
+        params: { indexName: this.indexName },
+      });
     },
     onFilterChanged(value) {
-      this.rawFilter = value
+      this.rawFilter = value;
     },
     async toggleSubscription() {
       if (!this.subscribed) {
-        await this.subscribe()
+        await this.subscribe();
       } else {
-        await this.unsubscribe(this.room)
+        await this.unsubscribe(this.room);
       }
     },
     handleNotification(result) {
       if (this.notifications.length > this.notificationsLengthLimit) {
         if (this.warning.message === '') {
-          this.warning.info = true
+          this.warning.info = true;
           this.warning.message =
-            'Older notifications are discarded due to the amount of items displayed'
+            'Older notifications are discarded due to the amount of items displayed';
         }
 
         if (Date.now() - this.warning.lastTime < 50) {
-          this.warning.count++
+          this.warning.count++;
         }
 
-        this.warning.lastTime = Date.now()
+        this.warning.lastTime = Date.now();
 
         if (this.warning.count >= 100) {
-          this.warning.info = false
+          this.warning.info = false;
           this.warning.message =
-            'You are receiving too many messages, try to add more filters to reduce the amount of messages'
+            'You are receiving too many messages, try to add more filters to reduce the amount of messages';
         }
 
         // two shift instead of one to have a visual effect on items in the view
-        this.notifications.shift()
-        this.notifications.shift()
+        this.notifications.shift();
+        this.notifications.shift();
       }
 
-      this.notifications.unshift(result)
+      this.notifications.unshift(result);
     },
     async subscribe() {
       try {
         if (!this.isFilterValid) {
-          throw new Error('Realtime filter seems to be invalid')
+          throw new Error('Realtime filter seems to be invalid');
         }
         const room = await this.$kuzzle.realtime.subscribe(
           this.indexName,
           this.collectionName,
           this.realtimeQuery,
           this.handleNotification,
-          this.subscribeOptions
-        )
-        this.subscribed = true
-        this.room = room
+          this.subscribeOptions,
+        );
+        this.subscribed = true;
+        this.room = room;
       } catch (err) {
-        this.room = null
-        this.subscribed = false
-        this.$log.error(err)
+        this.room = null;
+        this.subscribed = false;
+        this.$log.error(err);
         this.$bvToast.toast(err.message, {
-          title:
-            'Ooops! Something went wrong while subscribing to the collection.',
+          title: 'Ooops! Something went wrong while subscribing to the collection.',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
           appendToast: true,
           dismissible: true,
-          noAutoHide: true
-        })
+          noAutoHide: true,
+        });
       }
     },
     async unsubscribe(room) {
-      this.warning.message = ''
-      this.warning.count = 0
+      this.warning.message = '';
+      this.warning.count = 0;
 
-      await this.$kuzzle.realtime.unsubscribe(room)
-      this.subscribed = false
-      this.room = null
+      await this.$kuzzle.realtime.unsubscribe(room);
+      this.subscribed = false;
+      this.room = null;
     },
     resetFilters() {
       if (this.subscribed) {
-        this.subscribed = false
-        this.unsubscribe(this.room)
+        this.subscribed = false;
+        this.unsubscribe(this.room);
       }
       if (this.$refs.filter) {
-        this.$refs.filter.setContent('{}')
+        this.$refs.filter.setContent('{}');
       }
     },
     resetNotifications() {
-      this.notifications = []
-      this.warning.message = ''
-      this.warning.count = 0
+      this.notifications = [];
+      this.warning.message = '';
+      this.warning.count = 0;
     },
     reset() {
       // trigged when user changed the collection of watch data page
-      this.resetFilters()
-      this.resetNotifications()
-    }
-  },
-  watch: {
-    index() {
-      this.reset()
+      this.resetFilters();
+      this.resetNotifications();
     },
-    collection() {
-      this.reset()
-    },
-    $route() {
-      this.reset()
-      this.currentFilter = filterManager.loadFromRoute(this.$route)
-    }
   },
-  async destroyed() {
-    this.reset()
-    if (this.room) {
-      await this.$kuzzle.realtime.unsubscribe(this.room)
-    }
-  }
-}
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

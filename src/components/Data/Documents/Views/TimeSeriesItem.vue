@@ -20,7 +20,7 @@
         :items="items"
         :value="newValue"
         :notify-change="false"
-        @autocomplete::change="attribute => addItem(attribute)"
+        @autocomplete::change="(attribute) => addItem(attribute)"
       />
       <input v-else :value="value" :disabled="true" class="form-control" />
     </div>
@@ -35,89 +35,89 @@
 </template>
 
 <script>
-import { Chrome as ColorPicker } from 'vue-color'
+import { Chrome as ColorPicker } from 'vue-color';
 
-import Autocomplete from '@/components/Common/Autocomplete.vue'
+import Autocomplete from '@/components/Common/Autocomplete.vue';
 
 const getRandomColor = () => {
-  const letters = '0123456789ABCDEF'
-  let color = '#'
+  const letters = '0123456789ABCDEF';
+  let color = '#';
 
   for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)]
+    color += letters[Math.floor(Math.random() * 16)];
   }
-  return color
-}
+  return color;
+};
 
 export default {
   name: 'TimeSeriesItem',
   components: {
     Autocomplete,
-    ColorPicker
+    ColorPicker,
   },
   props: {
     value: {
       type: String,
-      default: ''
+      default: '',
     },
     color: {
       type: String,
-      default: getRandomColor()
+      default: getRandomColor(),
     },
     isUpdatable: {
       type: Boolean,
-      default: false
+      default: false,
     },
     items: {
       type: Array,
       default: () => {
-        return []
-      }
+        return [];
+      },
     },
     newValue: {
       type: String,
-      default: ''
+      default: '',
     },
     index: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   data() {
     return {
       showColorPicker: false,
-      newColor: this.color
-    }
+      newColor: this.color,
+    };
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside)
+    document.addEventListener('click', this.handleClickOutside);
 
-    this.newColor = this.color
+    this.newColor = this.color;
   },
   destroyed() {
-    document.removeEventListener('click', this.handleClickOutside)
+    document.removeEventListener('click', this.handleClickOutside);
   },
   methods: {
     handleClickOutside(evt) {
       if (!this.$el.contains(evt.target)) {
-        this.showColorPicker = false
+        this.showColorPicker = false;
       }
     },
     togglePicker() {
-      this.showColorPicker = !this.showColorPicker
+      this.showColorPicker = !this.showColorPicker;
     },
     updateColor(color) {
-      this.newColor = color.hex
+      this.newColor = color.hex;
       if (this.isUpdatable) {
-        this.$emit('update-color', { color: this.newColor, index: this.index })
+        this.$emit('update-color', { color: this.newColor, index: this.index });
       }
     },
     addItem(attr) {
-      this.$emit('autocomplete::change', { name: attr, color: this.newColor })
-      this.newColor = getRandomColor()
-    }
-  }
-}
+      this.$emit('autocomplete::change', { name: attr, color: this.newColor });
+      this.newColor = getRandomColor();
+    },
+  },
+};
 </script>
 
 <style scoped>

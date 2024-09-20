@@ -1,3 +1,3 @@
 export interface RoutingState {
-  routeBeforeRedirect?: string
+  routeBeforeRedirect?: string;
 }

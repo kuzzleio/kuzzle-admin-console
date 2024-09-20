@@ -1,17 +1,15 @@
 <template>
   <b-modal
-    data-cy="EnvironmentImport"
-    ref="modal-import-env"
-    title="Import Connection"
     :id="id"
+    ref="modal-import-env"
+    data-cy="EnvironmentImport"
+    title="Import Connection"
     @cancel="reset"
     @close="reset"
     @hide="reset"
   >
-    <template v-slot:modal-footer>
-      <b-button variant="secondary" @click="$bvModal.hide(id)">
-        Cancel
-      </b-button>
+    <template #modal-footer>
+      <b-button variant="secondary" @click="$bvModal.hide(id)"> Cancel </b-button>
       <b-button
         data-cy="EnvironmentImport-submitBtn"
         variant="primary"
@@ -27,10 +25,10 @@
       description="You can drag and drop your file in this input field"
     >
       <b-form-file
-        accept=".json"
-        data-cy="EnvironmentImport-fileInput"
         ref="file-input"
         v-model="file"
+        accept=".json"
+        data-cy="EnvironmentImport-fileInput"
       />
     </b-form-group>
 
@@ -42,13 +40,13 @@
     </b-alert>
 
     <b-alert
-      data-cy="EnvironmentImport-err"
       v-for="(err, k) in errors"
+      :key="k"
+      data-cy="EnvironmentImport-err"
       class="mt-3"
       dismissible
       show
       variant="danger"
-      :key="k"
       >{{ err }}</b-alert
     >
   </b-modal>
@@ -57,102 +55,100 @@
 <script>
 export default {
   name: 'ModalImport',
-  props: ['id'],
   components: {},
+  props: ['id'],
   data() {
     return {
       file: null,
       env: {},
       errors: [],
-      loading: false
-    }
+      loading: false,
+    };
   },
   computed: {
     envNames() {
-      return Object.keys(this.env)
-    }
+      return Object.keys(this.env);
+    },
+  },
+  watch: {
+    file: {
+      handler() {
+        this.$log.debug('File has changed');
+        this.upload();
+      },
+    },
   },
   methods: {
     clearFiles() {
-      this.$refs['file-input'].reset()
+      this.$refs['file-input'].reset();
     },
     reset() {
-      this.clearFiles()
-      this.errors = []
-      this.env = {}
-      this.loading = false
+      this.clearFiles();
+      this.errors = [];
+      this.env = {};
+      this.loading = false;
     },
     async importEnv() {
-      let mustSwitch = false
-      if (
-        Object.keys(this.$store.direct.state.kuzzle.environments).length === 0
-      ) {
-        mustSwitch = true
+      let mustSwitch = false;
+      if (Object.keys(this.$store.direct.state.kuzzle.environments).length === 0) {
+        mustSwitch = true;
       }
       for (const name in this.env) {
         try {
           this.$store.direct.dispatch.kuzzle.createEnvironment({
             id: name,
-            environment: this.env[name]
-          })
+            environment: this.env[name],
+          });
         } catch (e) {
-          this.$log.error(e)
-          this.errors.push(e)
+          this.$log.error(e);
+          this.errors.push(e);
         }
       }
       if (!this.errors.length) {
-        this.$log.debug(`Finished import must switch: ${mustSwitch}, env:`)
-        this.$log.debug(this.$store.direct.state.kuzzle.environments)
+        this.$log.debug(`Finished import must switch: ${mustSwitch}, env:`);
+        this.$log.debug(this.$store.direct.state.kuzzle.environments);
         if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
-          this.$router.push({ name: 'SelectEnvironment' })
+          this.$router.push({ name: 'SelectEnvironment' });
         }
-        this.$bvModal.hide(this.id)
+        this.$bvModal.hide(this.id);
       }
     },
     upload() {
       if (!this.file || this.loading) {
-        return
+        return;
       }
-      this.$log.debug('Uploading!')
+      this.$log.debug('Uploading!');
 
-      this.errors = []
-      this.env = {}
-      this.loading = true
-      const reader = new FileReader()
+      this.errors = [];
+      this.env = {};
+      this.loading = true;
+      const reader = new FileReader();
 
       if (this.file.type !== 'application/json') {
         this.errors.push(
-          `⛔️ Uploaded file type (${this.file.type}) is not supported. Please import .json files only`
-        )
-        this.loading = false
-        return
+          `⛔️ Uploaded file type (${this.file.type}) is not supported. Please import .json files only`,
+        );
+        this.loading = false;
+        return;
       }
 
       reader.onload = (() => {
-        return e => {
+        return (e) => {
           try {
-            this.env = JSON.parse(e.target.result)
+            this.env = JSON.parse(e.target.result);
           } catch (error) {
-            this.$log.error(error)
-            this.$log.debug(e.target)
-            this.errors.push(error)
+            this.$log.error(error);
+            this.$log.debug(e.target);
+            this.errors.push(error);
           }
-          this.loading = false
-        }
-      })(this.file)
+          this.loading = false;
+        };
+      })(this.file);
 
-      reader.readAsText(this.file)
-    }
+      reader.readAsText(this.file);
+    },
   },
-  watch: {
-    file: {
-      handler() {
-        this.$log.debug('File has changed')
-        this.upload()
-      }
-    }
-  }
-}
+};
 </script>
 
 <style></style>

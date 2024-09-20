@@ -1,6 +1,6 @@
 <template>
   <b-card no-body data-cy="RolesFilters" class="RolesFilters">
-    <template v-slot:header>
+    <template #header>
       <b-row>
         <b-col cols="8">
           <div class="RolesFilters-searchBar">
@@ -12,12 +12,8 @@
             />
           </div>
         </b-col>
-        <b-col cols="2" v-if="availableControllers.length !== 0">
-          <b-dropdown
-            text="Controllers"
-            :disabled="disableDropdown"
-            id="controllers-dropdown"
-          >
+        <b-col v-if="availableControllers.length !== 0" cols="2">
+          <b-dropdown id="controllers-dropdown" text="Controllers" :disabled="disableDropdown">
             <b-dropdown-item
               v-for="controller of availableControllers"
               :key="`dropdownControllers-${controller}`"
@@ -27,11 +23,7 @@
               {{ controller }}
             </b-dropdown-item>
           </b-dropdown>
-          <b-tooltip
-            target="controllers-dropdown"
-            triggers="hover"
-            v-if="disableDropdown"
-          >
+          <b-tooltip v-if="disableDropdown" target="controllers-dropdown" triggers="hover">
             Unable to retrieve controller list
           </b-tooltip>
         </b-col>
@@ -51,62 +43,60 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'RolesFilters',
   components: {},
   props: {
-    currentFilter: Object
+    currentFilter: Object,
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle'])
+    ...mapGetters('kuzzle', ['$kuzzle']),
   },
   data() {
     return {
       controllers: [],
       availableControllers: [],
-      disableDropdown: false
-    }
+      disableDropdown: false,
+    };
+  },
+  watch: {
+    controllers: {
+      handler(value) {
+        this.$emit('filters-updated', { controllers: value });
+      },
+    },
+  },
+  mounted() {
+    this.controllers =
+      this.currentFilter && this.currentFilter.controllers ? this.currentFilter.controllers : [];
+    this.getKuzzlePublicApi();
   },
   methods: {
     resetSearch() {
-      this.controllers = []
+      this.controllers = [];
     },
     addControllerTag(controller) {
       if (this.controllers.includes(controller)) {
-        return
+        return;
       }
-      this.controllers.push(controller)
+      this.controllers.push(controller);
     },
     async getKuzzlePublicApi() {
       try {
         const publicApi = await this.$kuzzle.query({
           controller: 'server',
-          action: 'publicApi'
-        })
-        this.availableControllers = Object.keys(publicApi.result)
+          action: 'publicApi',
+        });
+        this.availableControllers = Object.keys(publicApi.result);
       } catch (error) {
-        this.disableDropdown = true
-        this.$log.error(error)
+        this.disableDropdown = true;
+        this.$log.error(error);
       }
-    }
+    },
   },
-  mounted() {
-    this.controllers =
-      this.currentFilter && this.currentFilter.controllers
-        ? this.currentFilter.controllers
-        : []
-    this.getKuzzlePublicApi()
-  },
-  watch: {
-    controllers: {
-      handler(value) {
-        this.$emit('filters-updated', { controllers: value })
-      }
-    }
-  }
-}
+};
 </script>
 
 <style lang="scss">

@@ -11,8 +11,7 @@
               :options="mappingGeopoints"
               :value="selectedGeopoint || ''"
               @change="$emit('on-select-geopoint', $event)"
-            >
-            </b-form-select>
+            />
           </div>
           <div v-if="mappingGeoshapes.length">
             GeoShape field
@@ -22,8 +21,7 @@
               :options="mappingGeoshapes"
               :value="selectedGeoshape || ''"
               @change="$emit('on-select-geoshape', $event)"
-            >
-            </b-form-select>
+            />
           </div>
         </b-row>
       </b-col>
@@ -53,16 +51,9 @@
             :lat-lng="shape.content.coordinates"
             :radius="getRadiusInMeter(shape.content.radius)"
             :color="getShapeColor(shape._id)"
-            :className="`data-cy-shape data-cy-shape-${shape._id}`"
+            :class-name="`data-cy-shape data-cy-shape-${shape._id}`"
             :class="getShapeCyClasse(shape)"
-            @click="
-              onItemClicked(
-                shape,
-                shape.content.coordinates,
-                'circle',
-                shape.content.radius
-              )
-            "
+            @click="onItemClicked(shape, shape.content.coordinates, 'circle', shape.content.radius)"
           />
           <l-polygon
             v-for="shape of polygonShapes"
@@ -71,7 +62,7 @@
             :lat-lngs="shape.content.coordinates"
             :color="getShapeColor(shape._id)"
             :class="getShapeCyClasse(shape)"
-            :className="`data-cy-shape data-cy-shape-${shape._id}`"
+            :class-name="`data-cy-shape data-cy-shape-${shape._id}`"
             @click="onItemClicked(shape, shape.content.coordinates, 'array')"
           />
           <div v-for="shape of multiPolygonShapes" :key="shape._id">
@@ -82,24 +73,18 @@
               :lat-lngs="polygon"
               :color="getShapeColor(shape._id)"
               :class="getShapeCyClasse(shape)"
-              :className="`data-cy-shape data-cy-shape-${shape._id}`"
+              :class-name="`data-cy-shape data-cy-shape-${shape._id}`"
               @click="onItemClicked(shape, polygon, 'array')"
             />
           </div>
         </l-map>
       </b-col>
       <b-col cols="4">
-        <b-card
-          no-body
-          v-if="currentDocument"
-          data-cy="mapView-current-document-card"
-        >
+        <b-card v-if="currentDocument" no-body data-cy="mapView-current-document-card">
           <b-card-header>
             <b-row align-v="center">
               <b-col cols="8" align-v="center">
-                <span data-cy="mapView-current-document-id">{{
-                  currentDocument._id
-                }}</span>
+                <span data-cy="mapView-current-document-id">{{ currentDocument._id }}</span>
               </b-col>
               <b-col cols="4" class="pr-1 text-right">
                 <b-button
@@ -108,11 +93,7 @@
                   variant="link"
                   :data-cy="`DocumentMapItem-update--${currentDocument._id}`"
                   :disabled="!canEdit"
-                  :title="
-                    canEdit
-                      ? 'Edit Document'
-                      : 'You are not allowed to edit this Document'
-                  "
+                  :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
                   @click.prevent="editCurrentDocument"
                 >
                   <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
@@ -125,19 +106,13 @@
                   :data-cy="`DocumentListItem-delete--${currentDocument._id}`"
                   :disabled="!canDelete"
                   :title="
-                    canDelete
-                      ? 'Delete Document'
-                      : 'You are not allowed to delete this Document'
+                    canDelete ? 'Delete Document' : 'You are not allowed to delete this Document'
                   "
                   @click.prevent="deleteCurrentDocument"
                 >
                   <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
                 </b-button>
-                <b-button
-                  class="ml-2"
-                  title="Close"
-                  @click.prevent="closeDocument"
-                >
+                <b-button class="ml-2" title="Close" @click.prevent="closeDocument">
                   <i class="fa fa-times" />
                 </b-button>
               </b-col>
@@ -146,11 +121,11 @@
           <b-card-body class="pt-1 pb-1">
             <b-row class="viewMap-document-json">
               <pre
-                class="json-formatter"
                 v-json-formatter="{
                   content: currentDocument,
-                  open: true
+                  open: true,
                 }"
+                class="json-formatter"
               />
             </b-row>
           </b-card-body>
@@ -164,19 +139,12 @@
           <b-card-text class="p-0">
             <b-row align-h="center" class="valign-center empty-set h-100">
               <b-col cols="2" class="text-center">
-                <i
-                  class="fa fa-3x fa-search text-secondary mt-3"
-                  aria-hidden="true"
-                />
+                <i class="fa fa-3x fa-search text-secondary mt-3" aria-hidden="true" />
               </b-col>
               <b-col md="10">
-                <h3 class="text-secondary font-weight-bold">
-                  No document selected.
-                </h3>
+                <h3 class="text-secondary font-weight-bold">No document selected.</h3>
                 <p>
-                  <em>
-                    You can view a document content by clicking on a marker
-                  </em>
+                  <em> You can view a document content by clicking on a marker </em>
                 </p>
               </b-col>
             </b-row>
@@ -188,14 +156,15 @@
 </template>
 
 <script>
-import L from 'leaflet'
-import get from 'lodash/get'
-import { mapGetters } from 'vuex'
-import { LMap, LTileLayer, LMarker, LCircle, LPolygon } from 'vue2-leaflet'
+import L from 'leaflet';
+import get from 'lodash/get';
+import { LMap, LTileLayer, LMarker, LCircle, LPolygon } from 'vue2-leaflet';
+import { mapGetters } from 'vuex';
 
-import '@/assets/leaflet.css'
-import PerPageSelector from '@/components/Common/PerPageSelector.vue'
-import JsonFormatter from '@/directives/json-formatter.directive'
+import '@/assets/leaflet.css';
+import JsonFormatter from '@/directives/json-formatter.directive';
+
+import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 
 export default {
   name: 'ViewMap',
@@ -205,42 +174,42 @@ export default {
     LMarker,
     LCircle,
     LPolygon,
-    PerPageSelector
+    PerPageSelector,
   },
   directives: {
-    JsonFormatter
+    JsonFormatter,
   },
   props: {
     currentPageSize: {
       type: Number,
-      default: 25
+      default: 25,
     },
     selectedGeopoint: {
       type: String,
-      required: true
+      required: true,
     },
     selectedGeoshape: {
       type: String,
-      required: true
+      required: true,
     },
     mappingGeopoints: {
       type: Array,
-      required: true
+      required: true,
     },
     mappingGeoshapes: {
       type: Array,
-      required: true
+      required: true,
     },
     geoDocuments: {
       type: Array,
-      required: true
+      required: true,
     },
     shapesDocuments: {
       type: Array,
-      require: true
+      require: true,
     },
     index: String,
-    collection: String
+    collection: String,
   },
   data() {
     return {
@@ -249,8 +218,7 @@ export default {
       lngField: null,
       map: null,
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution:
-        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       currentDocument: null,
       LeafDefaultIcon: L.Icon.extend({
         options: {
@@ -259,8 +227,8 @@ export default {
           iconSize: [25, 41],
           iconAnchor: [12, 41],
           popupAnchor: [1, -34],
-          shadowSize: [41, 41]
-        }
+          shadowSize: [41, 41],
+        },
       }),
       defaultIcon: new L.Icon({
         iconUrl: '/images/marker-icon-2x-blue.png',
@@ -269,7 +237,7 @@ export default {
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
         shadowSize: [41, 41],
-        className: 'mapView-marker-default'
+        className: 'mapView-marker-default',
       }),
       LeafSelectedIcon: L.Icon.extend({
         options: {
@@ -278,8 +246,8 @@ export default {
           iconSize: [25, 41],
           iconAnchor: [12, 41],
           popupAnchor: [1, -34],
-          shadowSize: [41, 41]
-        }
+          shadowSize: [41, 41],
+        },
       }),
       selectedIcon: new L.Icon({
         iconUrl: '/images/marker-icon-2x-green.png',
@@ -288,177 +256,159 @@ export default {
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
         shadowSize: [41, 41],
-        className: 'mapView-marker-selected'
-      })
-    }
+        className: 'mapView-marker-selected',
+      }),
+    };
   },
   computed: {
     totalDocuments() {
-      return this.geoDocuments.length
+      return this.geoDocuments.length;
     },
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     coordinates() {
       const coordinates = [
-        ...this.geoDocuments.map(d => d.coordinates),
-        ...this.getShapesCoordinates()
-      ]
-      return coordinates
+        ...this.geoDocuments.map((d) => d.coordinates),
+        ...this.getShapesCoordinates(),
+      ];
+      return coordinates;
     },
     canEdit() {
       if (!this.index || !this.collection) {
-        return false
+        return false;
       }
-      return this.canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.index, this.collection);
     },
     canDelete() {
       if (!this.index || !this.collection) {
-        return false
+        return false;
       }
-      return this.canDeleteDocument(this.index, this.collection)
+      return this.canDeleteDocument(this.index, this.collection);
     },
     circleShapes() {
-      return this.shapesDocuments.filter(
-        shape => get(shape, 'content.type') === 'circle'
-      )
+      return this.shapesDocuments.filter((shape) => get(shape, 'content.type') === 'circle');
     },
     polygonShapes() {
-      return this.shapesDocuments.filter(
-        shape => get(shape, 'content.type') === 'polygon'
-      )
+      return this.shapesDocuments.filter((shape) => get(shape, 'content.type') === 'polygon');
     },
     multiPolygonShapes() {
-      return this.shapesDocuments.filter(
-        shape => get(shape, 'content.type') === 'multipolygon'
-      )
-    }
+      return this.shapesDocuments.filter((shape) => get(shape, 'content.type') === 'multipolygon');
+    },
   },
   watch: {
     selectedGeopoint: {
       handler(value) {
         if (value) {
-          this.map.fitBounds(this.coordinates, { maxZoom: 12 })
+          this.map.fitBounds(this.coordinates, { maxZoom: 12 });
         }
-      }
+      },
     },
     selectedGeoshape: {
       handler(value) {
         if (value) {
-          this.map.fitBounds(this.coordinates, { maxZoom: 12 })
+          this.map.fitBounds(this.coordinates, { maxZoom: 12 });
         }
-      }
-    }
+      },
+    },
   },
   mounted() {
     this.$nextTick(() => {
-      this.map = this.$refs.map.mapObject
+      this.map = this.$refs.map.mapObject;
       if (L.latLngBounds(this.coordinates).isValid()) {
-        this.map.fitBounds(this.coordinates, { maxZoom: 12 })
+        this.map.fitBounds(this.coordinates, { maxZoom: 12 });
       }
-    })
+    });
   },
   methods: {
     getShapeCyClasse(shape) {
       return this.currentDocument && this.currentDocument._id === shape._id
         ? 'data-cy-shape-selected'
-        : ''
+        : '';
     },
     getShapeColor(id) {
-      return this.currentDocument && this.currentDocument._id === id
-        ? '#26AD23'
-        : '#2981CA'
+      return this.currentDocument && this.currentDocument._id === id ? '#26AD23' : '#2981CA';
     },
     getRadiusInMeter(radius) {
       if (typeof radius === 'number') {
-        return radius
+        return radius;
       }
       if (typeof radius !== 'string') {
-        return null
+        return null;
       }
-      const value = parseInt(radius)
-      const unit = radius.replace(value.toString(), '')
-      let multiplicator = 1
+      const value = parseInt(radius);
+      const unit = radius.replace(value.toString(), '');
+      let multiplicator = 1;
       switch (unit) {
         case 'km':
-          multiplicator = 1000
-          break
+          multiplicator = 1000;
+          break;
         default:
-          multiplicator = 1
+          multiplicator = 1;
       }
-      return value * multiplicator
+      return value * multiplicator;
     },
     flattenShapes(arr) {
       return arr.reduce((a, b) => {
-        return a.concat(
-          Array.isArray(b) && typeof b[0] !== 'number'
-            ? this.flattenShapes(b)
-            : [b]
-        )
-      }, [])
+        return a.concat(Array.isArray(b) && typeof b[0] !== 'number' ? this.flattenShapes(b) : [b]);
+      }, []);
     },
     getShapesCoordinates() {
-      const circlePoints = this.circleShapes.map(
-        circle => circle.content.coordinates
-      )
+      const circlePoints = this.circleShapes.map((circle) => circle.content.coordinates);
 
-      const polygonArrays = this.polygonShapes.map(
-        polygon => polygon.content.coordinates
-      )
+      const polygonArrays = this.polygonShapes.map((polygon) => polygon.content.coordinates);
 
       const multipolygonArrays = [
-        ...this.multiPolygonShapes.map(
-          multipolygon => multipolygon.content.coordinates
-        )
-      ]
+        ...this.multiPolygonShapes.map((multipolygon) => multipolygon.content.coordinates),
+      ];
 
       const points = [
         ...circlePoints,
         ...this.flattenShapes(polygonArrays),
-        ...this.flattenShapes(multipolygonArrays)
-      ]
-      return points
+        ...this.flattenShapes(multipolygonArrays),
+      ];
+      return points;
     },
     onItemClicked(document, latlng, type, radius) {
       if (this.currentDocument === document) {
-        this.currentDocument = null
-        return
+        this.currentDocument = null;
+        return;
       }
-      this.currentDocument = document
+      this.currentDocument = document;
       if (type === 'array') {
-        this.map.fitBounds(latlng, { maxZoom: 14 })
+        this.map.fitBounds(latlng, { maxZoom: 14 });
       } else if (type === 'point') {
-        this.map.setView(latlng, 14)
+        this.map.setView(latlng, 14);
       } else if (type === 'circle') {
-        const radiusInMeter = this.getRadiusInMeter(radius)
-        const bounds = L.latLng(latlng).toBounds(radiusInMeter * 2)
-        this.map.fitBounds(bounds, 14)
+        const radiusInMeter = this.getRadiusInMeter(radius);
+        const bounds = L.latLng(latlng).toBounds(radiusInMeter * 2);
+        this.map.fitBounds(bounds, 14);
       }
     },
     closeDocument() {
-      this.currentDocument = null
+      this.currentDocument = null;
     },
     getIcon(document) {
       if (get(this.currentDocument, '_id') === document._id) {
         return new this.LeafSelectedIcon({
-          className: `mapView-marker-selected documentId-${document._id}`
-        })
+          className: `mapView-marker-selected documentId-${document._id}`,
+        });
       }
 
       return new this.LeafDefaultIcon({
-        className: `mapView-marker-default documentId-${document._id}`
-      })
+        className: `mapView-marker-default documentId-${document._id}`,
+      });
     },
     deleteCurrentDocument() {
       if (this.canDelete) {
-        this.$emit('delete', this.currentDocument._id)
+        this.$emit('delete', this.currentDocument._id);
       }
     },
     editCurrentDocument() {
       if (this.canEdit) {
-        this.$emit('edit', this.currentDocument._id)
+        this.$emit('edit', this.currentDocument._id);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">

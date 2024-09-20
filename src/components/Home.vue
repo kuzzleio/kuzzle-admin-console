@@ -9,16 +9,16 @@
     </div>
 
     <div class="Home-routeWrapper" data-cy="App-loggedIn">
-      <main-spinner v-if="authInitializing"></main-spinner>
+      <main-spinner v-if="authInitializing" />
       <router-view v-else />
     </div>
     <b-toast
+      id="no-admin-warning"
       variant="info"
       no-auto-hide
       toaster="b-toaster-bottom-right"
       title="Warning!"
       data-cy="noAdminWarning"
-      id="no-admin-warning"
     >
       <p>
         Your Kuzzle has no administrator user. It is strongly recommended
@@ -26,10 +26,10 @@
       </p>
       <div class="text-center">
         <b-button
+          id="noAdminGotIt"
           title="Don't show this toast again for the current environment"
           variant="primary"
           size="sm"
-          id="noAdminGotIt"
           @click="hideNoAdminWarning"
         >
           Ok, got it
@@ -39,10 +39,10 @@
 
     <b-modal
       id="tokenExpired"
+      v-model="tokenExpiredIsOpen"
       data-cy="Modal-tokenExpired"
       hide-footer
       title="Sorry, your session has expired"
-      v-model="tokenExpiredIsOpen"
     >
       <login-form />
     </b-modal>
@@ -50,34 +50,70 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import MainMenu from './Common/MainMenu.vue'
-import MainSpinner from './Common/MainSpinner.vue'
-import LoginForm from './Common/Login/Form.vue'
+import LoginForm from './Common/Login/Form.vue';
+import MainMenu from './Common/MainMenu.vue';
+import MainSpinner from './Common/MainSpinner.vue';
 
 export default {
   name: 'Home',
   components: {
     LoginForm,
     MainMenu,
-    MainSpinner
+    MainSpinner,
   },
   data() {
     return {
       host: null,
       port: null,
-      tokenExpiredIsOpen: false
-    }
+      tokenExpiredIsOpen: false,
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     tokenValid() {
-      return this.$store.direct.state.auth.tokenValid
+      return this.$store.direct.state.auth.tokenValid;
     },
     authInitializing() {
-      return this.$store.direct.state.auth.initializing
-    }
+      return this.$store.direct.state.auth.initializing;
+    },
+  },
+  watch: {
+    tokenValid: {
+      handler(val) {
+        setTimeout(() => {
+          this.tokenExpiredIsOpen = !val;
+        }, 500);
+      },
+    },
+  },
+  mounted() {
+    this.$kuzzle.on('tokenExpired', () => this.onTokenExpired());
+    this.$kuzzle.on('queryError', (e) => {
+      if (this.currentEnvironment.backendMajorVersion === 1) {
+        switch (e.id) {
+          case 'security.token.invalid':
+            this.onTokenExpired();
+            break;
+          default:
+            break;
+        }
+      } else {
+        switch (e.id) {
+          case 'security.token.expired':
+            this.onTokenExpired();
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    this.displayNoAdminWarning();
+  },
+  beforeDestroy() {
+    this.$kuzzle.removeListener('tokenExpired');
+    this.$kuzzle.removeListener('queryError');
   },
   methods: {
     hideNoAdminWarning() {
@@ -85,62 +121,26 @@ export default {
         id: this.$store.direct.state.kuzzle.currentId,
         environment: {
           ...this.currentEnvironment,
-          hideAdminWarning: true
-        }
-      })
-      this.$bvToast.hide('no-admin-warning')
+          hideAdminWarning: true,
+        },
+      });
+      this.$bvToast.hide('no-admin-warning');
     },
     onTokenExpired() {
-      this.$store.direct.dispatch.auth.setSession(null)
+      this.$store.direct.dispatch.auth.setSession(null);
     },
     noop() {},
     displayNoAdminWarning() {
       if (this.$store.direct.getters.auth.adminAlreadyExists) {
-        return
+        return;
       }
       if (this.currentEnvironment.hideAdminWarning) {
-        return
+        return;
       }
-      this.$bvToast.show('no-admin-warning')
-    }
+      this.$bvToast.show('no-admin-warning');
+    },
   },
-  mounted() {
-    this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
-    this.$kuzzle.on('queryError', e => {
-      if (this.currentEnvironment.backendMajorVersion === 1) {
-        switch (e.id) {
-          case 'security.token.invalid':
-            this.onTokenExpired()
-            break
-          default:
-            break
-        }
-      } else {
-        switch (e.id) {
-          case 'security.token.expired':
-            this.onTokenExpired()
-            break
-          default:
-            break
-        }
-      }
-    })
-    this.displayNoAdminWarning()
-  },
-  beforeDestroy() {
-    this.$kuzzle.removeListener('tokenExpired')
-    this.$kuzzle.removeListener('queryError')
-  },
-  watch: {
-    tokenValid: {
-      handler(val) {
-        setTimeout(() => {
-          this.tokenExpiredIsOpen = !val
-        }, 500)
-      }
-    }
-  }
-}
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

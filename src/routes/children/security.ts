@@ -1,18 +1,18 @@
-import UsersPage from '@/components/Security/Users/Page.vue';
-import UsersEditCustomMapping from '@/components/Security/Users/EditCustomMapping.vue';
-import UsersCreateOrUpdate from '@/components/Security/Users/CreateOrUpdate.vue';
-import ProfilesPage from '@/components/Security/Profiles/Page.vue';
 import ProfilesCreate from '@/components/Security/Profiles/Create.vue';
+import ProfilesPage from '@/components/Security/Profiles/Page.vue';
 import ProfilesUpdate from '@/components/Security/Profiles/Update.vue';
-import RolesPage from '@/components/Security/Roles/Page.vue';
 import RolesCreateOrUpdate from '@/components/Security/Roles/CreateOrUpdate.vue';
+import RolesPage from '@/components/Security/Roles/Page.vue';
+import UsersCreateOrUpdate from '@/components/Security/Users/CreateOrUpdate.vue';
+import UsersEditCustomMapping from '@/components/Security/Users/EditCustomMapping.vue';
+import UsersPage from '@/components/Security/Users/Page.vue';
 
 export default [
   {
     path: '/security/users',
     name: 'SecurityUsersList',
     meta: {
-      section: 'users'
+      section: 'users',
     },
     component: UsersPage,
   },
@@ -20,7 +20,7 @@ export default [
     path: '/security/users/custom-mapping',
     name: 'SecurityUsersEditCustomMapping',
     meta: {
-      section: 'users'
+      section: 'users',
     },
     component: UsersEditCustomMapping,
   },
@@ -28,7 +28,7 @@ export default [
     path: '/security/users/create',
     name: 'SecurityUsersCreate',
     meta: {
-      section: 'users'
+      section: 'users',
     },
     component: UsersCreateOrUpdate,
   },
@@ -36,16 +36,16 @@ export default [
     path: '/security/users/:id',
     name: 'SecurityUsersUpdate',
     meta: {
-      section: 'users'
+      section: 'users',
     },
     component: UsersCreateOrUpdate,
-    props: route => ({ id: route.params.id })
+    props: (route) => ({ id: route.params.id }),
   },
   {
     path: '/security/profiles',
     name: 'SecurityProfilesList',
     meta: {
-      section: 'profiles'
+      section: 'profiles',
     },
     component: ProfilesPage,
   },
@@ -53,7 +53,7 @@ export default [
     path: '/security/profiles/create',
     name: 'SecurityProfilesCreate',
     meta: {
-      section: 'profiles'
+      section: 'profiles',
     },
     component: ProfilesCreate,
   },
@@ -61,16 +61,16 @@ export default [
     path: '/security/profiles/:id',
     name: 'SecurityProfilesUpdate',
     meta: {
-      section: 'profiles'
+      section: 'profiles',
     },
     component: ProfilesUpdate,
-    props: route => ({ id: route.params.id })
+    props: (route) => ({ id: route.params.id }),
   },
   {
     path: '/security/roles',
     name: 'SecurityRolesList',
     meta: {
-      section: 'roles'
+      section: 'roles',
     },
     component: RolesPage,
   },
@@ -78,7 +78,7 @@ export default [
     path: '/security/roles/create',
     name: 'SecurityRolesCreate',
     meta: {
-      section: 'roles'
+      section: 'roles',
     },
     component: RolesCreateOrUpdate,
   },
@@ -86,9 +86,9 @@ export default [
     path: '/security/roles/:id',
     name: 'SecurityRolesUpdate',
     meta: {
-      section: 'roles'
+      section: 'roles',
     },
     component: RolesCreateOrUpdate,
-    props: route => ({ id: route.params.id })
-  }
-]
+    props: (route) => ({ id: route.params.id }),
+  },
+];

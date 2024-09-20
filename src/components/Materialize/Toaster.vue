@@ -12,9 +12,9 @@ export default {
         html: this.$store.state.toaster.toast.text,
         inDuration: this.$store.state.toaster.toast.duration,
         classes: this.$store.state.toaster.toast.cssClass,
-        completeCallback: this.$store.state.toaster.toast.cb
-      })
-    }
-  }
-}
+        completeCallback: this.$store.state.toaster.toast.cb,
+      });
+    },
+  },
+};
 </script>

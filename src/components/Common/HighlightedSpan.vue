@@ -2,9 +2,7 @@
   <span>
     <span v-if="highlightIndex >= 0">
       {{ value.substring(0, highlightIndex)
-      }}<strong>{{
-        value.substring(highlightIndex, highlightIndex + filter.length)
-      }}</strong
+      }}<strong>{{ value.substring(highlightIndex, highlightIndex + filter.length) }}</strong
       >{{ value.substring(highlightIndex + filter.length) }}
     </span>
     <span v-else>{{ value }}</span>
@@ -17,27 +15,22 @@ export default {
   props: {
     value: {
       type: String,
-      required: true
+      required: true,
     },
     filter: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     highlightIndex() {
-      if (
-        !this.value ||
-        this.value === '' ||
-        !this.filter ||
-        this.filter === ''
-      ) {
-        return -1
+      if (!this.value || this.value === '' || !this.filter || this.filter === '') {
+        return -1;
       }
-      return this.value.toLowerCase().indexOf(this.filter.toLowerCase())
-    }
-  }
-}
+      return this.value.toLowerCase().indexOf(this.filter.toLowerCase());
+    },
+  },
+};
 </script>
 
 <style></style>

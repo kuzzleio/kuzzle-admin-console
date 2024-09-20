@@ -4,12 +4,7 @@
       <div class="col s7">
         <div class="QuickFilter-searchBar">
           <i class="QuickFilter-searchIcon fa fa-search search" />
-          <input
-            v-model="filters.searchTerm"
-            v-focus
-            type="text"
-            placeholder="Search..."
-          />
+          <input v-model="filters.searchTerm" v-focus type="text" placeholder="Search..." />
           <a
             v-if="!displayBlockFilter"
             class="QuickFilter-optionBtn fluid-hover"
@@ -34,10 +29,7 @@
         >
           Search
         </button>
-        <button
-          class="btn-flat btn-small waves-effect waves-light"
-          @click="resetQuickSearch"
-        >
+        <button class="btn-flat btn-small waves-effect waves-light" @click="resetQuickSearch">
           reset
         </button>
       </div>
@@ -46,37 +38,37 @@
 </template>
 
 <script>
-import Focus from '@/directives/focus.directive'
+import Focus from '@/directives/focus.directive';
 
 export default {
   name: 'QuickFilter',
   directives: {
-    Focus
+    Focus,
   },
   props: ['searchTerm', 'displayBlockFilter'],
   data() {
     return {
       filters: {
-        searchTerm: null
-      }
-    }
+        searchTerm: null,
+      },
+    };
   },
   mounted() {
-    this.filters.searchTerm = this.searchTerm
+    this.filters.searchTerm = this.searchTerm;
   },
   methods: {
     quickSearch() {
-      this.$emit('filters-quick-search', this.filters.searchTerm)
+      this.$emit('filters-quick-search', this.filters.searchTerm);
     },
     resetQuickSearch() {
-      this.filters.searchTerm = null
-      this.$emit('filters-quick-search', null)
+      this.filters.searchTerm = null;
+      this.$emit('filters-quick-search', null);
     },
     displayComplexSearch() {
-      this.$emit('filters-display-block-filter')
-    }
-  }
-}
+      this.$emit('filters-display-block-filter');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

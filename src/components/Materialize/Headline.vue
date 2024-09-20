@@ -8,17 +8,17 @@
 </template>
 
 <script>
-import Breadcrumb from '@/components/Common/Breadcrumb.vue'
+import Breadcrumb from '@/components/Common/Breadcrumb.vue';
 
 export default {
   name: 'Headline',
   components: {
-    Breadcrumb
+    Breadcrumb,
   },
   props: {
-    title: String
-  }
-}
+    title: String,
+  },
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

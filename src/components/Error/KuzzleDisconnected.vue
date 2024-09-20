@@ -27,6 +27,16 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'KuzzleDisconnected',
+  props: {
+    host: String,
+    port: Number,
+  },
+};
+</script>
+
 <style lang="scss" rel="stylesheet/scss" scoped>
 .kuzzle-disconnected {
   margin-top: 30px;
@@ -58,13 +68,3 @@
   }
 }
 </style>
-
-<script>
-export default {
-  name: 'KuzzleDisconnected',
-  props: {
-    host: String,
-    port: Number
-  }
-}
-</script>

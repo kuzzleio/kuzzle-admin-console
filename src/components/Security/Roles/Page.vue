@@ -6,6 +6,7 @@
       </b-col>
       <b-col class="text-right">
         <b-button
+          v-b-modal.revokeAnonymous-modal
           :disabled="!displayRevokeAnonymous"
           :title="
             displayRevokeAnonymous
@@ -15,7 +16,6 @@
           class="mr-2"
           data-cy="RolesManagement-revokeAnonymous"
           variant="primary"
-          v-b-modal.revokeAnonymous-modal
           >Revoke anonymous rights</b-button
         >
         <b-button
@@ -37,10 +37,10 @@
       route-create="SecurityRolesCreate"
       route-update="SecurityRolesUpdate"
     >
-      <b-card class="EmptyState text-center" slot="emptySet">
-        <i class="text-secondary fas fa-unlock-alt fa-6x mb-3"></i>
+      <b-card slot="emptySet" class="EmptyState text-center">
+        <i class="text-secondary fas fa-unlock-alt fa-6x mb-3" />
         <h2 class="text-secondary font-weight-bold">No role is defined</h2>
-        <p class="text-secondary" v-if="canCreateRole">
+        <p v-if="canCreateRole" class="text-secondary">
           You can create a new role by hitting the button above
         </p>
       </b-card>
@@ -52,27 +52,28 @@
       @ok="revokeAnonymous"
     >
       <p class="my-4">
-        The anonymous users will only be able to perform some basic
-        authentication actions, like logging-in, see their rights and see their
-        user ID. You will still be able to add more rights if needed.
+        The anonymous users will only be able to perform some basic authentication actions, like
+        logging-in, see their rights and see their user ID. You will still be able to add more
+        rights if needed.
       </p>
     </b-modal>
   </b-container>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import RoleList from './List.vue'
-import ListNotAllowed from '../../Common/ListNotAllowed.vue'
-import Headline from '../../Materialize/Headline.vue'
+import ListNotAllowed from '../../Common/ListNotAllowed.vue';
+import Headline from '../../Materialize/Headline.vue';
+
+import RoleList from './List.vue';
 
 export default {
   name: 'RolesManagement',
   components: {
     ListNotAllowed,
     RoleList,
-    Headline
+    Headline,
   },
   methods: {
     async revokeAnonymous() {
@@ -83,27 +84,27 @@ export default {
             controllers: {
               '*': {
                 actions: {
-                  '*': false
-                }
+                  '*': false,
+                },
               },
               auth: {
                 actions: {
                   checkToken: true,
                   getCurrentUser: true,
                   getMyRights: true,
-                  login: true
-                }
+                  login: true,
+                },
               },
               server: {
                 actions: {
                   publicApi: true,
-                  openapi: true
-                }
-              }
-            }
+                  openapi: true,
+                },
+              },
+            },
           },
-          { refresh: 'wait_for' }
-        )
+          { refresh: 'wait_for' },
+        );
 
         await this.$kuzzle.security.updateRole(
           'default',
@@ -111,8 +112,8 @@ export default {
             controllers: {
               '*': {
                 actions: {
-                  '*': false
-                }
+                  '*': false,
+                },
               },
               auth: {
                 actions: {
@@ -120,32 +121,29 @@ export default {
                   getCurrentUser: true,
                   getMyRights: true,
                   logout: true,
-                  updateSelf: true
-                }
+                  updateSelf: true,
+                },
               },
               server: {
                 actions: {
-                  publicApi: true
-                }
-              }
-            }
+                  publicApi: true,
+                },
+              },
+            },
           },
-          { refresh: 'wait_for' }
-        )
-        this.$router.go(this.$router.currentRoute)
+          { refresh: 'wait_for' },
+        );
+        this.$router.go(this.$router.currentRoute);
       } catch (err) {
-        this.$log.error(err)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title: 'Ooops! Something went wrong while revoking Anonymous role.',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true
-          }
-        )
+        this.$log.error(err);
+        this.$bvToast.toast('The complete error has been printed to the console.', {
+          title: 'Ooops! Something went wrong while revoking Anonymous role.',
+          variant: 'danger',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+        });
       }
-    }
+    },
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
@@ -156,8 +154,8 @@ export default {
         this.$store.direct.getters.auth.canEditRole &&
         this.$store.direct.getters.auth.canManageRoles &&
         this.$store.direct.getters.auth.user.id !== -1
-      )
-    }
-  }
-}
+      );
+    },
+  },
+};
 </script>

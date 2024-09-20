@@ -11,8 +11,8 @@
             name: 'DocumentList',
             params: {
               index: $route.params.index,
-              collection: $route.params.collection
-            }
+              collection: $route.params.collection,
+            },
           }"
         >
           Browse
@@ -28,10 +28,7 @@
               : 'You are not allowed to subscribe to this collection'
           "
           :class="{
-            disabled: !canSubscribe(
-              $route.params.index,
-              $route.params.collection
-            )
+            disabled: !canSubscribe($route.params.index, $route.params.collection),
           }"
           :to="
             canSubscribe($route.params.index, $route.params.collection)
@@ -39,8 +36,8 @@
                   name: 'WatchCollection',
                   params: {
                     index: $route.params.index,
-                    collection: $route.params.collection
-                  }
+                    collection: $route.params.collection,
+                  },
                 }
               : ''
           "
@@ -51,10 +48,30 @@
       <li
         v-if="!$store.state.collection.isRealtimeOnly"
         :class="{ active: isRouteActive('CreateDocument') }"
-      ></li>
+      />
     </ul>
   </div>
 </template>
+
+<script>
+import { mapGetters } from 'vuex';
+
+export default {
+  name: 'CollectionTabs',
+  computed: {
+    ...mapGetters('auth', ['canCreateDocument', 'canSubscribe']),
+  },
+  methods: {
+    isRouteActive(routeName) {
+      if (Array.isArray(routeName)) {
+        return routeName.includes(this.$route.name);
+      }
+
+      return this.$route.name === routeName;
+    },
+  },
+};
+</script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .nav li {
@@ -81,23 +98,3 @@
   }
 }
 </style>
-
-<script>
-import { mapGetters } from 'vuex'
-
-export default {
-  name: 'CollectionTabs',
-  computed: {
-    ...mapGetters('auth', ['canCreateDocument', 'canSubscribe'])
-  },
-  methods: {
-    isRouteActive(routeName) {
-      if (Array.isArray(routeName)) {
-        return routeName.indexOf(this.$route.name) >= 0
-      }
-
-      return this.$route.name === routeName
-    }
-  }
-}
-</script>

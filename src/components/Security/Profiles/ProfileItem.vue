@@ -4,37 +4,28 @@
       <b-col cols="10" class="py-1">
         <i
           aria-role="button"
-          :class="
-            `fa fa-caret-${
-              expanded ? 'down' : 'right'
-            } mr-2  d-inline-block align-middle`
-          "
+          :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2  d-inline-block align-middle`"
           :data-cy="`ProfileItem-${document._id}--toggle`"
           @click="toggleCollapse"
         />
         <b-form-checkbox
+          :id="checkboxId"
+          v-model="checked"
           class="d-inline-block align-middle"
           type="checkbox"
           value="true"
           unchecked-value="false"
-          v-model="checked"
           :data-cy="`ProfileListItem-checkbox--${document._id}`"
-          :id="checkboxId"
           @change="notifyCheckboxClick"
         />
-        <a
-          class="d-inline-block align-middle code pointer"
-          @click="toggleCollapse"
-          >{{ document._id }}</a
-        >
+        <a class="d-inline-block align-middle code pointer" @click="toggleCollapse">{{
+          document._id
+        }}</a>
         <label
-          v-if="
-            document.additionalAttribute && document.additionalAttribute.value
-          "
+          v-if="document.additionalAttribute && document.additionalAttribute.value"
           class="ProfileItem-additionalAttribute"
         >
-          ({{ document.additionalAttribute.name }}:
-          {{ document.additionalAttribute.value }})
+          ({{ document.additionalAttribute.name }}: {{ document.additionalAttribute.value }})
         </label>
       </b-col>
       <b-col cols="2">
@@ -45,17 +36,10 @@
             variant="link"
             :data-cy="`ProfileListItem-update--${document._id}`"
             :disabled="!canEditProfile"
-            :title="
-              canEditProfile
-                ? 'Edit Profile'
-                : 'You are not allowed to edit this profile'
-            "
+            :title="canEditProfile ? 'Edit Profile' : 'You are not allowed to edit this profile'"
             @click.prevent="update"
           >
-            <i
-              class="fa fa-pencil-alt"
-              :class="{ disabled: !canEditProfile }"
-            />
+            <i class="fa fa-pencil-alt" :class="{ disabled: !canEditProfile }" />
           </b-button>
           <b-button
             class="ProfileListItem-delete"
@@ -64,9 +48,7 @@
             :data-cy="`ProfileListItem-delete--${document._id}`"
             :disabled="!canDeleteProfile"
             :title="
-              canDeleteProfile
-                ? 'Delete profile'
-                : 'You are not allowed to delete this profile'
+              canDeleteProfile ? 'Delete profile' : 'You are not allowed to delete this profile'
             "
             @click.prevent="deleteDocument(document._id)"
           >
@@ -79,8 +61,8 @@
     <b-row>
       <b-collapse
         :id="`collapse-${document._id}`"
-        :data-cy="`ProfileListItem-collapse--${document._id}`"
         v-model="expanded"
+        :data-cy="`ProfileListItem-collapse--${document._id}`"
         class="mt-3 ml-3 DocumentListItem-content"
       >
         <pre v-json-formatter="{ content: document, open: true }" />
@@ -90,58 +72,58 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import jsonFormatter from '@/directives/json-formatter.directive'
+import jsonFormatter from '@/directives/json-formatter.directive';
 
 export default {
   name: 'ProfileItem',
   components: {},
   directives: {
-    jsonFormatter
+    jsonFormatter,
   },
   props: {
     document: Object,
-    isChecked: Boolean
+    isChecked: Boolean,
   },
   data() {
     return {
       expanded: false,
-      checked: false
-    }
+      checked: false,
+    };
   },
   computed: {
     ...mapGetters('auth', ['canEditProfile', 'canDeleteProfile']),
     checkboxId() {
-      return `checkbox-${this.document._id}`
-    }
-  },
-  methods: {
-    toggleCollapse() {
-      this.expanded = !this.expanded
+      return `checkbox-${this.document._id}`;
     },
-    notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document._id)
-    },
-    deleteDocument() {
-      if (this.canDeleteProfile) {
-        this.$emit('delete', this.document._id)
-      }
-    },
-    update() {
-      if (this.canEditProfile) {
-        this.$emit('edit', this.document._id)
-      }
-    }
   },
   watch: {
     isChecked: {
       handler(value) {
-        this.checked = value
+        this.checked = value;
+      },
+    },
+  },
+  methods: {
+    toggleCollapse() {
+      this.expanded = !this.expanded;
+    },
+    notifyCheckboxClick() {
+      this.$emit('checkbox-click', this.document._id);
+    },
+    deleteDocument() {
+      if (this.canDeleteProfile) {
+        this.$emit('delete', this.document._id);
       }
-    }
-  }
-}
+    },
+    update() {
+      if (this.canEditProfile) {
+        this.$emit('edit', this.document._id);
+      }
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

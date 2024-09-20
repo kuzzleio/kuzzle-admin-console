@@ -1,8 +1,8 @@
 <template>
   <b-modal
-    size="xl"
-    ref="modal-create-env"
     :id="id"
+    ref="modal-create-env"
+    size="xl"
     :title="`${environmentId ? 'Update' : 'Create'} Connection`"
   >
     <create-environment
@@ -11,45 +11,39 @@
       @environment::importEnv="importEnv"
     />
 
-    <template v-slot:modal-footer>
-      <b-button variant="outline-secondary" @click="$bvModal.hide(id)">
-        Cancel
-      </b-button>
-      <b-button
-        data-cy="EnvironmentCreateModal-submit"
-        variant="primary"
-        @click="submit"
-      >
+    <template #modal-footer>
+      <b-button variant="outline-secondary" @click="$bvModal.hide(id)"> Cancel </b-button>
+      <b-button data-cy="EnvironmentCreateModal-submit" variant="primary" @click="submit">
         OK
       </b-button>
     </template>
   </b-modal>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped></style>
-
 <script>
-import CreateEnvironment from './CreateEnvironment.vue'
+import CreateEnvironment from './CreateEnvironment.vue';
 
 export default {
   name: 'EnvironmentsCreateModal',
   components: {
-    CreateEnvironment
+    CreateEnvironment,
   },
   props: ['environmentId', 'id'],
   methods: {
     importEnv() {
-      this.$bvModal.hide(this.id)
-      this.$emit('environment::importEnv')
+      this.$bvModal.hide(this.id);
+      this.$emit('environment::importEnv');
     },
     submit() {
-      const submitted = this.$refs.createEnvironmentComponent.submit()
+      const submitted = this.$refs.createEnvironmentComponent.submit();
       this.$nextTick(() => {
         if (submitted) {
-          this.$bvModal.hide(this.id)
+          this.$bvModal.hide(this.id);
         }
-      })
-    }
-  }
-}
+      });
+    },
+  },
+};
 </script>
+
+<style lang="scss" rel="stylesheet/scss" scoped></style>

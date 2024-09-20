@@ -1,27 +1,27 @@
 export function getBadgeVariant(action) {
   switch (action) {
     case 'update':
-      return 'warning'
+      return 'warning';
     case 'delete':
-      return 'danger'
+      return 'danger';
     case 'replace':
-      return 'warning'
+      return 'warning';
     default:
-      return ''
+      return '';
   }
 }
 
 export function getBadgeText(action) {
   switch (action) {
     case 'create':
-      return 'created'
+      return 'created';
     case 'update':
-      return 'updated'
+      return 'updated';
     case 'delete':
-      return 'deleted'
+      return 'deleted';
     case 'replace':
-      return 'replaced'
+      return 'replaced';
     default:
-      return ''
+      return '';
   }
 }

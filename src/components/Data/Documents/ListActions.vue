@@ -7,9 +7,7 @@
         :disabled="!displayToggleAll"
         @click="$emit('toggle-all')"
       >
-        <i
-          :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`"
-        />
+        <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`" />
         Toggle all
       </b-button>
 
@@ -23,31 +21,19 @@
         Delete
       </b-button>
 
-      <b-button
-        variant="outline-secondary"
-        class="m-2"
-        @click.prevent="$emit('refresh')"
-      >
+      <b-button variant="outline-secondary" class="m-2" @click.prevent="$emit('refresh')">
         <i class="fas fa-sync-alt left" />
         Refresh
       </b-button>
     </b-col>
     <template v-if="displayGeopointSelect">
-      <b-col cols="2">
-        Selected geopoint
-      </b-col>
+      <b-col cols="2"> Selected geopoint </b-col>
       <b-col cols="2">
         <m-select
           v-model="selectedGeopoint"
-          @input="
-            selectedGeopoint => $emit('select-geopoint', selectedGeopoint)
-          "
+          @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)"
         >
-          <option
-            v-for="geopoint in geopointList"
-            :key="geopoint"
-            :value="geopoint"
-          >
+          <option v-for="geopoint in geopointList" :key="geopoint" :value="geopoint">
             {{ geopoint }}
           </option>
         </m-select>
@@ -57,26 +43,26 @@
 </template>
 
 <script>
-import MSelect from '@/components/Common/MSelect.vue'
+import MSelect from '@/components/Common/MSelect.vue';
 
 export default {
   name: 'ListActions',
   components: {
-    MSelect
+    MSelect,
   },
   props: {
     allChecked: Boolean,
     displayBulkDelete: Boolean,
     displayGeopointSelect: Boolean,
     displayToggleAll: Boolean,
-    geopointList: Array
+    geopointList: Array,
   },
   data() {
     return {
-      selectedGeopoint: null
-    }
-  }
-}
+      selectedGeopoint: null,
+    };
+  },
+};
 </script>
 
 <style lang="scss"></style>

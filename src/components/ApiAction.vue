@@ -1,15 +1,9 @@
 <template>
-  <Multipane
-    class="DataLayout-vertical Custom-resizer-vertical"
-    layout="vertical"
-  >
-    <div
-      class="DataLayout-sidebarWrapper-vertical"
-      data-cy="DataLayout-sidebarWrapper"
-    >
+  <Multipane class="DataLayout-vertical Custom-resizer-vertical" layout="vertical">
+    <div class="DataLayout-sidebarWrapper-vertical" data-cy="DataLayout-sidebarWrapper">
       <QueryList
-        :savedQueries="savedQueries"
-        :currentQueryName="currentQueryName"
+        :saved-queries="savedQueries"
+        :current-query-name="currentQueryName"
         @deleteSavedQuery="deleteSavedQuery"
         @loadSavedQuery="loadSavedQuery"
       />
@@ -18,47 +12,40 @@
     <div class="DataLayout-contentWrapper-vertical">
       <b-container fluid class="h-100">
         <b-row align-v="stretch" class="h-100">
-          <b-col cols="12" v-if="loading"> </b-col>
-          <b-col cols="12" v-else>
+          <b-col v-if="loading" cols="12" />
+          <b-col v-else cols="12">
             <b-card no-body class="px-0 h-100">
               <b-tabs card content-class="px-0 mt-3 tabsHeight">
                 <b-tab
                   v-for="(tabContent, tabIdx) of tabs"
                   :key="`query-${tabIdx}-${tabContent.name}`"
                   :active="currentTabIdx === tabIdx"
-                  @click.prevent=""
                   class="px-2 py-0"
                   title-link-class="px-3 py-0 titleItem"
+                  @click.prevent=""
                 >
                   <template #title>
                     <b-row
+                      v-b-tooltip.hover
                       align-v="center"
                       class="tabTitle"
-                      v-b-tooltip.hover
                       :data-cy="`api-actions-tab-${tabIdx}`"
                       :title="tabContent.name"
                     >
-                      <b-col
-                        cols="9"
-                        class=" text-left py-3 pointer"
-                        @click="setCurrentTab(tabIdx)"
-                      >
+                      <b-col cols="9" class="text-left py-3 pointer" @click="setCurrentTab(tabIdx)">
                         <span>
                           {{ formatTabName(tabContent) }}
                         </span>
                       </b-col>
                       <b-col cols="3" class="py-3">
-                        <i
-                          class="fas fa-times pointer"
-                          @click="closeTab(tabIdx)"
-                        />
+                        <i class="fas fa-times pointer" @click="closeTab(tabIdx)" />
                       </b-col>
                     </b-row>
                   </template>
                   <QueryCard
                     class="px-0"
                     :query="tabContent.query"
-                    :tabIdx="tabIdx"
+                    :tab-idx="tabIdx"
                     :api="api"
                     :openapi="openapi"
                     :response="tabContent.response"
@@ -68,11 +55,7 @@
                   />
                 </b-tab>
                 <template #tabs-end>
-                  <b-row
-                    align-v="center"
-                    class="px-3"
-                    @click.prevent="addNewTab"
-                  >
+                  <b-row align-v="center" class="px-3" @click.prevent="addNewTab">
                     <b-col cols="12" class="text-center my-3 pointer">
                       <b data-cy="api-actions-tab-plus">+</b>
                     </b-col>
@@ -84,22 +67,20 @@
         </b-row>
       </b-container>
     </div>
-    <SaveQueryModal
-      :isQueryNameValid="isQueryNameValid"
-      @storeNewQuery="storeNewQuery"
-    />
+    <SaveQueryModal :is-query-name-valid="isQueryNameValid" @storeNewQuery="storeNewQuery" />
   </Multipane>
 </template>
 
 <script>
-import { Multipane, MultipaneResizer } from 'vue-multipane'
-import { mapGetters } from 'vuex'
-import _ from 'lodash'
+import _ from 'lodash';
+import { Multipane, MultipaneResizer } from 'vue-multipane';
+import { mapGetters } from 'vuex';
 
-import SaveQueryModal from '@/components/ApiAction/SaveQueryModal.vue'
-import QueryList from '@/components/ApiAction/QueryList.vue'
-import QueryCard from '@/components/ApiAction/QueryCard.vue'
-import { truncateName } from '@/utils'
+import { truncateName } from '@/utils';
+
+import QueryCard from '@/components/ApiAction/QueryCard.vue';
+import QueryList from '@/components/ApiAction/QueryList.vue';
+import SaveQueryModal from '@/components/ApiAction/SaveQueryModal.vue';
 
 export default {
   components: {
@@ -107,7 +88,7 @@ export default {
     MultipaneResizer,
     QueryCard,
     SaveQueryModal,
-    QueryList
+    QueryList,
   },
   data() {
     return {
@@ -118,8 +99,8 @@ export default {
       openapi: null,
       loading: true,
       savedQueries: [],
-      newSaveTabIdx: null
-    }
+      newSaveTabIdx: null,
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
@@ -129,183 +110,210 @@ export default {
         query: {
           controller: null,
           action: null,
-          body: {}
+          body: {},
         },
         saved: false,
         name: '',
         response: '',
-        savedIdx: null
-      }
+        savedIdx: null,
+      };
     },
     currentQueryBody() {
       if (!this.tabs[this.currentTabIdx]) {
-        return null
+        return null;
       }
-      return this.tabs[this.currentTabIdx].body
+      return this.tabs[this.currentTabIdx].body;
     },
     currentQueryName() {
       if (!this.tabs[this.currentTabIdx]) {
-        return null
+        return null;
       }
-      return this.tabs[this.currentTabIdx].name
+      return this.tabs[this.currentTabIdx].name;
+    },
+  },
+  async mounted() {
+    this.loading = true;
+    if (this.canGetPublicApi) {
+      await this.getKuzzlePublicApi();
+    } else {
+      this.$bvToast.toast(
+        'This view remains functional but you will not be able to select controllers and actions in the selectors.',
+        {
+          title: 'Unable to fetch the API action list.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true,
+        },
+      );
     }
+    if (this.currentEnvironment.backendMajorVersion > 1 && this.canGetOpenApi) {
+      await this.getKuzzleOpenApi();
+    } else {
+      this.$bvToast.toast(
+        'This view remains functional but you will not be able to select controllers and actions in the selectors.',
+        {
+          title: 'Unable to fetch the API action list.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true,
+        },
+      );
+    }
+    this.loadStoredQueriesFromLocalStorage();
+    this.addNewTab();
+    this.loading = false;
   },
   methods: {
     closeAlert() {
-      this.showAlert = false
+      this.showAlert = false;
     },
     formatTabName(tabContent) {
-      let name = tabContent.name ? tabContent.name : 'New API action'
-      name = truncateName(name, 11)
-      name += tabContent.saved ? '' : ' *'
-      return name
+      let name = tabContent.name ? tabContent.name : 'New API action';
+      name = truncateName(name, 11);
+      name += tabContent.saved ? '' : ' *';
+      return name;
     },
     onQueryChanged({ query, tabIdx }) {
-      const savedIdx = this.tabs[tabIdx].savedIdx
+      const savedIdx = this.tabs[tabIdx].savedIdx;
       if (savedIdx !== null && savedIdx !== undefined) {
-        this.tabs[tabIdx].saved = _.isEqual(
-          this.savedQueries[savedIdx].query,
-          query
-        )
+        this.tabs[tabIdx].saved = _.isEqual(this.savedQueries[savedIdx].query, query);
       }
-      this.tabs[tabIdx].query = JSON.parse(JSON.stringify(query))
+      this.tabs[tabIdx].query = JSON.parse(JSON.stringify(query));
     },
     setCurrentTab(tabIdx) {
-      this.currentTabIdx = tabIdx
+      this.currentTabIdx = tabIdx;
     },
     closeTab(tabIdx) {
       if (this.currentTabIdx === tabIdx) {
         if (this.currentTabIdx > 0) {
-          this.currentTabIdx = tabIdx - 1
+          this.currentTabIdx = tabIdx - 1;
         } else {
-          this.currentTabIdx = 0
+          this.currentTabIdx = 0;
         }
       } else if (this.currentTabIdx > tabIdx) {
-        this.currentTabIdx = this.currentTabIdx - 1
+        this.currentTabIdx = this.currentTabIdx - 1;
       }
-      this.tabs.splice(tabIdx, 1)
+      this.tabs.splice(tabIdx, 1);
     },
     deleteSavedQuery(savedQueryIdx) {
-      const tabIdx = this.tabs.findIndex(t => t.savedIdx === savedQueryIdx)
+      const tabIdx = this.tabs.findIndex((t) => t.savedIdx === savedQueryIdx);
       if (tabIdx !== -1) {
-        this.tabs[tabIdx].name = ''
-        this.tabs[tabIdx].savedIdx = null
-        this.tabs[tabIdx].saved = false
+        this.tabs[tabIdx].name = '';
+        this.tabs[tabIdx].savedIdx = null;
+        this.tabs[tabIdx].saved = false;
       }
-      this.savedQueries.splice(savedQueryIdx, 1)
-      this.storeQueriesToLocalStorage()
+      this.savedQueries.splice(savedQueryIdx, 1);
+      this.storeQueriesToLocalStorage();
     },
     loadSavedQuery(savedQueryIdx) {
-      if (!this.savedQueries[savedQueryIdx]) return
-      const query = JSON.parse(JSON.stringify(this.savedQueries[savedQueryIdx]))
-      const tabIdx = this.tabs.findIndex(t => t.name === query.name)
+      if (!this.savedQueries[savedQueryIdx]) return;
+      const query = JSON.parse(JSON.stringify(this.savedQueries[savedQueryIdx]));
+      const tabIdx = this.tabs.findIndex((t) => t.name === query.name);
       if (tabIdx !== -1) {
-        this.currentTabIdx = tabIdx
-        return
+        this.currentTabIdx = tabIdx;
+        return;
       }
-      this.tabs.push(query)
-      this.currentTabIdx = this.tabs.length - 1
+      this.tabs.push(query);
+      this.currentTabIdx = this.tabs.length - 1;
     },
     isQueryNameValid(name) {
       if (name === '' || name === 'New Query') {
-        return false
+        return false;
       }
       const nameSearch = this.savedQueries.find((q, index) => {
         if (this.currentQueryIndexName === index) {
-          return false
+          return false;
         }
-        return q.name === name
-      })
-      const nameAlreadyUsed = nameSearch !== undefined
-      return !nameAlreadyUsed
+        return q.name === name;
+      });
+      const nameAlreadyUsed = nameSearch !== undefined;
+      return !nameAlreadyUsed;
     },
     storeNewQuery(name) {
-      this.tabs[this.newSaveTabIdx].name = name
-      this.tabs[this.newSaveTabIdx].saved = true
-      this.tabs[this.newSaveTabIdx].savedIdx = this.savedQueries.length
-      const tab = JSON.parse(JSON.stringify(this.tabs[this.newSaveTabIdx]))
-      this.savedQueries.push(tab)
-      this.newSaveTabIdx = null
-      this.storeQueriesToLocalStorage()
+      this.tabs[this.newSaveTabIdx].name = name;
+      this.tabs[this.newSaveTabIdx].saved = true;
+      this.tabs[this.newSaveTabIdx].savedIdx = this.savedQueries.length;
+      const tab = JSON.parse(JSON.stringify(this.tabs[this.newSaveTabIdx]));
+      this.savedQueries.push(tab);
+      this.newSaveTabIdx = null;
+      this.storeQueriesToLocalStorage();
     },
     saveQuery(tabIdx) {
-      const tab = this.tabs[tabIdx]
-      const storedQueryIdx = this.savedQueries.findIndex(
-        q => q.name === tab.name
-      )
+      const tab = this.tabs[tabIdx];
+      const storedQueryIdx = this.savedQueries.findIndex((q) => q.name === tab.name);
       if (storedQueryIdx !== -1) {
-        this.savedQueries[storedQueryIdx].query = JSON.parse(
-          JSON.stringify(tab.query)
-        )
-        this.tabs[tabIdx].saved = true
-        this.storeQueriesToLocalStorage()
+        this.savedQueries[storedQueryIdx].query = JSON.parse(JSON.stringify(tab.query));
+        this.tabs[tabIdx].saved = true;
+        this.storeQueriesToLocalStorage();
       } else {
-        this.newSaveTabIdx = tabIdx
-        this.$bvModal.show('modal-save-query')
+        this.newSaveTabIdx = tabIdx;
+        this.$bvModal.show('modal-save-query');
       }
     },
     loadStoredQueriesFromLocalStorage() {
-      const storedQueries = localStorage.getItem('storedQueries')
+      const storedQueries = localStorage.getItem('storedQueries');
       if (!storedQueries) {
-        return
+        return;
       }
-      const jsonStoreQueries = JSON.parse(storedQueries)
+      const jsonStoreQueries = JSON.parse(storedQueries);
       if (!jsonStoreQueries[this.currentEnvironment.name]) {
-        return
+        return;
       }
-      this.savedQueries = jsonStoreQueries[this.currentEnvironment.name].map(
-        (q, idx) => {
-          q.response = ''
-          q.saved = true
-          q.savedIdx = idx
-          return q
-        }
-      )
+      this.savedQueries = jsonStoreQueries[this.currentEnvironment.name].map((q, idx) => {
+        q.response = '';
+        q.saved = true;
+        q.savedIdx = idx;
+        return q;
+      });
     },
     storeQueriesToLocalStorage() {
-      let storedQueries = JSON.parse(localStorage.getItem('storedQueries'))
+      let storedQueries = JSON.parse(localStorage.getItem('storedQueries'));
       if (!storedQueries) {
-        storedQueries = {}
+        storedQueries = {};
       }
-      const queriesToStore = JSON.parse(JSON.stringify(this.savedQueries))
-      storedQueries[this.currentEnvironment.name] = queriesToStore.map(q => {
-        delete q.response
-        delete q.saved
-        delete q.savedIdx
-        return q
-      })
-      localStorage.setItem('storedQueries', JSON.stringify(storedQueries))
+      const queriesToStore = JSON.parse(JSON.stringify(this.savedQueries));
+      storedQueries[this.currentEnvironment.name] = queriesToStore.map((q) => {
+        delete q.response;
+        delete q.saved;
+        delete q.savedIdx;
+        return q;
+      });
+      localStorage.setItem('storedQueries', JSON.stringify(storedQueries));
     },
     async performQuery(tabIdx) {
-      const query = JSON.parse(JSON.stringify(this.tabs[tabIdx].query))
-      let response = {}
+      const query = JSON.parse(JSON.stringify(this.tabs[tabIdx].query));
+      let response = {};
 
       try {
-        response = await this.$kuzzle.query(query)
+        response = await this.$kuzzle.query(query);
       } catch (error) {
         response = {
           ...error,
           message: error.message,
           stack: error.stack,
-          kuzzleStack: error.kuzzleStack
-        }
+          kuzzleStack: error.kuzzleStack,
+        };
       }
-      this.tabs[tabIdx].response = response
+      this.tabs[tabIdx].response = response;
     },
     addNewTab() {
-      let newTab = JSON.parse(JSON.stringify(this.emptyTab))
-      this.tabs.push(newTab)
-      this.currentTabIdx = this.tabs.length - 1
+      const newTab = JSON.parse(JSON.stringify(this.emptyTab));
+      this.tabs.push(newTab);
+      this.currentTabIdx = this.tabs.length - 1;
     },
     async getKuzzleOpenApi() {
       try {
         const openApi = await this.$kuzzle.query({
           controller: 'server',
-          action: 'openapi'
-        })
-        this.openapi = openApi.paths
+          action: 'openapi',
+        });
+        this.openapi = openApi.paths;
       } catch (error) {
-        this.$log.error(error)
+        this.$log.error(error);
         this.$bvToast.toast(
           'This view remains functional but you will not be able to select controllers and actions in the selectors.',
           {
@@ -314,20 +322,20 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true,
             dismissible: true,
-            noAutoHide: true
-          }
-        )
+            noAutoHide: true,
+          },
+        );
       }
     },
     async getKuzzlePublicApi() {
       try {
         const publicApi = await this.$kuzzle.query({
           controller: 'server',
-          action: 'publicApi'
-        })
-        this.api = publicApi.result
+          action: 'publicApi',
+        });
+        this.api = publicApi.result;
       } catch (error) {
-        this.$log.error(error)
+        this.$log.error(error);
         this.$bvToast.toast(
           'This view remains functional but you will not be able to select controllers and actions in the selectors.',
           {
@@ -336,49 +344,13 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true,
             dismissible: true,
-            noAutoHide: true
-          }
-        )
+            noAutoHide: true,
+          },
+        );
       }
-    }
+    },
   },
-  async mounted() {
-    this.loading = true
-    if (this.canGetPublicApi) {
-      await this.getKuzzlePublicApi()
-    } else {
-      this.$bvToast.toast(
-        'This view remains functional but you will not be able to select controllers and actions in the selectors.',
-        {
-          title: 'Unable to fetch the API action list.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        }
-      )
-    }
-    if (this.currentEnvironment.backendMajorVersion > 1 && this.canGetOpenApi) {
-      await this.getKuzzleOpenApi()
-    } else {
-      this.$bvToast.toast(
-        'This view remains functional but you will not be able to select controllers and actions in the selectors.',
-        {
-          title: 'Unable to fetch the API action list.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        }
-      )
-    }
-    this.loadStoredQueriesFromLocalStorage()
-    this.addNewTab()
-    this.loading = false
-  }
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -17,21 +17,12 @@
               data-cy="noAdminWarning"
               :show="displayNoAdminWarning"
             >
-              <b>Warning!</b> Your Kuzzle has no administrator user. It is
-              strongly recommended
-              <a
-                class="alert-link"
-                data-cy="NoAdminWarning-link"
-                href="#/signup"
-              >
+              <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended
+              <a class="alert-link" data-cy="NoAdminWarning-link" href="#/signup">
                 that you create one.</a
               >
             </b-alert>
-            <b-form-group
-              label="Connected to"
-              label-cols-sm="4"
-              label-cols-lg="3"
-            >
+            <b-form-group label="Connected to" label-cols-sm="4" label-cols-lg="3">
               <environment-switch
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
@@ -47,27 +38,27 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import LoginForm from './Common/Login/Form.vue'
-import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue'
+import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
+import LoginForm from './Common/Login/Form.vue';
 
 export default {
   name: 'Login',
   components: {
     LoginForm,
-    EnvironmentSwitch
+    EnvironmentSwitch,
   },
   data() {
     return {
-      environmentId: null
-    }
+      environmentId: null,
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['currentEnvironment']),
     displayNoAdminWarning() {
-      return !this.$store.direct.getters.auth.adminAlreadyExists
-    }
+      return !this.$store.direct.getters.auth.adminAlreadyExists;
+    },
   },
   methods: {
     onLogin() {
@@ -75,26 +66,26 @@ export default {
       // After login, the index route is pushed to view router and the body overflow is
       // not set to his original state
       // see src/components/Materialize/Modale.vue#62
-      window.document.body.style.overflow = 'visible'
+      window.document.body.style.overflow = 'visible';
 
       if (this.$store.getters.routeBeforeRedirect) {
-        this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
-        this.$router.push({ name: this.$store.getters.routeBeforeRedirect })
+        this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined);
+        this.$router.push({ name: this.$store.getters.routeBeforeRedirect });
       } else {
-        this.$router.push('/')
+        this.$router.push('/');
       }
     },
     editEnvironment(id) {
-      this.$emit('environment::create', id)
+      this.$emit('environment::create', id);
     },
     deleteEnvironment(id) {
-      this.$emit('environment::delete', id)
+      this.$emit('environment::delete', id);
     },
     importEnv() {
-      this.$emit('environment::importEnv')
-    }
-  }
-}
+      this.$emit('environment::importEnv');
+    },
+  },
+};
 </script>
 
 <style type="text/css" scoped>

@@ -10,16 +10,16 @@
         label-cols-md="3"
       >
         <b-form-input
+          id="password"
+          v-model="v$.password.$model"
           autofocus
           class="validate"
           data-cy="ResetPassword-password"
-          id="password"
           name="password"
           pattern=".*[^ ].*"
           required
           tabindex="1"
           type="password"
-          v-model="v$.password.$model"
           :state="validateState('password')"
         />
       </b-form-group>
@@ -34,23 +34,21 @@
         :invalid-feedback="password2Feedback"
       >
         <b-input
+          id="password2"
+          v-model="v$.password2.$model"
           class="validate"
           data-cy="ResetPassword-password2"
-          id="password2"
           name="password2"
           required
           tabindex="2"
           type="password"
-          v-model="v$.password2.$model"
           :pattern="password2Pattern"
           :state="validateState('password2')"
         />
       </b-form-group>
 
-      <div class="ResetPasswordForm-error" v-if="error">
-        <b-alert variant="danger" show dismissible>
-          Error: {{ error }}
-        </b-alert>
+      <div v-if="error" class="ResetPasswordForm-error">
+        <b-alert variant="danger" show dismissible> Error: {{ error }} </b-alert>
       </div>
 
       <div class="ResetPasswordForm-buttons float-right mt-3">
@@ -68,67 +66,69 @@
 </template>
 
 <script>
-import { useVuelidate } from '@vuelidate/core'
-import { sameAs, required } from '@vuelidate/validators'
+import { useVuelidate } from '@vuelidate/core';
+import { sameAs, required } from '@vuelidate/validators';
 
 export default {
   name: 'ResetPasswordForm',
   props: {
-    resetToken: String
+    resetToken: String,
   },
-  setup() { return { v$: useVuelidate() } },
+  setup() {
+    return { v$: useVuelidate() };
+  },
   data() {
     return {
       error: '',
       password: '',
-      password2: ''
-    }
+      password2: '',
+    };
   },
   validations: {
     password: {
-      required
+      required,
     },
     password2: {
       required,
-      sameAs: sameAs('password')
-    }
+      sameAs: sameAs('password'),
+    },
   },
   computed: {
     password2Feedback() {
       if (!this.v$.password2.sameAs) {
-        return 'Passwords do not match'
+        return 'Passwords do not match';
       }
       if (!this.v$.password2.required) {
-        return 'Password must not be empty'
+        return 'Password must not be empty';
       }
-      return null
+      return null;
     },
     password2Pattern() {
       // html validation pattern use regular expressions
       // We need to escape special chars to match against the password field
       // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Escaping
-      return this.password.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&')
-    }
+      return this.password.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
+    },
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.v$[fieldName]
-      const state = $dirty ? !$error : null
-      return state
+      const { $dirty, $error } = this.v$[fieldName];
+      const state = $dirty ? !$error : null;
+      return state;
     },
     async resetPassword() {
-      this.error = ''
+      this.error = '';
 
       try {
         await this.$store.direct.dispatch.auth.doResetPassword({
           password: this.password,
-          token: this.resetToken
-        })
-        this.$emit('reset-password::after')
+          token: this.resetToken,
+        });
+        this.$emit('reset-password::after');
       } catch (error) {
-        this.error = error.message
+        this.error = error.message;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

@@ -3,8 +3,8 @@
     <template v-if="favorites.length > 0">
       <FavoriteFilterItem
         v-for="(favori, i) in favorites"
-        :key="i"
         :id="i"
+        :key="i"
         :data-cy="'FilterFavoriItem--' + i"
         :index="index"
         :collection="collection"
@@ -13,9 +13,7 @@
       />
     </template>
     <template v-else>
-      <h4 class="text-secondary text-center">
-        You don't have any favorite filters.
-      </h4>
+      <h4 class="text-secondary text-center">You don't have any favorite filters.</h4>
       <p class="text-secondary text-center">
         You can add more by browsing the history of your filters.
       </p>
@@ -24,50 +22,44 @@
 </template>
 
 <script>
-import * as filterManager from '@/services/filterManager'
-import FavoriteFilterItem from './FavoriteFilterItem.vue'
+import * as filterManager from '@/services/filterManager';
+
+import FavoriteFilterItem from './FavoriteFilterItem.vue';
 
 export default {
   name: 'FavoriteFilters',
   components: {
-    FavoriteFilterItem
+    FavoriteFilterItem,
   },
   props: {
     index: String,
-    collection: String
+    collection: String,
   },
   data() {
     return {
-      favorites: []
-    }
-  },
-  mounted() {
-    this.favorites = filterManager.loadFavoritesFromLocalStorage(
-      this.index,
-      this.collection
-    )
-  },
-  methods: {
-    onFavoriteDelete(id) {
-      let idIndex = this.favorites
-        .map(favori => {
-          return favori.id
-        })
-        .indexOf(id)
-      this.favorites.splice(idIndex, 1)
-    }
+      favorites: [],
+    };
   },
   watch: {
     favorites: {
       handler() {
-        filterManager.saveFavoritesToLocalStorage(
-          this.favorites,
-          this.index,
-          this.collection
-        )
+        filterManager.saveFavoritesToLocalStorage(this.favorites, this.index, this.collection);
       },
-      deep: true
-    }
-  }
-}
+      deep: true,
+    },
+  },
+  mounted() {
+    this.favorites = filterManager.loadFavoritesFromLocalStorage(this.index, this.collection);
+  },
+  methods: {
+    onFavoriteDelete(id) {
+      const idIndex = this.favorites
+        .map((favori) => {
+          return favori.id;
+        })
+        .indexOf(id);
+      this.favorites.splice(idIndex, 1);
+    },
+  },
+};
 </script>

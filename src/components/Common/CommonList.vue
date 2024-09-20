@@ -48,12 +48,13 @@
 </template>
 
 <script>
-import * as filterManager from '@/services/filterManager'
-import CrudlDocument from './CrudlDocument.vue'
-import UserItem from '../Security/Users/UserItem.vue'
-import RoleItem from '../Security/Roles/RoleItem.vue'
-import ProfileItem from '../Security/Profiles/ProfileItem.vue'
-import DocumentItem from '../Data/Documents/DocumentListItem.vue'
+import DocumentItem from '../Data/Documents/DocumentListItem.vue';
+import ProfileItem from '../Security/Profiles/ProfileItem.vue';
+import RoleItem from '../Security/Roles/RoleItem.vue';
+import UserItem from '../Security/Users/UserItem.vue';
+import * as filterManager from '@/services/filterManager';
+
+import CrudlDocument from './CrudlDocument.vue';
 
 export default {
   name: 'CommonList',
@@ -62,7 +63,7 @@ export default {
     UserItem,
     RoleItem,
     ProfileItem,
-    DocumentItem
+    DocumentItem,
   },
   props: {
     index: String,
@@ -70,7 +71,7 @@ export default {
     itemName: String,
     displayCreate: {
       type: Boolean,
-      default: false
+      default: false,
     },
     performSearch: Function,
     performDelete: Function,
@@ -78,8 +79,8 @@ export default {
     routeUpdate: String,
     collectionMapping: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
 
   data() {
@@ -89,172 +90,130 @@ export default {
       documents: [],
       totalDocuments: 0,
       documentToDelete: null,
-      currentFilter: new filterManager.Filter()
-    }
+      currentFilter: new filterManager.Filter(),
+    };
   },
   computed: {
     isDocumentListFiltered() {
-      return this.currentFilter.active !== filterManager.NO_ACTIVE
+      return this.currentFilter.active !== filterManager.NO_ACTIVE;
     },
     isCollectionEmpty() {
-      return !this.isDocumentListFiltered && this.totalDocuments === 0
+      return !this.isDocumentListFiltered && this.totalDocuments === 0;
     },
     displayBulkDelete() {
-      return this.selectedDocuments.length > 0
+      return this.selectedDocuments.length > 0;
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
-        return false
+        return false;
       }
 
-      return this.selectedDocuments.length === this.documents.length
+      return this.selectedDocuments.length === this.documents.length;
     },
     paginationFrom() {
-      return parseInt(this.currentFilter.from) || 0
+      return parseInt(this.currentFilter.from) || 0;
     },
     paginationSize() {
-      return parseInt(this.currentFilter.size) || 25
-    }
+      return parseInt(this.currentFilter.size) || 25;
+    },
   },
   watch: {
     $route: {
       immediate: false,
       handler(newValue) {
-        this.currentFilter = filterManager.load(
-          this.index,
-          this.collection,
-          newValue
-        )
-        filterManager.save(
-          this.currentFilter,
-          this.$router,
-          this.index,
-          this.collection
-        )
-        filterManager.addNewHistoryItemAndSave(
-          newValue,
-          this.index,
-          this.collection
-        )
-      }
+        this.currentFilter = filterManager.load(this.index, this.collection, newValue);
+        filterManager.save(this.currentFilter, this.$router, this.index, this.collection);
+        filterManager.addNewHistoryItemAndSave(newValue, this.index, this.collection);
+      },
     },
     currentFilter() {
-      this.fetchDocuments()
-    }
+      this.fetchDocuments();
+    },
   },
   mounted() {
-    this.currentFilter = filterManager.load(
-      this.index,
-      this.collection,
-      this.$route
-    )
-    filterManager.save(
-      this.currentFilter,
-      this.$router,
-      this.index,
-      this.collection
-    )
+    this.currentFilter = filterManager.load(this.index, this.collection, this.$route);
+    filterManager.save(this.currentFilter, this.$router, this.index, this.collection);
   },
   methods: {
     isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1
+      return this.selectedDocuments.indexOf(id) > -1;
     },
     toggleAll() {
       if (this.allChecked) {
-        this.selectedDocuments = []
-        return
+        this.selectedDocuments = [];
+        return;
       }
-      this.selectedDocuments = []
-      this.selectedDocuments = this.documents.map(document => document.id)
+      this.selectedDocuments = [];
+      this.selectedDocuments = this.documents.map((document) => document.id);
     },
     toggleSelectDocuments(id) {
-      let index = this.selectedDocuments.indexOf(id)
+      const index = this.selectedDocuments.indexOf(id);
 
       if (index === -1) {
-        this.selectedDocuments.push(id)
-        return
+        this.selectedDocuments.push(id);
+        return;
       }
 
-      this.selectedDocuments.splice(index, 1)
+      this.selectedDocuments.splice(index, 1);
     },
     onFiltersUpdated(newFilters) {
       try {
-        filterManager.save(
-          newFilters,
-          this.$router,
-          this.index,
-          this.collection
-        )
-        filterManager.addNewHistoryItemAndSave(
-          newFilters,
-          this.index,
-          this.collection
-        )
+        filterManager.save(newFilters, this.$router, this.index, this.collection);
+        filterManager.addNewHistoryItemAndSave(newFilters, this.index, this.collection);
       } catch (error) {
         this.$store.direct.commit.toaster.setToast({
-          text:
-            'An error occurred while updating filters: <br />' + error.message
-        })
+          text: 'An error occurred while updating filters: <br />' + error.message,
+        });
       }
     },
     fetchDocuments() {
-      this.$forceUpdate()
+      this.$forceUpdate();
 
-      this.selectedDocuments = []
+      this.selectedDocuments = [];
 
-      let pagination = {
+      const pagination = {
         from: this.paginationFrom,
-        size: this.paginationSize
-      }
+        size: this.paginationSize,
+      };
 
-      let searchQuery = null
-      searchQuery = filterManager.toSearchQuery(
-        this.currentFilter,
-        this.collectionMapping
-      )
+      let searchQuery = null;
+      searchQuery = filterManager.toSearchQuery(this.currentFilter, this.collectionMapping);
       if (!searchQuery) {
-        searchQuery = {}
+        searchQuery = {};
       }
 
-      let sorting = ['_id'] // by default, sort on _id: prevent random order
+      let sorting = ['_id']; // by default, sort on _id: prevent random order
       if (this.currentFilter.sorting) {
-        sorting = filterManager.toSort(this.currentFilter)
+        sorting = filterManager.toSort(this.currentFilter);
       }
 
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
-      this.performSearch(
-        this.collection,
-        this.index,
-        searchQuery,
-        pagination,
-        sorting
-      )
-        .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
+      this.performSearch(this.collection, this.index, searchQuery, pagination, sorting)
+        .then((res) => {
+          this.documents = res.documents;
+          this.totalDocuments = res.total;
         })
-        .catch(e => {
+        .catch((e) => {
           this.$store.direct.commit.toaster.setToast({
-            text:
-              'An error occurred while performing search: <br />' + e.message
-          })
-        })
+            text: 'An error occurred while performing search: <br />' + e.message,
+          });
+        });
     },
     editDocument(route, id) {
       this.$router.push({
         name: this.routeUpdate,
-        params: { id }
-      })
+        params: { id },
+      });
     },
     deleteDocument(id) {
-      this.documentToDelete = id
+      this.documentToDelete = id;
     },
     create() {
-      this.$router.push({ name: this.routeCreate })
-    }
-  }
-}
+      this.$router.push({ name: this.routeCreate });
+    },
+  },
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

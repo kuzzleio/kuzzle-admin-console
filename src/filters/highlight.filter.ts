@@ -1,6 +1,6 @@
 export function highlight(value, filter) {
   if (value && value !== '' && filter) {
-    let index = value.toLowerCase().indexOf(filter.toLowerCase())
+    const index = value.toLowerCase().indexOf(filter.toLowerCase());
 
     if (index >= 0) {
       value =
@@ -8,9 +8,9 @@ export function highlight(value, filter) {
         '<strong class="highlight">' +
         value.substring(index, index + filter.length) +
         '</strong>' +
-        value.substring(index + filter.length)
+        value.substring(index + filter.length);
     }
   }
 
-  return value
+  return value;
 }

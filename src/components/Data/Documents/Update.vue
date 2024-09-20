@@ -1,20 +1,18 @@
 <template>
   <b-container class="DocumentUpdate d-flex flex-column h-100">
     <template v-if="hasRights">
-      <headline>
-        Edit document
-      </headline>
+      <headline> Edit document </headline>
 
       <b-alert variant="danger" :show="showAlert">
-        <b>Warning!</b> This document has been edited while you were editing it.
-        If you save now, you will overwrite someone else's modifications.
+        <b>Warning!</b> This document has been edited while you were editing it. If you save now,
+        you will overwrite someone else's modifications.
       </b-alert>
       <div v-if="loading" class="text-center">
         <b-spinner
           style="width: 3rem; height: 3rem; margin-top: 3em"
           label="Large Spinner"
           variant="primary"
-        ></b-spinner>
+        />
       </div>
       <create-or-update
         v-else
@@ -35,32 +33,32 @@
 </template>
 
 <script>
-import omit from 'lodash/omit'
-import get from 'lodash/get'
-import { mapGetters } from 'vuex'
+import get from 'lodash/get';
+import omit from 'lodash/omit';
+import { mapGetters } from 'vuex';
 
-import PageNotAllowed from '@/components/Common/PageNotAllowed.vue'
-import Headline from '@/components/Materialize/Headline.vue'
-import CreateOrUpdate from './Common/CreateOrUpdate.vue'
+import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';
+import Headline from '@/components/Materialize/Headline.vue';
+import CreateOrUpdate from './Common/CreateOrUpdate.vue';
 
 export default {
   name: 'DocumentUpdate',
   components: {
     Headline,
     CreateOrUpdate,
-    PageNotAllowed
+    PageNotAllowed,
   },
   props: {
     id: { type: String, required: true },
     indexName: { type: String, required: true },
-    collectionName: { type: String, required: true }
+    collectionName: { type: String, required: true },
   },
   data() {
     return {
       document: {},
       loading: false,
-      showAlert: false
-    }
+      showAlert: false,
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
@@ -68,108 +66,101 @@ export default {
     mappingAttributes() {
       return get(this, 'collection.mapping', null)
         ? omit(this.collection.mapping, '_kuzzle_info')
-        : null
+        : null;
     },
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+      return this.$store.direct.getters.index.getOneIndex(this.indexName);
     },
     collection() {
-      return this.$store.direct.getters.index.getOneCollection(
-        this.index,
-        this.collectionName
-      )
+      return this.$store.direct.getters.index.getOneCollection(this.index, this.collectionName);
     },
     hasRights() {
-      return this.canEditDocument(this.indexName, this.collectionName)
-    }
+      return this.canEditDocument(this.indexName, this.collectionName);
+    },
   },
   async mounted() {
-    this.fetch()
+    this.fetch();
     this.room = await this.$kuzzle.realtime.subscribe(
       this.indexName,
       this.collectionName,
       { ids: { values: [this.$route.params.id] } },
       () => {
-        this.showAlert = true
-      }
-    )
+        this.showAlert = true;
+      },
+    );
   },
   async destroyed() {
     if (this.room) {
-      await this.$kuzzle.realtime.unsubscribe(this.room)
+      await this.$kuzzle.realtime.unsubscribe(this.room);
     }
   },
   methods: {
     async onSubmit(document, id, replace = false) {
-      this.submitted = true
-      this.error = ''
+      this.submitted = true;
+      this.error = '';
 
       if (!document) {
-        this.error = 'The document is invalid, please review it'
-        return
+        this.error = 'The document is invalid, please review it';
+        return;
       }
 
       try {
-        delete document._id
-        let action = 'update'
-        if (replace === true) {
-          action = 'replace'
+        delete document._id;
+        let action = 'update';
+        if (replace) {
+          action = 'replace';
         }
         await this.$kuzzle.document[action](
           this.indexName,
           this.collectionName,
           this.id,
           document,
-          { refresh: 'wait_for' }
-        )
+          { refresh: 'wait_for' },
+        );
         this.$router.push({
           name: 'DocumentList',
-          params: { index: this.indexName, collection: this.collectionName }
-        })
+          params: { index: this.indexName, collection: this.collectionName },
+        });
       } catch (err) {
-        this.$log.error(err)
+        this.$log.error(err);
         this.$bvToast.toast(err.message, {
           title: 'Ooops! Something went wrong while persisting the document.',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
           appendToast: true,
           dismissible: true,
-          noAutoHide: true
-        })
+          noAutoHide: true,
+        });
       }
     },
     onCancel() {
       this.$router.push({
         name: 'DocumentList',
-        params: { index: this.indexName, collection: this.collectionName }
-      })
+        params: { index: this.indexName, collection: this.collectionName },
+      });
     },
     onDocumentChange(document) {
-      this.document = document
+      this.document = document;
     },
     async fetch() {
-      this.showAlert = false
-      this.loading = true
+      this.showAlert = false;
+      this.loading = true;
       try {
-        const res = await this.$kuzzle.document.get(
-          this.indexName,
-          this.collectionName,
-          this.id
-        )
-        this.document = omit(res._source, '_kuzzle_info')
-        this.loading = false
+        const res = await this.$kuzzle.document.get(this.indexName, this.collectionName, this.id);
+        this.document = omit(res._source, '_kuzzle_info');
+        this.loading = false;
       } catch (err) {
-        this.$log.error(err)
+        this.$log.error(err);
         this.$bvToast.toast(err.message, {
           title: 'Ooops! Something went wrong while loading the document.',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
           appendToast: true,
           dismissible: true,
-          noAutoHide: true
-        })
+          noAutoHide: true,
+        });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

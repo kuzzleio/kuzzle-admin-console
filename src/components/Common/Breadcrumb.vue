@@ -3,7 +3,7 @@
     <ul v-if="$route.path.indexOf('/security') === 0">
       <li>
         <router-link :to="{ name: 'Security' }">
-          <i class="fa fa-home"></i>
+          <i class="fa fa-home" />
           security
         </router-link>
       </li>
@@ -14,15 +14,13 @@
             'SecurityUsersList',
             'SecurityUsersCreate',
             'SecurityUsersUpdate',
-            'SecurityUsersEditCustomMapping'
+            'SecurityUsersEditCustomMapping',
           ])
         "
       >
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
-        <router-link :to="{ name: 'SecurityUsersList' }">
-          users
-        </router-link>
+        <router-link :to="{ name: 'SecurityUsersList' }"> users </router-link>
       </li>
 
       <li
@@ -30,37 +28,25 @@
           isRouteActive([
             'SecurityProfilesList',
             'SecurityProfilesCreate',
-            'SecurityProfilesUpdate'
+            'SecurityProfilesUpdate',
           ])
         "
       >
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
-        <router-link :to="{ name: 'SecurityProfilesList' }">
-          profiles
-        </router-link>
+        <router-link :to="{ name: 'SecurityProfilesList' }"> profiles </router-link>
       </li>
 
-      <li
-        v-if="
-          isRouteActive([
-            'SecurityRolesList',
-            'SecurityRolesCreate',
-            'SecurityRolesUpdate'
-          ])
-        "
-      >
+      <li v-if="isRouteActive(['SecurityRolesList', 'SecurityRolesCreate', 'SecurityRolesUpdate'])">
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
-        <router-link :to="{ name: 'SecurityRolesList' }">
-          roles
-        </router-link>
+        <router-link :to="{ name: 'SecurityRolesList' }"> roles </router-link>
       </li>
     </ul>
     <ul v-if="$route.path.indexOf('/data') === 0">
       <li>
         <router-link :to="{ name: 'Data' }">
-          <i class="fa fa-home"></i>
+          <i class="fa fa-home" />
           data
         </router-link>
       </li>
@@ -71,7 +57,7 @@
         <router-link
           :to="{
             name: 'Collections',
-            params: { indexName: $route.params.indexName }
+            params: { indexName: $route.params.indexName },
           }"
         >
           {{ $route.params.indexName }}
@@ -87,8 +73,8 @@
             name: 'WatchCollection',
             params: {
               indexName: $route.params.indexName,
-              collectionName: $route.params.collectionName
-            }
+              collectionName: $route.params.collectionName,
+            },
           }"
         >
           {{ $route.params.collectionName }}
@@ -100,8 +86,8 @@
             name: 'DocumentList',
             params: {
               indexName: $route.params.indexName,
-              collectionName: $route.params.collectionName
-            }
+              collectionName: $route.params.collectionName,
+            },
           }"
         >
           {{ $route.params.collectionName }}
@@ -110,6 +96,35 @@
     </ul>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'CommonBreadcrumb',
+  methods: {
+    index() {
+      return this.$route.params.indexName
+        ? this.$store.direct.getters.index.getOneIndex(this.$route.params.indexName)
+        : undefined;
+    },
+    isCollectionRealtime() {
+      if (!this.index || this.$route.params.collectionName) {
+        return false;
+      }
+      return this.$store.direct.getters.index.getOneCollection(
+        this.index,
+        this.$route.params.collectionName,
+      ).isRealtime;
+    },
+    isRouteActive(routeName) {
+      if (Array.isArray(routeName)) {
+        return routeName.includes(this.$route.name);
+      }
+
+      return this.$route.name === routeName;
+    },
+  },
+};
+</script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
 .nav-breadcrumb {
@@ -138,34 +153,3 @@
   }
 }
 </style>
-
-<script>
-export default {
-  name: 'CommonBreadcrumb',
-  methods: {
-    index() {
-      return this.$route.params.indexName
-        ? this.$store.direct.getters.index.getOneIndex(
-            this.$route.params.indexName
-          )
-        : undefined
-    },
-    isCollectionRealtime() {
-      if (!this.index || this.$route.params.collectionName) {
-        return false
-      }
-      return this.$store.direct.getters.index.getOneCollection(
-        this.index,
-        this.$route.params.collectionName
-      ).isRealtime
-    },
-    isRouteActive(routeName) {
-      if (Array.isArray(routeName)) {
-        return routeName.indexOf(this.$route.name) >= 0
-      }
-
-      return this.$route.name === routeName
-    }
-  }
-}
-</script>

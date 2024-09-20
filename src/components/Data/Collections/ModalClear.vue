@@ -1,16 +1,11 @@
 <template>
-  <b-modal
-    data-cy="CollectionClearModal"
-    additional-class="left-align"
-    :id="id"
-    @hide="reset"
-  >
-    <template v-slot:modal-header
+  <b-modal :id="id" data-cy="CollectionClearModal" additional-class="left-align" @hide="reset">
+    <template #modal-header
       ><h5>
         Clear <span class="code">{{ collection }}</span>
       </h5>
     </template>
-    <template v-slot:modal-footer="{ cancel }">
+    <template #modal-footer="{ cancel }">
       <b-button @click="cancel()">Cancel</b-button>
       <b-button
         data-cy="CollectionClearModal-submit"
@@ -29,52 +24,48 @@
     >
       <b-form-input
         id="env-to-delete-name"
+        v-model="confirmation"
         data-cy="CollectionClearModal-collectionName"
         trim
-        v-model="confirmation"
         @keydown.enter="clearCollection(index, collection)"
-      ></b-form-input>
+      />
     </b-form-group>
   </b-modal>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import Focus from '@/directives/focus.directive'
+import Focus from '@/directives/focus.directive';
 
 export default {
   name: 'ClearCollectionModal',
   directives: {
-    Focus
+    Focus,
   },
   props: {
     id: String,
     index: String,
-    collection: String
+    collection: String,
   },
   data() {
     return {
-      confirmation: ''
-    }
+      confirmation: '',
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
     confirmationOk() {
-      return this.collection !== null && this.collection === this.confirmation
-    }
+      return this.collection !== null && this.collection === this.confirmation;
+    },
   },
   methods: {
     reset() {
-      this.confirmation = ''
+      this.confirmation = '';
     },
     async clearCollection() {
-      if (
-        this.index.trim() !== '' ||
-        this.collection.trim() !== '' ||
-        !this.confirmationOk
-      ) {
-        return
+      if (this.index.trim() !== '' || this.collection.trim() !== '' || !this.confirmationOk) {
+        return;
       }
 
       try {
@@ -83,24 +74,21 @@ export default {
           action: 'truncate',
           index: this.index,
           collection: this.collection,
-          refresh: 'wait_for'
-        })
-        this.$emit('clear')
-        this.reset()
-        this.$bvModal.hide(this.id)
+          refresh: 'wait_for',
+        });
+        this.$emit('clear');
+        this.reset();
+        this.$bvModal.hide(this.id);
       } catch (err) {
-        this.$log.error(err)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title: 'Ooops! Something went wrong while clearing the collection.',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true
-          }
-        )
+        this.$log.error(err);
+        this.$bvToast.toast('The complete error has been printed to the console.', {
+          title: 'Ooops! Something went wrong while clearing the collection.',
+          variant: 'danger',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+        });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

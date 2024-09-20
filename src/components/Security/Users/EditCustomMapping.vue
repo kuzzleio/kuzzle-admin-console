@@ -1,8 +1,5 @@
 <template>
-  <b-container
-    class="EditUserMapping d-flex flex-column h-100"
-    data-cy="EditUserMapping"
-  >
+  <b-container class="EditUserMapping d-flex flex-column h-100" data-cy="EditUserMapping">
     <b-row>
       <b-col cols="6">
         <headline>Edit User Custom Data Mapping</headline>
@@ -11,23 +8,22 @@
         <b-button
           class="float-right"
           data-cy="export-user-mapping"
-          :download="`${this.currentEnvironment.name}-user-mapping.json`"
+          :download="`${currentEnvironment.name}-user-mapping.json`"
           :href="downloadMappingValue"
           :disabled="!isMappingValid"
         >
           Export Mapping
         </b-button>
         <b-form-file
-          class="float-right mr-3 w-50"
           ref="file-input"
-          @change="loadMappingValue($event)"
+          class="float-right mr-3 w-50"
           placeholder="Import mapping"
+          @change="loadMappingValue($event)"
         />
       </b-col>
     </b-row>
     <b-alert class="flow-text" show>
-      Here, you will be able to define the fields to be included in Users'
-      custom data payload.
+      Here, you will be able to define the fields to be included in Users' custom data payload.
     </b-alert>
     <template v-if="!loading">
       <b-card class="flex-grow" body-class="h-100">
@@ -35,17 +31,17 @@
           <b-col cols="8">
             <json-editor
               id="user-custom-data-mapping-editor"
+              ref="jsoneditor"
               data-cy="EditUserMapping-JSONEditor"
               myclass="h-100"
-              ref="jsoneditor"
               tabindex="4"
               :content="mappingValue"
               @change="onMappingChange"
             />
           </b-col>
           <b-col class="text-secondary">
-            Mapping is the process of defining how a document, and the fields it
-            contains, are stored and indexed.
+            Mapping is the process of defining how a document, and the fields it contains, are
+            stored and indexed.
             <a
               href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
               target="_blank"
@@ -63,11 +59,9 @@
           </b-col>
         </b-row>
 
-        <template v-slot:footer>
+        <template #footer>
           <div class="text-right">
-            <b-button class="mr-2" variant="outline-primary" @click="onCancel"
-              >Cancel</b-button
-            >
+            <b-button class="mr-2" variant="outline-primary" @click="onCancel">Cancel</b-button>
             <b-button
               data-cy="EditUserMapping-submitBtn"
               type="submit"
@@ -88,62 +82,58 @@
 /**
  * This feature is currently freezed.
  */
-import omit from 'lodash/omit'
-import { mapGetters } from 'vuex'
+import omit from 'lodash/omit';
+import { mapGetters } from 'vuex';
 
-import JsonEditor from '../../Common/JsonEditor.vue'
-import Headline from '../../Materialize/Headline.vue'
+import JsonEditor from '../../Common/JsonEditor.vue';
+import Headline from '../../Materialize/Headline.vue';
 
 export default {
   name: 'UsersCustomMappingWizard',
   components: {
     Headline,
-    JsonEditor
+    JsonEditor,
   },
   data() {
     return {
       mappingValue: '{}',
       loading: false,
-      error: ''
-    }
+      error: '',
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
     isMappingValid() {
       try {
-        JSON.parse(this.mappingValue)
-        return true
+        JSON.parse(this.mappingValue);
+        return true;
       } catch (error) {
-        return false
+        return false;
       }
     },
     downloadMappingValue() {
       if (this.isMappingValid) {
         const blob = new Blob([JSON.stringify(JSON.parse(this.mappingValue))], {
-          type: 'application/json'
-        })
-        return window.URL.createObjectURL(blob)
+          type: 'application/json',
+        });
+        return window.URL.createObjectURL(blob);
       }
-      return null
-    }
+      return null;
+    },
   },
   async mounted() {
-    this.loading = true
-    const result = await this.wrapper.getMappingUsers()
-    this.mappingValue = JSON.stringify(
-      omit(result.mapping, 'profileIds') || {},
-      null,
-      2
-    )
-    this.loading = false
+    this.loading = true;
+    const result = await this.wrapper.getMappingUsers();
+    this.mappingValue = JSON.stringify(omit(result.mapping, 'profileIds') || {}, null, 2);
+    this.loading = false;
   },
   methods: {
     loadMappingValue(event) {
-      let file = event.target.files[0]
-      let reader = new FileReader()
-      reader.onload = async e => {
-        this.mappingValue = e.target.result
-        this.$refs.jsoneditor.setContent(this.mappingValue)
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        this.mappingValue = e.target.result;
+        this.$refs.jsoneditor.setContent(this.mappingValue);
         this.$bvToast.toast(
           'The file has been written in the json editor. You can still edit it before saving if necessary.',
           {
@@ -152,34 +142,34 @@ export default {
             toaster: 'b-toaster-bottom-right',
             appendToast: true,
             dismissible: true,
-            noAutoHide: true
-          }
-        )
-      }
-      reader.readAsText(file)
+            noAutoHide: true,
+          },
+        );
+      };
+      reader.readAsText(file);
     },
     onMappingChange(value) {
-      this.mappingValue = value
+      this.mappingValue = value;
     },
     onCancel() {
-      this.$router.push({ name: 'SecurityUsersList' })
+      this.$router.push({ name: 'SecurityUsersList' });
     },
     async onSubmit() {
       try {
-        await this.wrapper.updateMappingUsers(JSON.parse(this.mappingValue))
-        this.$router.push({ name: 'SecurityUsersList' })
+        await this.wrapper.updateMappingUsers(JSON.parse(this.mappingValue));
+        this.$router.push({ name: 'SecurityUsersList' });
       } catch (error) {
-        this.$log.error(error)
+        this.$log.error(error);
         this.$bvToast.toast('The complete error has been printed to console', {
           title: 'Ooops! Something went wrong while updating the mapping',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
           appendToast: true,
           dismissible: true,
-          noAutoHide: true
-        })
+          noAutoHide: true,
+        });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

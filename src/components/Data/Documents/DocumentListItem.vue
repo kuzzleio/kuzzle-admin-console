@@ -9,27 +9,21 @@
           <i
             aria-hidden="true"
             data-cy="DocumentListItem-toggleCollapse"
-            :class="
-              `fa fa-caret-${
-                expanded ? 'down' : 'right'
-              } mr-2  d-inline-block align-middle`
-            "
+            :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2  d-inline-block align-middle`"
             @click="toggleCollapse"
           />
           <b-form-checkbox
+            :id="checkboxId"
+            v-model="checked"
             class="d-inline-block align-middle"
             type="checkbox"
             value="true"
             unchecked-value="false"
-            v-model="checked"
-            :id="checkboxId"
             @change="notifyCheckboxClick"
           />
-          <a
-            class="d-inline-block align-middle code pointer"
-            @click="toggleCollapse"
-            >{{ document._id }}</a
-          >
+          <a class="d-inline-block align-middle code pointer" @click="toggleCollapse">{{
+            document._id
+          }}</a>
           <b-badge
             v-if="!autoSync && notifBadgeText && notifBadgeText !== 'created'"
             :variant="notifBadgeVariant"
@@ -45,11 +39,7 @@
               variant="link"
               :data-cy="`DocumentListItem-update--${document._id}`"
               :disabled="!canEdit"
-              :title="
-                canEdit
-                  ? 'Edit Document'
-                  : 'You are not allowed to edit this Document'
-              "
+              :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
               @click.prevent="editDocument"
             >
               <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
@@ -60,11 +50,7 @@
               variant="link"
               :data-cy="`DocumentListItem-delete--${document._id}`"
               :disabled="!canDelete"
-              :title="
-                canDelete
-                  ? 'Delete Document'
-                  : 'You are not allowed to delete this Document'
-              "
+              :title="canDelete ? 'Delete Document' : 'You are not allowed to delete this Document'"
               @click.prevent="deleteDocument"
             >
               <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
@@ -86,19 +72,19 @@
 </template>
 
 <script>
-import cloneDeep from 'lodash/cloneDeep'
-import get from 'lodash/get'
-import set from 'lodash/set'
-import { mapGetters } from 'vuex'
+import cloneDeep from 'lodash/cloneDeep';
+import get from 'lodash/get';
+import set from 'lodash/set';
+import { mapGetters } from 'vuex';
 
-import JsonFormatter from '@/directives/json-formatter.directive'
-import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications'
-import { dateFromTimestamp } from '@/utils'
+import JsonFormatter from '@/directives/json-formatter.directive';
+import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
+import { dateFromTimestamp } from '@/utils';
 
 export default {
   name: 'DocumentListItem',
   directives: {
-    JsonFormatter
+    JsonFormatter,
   },
   props: {
     autoSync: Boolean,
@@ -109,59 +95,59 @@ export default {
     notification: Object,
     dateFields: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       expanded: false,
-      checked: false
-    }
+      checked: false,
+    };
   },
   watch: {
     isChecked: {
       handler(value) {
-        this.checked = value
-      }
+        this.checked = value;
+      },
     },
     notification: {
       handler(n) {
         if (!this.autoSync || !n) {
-          return
+          return;
         }
-        this.$el.classList.add(getBadgeText(n.action))
-        setTimeout(() => this.$el.classList.remove(getBadgeText(n.action)), 200)
-      }
-    }
+        this.$el.classList.add(getBadgeText(n.action));
+        setTimeout(() => this.$el.classList.remove(getBadgeText(n.action)), 200);
+      },
+    },
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     notifBadgeVariant() {
       if (!get(this.notification, 'action')) {
-        return ''
+        return '';
       }
-      return getBadgeVariant(get(this.notification, 'action'))
+      return getBadgeVariant(get(this.notification, 'action'));
     },
     notifBadgeText() {
       if (!get(this.notification, 'action')) {
-        return ''
+        return '';
       }
-      return getBadgeText(get(this.notification, 'action'))
+      return getBadgeText(get(this.notification, 'action'));
     },
     canEdit() {
       if (!this.index || !this.collection) {
-        return false
+        return false;
       }
-      return this.canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.index, this.collection);
     },
     canDelete() {
       if (!this.index || !this.collection) {
-        return false
+        return false;
       }
-      return this.canDeleteDocument(this.index, this.collection)
+      return this.canDeleteDocument(this.index, this.collection);
     },
     checkboxId() {
-      return `checkbox-${this.document._id}`
+      return `checkbox-${this.document._id}`;
     },
     formattedDocument() {
       // NOTE: This solution (cloning the object) is shitty.
@@ -169,40 +155,40 @@ export default {
       // directly in the JSON formatter. Unfortunately this is not supporter.
       // I strongly encourage to reimplement the JSON formatter in a
       // way that each field can be rendered via a custom renderer function.
-      const formatted = cloneDeep(this.document._source)
-      this.dateFields.forEach(fieldPath => {
-        const dateObj = dateFromTimestamp(get(formatted, fieldPath))
+      const formatted = cloneDeep(this.document._source);
+      this.dateFields.forEach((fieldPath) => {
+        const dateObj = dateFromTimestamp(get(formatted, fieldPath));
         if (dateObj) {
-          set(formatted, fieldPath, dateObj.toLocaleString('en-GB'))
+          set(formatted, fieldPath, dateObj.toLocaleString('en-GB'));
         }
-      })
-      return formatted
-    }
+      });
+      return formatted;
+    },
   },
+  beforeUpdate() {},
+  updated() {},
   methods: {
     toggleCollapse() {
-      this.expanded = !this.expanded
+      this.expanded = !this.expanded;
     },
     notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document._id)
+      this.$emit('checkbox-click', this.document._id);
     },
     deleteDocument() {
       if (this.canDelete) {
-        this.$emit('delete', this.document._id)
+        this.$emit('delete', this.document._id);
       }
     },
     editDocument() {
       if (this.canEdit) {
         this.$router.push({
           name: 'UpdateDocument',
-          params: { id: this.document._id }
-        })
+          params: { id: this.document._id },
+        });
       }
-    }
+    },
   },
-  beforeUpdate() {},
-  updated() {}
-}
+};
 </script>
 
 <style lang="scss" scoped>

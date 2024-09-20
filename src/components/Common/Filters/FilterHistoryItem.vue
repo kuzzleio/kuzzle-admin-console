@@ -4,20 +4,14 @@
       <b-row align-h="between" no-gutters>
         <b-col cols="10" class="py-1">
           <i
-            @click="toggleCollapse"
-            :class="
-              `fa fa-caret-${
-                expanded ? 'down' : 'right'
-              } mr-2  d-inline-block align-middle`
-            "
+            :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2  d-inline-block align-middle`"
             aria-hidden="true"
+            @click="toggleCollapse"
           />
 
-          <a
-            class="d-inline-block align-middle code pointer"
-            @click="toggleCollapse"
-            >{{ filter.name }}</a
-          >
+          <a class="d-inline-block align-middle code pointer" @click="toggleCollapse">{{
+            filter.name
+          }}</a>
           <b-button variant="link" :title="'Edit Filter'" @click="openModal">
             <i class="fa fa-pencil-alt" />
           </b-button>
@@ -27,10 +21,7 @@
             :data-cy="'FilterHistoryItem-Add-Favorite--' + id"
             @click="toggleFavorite"
           >
-            <i
-              :class="isFavorite() === true ? 'fa fa-star' : 'far fa-star'"
-              aria-hidden="true"
-            />
+            <i :class="isFavorite() === true ? 'fa fa-star' : 'far fa-star'" aria-hidden="true" />
           </b-button>
         </b-col>
         <b-col cols="2">
@@ -45,9 +36,9 @@
             </b-button>
             <b-button
               variant="link"
-              @click="deleteFilter"
               :data-cy="`FilterHistoryItem-deleteBtn--${id}`"
               :title="'Delete Filter'"
+              @click="deleteFilter"
             >
               <i class="fa fa-trash" />
             </b-button>
@@ -63,8 +54,8 @@
       </b-row>
     </b-container>
     <b-modal
-      size="lg"
       :id="`changeNameHistoryFilter-${filter.id}`"
+      size="lg"
       title="Edit favorite filter name"
       @ok="submitChange"
       @cancel="cancelChange"
@@ -76,9 +67,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import * as filterManager from '@/services/filterManager'
+import * as filterManager from '@/services/filterManager';
 
 export default {
   name: 'FilterHistoryItem',
@@ -87,59 +78,56 @@ export default {
     collection: String,
     filter: Object,
     favorite: Array,
-    id: Number
+    id: Number,
   },
   data() {
     return {
       expanded: false,
-      oldName: this.filter.name
-    }
+      oldName: this.filter.name,
+    };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper'])
+    ...mapGetters('kuzzle', ['wrapper']),
   },
   methods: {
     isFavorite() {
       const idIndex = this.favorite
-        .map(f => {
-          return f.id
+        .map((f) => {
+          return f.id;
         })
-        .indexOf(this.filter.id)
+        .indexOf(this.filter.id);
       if (idIndex !== -1) {
-        return true
+        return true;
       } else {
-        return false
+        return false;
       }
     },
     cancelChange() {
-      this.filter.name = this.oldName
+      this.filter.name = this.oldName;
     },
     toggleFavorite() {
-      this.$emit('toggle-favorite', !this.isFavorite())
+      this.$emit('toggle-favorite', !this.isFavorite());
     },
     submitChange() {
-      this.$emit('change')
+      this.$emit('change');
     },
     openModal() {
-      this.$bvModal.show('changeNameHistoryFilter-' + this.filter.id)
+      this.$bvModal.show('changeNameHistoryFilter-' + this.filter.id);
     },
     deleteFilter() {
-      this.$emit('filters-delete', this.filter.id)
+      this.$emit('filters-delete', this.filter.id);
     },
     useFilter() {
-      this.$parent.$emit('submit', this.filter)
+      this.$parent.$emit('submit', this.filter);
     },
     getFilter() {
-      const loadedFilter = Object.assign(
-        new filterManager.Filter(),
-        this.filter
-      )
-      if (loadedFilter.active == 'basic') return loadedFilter.basic
-      if (loadedFilter.active == 'raw') return loadedFilter.raw
+      const loadedFilter = Object.assign(new filterManager.Filter(), this.filter);
+      if (loadedFilter.active == 'basic') return loadedFilter.basic;
+      if (loadedFilter.active == 'raw') return loadedFilter.raw;
     },
     toggleCollapse() {
-      this.expanded = !this.expanded
-    }
-  }
-}
+      this.expanded = !this.expanded;
+    },
+  },
+};
 </script>

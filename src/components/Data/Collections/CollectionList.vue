@@ -1,10 +1,10 @@
 <template>
   <div>
-    <b-container class="CollectionList" v-if="index">
+    <b-container v-if="index" class="CollectionList">
       <headline>
         <div class="d-flex flex-row">
           <span class="flex-grow-1 text-truncate">
-            <i class="fa fa-database text-secondary"></i> &nbsp;
+            <i class="fa fa-database text-secondary" /> &nbsp;
             <span class="code">{{ indexName }}</span>
           </span>
           <span class="text-right">
@@ -20,10 +20,10 @@
               "
               :to="{ name: 'CreateCollection', params: { indexName } }"
             >
-              <i class="fa fa-plus"></i> Create a collection
+              <i class="fa fa-plus" /> Create a collection
             </b-button>
             <IndexDropdownAction
-              :indexName="indexName"
+              :index-name="indexName"
               @delete-index-clicked="onDeleteIndexClicked"
             />
           </span>
@@ -31,7 +31,7 @@
       </headline>
 
       <list-not-allowed v-if="!canSearchCollection(indexName)" />
-      <div class="CollectionList-content" v-else-if="collections">
+      <div v-else-if="collections" class="CollectionList-content">
         <template>
           <b-row class="mb-3">
             <b-col sm="2" class="text-secondary">
@@ -41,32 +41,22 @@
             <b-col sm="10">
               <b-row>
                 <b-col cols="6" class="text-right">
-                  <b-button
-                    variant="outline-dark"
-                    class="mr-2"
-                    @click="onToggleAllClicked"
-                  >
+                  <b-button variant="outline-dark" class="mr-2" @click="onToggleAllClicked">
                     <i
-                      :class="
-                        `far ${
-                          selectedCollections.length ===
-                          filteredCollections.length
-                            ? 'fa-check-square'
-                            : 'fa-square'
-                        } left`
-                      "
+                      :class="`far ${
+                        selectedCollections.length === filteredCollections.length
+                          ? 'fa-check-square'
+                          : 'fa-square'
+                      } left`"
                     />
                     Toggle all
                   </b-button>
 
                   <b-button
+                    v-if="$store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !== 1"
                     variant="outline-danger"
                     :data-cy="`CollectionList-bulkDelete--btn`"
                     :disabled="!bulkDeleteEnabled"
-                    v-if="
-                      $store.direct.getters.kuzzle.currentEnvironment
-                        .backendMajorVersion !== 1
-                    "
                     @click="deleteCollections"
                   >
                     <i class="fa fa-minus-circle left" />
@@ -75,13 +65,13 @@
                 </b-col>
                 <b-col cols="6">
                   <b-input-group>
-                    <template v-slot:prepend>
+                    <template #prepend>
                       <b-input-group-text>Filter</b-input-group-text>
                     </template>
                     <b-form-input
+                      v-model="filter"
                       autofocus
                       debounce="300"
-                      v-model="filter"
                       :disabled="collections.length === 0"
                       @keyup.enter="navigateToCollection"
                     />
@@ -101,23 +91,18 @@
             :filter="filter"
             @filtered="updateFilteredCollections"
           >
-            <template v-slot:empty>
-              <h4 class="text-secondary text-center">
-                This index has no collections.
-              </h4>
-              <p
-                v-if="canCreateCollection(index.name)"
-                class="text-secondary text-center"
-              >
+            <template #empty>
+              <h4 class="text-secondary text-center">This index has no collections.</h4>
+              <p v-if="canCreateCollection(index.name)" class="text-secondary text-center">
                 You can create the collection by hitting the button above.
               </p>
             </template>
-            <template v-slot:emptyfiltered>
+            <template #emptyfiltered>
               <h4 class="text-secondary text-center">
                 There is no collection matching your filter.
               </h4>
             </template>
-            <template v-slot:cell(selected)="row">
+            <template #cell(selected)="row">
               <b-form-checkbox
                 class="d-inline-block align-middle"
                 type="checkbox"
@@ -128,17 +113,17 @@
                 @change="onCheckboxClick(row.item)"
               />
             </template>
-            <template v-slot:cell(type)="row">
+            <template #cell(type)="row">
               <i
                 class="fa fa-2x"
                 :class="{
                   'fa-bolt ml-2': row.item.type === 'realtime',
-                  'fa-th-list': row.item.type === 'stored'
+                  'fa-th-list': row.item.type === 'stored',
                 }"
                 :title="row.item.type === 'realtime' ? 'Realtime' : 'Stored'"
-              ></i>
+              />
             </template>
-            <template v-slot:cell(name)="row">
+            <template #cell(name)="row">
               <b-link
                 class="code"
                 :data-cy="`CollectionList-name--${row.item.name}`"
@@ -149,24 +134,24 @@
                         name: 'WatchCollection',
                         params: {
                           indexName: indexName,
-                          collectionName: row.item.name
-                        }
+                          collectionName: row.item.name,
+                        },
                       }
                     : {
                         name: 'DocumentList',
                         params: {
                           indexName: indexName,
-                          collectionName: row.item.name
-                        }
+                          collectionName: row.item.name,
+                        },
                       }
                 "
                 >{{ truncateName(row.item.name) }}</b-link
               >
             </template>
-            <template v-slot:cell(count)="row">
+            <template #cell(count)="row">
               {{ row.item.count }}
             </template>
-            <template v-slot:cell(actions)="row">
+            <template #cell(actions)="row">
               <b-button
                 class="mx-1"
                 variant="link"
@@ -177,53 +162,50 @@
                         name: 'WatchCollection',
                         params: {
                           indexName: indexName,
-                          collectionName: row.item.name
-                        }
+                          collectionName: row.item.name,
+                        },
                       }
                     : {
                         name: 'DocumentList',
                         params: {
                           indexName: indexName,
-                          collectionName: row.item.name
-                        }
+                          collectionName: row.item.name,
+                        },
                       }
                 "
-                ><i class="fa fa-eye"></i
-              ></b-button>
+                ><i class="fa fa-eye"
+              /></b-button>
               <b-button
                 class="mx-1"
                 variant="link"
                 title="Edit collection"
                 :data-cy="`CollectionList-edit--${row.item.name}`"
-                :disabled="
-                  row.item.type !== 'stored' ||
-                    !canEditCollection(row.item.name)
-                "
+                :disabled="row.item.type !== 'stored' || !canEditCollection(row.item.name)"
                 :to="
                   canEditCollection(row.item.name)
                     ? {
                         name: 'EditCollection',
                         params: {
                           indexName: indexName,
-                          collectionName: row.item.name
-                        }
+                          collectionName: row.item.name,
+                        },
                       }
                     : ''
                 "
-                ><i class="fa fa-pencil-alt"></i
-              ></b-button>
+                ><i class="fa fa-pencil-alt"
+              /></b-button>
               <b-button
+                v-if="
+                  $store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !== 1 &&
+                  !row.item.isRealtime()
+                "
                 class="mx-1"
                 variant="link"
-                v-if="
-                  $store.direct.getters.kuzzle.currentEnvironment
-                    .backendMajorVersion !== 1 && !row.item.isRealtime()
-                "
                 title="Delete collection"
                 :data-cy="`CollectionList-delete--${row.item.name}`"
                 @click="onDeleteCollectionClicked(row.item)"
-                ><i class="fa fa-trash"></i
-              ></b-button>
+                ><i class="fa fa-trash"
+              /></b-button>
             </template>
           </b-table>
         </template>
@@ -231,20 +213,20 @@
       <DeleteCollectionModal
         :index="index"
         :collection="collectionToDelete"
-        :modalId="deleteCollectionModalId"
+        :modal-id="deleteCollectionModalId"
         @delete-successful="onDeleteModalSuccess"
       />
       <BulkDeleteCollectionsModal
         :index="index"
         :collections="selectedCollections"
-        :modalId="bulkDeleteCollectionsModalId"
+        :modal-id="bulkDeleteCollectionsModalId"
         @delete-successful="onDeleteModalSuccess"
       />
     </b-container>
     <DeleteIndexModal
       :ref="deleteIndexModalId"
       :index="index"
-      :modalId="deleteIndexModalId"
+      :modal-id="deleteIndexModalId"
       @confirm-deletion="onDeleteIndexConfirm"
       @cancel="onDeleteIndexCancel"
     />
@@ -252,15 +234,16 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import { truncateName } from '@/utils'
-import DeleteCollectionModal from './DeleteCollectionModal.vue'
-import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal.vue'
-import IndexDropdownAction from '../Indexes/DropdownActions.vue'
-import DeleteIndexModal from '../Indexes/DeleteIndexModal.vue'
-import ListNotAllowed from '../../Common/ListNotAllowed.vue'
-import Headline from '../../Materialize/Headline.vue'
+import ListNotAllowed from '../../Common/ListNotAllowed.vue';
+import Headline from '../../Materialize/Headline.vue';
+import DeleteIndexModal from '../Indexes/DeleteIndexModal.vue';
+import IndexDropdownAction from '../Indexes/DropdownActions.vue';
+import { truncateName } from '@/utils';
+
+import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal.vue';
+import DeleteCollectionModal from './DeleteCollectionModal.vue';
 
 export default {
   name: 'CollectionList',
@@ -270,10 +253,10 @@ export default {
     DeleteCollectionModal,
     BulkDeleteCollectionsModal,
     Headline,
-    ListNotAllowed
+    ListNotAllowed,
   },
   props: {
-    indexName: String
+    indexName: String,
   },
   data() {
     return {
@@ -284,142 +267,135 @@ export default {
       deleteConfirmation: '',
       rawStoredCollections: [],
       filteredCollections: [],
-      selectedCollections: []
-    }
+      selectedCollections: [],
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
-    ...mapGetters('auth', [
-      'canSearchCollection',
-      'canCreateCollection',
-      'canEditCollection'
-    ]),
+    ...mapGetters('auth', ['canSearchCollection', 'canCreateCollection', 'canEditCollection']),
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+      return this.$store.direct.getters.index.getOneIndex(this.indexName);
     },
     collections() {
-      return this.index ? this.index.collections : []
+      return this.index ? this.index.collections : [];
     },
     bulkDeleteEnabled() {
-      return this.selectedCollections.length > 0
+      return this.selectedCollections.length > 0;
     },
     allChecked() {
       if (!this.selectedCollections || !this.filteredCollections) {
-        return false
+        return false;
       }
-      return this.selectedCollections.length === this.filteredCollections.length
+      return this.selectedCollections.length === this.filteredCollections.length;
     },
     tableFields() {
       return [
         {
           class: 'CollectionList-type align-middle',
           key: 'selected',
-          label: ''
+          label: '',
         },
         {
           class: 'CollectionList-type align-middle',
           key: 'type',
-          label: ''
+          label: '',
         },
         {
           key: 'name',
           label: 'Name',
           sortable: true,
-          class: 'CollectionList-name align-middle'
+          class: 'CollectionList-name align-middle',
         },
         {
           class: 'CollectionList-actions align-middle text-right',
           key: 'actions',
-          label: ''
-        }
-      ]
+          label: '',
+        },
+      ];
     },
     deleteIndexModalId() {
-      return `delete-index-${this.indexName}`
-    }
+      return `delete-index-${this.indexName}`;
+    },
+  },
+  async created() {
+    this.updateFilteredCollections(this.collections);
   },
   methods: {
     truncateName,
     onDeleteIndexCancel() {
-      this.$refs[this.deleteIndexModalId].resetForm()
-      this.$bvModal.hide(this.deleteIndexModalId)
+      this.$refs[this.deleteIndexModalId].resetForm();
+      this.$bvModal.hide(this.deleteIndexModalId);
     },
     async onDeleteIndexConfirm() {
       try {
-        await this.$store.direct.dispatch.index.deleteIndex(this.index)
-        this.$bvModal.hide(this.deleteIndexModalId)
-        this.$router.push({ name: 'Indexes', params: {} })
+        await this.$store.direct.dispatch.index.deleteIndex(this.index);
+        this.$bvModal.hide(this.deleteIndexModalId);
+        this.$router.push({ name: 'Indexes', params: {} });
       } catch (err) {
-        this.$refs[this.deleteIndexModalId].setError(err.message)
+        this.$refs[this.deleteIndexModalId].setError(err.message);
       }
     },
     onDeleteIndexClicked() {
-      this.$bvModal.show(`delete-index-${this.indexName}`)
+      this.$bvModal.show(`delete-index-${this.indexName}`);
     },
     onDeleteCollectionClicked(collection) {
-      this.collectionToDelete = collection
-      this.$bvModal.show(this.deleteCollectionModalId)
+      this.collectionToDelete = collection;
+      this.$bvModal.show(this.deleteCollectionModalId);
     },
     deleteCollections() {
-      this.$bvModal.show(this.bulkDeleteCollectionsModalId)
+      this.$bvModal.show(this.bulkDeleteCollectionsModalId);
     },
     onToggleAllClicked() {
       if (this.allChecked) {
-        this.selectedCollections = []
-        return
+        this.selectedCollections = [];
+        return;
       }
 
-      this.selectedCollections = []
-      this.selectedCollections = this.filteredCollections
+      this.selectedCollections = [];
+      this.selectedCollections = this.filteredCollections;
     },
     isChecked(collection) {
-      return this.selectedCollections.find(el => el.name === collection.name)
-        ? true
-        : false
+      return !!this.selectedCollections.find((el) => el.name === collection.name);
     },
     onCheckboxClick(collection) {
       const collectionAlreadySelected = this.selectedCollections.find(
-        el => el.name === collection.name
-      )
+        (el) => el.name === collection.name,
+      );
 
       if (!collectionAlreadySelected) {
-        this.selectedCollections.push(collection)
-        return
+        this.selectedCollections.push(collection);
+        return;
       }
 
       this.selectedCollections = this.selectedCollections.filter(
-        el => el.name !== collection.name
-      )
+        (el) => el.name !== collection.name,
+      );
     },
     async onDeleteModalSuccess() {
-      this.updateFilteredCollections(this.collections)
+      this.updateFilteredCollections(this.collections);
     },
     navigateToCollection() {
-      const collection = this.filteredCollections[0]
+      const collection = this.filteredCollections[0];
 
       if (!collection) {
-        return
+        return;
       }
 
       const route = {
-        name:
-          collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
+        name: collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
         params: {
           indexName: this.index.name,
-          collectionName: collection.name
-        }
-      }
+          collectionName: collection.name,
+        },
+      };
 
-      this.$router.push(route)
+      this.$router.push(route);
     },
     updateFilteredCollections(filteredCollections) {
-      this.filteredCollections = filteredCollections
-    }
+      this.filteredCollections = filteredCollections;
+    },
   },
-  async created() {
-    this.updateFilteredCollections(this.collections)
-  }
-}
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss">

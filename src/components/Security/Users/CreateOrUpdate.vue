@@ -4,9 +4,7 @@
       <headline v-if="!!id">
         Edit user - <span class="code">{{ $route.params.id }}</span>
       </headline>
-      <headline v-else>
-        Create a new user
-      </headline>
+      <headline v-else> Create a new user </headline>
 
       <Notice />
 
@@ -16,14 +14,14 @@
         </template>
         <template v-else>
           <b-tabs
-            card
             v-if="!loading"
+            card
             :active="activeTab"
             :object-tab-active="activeTabObject"
             @tab-changed="switchTab"
           >
             <b-tab id="UserUpdate-basicTab">
-              <template v-slot:title>
+              <template #title>
                 <i
                   v-if="v$.basic.$anyError"
                   class="fas fa-exclamation-circle text-danger"
@@ -52,7 +50,7 @@
               id="UserUpdate-customTab"
               :title-link-attributes="{ 'data-cy': 'UserUpdate-customTab' }"
             >
-              <template v-slot:title>
+              <template #title>
                 <i
                   v-if="v$.customContentValue.$anyError"
                   class="fas fa-exclamation-circle text-danger"
@@ -69,12 +67,10 @@
           </b-tabs>
         </template>
 
-        <template v-slot:footer>
+        <template #footer>
           <b-row class="mt-2">
             <b-col offset="9" class="text-right">
-              <b-button class="m-1" tabindex="6" @click.prevent="cancel"
-                >Cancel</b-button
-              >
+              <b-button class="m-1" tabindex="6" @click.prevent="cancel">Cancel</b-button>
               <b-button
                 class="m-1"
                 data-cy="UserUpdate-submit"
@@ -95,19 +91,19 @@
 </template>
 
 <script>
-import Promise from 'bluebird'
-import { useVuelidate } from '@vuelidate/core'
-import { not } from '@vuelidate/validators'
-import { mapGetters } from 'vuex'
+import { useVuelidate } from '@vuelidate/core';
+import { not } from '@vuelidate/validators';
+import Promise from 'bluebird';
+import { mapGetters } from 'vuex';
 
-import { startsWithSpace, isWhitespace } from '@/validators'
+import MainSpinner from '../../Common/MainSpinner.vue';
+import Headline from '../../Materialize/Headline.vue';
+import Notice from '../Common/Notice.vue';
+import { startsWithSpace, isWhitespace } from '@/validators';
 
-import Basic from './Steps/Basic.vue'
-import CredentialsSelector from './Steps/CredentialsSelector.vue'
-import CustomData from './Steps/CustomData.vue'
-import Notice from '../Common/Notice.vue'
-import Headline from '../../Materialize/Headline.vue'
-import MainSpinner from '../../Common/MainSpinner.vue'
+import Basic from './Steps/Basic.vue';
+import CredentialsSelector from './Steps/CredentialsSelector.vue';
+import CustomData from './Steps/CustomData.vue';
 
 export default {
   name: 'CreateOrUpdateUser',
@@ -117,9 +113,16 @@ export default {
     CustomData,
     Headline,
     MainSpinner,
-    Notice
+    Notice,
   },
-  setup() { return { v$: useVuelidate() } },
+  props: {
+    id: {
+      type: String,
+    },
+  },
+  setup() {
+    return { v$: useVuelidate() };
+  },
   data() {
     return {
       loading: false,
@@ -133,218 +136,210 @@ export default {
       credentialsMapping: {},
       customContent: '{}',
       customContentValue: '{}',
-      customContentMapping: {}
-    }
+      customContentMapping: {},
+    };
   },
   validations() {
     const v = {
       kuid: {
         notEmpty: not(isWhitespace),
-        notStartsWithSpace: not(startsWithSpace)
+        notStartsWithSpace: not(startsWithSpace),
       },
       addedProfiles: {
-        minLength: function(value) {
-          return value.length > 0
-        }
+        minLength: function (value) {
+          return value.length > 0;
+        },
       },
       basic: ['kuid', 'addedProfiles'],
       customContentValue: {
-        syntaxOK: function(value) {
+        syntaxOK: function (value) {
           try {
-            JSON.parse(value)
-            return true
+            JSON.parse(value);
+            return true;
           } catch (error) {
-            return false
+            return false;
           }
-        }
-      }
-    }
+        },
+      },
+    };
     // TODO One day we should be able to validate credentials (big deal)
-    return v
-  },
-  props: {
-    id: {
-      type: String
-    }
+    return v;
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper'])
-  },
-  methods: {
-    onProfileAdded(profile) {
-      this.v$.addedProfiles.$model.push(profile)
-      this.v$.addedProfiles.$touch()
-    },
-    onProfileRemoved(profile) {
-      this.v$.addedProfiles.$model.splice(
-        this.v$.addedProfiles.$model.indexOf(profile),
-        1
-      )
-      this.v$.addedProfiles.$touch()
-    },
-    setCustomKuid(value) {
-      this.v$.kuid.$model = value
-    },
-    onCredentialsChanged(payload) {
-      this.credentials[payload.strategy] = { ...payload.credentials }
-    },
-    onCustomContentChanged(value) {
-      this.v$.customContentValue.$model = value
-    },
-    switchTab(name) {
-      this.activeTab = name
-    },
-    setActiveTabObject(tab) {
-      this.activeTabObject = tab
-    },
-    async submit() {
-      this.v$.$touch()
-      if (this.v$.$anyError) {
-        return
-      }
-      for (const strategy of Object.keys(this.credentials)) {
-        const credentials = this.credentials[strategy]
-        const notEmptyFields = Object.keys(credentials).filter(
-          field => credentials[field] !== ''
-        )
-        if (notEmptyFields.length === 0) {
-          delete this.credentials[strategy]
-        }
-      }
-      this.submitting = true
-      try {
-        if (this.id) {
-          await this.wrapper.performReplaceUser(this.kuid, {
-            profileIds: this.addedProfiles,
-            ...JSON.parse(this.customContentValue)
-          })
-          await Promise.all(
-            Object.keys(this.credentials).map(async strategy => {
-              const credentialsExists = await this.$kuzzle.security.hasCredentials(
-                strategy,
-                this.kuid
-              )
-
-              if (credentialsExists) {
-                await this.$kuzzle.security.updateCredentials(
-                  strategy,
-                  this.kuid,
-                  this.credentials[strategy]
-                )
-              } else {
-                await this.$kuzzle.security.createCredentials(
-                  strategy,
-                  this.kuid,
-                  this.credentials[strategy]
-                )
-              }
-            })
-          )
-        } else {
-          await this.wrapper.performCreateUser(this.kuid, {
-            content: {
-              profileIds: this.addedProfiles,
-              ...JSON.parse(this.customContentValue)
-            },
-            credentials: this.credentials
-          })
-          if (!this.$store.direct.getters.auth.adminAlreadyExists) {
-            try {
-              await this.$store.direct.dispatch.auth.checkFirstAdmin()
-            } catch (err) {
-              this.$log.error(err)
-            }
-          }
-        }
-        this.$router.push({ name: 'SecurityUsersList' })
-      } catch (err) {
-        this.$log.error(err)
-        this.submitting = false
-        this.$bvToast.toast(err.message, {
-          title: 'Unable to create user',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true
-        })
-      }
-    },
-    cancel() {
-      if (this.$router._prevTransition && this.$router._prevTransition.to) {
-        this.$router.push(this.$router._prevTransition.to)
-      } else {
-        this.$router.push({ name: 'SecurityUsersList' })
-      }
-    }
+    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
   },
   async mounted() {
-    this.loading = true
+    this.loading = true;
 
     try {
-      let credentialsMapping = await this.$kuzzle.security.getAllCredentialFields()
-      this.strategies = Object.keys(credentialsMapping)
+      const credentialsMapping = await this.$kuzzle.security.getAllCredentialFields();
+      this.strategies = Object.keys(credentialsMapping);
 
       // Clean "kuid" from credentialsMapping
-      this.strategies.forEach(strategy => {
+      this.strategies.forEach((strategy) => {
         if (credentialsMapping[strategy].kuid) {
-          delete credentialsMapping[strategy].kuid
+          delete credentialsMapping[strategy].kuid;
         }
-      })
-      this.credentialsMapping = credentialsMapping
+      });
+      this.credentialsMapping = credentialsMapping;
 
-      const { mapping } = await this.wrapper.getMappingUsers()
+      const { mapping } = await this.wrapper.getMappingUsers();
       if (mapping) {
-        this.customContentMapping = mapping
-        delete this.customContentMapping.profileIds
+        this.customContentMapping = mapping;
+        delete this.customContentMapping.profileIds;
       }
 
       if (this.id) {
-        this.kuid = this.id
+        this.kuid = this.id;
 
         await Promise.all(
-          this.strategies.map(async strategy => {
+          this.strategies.map(async (strategy) => {
             const credentialsExists = await this.$kuzzle.security.hasCredentials(
               strategy,
-              this.kuid
-            )
+              this.kuid,
+            );
 
             if (!credentialsExists) {
-              return
+              return;
             }
 
-            let strategyCredentials = await this.$kuzzle.security.getCredentials(
+            const strategyCredentials = await this.$kuzzle.security.getCredentials(
               strategy,
-              this.kuid
-            )
+              this.kuid,
+            );
 
             if (strategyCredentials.kuid) {
-              delete strategyCredentials.kuid
+              delete strategyCredentials.kuid;
             }
 
-            this.$set(this.credentials, strategy, strategyCredentials)
-          })
-        )
+            this.$set(this.credentials, strategy, strategyCredentials);
+          }),
+        );
 
-        let { _id, content } = await this.$kuzzle.security.getUser(this.kuid)
-        this.id = _id
-        this.addedProfiles = content.profileIds
-        delete content.profileIds
-        delete content._kuzzle_info
-        this.customContent = JSON.stringify(content, null, 2)
-        this.customContentValue = this.customContent
+        const { _id, content } = await this.$kuzzle.security.getUser(this.kuid);
+        this.id = _id;
+        this.addedProfiles = content.profileIds;
+        delete content.profileIds;
+        delete content._kuzzle_info;
+        this.customContent = JSON.stringify(content, null, 2);
+        this.customContentValue = this.customContent;
       }
 
-      this.loading = false
+      this.loading = false;
     } catch (e) {
-      this.$log.error(e)
+      this.$log.error(e);
       this.$bvToast.toast('The complete error has been printed to console', {
         title: 'Ooops! Something went wrong while loading the user',
         variant: 'warning',
         toaster: 'b-toaster-bottom-right',
         appendToast: true,
         dismissible: true,
-        noAutoHide: true
-      })
+        noAutoHide: true,
+      });
     }
-  }
-}
+  },
+  methods: {
+    onProfileAdded(profile) {
+      this.v$.addedProfiles.$model.push(profile);
+      this.v$.addedProfiles.$touch();
+    },
+    onProfileRemoved(profile) {
+      this.v$.addedProfiles.$model.splice(this.v$.addedProfiles.$model.indexOf(profile), 1);
+      this.v$.addedProfiles.$touch();
+    },
+    setCustomKuid(value) {
+      this.v$.kuid.$model = value;
+    },
+    onCredentialsChanged(payload) {
+      this.credentials[payload.strategy] = { ...payload.credentials };
+    },
+    onCustomContentChanged(value) {
+      this.v$.customContentValue.$model = value;
+    },
+    switchTab(name) {
+      this.activeTab = name;
+    },
+    setActiveTabObject(tab) {
+      this.activeTabObject = tab;
+    },
+    async submit() {
+      this.v$.$touch();
+      if (this.v$.$anyError) {
+        return;
+      }
+      for (const strategy of Object.keys(this.credentials)) {
+        const credentials = this.credentials[strategy];
+        const notEmptyFields = Object.keys(credentials).filter(
+          (field) => credentials[field] !== '',
+        );
+        if (notEmptyFields.length === 0) {
+          delete this.credentials[strategy];
+        }
+      }
+      this.submitting = true;
+      try {
+        if (this.id) {
+          await this.wrapper.performReplaceUser(this.kuid, {
+            profileIds: this.addedProfiles,
+            ...JSON.parse(this.customContentValue),
+          });
+          await Promise.all(
+            Object.keys(this.credentials).map(async (strategy) => {
+              const credentialsExists = await this.$kuzzle.security.hasCredentials(
+                strategy,
+                this.kuid,
+              );
+
+              if (credentialsExists) {
+                await this.$kuzzle.security.updateCredentials(
+                  strategy,
+                  this.kuid,
+                  this.credentials[strategy],
+                );
+              } else {
+                await this.$kuzzle.security.createCredentials(
+                  strategy,
+                  this.kuid,
+                  this.credentials[strategy],
+                );
+              }
+            }),
+          );
+        } else {
+          await this.wrapper.performCreateUser(this.kuid, {
+            content: {
+              profileIds: this.addedProfiles,
+              ...JSON.parse(this.customContentValue),
+            },
+            credentials: this.credentials,
+          });
+          if (!this.$store.direct.getters.auth.adminAlreadyExists) {
+            try {
+              await this.$store.direct.dispatch.auth.checkFirstAdmin();
+            } catch (err) {
+              this.$log.error(err);
+            }
+          }
+        }
+        this.$router.push({ name: 'SecurityUsersList' });
+      } catch (err) {
+        this.$log.error(err);
+        this.submitting = false;
+        this.$bvToast.toast(err.message, {
+          title: 'Unable to create user',
+          variant: 'danger',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+        });
+      }
+    },
+    cancel() {
+      if (this.$router._prevTransition && this.$router._prevTransition.to) {
+        this.$router.push(this.$router._prevTransition.to);
+      } else {
+        this.$router.push({ name: 'SecurityUsersList' });
+      }
+    },
+  },
+};
 </script>

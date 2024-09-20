@@ -20,11 +20,11 @@
 </template>
 
 <script>
-import '@/assets/style.scss'
-import ModalCreateOrUpdate from '@/components/Common/Environments/ModalCreateOrUpdate.vue'
-import ModalDelete from '@/components/Common/Environments/ModalDelete.vue'
-import ModalImport from '@/components/Common/Environments/ModalImport.vue'
-import TelemetryBanner from '@/components/TelemetryBanner.vue'
+import '@/assets/style.scss';
+import ModalCreateOrUpdate from '@/components/Common/Environments/ModalCreateOrUpdate.vue';
+import ModalDelete from '@/components/Common/Environments/ModalDelete.vue';
+import ModalImport from '@/components/Common/Environments/ModalImport.vue';
+import TelemetryBanner from '@/components/TelemetryBanner.vue';
 
 export default {
   name: 'KuzzleAdminConsole',
@@ -32,27 +32,27 @@ export default {
     ModalCreateOrUpdate,
     ModalDelete,
     ModalImport,
-    TelemetryBanner
+    TelemetryBanner,
   },
   data() {
     return {
-      environmentId: null
-    }
+      environmentId: null,
+    };
   },
   methods: {
     editEnvironment(id) {
-      this.environmentId = id
-      this.$bvModal.show('modal-env-create-or-update')
+      this.environmentId = id;
+      this.$bvModal.show('modal-env-create-or-update');
     },
     deleteEnvironment(id) {
-      this.environmentId = id
-      this.$bvModal.show('modal-env-delete')
+      this.environmentId = id;
+      this.$bvModal.show('modal-env-delete');
     },
     importEnvironment() {
-      this.$bvModal.show('modal-env-import')
-    }
-  }
-}
+      this.$bvModal.show('modal-env-import');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

@@ -1,9 +1,7 @@
 <template>
   <b-card no-body class="h-100">
     <b-card-header>
-      <b-card-title>
-        Response
-      </b-card-title>
+      <b-card-title> Response </b-card-title>
     </b-card-header>
     <b-card-body class="p-0">
       <b-row class="m-2" no-gutters>
@@ -19,8 +17,8 @@
         </b-col>
       </b-row>
       <json-editor
-        :ref="`responseEditorWrapper-${tabIdx}`"
         :id="`responseEditorWrapper-${tabIdx}`"
+        :ref="`responseEditorWrapper-${tabIdx}`"
         :data-cy="`api-actions-response-JSONEditor-${tabIdx}`"
         readonly
         class="m-2 responseJsonEditor"
@@ -31,54 +29,53 @@
 </template>
 
 <script>
-import _ from 'lodash'
+import _ from 'lodash';
 
-import jsonEditor from '@/components/Common/JsonEditor.vue'
+import jsonEditor from '@/components/Common/JsonEditor.vue';
 
 export default {
   components: {
-    jsonEditor
+    jsonEditor,
   },
   props: {
     response: {
-      default: ''
+      default: '',
     },
-    tabIdx: {}
+    tabIdx: {},
   },
   data() {
     return {
-      isFullScreen: false
-    }
+      isFullScreen: false,
+    };
+  },
+  computed: {
+    currentStatus() {
+      return this.response ? _.get(this.response, 'status', 'undefined') : null;
+    },
+    currentErrorMessage() {
+      return this.response ? this.response.message : null;
+    },
+    statusBarVariant() {
+      if (this.currentStatus === null || this.currentStatus === 'undefined') return 'secondary';
+      if (this.currentStatus.toString().match(/20[0-9]/) != null) return 'success';
+      return 'danger';
+    },
   },
   watch: {
     response: {
       handler(value) {
         this.$refs[`responseEditorWrapper-${this.tabIdx}`].setContent(
-          JSON.stringify(value, null, ' ')
-        )
-      }
-    }
-  },
-  computed: {
-    currentStatus() {
-      return this.response ? _.get(this.response, 'status', 'undefined') : null
+          JSON.stringify(value, null, ' '),
+        );
+      },
     },
-    currentErrorMessage() {
-      return this.response ? this.response.message : null
-    },
-    statusBarVariant() {
-      if (this.currentStatus === null || this.currentStatus === 'undefined')
-        return 'secondary'
-      if (this.currentStatus.toString().match(/20[0-9]/)) return 'success'
-      return 'danger'
-    }
   },
   methods: {
     toggleFullscreen() {
-      this.isFullScreen = !this.isFullScreen
-    }
-  }
-}
+      this.isFullScreen = !this.isFullScreen;
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

@@ -1,6 +1,6 @@
 <template>
-  <b-modal data-cy="ModalDeleteRoles" :id="id" @hide="$emit('hide')">
-    <template v-slot:modal-header>
+  <b-modal :id="id" data-cy="ModalDeleteRoles" @hide="$emit('hide')">
+    <template #modal-header>
       <h4>Role deletion</h4>
     </template>
 
@@ -19,13 +19,11 @@
     </template>
     <template v-else>
       <div class="text-center">
-        <b-spinner label="Spinning"></b-spinner>
+        <b-spinner label="Spinning" />
       </div>
     </template>
-    <template v-slot:modal-footer="{ close }">
-      <b-button @click.prevent="close">
-        Cancel
-      </b-button>
+    <template #modal-footer="{ close }">
+      <b-button @click.prevent="close"> Cancel </b-button>
       <b-button
         data-cy="ModalDeleteRoles-submitBtn"
         variant="danger"
@@ -39,7 +37,7 @@
 </template>
 
 <script>
-import { truncateName } from '@/utils'
+import { truncateName } from '@/utils';
 
 export default {
   name: 'RoleDeleteModal',
@@ -47,13 +45,13 @@ export default {
   props: {
     id: {
       type: String,
-      required: true
+      required: true,
     },
     candidatesForDeletion: Array,
-    isLoading: Boolean
+    isLoading: Boolean,
   },
   methods: {
-    truncateName
-  }
-}
+    truncateName,
+  },
+};
 </script>

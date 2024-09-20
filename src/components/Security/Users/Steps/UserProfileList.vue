@@ -4,8 +4,8 @@
       ><div v-if="profileList.length">
         <b-form-select
           v-model="selectedProfiled"
-          @change="onProfileSelected"
           data-cy="UserProfileList-select"
+          @change="onProfileSelected"
         >
           <b-select-option v-if="availableProfiles.length" :value="0">
             Select a Profile to add
@@ -16,21 +16,14 @@
             disabled
             >The user has all the profiles (are you sure?)
           </b-select-option>
-          <b-select-option
-            v-for="profile of availableProfiles"
-            :key="profile._id"
-            :value="profile"
-          >
+          <b-select-option v-for="profile of availableProfiles" :key="profile._id" :value="profile">
             {{ profile }}
           </b-select-option>
         </b-form-select>
       </div>
       <div v-else>
         No profiles found (you should
-        <router-link
-          :to="{ name: 'SecurityProfilesCreate' }"
-          class="text-light-blue"
-        >
+        <router-link :to="{ name: 'SecurityProfilesCreate' }" class="text-light-blue">
           create one
         </router-link>
         before creating a user)
@@ -40,10 +33,10 @@
       <template v-if="addedProfiles.length">
         <b-badge
           v-for="(profile, index) in addedProfiles"
+          :key="index"
           class="p-2 mr-2 my-1"
           title="Click to remove"
           :data-cy="`UserProfileList-badge--${profile}`"
-          :key="index"
         >
           {{ profile }}&nbsp;
           <i
@@ -61,56 +54,56 @@
 </template>
 
 <script type="text/javascript">
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'UserProfileList',
   components: {},
   props: {
     addedProfiles: {
-      type: Array
-    }
+      type: Array,
+    },
   },
   data() {
     return {
       profileList: [],
-      selectedProfiled: 0
-    }
+      selectedProfiled: 0,
+    };
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
     availableProfiles() {
       return this.profileList
-        .filter(profile => {
-          return !this.addedProfiles.includes(profile._id)
+        .filter((profile) => {
+          return !this.addedProfiles.includes(profile._id);
         })
-        .map(profile => profile._id)
-        .sort()
-    }
+        .map((profile) => profile._id)
+        .sort();
+    },
   },
   mounted() {
-    return this.fetchProfileList()
+    return this.fetchProfileList();
   },
   methods: {
     fetchProfileList() {
-      return this.wrapper.performSearchProfiles().then(result => {
-        result.documents.forEach(profile => {
-          this.profileList.push(profile)
-        })
-      })
+      return this.wrapper.performSearchProfiles().then((result) => {
+        result.documents.forEach((profile) => {
+          this.profileList.push(profile);
+        });
+      });
     },
     onProfileSelected(profile) {
       if (!profile) {
-        return
+        return;
       }
-      this.$emit('selected-profile', profile)
-      this.selectedProfiled = 0
+      this.$emit('selected-profile', profile);
+      this.selectedProfiled = 0;
     },
     removeProfile(profile) {
-      this.$emit('remove-profile', profile)
-    }
-  }
-}
+      this.$emit('remove-profile', profile);
+    },
+  },
+};
 </script>
 
 <style type="text/css" scoped>

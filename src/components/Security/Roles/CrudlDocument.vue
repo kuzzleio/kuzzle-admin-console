@@ -11,10 +11,7 @@
     <div class="card-panel card-body">
       <div v-show="!documents.length" class="row valign-center empty-set">
         <div class="col s2 offset-s1">
-          <i
-            class="fa fa-6x fa-search grey-text text-lighten-1"
-            aria-hidden="true"
-          />
+          <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true" />
         </div>
         <div class="col s12">
           <p>
@@ -26,14 +23,8 @@
 
       <div v-if="documents.length" class="row actions">
         <div class="col s8">
-          <button
-            class="btn btn-small waves-effect waves-light tertiary"
-            @click="dispatchToggle"
-          >
-            <i
-              class="fa left"
-              :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
-            />
+          <button class="btn btn-small waves-effect waves-light tertiary" @click="dispatchToggle">
+            <i class="fa left" :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'" />
             Toggle all
           </button>
 
@@ -42,9 +33,7 @@
             :class="!displayCreate ? 'disabled' : ''"
             :disabled="!displayCreate"
             :title="
-              displayCreate
-                ? ''
-                : 'You are not allowed to create a document in this collection'
+              displayCreate ? '' : 'You are not allowed to create a document in this collection'
             "
             @click.prevent="create"
           >
@@ -56,9 +45,7 @@
             class="btn btn-small waves-effect waves-light"
             :class="displayBulkDelete ? 'red-color' : 'disabled'"
             :disabled="!displayBulkDelete"
-            :title="
-              displayBulkDelete ? '' : 'You need to select at least one element'
-            "
+            :title="displayBulkDelete ? '' : 'You need to select at least one element'"
             @click="deleteBulk"
           >
             <i class="fa fa-minus-circle left" />
@@ -87,12 +74,7 @@
       </div>
     </div>
 
-    <modal
-      id="bulk-delete"
-      :is-open="bulkDeleteIsOpen"
-      :close="close"
-      :loading="isLoading"
-    >
+    <modal id="bulk-delete" :is-open="bulkDeleteIsOpen" :close="close" :loading="isLoading">
       <h4>Document deletion</h4>
       <p>Do you really want to delete {{ lengthDocument }} documents?</p>
 
@@ -104,18 +86,11 @@
         >
           I'm sure!
         </button>
-        <button href="#" class="btn-flat" @click.prevent="close">
-          Cancel
-        </button>
+        <button href="#" class="btn-flat" @click.prevent="close">Cancel</button>
       </span>
     </modal>
 
-    <modal
-      id="single-delete"
-      :is-open="singleDeleteIsOpen"
-      :close="close"
-      :loading="isLoading"
-    >
+    <modal id="single-delete" :is-open="singleDeleteIsOpen" :close="close" :loading="isLoading">
       <h4>Delete element</h4>
       <p>Do you really want to delete {{ documentIdToDelete }}?</p>
 
@@ -126,51 +101,45 @@
         >
           I'm sure!
         </button>
-        <button class="btn-flat" @click.prevent="close">
-          Cancel
-        </button>
+        <button class="btn-flat" @click.prevent="close">Cancel</button>
       </span>
     </modal>
   </div>
 </template>
 
 <script>
-import {
-  formatFromBasicSearch,
-  ACTIVE_BASIC,
-  NO_ACTIVE
-} from '@/services/filterManager'
+import Modal from '../../Materialize/Modal.vue';
+import Pagination from '../../Materialize/Pagination.vue';
+import { formatFromBasicSearch, ACTIVE_BASIC, NO_ACTIVE } from '@/services/filterManager';
 
-import Filters from './Filters.vue'
-import Pagination from '../../Materialize/Pagination.vue'
-import Modal from '../../Materialize/Modal.vue'
+import Filters from './Filters.vue';
 
 export default {
   name: 'CrudlDocument',
   components: {
     Pagination,
     Modal,
-    Filters
+    Filters,
   },
   props: {
     documents: Array,
     displayBulkDelete: Boolean,
     displayCreate: {
       type: Boolean,
-      default: false
+      default: false,
     },
     allChecked: Boolean,
     totalDocuments: Number,
     lengthDocument: {
       type: Number,
-      default: 0
+      default: 0,
     },
     selectedDocuments: Array,
     paginationFrom: Number,
     paginationSize: Number,
     currentFilter: Object,
     documentToDelete: String,
-    performDelete: Function
+    performDelete: Function,
   },
   data() {
     return {
@@ -178,84 +147,84 @@ export default {
       documentIdToDelete: '',
       singleDeleteIsOpen: false,
       bulkDeleteIsOpen: false,
-      isLoading: false
-    }
+      isLoading: false,
+    };
   },
   watch: {
     documentToDelete(val) {
-      this.documentIdToDelete = val
-      this.singleDeleteIsOpen = true
-    }
+      this.documentIdToDelete = val;
+      this.singleDeleteIsOpen = true;
+    },
   },
   methods: {
     create() {
-      this.$emit('create-clicked')
+      this.$emit('create-clicked');
     },
     changePage(from) {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
-          from
-        })
-      )
+          from,
+        }),
+      );
     },
     onBasicFilterUpdated(filter) {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_BASIC : NO_ACTIVE,
           basic: filter,
-          from: 0
-        })
-      )
+          from: 0,
+        }),
+      );
     },
     confirmBulkDelete() {
-      this.isLoading = true
+      this.isLoading = true;
       this.performDelete(this.selectedDocuments)
         .then(() => {
-          this.close()
-          this.refreshSearch()
-          this.isLoading = false
-          return null
+          this.close();
+          this.refreshSearch();
+          this.isLoading = false;
+          return null;
         })
-        .catch(e => {
-          this.$store.direct.commit.toaster.setToast({ text: e.message })
-        })
+        .catch((e) => {
+          this.$store.direct.commit.toaster.setToast({ text: e.message });
+        });
     },
     confirmSingleDelete(id) {
       this.performDelete([id])
         .then(() => {
-          this.close()
-          this.refreshSearch()
-          return null
+          this.close();
+          this.refreshSearch();
+          return null;
         })
-        .catch(e => {
-          this.$store.direct.commit.toaster.setToast({ text: e.message })
-        })
+        .catch((e) => {
+          this.$store.direct.commit.toaster.setToast({ text: e.message });
+        });
     },
     onFiltersUpdated(newFilters) {
-      this.$emit('filters-updated', newFilters)
+      this.$emit('filters-updated', newFilters);
     },
     refreshSearch() {
       // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
       // https://github.com/vuejs/vue-router/issues/296
       if (parseInt(this.$route.query.from) === 0) {
-        this.$emit('crudl-refresh-search')
+        this.$emit('crudl-refresh-search');
       } else {
-        this.$router.push({ query: { ...this.$route.query, from: 0 } })
+        this.$router.push({ query: { ...this.$route.query, from: 0 } });
       }
     },
     dispatchToggle() {
-      this.$emit('toggle-all')
+      this.$emit('toggle-all');
     },
     deleteBulk() {
-      this.bulkDeleteIsOpen = true
+      this.bulkDeleteIsOpen = true;
     },
     close() {
-      this.singleDeleteIsOpen = false
-      this.bulkDeleteIsOpen = false
-      this.documentIdToDelete = []
-    }
-  }
-}
+      this.singleDeleteIsOpen = false;
+      this.bulkDeleteIsOpen = false;
+      this.documentIdToDelete = [];
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

@@ -11,6 +11,12 @@
   </b-alert>
 </template>
 
+<script>
+export default {
+  name: 'SecurityNotice',
+};
+</script>
+
 <style lang="scss" rel="stylesheet/scss" scoped>
 @use '@/assets/styles/variables.scss';
 
@@ -18,9 +24,3 @@
   max-width: variables.$container-width;
 }
 </style>
-
-<script>
-export default {
-  name: 'SecurityNotice'
-}
-</script>

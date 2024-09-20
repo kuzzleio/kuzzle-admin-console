@@ -34,14 +34,8 @@
     <!-- Actions -->
     <div class="row">
       <div class="col s12">
-        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel"
-          >Cancel</a
-        >
-        <button
-          type="submit"
-          class="btn primary waves-effect waves-light"
-          @click.prevent="submit"
-        >
+        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
+        <button type="submit" class="btn primary waves-effect waves-light" @click.prevent="submit">
           Save
         </button>
       </div>
@@ -54,81 +48,82 @@ import {
   flattenObjectMapping,
   getDefaultSchemaForType,
   flattenObjectSchema,
-  formatSchema
-} from '@/services/collectionHelper'
-import FormLine from './FormLine.vue'
+  formatSchema,
+} from '@/services/collectionHelper';
+
+import FormLine from './FormLine.vue';
 
 export default {
   name: 'SchemaForm',
   components: {
-    FormLine
+    FormLine,
   },
   props: {
     mapping: Object,
     currentStep: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       schema: {},
-      allowForm: true
-    }
+      allowForm: true,
+    };
   },
   computed: {
     flattenMapping() {
-      return flattenObjectMapping(this.mapping)
+      return flattenObjectMapping(this.mapping);
     },
     flattenSchema() {
-      return flattenObjectSchema(this.schema)
+      return flattenObjectSchema(this.schema);
     },
     flattenSchemaWithType() {
-      let schema = {}
+      const schema = {};
 
-      Object.keys(this.flattenMapping).forEach(attribute => {
+      Object.keys(this.flattenMapping).forEach((attribute) => {
         if (this.flattenSchema && this.flattenSchema[attribute]) {
-          schema[attribute] = { ...this.flattenSchema[attribute] }
+          schema[attribute] = { ...this.flattenSchema[attribute] };
         } else {
           schema[attribute] = {
-            ...getDefaultSchemaForType(this.flattenMapping[attribute])
-          }
+            ...getDefaultSchemaForType(this.flattenMapping[attribute]),
+          };
         }
-      })
+      });
 
-      return schema
+      return schema;
     },
     gatherData() {
       return {
         schema: this.schema,
-        allowForm: this.allowForm
-      }
-    }
+        allowForm: this.allowForm,
+      };
+    },
   },
   watch: {
     currentStep() {
-      this.$emit('change-step', this.gatherData)
-    }
+      this.$emit('change-step', this.gatherData);
+    },
   },
   mounted() {
-    this.schema = this.flattenSchemaWithType
+    this.schema = this.flattenSchemaWithType;
   },
   methods: {
     next() {
-      this.$emit('next', this.gatherData)
+      this.$emit('next', this.gatherData);
     },
     cancel() {
-      this.$emit('cancel')
+      this.$emit('cancel');
     },
     changeAllowForm(e) {
-      this.allowForm = e.target.checked
+      this.allowForm = e.target.checked;
     },
     changeSchema(event) {
       this.schema = formatSchema({
         ...this.schema,
-        [event.name]: event.element
-      })
-    }
-  }
-}
+        [event.name]: event.element,
+      });
+    },
+  },
+};
 </script>

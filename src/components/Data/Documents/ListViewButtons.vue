@@ -42,42 +42,42 @@ export default {
     activeView: {
       type: String,
       required: false,
-      default: 'list'
+      default: 'list',
     },
     boxesEnabled: {
       type: Boolean,
       required: false,
-      default: false
+      default: false,
     },
     mapEnabled: {
       type: Boolean,
       required: false,
-      default: false
+      default: false,
     },
     timeSeriesEnabled: {
       type: Boolean,
       required: false,
-      default: true
-    }
+      default: true,
+    },
   },
   methods: {
     onBoxesClicked() {
       if (this.boxesEnabled) {
-        this.$emit('boxes')
+        this.$emit('boxes');
       }
     },
     onMapClicked() {
       if (this.mapEnabled) {
-        this.$emit('map')
+        this.$emit('map');
       }
     },
     onTimeSeriesClicked() {
       if (this.timeSeriesEnabled) {
-        this.$emit('time-series')
+        this.$emit('time-series');
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

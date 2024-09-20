@@ -13,6 +13,13 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'PageNotAllowed',
+  components: {},
+};
+</script>
+
 <style lang="scss" scoped>
 .PageNotAllowed {
   height: 100%;
@@ -21,10 +28,3 @@
   justify-content: center;
 }
 </style>
-
-<script>
-export default {
-  name: 'PageNotAllowed',
-  components: {}
-}
-</script>

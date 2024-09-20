@@ -19,9 +19,9 @@
 export default {
   name: 'NewDocumentsBadge',
   props: {
-    hasNewDocuments: Boolean
-  }
-}
+    hasNewDocuments: Boolean,
+  },
+};
 </script>
 
 <style></style>
