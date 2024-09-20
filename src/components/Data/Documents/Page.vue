@@ -254,6 +254,7 @@ import {
   saveSettingsForCollection,
 } from '@/services/localSettings';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
+import { KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
 import { truncateName } from '@/utils';
 
 import Filters from '@/components/Common/Filters/Filters.vue';
@@ -402,11 +403,15 @@ export default {
         }));
     },
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName);
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
+      ](this.indexName);
     },
     collection() {
       return this.index
-        ? this.$store.direct.getters.index.getOneCollection(this.index, this.collectionName)
+        ? this.$store.getters[
+            `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
+          ](this.index, this.collectionName)
         : null;
     },
     collectionMapping() {

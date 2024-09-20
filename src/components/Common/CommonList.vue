@@ -53,6 +53,7 @@ import ProfileItem from '../Security/Profiles/ProfileItem.vue';
 import RoleItem from '../Security/Roles/RoleItem.vue';
 import UserItem from '../Security/Users/UserItem.vue';
 import * as filterManager from '@/services/filterManager';
+import { KToasterMutationsTypes, StoreNamespaceTypes } from '@/store';
 
 import CrudlDocument from './CrudlDocument.vue';
 
@@ -161,7 +162,7 @@ export default {
         filterManager.save(newFilters, this.$router, this.index, this.collection);
         filterManager.addNewHistoryItemAndSave(newFilters, this.index, this.collection);
       } catch (error) {
-        this.$store.direct.commit.toaster.setToast({
+        this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
           text: 'An error occurred while updating filters: <br />' + error.message,
         });
       }
@@ -195,7 +196,7 @@ export default {
           this.totalDocuments = res.total;
         })
         .catch((e) => {
-          this.$store.direct.commit.toaster.setToast({
+          this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
             text: 'An error occurred while performing search: <br />' + e.message,
           });
         });

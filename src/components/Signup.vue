@@ -125,6 +125,13 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import {
+  KAuthActionsTypes,
+  KAuthMutationsTypes,
+  KKuzzleActionsTypes,
+  StoreNamespaceTypes,
+} from '@/store';
+
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
 
 export default {
@@ -176,8 +183,14 @@ export default {
             },
           },
         });
-        this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null);
-        this.$store.direct.commit.auth.setAdminExists(true);
+        this.$store.dispatch(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT}`,
+          null,
+        );
+        this.$store.commit(
+          `${StoreNamespaceTypes.AUTH}/${KAuthMutationsTypes.SET_ADMIN_EXISTS}`,
+          true,
+        );
         this.$router.push({ name: 'Login' });
       } catch (err) {
         if (
@@ -201,8 +214,8 @@ export default {
     },
     loginAsGuest() {
       this.error = null;
-      this.$store.direct.dispatch.auth
-        .setSession('anonymous')
+      this.$store
+        .dispatch(`${StoreNamespaceTypes.Auth}/${KAuthActionsTypes.SET_SESSION}`, 'anonymous')
         .then(() => {
           this.$router.go({ name: 'Data' });
         })

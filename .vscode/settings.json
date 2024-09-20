@@ -2,6 +2,7 @@
   "editor.formatOnSave": false,
   "vetur.format.defaultFormatter.html": "prettier",
   "vetur.format.defaultFormatter.js": "prettier-eslint",
+  "eslint.enable": false,
   "eslint.validate": [
     "javascript",
     "javascriptreact",

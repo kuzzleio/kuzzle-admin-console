@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { KIndexActionsTypes, StoreNamespaceTypes } from '@/store';
 import { truncateName } from '@/utils';
 
 export default {
@@ -90,10 +91,13 @@ export default {
       }
 
       try {
-        await this.$store.direct.dispatch.index.deleteCollection({
-          index: this.index,
-          collection: this.collection,
-        });
+        this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.DELETE_COLLECTION}`,
+          {
+            index: this.index,
+            collection: this.collection,
+          },
+        );
 
         this.onDeleteSuccess();
       } catch (err) {

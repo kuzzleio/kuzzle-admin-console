@@ -7,7 +7,8 @@ import './plugins/logger';
 import VueFormGenerator from 'vue-form-generator';
 
 import 'vue-form-generator/dist/vfg.css';
-import store from './vuex/store';
+import { createStore } from './services/createStore';
+import { KKuzzleGettersTypes, StoreNamespaceTypes } from './store';
 
 import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue';
 import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue';
@@ -17,14 +18,15 @@ import App from './App.vue';
 
 Reflect.defineProperty(window, 'kuzzle', {
   get() {
-    return store.getters.kuzzle.$kuzzle;
+    return this.$store.getters[`${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.$KUZZLE}`];
   },
 });
 
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
-const router = createRoutes(Vue.prototype.$log);
+const store = createStore();
+const router = createRoutes(Vue.prototype.$log, store);
 
 Vue.component('FieldJsonFormInput', JsonFormInput);
 Vue.component('FieldDateTimeFormInput', DateTimeFormInput);
@@ -49,6 +51,6 @@ Vue.use(VueFormGenerator);
 new Vue({
   el: '#app',
   router,
-  store: store.original,
+  store,
   render: (h) => h(App),
 });

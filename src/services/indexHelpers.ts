@@ -1,4 +1,4 @@
-import type { Index } from '@/vuex/modules/index/types';
+import type { Index } from '@/store';
 
 export const filterIndexesByKeyword = (indexes: Index[], word: string) => {
   if (!word || word === '') {

@@ -208,21 +208,6 @@ export default {
     isCollectionActive(indexName, collectionName) {
       return this.browsedIndexName === indexName && this.browsedCollectionName === collectionName;
     },
-    removeRealtimeCollection(indexName, collectionName) {
-      this.$store.direct.dispatch.index.removeRealtimeCollection({
-        index: indexName,
-        collection: collectionName,
-      });
-      if (
-        this.$route.params.index === indexName &&
-        this.$route.params.collection === collectionName
-      ) {
-        this.$router.push({
-          name: 'Indexes',
-          params: { index: indexName },
-        });
-      }
-    },
   },
 };
 </script>

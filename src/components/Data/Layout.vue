@@ -32,6 +32,7 @@
 import { Multipane, MultipaneResizer } from 'vue-multipane';
 import { mapGetters } from 'vuex';
 
+import { KIndexActionsTypes, KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
 import { setPersistedItem, getPersistedItem } from './itemsStorage';
 
 import Treeview from '@/components/Data/Leftnav/Treeview.vue';
@@ -101,7 +102,9 @@ export default {
     },
     async fetchIndexList() {
       try {
-        await this.$store.direct.dispatch.index.fetchIndexList();
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.FETCH_INDEX_LIST}`,
+        );
       } catch (error) {
         this.$log.error(error);
         this.$bvToast.toast('The complete error has been printed to the console.', {
@@ -116,14 +119,19 @@ export default {
     },
     async fetchCollectionList() {
       try {
-        const index = this.$store.direct.getters.index.getOneIndex(this.indexName);
+        const index = this.$store.getters[
+          `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
+        ](this.indexName);
 
         if (!index) {
           this.handleDataNotFound();
           return;
         }
 
-        await this.$store.direct.dispatch.index.fetchCollectionList(index);
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.FETCH_COLLECTION_LIST}`,
+          index,
+        );
       } catch (error) {
         this.$log.error(error);
         this.$bvToast.toast('The complete error has been printed to the console.', {
@@ -138,27 +146,31 @@ export default {
     },
     async fetchCollectionMapping() {
       try {
-        const index = this.$store.direct.getters.index.getOneIndex(this.indexName);
+        const index = this.$store.getters[
+          `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
+        ](this.indexName);
 
         if (!index) {
           this.handleDataNotFound();
           return;
         }
 
-        const collection = this.$store.direct.getters.index.getOneCollection(
-          index,
-          this.collectionName,
-        );
+        const collection = this.$store.getters[
+          `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
+        ](index, this.collectionName);
 
         if (!collection) {
           this.handleDataNotFound();
           return;
         }
 
-        await this.$store.direct.dispatch.index.fetchCollectionMapping({
-          index,
-          collection,
-        });
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.FETCH_COLLECTION_MAPPING}`,
+          {
+            index,
+            collection,
+          },
+        );
       } catch (error) {
         this.$log.error(error);
         this.$bvToast.toast('The complete error has been printed to the console.', {

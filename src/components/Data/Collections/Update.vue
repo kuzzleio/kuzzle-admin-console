@@ -22,6 +22,7 @@ import { omit } from 'lodash';
 import { mapGetters } from 'vuex';
 
 import PageNotAllowed from '../../Common/PageNotAllowed.vue';
+import { KIndexActionsTypes, KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
 
 import CreateOrUpdate from './CreateOrUpdate.vue';
 
@@ -47,10 +48,14 @@ export default {
       return this.canEditCollection(this.indexName, this.collectionName);
     },
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName);
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
+      ](this.indexName);
     },
     collection() {
-      return this.$store.direct.getters.index.getOneCollection(this.index, this.collectionName);
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
+      ](this.index, this.collectionName);
     },
     fullMappings() {
       const mappings = {
@@ -61,18 +66,23 @@ export default {
       return mappings;
     },
     loading() {
-      return this.$store.direct.getters.index.loadingCollections(this.index.name);
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.LOADING_COLLECTIONS}`
+      ](this.index.name);
     },
   },
   methods: {
     async update(payload) {
       this.error = '';
       try {
-        await this.$store.direct.dispatch.index.updateCollection({
-          index: this.index,
-          name: payload.name,
-          mapping: payload.mapping,
-        });
+        this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.UPDATE_COLLECTION}`,
+          {
+            index: this.index,
+            name: payload.name,
+            mapping: payload.mapping,
+          },
+        );
         this.$router.push({
           name: 'Collections',
           params: { indexName: this.index.name },

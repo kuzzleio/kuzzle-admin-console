@@ -47,6 +47,7 @@
 import { mapGetters } from 'vuex';
 
 import Focus from '@/directives/focus.directive';
+import { KAuthActionsTypes, StoreNamespaceTypes } from '@/store';
 
 export default {
   name: 'LoginForm',
@@ -73,7 +74,7 @@ export default {
     async login() {
       this.error = '';
       try {
-        await this.$store.direct.dispatch.auth.doLogin({
+        await this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.DO_LOGIN}`, {
           username: this.username,
           password: this.password,
         });
@@ -101,7 +102,10 @@ export default {
       this.error = '';
       this.$kuzzle.jwt = null;
       try {
-        await this.$store.direct.dispatch.auth.setSession('anonymous');
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.SET_SESSION}`,
+          'anonymous',
+        );
         await this.onLogin();
       } catch (error) {
         this.error = error.message;

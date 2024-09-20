@@ -39,6 +39,7 @@
 import { mapGetters } from 'vuex';
 
 import { filterIndexesByKeyword } from '@/services/indexHelpers';
+import { KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
 
 import IndexBranch from './IndexBranch.vue';
 
@@ -64,10 +65,12 @@ export default {
       );
     },
     isLoading() {
-      return this.$store.direct.getters.index.loadingIndexes;
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.LOADING_INDEXES}`
+      ];
     },
     indexes() {
-      return this.$store.direct.getters.index.indexes;
+      return this.$store.getters[`${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.INDEXES}`];
     },
   },
 };

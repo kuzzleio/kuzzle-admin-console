@@ -38,6 +38,12 @@
 
 <script>
 import Focus from '@/directives/focus.directive';
+import {
+  KAuthActionsTypes,
+  KKuzzleActionsTypes,
+  KKuzzleGettersTypes,
+  StoreNamespaceTypes,
+} from '@/store';
 
 export default {
   name: 'EnvironmentDeleteModal',
@@ -71,13 +77,20 @@ export default {
     },
     async confirmDeleteEnvironment() {
       if (this.confirmationOk) {
-        if (this.$store.direct.state.kuzzle.currentId === this.environmentId) {
-          await this.$store.direct.dispatch.auth.doLogout();
+        if (this.$store.state.kuzzle.currentId === this.environmentId) {
+          await this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.DO_LOGOUT}`);
         }
 
-        this.$store.direct.dispatch.kuzzle.deleteEnvironment(this.environmentId);
+        this.$store.dispatch(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.DELETE_ENVIRONMENT}`,
+          this.environmentId,
+        );
 
-        if (this.$store.direct.getters.kuzzle.hasEnvironment) {
+        if (
+          this.$store.getters[
+            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.HAS_ENVIRONMENT}`
+          ]
+        ) {
           this.$router.push({ name: 'SelectEnvironment' });
         } else {
           this.$router.push({ name: 'CreateEnvironment' });

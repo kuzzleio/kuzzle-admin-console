@@ -19,7 +19,7 @@
       <template v-else> Select a connection </template>
     </template>
     <b-dropdown-item
-      v-for="(env, index) in sortObject($store.direct.getters.kuzzle.environments)"
+      v-for="(env, index) in sortObject(environments)"
       :key="env.name"
       class="EnvironmentSwitch-env environment"
       :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
@@ -60,6 +60,7 @@
 import { mapValues, omit } from 'lodash';
 import { mapGetters } from 'vuex';
 
+import { KKuzzleActionsTypes, KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
 import { formatForDom, sortObject } from '@/utils';
 import { isValidEnvironment } from '@/validators';
 
@@ -92,17 +93,28 @@ export default {
 
       return URL.createObjectURL(blob);
     },
+    environments() {
+      return this.$store.getters[
+        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.ENVIRONMENTS}`
+      ];
+    },
   },
   methods: {
     isValidEnvironment,
     async switchEnv(id) {
       try {
-        await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id);
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.SET_CURRENT_ENVIRONMENT}`,
+          id,
+        );
         this.$emit('environmentSwitched');
       } catch (error) {
         this.$log.error(error);
         if (error.code) {
-          this.$store.direct.dispatch.kuzzle.onConnectionError(error);
+          await this.$store.dispatch(
+            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.ON_CONNECTION_ERROR}`,
+            error,
+          );
         }
       }
     },

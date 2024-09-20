@@ -228,6 +228,7 @@ import { mapGetters } from 'vuex';
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { flattenObjectMapping } from '@/services/collectionHelper';
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
+import { KAuthActionsTypes, StoreNamespaceTypes } from '@/store';
 import { truncateName } from '@/utils';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
@@ -375,7 +376,9 @@ export default {
   },
   methods: {
     async fetchSingleUseToken() {
-      this.singleUseToken = await this.$store.direct.dispatch.auth.createSingleUseToken();
+      this.singleUseToken = await this.$store.dispatch(
+        `${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.CREATE_SINGLE_USE_TOKEN}`,
+      );
     },
     clearSingleUseToken() {
       this.singleUseToken = null;

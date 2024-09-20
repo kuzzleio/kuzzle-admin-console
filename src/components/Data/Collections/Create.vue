@@ -15,6 +15,7 @@
 import { mapGetters } from 'vuex';
 
 import PageNotAllowed from '../../Common/PageNotAllowed.vue';
+import { KIndexActionsTypes, KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
 
 import CreateOrUpdate from './CreateOrUpdate.vue';
 
@@ -33,17 +34,22 @@ export default {
       return this.canCreateCollection(this.index.name);
     },
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName);
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
+      ](this.indexName);
     },
   },
   methods: {
     async create(payload) {
       try {
-        await this.$store.direct.dispatch.index.createCollection({
-          index: this.index,
-          name: payload.name,
-          mapping: payload.mapping,
-        });
+        this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.CREATE_COLLECTION}`,
+          {
+            index: this.index,
+            name: payload.name,
+            mapping: payload.mapping,
+          },
+        );
 
         this.$router.push({
           name: 'Collections',

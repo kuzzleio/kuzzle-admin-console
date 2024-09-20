@@ -65,6 +65,7 @@ import { mapGetters } from 'vuex';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
+import { KAuthGettersTypes, StoreNamespaceTypes } from '@/store';
 
 import RoleList from './List.vue';
 
@@ -150,10 +151,12 @@ export default {
     ...mapGetters('auth', ['canSearchRole', 'canCreateRole']),
     displayRevokeAnonymous() {
       return (
-        this.$store.direct.getters.auth.adminAlreadyExists &&
-        this.$store.direct.getters.auth.canEditRole &&
-        this.$store.direct.getters.auth.canManageRoles &&
-        this.$store.direct.getters.auth.user.id !== -1
+        this.$store.getters[
+          `${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.ADMIN_ALREADY_EXISTS}`
+        ] &&
+        this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.CAN_EDIT_ROLE}`] &&
+        this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.CAN_MANAGE_ROLES}`] &&
+        this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.USER}`].id !== -1
       );
     },
   },

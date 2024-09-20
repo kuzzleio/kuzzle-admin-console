@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import { KKuzzleActionsTypes, KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+
 export default {
   name: 'ModalImport',
   components: {},
@@ -90,15 +92,18 @@ export default {
     },
     async importEnv() {
       let mustSwitch = false;
-      if (Object.keys(this.$store.direct.state.kuzzle.environments).length === 0) {
+      if (Object.keys(this.$store.state.kuzzle.environments).length === 0) {
         mustSwitch = true;
       }
       for (const name in this.env) {
         try {
-          this.$store.direct.dispatch.kuzzle.createEnvironment({
-            id: name,
-            environment: this.env[name],
-          });
+          this.$store.dispatch(
+            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.CREATE_ENVIRONMENT}`,
+            {
+              id: name,
+              environment: this.env[name],
+            },
+          );
         } catch (e) {
           this.$log.error(e);
           this.errors.push(e);
@@ -106,8 +111,12 @@ export default {
       }
       if (!this.errors.length) {
         this.$log.debug(`Finished import must switch: ${mustSwitch}, env:`);
-        this.$log.debug(this.$store.direct.state.kuzzle.environments);
-        if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
+        this.$log.debug(this.$store.state.kuzzle.environments);
+        if (
+          !this.$store.getters[
+            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
+          ]
+        ) {
           this.$router.push({ name: 'SelectEnvironment' });
         }
         this.$bvModal.hide(this.id);

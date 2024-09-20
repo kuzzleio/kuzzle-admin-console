@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    ".eslintrc.cjs",
+    "vite.config.ts",
+    "scripts/packScript.mjs",
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "tests/**/*.ts"
+  ]
+}

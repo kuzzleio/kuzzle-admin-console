@@ -53,7 +53,7 @@
                   </b-button>
 
                   <b-button
-                    v-if="$store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !== 1"
+                    v-if="currentEnvironment.backendMajorVersion !== 1"
                     variant="outline-danger"
                     :data-cy="`CollectionList-bulkDelete--btn`"
                     :disabled="!bulkDeleteEnabled"
@@ -195,10 +195,7 @@
                 ><i class="fa fa-pencil-alt"
               /></b-button>
               <b-button
-                v-if="
-                  $store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !== 1 &&
-                  !row.item.isRealtime()
-                "
+                v-if="currentEnvironment.backendMajorVersion !== 1 && !row.item.isRealtime()"
                 class="mx-1"
                 variant="link"
                 title="Delete collection"
@@ -240,6 +237,12 @@ import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
 import DeleteIndexModal from '../Indexes/DeleteIndexModal.vue';
 import IndexDropdownAction from '../Indexes/DropdownActions.vue';
+import {
+  KIndexActionsTypes,
+  KIndexGettersTypes,
+  KKuzzleGettersTypes,
+  StoreNamespaceTypes,
+} from '@/store';
 import { truncateName } from '@/utils';
 
 import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal.vue';
@@ -274,7 +277,9 @@ export default {
     ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['canSearchCollection', 'canCreateCollection', 'canEditCollection']),
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName);
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
+      ](this.indexName);
     },
     collections() {
       return this.index ? this.index.collections : [];
@@ -316,6 +321,11 @@ export default {
     deleteIndexModalId() {
       return `delete-index-${this.indexName}`;
     },
+    currentEnvironment() {
+      return this.$store.getters[
+        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
+      ];
+    },
   },
   async created() {
     this.updateFilteredCollections(this.collections);
@@ -328,7 +338,10 @@ export default {
     },
     async onDeleteIndexConfirm() {
       try {
-        await this.$store.direct.dispatch.index.deleteIndex(this.index);
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.DELETE_INDEX}`,
+          this.index,
+        );
         this.$bvModal.hide(this.deleteIndexModalId);
         this.$router.push({ name: 'Indexes', params: {} });
       } catch (err) {

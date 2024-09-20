@@ -40,6 +40,13 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import {
+  KAuthGettersTypes,
+  KRoutingGettersTypes,
+  KRoutingMutationsTypes,
+  StoreNamespaceTypes,
+} from '@/store';
+
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
 import LoginForm from './Common/Login/Form.vue';
 
@@ -57,7 +64,9 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['currentEnvironment']),
     displayNoAdminWarning() {
-      return !this.$store.direct.getters.auth.adminAlreadyExists;
+      return !this.$store.getters[
+        `${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.ADMIN_ALREADY_EXISTS}`
+      ];
     },
   },
   methods: {
@@ -68,9 +77,20 @@ export default {
       // see src/components/Materialize/Modale.vue#62
       window.document.body.style.overflow = 'visible';
 
-      if (this.$store.getters.routeBeforeRedirect) {
-        this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined);
-        this.$router.push({ name: this.$store.getters.routeBeforeRedirect });
+      if (
+        this.$store.getters[
+          `${StoreNamespaceTypes.ROUTING}/${KRoutingGettersTypes.ROUTE_BEFORE_REDIRECT}`
+        ]
+      ) {
+        this.$store.commit(
+          `${StoreNamespaceTypes.ROUTING}/${KRoutingMutationsTypes.SET_ROUTE_BEFORE_REDIRECT}`,
+          undefined,
+        );
+        this.$router.push({
+          name: this.$store.getters[
+            `${StoreNamespaceTypes.ROUTING}/${KRoutingGettersTypes.ROUTE_BEFORE_REDIRECT}`
+          ],
+        });
       } else {
         this.$router.push('/');
       }

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import KeplerCompanion from 'kepler-companion';
 import VueRouter from 'vue-router';
+import type { Store } from 'vuex';
 
 import PageNotFound from '../components/404.vue';
 import ApiAction from '../components/ApiAction.vue';
@@ -14,31 +15,47 @@ import ResetPassword from '../components/ResetPassword.vue';
 import SecurityLayout from '../components/Security/Layout.vue';
 import Signup from '../components/Signup.vue';
 import telemetryCookies from '../services/telemetryCookies';
-import store, { moduleActionContext } from '../vuex/store';
+import {
+  KKuzzleActionsTypes,
+  KKuzzleGettersTypes,
+  type RootState,
+  StoreNamespaceTypes,
+} from '@/store';
 import DataSubRoutes from './children/data';
 import SecuritySubRoutes from './children/security';
 
 Vue.use(VueRouter);
 
-export default function createRoutes(log) {
+export default function createRoutes(log, store: Store<RootState>) {
   const environmentsGuard = async (from, to, next) => {
     log.debug('Router:EnvironmentsGuard');
+
     try {
-      store.dispatch.kuzzle.loadEnvironments(moduleActionContext);
+      store.dispatch(`${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.LOAD_ENVIRONMENTS}`);
     } catch (error) {
       log.error(
         'Something went wrong while loading the connections. The JSON content saved in the LocalStorage seems to be malformed.',
       );
       log.error(error.message);
     }
-    if (store.getters.kuzzle.hasEnvironment) {
+
+    const hasEnvironment =
+      store.getters[`${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.HAS_ENVIRONMENT}`];
+    const currentEnvironment =
+      store.getters[`${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`];
+    const isCurrentEnvironmentValid =
+      store.getters[
+        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.IS_CURRENT_ENVIRONMENT_VALID}`
+      ];
+
+    if (hasEnvironment) {
       log.debug('Has environments');
 
-      if (!store.getters.kuzzle.currentEnvironment) {
+      if (!currentEnvironment) {
         log.debug('No environment selected');
         return next({ name: 'SelectEnvironment' });
       }
-      if (!store.getters.kuzzle.isCurrentEnvironmentValid) {
+      if (!isCurrentEnvironmentValid) {
         log.debug('Current environment is not valid');
         return next({
           name: 'EditEnvironment',
@@ -59,7 +76,9 @@ export default function createRoutes(log) {
         path: '/create-connection',
         name: 'CreateEnvironment',
         beforeEnter: async (from, to, next) => {
-          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext);
+          await store.dispatch(
+            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.LOAD_ENVIRONMENTS}`,
+          );
           next();
         },
         props: true,
@@ -69,7 +88,9 @@ export default function createRoutes(log) {
         path: '/edit-connection/:id',
         name: 'EditEnvironment',
         beforeEnter: async (from, to, next) => {
-          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext);
+          await store.dispatch(
+            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.LOAD_ENVIRONMENTS}`,
+          );
           next();
         },
         props: (route) => ({
@@ -81,7 +102,9 @@ export default function createRoutes(log) {
         path: '/select-connection',
         name: 'SelectEnvironment',
         beforeEnter: async (from, to, next) => {
-          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext);
+          await store.dispatch(
+            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.LOAD_ENVIRONMENTS}`,
+          );
           next();
         },
         component: SelectEnvironmentPage,

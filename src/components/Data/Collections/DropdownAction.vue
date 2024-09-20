@@ -34,7 +34,7 @@
           Edit collection
         </b-dropdown-item>
         <b-dropdown-item
-          v-if="$store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !== 1"
+          v-if="backendMajorVersion !== 1"
           data-cy="CollectionDropdown-delete"
           @click="onDeleteCollectionClicked"
         >
@@ -69,6 +69,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import { KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+
 import ModalClear from './ModalClear.vue';
 
 export default {
@@ -93,6 +95,11 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['canEditCollection', 'canTruncateCollection']),
+    backendMajorVersion() {
+      return this.$store.getters[
+        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
+      ].backendMajorVersion;
+    },
   },
   methods: {
     onDeleteCollectionClicked() {

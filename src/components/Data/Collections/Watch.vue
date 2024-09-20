@@ -262,6 +262,7 @@ import Notification from '../Realtime/Notification.vue';
 import JsonFormatter from '@/directives/json-formatter.directive';
 import * as filterManager from '@/services/filterManager';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
+import { KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
 import { truncateName } from '@/utils';
 
 import DeleteCollectionModal from './DeleteCollectionModal.vue';
@@ -302,11 +303,15 @@ export default {
     ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['canSubscribe']),
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName);
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
+      ](this.indexName);
     },
     collection() {
       return this.index
-        ? this.$store.direct.getters.index.getOneCollection(this.index, this.collectionName)
+        ? this.$store.getters[
+            `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
+          ](this.index, this.collectionName)
         : null;
     },
     collectionMapping() {

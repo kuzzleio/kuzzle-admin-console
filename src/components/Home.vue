@@ -52,6 +52,13 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import {
+  KAuthActionsTypes,
+  KAuthGettersTypes,
+  KKuzzleActionsTypes,
+  StoreNamespaceTypes,
+} from '@/store';
+
 import LoginForm from './Common/Login/Form.vue';
 import MainMenu from './Common/MainMenu.vue';
 import MainSpinner from './Common/MainSpinner.vue';
@@ -73,10 +80,10 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     tokenValid() {
-      return this.$store.direct.state.auth.tokenValid;
+      return this.$store.state.auth.tokenValid;
     },
     authInitializing() {
-      return this.$store.direct.state.auth.initializing;
+      return this.$store.state.auth.initializing;
     },
   },
   watch: {
@@ -117,21 +124,27 @@ export default {
   },
   methods: {
     hideNoAdminWarning() {
-      this.$store.direct.dispatch.kuzzle.updateEnvironment({
-        id: this.$store.direct.state.kuzzle.currentId,
-        environment: {
-          ...this.currentEnvironment,
-          hideAdminWarning: true,
+      this.$store.dispatch(
+        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.UPDATE_ENVIRONMENT}`,
+        {
+          id: this.$store.state.kuzzle.currentId,
+          environment: {
+            ...this.currentEnvironment,
+            hideAdminWarning: true,
+          },
         },
-      });
+      );
+
       this.$bvToast.hide('no-admin-warning');
     },
     onTokenExpired() {
-      this.$store.direct.dispatch.auth.setSession(null);
+      this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.SET_SESSION}`, null);
     },
     noop() {},
     displayNoAdminWarning() {
-      if (this.$store.direct.getters.auth.adminAlreadyExists) {
+      if (
+        this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.ADMIN_ALREADY_EXISTS}`]
+      ) {
         return;
       }
       if (this.currentEnvironment.hideAdminWarning) {

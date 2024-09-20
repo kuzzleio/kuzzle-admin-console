@@ -1,6 +1,6 @@
 import trim from 'lodash/trim';
 
-import { envColors } from './vuex/modules/kuzzle/store';
+import { ENV_COLORS } from './utils';
 
 export const startsWithSpace = (value) => {
   return value[0] === ' ';
@@ -21,18 +21,15 @@ export const isUppercase = (value) => {
   return /[A-Z]/.test(value);
 };
 export const isValidEnvironment = (env) => {
-  if (
-    !env.name ||
-    !env.host ||
-    !env.port ||
-    !env.backendMajorVersion ||
-    typeof env.port !== 'number' ||
-    env.ssl === undefined ||
-    env.ssl === null ||
-    !env.color ||
-    !envColors.includes(env.color)
-  ) {
-    return false;
-  }
-  return true;
+  return (
+    env !== null &&
+    typeof env.name === 'string' &&
+    typeof env.host === 'string' &&
+    typeof env.backendMajorVersion === 'number' &&
+    typeof env.port === 'number' &&
+    env.ssl !== undefined &&
+    env.ssl !== null &&
+    typeof env.color === 'string' &&
+    ENV_COLORS.includes(env.color)
+  );
 };

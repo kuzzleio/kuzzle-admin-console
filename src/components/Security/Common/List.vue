@@ -55,6 +55,7 @@ import ProfileItem from '../Profiles/ProfileItem.vue';
 import RoleItem from '../Roles/RoleItem.vue';
 import UserItem from '../Users/UserItem.vue';
 import { availableFilters } from '@/services/filterManager';
+import { KToasterMutationsTypes, StoreNamespaceTypes } from '@/store';
 
 import CrudlDocument from './CrudlDocument.vue';
 
@@ -171,7 +172,7 @@ export default {
           this.totalDocuments = res.total;
         })
         .catch((e) => {
-          this.$store.direct.commit.toaster.setToast({
+          this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
             text: 'An error occurred while performing search: <br />' + e.message,
           });
         });

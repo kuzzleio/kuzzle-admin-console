@@ -99,6 +99,7 @@ import { mapGetters } from 'vuex';
 import MainSpinner from '../../Common/MainSpinner.vue';
 import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
+import { KAuthActionsTypes, KAuthGettersTypes, StoreNamespaceTypes } from '@/store';
 import { startsWithSpace, isWhitespace } from '@/validators';
 
 import Basic from './Steps/Basic.vue';
@@ -313,9 +314,15 @@ export default {
             },
             credentials: this.credentials,
           });
-          if (!this.$store.direct.getters.auth.adminAlreadyExists) {
+          if (
+            !this.$store.getters[
+              `${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.ADMIN_ALREADY_EXISTS}`
+            ]
+          ) {
             try {
-              await this.$store.direct.dispatch.auth.checkFirstAdmin();
+              await this.$store.dispatch(
+                `${StoreNamespaceTypes.KUZZLE}/${KAuthActionsTypes.CHECK_FIRST_ADMIN}`,
+              );
             } catch (err) {
               this.$log.error(err);
             }

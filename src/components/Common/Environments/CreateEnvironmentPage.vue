@@ -53,6 +53,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import { KKuzzleActionsTypes, StoreNamespaceTypes } from '@/store';
+
 import CreateEnvironment from './CreateEnvironment.vue';
 
 export default {
@@ -69,7 +71,10 @@ export default {
       if (Object.keys(this.environments).length > 1) {
         this.$router.push({ name: 'SelectEnvironment' });
       } else {
-        await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id);
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.SET_CURRENT_ENVIRONMENT}`,
+          id,
+        );
         this.$router.push('/');
       }
     },

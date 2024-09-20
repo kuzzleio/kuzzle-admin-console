@@ -98,22 +98,26 @@
 </template>
 
 <script>
+import { KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+
 export default {
   name: 'CommonBreadcrumb',
   methods: {
     index() {
       return this.$route.params.indexName
-        ? this.$store.direct.getters.index.getOneIndex(this.$route.params.indexName)
+        ? this.$store.getters[`${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`](
+            this.$route.params.indexName,
+          )
         : undefined;
     },
     isCollectionRealtime() {
       if (!this.index || this.$route.params.collectionName) {
         return false;
       }
-      return this.$store.direct.getters.index.getOneCollection(
-        this.index,
-        this.$route.params.collectionName,
-      ).isRealtime;
+
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
+      ](this.index, this.$route.params.collectionName).isRealtime;
     },
     isRouteActive(routeName) {
       if (Array.isArray(routeName)) {

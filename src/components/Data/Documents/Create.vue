@@ -25,6 +25,8 @@ import get from 'lodash/get';
 import omit from 'lodash/omit';
 import { mapGetters } from 'vuex';
 
+import { KIndexActionsTypes, KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+
 import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';
 import Headline from '@/components/Materialize/Headline.vue';
 import CreateOrUpdate from './Common/CreateOrUpdate.vue';
@@ -50,10 +52,14 @@ export default {
     ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['canCreateDocument']),
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName);
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
+      ](this.indexName);
     },
     collection() {
-      return this.$store.direct.getters.index.getOneCollection(this.index, this.collectionName);
+      return this.$store.getters[
+        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
+      ](this.index, this.collectionName);
     },
     mappingAttributes() {
       return get(this, 'collection.mapping', null)
@@ -110,10 +116,13 @@ export default {
     },
     async fetchCollectionMapping() {
       try {
-        this.$store.direct.dispatch.index.fetchCollectionMapping({
-          index: this.index,
-          collection: this.collection,
-        });
+        this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.FETCH_COLLECTION_MAPPING}`,
+          {
+            index: this.index,
+            collection: this.collection,
+          },
+        );
       } catch (error) {
         this.$log.error(error);
         this.$bvToast.toast('The complete error has been printed to the console.', {

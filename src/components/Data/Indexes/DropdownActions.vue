@@ -32,6 +32,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import { KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+
 export default {
   name: 'IndexDropdownAction',
   props: {
@@ -43,7 +45,9 @@ export default {
   computed: {
     ...mapGetters('auth', ['canDeleteIndex']),
     backendMajorVersion() {
-      return this.$store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion;
+      return this.$store.getters[
+        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
+      ].backendMajorVersion;
     },
   },
   methods: {

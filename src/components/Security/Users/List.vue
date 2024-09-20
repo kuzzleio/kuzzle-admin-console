@@ -349,9 +349,15 @@ export default {
         this.deleteModalIsLoading = false;
         this.$bvModal.hide('modal-delete-users');
         await this.fetchDocuments();
-        if (this.$store.direct.getters.auth.adminAlreadyExists) {
+        if (
+          this.$store.getters[
+            `${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.ADMIN_ALREADY_EXISTS}`
+          ]
+        ) {
           try {
-            await this.$store.direct.dispatch.auth.checkFirstAdmin();
+            await this.$store.dispatch(
+              `${StoreNamespaceTypes.KUZZLE}/${KAuthActionsTypes.CHECK_FIRST_ADMIN}`,
+            );
           } catch (err) {
             this.$log.error(err);
             this.setError(err.message);

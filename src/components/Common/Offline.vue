@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import { KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue';
 
 export default {
@@ -46,7 +48,9 @@ export default {
   },
   computed: {
     currentEnvironment() {
-      return this.$store.direct.getters.kuzzle.currentEnvironment;
+      return this.$store.getters[
+        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
+      ];
     },
     host() {
       return this.currentEnvironment ? this.currentEnvironment.host : '';

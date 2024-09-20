@@ -67,6 +67,7 @@
 import { useVuelidate } from '@vuelidate/core';
 import { not, required } from '@vuelidate/validators';
 
+import { KIndexActionsTypes, StoreNamespaceTypes } from '@/store';
 import { startsWithSpace, isWhitespace, isUppercase } from '@/validators';
 
 function includesInvalidIndexChars(value) {
@@ -131,7 +132,10 @@ export default {
       }
 
       try {
-        await this.$store.direct.dispatch.index.createIndex(this.index);
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.CREATE_INDEX}`,
+          this.index,
+        );
         this.onCreateSuccess();
       } catch (err) {
         this.error = err.message;

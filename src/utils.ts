@@ -1,6 +1,22 @@
 export const antiGlitchOverlayTimeout = 900;
+
 export const LS_ENVIRONMENTS = 'environments';
+export const LS_LAST_ENV = 'lastEnv';
 export const SS_CURRENT_ENV = 'currentEnv';
+
+export const NO_ADMIN_WARNING_HOSTS = ['localhost', '127.0.0.1'];
+
+export const DEFAULT_COLOR = 'darkblue';
+export const ENV_COLORS = [
+  DEFAULT_COLOR,
+  'lightblue',
+  'purple',
+  'green',
+  'orange',
+  'red',
+  'grey',
+  'magenta',
+];
 
 export const formatForDom = (word) => {
   return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-');

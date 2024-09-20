@@ -169,6 +169,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import { KIndexActionsTypes, StoreNamespaceTypes } from '@/store';
+
 import ListNotAllowed from '@/components/Common/ListNotAllowed.vue';
 import Headline from '@/components/Materialize/Headline.vue';
 import BulkDeleteIndexesModal from './BulkDeleteIndexesModal.vue';
@@ -258,7 +260,10 @@ export default {
     },
     async onConfirmDeleteModal() {
       try {
-        await this.$store.direct.dispatch.index.deleteIndex(this.indexToDelete);
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.DELETE_INDEX}`,
+          this.indexToDelete,
+        );
         this.$bvModal.hide(this.deleteIndexModalId);
         await this.refreshIndexes();
       } catch (err) {
@@ -273,7 +278,9 @@ export default {
     },
     async refreshIndexes() {
       try {
-        await this.$store.direct.dispatch.index.fetchIndexList();
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.FETCH_INDEX_LIST}`,
+        );
       } catch (err) {
         this.$log.error(err);
         this.$bvToast.toast('The complete error has been printed to the console.', {

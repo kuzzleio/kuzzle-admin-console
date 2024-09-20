@@ -80,6 +80,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import { KAuthActionsTypes, KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue';
 
 export default {
@@ -111,7 +113,9 @@ export default {
   computed: {
     ...mapGetters('auth', ['hasSecurityRights', 'user']),
     currentEnvironmentColor() {
-      return this.$store.direct.getters.kuzzle.currentEnvironment.color;
+      return this.$store.getters[
+        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
+      ].color;
     },
     currentUserName() {
       if (!this.user) {
@@ -135,7 +139,7 @@ export default {
   methods: {
     async doLogout() {
       try {
-        await this.$store.direct.dispatch.auth.doLogout();
+        await this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.DO_LOGOUT}`);
       } catch (error) {
         this.$log.error(error);
       } finally {

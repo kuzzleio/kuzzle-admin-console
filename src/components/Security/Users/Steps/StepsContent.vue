@@ -32,6 +32,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import { KToasterMutationsTypes, StoreNamespaceTypes } from '@/store';
+
 import Basic from './Basic.vue';
 import CredentialsSelector from './CredentialsSelector.vue';
 import CustomData from './CustomData.vue';
@@ -117,7 +119,9 @@ export default {
       this.loading = false;
       this.updateUser();
     } catch (e) {
-      this.$store.direct.commit.toaster.setToast({ text: e.message });
+      this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
+        text: e.message,
+      });
     }
   },
   methods: {

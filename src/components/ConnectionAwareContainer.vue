@@ -44,6 +44,14 @@
 import { mapGetters } from 'vuex';
 
 import { antiGlitchOverlayTimeout } from '../utils';
+import {
+  KAuthActionsTypes,
+  KAuthGettersTypes,
+  KAuthMutationsTypes,
+  KKuzzleActionsTypes,
+  KKuzzleMutationsTypes,
+  StoreNamespaceTypes,
+} from '@/store';
 
 import OfflineSpinner from './Common/Offline.vue';
 import ErrorPage from './Error/KuzzleErrorPage.vue';
@@ -68,10 +76,10 @@ export default {
       return this.$store.state.kuzzle.errorFromKuzzle;
     },
     online() {
-      return this.$store.direct.state.kuzzle.online;
+      return this.$store.state.kuzzle.online;
     },
     connecting() {
-      return this.$store.direct.state.kuzzle.connecting;
+      return this.$store.state.kuzzle.connecting;
     },
   },
   watch: {
@@ -129,30 +137,48 @@ export default {
         this.$log.error(`ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`);
       });
       this.$kuzzle.addListener('connected', async () => {
-        this.$store.direct.commit.kuzzle.setConnecting(false);
-        this.$store.direct.commit.kuzzle.setOnline(true);
+        this.$store.commit(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_CONNECTING}`,
+          false,
+        );
+        this.$store.commit(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_ONLINE}`,
+          true,
+        );
         this.$log.debug('ConnectionAwareContainer::initializing auth upon connection...');
         try {
-          await this.$store.direct.dispatch.auth.init();
+          await this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.INIT}`);
         } catch (error) {
           this.$log.error(
             `ConnectionAwareContainer:initializing auth: "${error.message}" - code: ${error.code} - id: ${error.id}`,
           );
           if (error.id === 'api.process.incompatible_sdk_version') {
-            return this.$store.direct.dispatch.kuzzle.onConnectionError(error);
+            return this.$store.dispatch(
+              `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.ON_CONNECTION_ERROR}`,
+              error,
+            );
           }
         }
         this.authenticationGuard();
       });
       this.$kuzzle.addListener('reconnected', () => {
-        this.$store.direct.commit.kuzzle.setConnecting(false);
-        this.$store.direct.commit.kuzzle.setOnline(true);
+        this.$store.commit(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_CONNECTING}`,
+          false,
+        );
+        this.$store.commit(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_ONLINE}`,
+          true,
+        );
         this.$log.debug('ConnectionAwareContainer::checking token after reconnection...');
-        this.$store.direct.dispatch.auth.checkToken();
+        this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.CHECK_TOKEN}`);
       });
       this.$kuzzle.addListener('disconnected', () => {
         this.$log.debug('ConnectionAwareContainer::backend went offline...');
-        this.$store.direct.commit.kuzzle.setOnline(false);
+        this.$store.commit(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_ONLINE}`,
+          false,
+        );
       });
     },
     removeListeners() {
@@ -178,12 +204,17 @@ export default {
     },
     async onEnvironmentSwitch() {
       this.$log.debug('ConnectionAwareContainer::environmentSwitched');
-      this.$store.direct.commit.auth.setTokenValid(false);
+      this.$store.commit(
+        `${StoreNamespaceTypes.AUTH}/${KAuthMutationsTypes.SET_TOKEN_VALID}`,
+        false,
+      );
       this.updatePageTitle();
       this.removeListeners();
       this.initListeners();
       try {
-        await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment();
+        await this.$store.dispatch(
+          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.CONNECT_TO_CURRENT_ENVIRONMENT}`,
+        );
       } catch (error) {
         this.$log.error(`ConnectionAwareContainer:onEnvironmentSwitch: ${error.message}`);
       }
@@ -195,7 +226,7 @@ export default {
       }
       if (
         this.$route.matched.some((record) => record.meta.requiresAuth) &&
-        !this.$store.direct.getters.auth.isAuthenticated
+        !this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.IS_AUTHENTICATED}`]
       ) {
         this.$log.debug('ConnectionAwareContainer::not authenticated');
         this.$router.push({ name: 'Login', query: { to: this.$route.name } });
