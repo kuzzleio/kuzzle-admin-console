@@ -34,10 +34,11 @@ runs:
 
     - name: Deploy
       run: |
-        aws s3 rm s3://${{ inputs.S3_BUCKET }} --recursive --region ${{ inputs.REGION }}
+        aws s3 rm s3://${{ inputs.S3_BUCKET }} --recursive
         aws s3 sync ${{ inputs.TARGET_DIST }} s3://${{ inputs.S3_BUCKET }}
         aws cloudfront create-invalidation --distribution-id ${{ inputs.CLOUDFRONT_ID }} --paths "/*"
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ inputs.REGION }}
       shell: bash
