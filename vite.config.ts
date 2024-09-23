@@ -6,14 +6,9 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 
 const manualChunks = (id: string) => {
-  // Bootstrap icons
-  if (id.includes('bootstrap') && id.includes('icons')) {
-    return 'bootstrap-vue-icons';
-  }
-
   // Bootstrap
   if (id.includes('bootstrap')) {
-    return 'bootstrap-vue';
+    return 'bootstrap';
   }
 
   // Ace
