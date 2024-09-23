@@ -30,10 +30,10 @@
           <span v-if="collection">This field cannot be updated</span>
           <span v-else>This field is mandatory</span>
         </template>
-        <template v-if="!v$.name.required" #invalid-feedback
+        <template v-if="v$.name.required.$invalid" #invalid-feedback
           >Please fill-in a valid collection name.
         </template>
-        <template v-else-if="!v$.name.isValidCollectionName" #invalid-feedback
+        <template v-else-if="v$.name.isValidCollectionName.$invalid" #invalid-feedback
           >The name you entered is invalid.
           <a target="_blank" href="https://docs.kuzzle.io/core/2/api/controllers/collection/create/"
             >Read more about how to choose a valid name</a
@@ -164,7 +164,7 @@ export default {
   validations() {
     return {
       name: {
-        required: requiredUnless('collection'),
+        required: requiredUnless(() => !!this.collection),
         isValidCollectionName,
       },
       rawMapping: {
@@ -274,7 +274,7 @@ export default {
     },
     onSubmit() {
       this.v$.$touch();
-      if (this.v$.$anyError) {
+      if (this.v$.$errors.length > 0) {
         return;
       }
 

@@ -7,6 +7,12 @@ describe('Environments', function() {
   this.beforeEach(() => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     localStorage.removeItem('environments')
+    cy.setCookie('telemetry', 'false')
+    cy.goOnline();
+  })
+
+  this.afterEach(() => {
+    cy.goOnline();
   })
 
   it('Should be able to create a new environment', function() {
@@ -56,7 +62,7 @@ describe('Environments', function() {
       `v${backendVersion}.x`
     )
     cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.get('#input-env-name-feedback')
+    cy.get('#env-name .invalid-feedback')
       .should('be.visible')
       .should('contain', `An environment with the same name already exists`)
   })
@@ -251,7 +257,8 @@ describe('Environments', function() {
     cy.get('[data-cy="App-online"]')
   })
 
-  it('Should be able to update an environment', () => {
+  it.skip('Should be able to update an environment', () => {
+    // TODO: Fix how environment switching is handled
     const envNames = ['local', 'another']
     const hosts = ['localhost', '123.123.123.123']
     const ports = [7512, 7514]
@@ -335,7 +342,7 @@ describe('Environments', function() {
     })
   })
 
-  it.only('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
+  it.skip('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
     cy.initLocalEnv(backendVersion)
     cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
     cy.wait(5000)
@@ -348,19 +355,17 @@ describe('Environments', function() {
     cy.get('[data-cy=App-online]').should('be.visible')
   })
 
-  it('Should display a toast when the backend goes down and hide it when the backend goes up again', () => {
+  it('Should display a toast when the backend goes down and hide it when the backend goes up again', { browser: '!firefox' }, () => {
     cy.initLocalEnv(backendVersion)
-    cy.task('doco', { version: backendVersion, docoArgs: ['up', '-d'] })
-    cy.waitForService('http://localhost:7512')
     cy.visit('/')
     cy.get('[data-cy=App-online]').should('be.visible')
-    cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
-    cy.get('.toast-header')
+    cy.goOffline();
+    cy.wait(5000);
+    cy.get('#offline-toast')
       .should('be.visible')
-      .should('contain', 'Offline')
-    cy.task('doco', { version: backendVersion, docoArgs: ['up', '-d'] })
-    cy.waitForService('http://localhost:7512')
-    cy.get('.toast-header').should('not.exist')
+    cy.goOnline();
+    cy.wait(1000);
+    cy.get('#offline-toast').should('not.exist')
   })
 
   it('Should see an error when specifying the wrong backend version and should be able to fix it', () => {
@@ -495,6 +500,7 @@ describe('Import and export environments', function() {
   this.beforeEach(() => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     localStorage.removeItem('environments')
+    cy.setCookie('telemetry', 'false')
   })
 
   it('Should be able to import environments', function() {

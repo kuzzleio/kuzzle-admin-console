@@ -8,11 +8,11 @@
     "dev": "vite",
     "build": "vite build",
     "test": "npm run test:e2e",
+    "test:e2e": "cypress run",
     "test:lint": "eslint src --ext .ts,.vue",
     "test:lint:fix": "npm run test:lint -- --fix",
     "test:types": "vue-tsc --noEmit -p tsconfig.test.json",
-    "test:e2e": "./test/e2e/run-test/bin/run",
-    "test:e2e:local": "npm run test:e2e -- --local"
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
@@ -69,7 +69,6 @@
     "cypress-wait-until": "^3.0.2",
     "eslint-plugin-cypress": "^3.5.0",
     "eslint-plugin-vue-kuzzle": "^0.0.13",
-    "execa": "^9.4.0",
     "file-loader": "^6.2.0",
     "kuzzle": "^2.31.0",
     "rollup-plugin-visualizer": "^5.12.0",

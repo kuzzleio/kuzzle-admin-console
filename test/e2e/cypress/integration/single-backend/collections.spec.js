@@ -22,8 +22,8 @@ describe('Collection management', function() {
     })
 
     cy.get(
-      '[data-cy="CollectionCreateOrUpdate-name"] .invalid-feedback'
-    ).should('contain', 'The name you entered is invalid')
+      '#collection-name .invalid-feedback'
+    ).should('contain', 'Please fill-in a valid collection name.')
 
     cy.get('[data-cy="CollectionCreateOrUpdate-name"] input').type(
       '{selectall}{backspace}',
@@ -55,7 +55,7 @@ describe('Collection management', function() {
 
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
       .should('exist')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type('{selectall}{backspace}', { force: true })
       .type(`SuM UNV4L1d jayZON Kood`)
 
     cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click()
@@ -91,7 +91,7 @@ describe('Collection management', function() {
 
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
       .should('exist')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type('{selectall}{backspace}', { force: true })
       .type(
         `{
 "dynamic": false,
@@ -258,7 +258,7 @@ describe('Collection management', function() {
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').type('testexport')
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
       .should('exist')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type('{selectall}{backspace}', { force: true })
       .type(
         `{
 "firstName": {

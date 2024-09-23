@@ -111,12 +111,7 @@ describe('Profiles', () => {
       'This field cannot contain just whitespaces'
     )
 
-    cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').type(
-      '{selectall}{backspace}',
-      {
-        force: true
-      }
-    )
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').clear({ force: true })
 
     cy.get('[data-cy="ProfileCreateOrUpdate-id"] .invalid-feedback').should(
       'contain',
@@ -207,7 +202,6 @@ describe('Profiles', () => {
 "policies": [{
 "roleId": "admin"`,
         {
-          delay: 200,
           force: true
         }
       )

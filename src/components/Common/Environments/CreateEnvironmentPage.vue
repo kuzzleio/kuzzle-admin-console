@@ -68,6 +68,10 @@ export default {
   methods: {
     async submit() {
       const id = await this.$refs.createEnvironmentComponent.submit();
+      if (id === undefined) {
+        return;
+      }
+
       if (Object.keys(this.environments).length > 1) {
         this.$router.push({ name: 'SelectEnvironment' });
       } else {

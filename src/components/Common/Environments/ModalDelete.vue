@@ -77,7 +77,10 @@ export default {
     },
     async confirmDeleteEnvironment() {
       if (this.confirmationOk) {
-        if (this.$store.state.kuzzle.currentId === this.environmentId) {
+        if (
+          this.$store.state.kuzzle.currentId === this.environmentId &&
+          this.$store.state.kuzzle.online
+        ) {
           await this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.DO_LOGOUT}`);
         }
 

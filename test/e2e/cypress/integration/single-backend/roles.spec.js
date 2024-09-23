@@ -47,6 +47,12 @@ describe('Roles', () => {
     cy.visit('/#/security/roles/create')
     cy.contains('Create a new role')
 
+    cy.get('[data-cy="RoleCreateOrUpdate-createBtn"]').click()
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+      'contain',
+      'This field cannot be empty'
+    )
+
     cy.get('[data-cy="RoleCreateOrUpdate-id"] input').type(' ', {
       force: true
     })
@@ -144,7 +150,7 @@ describe('Roles', () => {
       .click({ force: true })
 
     cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type('{selectall}{backspace}', { force: true })
       .clear({ force: true })
       .type(
         `{selectall}{
@@ -154,7 +160,6 @@ describe('Roles', () => {
 "get": true,
 "search": true`,
         {
-          delay: 200,
           force: true
         }
       )

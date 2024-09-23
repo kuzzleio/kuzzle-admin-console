@@ -23,7 +23,7 @@
             <b-tab id="UserUpdate-basicTab">
               <template #title>
                 <i
-                  v-if="v$.basic.$anyError"
+                  v-if="v$.$validationGroups.basic.$errors.length > 0"
                   class="fas fa-exclamation-circle text-danger"
                   data-cy="UserUpdate-basicTab--dangerIcon"
                 />
@@ -33,7 +33,7 @@
                 :edit-kuid="!id"
                 :added-profiles="addedProfiles"
                 :kuid="kuid"
-                :validations="v$.basic"
+                :validations="v$"
                 @set-custom-kuid="setCustomKuid"
                 @profile-add="onProfileAdded"
                 @profile-remove="onProfileRemoved"
@@ -52,7 +52,7 @@
             >
               <template #title>
                 <i
-                  v-if="v$.customContentValue.$anyError"
+                  v-if="v$.customContentValue.$errors.length > 0"
                   class="fas fa-exclamation-circle text-danger"
                   data-cy="UserUpdate-customTab--dangerIcon"
                 />
@@ -92,7 +92,7 @@
 
 <script>
 import { useVuelidate } from '@vuelidate/core';
-import { not } from '@vuelidate/validators';
+import { not, helpers } from '@vuelidate/validators';
 import Promise from 'bluebird';
 import { mapGetters } from 'vuex';
 
@@ -141,17 +141,23 @@ export default {
     };
   },
   validations() {
-    const v = {
+    // TODO One day we should be able to validate credentials (big deal)
+    return {
       kuid: {
-        notEmpty: not(isWhitespace),
-        notStartsWithSpace: not(startsWithSpace),
+        notEmpty: helpers.withMessage(
+          'The KUID cannot contain just whitespaces',
+          not(isWhitespace),
+        ),
+        notStartsWithSpace: helpers.withMessage(
+          'The KUID cannot start with a whitespace',
+          not(startsWithSpace),
+        ),
       },
       addedProfiles: {
         minLength: function (value) {
           return value.length > 0;
         },
       },
-      basic: ['kuid', 'addedProfiles'],
       customContentValue: {
         syntaxOK: function (value) {
           try {
@@ -162,9 +168,10 @@ export default {
           }
         },
       },
+      $validationGroups: {
+        basic: ['kuid', 'addedProfiles'],
+      },
     };
-    // TODO One day we should be able to validate credentials (big deal)
-    return v;
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
@@ -265,7 +272,7 @@ export default {
     },
     async submit() {
       this.v$.$touch();
-      if (this.v$.$anyError) {
+      if (this.v$.$errors.length > 0) {
         return;
       }
       for (const strategy of Object.keys(this.credentials)) {
@@ -321,7 +328,7 @@ export default {
           ) {
             try {
               await this.$store.dispatch(
-                `${StoreNamespaceTypes.KUZZLE}/${KAuthActionsTypes.CHECK_FIRST_ADMIN}`,
+                `${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.CHECK_FIRST_ADMIN}`,
               );
             } catch (err) {
               this.$log.error(err);

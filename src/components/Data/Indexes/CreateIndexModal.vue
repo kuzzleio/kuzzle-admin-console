@@ -21,26 +21,18 @@
     </template>
     <b-overlay :show="modalBusy" rounded="sm" class="p-3">
       <b-form @submit.prevent="tryCreateIndex">
-        <b-form-group data-cy="CreateIndexModal-name" label="Index name" label-for="indexName">
+        <b-form-group
+          data-cy="CreateIndexModal-name"
+          label="Index name"
+          label-for="indexName"
+          :invalid-feedback="indexFeedback"
+        >
           <template #description
             >The index name should contain only lowercase characters and no spaces. It also must not
             contain de following characters: <code>\</code>, <code>/</code>, <code>*</code>,
             <code>?</code>, <code>"</code>, <code>&lt;</code>, <code>></code>, <code>|</code>,
             <code>,</code>, <code>#</code>, <code>:</code>, <code>%</code>, <code>&</code>,
             <code>.</code>
-          </template>
-          <template id="profile-id-feedback" #invalid-feedback>
-            <span v-if="!v$.index.required">This field cannot be empty</span>
-            <span v-else-if="!v$.index.isNotWhitespace"
-              >This field cannot contain just whitespaces</span
-            >
-            <span v-else-if="!v$.index.startsWithLetter"
-              >This field cannot start with a whitespace</span
-            >
-            <span v-else-if="!v$.index.isLowercase"
-              >This field cannot contain uppercase letters</span
-            >
-            <span v-else-if="!v$.index.validChars">This field cannnot contain invalid chars</span>
           </template>
           <b-form-input
             id="indexName"
@@ -65,7 +57,7 @@
 
 <script>
 import { useVuelidate } from '@vuelidate/core';
-import { not, required } from '@vuelidate/validators';
+import { not, required, helpers } from '@vuelidate/validators';
 
 import { KIndexActionsTypes, StoreNamespaceTypes } from '@/store';
 import { startsWithSpace, isWhitespace, isUppercase } from '@/validators';
@@ -96,13 +88,34 @@ export default {
   validations() {
     return {
       index: {
-        isNotWhitespace: not(isWhitespace),
-        startsWithLetter: not(startsWithSpace),
-        isLowercase: not(isUppercase),
-        required,
-        validChars: not(includesInvalidIndexChars),
+        isNotWhitespace: helpers.withMessage(
+          'This field cannot contain just whitespaces',
+          not(isWhitespace),
+        ),
+        startsWithLetter: helpers.withMessage(
+          'This field cannot start with a whitespace',
+          not(startsWithSpace),
+        ),
+        isLowercase: helpers.withMessage(
+          'This field cannot contain uppercase letters',
+          not(isUppercase),
+        ),
+        required: helpers.withMessage('This field cannot be empty', required),
+        validChars: helpers.withMessage(
+          'This field cannnot contain invalid chars',
+          not(includesInvalidIndexChars),
+        ),
       },
     };
+  },
+  computed: {
+    indexFeedback() {
+      if (this.v$.index.$errors.length > 0) {
+        return this.v$.index.$errors[0].$message;
+      }
+
+      return null;
+    },
   },
   methods: {
     validateState(fieldName) {
@@ -125,11 +138,12 @@ export default {
       this.$bvModal.hide(this.modalId);
     },
     async tryCreateIndex() {
-      this.modalBusy = true;
       this.v$.$touch();
-      if (this.v$.$anyError) {
+      if (this.v$.$errors.length > 0) {
         return;
       }
+
+      this.modalBusy = true;
 
       try {
         await this.$store.dispatch(

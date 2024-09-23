@@ -3,11 +3,11 @@
     <div class="resetPasswordForm-inputs">
       <b-form-group
         data-cy="ResetPassword-password--group"
-        invalid-feedback="Password must not be empty"
         label="New password"
         label-for="password"
         label-cols-sm="4"
         label-cols-md="3"
+        :invalid-feedback="passwordFeedback"
       >
         <b-form-input
           id="password"
@@ -67,7 +67,7 @@
 
 <script>
 import { useVuelidate } from '@vuelidate/core';
-import { sameAs, required } from '@vuelidate/validators';
+import { sameAs, required, helpers } from '@vuelidate/validators';
 
 import { KAuthActionsTypes, StoreNamespaceTypes } from '@/store';
 
@@ -88,21 +88,26 @@ export default {
   },
   validations: {
     password: {
-      required,
+      required: helpers.withMessage('Password must not be empty', required),
     },
     password2: {
-      required,
-      sameAs: sameAs('password'),
+      required: helpers.withMessage('Password must not be empty', required),
+      sameAs: helpers.withMessage('Passwords do not match', sameAs('password')),
     },
   },
   computed: {
+    passwordFeedback() {
+      if (this.v$.password.$errors.length > 0) {
+        return this.v$.password.$errors[0].$message;
+      }
+
+      return null;
+    },
     password2Feedback() {
-      if (!this.v$.password2.sameAs) {
-        return 'Passwords do not match';
+      if (this.v$.password2.$errors.length > 0) {
+        return this.v$.password2.$errors[0].$message;
       }
-      if (!this.v$.password2.required) {
-        return 'Password must not be empty';
-      }
+
       return null;
     },
     password2Pattern() {

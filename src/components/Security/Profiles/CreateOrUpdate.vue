@@ -10,16 +10,8 @@
           label-cols="3"
           label-for="profile-id"
           :description="!id ? 'This field is mandatory' : ''"
+          :invalid-feedback="idFeedback"
         >
-          <template id="profile-id-feedback" #invalid-feedback>
-            <span v-if="!v$.idValue.required">This field cannot be empty</span>
-            <span v-else-if="!v$.idValue.isNotWhitespace"
-              >This field cannot contain just whitespaces</span
-            >
-            <span v-else-if="!v$.idValue.startsWithLetter"
-              >This field cannot start with a whitespace</span
-            >
-          </template>
           <b-input
             id="profile-id"
             v-model="v$.idValue.$model"
@@ -112,7 +104,7 @@
 
 <script>
 import { useVuelidate } from '@vuelidate/core';
-import { not, requiredUnless } from '@vuelidate/validators';
+import { not, requiredUnless, helpers } from '@vuelidate/validators';
 
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { startsWithSpace, isWhitespace } from '@/validators';
@@ -146,21 +138,41 @@ export default {
       submitting: false,
     };
   },
-  validations: {
-    idValue: {
-      required: requiredUnless('id'),
-      isNotWhitespace: not(isWhitespace),
-      startsWithLetter: not(startsWithSpace),
-    },
-    profileValue: {
-      syntaxOK: function (value) {
-        try {
-          JSON.parse(value);
-        } catch (e) {
-          return false;
-        }
-        return true;
+  validations() {
+    return {
+      idValue: {
+        isNotWhitespace: helpers.withMessage(
+          'This field cannot contain just whitespaces',
+          not(isWhitespace),
+        ),
+        required: helpers.withMessage(
+          'This field cannot be empty',
+          requiredUnless(() => !!this.id),
+        ),
+        startsWithLetter: helpers.withMessage(
+          'This field cannot start with a whitespace',
+          not(startsWithSpace),
+        ),
       },
+      profileValue: {
+        syntaxOK: function (value) {
+          try {
+            JSON.parse(value);
+          } catch (e) {
+            return false;
+          }
+          return true;
+        },
+      },
+    };
+  },
+  computed: {
+    idFeedback() {
+      if (this.v$.idValue.$errors.length > 0) {
+        return this.v$.idValue.$errors[0].$message;
+      }
+
+      return null;
     },
   },
   methods: {
@@ -173,7 +185,7 @@ export default {
     },
     submit() {
       this.v$.$touch();
-      if (this.v$.$anyError) {
+      if (this.v$.$errors.length > 0) {
         return;
       }
       this.$emit('submit', {

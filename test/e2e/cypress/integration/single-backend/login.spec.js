@@ -79,7 +79,7 @@ describe('Login', function() {
             host: 'localhost',
             ssl: false,
             port: 7512,
-            backendMajorVersion: Cypress.env('BACKEND_VERSION') || '2',
+            backendMajorVersion: Cypress.env('BACKEND_VERSION') || 2,
             token: response.body.result.jwt
           }
         })
@@ -146,7 +146,7 @@ describe('Login', function() {
             host: 'localhost',
             ssl: false,
             port: 7512,
-            backendMajorVersion: Cypress.env('BACKEND_VERSION') || '2',
+            backendMajorVersion: Cypress.env('BACKEND_VERSION') || 2,
             token: response.body.result.jwt
           }
         })

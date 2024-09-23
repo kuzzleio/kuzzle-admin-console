@@ -22,7 +22,6 @@ describe('JSON Editor', function() {
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
       .clear({ force: true })
       .type(`INVALID JSON`, {
-        delay: 200,
         force: true
       })
 

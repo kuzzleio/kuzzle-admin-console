@@ -17,7 +17,6 @@ describe('API Actions - query', function() {
 "controller": "index",
 "action": "create",
 "index": "${indexName}"`, {
-      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-run-button-0"]').click()
@@ -40,7 +39,6 @@ describe('API Actions - query', function() {
 "controller": "index",
 "action": "create",
 "index": "${indexName}"`, {
-      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-run-button-0"]').click()
@@ -139,7 +137,6 @@ describe('API Actions - tabs and save', function() {
     cy.visit(`/#/api-action`)
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
     .type(`{selectall}{backspace}tab0`, {
-      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-tab-plus"]').click()
@@ -161,13 +158,11 @@ describe('API Actions - tabs and save', function() {
 "controller": "index",
 "action": "create",
 "index": "toto"`, {
-      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-save-button-0"]').click()
     cy.get('[data-cy="api-actions-modal-name-input"]')
     .type(`{selectall}{backspace}${queryName}`, {
-      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-modal-ok-button"]').click()
@@ -248,7 +243,6 @@ describe('API Actions - tabs and save', function() {
 "controller": "index",
 "action": "create",
 "index": "${indexName2}"`, {
-      delay: 200,
       force: true
     })
     cy.get('[data-cy="api-actions-save-button-1"]').click()

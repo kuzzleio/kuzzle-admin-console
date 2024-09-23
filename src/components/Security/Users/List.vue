@@ -133,6 +133,7 @@ import { mapGetters } from 'vuex';
 
 import Filters from '../../Common/Filters/Filters.vue';
 import * as filterManager from '@/services/filterManager';
+import { KAuthActionsTypes, KAuthGettersTypes, StoreNamespaceTypes } from '@/store';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import DeleteModal from './DeleteModal.vue';
@@ -356,7 +357,7 @@ export default {
         ) {
           try {
             await this.$store.dispatch(
-              `${StoreNamespaceTypes.KUZZLE}/${KAuthActionsTypes.CHECK_FIRST_ADMIN}`,
+              `${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.CHECK_FIRST_ADMIN}`,
             );
           } catch (err) {
             this.$log.error(err);

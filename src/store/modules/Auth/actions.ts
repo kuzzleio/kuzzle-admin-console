@@ -161,16 +161,16 @@ export const actions: ActionTree<AuthState, RootState> = {
 
     return await store.dispatch(KAuthActionsTypes.CHECK_FIRST_ADMIN);
   },
-  async [KAuthActionsTypes.DO_RESET_PASSWORD](_store, _data) {
-    // const kuzzle = getKuzzleSdk(store.rootGetters);
-    // kuzzle.jwt = null;
-    // const request = {
-    //   controller: 'kuzzle-plugin-auth-passport-local/password',
-    //   action: 'reset',
-    //   body: data,
-    // };
-    // const response = await kuzzle.query(request);
-    // const jwt = response.result.jwt;
-    // return store.dispatch(KAuthActionsTypes.PREPARE_SESSION, jwt);
+  async [KAuthActionsTypes.DO_RESET_PASSWORD](store, data) {
+    const kuzzle = getKuzzleSdk(store.rootGetters);
+    kuzzle.jwt = null;
+    const request = {
+      controller: 'kuzzle-plugin-auth-passport-local/password',
+      action: 'reset',
+      body: data,
+    };
+    const response = await kuzzle.query(request);
+    const jwt = response.result.jwt;
+    return await store.dispatch(KAuthActionsTypes.SET_SESSION, jwt);
   },
 };

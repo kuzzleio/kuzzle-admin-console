@@ -9,6 +9,7 @@
         label-cols-sm="4"
         label-cols-lg="3"
         label-for="input-env-name"
+        :invalid-feedback="nameFeedback"
       >
         <b-form-input
           id="input-env-name"
@@ -16,9 +17,6 @@
           data-cy="CreateEnvironment-name"
           :state="validateState('name')"
         />
-        <b-form-invalid-feedback id="input-env-name-feedback">{{
-          nameFeedback
-        }}</b-form-invalid-feedback>
       </b-form-group>
 
       <b-form-group
@@ -57,6 +55,7 @@
           :state="validateState('port')"
         />
       </b-form-group>
+
       <b-form-group
         label="Use SSL"
         label-for="env-ssl"
@@ -75,6 +74,7 @@
           <i class="fa fa-exclamation-triangle" aria-hidden="true" />
         </b-form-invalid-feedback>
       </b-form-group>
+
       <b-form-group
         data-cy="CreateEnvironment-backendVersion--group"
         label="Kuzzle version"
@@ -124,7 +124,7 @@
 
 <script>
 import { useVuelidate } from '@vuelidate/core';
-import { numeric, required } from '@vuelidate/validators';
+import { numeric, required, helpers } from '@vuelidate/validators';
 
 import { KKuzzleActionsTypes, StoreNamespaceTypes } from '@/store';
 import { DEFAULT_COLOR, ENV_COLORS, NO_ADMIN_WARNING_HOSTS } from '@/utils';
@@ -180,24 +180,32 @@ export default {
   validations: {
     environment: {
       name: {
-        required,
-        nameIsUnique,
+        required: helpers.withMessage('You must enter a non-empty environment name', required),
+        nameIsUnique: helpers.withMessage(
+          'An environment with the same name already exists',
+          nameIsUnique,
+        ),
       },
       host: {
-        required,
-        notIncludeScheme,
-        isValidHostname,
+        required: helpers.withMessage('You must enter a non-empty host name', required),
+        notIncludeScheme: helpers.withMessage(
+          'Do not include the protocol in your host name',
+          notIncludeScheme,
+        ),
+        isValidHostname: helpers.withMessage('Must be a valid host name', isValidHostname),
       },
       port: {
-        required,
-        numeric,
+        required: helpers.withMessage('You must enter a non-empty port', required),
+        numeric: helpers.withMessage('Port must be a number', numeric),
       },
       color: {
-        required,
-        isValidColor: (color) => ENV_COLORS.includes(color),
+        required: helpers.withMessage('You must select a color for this environment', required),
+        isValidColor: helpers.withMessage('You must select a valid color', (color) =>
+          ENV_COLORS.includes(color),
+        ),
       },
       backendMajorVersion: {
-        required,
+        required: helpers.withMessage('You must select a backend version', required),
       },
     },
   },
@@ -212,30 +220,24 @@ export default {
       return useHttps;
     },
     nameFeedback() {
-      if (!this.v$.environment.name.required) {
-        return 'You must enter a non-empty environment name';
+      if (this.v$.environment.name.$errors.length > 0) {
+        return this.v$.environment.name.$errors[0].$message;
       }
-      if (!this.v$.environment.name.nameIsUnique) {
-        return 'An environment with the same name already exists';
-      }
+
       return null;
     },
     hostFeedback() {
-      if (!this.v$.environment.host.required) {
-        return 'You must enter a non-empty host name';
+      if (this.v$.environment.host.$errors.length > 0) {
+        return this.v$.environment.host.$errors[0].$message;
       }
-      if (!this.v$.environment.host.notIncludeScheme) {
-        return 'Do not include the protocol in your host name';
-      }
-      if (!this.v$.environment.host.isValidHostname) {
-        return 'Must be a valid host name';
-      }
+
       return null;
     },
     portFeedback() {
-      if (!this.v$.environment.port.required) {
-        return 'You must enter a non-empty port';
+      if (this.v$.environment.port.$errors.length > 0) {
+        return this.v$.environment.port.$errors[0].$message;
       }
+
       return null;
     },
     sslFeedback() {
@@ -252,9 +254,10 @@ export default {
       return '';
     },
     versionFeedback() {
-      if (!this.v$.environment.backendMajorVersion.required) {
-        return 'You must select a backend version';
+      if (this.v$.environment.backendMajorVersion.$errors.length > 0) {
+        return this.v$.environment.backendMajorVersion.$errors[0].$message;
       }
+
       return null;
     },
     colorState() {
@@ -296,7 +299,7 @@ export default {
         if (/^\$/.test(field)) {
           return;
         }
-        if (this.v$.environment[field].$anyError === false) {
+        if (this.v$.environment[field].$errors.length === 0) {
           this.v$.environment[field].$reset();
         }
       });
@@ -308,7 +311,7 @@ export default {
     },
     submit() {
       this.v$.environment.$touch();
-      if (this.v$.environment.$anyError) {
+      if (this.v$.environment.$errors.length > 0) {
         return;
       }
       this.submitting = true;

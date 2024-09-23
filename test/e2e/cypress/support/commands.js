@@ -26,7 +26,6 @@
 
 import 'cypress-file-upload'
 import { antiGlitchOverlayTimeout } from '../../../../src/utils.ts'
-import axios from 'axios'
 import 'cypress-wait-until'
 
 Cypress.Commands.add('waitOverlay', () => {
@@ -64,7 +63,7 @@ function wait(ms) {
 async function poll(url, state = 'up', tries) {
   for (let i = tries; i > 0; i--) {
     try {
-      const r = await axios.get(url)
+      const r = await fetch(url)
       if (r) {
         console.log('Service is up')
         if (state === 'up') {
@@ -113,3 +112,38 @@ Cypress.Commands.add('skipUnlessBackendVersion', version => {
     ctx.skip()
   }
 })
+
+Cypress.Commands.add('goOffline', () => {
+  return cy.log('Going offline')
+    .then(() => {
+      return Cypress.automation('remote:debugger:protocol', {
+        command: 'Network.enable',
+      });
+    })
+    .then(() => {
+      return Cypress.automation('remote:debugger:protocol', {
+        command: 'Network.emulateNetworkConditions',
+        params: {
+          offline: true,
+          latency: 0,
+          downloadThroughput: -1,
+          uploadThroughput: -1,
+        },
+      });
+    });
+});
+
+Cypress.Commands.add('goOnline', () => {
+  return cy.log('Going online')
+    .then(() => {
+      return Cypress.automation('remote:debugger:protocol', {
+        command: 'Network.emulateNetworkConditions',
+        params: {
+          offline: false,
+          latency: 0,
+          downloadThroughput: -1,
+          uploadThroughput: -1,
+        },
+      });
+    });
+});

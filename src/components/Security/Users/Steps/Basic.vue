@@ -1,14 +1,7 @@
 <template>
   <form class="wrapper">
-    <b-form-group label-cols="2" data-cy="UserBasic-kuid">
+    <b-form-group label-cols="2" data-cy="UserBasic-kuid" :invalid-feedback="kuidFeedback">
       <template #label><strong>KUID</strong></template>
-
-      <template #invalid-feedback>
-        <span v-if="!validations.kuid.notEmpty">The KUID cannot contain just whitespaces</span>
-        <span v-else-if="!validations.kuid.notStartsWithSpace"
-          >The KUID cannot start with a whitespace</span
-        >
-      </template>
       <b-input
         id="custom-kuid"
         class="validate"
@@ -68,6 +61,15 @@ export default {
     },
     validations: {
       type: Object,
+    },
+  },
+  computed: {
+    kuidFeedback() {
+      if (this.validations.kuid.$errors.length > 0) {
+        return this.validations.kuid.$errors[0].$message;
+      }
+
+      return null;
     },
   },
   methods: {

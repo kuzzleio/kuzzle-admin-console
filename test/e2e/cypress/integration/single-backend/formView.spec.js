@@ -70,7 +70,6 @@ describe('Form view', function() {
       .type(`{selectall}{backspace}{
 "desktop": "standing"`,
         {
-          delay: 200,
           force: true
         }
       )
@@ -80,7 +79,6 @@ describe('Form view', function() {
 "name": "CSS",
 "level": 60`,
         {
-          delay: 200,
           force: true
         }
       )
@@ -132,7 +130,6 @@ describe('Form view', function() {
 "name": "management",
 "level": 0`,
         {
-          delay: 200,
           force: true
         }
       )
@@ -162,7 +159,6 @@ describe('Form view', function() {
       .type(`{selectall}{backspace}{
 "name": "PHP CEO"`,
         {
-          delay: 200,
           force: true
         }
       )

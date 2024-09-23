@@ -23,13 +23,22 @@ describe('Indexes', () => {
     cy.waitOverlay()
 
     cy.get('[data-cy="IndexesPage-createBtn"').click()
+
+    cy.get('[data-cy="CreateIndexModal-name"] input').clear({ force: true })
+    cy.get('[data-cy="CreateIndexModal-createBtn"]').click()
+    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+      'contain',
+      'This field cannot be empty'
+    )
+
     cy.get('[data-cy="CreateIndexModal-name"] input').type(' ', {
       force: true
     })
     cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
       'contain',
-      'This field cannot be empty'
+      'This field cannot contain just whitespaces'
     )
+
     cy.get('[data-cy="CreateIndexModal-name"] input').type('s', {
       force: true
     })
@@ -37,6 +46,7 @@ describe('Indexes', () => {
       'contain',
       'This field cannot start with a whitespace'
     )
+
     cy.get('[data-cy="CreateIndexModal-name"] input').type('{selectall}A', {
       force: true
     })
@@ -44,6 +54,7 @@ describe('Indexes', () => {
       'contain',
       'This field cannot contain uppercase letters'
     )
+
     cy.get('[data-cy="CreateIndexModal-name"] input').type('{selectall}asd#', {
       force: true
     })
