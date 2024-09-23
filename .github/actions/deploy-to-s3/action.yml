@@ -30,8 +30,6 @@ runs:
       run: |
         npm ci
         npm run build
-      env:
-        NODE_ENV: production
       shell: bash
 
     - name: Deploy
