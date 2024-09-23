@@ -11,7 +11,7 @@ env:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
   e2e-tests:
     name: E2E Cypress tests
     needs: ['lint']
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -50,7 +50,7 @@ jobs:
   deploy-production:
     name: Deploy Admin Console to production - console.kuzzle.io
     needs: ['e2e-tests']
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
