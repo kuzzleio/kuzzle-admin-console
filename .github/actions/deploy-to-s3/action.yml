@@ -26,13 +26,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install AWS CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install python python-pip
-        pip install awscli --upgrade --user
-      shell: bash
-
     - name: Build
       run: |
         npm ci
