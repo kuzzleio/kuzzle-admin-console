@@ -100,6 +100,7 @@ describe('Collection management', function() {
 "firstName": {
 "type": "keyword"`,
         {
+          delay: 200,
           force: true
         }
       )
