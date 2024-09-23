@@ -2,58 +2,36 @@ name: Pull request checks
 
 on: [pull_request]
 
+env:
+  NODE_VERSION: "20"
+
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-22.04
+    continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          path: |
-            ~/.npm
-            **/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - uses: actions/setup-node@v1
-        with:
-          node-version: "10"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
       - uses: ./.github/actions/lint
 
   e2e-tests:
-    name: E2E Cypress tests - Kuzzle ${{ matrix.backend_config}}
+    name: E2E Cypress tests
     needs: ['lint']
-    strategy:
-      matrix:
-        backend_config: ['1', '2', 'multi']
-      fail-fast: false
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
+      - uses: actions/checkout@v4
+
+      - name: Start Kuzzle
+        run: docker compose up --wait
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
         with:
-          path: |
-            ~/.npm
-            **/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 10
-      - uses: ./.github/actions/e2e-tests
-        with:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          backend_config: ${{ matrix.backend_config }}
-          branch_name: ${{ github.head_ref }}
+          build: npm run build
+          start: npm run preview

@@ -32,6 +32,7 @@ runs:
         sudo apt-get install python python-pip
         pip install awscli --upgrade --user
       shell: bash
+
     - name: Build
       run: |
         npm ci
@@ -39,6 +40,7 @@ runs:
       env:
         NODE_ENV: production
       shell: bash
+
     - name: Deploy
       run: |
         aws s3 rm s3://${{ inputs.S3_BUCKET }} --recursive --region ${{ inputs.REGION }}

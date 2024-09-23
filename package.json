@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "preview": "vite preview",
     "test": "npm run test:e2e",
     "test:e2e": "cypress run",
     "test:lint": "eslint src --ext .ts,.vue",

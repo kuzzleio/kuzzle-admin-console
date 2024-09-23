@@ -64,6 +64,9 @@ export default defineConfig({
     '__COMMIT_HASH__': JSON.stringify(commitHash),
   },
   plugins: [vue(), visualizer()],
+  preview: {
+    port: 8080,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
