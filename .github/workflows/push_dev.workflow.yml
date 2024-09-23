@@ -39,6 +39,13 @@ jobs:
           build: npm run build
           start: npm run preview
 
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+            name: cypress-snapshots
+            path: test/e2e/failed-test
+
   deploy-staging:
     name: Deploy Admin Console to staging - next-console.kuzzle.io
     needs: ['e2e-tests']
