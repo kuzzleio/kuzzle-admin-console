@@ -38,6 +38,7 @@ jobs:
         with:
           build: npm run build
           start: npm run preview
+          browser: chrome
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
