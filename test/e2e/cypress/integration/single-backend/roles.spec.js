@@ -150,7 +150,7 @@ describe('Roles', () => {
       .click({ force: true })
 
     cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { force: true })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .clear({ force: true })
       .type(
         `{selectall}{
@@ -160,6 +160,7 @@ describe('Roles', () => {
 "get": true,
 "search": true`,
         {
+          delay: 200,
           force: true
         }
       )

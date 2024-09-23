@@ -108,7 +108,7 @@ describe('Users', function() {
     cy.get('#rawsearch .ace_active-line').click({ force: true })
     cy.get('textarea.ace_text-input')
       .should('exist')
-      .type('{selectall}{backspace}', { force: true })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
   "query": {
@@ -391,7 +391,7 @@ describe('Users', function() {
     })
     cy.get('[data-cy="UserCustomContent-jsonEditor"] textarea.ace_text-input')
       .should('exist')
-      .type('{selectall}{backspace}', { force: true })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
   "super_important_field": "LOL"`,
@@ -492,7 +492,7 @@ describe('Users', function() {
     })
     cy.get('[data-cy="UserCustomContent-jsonEditor"] textarea.ace_text-input')
       .should('exist')
-      .type('{selectall}{backspace}', { force: true })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
   "super_important_field": "LOL"`,
@@ -526,7 +526,7 @@ describe('Users', function() {
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { force: true })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
   "address": {
@@ -552,7 +552,7 @@ describe('Users', function() {
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { force: true })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
 "address": {

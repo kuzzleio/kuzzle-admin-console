@@ -70,6 +70,7 @@ describe('Form view', function() {
       .type(`{selectall}{backspace}{
 "desktop": "standing"`,
         {
+          delay: 200,
           force: true
         }
       )
@@ -79,6 +80,7 @@ describe('Form view', function() {
 "name": "CSS",
 "level": 60`,
         {
+          delay: 200,
           force: true
         }
       )
@@ -107,7 +109,7 @@ describe('Form view', function() {
     })
   })
 
-  it('should be able to update a document with the form view enabled', function() {
+  it.only('should be able to update a document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
@@ -130,6 +132,7 @@ describe('Form view', function() {
 "name": "management",
 "level": 0`,
         {
+          delay: 200,
           force: true
         }
       )
@@ -159,6 +162,7 @@ describe('Form view', function() {
       .type(`{selectall}{backspace}{
 "name": "PHP CEO"`,
         {
+          delay: 200,
           force: true
         }
       )

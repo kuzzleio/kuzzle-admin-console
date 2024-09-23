@@ -481,6 +481,7 @@ describe('Document update/replace', () => {
 
     cy.get('textarea.ace_text-input')
       .type(`{selectall}{backspace}`, {
+        delay: 400,
         force: true
       })
       .type(
@@ -518,6 +519,7 @@ describe('Document update/replace', () => {
       .click({ force: true })
     cy.get('textarea.ace_text-input')
       .type(`{selectall}{backspace}`, {
+        delay: 400,
         force: true
       })
       .type(
