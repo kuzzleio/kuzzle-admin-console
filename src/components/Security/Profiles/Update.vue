@@ -19,10 +19,11 @@
 
 <script>
 import omit from 'lodash/omit';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import CreateOrUpdate from './CreateOrUpdate.vue';
 
@@ -47,8 +48,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
-    ...mapGetters('auth', ['userProfiles']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
+    ...mapState(useAuthStore, ['userProfiles']),
     displayWarningAlert() {
       return this.userProfiles && this.userProfiles.includes(this.id);
     },

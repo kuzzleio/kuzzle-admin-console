@@ -98,16 +98,19 @@
 </template>
 
 <script>
-import { KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useStorageIndexStore } from '@/stores';
 
 export default {
   name: 'CommonBreadcrumb',
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
+  },
   methods: {
     index() {
       return this.$route.params.indexName
-        ? this.$store.getters[`${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`](
-            this.$route.params.indexName,
-          )
+        ? this.storageIndexStore.getOneIndex(this.$route.params.indexName)
         : undefined;
     },
     isCollectionRealtime() {
@@ -115,9 +118,8 @@ export default {
         return false;
       }
 
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
-      ](this.index, this.$route.params.collectionName).isRealtime;
+      return this.storageIndexStore.getOneCollection(this.index, this.$route.params.collectionName)
+        .isRealtime;
     },
     isRouteActive(routeName) {
       if (Array.isArray(routeName)) {

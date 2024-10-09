@@ -1,14 +1,10 @@
 export class Index {
-  private readonly _name: string;
+  readonly name: string;
   loading = false;
   collections?: Collection[];
 
   constructor(name: string) {
-    this._name = name;
-  }
-
-  get name(): string {
-    return this._name;
+    this.name = name;
   }
 
   get collectionsCount(): number | undefined {
@@ -53,26 +49,18 @@ export class Index {
 }
 
 export class Collection {
-  private readonly _name: string;
-  private readonly _type: CollectionType;
+  readonly name: string;
+  readonly type: CollectionType;
   mapping?: object;
   dynamic?: string;
 
   constructor(name: string, type: CollectionType) {
-    this._type = this.findType(name, type);
-    this._name = name;
-  }
-
-  get name(): string {
-    return this._name;
-  }
-
-  get type(): CollectionType {
-    return this._type;
+    this.type = this.findType(name, type);
+    this.name = name;
   }
 
   public isRealtime(): boolean {
-    return this._type === 'realtime';
+    return this.type === 'realtime';
   }
 
   private findType(name: string, type: CollectionType): CollectionType {

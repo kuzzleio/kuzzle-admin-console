@@ -22,7 +22,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useAuthStore } from '@/stores';
 
 export default {
   props: {
@@ -31,7 +33,7 @@ export default {
     hasNewDocuments: Boolean,
   },
   computed: {
-    ...mapGetters('auth', ['canCreateDocument']),
+    ...mapState(useAuthStore, ['canCreateDocument']),
   },
 };
 </script>

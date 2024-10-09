@@ -111,7 +111,7 @@
 import Modal from '../../Materialize/Modal.vue';
 import Pagination from '../../Materialize/Pagination.vue';
 import { formatFromBasicSearch, ACTIVE_BASIC, NO_ACTIVE } from '@/services/filterManager';
-import { KToasterMutationsTypes, StoreNamespaceTypes } from '@/store';
+import { useToasterStore } from '@/stores';
 
 import Filters from './Filters.vue';
 
@@ -141,6 +141,11 @@ export default {
     currentFilter: Object,
     documentToDelete: String,
     performDelete: Function,
+  },
+  setup() {
+    return {
+      toasterStore: useToasterStore(),
+    };
   },
   data() {
     return {
@@ -187,9 +192,9 @@ export default {
           return null;
         })
         .catch((e) => {
-          this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
+          this.toasterStore.toast = {
             text: e.message,
-          });
+          };
         });
     },
     confirmSingleDelete(id) {
@@ -200,9 +205,9 @@ export default {
           return null;
         })
         .catch((e) => {
-          this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
+          this.toasterStore.toast = {
             text: e.message,
-          });
+          };
         });
     },
     onFiltersUpdated(newFilters) {

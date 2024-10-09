@@ -59,8 +59,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
+import { useKuzzleStore } from '@/stores';
 import { truncateName } from '@/utils';
 
 export default {
@@ -84,7 +85,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapState(useKuzzleStore, ['wrapper']),
     hasFilter() {
       return this.selectedRoles.length > 0;
     },

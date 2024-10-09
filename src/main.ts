@@ -1,14 +1,13 @@
 import Vue from 'vue';
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
+import { createPinia, PiniaVuePlugin } from 'pinia';
+import VueRouter from 'vue-router';
 
 import createRoutes from './routes/index';
 import './plugins/logger';
-
+import { useKuzzleStore } from './stores';
 import VueFormGenerator from 'vue-form-generator';
-
 import 'vue-form-generator/dist/vfg.css';
-import { createStore } from './services/createStore';
-import { KKuzzleGettersTypes, StoreNamespaceTypes } from './store';
 
 import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue';
 import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue';
@@ -18,15 +17,19 @@ import App from './App.vue';
 
 Reflect.defineProperty(window, 'kuzzle', {
   get() {
-    return this.$store.getters[`${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.$KUZZLE}`];
+    const kuzzleStore = useKuzzleStore();
+    return kuzzleStore.$kuzzle;
   },
 });
 
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
-const store = createStore();
-const router = createRoutes(Vue.prototype.$log, store);
+Vue.use(PiniaVuePlugin);
+const pinia = createPinia();
+
+Vue.use(VueRouter);
+const router = createRoutes(Vue.prototype.$log);
 
 Vue.component('FieldJsonFormInput', JsonFormInput);
 Vue.component('FieldDateTimeFormInput', DateTimeFormInput);
@@ -50,7 +53,7 @@ Vue.use(VueFormGenerator);
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  pinia,
   router,
-  store,
   render: (h) => h(App),
 });

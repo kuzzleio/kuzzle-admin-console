@@ -78,9 +78,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import { KAuthActionsTypes, KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue';
 
@@ -88,6 +88,12 @@ export default {
   name: 'MainMenu',
   components: {
     EnvironmentSwitch,
+  },
+  setup() {
+    return {
+      authStore: useAuthStore(),
+      kuzzleStore: useKuzzleStore(),
+    };
   },
   data() {
     return {
@@ -111,11 +117,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['hasSecurityRights', 'user']),
+    ...mapState(useAuthStore, ['hasSecurityRights', 'user']),
     currentEnvironmentColor() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
-      ].color;
+      return this.kuzzleStore.currentEnvironment?.color;
     },
     currentUserName() {
       if (!this.user) {
@@ -139,7 +143,7 @@ export default {
   methods: {
     async doLogout() {
       try {
-        await this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.DO_LOGOUT}`);
+        await this.authStore.doLogout();
       } catch (error) {
         this.$log.error(error);
       } finally {

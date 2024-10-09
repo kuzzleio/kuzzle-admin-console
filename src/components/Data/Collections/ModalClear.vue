@@ -34,9 +34,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import Focus from '@/directives/focus.directive';
+import { useKuzzleStore } from '@/stores';
 
 export default {
   name: 'ClearCollectionModal',
@@ -54,7 +55,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
     confirmationOk() {
       return this.collection !== null && this.collection === this.confirmation;
     },

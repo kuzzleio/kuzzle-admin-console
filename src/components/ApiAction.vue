@@ -73,9 +73,10 @@
 
 <script>
 import _ from 'lodash';
+import { mapState } from 'pinia';
 import { Multipane, MultipaneResizer } from 'vue-multipane';
-import { mapGetters } from 'vuex';
 
+import { useAuthStore, useKuzzleStore } from '@/stores';
 import { truncateName } from '@/utils';
 
 import QueryCard from '@/components/ApiAction/QueryCard.vue';
@@ -103,8 +104,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
-    ...mapGetters('auth', ['canGetPublicApi', 'canGetOpenApi']),
+    ...mapState(useKuzzleStore, ['$kuzzle', 'currentEnvironment']),
+    ...mapState(useAuthStore, ['canGetPublicApi', 'canGetOpenApi']),
     emptyTab() {
       return {
         query: {

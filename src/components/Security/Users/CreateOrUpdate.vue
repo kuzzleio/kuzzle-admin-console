@@ -94,12 +94,12 @@
 import { useVuelidate } from '@vuelidate/core';
 import { not, helpers } from '@vuelidate/validators';
 import Promise from 'bluebird';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import MainSpinner from '../../Common/MainSpinner.vue';
 import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
-import { KAuthActionsTypes, KAuthGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 import { startsWithSpace, isWhitespace } from '@/validators';
 
 import Basic from './Steps/Basic.vue';
@@ -122,7 +122,10 @@ export default {
     },
   },
   setup() {
-    return { v$: useVuelidate() };
+    return {
+      v$: useVuelidate(),
+      authStore: useAuthStore(),
+    };
   },
   data() {
     return {
@@ -174,7 +177,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
+    ...mapState(useKuzzleStore, ['$kuzzle', 'wrapper']),
   },
   async mounted() {
     this.loading = true;
@@ -321,15 +324,9 @@ export default {
             },
             credentials: this.credentials,
           });
-          if (
-            !this.$store.getters[
-              `${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.ADMIN_ALREADY_EXISTS}`
-            ]
-          ) {
+          if (!this.authStore.adminAlreadyExists) {
             try {
-              await this.$store.dispatch(
-                `${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.CHECK_FIRST_ADMIN}`,
-              );
+              await this.authStore.checkFirstAdmin();
             } catch (err) {
               this.$log.error(err);
             }

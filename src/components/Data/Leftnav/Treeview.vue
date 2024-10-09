@@ -36,10 +36,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import { filterIndexesByKeyword } from '@/services/indexHelpers';
-import { KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useStorageIndexStore } from '@/stores';
 
 import IndexBranch from './IndexBranch.vue';
 
@@ -52,25 +52,28 @@ export default {
     indexName: String,
     collectionName: String,
   },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
+  },
   data() {
     return {
       filter: '',
     };
   },
   computed: {
-    ...mapGetters('auth', ['canSearchIndex']),
+    ...mapState(useAuthStore, ['canSearchIndex']),
     orderedFilteredIndexes() {
       return [...filterIndexesByKeyword(this.indexes, this.filter)].sort((a, b) =>
         a.name.localeCompare(b.name),
       );
     },
     isLoading() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.LOADING_INDEXES}`
-      ];
+      return this.storageIndexStore.loadingIndexes;
     },
     indexes() {
-      return this.$store.getters[`${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.INDEXES}`];
+      return this.storageIndexStore.indexes;
     },
   },
 };

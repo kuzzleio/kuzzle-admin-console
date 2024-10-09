@@ -47,12 +47,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useAuthStore } from '@/stores';
 
 export default {
   name: 'SecurityLayout',
   computed: {
-    ...mapGetters('auth', ['canManageUsers', 'canManageRoles', 'canManageProfiles']),
+    ...mapState(useAuthStore, ['canManageUsers', 'canManageRoles', 'canManageProfiles']),
   },
 };
 </script>

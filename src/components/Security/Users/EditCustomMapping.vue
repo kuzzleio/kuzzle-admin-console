@@ -83,10 +83,11 @@
  * This feature is currently freezed.
  */
 import omit from 'lodash/omit';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import JsonEditor from '../../Common/JsonEditor.vue';
 import Headline from '../../Materialize/Headline.vue';
+import { useKuzzleStore } from '@/stores';
 
 export default {
   name: 'UsersCustomMappingWizard',
@@ -102,7 +103,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
+    ...mapState(useKuzzleStore, ['wrapper', 'currentEnvironment']),
     isMappingValid() {
       try {
         JSON.parse(this.mappingValue);

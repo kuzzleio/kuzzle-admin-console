@@ -36,7 +36,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useKuzzleStore } from '@/stores';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
 
@@ -68,6 +70,11 @@ export default {
       },
     },
   },
+  setup() {
+    return {
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
   data() {
     return {
       rawFilter: `{
@@ -78,7 +85,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapState(useKuzzleStore, ['wrapper']),
     filterState() {
       try {
         return JSON.parse(this.rawFilter);

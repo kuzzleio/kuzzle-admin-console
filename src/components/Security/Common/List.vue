@@ -55,7 +55,7 @@ import ProfileItem from '../Profiles/ProfileItem.vue';
 import RoleItem from '../Roles/RoleItem.vue';
 import UserItem from '../Users/UserItem.vue';
 import { availableFilters } from '@/services/filterManager';
-import { KToasterMutationsTypes, StoreNamespaceTypes } from '@/store';
+import { useToasterStore } from '@/stores';
 
 import CrudlDocument from './CrudlDocument.vue';
 
@@ -80,6 +80,11 @@ export default {
     performDelete: Function,
     routeCreate: String,
     routeUpdate: String,
+  },
+  setup() {
+    return {
+      toasterStore: useToasterStore(),
+    };
   },
   data() {
     return {
@@ -172,9 +177,9 @@ export default {
           this.totalDocuments = res.total;
         })
         .catch((e) => {
-          this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
+          this.toasterStore.toast = {
             text: 'An error occurred while performing search: <br />' + e.message,
-          });
+          };
         });
     },
     editDocument(route, id) {

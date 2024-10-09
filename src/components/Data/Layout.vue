@@ -29,10 +29,10 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import { Multipane, MultipaneResizer } from 'vue-multipane';
-import { mapGetters } from 'vuex';
 
-import { KIndexActionsTypes, KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useStorageIndexStore } from '@/stores';
 import { setPersistedItem, getPersistedItem } from './itemsStorage';
 
 import Treeview from '@/components/Data/Leftnav/Treeview.vue';
@@ -46,6 +46,11 @@ export default {
     MultipaneResizer,
     DataNotFound,
   },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
+  },
   data() {
     return {
       isFetching: true,
@@ -55,8 +60,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('index', ['loadingIndexes', 'loadingCollections']),
-    ...mapGetters('auth', ['isAuthenticated']),
+    ...mapState(useStorageIndexStore, ['loadingIndexes', 'loadingCollections']),
+    ...mapState(useAuthStore, ['isAuthenticated']),
     indexName() {
       return this.$route.params.indexName;
     },
@@ -102,9 +107,7 @@ export default {
     },
     async fetchIndexList() {
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.FETCH_INDEX_LIST}`,
-        );
+        await this.storageIndexStore.fetchIndexList();
       } catch (error) {
         this.$log.error(error);
         this.$bvToast.toast('The complete error has been printed to the console.', {
@@ -119,19 +122,14 @@ export default {
     },
     async fetchCollectionList() {
       try {
-        const index = this.$store.getters[
-          `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
-        ](this.indexName);
+        const index = this.storageIndexStore.getOneIndex(this.indexName);
 
         if (!index) {
           this.handleDataNotFound();
           return;
         }
 
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.FETCH_COLLECTION_LIST}`,
-          index,
-        );
+        await this.storageIndexStore.fetchCollectionList(index);
       } catch (error) {
         this.$log.error(error);
         this.$bvToast.toast('The complete error has been printed to the console.', {
@@ -146,31 +144,21 @@ export default {
     },
     async fetchCollectionMapping() {
       try {
-        const index = this.$store.getters[
-          `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
-        ](this.indexName);
+        const index = this.storageIndexStore.getOneIndex(this.indexName);
 
         if (!index) {
           this.handleDataNotFound();
           return;
         }
 
-        const collection = this.$store.getters[
-          `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
-        ](index, this.collectionName);
+        const collection = this.storageIndexStore.getOneCollection(index, this.collectionName);
 
         if (!collection) {
           this.handleDataNotFound();
           return;
         }
 
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.FETCH_COLLECTION_MAPPING}`,
-          {
-            index,
-            collection,
-          },
-        );
+        await this.storageIndexStore.fetchCollectionMapping({ index, collection });
       } catch (error) {
         this.$log.error(error);
         this.$bvToast.toast('The complete error has been printed to the console.', {

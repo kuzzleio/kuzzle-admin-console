@@ -54,12 +54,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useAuthStore } from '@/stores';
 
 export default {
   name: 'CollectionTabs',
   computed: {
-    ...mapGetters('auth', ['canCreateDocument', 'canSubscribe']),
+    ...mapState(useAuthStore, ['canCreateDocument', 'canSubscribe']),
   },
   methods: {
     isRouteActive(routeName) {

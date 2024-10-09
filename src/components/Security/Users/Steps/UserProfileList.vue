@@ -54,7 +54,9 @@
 </template>
 
 <script type="text/javascript">
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useKuzzleStore } from '@/stores';
 
 export default {
   name: 'UserProfileList',
@@ -71,7 +73,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapState(useKuzzleStore, ['wrapper']),
     availableProfiles() {
       return this.profileList
         .filter((profile) => {

@@ -44,10 +44,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import Focus from '@/directives/focus.directive';
-import { KAuthActionsTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 export default {
   name: 'LoginForm',
@@ -57,6 +57,11 @@ export default {
   props: {
     onLogin: { type: Function, default: () => {} },
   },
+  setup() {
+    return {
+      authStore: useAuthStore(),
+    };
+  },
   data() {
     return {
       username: null,
@@ -65,7 +70,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
   },
   methods: {
     dismissError() {
@@ -74,10 +79,11 @@ export default {
     async login() {
       this.error = '';
       try {
-        await this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.DO_LOGIN}`, {
+        await this.authStore.doLogin({
           username: this.username,
           password: this.password,
         });
+
         this.onLogin(); // TODO change this to $emit
       } catch (err) {
         if (
@@ -102,10 +108,7 @@ export default {
       this.error = '';
       this.$kuzzle.jwt = null;
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.SET_SESSION}`,
-          'anonymous',
-        );
+        await this.authStore.setSession('anonymous');
         await this.onLogin();
       } catch (error) {
         this.error = error.message;

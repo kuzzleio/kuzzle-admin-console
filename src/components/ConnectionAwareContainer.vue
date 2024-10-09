@@ -41,17 +41,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import { antiGlitchOverlayTimeout } from '../utils';
-import {
-  KAuthActionsTypes,
-  KAuthGettersTypes,
-  KAuthMutationsTypes,
-  KKuzzleActionsTypes,
-  KKuzzleMutationsTypes,
-  StoreNamespaceTypes,
-} from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import OfflineSpinner from './Common/Offline.vue';
 import ErrorPage from './Error/KuzzleErrorPage.vue';
@@ -62,24 +55,30 @@ export default {
     OfflineSpinner,
     ErrorPage,
   },
+  setup() {
+    return {
+      authStore: useAuthStore(),
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
   data() {
     return {
       showOfflineSpinner: false,
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
+    ...mapState(useKuzzleStore, ['$kuzzle', 'currentEnvironment']),
     currentEnvironmentId() {
-      return this.$store.state.kuzzle.currentId;
+      return this.kuzzleStore.currentId;
     },
     kuzzleError() {
-      return this.$store.state.kuzzle.errorFromKuzzle;
+      return this.kuzzleStore.errorFromKuzzle;
     },
     online() {
-      return this.$store.state.kuzzle.online;
+      return this.kuzzleStore.online;
     },
     connecting() {
-      return this.$store.state.kuzzle.connecting;
+      return this.kuzzleStore.connecting;
     },
   },
   watch: {
@@ -137,48 +136,32 @@ export default {
         this.$log.error(`ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`);
       });
       this.$kuzzle.addListener('connected', async () => {
-        this.$store.commit(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_CONNECTING}`,
-          false,
-        );
-        this.$store.commit(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_ONLINE}`,
-          true,
-        );
+        this.kuzzleStore.connecting = false;
+        this.kuzzleStore.online = true;
+
         this.$log.debug('ConnectionAwareContainer::initializing auth upon connection...');
         try {
-          await this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.INIT}`);
+          await this.authStore.init();
         } catch (error) {
           this.$log.error(
             `ConnectionAwareContainer:initializing auth: "${error.message}" - code: ${error.code} - id: ${error.id}`,
           );
           if (error.id === 'api.process.incompatible_sdk_version') {
-            return this.$store.dispatch(
-              `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.ON_CONNECTION_ERROR}`,
-              error,
-            );
+            return this.kuzzleStore.onConnectionError(error);
           }
         }
         this.authenticationGuard();
       });
       this.$kuzzle.addListener('reconnected', () => {
-        this.$store.commit(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_CONNECTING}`,
-          false,
-        );
-        this.$store.commit(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_ONLINE}`,
-          true,
-        );
+        this.kuzzleStore.connecting = false;
+        this.kuzzleStore.online = true;
+
         this.$log.debug('ConnectionAwareContainer::checking token after reconnection...');
-        this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.CHECK_TOKEN}`);
+        this.authStore.checkToken();
       });
       this.$kuzzle.addListener('disconnected', () => {
         this.$log.debug('ConnectionAwareContainer::backend went offline...');
-        this.$store.commit(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleMutationsTypes.SET_ONLINE}`,
-          false,
-        );
+        this.kuzzleStore.online = false;
       });
     },
     removeListeners() {
@@ -204,17 +187,13 @@ export default {
     },
     async onEnvironmentSwitch() {
       this.$log.debug('ConnectionAwareContainer::environmentSwitched');
-      this.$store.commit(
-        `${StoreNamespaceTypes.AUTH}/${KAuthMutationsTypes.SET_TOKEN_VALID}`,
-        false,
-      );
+      this.authStore.tokenValid = false;
+
       this.updatePageTitle();
       this.removeListeners();
       this.initListeners();
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.CONNECT_TO_CURRENT_ENVIRONMENT}`,
-        );
+        await this.kuzzleStore.connectToCurrentEnvironment();
       } catch (error) {
         this.$log.error(`ConnectionAwareContainer:onEnvironmentSwitch: ${error.message}`);
       }
@@ -226,7 +205,7 @@ export default {
       }
       if (
         this.$route.matched.some((record) => record.meta.requiresAuth) &&
-        !this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.IS_AUTHENTICATED}`]
+        !this.authStore.isAuthenticated
       ) {
         this.$log.debug('ConnectionAwareContainer::not authenticated');
         this.$router.push({ name: 'Login', query: { to: this.$route.name } });

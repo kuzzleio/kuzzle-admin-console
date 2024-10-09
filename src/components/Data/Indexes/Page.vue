@@ -167,9 +167,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import { KIndexActionsTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useStorageIndexStore } from '@/stores';
 
 import ListNotAllowed from '@/components/Common/ListNotAllowed.vue';
 import Headline from '@/components/Materialize/Headline.vue';
@@ -185,6 +185,11 @@ export default {
     DeleteIndexModal,
     BulkDeleteIndexesModal,
     ListNotAllowed,
+  },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   data() {
     return {
@@ -230,8 +235,8 @@ export default {
     this.updateFilteredIndexes(this.indexes);
   },
   computed: {
-    ...mapGetters('auth', ['canSearchIndex', 'canCreateIndex']),
-    ...mapGetters('index', ['indexes', 'loadingIndexes']),
+    ...mapState(useAuthStore, ['canSearchIndex', 'canCreateIndex']),
+    ...mapState(useStorageIndexStore, ['indexes', 'loadingIndexes']),
     bulkDeleteEnabled() {
       return this.selectedIndexes.length > 0;
     },
@@ -260,10 +265,7 @@ export default {
     },
     async onConfirmDeleteModal() {
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.DELETE_INDEX}`,
-          this.indexToDelete,
-        );
+        await this.storageIndexStore.deleteIndex(this.indexToDelete);
         this.$bvModal.hide(this.deleteIndexModalId);
         await this.refreshIndexes();
       } catch (err) {
@@ -278,9 +280,7 @@ export default {
     },
     async refreshIndexes() {
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.FETCH_INDEX_LIST}`,
-        );
+        await this.storageIndexStore.fetchIndexList();
       } catch (err) {
         this.$log.error(err);
         this.$bvToast.toast('The complete error has been printed to the console.', {

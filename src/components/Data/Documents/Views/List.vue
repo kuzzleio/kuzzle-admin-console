@@ -44,10 +44,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import NewDocumentsBadge from '../Common/NewDocumentsBadge.vue';
 import DocumentListItem from '../DocumentListItem.vue';
+import { useAuthStore } from '@/stores';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 
@@ -106,7 +107,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['canDeleteDocument']),
+    ...mapState(useAuthStore, ['canDeleteDocument']),
     hasSelectedDocuments() {
       return this.selectedDocuments.length > 0;
     },

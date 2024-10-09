@@ -26,9 +26,10 @@
 </template>
 
 <script type="text/javascript">
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import MSelect from '../../Common/MSelect.vue';
+import { useKuzzleStore } from '@/stores';
 
 export default {
   name: 'RoleChips',
@@ -46,7 +47,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapState(useKuzzleStore, ['wrapper']),
     availableRoles() {
       return this.roleList.filter((role) => {
         return this.addedRoles.indexOf(role.id) === -1;

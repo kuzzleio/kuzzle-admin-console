@@ -254,7 +254,7 @@
 <script>
 import { isEqual } from 'lodash';
 import moment from 'moment';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import JsonEditor from '../../Common/JsonEditor.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -262,7 +262,7 @@ import Notification from '../Realtime/Notification.vue';
 import JsonFormatter from '@/directives/json-formatter.directive';
 import * as filterManager from '@/services/filterManager';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
-import { KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
 
 import DeleteCollectionModal from './DeleteCollectionModal.vue';
@@ -286,6 +286,11 @@ export default {
     indexName: String,
     collectionName: String,
   },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
+  },
   data() {
     return {
       advancedFiltersVisible: false,
@@ -300,18 +305,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
-    ...mapGetters('auth', ['canSubscribe']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
+    ...mapState(useAuthStore, ['canSubscribe']),
     index() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
-      ](this.indexName);
+      return this.storageIndexStore.getOneIndex(this.indexName);
     },
     collection() {
       return this.index
-        ? this.$store.getters[
-            `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
-          ](this.index, this.collectionName)
+        ? this.storageIndexStore.getOneCollection(this.index, this.collectionName)
         : null;
     },
     collectionMapping() {

@@ -75,8 +75,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapState } from 'pinia';
 
+import { useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
 
 import HighlightedSpan from '@/components/Common/HighlightedSpan.vue';
@@ -105,7 +106,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('index', ['loadingCollections']),
+    ...mapState(useStorageIndexStore, ['loadingCollections']),
     showMoreCollectionsDisplay() {
       if (
         this.filter.length > 0 &&
@@ -153,7 +154,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('index', ['fetchCollectionList']),
+    ...mapActions(useStorageIndexStore, ['fetchCollectionList']),
     truncateName,
     async onToggleBranchClicked() {
       if (!this.open) {

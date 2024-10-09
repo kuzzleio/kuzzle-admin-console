@@ -67,9 +67,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import { KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import ModalClear from './ModalClear.vue';
 
@@ -88,17 +88,20 @@ export default {
       required: true,
     },
   },
+  setup() {
+    return {
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
   data: function () {
     return {
       deleteConfirmation: '',
     };
   },
   computed: {
-    ...mapGetters('auth', ['canEditCollection', 'canTruncateCollection']),
+    ...mapState(useAuthStore, ['canEditCollection', 'canTruncateCollection']),
     backendMajorVersion() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
-      ].backendMajorVersion;
+      return this.kuzzleStore.currentEnvironment?.backendMajorVersion;
     },
   },
   methods: {

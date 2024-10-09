@@ -1,7 +1,5 @@
-import Vue from 'vue';
 import KeplerCompanion from 'kepler-companion';
 import VueRouter from 'vue-router';
-import type { Store } from 'vuex';
 
 import PageNotFound from '../components/404.vue';
 import ApiAction from '../components/ApiAction.vue';
@@ -15,51 +13,37 @@ import ResetPassword from '../components/ResetPassword.vue';
 import SecurityLayout from '../components/Security/Layout.vue';
 import Signup from '../components/Signup.vue';
 import telemetryCookies from '../services/telemetryCookies';
-import {
-  KKuzzleActionsTypes,
-  KKuzzleGettersTypes,
-  type RootState,
-  StoreNamespaceTypes,
-} from '@/store';
+import { useKuzzleStore } from '@/stores';
 import DataSubRoutes from './children/data';
 import SecuritySubRoutes from './children/security';
 
-Vue.use(VueRouter);
-
-export default function createRoutes(log, store: Store<RootState>) {
-  const environmentsGuard = async (from, to, next) => {
+export default function createRoutes(log) {
+  const environmentsGuard = async (_from, _to, next) => {
+    const kuzzleStore = useKuzzleStore();
     log.debug('Router:EnvironmentsGuard');
 
     try {
-      store.dispatch(`${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.LOAD_ENVIRONMENTS}`);
+      kuzzleStore.loadEnvironments();
     } catch (error) {
       log.error(
         'Something went wrong while loading the connections. The JSON content saved in the LocalStorage seems to be malformed.',
       );
-      log.error(error.message);
+
+      log.error((error as Error).message);
     }
 
-    const hasEnvironment =
-      store.getters[`${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.HAS_ENVIRONMENT}`];
-    const currentEnvironment =
-      store.getters[`${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`];
-    const isCurrentEnvironmentValid =
-      store.getters[
-        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.IS_CURRENT_ENVIRONMENT_VALID}`
-      ];
-
-    if (hasEnvironment) {
+    if (kuzzleStore.hasEnvironment) {
       log.debug('Has environments');
 
-      if (!currentEnvironment) {
+      if (kuzzleStore.currentEnvironment == null) {
         log.debug('No environment selected');
         return next({ name: 'SelectEnvironment' });
       }
-      if (!isCurrentEnvironmentValid) {
+      if (!kuzzleStore.isCurrentEnvironmentValid) {
         log.debug('Current environment is not valid');
         return next({
           name: 'EditEnvironment',
-          params: { id: store.state.kuzzle.currentId },
+          params: { id: kuzzleStore.currentId },
         });
       }
       return next();
@@ -75,10 +59,10 @@ export default function createRoutes(log, store: Store<RootState>) {
       {
         path: '/create-connection',
         name: 'CreateEnvironment',
-        beforeEnter: async (from, to, next) => {
-          await store.dispatch(
-            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.LOAD_ENVIRONMENTS}`,
-          );
+        beforeEnter: async (_from, _to, next) => {
+          const kuzzleStore = useKuzzleStore();
+          kuzzleStore.loadEnvironments();
+
           next();
         },
         props: true,
@@ -87,10 +71,10 @@ export default function createRoutes(log, store: Store<RootState>) {
       {
         path: '/edit-connection/:id',
         name: 'EditEnvironment',
-        beforeEnter: async (from, to, next) => {
-          await store.dispatch(
-            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.LOAD_ENVIRONMENTS}`,
-          );
+        beforeEnter: async (_from, _to, next) => {
+          const kuzzleStore = useKuzzleStore();
+          kuzzleStore.loadEnvironments();
+
           next();
         },
         props: (route) => ({
@@ -101,10 +85,10 @@ export default function createRoutes(log, store: Store<RootState>) {
       {
         path: '/select-connection',
         name: 'SelectEnvironment',
-        beforeEnter: async (from, to, next) => {
-          await store.dispatch(
-            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.LOAD_ENVIRONMENTS}`,
-          );
+        beforeEnter: async (_from, _to, next) => {
+          const kuzzleStore = useKuzzleStore();
+          kuzzleStore.loadEnvironments();
+
           next();
         },
         component: SelectEnvironmentPage,

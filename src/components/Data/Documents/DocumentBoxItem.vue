@@ -21,10 +21,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import Dropdown from '@/components/Materialize/Dropdown';
 import JsonFormat from '@/directives/json-formatter.directive';
+import { useAuthStore } from '@/stores';
 
 export default {
   name: 'DocumentBoxItem',
@@ -43,7 +44,7 @@ export default {
     return {};
   },
   computed: {
-    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
+    ...mapState(useAuthStore, ['canEditDocument', 'canDeleteDocument']),
     documentContent() {
       const content = Object.assign(this.document.content, {});
       delete content._kuzzle_info;

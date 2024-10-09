@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { KRoutingMutationsTypes, StoreNamespaceTypes } from '@/store';
+import { useRoutingStore } from '@/stores';
 
 import ResetPasswordForm from './Common/Login/ResetPasswordForm.vue';
 
@@ -43,21 +43,19 @@ export default {
     showIntro: Boolean,
     token: String,
   },
+  setup() {
+    return {
+      routingStore: useRoutingStore(),
+    };
+  },
   methods: {
     onReset() {
-      if (
-        this.$store.getters[
-          `${StoreNamespaceTypes.ROUTING}/${KRoutingGettersTypes.ROUTE_BEFORE_REDIRECT}`
-        ]
-      ) {
-        this.$store.commit(
-          `${StoreNamespaceTypes.ROUTING}/${KRoutingMutationsTypes.SET_ROUTE_BEFORE_REDIRECT}`,
-          undefined,
-        );
+      if (this.routingStore.routeBeforeRedirect) {
+        const route = this.routingStore.routeBeforeRedirect;
+        this.routingStore.routeBeforeRedirect = undefined;
+
         this.$router.push({
-          name: this.$store.getters[
-            `${StoreNamespaceTypes.ROUTING}/${KRoutingGettersTypes.ROUTE_BEFORE_REDIRECT}`
-          ],
+          name: route,
         });
       } else {
         this.$router.push('/');

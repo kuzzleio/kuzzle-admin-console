@@ -241,8 +241,8 @@ describe('Environments', function() {
       force: true
     })
 
-    cy.contains('Connecting to Kuzzle')
-    cy.get('[data-cy="App-offline"]')
+    cy.contains('Something went wrong while connecting to Kuzzle')
+    cy.get('[data-cy="App-connectionError"]')
     cy.wait(2000)
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()

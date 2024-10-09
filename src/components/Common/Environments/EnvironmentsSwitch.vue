@@ -58,9 +58,9 @@
 
 <script>
 import { mapValues, omit } from 'lodash';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import { KKuzzleActionsTypes, KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useKuzzleStore } from '@/stores';
 import { formatForDom, sortObject } from '@/utils';
 import { isValidEnvironment } from '@/validators';
 
@@ -80,12 +80,15 @@ export default {
       default: true,
     },
   },
+  setup() {
+    return {
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
   computed: {
-    ...mapGetters('kuzzle', ['currentEnvironment']),
+    ...mapState(useKuzzleStore, ['currentEnvironment']),
     exportUrl() {
-      const envWitoutToken = mapValues(this.$store.state.kuzzle.environments, (e) =>
-        omit(e, 'token'),
-      );
+      const envWitoutToken = mapValues(this.kuzzleStore.environments, (e) => omit(e, 'token'));
 
       const blob = new Blob([JSON.stringify(envWitoutToken)], {
         type: 'application/json',
@@ -94,27 +97,19 @@ export default {
       return URL.createObjectURL(blob);
     },
     environments() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.ENVIRONMENTS}`
-      ];
+      return this.kuzzleStore.environments;
     },
   },
   methods: {
     isValidEnvironment,
     async switchEnv(id) {
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.SET_CURRENT_ENVIRONMENT}`,
-          id,
-        );
+        await this.kuzzleStore.setCurrentEnvironment(id);
         this.$emit('environmentSwitched');
       } catch (error) {
         this.$log.error(error);
         if (error.code) {
-          await this.$store.dispatch(
-            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.ON_CONNECTION_ERROR}`,
-            error,
-          );
+          await this.kuzzleStore.onConnectionError(error);
         }
       }
     },

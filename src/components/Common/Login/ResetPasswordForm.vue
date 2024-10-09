@@ -69,7 +69,7 @@
 import { useVuelidate } from '@vuelidate/core';
 import { sameAs, required, helpers } from '@vuelidate/validators';
 
-import { KAuthActionsTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore } from '@/stores';
 
 export default {
   name: 'ResetPasswordForm',
@@ -77,7 +77,10 @@ export default {
     resetToken: String,
   },
   setup() {
-    return { v$: useVuelidate() };
+    return {
+      v$: useVuelidate(),
+      authStore: useAuthStore(),
+    };
   },
   data() {
     return {
@@ -127,13 +130,10 @@ export default {
       this.error = '';
 
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.DO_RESET_PASSWORD}`,
-          {
-            password: this.password,
-            token: this.resetToken,
-          },
-        );
+        await this.authStore.doResetPassword({
+          password: this.password,
+          token: this.resetToken,
+        });
 
         this.$emit('reset-password::after');
       } catch (error) {

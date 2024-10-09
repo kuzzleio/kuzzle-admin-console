@@ -104,11 +104,12 @@
 import { useVuelidate } from '@vuelidate/core';
 import { not, requiredUnless, helpers } from '@vuelidate/validators';
 import { omit, intersection } from 'lodash';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import JsonEditor from '../../Common/JsonEditor.vue';
 import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 import { startsWithSpace, isWhitespace } from '@/validators';
 
 export default {
@@ -164,8 +165,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
-    ...mapGetters('auth', ['userProfiles']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
+    ...mapState(useAuthStore, ['userProfiles']),
     displayWarningAlert() {
       return intersection(this.attachedProfiles, this.userProfiles).length !== 0;
     },

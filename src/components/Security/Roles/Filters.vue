@@ -43,7 +43,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useKuzzleStore } from '@/stores';
 
 export default {
   name: 'RolesFilters',
@@ -52,7 +54,7 @@ export default {
     currentFilter: Object,
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
   },
   data() {
     return {

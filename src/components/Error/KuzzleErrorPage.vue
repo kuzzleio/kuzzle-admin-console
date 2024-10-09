@@ -33,12 +33,19 @@
 </template>
 
 <script>
+import { useKuzzleStore } from '@/stores';
+
 import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue';
 
 export default {
   name: 'KuzzleErrorPage',
   components: {
     EnvironmentSwitch,
+  },
+  setup() {
+    return {
+      kuzzleStore: useKuzzleStore(),
+    };
   },
   data() {
     return {
@@ -48,7 +55,7 @@ export default {
   },
   computed: {
     kuzzleError() {
-      return this.$store.state.kuzzle.errorFromKuzzle;
+      return this.kuzzleStore.errorFromKuzzle;
     },
   },
   methods: {

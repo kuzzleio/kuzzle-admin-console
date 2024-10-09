@@ -158,11 +158,12 @@
 <script>
 import L from 'leaflet';
 import get from 'lodash/get';
+import { mapState } from 'pinia';
 import { LMap, LTileLayer, LMarker, LCircle, LPolygon } from 'vue2-leaflet';
-import { mapGetters } from 'vuex';
 
 import '@/assets/leaflet.css';
 import JsonFormatter from '@/directives/json-formatter.directive';
+import { useAuthStore } from '@/stores';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 
@@ -264,7 +265,7 @@ export default {
     totalDocuments() {
       return this.geoDocuments.length;
     },
-    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
+    ...mapState(useAuthStore, ['canEditDocument', 'canDeleteDocument']),
     coordinates() {
       const coordinates = [
         ...this.geoDocuments.map((d) => d.coordinates),

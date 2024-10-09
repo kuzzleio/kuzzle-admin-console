@@ -1,4 +1,4 @@
-import type { Index } from '@/store';
+import type { Index } from '@/stores';
 
 export const filterIndexesByKeyword = (indexes: Index[], word: string) => {
   if (!word || word === '') {

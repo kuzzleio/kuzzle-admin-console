@@ -30,9 +30,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import { KToasterMutationsTypes, StoreNamespaceTypes } from '@/store';
+import { useKuzzleStore, useToasterStore } from '@/stores';
 
 import Basic from './Basic.vue';
 import CredentialsSelector from './CredentialsSelector.vue';
@@ -46,6 +46,11 @@ export default {
     CustomData,
   },
   props: ['step', 'isUpdate'],
+  setup() {
+    return {
+      toasterStore: useToasterStore(),
+    };
+  },
   data() {
     return {
       kuid: null,
@@ -59,7 +64,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
+    ...mapState(useKuzzleStore, ['$kuzzle', 'wrapper']),
   },
   async mounted() {
     this.loading = true;
@@ -119,9 +124,9 @@ export default {
       this.loading = false;
       this.updateUser();
     } catch (e) {
-      this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
+      this.toasterStore.toast = {
         text: e.message,
-      });
+      };
     }
   },
   methods: {

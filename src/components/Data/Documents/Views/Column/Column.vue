@@ -222,13 +222,13 @@
 <script>
 import defaultsDeep from 'lodash/defaultsDeep';
 import get from 'lodash/get';
+import { mapState } from 'pinia';
 import draggable from 'vuedraggable';
-import { mapGetters } from 'vuex';
 
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { flattenObjectMapping } from '@/services/collectionHelper';
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
-import { KAuthActionsTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 import { truncateName } from '@/utils';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
@@ -265,6 +265,11 @@ export default {
     notifications: Object,
     hasNewDocuments: Boolean,
   },
+  setup() {
+    return {
+      authStore: useAuthStore(),
+    };
+  },
   data() {
     return {
       itemsPerPage: [10, 25, 50, 100, 500],
@@ -286,8 +291,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument', 'user']),
-    ...mapGetters('kuzzle', ['wrapper', 'currentEnvironment']),
+    ...mapState(useAuthStore, ['canEditDocument', 'canDeleteDocument', 'user']),
+    ...mapState(useKuzzleStore, ['wrapper', 'currentEnvironment']),
     exportUrl() {
       const protocol = this.currentEnvironment.ssl ? 'https' : 'http';
       const baseUrl = `${protocol}://${this.currentEnvironment.host}:${this.currentEnvironment.port}`;
@@ -376,9 +381,7 @@ export default {
   },
   methods: {
     async fetchSingleUseToken() {
-      this.singleUseToken = await this.$store.dispatch(
-        `${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.CREATE_SINGLE_USE_TOKEN}`,
-      );
+      this.singleUseToken = await this.authStore.createSingleUseToken();
     },
     clearSingleUseToken() {
       this.singleUseToken = null;

@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { KIndexActionsTypes, StoreNamespaceTypes } from '@/store';
+import { useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
 
 export default {
@@ -56,6 +56,11 @@ export default {
       type: Object,
       required: false,
     },
+  },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   data() {
     return {
@@ -91,13 +96,10 @@ export default {
       }
 
       try {
-        this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.DELETE_COLLECTION}`,
-          {
-            index: this.index,
-            collection: this.collection,
-          },
-        );
+        this.storageIndexStore.deleteCollection({
+          index: this.index,
+          collection: this.collection,
+        });
 
         this.onDeleteSuccess();
       } catch (err) {

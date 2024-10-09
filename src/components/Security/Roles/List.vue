@@ -102,10 +102,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import RoleItem from '../Roles/RoleItem.vue';
 import * as filterManager from '@/services/filterManager';
+import { useKuzzleStore } from '@/stores';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import DeleteModal from './DeleteModal.vue';
@@ -143,7 +144,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapState(useKuzzleStore, ['wrapper']),
     displayBulkDelete() {
       return this.selectedDocuments.length > 0;
     },

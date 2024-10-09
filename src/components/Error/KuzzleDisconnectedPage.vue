@@ -17,7 +17,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue';
 import Connecting from './Connecting.vue';
@@ -38,7 +40,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
   },
   mounted() {
     this.host = this.$kuzzle.protocol.host;

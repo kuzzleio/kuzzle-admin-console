@@ -35,9 +35,9 @@
 <script>
 import get from 'lodash/get';
 import omit from 'lodash/omit';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import { KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 
 import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';
 import Headline from '@/components/Materialize/Headline.vue';
@@ -55,6 +55,11 @@ export default {
     indexName: { type: String, required: true },
     collectionName: { type: String, required: true },
   },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
+  },
   data() {
     return {
       document: {},
@@ -63,22 +68,18 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
-    ...mapGetters('auth', ['canEditDocument']),
+    ...mapState(useKuzzleStore, ['$kuzzle', 'wrapper']),
+    ...mapState(useAuthStore, ['canEditDocument']),
     mappingAttributes() {
       return get(this, 'collection.mapping', null)
         ? omit(this.collection.mapping, '_kuzzle_info')
         : null;
     },
     index() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
-      ](this.indexName);
+      return this.storageIndexStore.getOneIndex(this.indexName);
     },
     collection() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
-      ](this.index, this.collectionName);
+      return this.storageIndexStore.getOneCollection(this.index, this.collectionName);
     },
     hasRights() {
       return this.canEditDocument(this.indexName, this.collectionName);

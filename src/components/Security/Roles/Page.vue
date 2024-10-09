@@ -61,11 +61,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
-import { KAuthGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import RoleList from './List.vue';
 
@@ -75,6 +75,11 @@ export default {
     ListNotAllowed,
     RoleList,
     Headline,
+  },
+  setup() {
+    return {
+      authStore: useAuthStore(),
+    };
   },
   methods: {
     async revokeAnonymous() {
@@ -147,16 +152,14 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
-    ...mapGetters('auth', ['canSearchRole', 'canCreateRole']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
+    ...mapState(useAuthStore, ['canSearchRole', 'canCreateRole']),
     displayRevokeAnonymous() {
       return (
-        this.$store.getters[
-          `${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.ADMIN_ALREADY_EXISTS}`
-        ] &&
-        this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.CAN_EDIT_ROLE}`] &&
-        this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.CAN_MANAGE_ROLES}`] &&
-        this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.USER}`].id !== -1
+        this.authStore.adminAlreadyExists &&
+        this.authStore.canEditRole &&
+        this.authStore.canManageRoles &&
+        this.authStore.user?.id !== -1
       );
     },
   },

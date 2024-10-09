@@ -75,10 +75,11 @@
 import cloneDeep from 'lodash/cloneDeep';
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
+import { useAuthStore } from '@/stores';
 import { dateFromTimestamp } from '@/utils';
 
 export default {
@@ -121,7 +122,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
+    ...mapState(useAuthStore, ['canEditDocument', 'canDeleteDocument']),
     notifBadgeVariant() {
       if (!get(this.notification, 'action')) {
         return '';

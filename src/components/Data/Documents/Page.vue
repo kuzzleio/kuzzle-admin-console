@@ -239,7 +239,7 @@ import get from 'lodash/get';
 import isUndefined from 'lodash/isUndefined';
 import mapValues from 'lodash/mapValues';
 import pickBy from 'lodash/pickBy';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import DeleteCollectionModal from '../Collections/DeleteCollectionModal.vue';
 import CollectionDropdownAction from '../Collections/DropdownAction.vue';
@@ -254,7 +254,7 @@ import {
   saveSettingsForCollection,
 } from '@/services/localSettings';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
-import { KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
 
 import Filters from '@/components/Common/Filters/Filters.vue';
@@ -289,6 +289,11 @@ export default {
   props: {
     indexName: String,
     collectionName: String,
+  },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   data() {
     return {
@@ -329,8 +334,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper', '$kuzzle']),
-    ...mapGetters('auth', [
+    ...mapState(useKuzzleStore, ['wrapper', '$kuzzle']),
+    ...mapState(useAuthStore, [
       'canSearchDocument',
       'canCreateDocument',
       'canDeleteDocument',
@@ -403,15 +408,11 @@ export default {
         }));
     },
     index() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
-      ](this.indexName);
+      return this.storageIndexStore.getOneIndex(this.indexName);
     },
     collection() {
       return this.index
-        ? this.$store.getters[
-            `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
-          ](this.index, this.collectionName)
+        ? this.storageIndexStore.getOneCollection(this.index, this.collectionName)
         : null;
     },
     collectionMapping() {

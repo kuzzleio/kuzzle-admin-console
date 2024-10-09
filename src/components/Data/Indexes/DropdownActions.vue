@@ -30,9 +30,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import { KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 export default {
   name: 'IndexDropdownAction',
@@ -42,12 +42,15 @@ export default {
       required: true,
     },
   },
+  setup() {
+    return {
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
   computed: {
-    ...mapGetters('auth', ['canDeleteIndex']),
+    ...mapState(useAuthStore, ['canDeleteIndex']),
     backendMajorVersion() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
-      ].backendMajorVersion;
+      return this.kuzzleStore.currentEnvironment?.backendMajorVersion;
     },
   },
   methods: {

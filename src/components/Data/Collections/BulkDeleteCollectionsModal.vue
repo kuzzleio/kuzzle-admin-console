@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { KIndexActionsTypes, StoreNamespaceTypes } from '@/store';
+import { useStorageIndexStore } from '@/stores';
 
 const BULK_DELETE_CONFIRMATION = 'DELETE';
 
@@ -54,6 +54,11 @@ export default {
       type: Object,
       required: false,
     },
+  },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   data() {
     return {
@@ -88,13 +93,10 @@ export default {
       }
 
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.BULK_DELETE_COLLECTIONS}`,
-          {
-            index: this.index,
-            collections: this.collections,
-          },
-        );
+        await this.storageIndexStore.bulkDeleteCollections({
+          index: this.index,
+          collections: this.collections,
+        });
 
         this.onDeleteSuccess();
       } catch (err) {

@@ -93,9 +93,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import jsonFormatter from '@/directives/json-formatter.directive';
+import { useAuthStore } from '@/stores';
 
 const MAX_PROFILES = 5;
 
@@ -116,7 +117,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['canEditUser', 'canDeleteUser']),
+    ...mapState(useAuthStore, ['canEditUser', 'canDeleteUser']),
     profileList() {
       if (!this.document.profileIds) {
         return [];

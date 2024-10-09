@@ -72,9 +72,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import jsonFormatter from '@/directives/json-formatter.directive';
+import { useAuthStore } from '@/stores';
 
 export default {
   name: 'ProfileItem',
@@ -93,7 +94,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['canEditProfile', 'canDeleteProfile']),
+    ...mapState(useAuthStore, ['canEditProfile', 'canDeleteProfile']),
     checkboxId() {
       return `checkbox-${this.document._id}`;
     },

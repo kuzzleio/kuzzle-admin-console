@@ -197,7 +197,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useKuzzleStore } from '@/stores';
 
 const emptyBasicFilter = { attribute: null, operator: 'contains', value: null };
 const emptySorting = { attribute: null, order: 'asc' };
@@ -241,7 +243,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapState(useKuzzleStore, ['wrapper']),
     selectAttributesValues() {
       return [
         { text: '_id', value: '_id' },

@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { KKuzzleGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue';
 
@@ -46,11 +46,14 @@ export default {
   components: {
     EnvironmentSwitch,
   },
+  setup() {
+    return {
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
   computed: {
     currentEnvironment() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
-      ];
+      return this.kuzzleStore.currentEnvironment;
     },
     host() {
       return this.currentEnvironment ? this.currentEnvironment.host : '';
@@ -59,7 +62,7 @@ export default {
       return this.currentEnvironment ? this.currentEnvironment.port : '';
     },
     errorInternalMessage() {
-      return this.$store.state.kuzzle.errorFromKuzzle;
+      return this.kuzzleStore.errorFromKuzzle;
     },
   },
   methods: {

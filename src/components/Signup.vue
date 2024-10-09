@@ -123,14 +123,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import {
-  KAuthActionsTypes,
-  KAuthMutationsTypes,
-  KKuzzleActionsTypes,
-  StoreNamespaceTypes,
-} from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
 
@@ -138,6 +133,12 @@ export default {
   name: 'Signup',
   components: {
     EnvironmentSwitch,
+  },
+  setup() {
+    return {
+      authStore: useAuthStore(),
+      kuzzleStore: useKuzzleStore(),
+    };
   },
   data() {
     return {
@@ -150,7 +151,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
   },
   methods: {
     async signup() {
@@ -183,14 +184,9 @@ export default {
             },
           },
         });
-        this.$store.dispatch(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT}`,
-          null,
-        );
-        this.$store.commit(
-          `${StoreNamespaceTypes.AUTH}/${KAuthMutationsTypes.SET_ADMIN_EXISTS}`,
-          true,
-        );
+
+        this.kuzzleStore.updateTokenCurrentEnvironment(null);
+        this.authStore.adminAlreadyExists = true;
         this.$router.push({ name: 'Login' });
       } catch (err) {
         if (
@@ -214,8 +210,8 @@ export default {
     },
     loginAsGuest() {
       this.error = null;
-      this.$store
-        .dispatch(`${StoreNamespaceTypes.Auth}/${KAuthActionsTypes.SET_SESSION}`, 'anonymous')
+      this.authStore
+        .setSession('anonymous')
         .then(() => {
           this.$router.go({ name: 'Data' });
         })

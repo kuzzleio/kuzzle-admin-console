@@ -59,7 +59,7 @@
 import { useVuelidate } from '@vuelidate/core';
 import { not, required, helpers } from '@vuelidate/validators';
 
-import { KIndexActionsTypes, StoreNamespaceTypes } from '@/store';
+import { useStorageIndexStore } from '@/stores';
 import { startsWithSpace, isWhitespace, isUppercase } from '@/validators';
 
 function includesInvalidIndexChars(value) {
@@ -76,7 +76,10 @@ export default {
     },
   },
   setup() {
-    return { v$: useVuelidate() };
+    return {
+      v$: useVuelidate(),
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   data() {
     return {
@@ -146,10 +149,7 @@ export default {
       this.modalBusy = true;
 
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.CREATE_INDEX}`,
-          this.index,
-        );
+        await this.storageIndexStore.createIndex(this.index);
         this.onCreateSuccess();
       } catch (err) {
         this.error = err.message;

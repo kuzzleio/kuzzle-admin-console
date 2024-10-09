@@ -67,9 +67,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import * as filterManager from '@/services/filterManager';
+import { useKuzzleStore } from '@/stores';
 
 export default {
   name: 'FilterHistoryItem',
@@ -87,7 +88,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapState(useKuzzleStore, ['wrapper']),
   },
   methods: {
     isFavorite() {

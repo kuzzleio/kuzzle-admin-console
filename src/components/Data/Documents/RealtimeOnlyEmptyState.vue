@@ -29,7 +29,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useAuthStore } from '@/stores';
 
 export default {
   props: {
@@ -37,7 +39,7 @@ export default {
     collection: String,
   },
   computed: {
-    ...mapGetters('auth', ['canEditCollection']),
+    ...mapState(useAuthStore, ['canEditCollection']),
   },
 };
 </script>

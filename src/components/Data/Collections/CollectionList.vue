@@ -231,18 +231,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
 import DeleteIndexModal from '../Indexes/DeleteIndexModal.vue';
 import IndexDropdownAction from '../Indexes/DropdownActions.vue';
-import {
-  KIndexActionsTypes,
-  KIndexGettersTypes,
-  KKuzzleGettersTypes,
-  StoreNamespaceTypes,
-} from '@/store';
+import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
 
 import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal.vue';
@@ -261,6 +256,12 @@ export default {
   props: {
     indexName: String,
   },
+  setup() {
+    return {
+      kuzzleStore: useKuzzleStore(),
+      storageIndexStore: useStorageIndexStore(),
+    };
+  },
   data() {
     return {
       deleteCollectionModalId: 'deleteCollectionModal',
@@ -274,12 +275,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
-    ...mapGetters('auth', ['canSearchCollection', 'canCreateCollection', 'canEditCollection']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
+    ...mapState(useAuthStore, ['canSearchCollection', 'canCreateCollection', 'canEditCollection']),
     index() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
-      ](this.indexName);
+      return this.storageIndexStore.getOneIndex(this.indexName);
     },
     collections() {
       return this.index ? this.index.collections : [];
@@ -322,9 +321,7 @@ export default {
       return `delete-index-${this.indexName}`;
     },
     currentEnvironment() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.CURRENT_ENVIRONMENT}`
-      ];
+      return this.kuzzleStore.currentEnvironment;
     },
   },
   async created() {
@@ -338,10 +335,7 @@ export default {
     },
     async onDeleteIndexConfirm() {
       try {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.DELETE_INDEX}`,
-          this.index,
-        );
+        await this.storageIndexStore.deleteIndex(this.index);
         this.$bvModal.hide(this.deleteIndexModalId);
         this.$router.push({ name: 'Indexes', params: {} });
       } catch (err) {

@@ -126,7 +126,7 @@
 import { useVuelidate } from '@vuelidate/core';
 import { numeric, required, helpers } from '@vuelidate/validators';
 
-import { KKuzzleActionsTypes, StoreNamespaceTypes } from '@/store';
+import { useKuzzleStore } from '@/stores';
 import { DEFAULT_COLOR, ENV_COLORS, NO_ADMIN_WARNING_HOSTS } from '@/utils';
 import { isValidHostname, notIncludeScheme } from '@/validators';
 
@@ -153,7 +153,10 @@ export default {
   components: {},
   props: ['environmentId'],
   setup() {
-    return { v$: useVuelidate() };
+    return {
+      v$: useVuelidate(),
+      kuzzleStore: useKuzzleStore(),
+    };
   },
   data() {
     return {
@@ -214,7 +217,7 @@ export default {
       return ENV_COLORS;
     },
     environments() {
-      return this.$store.state.kuzzle.environments;
+      return this.kuzzleStore.environments;
     },
     useHttps() {
       return useHttps;
@@ -317,37 +320,31 @@ export default {
       this.submitting = true;
       try {
         if (this.environmentId) {
-          return this.$store.dispatch(
-            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.UPDATE_ENVIRONMENT}`,
-            {
-              id: this.environmentId,
-              environment: {
-                name: this.environment.name,
-                color: this.environment.color,
-                host: this.environment.host,
-                port: parseInt(this.environment.port),
-                ssl: this.environment.ssl,
-                backendMajorVersion: this.environment.backendMajorVersion,
-                hideAdminWarning: this.environment.hideAdminWarning,
-              },
+          return this.kuzzleStore.updateEnvironment({
+            id: this.environmentId,
+            environment: {
+              name: this.environment.name,
+              color: this.environment.color,
+              host: this.environment.host,
+              port: parseInt(this.environment.port),
+              ssl: this.environment.ssl,
+              backendMajorVersion: this.environment.backendMajorVersion,
+              hideAdminWarning: this.environment.hideAdminWarning,
             },
-          );
+          });
         } else {
-          return this.$store.dispatch(
-            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.CREATE_ENVIRONMENT}`,
-            {
-              id: this.environment.name,
-              environment: {
-                name: this.environment.name,
-                color: this.environment.color,
-                host: this.environment.host,
-                port: parseInt(this.environment.port),
-                ssl: this.environment.ssl,
-                backendMajorVersion: this.environment.backendMajorVersion,
-                hideAdminWarning: !!NO_ADMIN_WARNING_HOSTS.includes(this.environment.host),
-              },
+          return this.kuzzleStore.createEnvironment({
+            id: this.environment.name,
+            environment: {
+              name: this.environment.name,
+              color: this.environment.color,
+              host: this.environment.host,
+              port: parseInt(this.environment.port),
+              ssl: this.environment.ssl,
+              backendMajorVersion: this.environment.backendMajorVersion,
+              hideAdminWarning: !!NO_ADMIN_WARNING_HOSTS.includes(this.environment.host),
             },
-          );
+          });
         }
       } catch (error) {
         this.$log.error(error.message);

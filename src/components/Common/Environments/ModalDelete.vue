@@ -38,12 +38,7 @@
 
 <script>
 import Focus from '@/directives/focus.directive';
-import {
-  KAuthActionsTypes,
-  KKuzzleActionsTypes,
-  KKuzzleGettersTypes,
-  StoreNamespaceTypes,
-} from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 export default {
   name: 'EnvironmentDeleteModal',
@@ -52,6 +47,12 @@ export default {
   },
   components: {},
   props: ['environmentId', 'id'],
+  setup() {
+    return {
+      authStore: useAuthStore(),
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
   data() {
     return {
       envConfirmation: null,
@@ -59,7 +60,7 @@ export default {
   },
   computed: {
     environments() {
-      return this.$store.state.kuzzle.environments;
+      return this.kuzzleStore.environments;
     },
     confirmationOk() {
       return this.environmentName !== null && this.environmentName === this.envConfirmation;
@@ -77,23 +78,13 @@ export default {
     },
     async confirmDeleteEnvironment() {
       if (this.confirmationOk) {
-        if (
-          this.$store.state.kuzzle.currentId === this.environmentId &&
-          this.$store.state.kuzzle.online
-        ) {
-          await this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.DO_LOGOUT}`);
+        if (this.kuzzleStore.currentId === this.environmentId && this.kuzzleStore.online) {
+          await this.authStore.doLogout();
         }
 
-        this.$store.dispatch(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.DELETE_ENVIRONMENT}`,
-          this.environmentId,
-        );
+        this.kuzzleStore.deleteEnvironment(this.environmentId);
 
-        if (
-          this.$store.getters[
-            `${StoreNamespaceTypes.KUZZLE}/${KKuzzleGettersTypes.HAS_ENVIRONMENT}`
-          ]
-        ) {
+        if (this.kuzzleStore.hasEnvironment) {
           this.$router.push({ name: 'SelectEnvironment' });
         } else {
           this.$router.push({ name: 'CreateEnvironment' });

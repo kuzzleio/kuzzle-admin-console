@@ -56,9 +56,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import jsonFormatter from '@/directives/json-formatter.directive';
+import { useAuthStore } from '@/stores';
 
 export default {
   name: 'RoleItem',
@@ -77,7 +78,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['canEditRole', 'canDeleteRole']),
+    ...mapState(useAuthStore, ['canEditRole', 'canDeleteRole']),
   },
   watch: {
     isChecked: {

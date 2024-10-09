@@ -19,10 +19,10 @@
 </template>
 <script>
 import { omit } from 'lodash';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import PageNotAllowed from '../../Common/PageNotAllowed.vue';
-import { KIndexActionsTypes, KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useStorageIndexStore } from '@/stores';
 
 import CreateOrUpdate from './CreateOrUpdate.vue';
 
@@ -36,6 +36,11 @@ export default {
     indexName: { type: String, required: true },
     collectionName: { type: String, required: true },
   },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
+  },
   data() {
     return {
       mapping: {},
@@ -43,19 +48,15 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['canEditCollection']),
+    ...mapState(useAuthStore, ['canEditCollection']),
     hasRights() {
       return this.canEditCollection(this.indexName, this.collectionName);
     },
     index() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
-      ](this.indexName);
+      return this.storageIndexStore.getOneIndex(this.indexName);
     },
     collection() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_COLLECTION}`
-      ](this.index, this.collectionName);
+      return this.storageIndexStore.getOneCollection(this.index, this.collectionName);
     },
     fullMappings() {
       const mappings = {
@@ -66,23 +67,19 @@ export default {
       return mappings;
     },
     loading() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.LOADING_COLLECTIONS}`
-      ](this.index.name);
+      return this.storageIndexStore.loadingCollections(this.index.name);
     },
   },
   methods: {
     async update(payload) {
       this.error = '';
       try {
-        this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.UPDATE_COLLECTION}`,
-          {
-            index: this.index,
-            name: payload.name,
-            mapping: payload.mapping,
-          },
-        );
+        this.storageIndexStore.updateCollection({
+          index: this.index,
+          name: payload.name,
+          mapping: payload.mapping,
+        });
+
         this.$router.push({
           name: 'Collections',
           params: { indexName: this.index.name },

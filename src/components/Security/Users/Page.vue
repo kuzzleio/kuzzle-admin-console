@@ -59,11 +59,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import List from './List.vue';
 
@@ -80,8 +81,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
-    ...mapGetters('auth', ['canSearchUser', 'canCreateUser']),
+    ...mapState(useKuzzleStore, ['wrapper']),
+    ...mapState(useAuthStore, ['canSearchUser', 'canCreateUser']),
     mappingAttributes() {
       return this.extractAttributesFromMapping(this.userMapping);
     },

@@ -38,10 +38,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
+import { useAuthStore } from '@/stores';
 
 import List from './List.vue';
 
@@ -53,7 +54,7 @@ export default {
     Headline,
   },
   computed: {
-    ...mapGetters('auth', ['canSearchProfile', 'canCreateProfile']),
+    ...mapState(useAuthStore, ['canSearchProfile', 'canCreateProfile']),
   },
   methods: {
     createProfile() {

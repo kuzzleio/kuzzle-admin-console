@@ -118,11 +118,12 @@
 <script>
 import { useVuelidate } from '@vuelidate/core';
 import { requiredUnless } from '@vuelidate/validators';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import JsonEditor from '../../Common/JsonEditor.vue';
 import Headline from '../../Materialize/Headline.vue';
 import Focus from '@/directives/focus.directive';
+import { useKuzzleStore } from '@/stores';
 
 function isValidCollectionName(value) {
   const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(value);
@@ -153,7 +154,9 @@ export default {
     },
   },
   setup() {
-    return { v$: useVuelidate() };
+    return {
+      v$: useVuelidate(),
+    };
   },
   data() {
     return {
@@ -180,7 +183,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['currentEnvironment']),
+    ...mapState(useKuzzleStore, ['currentEnvironment']),
     indexName() {
       return this.$route.params.indexName;
     },

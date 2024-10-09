@@ -7,10 +7,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
+import { useKuzzleStore } from '@/stores';
 
 import CreateOrUpdate from './CreateOrUpdate.vue';
 
@@ -22,7 +23,7 @@ export default {
     Notice,
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapState(useKuzzleStore, ['$kuzzle']),
   },
   methods: {
     async onSubmit({ profile, id }) {

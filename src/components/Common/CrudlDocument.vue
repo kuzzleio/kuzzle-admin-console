@@ -129,7 +129,7 @@
 <script>
 import Modal from '../Materialize/Modal.vue';
 import Pagination from '../Materialize/Pagination.vue';
-import { KToasterMutationsTypes, StoreNamespaceTypes } from '@/store';
+import { useToasterStore } from '@/stores';
 
 import Filters from './Filters/Filters.vue';
 
@@ -140,7 +140,6 @@ export default {
     Modal,
     Filters,
   },
-
   props: {
     index: String,
     collection: String,
@@ -168,6 +167,11 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  setup() {
+    return {
+      toasterStore: useToasterStore(),
+    };
   },
   data() {
     return {
@@ -204,9 +208,9 @@ export default {
           return null;
         })
         .catch((e) => {
-          this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
+          this.toasterStore.toast = {
             text: e.message,
-          });
+          };
         });
     },
     confirmSingleDelete(id) {
@@ -217,9 +221,9 @@ export default {
           return null;
         })
         .catch((e) => {
-          this.$store.commit(`${StoreNamespaceTypes.TOASTER}/${KToasterMutationsTypes.SET_TOAST}`, {
+          this.toasterStore.toast = {
             text: e.message,
-          });
+          };
         });
     },
     onFiltersUpdated(newFilters) {

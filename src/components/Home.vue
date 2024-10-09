@@ -50,14 +50,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import {
-  KAuthActionsTypes,
-  KAuthGettersTypes,
-  KKuzzleActionsTypes,
-  StoreNamespaceTypes,
-} from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import LoginForm from './Common/Login/Form.vue';
 import MainMenu from './Common/MainMenu.vue';
@@ -70,6 +65,12 @@ export default {
     MainMenu,
     MainSpinner,
   },
+  setup() {
+    return {
+      authStore: useAuthStore(),
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
   data() {
     return {
       host: null,
@@ -78,12 +79,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
+    ...mapState(useKuzzleStore, ['$kuzzle', 'currentEnvironment']),
     tokenValid() {
-      return this.$store.state.auth.tokenValid;
+      return this.authStore.tokenValid;
     },
     authInitializing() {
-      return this.$store.state.auth.initializing;
+      return this.authStore.initializing;
     },
   },
   watch: {
@@ -124,27 +125,22 @@ export default {
   },
   methods: {
     hideNoAdminWarning() {
-      this.$store.dispatch(
-        `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.UPDATE_ENVIRONMENT}`,
-        {
-          id: this.$store.state.kuzzle.currentId,
-          environment: {
-            ...this.currentEnvironment,
-            hideAdminWarning: true,
-          },
+      this.kuzzleStore.updateEnvironment({
+        id: this.kuzzleStore.currentId,
+        environment: {
+          ...this.currentEnvironment,
+          hideAdminWarning: true,
         },
-      );
+      });
 
       this.$bvToast.hide('no-admin-warning');
     },
     onTokenExpired() {
-      this.$store.dispatch(`${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.SET_SESSION}`, null);
+      this.authStore.setSession(null);
     },
     noop() {},
     displayNoAdminWarning() {
-      if (
-        this.$store.getters[`${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.ADMIN_ALREADY_EXISTS}`]
-      ) {
+      if (this.authStore.adminAlreadyExists) {
         return;
       }
       if (this.currentEnvironment.hideAdminWarning) {

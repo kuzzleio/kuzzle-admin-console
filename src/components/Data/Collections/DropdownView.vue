@@ -63,7 +63,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+
+import { useAuthStore } from '@/stores';
 
 export default {
   name: 'CollectionDropdownView',
@@ -75,7 +77,7 @@ export default {
     index: String,
   },
   computed: {
-    ...mapGetters('auth', ['canSubscribe']),
+    ...mapState(useAuthStore, ['canSubscribe']),
     mappingHasIntegerField() {
       return (
         Object.keys(this.mappingAttributes).filter(

@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import PageNotAllowed from '../../Common/PageNotAllowed.vue';
-import { KIndexActionsTypes, KIndexGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useStorageIndexStore } from '@/stores';
 
 import CreateOrUpdate from './CreateOrUpdate.vue';
 
@@ -28,28 +28,28 @@ export default {
   props: {
     indexName: String,
   },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
+  },
   computed: {
-    ...mapGetters('auth', ['canCreateCollection']),
+    ...mapState(useAuthStore, ['canCreateCollection']),
     hasRights() {
       return this.canCreateCollection(this.index.name);
     },
     index() {
-      return this.$store.getters[
-        `${StoreNamespaceTypes.INDEX}/${KIndexGettersTypes.GET_ONE_INDEX}`
-      ](this.indexName);
+      return this.storageIndexStore.getOneIndex(this.indexName);
     },
   },
   methods: {
     async create(payload) {
       try {
-        this.$store.dispatch(
-          `${StoreNamespaceTypes.INDEX}/${KIndexActionsTypes.CREATE_COLLECTION}`,
-          {
-            index: this.index,
-            name: payload.name,
-            mapping: payload.mapping,
-          },
-        );
+        await this.storageIndexStore.createCollection({
+          index: this.index,
+          name: payload.name,
+          mapping: payload.mapping,
+        });
 
         this.$router.push({
           name: 'Collections',

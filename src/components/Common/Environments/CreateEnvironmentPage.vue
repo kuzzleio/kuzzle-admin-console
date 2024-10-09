@@ -51,9 +51,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import { KKuzzleActionsTypes, StoreNamespaceTypes } from '@/store';
+import { useKuzzleStore } from '@/stores';
 
 import CreateEnvironment from './CreateEnvironment.vue';
 
@@ -62,8 +62,13 @@ export default {
   components: {
     CreateEnvironment,
   },
+  setup() {
+    return {
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
   computed: {
-    ...mapGetters('kuzzle', ['hasEnvironment', 'environments']),
+    ...mapState(useKuzzleStore, ['hasEnvironment', 'environments']),
   },
   methods: {
     async submit() {
@@ -75,10 +80,7 @@ export default {
       if (Object.keys(this.environments).length > 1) {
         this.$router.push({ name: 'SelectEnvironment' });
       } else {
-        await this.$store.dispatch(
-          `${StoreNamespaceTypes.KUZZLE}/${KKuzzleActionsTypes.SET_CURRENT_ENVIRONMENT}`,
-          id,
-        );
+        await this.kuzzleStore.setCurrentEnvironment(id);
         this.$router.push('/');
       }
     },

@@ -129,11 +129,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
 import Filters from '../../Common/Filters/Filters.vue';
 import * as filterManager from '@/services/filterManager';
-import { KAuthActionsTypes, KAuthGettersTypes, StoreNamespaceTypes } from '@/store';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import DeleteModal from './DeleteModal.vue';
@@ -164,7 +164,11 @@ export default {
     routeCreate: String,
     routeUpdate: String,
   },
-
+  setup() {
+    return {
+      authStore: useAuthStore(),
+    };
+  },
   data() {
     return {
       currentFilter: new filterManager.Filter(),
@@ -181,7 +185,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapState(useKuzzleStore, ['wrapper']),
     isDocumentListFiltered() {
       return this.currentFilter.active !== filterManager.NO_ACTIVE;
     },
@@ -350,15 +354,9 @@ export default {
         this.deleteModalIsLoading = false;
         this.$bvModal.hide('modal-delete-users');
         await this.fetchDocuments();
-        if (
-          this.$store.getters[
-            `${StoreNamespaceTypes.AUTH}/${KAuthGettersTypes.ADMIN_ALREADY_EXISTS}`
-          ]
-        ) {
+        if (this.authStore.adminAlreadyExists) {
           try {
-            await this.$store.dispatch(
-              `${StoreNamespaceTypes.AUTH}/${KAuthActionsTypes.CHECK_FIRST_ADMIN}`,
-            );
+            await this.authStore.checkFirstAdmin();
           } catch (err) {
             this.$log.error(err);
             this.setError(err.message);
