@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 export class Index {
   private readonly _name: string;
   loading = false;
@@ -9,7 +7,7 @@ export class Index {
     this._name = name;
   }
 
-  get name() {
+  get name(): string {
     return this._name;
   }
 
@@ -17,11 +15,11 @@ export class Index {
     return this.collections?.length;
   }
 
-  public initCollections(collections: Collection[]) {
+  public initCollections(collections: Collection[]): void {
     this.collections = collections;
   }
 
-  public addCollection(collection: Collection) {
+  public addCollection(collection: Collection): void {
     if (this.collections == null) {
       throw new Error('Unable to perform operations, the collection list is not yet initialized');
     }
@@ -29,7 +27,7 @@ export class Index {
     this.collections.push(collection);
   }
 
-  public removeCollection(collection: Collection) {
+  public removeCollection(collection: Collection): void {
     if (this.collections == null) {
       throw new Error('Unable to perform operations, the collection list is not yet initialized');
     }
@@ -37,7 +35,7 @@ export class Index {
     this.collections = this.collections.filter((el) => el.name !== collection.name);
   }
 
-  public getOneCollection(collectionName: string) {
+  public getOneCollection(collectionName: string): Collection | undefined {
     if (this.collections == null) {
       throw new Error('Unable to perform operations, the collection list is not yet initialized');
     }
@@ -77,9 +75,9 @@ export class Collection {
     return this._type === 'realtime';
   }
 
-  private findType(name: string, type: CollectionType) {
+  private findType(name: string, type: CollectionType): CollectionType {
     if (type !== 'stored' && type !== 'realtime') {
-      throw new Error(`Unknown collection type for "${name}" :  ${type}`);
+      throw new Error(`Unknown collection type for "${name}" :  ${String(type)}`);
     }
 
     return type;

@@ -266,7 +266,7 @@ export default {
           const timestamp = _.get(doc, this.customDateField, null);
           const date = dateFromTimestamp(timestamp);
 
-          if (!date) {
+          if (date == null) {
             continue;
           }
 

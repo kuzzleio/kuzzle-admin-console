@@ -56,7 +56,7 @@ export default {
         !isObject(this.data)
       ) {
         const dateObj = dateFromTimestamp(this.data);
-        if (dateObj) {
+        if (dateObj != null) {
           return dateObj.toLocaleString('en-GB');
         }
       }

@@ -107,7 +107,7 @@ export const actions: ActionTree<IndexState, RootState> = {
   ) {
     const kuzzle = getKuzzleSdk(store.rootGetters);
 
-    if (!name) {
+    if (name.length === 0) {
       throw new Error('Invalid collection name');
     }
 

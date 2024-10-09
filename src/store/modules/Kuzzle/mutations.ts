@@ -2,14 +2,10 @@ import Vue from 'vue';
 import type { MutationTree } from 'vuex';
 
 import { KKuzzleMutationsTypes } from './constants';
-import type { KuzzleState } from './types';
+import type { CreateEnvironmentPayload, KuzzleState, UpdateEnvironmentPayload } from './types';
 
 export const mutations: MutationTree<KuzzleState> = {
-  [KKuzzleMutationsTypes.CREATE_ENVIRONMENT](state, payload) {
-    if (!payload) {
-      return;
-    }
-
+  [KKuzzleMutationsTypes.CREATE_ENVIRONMENT](state, payload: CreateEnvironmentPayload) {
     if (Object.keys(state.environments).includes(payload.id)) {
       return;
     }
@@ -20,10 +16,10 @@ export const mutations: MutationTree<KuzzleState> = {
         [payload.id]: payload.environment,
       };
     } catch (error) {
-      throw new Error(`[${payload.id}] - ${error.message}`);
+      throw new Error(`[${payload.id}] - ${(error as Error).message}`);
     }
   },
-  [KKuzzleMutationsTypes.UPDATE_ENVIRONMENT](state, payload) {
+  [KKuzzleMutationsTypes.UPDATE_ENVIRONMENT](state, payload: UpdateEnvironmentPayload) {
     if (!Object.keys(state.environments).includes(payload.id)) {
       throw new Error(`The given id ${payload.id} does not correspond to any existing
         environment.`);

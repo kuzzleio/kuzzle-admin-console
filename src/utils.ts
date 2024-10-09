@@ -18,11 +18,11 @@ export const ENV_COLORS = [
   'magenta',
 ];
 
-export const formatForDom = (word) => {
+export const formatForDom = (word: string): string => {
   return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-');
 };
 
-export const sortObject = (object) => {
+export const sortObject = (object: object): object => {
   return Object.keys(object)
     .sort()
     .reduce((result, key) => {
@@ -31,20 +31,18 @@ export const sortObject = (object) => {
     }, {});
 };
 
-export const truncateName = (name, maxLength = 50) => {
-  if (!name) {
+export const truncateName = (name: string, maxLength = 50): string => {
+  if (name.length === 0) {
     return '';
-  }
-  if (name.length <= maxLength) {
+  } else if (name.length <= maxLength) {
     return name;
   }
-  if (name.length > maxLength) {
-    return `${name.substring(0, maxLength)}...`;
-  }
+
+  return `${name.substring(0, maxLength)}...`;
 };
 
-export const dateFromTimestamp = (value) => {
-  let timestamp;
+export const dateFromTimestamp = (value: string | number): Date | null => {
+  let timestamp: number;
 
   if (typeof value === 'string') {
     if (!isNaN(Date.parse(value))) {
@@ -64,7 +62,7 @@ export const dateFromTimestamp = (value) => {
 
   const length = `${timestamp}`.length;
 
-  let date;
+  let date: Date;
   if (length === 10) {
     date = new Date(timestamp * 1000);
   } else if (length === 13) {
@@ -76,7 +74,7 @@ export const dateFromTimestamp = (value) => {
   return date;
 };
 
-export const wait = async (ms) =>
+export const wait = async (ms: number): Promise<void> =>
   await new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve();

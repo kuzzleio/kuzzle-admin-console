@@ -158,7 +158,7 @@ export default {
       const formatted = cloneDeep(this.document._source);
       this.dateFields.forEach((fieldPath) => {
         const dateObj = dateFromTimestamp(get(formatted, fieldPath));
-        if (dateObj) {
+        if (dateObj != null) {
           set(formatted, fieldPath, dateObj.toLocaleString('en-GB'));
         }
       });

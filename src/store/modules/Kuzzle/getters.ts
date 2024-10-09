@@ -45,7 +45,7 @@ export const getters: GetterTree<KuzzleState, RootState> = {
       return null;
     }
 
-    if (!state.currentId) {
+    if (state.currentId === undefined) {
       return null;
     }
 

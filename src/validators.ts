@@ -2,25 +2,25 @@ import trim from 'lodash/trim';
 
 import { ENV_COLORS } from './utils';
 
-export const startsWithSpace = (value) => {
+export const startsWithSpace = (value): boolean => {
   return value[0] === ' ';
 };
 
-export const isWhitespace = (value) => {
+export const isWhitespace = (value): boolean => {
   return trim(value) === '';
 };
-export const isValidHostname = (value) => {
+export const isValidHostname = (value): boolean => {
   return /^@$|^(\*)$|^(\*\.)?(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9](\.?))$/.test(
     value,
   );
 };
-export const notIncludeScheme = (value) => {
+export const notIncludeScheme = (value): boolean => {
   return !/^(http|ws):\/\//.test(value);
 };
-export const isUppercase = (value) => {
+export const isUppercase = (value): boolean => {
   return /[A-Z]/.test(value);
 };
-export const isValidEnvironment = (env) => {
+export const isValidEnvironment = (env): boolean => {
   return (
     env !== null &&
     typeof env.name === 'string' &&
