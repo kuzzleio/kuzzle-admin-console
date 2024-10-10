@@ -96,6 +96,7 @@ describe('Users', function() {
         }
       )
     })
+    cy.waitOverlay()
     cy.visit('/#/security/users')
     cy.contains(kuids[0])
     cy.contains(kuids[1])
@@ -213,6 +214,7 @@ describe('Users', function() {
         }
       )
     })
+    cy.waitOverlay()
     cy.visit('/#/security/users')
     cy.contains(kuids[0])
     cy.contains(kuids[1])
@@ -240,6 +242,7 @@ describe('Users', function() {
         }
       }
     })
+    cy.waitOverlay()
     cy.visit('/#/security/users')
     cy.contains(kuid)
     cy.get('[data-cy="UsersManagement-createBtn"]').click()

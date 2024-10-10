@@ -148,6 +148,7 @@ describe('Profiles', () => {
 
   it('Should be able to create a new profile', () => {
     const profileId = 'dummy'
+    cy.waitOverlay()
     cy.visit('/#/security/profiles/create')
     cy.contains('Create a new profile')
 
