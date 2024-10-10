@@ -118,7 +118,8 @@ describe('Users', function() {
   "name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
   `,
         {
-          force: true
+          delay: 200,
+          force: true,
         }
       )
 
