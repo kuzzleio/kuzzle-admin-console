@@ -1,19 +1,19 @@
 import Vue from 'vue';
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
 import { createPinia, PiniaVuePlugin } from 'pinia';
+import VueFormGenerator from 'vue-form-generator';
 import VueRouter from 'vue-router';
 
-import createRoutes from './routes/index';
 import './plugins/logger';
-import { useKuzzleStore } from './stores';
-import VueFormGenerator from 'vue-form-generator';
+import 'leaflet/dist/leaflet.css';
 import 'vue-form-generator/dist/vfg.css';
 
-import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue';
-import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue';
-import 'leaflet/dist/leaflet.css';
+import { useKuzzleStore } from './stores';
 
 import App from './App.vue';
+import createRoutes from './routes/index';
+import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue';
+import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue';
 
 Reflect.defineProperty(window, 'kuzzle', {
   get() {

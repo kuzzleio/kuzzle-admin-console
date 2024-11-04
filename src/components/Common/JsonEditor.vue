@@ -3,10 +3,10 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import ace from 'ace-builds';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/mode-json';
-import Vue from 'vue';
 
 export default {
   name: 'JsonEditor',

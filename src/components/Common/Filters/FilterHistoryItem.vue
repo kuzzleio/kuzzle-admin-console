@@ -123,8 +123,8 @@ export default {
     },
     getFilter() {
       const loadedFilter = Object.assign(new filterManager.Filter(), this.filter);
-      if (loadedFilter.active == 'basic') return loadedFilter.basic;
-      if (loadedFilter.active == 'raw') return loadedFilter.raw;
+      if (loadedFilter.active === 'basic') return loadedFilter.basic;
+      if (loadedFilter.active === 'raw') return loadedFilter.raw;
     },
     toggleCollapse() {
       this.expanded = !this.expanded;

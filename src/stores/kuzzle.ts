@@ -97,7 +97,7 @@ export const useKuzzleStore = defineStore('kuzzle', {
 
       return payload.id;
     },
-    deleteEnvironment(id) {
+    deleteEnvironment(id: string) {
       if (!Object.keys(this.environments).includes(id)) {
         return;
       }
@@ -111,7 +111,7 @@ export const useKuzzleStore = defineStore('kuzzle', {
 
       localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(this.environments));
     },
-    updateTokenCurrentEnvironment(payload) {
+    updateTokenCurrentEnvironment(payload: any) {
       if (!this.currentId || this.currentEnvironment == null) {
         throw new Error('No current environment selected');
       }
@@ -126,7 +126,7 @@ export const useKuzzleStore = defineStore('kuzzle', {
 
       localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(this.environments));
     },
-    updateEnvironment(payload) {
+    updateEnvironment(payload: any) {
       let mustReconnect = false;
 
       if (
@@ -193,7 +193,7 @@ export const useKuzzleStore = defineStore('kuzzle', {
         throw new Error(`Id ${id} does not match any environment`);
       }
 
-      await this.setCurrentEnvironment(id);
+      this.setCurrentEnvironment(id);
       localStorage.setItem(LS_LAST_ENV, id);
 
       return await this.connectToCurrentEnvironment();
@@ -204,7 +204,7 @@ export const useKuzzleStore = defineStore('kuzzle', {
       this.errorFromKuzzle = error.message;
     },
     loadEnvironments() {
-      const loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}');
+      const loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) ?? '{}');
 
       Object.keys(loadedEnv).forEach((envId) => {
         const env = loadedEnv[envId];
@@ -228,7 +228,7 @@ export const useKuzzleStore = defineStore('kuzzle', {
         this.currentId = currentId;
       } else {
         currentId = localStorage.getItem(LS_LAST_ENV);
-        this.setCurrentEnvironment(currentId || undefined);
+        this.setCurrentEnvironment(currentId ?? undefined);
       }
     },
   },

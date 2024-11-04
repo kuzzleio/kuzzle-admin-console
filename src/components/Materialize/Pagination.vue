@@ -1,12 +1,12 @@
 <template>
   <div>
     <ul class="pagination">
-      <li :class="{ disabled: currentPage == 1 }" class="chevron" @click.prevent="firstPage">
+      <li :class="{ disabled: currentPage === 1 }" class="chevron" @click.prevent="firstPage">
         <a href="#">
           <i class="fa fa-angle-double-left fast-pagination waves-effect" />
         </a>
       </li>
-      <li :class="{ disabled: currentPage == 1 }" class="chevron" @click.prevent="previousPage">
+      <li :class="{ disabled: currentPage === 1 }" class="chevron" @click.prevent="previousPage">
         <a href="#" class="waves-effect">
           <i class="fa fa-chevron-left" />
         </a>
@@ -22,12 +22,12 @@
         <a href="#">{{ n }}</a>
       </li>
 
-      <li :class="{ disabled: currentPage == pages }" class="chevron" @click.prevent="nextPage">
+      <li :class="{ disabled: currentPage === pages }" class="chevron" @click.prevent="nextPage">
         <a href="#">
           <i class="fa fa-chevron-right waves-effect" />
         </a>
       </li>
-      <li :class="{ disabled: currentPage == pages }" class="chevron" @click.prevent="lastPage">
+      <li :class="{ disabled: currentPage === pages }" class="chevron" @click.prevent="lastPage">
         <a href="#">
           <i class="fa fa-angle-double-right fast-pagination waves-effect" />
         </a>

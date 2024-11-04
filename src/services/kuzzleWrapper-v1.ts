@@ -12,17 +12,6 @@ import type { MappingAttributes } from './mappingHelpers';
 // corresponding to the selected environment.
 export const kuzzle = new Kuzzle(new WebSocket('localhost'));
 
-// Helper for performSearch
-const getValueAdditionalAttribute = (content, attributePath) => {
-  const attribute = attributePath.shift();
-
-  if (typeof content[attribute] === 'object') {
-    return getValueAdditionalAttribute(content[attribute], attributePath);
-  }
-
-  return content[attribute];
-};
-
 function buildCaseInsensitiveRegexp(searchString) {
   return searchString
     .split('')
@@ -76,9 +65,9 @@ export class KuzzleWrapperV1 {
 
     try {
       await this.kuzzle.connect();
-    } catch (error) {
+    } catch (error: any) {
       if (error.message.match(/^Incompatible SDK client/)) {
-        const e = new Error(error);
+        const e = new Error(error) as any;
         e.id = 'api.process.incompatible_sdk_version';
         throw e;
       }
@@ -116,15 +105,6 @@ export class KuzzleWrapperV1 {
     const strategies = await this.kuzzle.auth.getStrategies();
 
     const result = await this.kuzzle.security.searchUsers({ ...filters, sort }, { ...pagination });
-    let additionalAttributeName: any = null;
-
-    if (sort.length > 0) {
-      if (typeof sort[0] === 'string') {
-        additionalAttributeName = sort[0];
-      } else {
-        additionalAttributeName = Object.keys(sort[0])[0];
-      }
-    }
 
     const users: any[] = [];
     for (const user of result.hits) {

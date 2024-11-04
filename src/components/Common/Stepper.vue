@@ -6,7 +6,7 @@
           <div
             class="Stepper-step col s1"
             :class="{
-              disabled: disabledSteps.indexOf(index) != -1,
+              disabled: disabledSteps.indexOf(index) !== -1,
               'offset-s4': index === 0,
             }"
           >

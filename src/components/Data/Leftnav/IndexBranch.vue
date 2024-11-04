@@ -143,7 +143,7 @@ export default {
         this.open = true;
       }
 
-      if (this.filter == '') {
+      if (this.filter === '') {
         this.open = false;
       }
     },

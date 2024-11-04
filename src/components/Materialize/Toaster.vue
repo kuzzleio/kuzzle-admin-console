@@ -8,7 +8,7 @@ import { useToasterStore } from '@/stores';
 const toasterStore = useToasterStore();
 
 toasterStore.$subscribe((_mutation, state) => {
-  if (state.toast != undefined) {
+  if (state.toast !== undefined) {
     // TODO: Import Materialize properly
     // @ts-expect-error
     M.toast({

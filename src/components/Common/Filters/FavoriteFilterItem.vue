@@ -86,10 +86,10 @@ export default {
       this.$emit('favoris-delete', this.favorite.id);
     },
     useFilter() {
-      if (this.favorite.active == 'raw') {
+      if (this.favorite.active === 'raw') {
         this.$parent.$emit('filter-raw-submitted', this.favorite.raw, true);
       }
-      if (this.favorite.active == 'basic') {
+      if (this.favorite.active === 'basic') {
         this.$parent.$emit(
           'filter-basic-submitted',
           this.favorite.basic,
@@ -100,8 +100,8 @@ export default {
     },
     getFilter() {
       const loadedFilter = Object.assign(new filterManager.Filter(), this.favorite);
-      if (loadedFilter.active == 'basic') return loadedFilter.basic;
-      if (loadedFilter.active == 'raw') return loadedFilter.raw;
+      if (loadedFilter.active === 'basic') return loadedFilter.basic;
+      if (loadedFilter.active === 'raw') return loadedFilter.raw;
     },
     toggleCollapse() {
       this.expanded = !this.expanded;
