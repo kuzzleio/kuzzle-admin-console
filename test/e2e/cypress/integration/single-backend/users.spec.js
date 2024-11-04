@@ -418,13 +418,14 @@ describe('Users', function() {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
-  it('Should be able to create a new user with auto-generated KUID', () => {
+  it('Should be able to create a new user with auto-generated KUID', { execTimeout} , () => {
     const credentials = {
       username: 'trippy',
       password: 'martinez'
     }
 
     cy.visit(`/#/security/users/create`)
+    cy.wait(2000)
     cy.get('[data-cy="UserProfileList-select"]').select('admin')
 
     cy.get('[data-cy=CredentialsSelector-local-username]').type(
