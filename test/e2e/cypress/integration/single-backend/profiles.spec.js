@@ -150,6 +150,7 @@ describe('Profiles', () => {
     const profileId = 'dummy'
     cy.waitOverlay()
     cy.visit('/#/security/profiles/create')
+    cy.wait(2000)
 
     cy.get('[data-cy="ProfileCreateOrUpdate-id"]').type(profileId)
 
