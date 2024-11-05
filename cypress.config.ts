@@ -8,6 +8,7 @@ export default defineConfig({
   viewportHeight: 800,
   viewportWidth: 1400,
   defaultCommandTimeout: 60000,
+  pageLoadTimeout: 60000,
   e2e: {
     setupNodeEvents(on, config) {},
     baseUrl: 'http://localhost:8080',
