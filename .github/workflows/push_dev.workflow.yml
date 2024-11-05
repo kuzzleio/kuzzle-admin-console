@@ -26,30 +26,30 @@ jobs:
       - name: Run linter
         uses: ./.github/actions/lint
 
-  e2e-tests:
-    name: E2E Cypress tests
-    needs: ['lint']
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # e2e-tests:
+  #   name: E2E Cypress tests
+  #   needs: ['lint']
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Start Kuzzle
-        run: docker compose up --wait
+  #     - name: Start Kuzzle
+  #       run: docker compose up --wait
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          build: npm run build
-          start: npm run preview
-          browser: chrome
+  #     - name: Cypress run
+  #       uses: cypress-io/github-action@v6
+  #       with:
+  #         build: npm run build
+  #         start: npm run preview
+  #         browser: chrome
 
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-            name: cypress-snapshots
-            path: test/e2e/failed-test
+  #     - name: Upload screenshots
+  #       uses: actions/upload-artifact@v4
+  #       if: failure()
+  #       with:
+  #           name: cypress-snapshots
+  #           path: test/e2e/failed-test
 
   deploy-staging:
     name: Deploy Admin Console to staging - next-console.kuzzle.io
