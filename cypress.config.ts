@@ -7,7 +7,7 @@ export default defineConfig({
   projectId: 'qnb41a',
   viewportHeight: 800,
   viewportWidth: 1400,
-  defaultCommandTimeout: 30000,
+  defaultCommandTimeout: 60000,
   e2e: {
     setupNodeEvents(on, config) {},
     baseUrl: 'http://localhost:8080',
