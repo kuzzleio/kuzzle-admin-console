@@ -53,7 +53,7 @@ jobs:
 
   deploy-staging:
     name: Deploy Admin Console to staging - next-console.kuzzle.io
-    needs: ['e2e-tests']
+    needs: ['lint']
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
