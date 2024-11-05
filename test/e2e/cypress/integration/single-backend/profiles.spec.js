@@ -146,37 +146,37 @@ describe('Profiles', () => {
     })
   })
 
-//   it('Should be able to create a new profile', () => {
-//     const profileId = 'dummy'
-//     cy.waitOverlay()
-//     cy.visit('/#/security/profiles/create')
-//     cy.wait(2000)
+  it('Should be able to create a new profile', () => {
+    const profileId = 'dummy'
+    cy.waitOverlay()
+    cy.visit('/#/security/profiles/create')
+    cy.wait(2000)
 
-//     cy.get('[data-cy="ProfileCreateOrUpdate-id"]').type(profileId)
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"]').type(profileId)
 
-//     cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line').should(
-//       'be.visible'
-//     )
+    cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line').should(
+      'be.visible'
+    )
 
-//     cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line')
-//       .contains('{')
-//       .click({ force: true })
+    cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line')
+      .contains('{')
+      .click({ force: true })
 
-//     cy.get('textarea.ace_text-input')
-//       .clear({ force: true })
-//       .type(
-//         `{
-// "rateLimit": 100,
-// "policies": [{
-// "roleId": "default"`,
-//         {
-//           delay: 200,
-//           force: true
-//         }
-//       )
-//     cy.get('[data-cy="ProfileCreateOrUpdate-createBtn"]').click()
-//     cy.contains(profileId)
-//   })
+    cy.get('textarea.ace_text-input')
+      .clear({ force: true })
+      .type(
+        `{
+"rateLimit": 100,
+"policies": [{
+"roleId": "default"`,
+        {
+          delay: 200,
+          force: true
+        }
+      )
+    cy.get('[data-cy="ProfileCreateOrUpdate-createBtn"]').click()
+    cy.contains(profileId)
+  })
 
   it('Should be able to update an existing profile', () => {
     const profileId = 'dummy'
