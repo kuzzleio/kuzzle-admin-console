@@ -418,7 +418,7 @@ describe('Users', function() {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
-  it('Should be able to create a new user with auto-generated KUID', { execTimeout} , () => {
+  it('Should be able to create a new user with auto-generated KUID', () => {
     const credentials = {
       username: 'trippy',
       password: 'martinez'
