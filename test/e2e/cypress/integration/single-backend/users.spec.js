@@ -425,9 +425,8 @@ describe('Users', function() {
     }
 
     cy.visit(`/#/security/users/create`)
-    cy.wait(2000)
-    cy.get('[data-cy="UserProfileList-select"]').select('admin')
 
+    cy.get('[data-cy="UserProfileList-select"]').select('admin')
     cy.get('[data-cy=CredentialsSelector-local-username]').type(
       `{selectall}${credentials.username}`
     )
