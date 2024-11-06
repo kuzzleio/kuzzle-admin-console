@@ -48,7 +48,7 @@ jobs:
           build: npm run build
           start: npm run preview
           browser: chrome
-          spec: e2e/cypress/integration/single-backend/${{ matrix.spec }}
+          spec: test/e2e/cypress/integration/single-backend/${{ matrix.spec }}
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
