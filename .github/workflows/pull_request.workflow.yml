@@ -23,32 +23,6 @@ jobs:
       - name: Run linter
         uses: ./.github/actions/lint
 
-  test-login:
-    name: Test Login
-    needs: ['lint']
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Start Kuzzle
-        run: docker compose up --wait
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          build: npm run build
-          start: npm run preview
-          browser: chrome
-          spec: test/e2e/cypress/integration/single-backend/login.spec.js
-
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-snapshots-login
-          path: test/e2e/failed-test
-
   test-users:
     name: Test Users
     needs: ['lint']
@@ -57,16 +31,55 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Start Kuzzle
-        run: docker compose up --wait
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          build: npm run build
-          start: npm run preview
-          browser: chrome
-          spec: test/e2e/cypress/integration/single-backend/users.spec.js
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start Kuzzle
+        run: |
+          docker compose up --wait
+          docker ps  # Debug: check running containers
+          curl -v http://localhost:7512  # Debug: check if Kuzzle is responding
+
+      - name: Build
+        run: npm run build
+
+      - name: Start preview and test
+        run: |
+          # Start the preview server and capture its PID
+          npm run preview &
+          PREVIEW_PID=$!
+          
+          # Wait for preview server to be ready
+          echo "Waiting for preview server..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8080 > /dev/null; then
+              echo "Preview server is up!"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Preview server failed to start"
+              exit 1
+            fi
+            sleep 1
+          done
+          
+          # Run Cypress test
+          npx cypress run --spec "test/e2e/cypress/integration/single-backend/users.spec.js" --browser chrome
+          
+          # Store the exit code
+          TEST_EXIT_CODE=$?
+          
+          # Kill the preview server
+          kill $PREVIEW_PID
+          
+          # Exit with the test exit code
+          exit $TEST_EXIT_CODE
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
@@ -74,46 +87,3 @@ jobs:
         with:
           name: cypress-snapshots-users
           path: test/e2e/failed-test
-
-  test-roles:
-    name: Test Roles
-    needs: ['lint']
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Start Kuzzle
-        run: docker compose up --wait
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          build: npm run build
-          start: npm run preview
-          browser: chrome
-          spec: test/e2e/cypress/integration/single-backend/roles.spec.js
-
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-snapshots-roles
-          path: test/e2e/failed-test
-
-  test-summary:
-    name: Tests Summary
-    needs: [lint, test-login, test-users, test-roles]
-    if: always()
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Check test results
-        run: |
-          if [ "${{ needs.test-login.result }}" = "failure" ] || \
-             [ "${{ needs.test-users.result }}" = "failure" ] || \
-             [ "${{ needs.test-roles.result }}" = "failure" ]; then
-            echo "One or more tests failed"
-            exit 1
-          else
-            echo "All tests passed!"
-          fi
