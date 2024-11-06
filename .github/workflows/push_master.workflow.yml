@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  NODE_VERSION: "20"
+  NODE_VERSION: '20'
 
 jobs:
   lint:
@@ -48,8 +48,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-            name: cypress-snapshots
-            path: test/e2e/failed-test
+          name: cypress-snapshots
+          path: test/e2e/failed-test
 
   deploy-production:
     name: Deploy Admin Console to production - console.kuzzle.io

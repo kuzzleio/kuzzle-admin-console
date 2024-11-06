@@ -2,8 +2,13 @@ name: Pull request checks
 
 on: [pull_request]
 
+# Cancel in-progress runs on new pushes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
-  NODE_VERSION: "20"
+  NODE_VERSION: '20'
 
 jobs:
   lint:
@@ -23,27 +28,145 @@ jobs:
       - name: Run linter
         uses: ./.github/actions/lint
 
-  # e2e-tests:
-  #   name: E2E Cypress tests
-  #   needs: ['lint']
-  #   runs-on: ubuntu-24.04
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+  e2e-tests:
+    name: E2E Test - ${{ matrix.spec }}
+    needs: ['lint']
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        spec:
+          - login
+          - users
+          - roles
+          - profiles
+          - resetpassword
+          - JSONEditor
+          - chartView
+          - formView
+          - treeview
+          - '404'
+          - api-actions
+          - collections
+          - docs
+          - environments
+          - indexes
+          - search
+          - watch
 
-  #     - name: Start Kuzzle
-  #       run: docker compose up --wait
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     - name: Cypress run
-  #       uses: cypress-io/github-action@v6
-  #       with:
-  #         build: npm run build
-  #         start: npm run preview
-  #         browser: chrome
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-  #     - name: Upload screenshots
-  #       uses: actions/upload-artifact@v4
-  #       if: failure()
-  #       with:
-  #           name: cypress-snapshots
-  #           path: test/e2e/failed-test
+      - name: Cache Cypress binary
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start Kuzzle
+        run: |
+          docker compose up --wait
+          docker ps
+          curl -v http://localhost:7512/_healthcheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Start preview server
+        run: |
+          npx vite preview --host 0.0.0.0 --port 8080 &
+          echo $! > preview.pid
+
+          echo "Waiting for preview server..."
+          timeout=30
+          until curl -s http://localhost:8080 > /dev/null; do
+            sleep 1
+            timeout=$((timeout-1))
+            if [ $timeout -eq 0 ]; then
+              echo "Preview server failed to start"
+              exit 1
+            fi
+          done
+          echo "Preview server is ready!"
+
+      - name: Run Cypress test
+        id: cypress
+        run: |
+          START_TIME=$(date +%s)
+
+          npx cypress run \
+            --spec "test/e2e/cypress/integration/single-backend/${{ matrix.spec }}.spec.js" \
+            --browser chrome \
+            --config baseUrl=http://localhost:8080,retries=2
+
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - START_TIME))
+          echo "duration=$DURATION" >> $GITHUB_OUTPUT
+
+      - name: Cleanup
+        if: always()
+        run: |
+          if [ -f preview.pid ]; then
+            kill $(cat preview.pid) || true
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-results-${{ matrix.spec }}
+          path: |
+            cypress/videos
+            cypress/screenshots
+            cypress/results
+          retention-days: 5
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-snapshots-${{ matrix.spec }}
+          path: test/e2e/failed-test
+          retention-days: 5
+
+  test-summary:
+    name: Tests Summary
+    needs: [lint, e2e-tests]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Create Summary
+        run: |
+          echo "# Test Results Summary 📊" >> $GITHUB_STEP_SUMMARY
+          echo "## Status" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.e2e-tests.result }}" = "success" ] && [ "${{ needs.lint.result }}" = "success" ]; then
+            echo "✅ All tests passed successfully!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "## Details" >> $GITHUB_STEP_SUMMARY
+          echo "- Lint: ${{ needs.lint.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- E2E Tests: ${{ needs.e2e-tests.result }}" >> $GITHUB_STEP_SUMMARY
+
+          # Set exit code based on test results
+          if [ "${{ needs.e2e-tests.result }}" = "failure" ]; then
+            echo "❌ E2E tests failed"
+            exit 1
+          elif [ "${{ needs.lint.result }}" = "failure" ]; then
+            echo "❌ Lint failed"
+            exit 1
+          else
+            echo "✅ All tests passed!"
+          fi
