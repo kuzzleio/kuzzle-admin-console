@@ -2,6 +2,11 @@ name: Pull request checks
 
 on: [pull_request]
 
+# Cancel in-progress runs on new pushes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: '20'
 
@@ -28,7 +33,7 @@ jobs:
     needs: ['lint']
     runs-on: ubuntu-24.04
     strategy:
-      fail-fast: false # Continue running other tests even if one fails
+      fail-fast: false
       matrix:
         spec:
           - login
@@ -58,6 +63,12 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+
+      - name: Cache Cypress binary
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
         run: npm ci
@@ -89,11 +100,18 @@ jobs:
           echo "Preview server is ready!"
 
       - name: Run Cypress test
+        id: cypress
         run: |
+          START_TIME=$(date +%s)
+
           npx cypress run \
             --spec "test/e2e/cypress/integration/single-backend/${{ matrix.spec }}.spec.js" \
             --browser chrome \
             --config baseUrl=http://localhost:8080,retries=2
+
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - START_TIME))
+          echo "duration=$DURATION" >> $GITHUB_OUTPUT
 
       - name: Cleanup
         if: always()
@@ -102,12 +120,24 @@ jobs:
             kill $(cat preview.pid) || true
           fi
 
-      - name: Upload screenshots
+      - name: Upload test results
+        if: always()
         uses: actions/upload-artifact@v4
+        with:
+          name: cypress-results-${{ matrix.spec }}
+          path: |
+            cypress/videos
+            cypress/screenshots
+            cypress/results
+          retention-days: 5
+
+      - name: Upload failure screenshots
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-snapshots-${{ matrix.spec }}
           path: test/e2e/failed-test
+          retention-days: 5
 
   test-summary:
     name: Tests Summary
@@ -115,14 +145,28 @@ jobs:
     if: always()
     runs-on: ubuntu-24.04
     steps:
-      - name: Check test results
+      - name: Create Summary
         run: |
+          echo "# Test Results Summary 📊" >> $GITHUB_STEP_SUMMARY
+          echo "## Status" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.e2e-tests.result }}" = "success" ] && [ "${{ needs.lint.result }}" = "success" ]; then
+            echo "✅ All tests passed successfully!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "## Details" >> $GITHUB_STEP_SUMMARY
+          echo "- Lint: ${{ needs.lint.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- E2E Tests: ${{ needs.e2e-tests.result }}" >> $GITHUB_STEP_SUMMARY
+
+          # Set exit code based on test results
           if [ "${{ needs.e2e-tests.result }}" = "failure" ]; then
-            echo "E2E tests failed"
+            echo "❌ E2E tests failed"
             exit 1
           elif [ "${{ needs.lint.result }}" = "failure" ]; then
-            echo "Lint failed"
+            echo "❌ Lint failed"
             exit 1
           else
-            echo "All tests passed!"
+            echo "✅ All tests passed!"
           fi
