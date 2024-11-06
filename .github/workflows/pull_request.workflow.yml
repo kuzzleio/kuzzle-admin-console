@@ -75,7 +75,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
-          spec: e2e/cypress/integration/single-backend/${{ matrix.spec }}
+          spec: test/e2e/cypress/integration/single-backend/${{ matrix.spec }}
           install: false # Skip installation as we already did npm ci
           wait-on: 'http://localhost:8080'
           wait-on-timeout: 60
