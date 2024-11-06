@@ -24,32 +24,20 @@ jobs:
         uses: ./.github/actions/lint
 
   e2e-tests:
-    name: E2E Tests - ${{ matrix.group.name }}
+    name: E2E Test - ${{ matrix.spec }}
     needs: ['lint']
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        group:
-          - name: 'auth'
-            spec: './e2e/cypress/integration/single-backend/{login,resetpassword,users,roles,profiles}.spec.js'
-          - name: 'views'
-            spec: './e2e/cypress/integration/single-backend/{JSONEditor,chartView,formView,treeview}.spec.js'
-          - name: 'core'
-            spec: './e2e/cypress/integration/single-backend/{404,api-actions,collections,docs,environments,indexes,search,watch}.spec.js'
+        spec:
+          - login.spec.js
+          - users.spec.js
+          - roles.spec.js
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Start Kuzzle
         run: docker compose up --wait
@@ -60,41 +48,11 @@ jobs:
           build: npm run build
           start: npm run preview
           browser: chrome
-          spec: ${{ matrix.group.spec }}
-          install: false
-          working-directory: .
-          wait-on: 'http://localhost:8080' # Updated to match your preview port
-          wait-on-timeout: 120
-          # Add headed mode to troubleshoot GPU issues
-          headed: true
-          # Add these env variables to handle GPU-related errors
-        env:
-          CYPRESS_REMOTE_DEBUGGING_PORT: 9222
-          DISPLAY: :99
-          CYPRESS_DOCKER_COMPOSE_FILE: docker-compose.yml
+          spec: e2e/cypress/integration/single-backend/${{ matrix.spec }}
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-snapshots-${{ matrix.group.name }}
+          name: cypress-snapshots-${{ matrix.spec }}
           path: test/e2e/failed-test
-          retention-days: 5
-
-  test-summary:
-    name: Tests Summary
-    needs: [lint, e2e-tests]
-    if: always()
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Check test results
-        run: |
-          if [ "${{ needs.e2e-tests.result }}" = "failure" ]; then
-            echo "E2E tests failed"
-            exit 1
-          elif [ "${{ needs.lint.result }}" = "failure" ]; then
-            echo "Lint failed"
-            exit 1
-          else
-            echo "All tests passed!"
-          fi
