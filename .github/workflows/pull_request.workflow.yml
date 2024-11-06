@@ -87,3 +87,68 @@ jobs:
         with:
           name: cypress-snapshots-users
           path: test/e2e/failed-test
+
+  test-profiles:
+    name: Test Profiles
+    needs: ['lint']
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start Kuzzle
+        run: |
+          docker compose up --wait
+          docker ps  # Debug: check running containers
+          curl -v http://localhost:7512  # Debug: check if Kuzzle is responding
+
+      - name: Build
+        run: npm run build
+
+      - name: Start preview and test
+        run: |
+          # Start the preview server and capture its PID
+          npm run preview &
+          PREVIEW_PID=$!
+          
+          # Wait for preview server to be ready
+          echo "Waiting for preview server..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8080 > /dev/null; then
+              echo "Preview server is up!"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Preview server failed to start"
+              exit 1
+            fi
+            sleep 1
+          done
+          
+          # Run Cypress test
+          npx cypress run --spec "test/e2e/cypress/integration/single-backend/profiles.spec.js" --browser chrome
+          
+          # Store the exit code
+          TEST_EXIT_CODE=$?
+          
+          # Kill the preview server
+          kill $PREVIEW_PID
+          
+          # Exit with the test exit code
+          exit $TEST_EXIT_CODE
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-snapshots-users
+          path: test/e2e/failed-test
