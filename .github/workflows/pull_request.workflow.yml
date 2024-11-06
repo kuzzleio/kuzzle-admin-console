@@ -32,11 +32,11 @@ jobs:
       matrix:
         group:
           - name: 'auth'
-            spec: 'e2e/cypress/integration/single-backend/{login,resetpassword,users,roles,profiles}.spec.js'
+            spec: './e2e/cypress/integration/single-backend/{login,resetpassword,users,roles,profiles}.spec.js'
           - name: 'views'
-            spec: 'e2e/cypress/integration/single-backend/{JSONEditor,chartView,formView,treeview}.spec.js'
+            spec: './e2e/cypress/integration/single-backend/{JSONEditor,chartView,formView,treeview}.spec.js'
           - name: 'core'
-            spec: 'e2e/cypress/integration/single-backend/{404,api-actions,collections,docs,environments,indexes,search,watch}.spec.js'
+            spec: './e2e/cypress/integration/single-backend/{404,api-actions,collections,docs,environments,indexes,search,watch}.spec.js'
 
     steps:
       - name: Checkout repository
@@ -61,12 +61,17 @@ jobs:
           start: npm run preview
           browser: chrome
           spec: ${{ matrix.group.spec }}
-          # Add some retry attempts for potentially flaky tests
-          config: retries=2
-          # We don't need to install again since we did it above
           install: false
-          # Add this to cache the build folder between runs
           working-directory: .
+          wait-on: 'http://localhost:8080' # Updated to match your preview port
+          wait-on-timeout: 120
+          # Add headed mode to troubleshoot GPU issues
+          headed: true
+          # Add these env variables to handle GPU-related errors
+        env:
+          CYPRESS_REMOTE_DEBUGGING_PORT: 9222
+          DISPLAY: :99
+          CYPRESS_DOCKER_COMPOSE_FILE: docker-compose.yml
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
@@ -74,9 +79,8 @@ jobs:
         with:
           name: cypress-snapshots-${{ matrix.group.name }}
           path: test/e2e/failed-test
-          retention-days: 5 # Limit retention to save space
+          retention-days: 5
 
-  # Add a summary job that depends on all tests
   test-summary:
     name: Tests Summary
     needs: [lint, e2e-tests]
