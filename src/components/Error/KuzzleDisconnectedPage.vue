@@ -17,56 +17,60 @@
 </template>
 
 <script>
-import Connecting from './Connecting'
-import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
-import { mapGetters } from 'vuex'
-let idConnect
-let idReconnect
+import { mapState } from 'pinia';
+
+import { useKuzzleStore } from '@/stores';
+
+import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue';
+import Connecting from './Connecting.vue';
+
+let idConnect;
+let idReconnect;
 
 export default {
   name: 'KuzzleDisconnectedPage',
   components: {
     Connecting,
-    EnvironmentSwitch
+    EnvironmentSwitch,
   },
   data() {
     return {
       host: null,
-      port: null
-    }
+      port: null,
+    };
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle'])
+    ...mapState(useKuzzleStore, ['$kuzzle']),
   },
   mounted() {
-    this.host = this.$kuzzle.protocol.host
-    this.port = this.$kuzzle.protocol.port
+    this.host = this.$kuzzle.protocol.host;
+    this.port = this.$kuzzle.protocol.port;
 
     idReconnect = this.$kuzzle.on('reconnected', () => {
-      this.$router.push({ name: 'Home' })
-    })
+      this.$router.push({ name: 'Home' });
+    });
 
     idConnect = this.$kuzzle.on('connected', () => {
-      this.$router.push({ name: 'Home' })
-    })
+      this.$router.push({ name: 'Home' });
+    });
 
     if (
       this.$kuzzle.protocol.state === 'connected' ||
       this.$kuzzle.protocol.state === 'reconnected'
     ) {
-      this.$router.push({ name: 'Login' })
+      this.$router.push({ name: 'Login' });
     }
   },
   destroyed() {
-    this.$kuzzle.removeListener('reconnected', idReconnect)
-    this.$kuzzle.removeListener('connected', idConnect)
+    this.$kuzzle.removeListener('reconnected', idReconnect);
+    this.$kuzzle.removeListener('connected', idConnect);
   },
   methods: {
     editEnvironment(id) {
-      this.$emit('environment::create', id)
-    }
-  }
-}
+      this.$emit('environment::create', id);
+    },
+  },
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

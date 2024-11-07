@@ -1,0 +1,15 @@
+// App
+@import 'styles/variables';
+@import 'styles/fonts';
+@import 'styles/layout';
+@import 'styles/animations';
+@import 'styles/realtime';
+@import 'styles/pages';
+@import 'styles/environment';
+@import 'styles/utility';
+@import 'styles/override';
+
+// Dependencies
+@import 'bootstrap/scss/bootstrap.scss';
+@import 'bootstrap-vue/src/index.scss';
+@import '@fortawesome/fontawesome-free/css/all.css';

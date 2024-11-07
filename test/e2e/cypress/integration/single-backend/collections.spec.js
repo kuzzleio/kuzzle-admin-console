@@ -22,8 +22,8 @@ describe('Collection management', function() {
     })
 
     cy.get(
-      '[data-cy="CollectionCreateOrUpdate-name"] .invalid-feedback'
-    ).should('contain', 'The name you entered is invalid')
+      '#collection-name .invalid-feedback'
+    ).should('contain', 'Please fill-in a valid collection name.')
 
     cy.get('[data-cy="CollectionCreateOrUpdate-name"] input').type(
       '{selectall}{backspace}',
@@ -100,6 +100,7 @@ describe('Collection management', function() {
 "firstName": {
 "type": "keyword"`,
         {
+          delay: 200,
           force: true
         }
       )

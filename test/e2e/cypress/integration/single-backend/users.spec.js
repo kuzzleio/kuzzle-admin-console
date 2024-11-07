@@ -96,6 +96,7 @@ describe('Users', function() {
         }
       )
     })
+    cy.waitOverlay()
     cy.visit('/#/security/users')
     cy.contains(kuids[0])
     cy.contains(kuids[1])
@@ -118,7 +119,8 @@ describe('Users', function() {
   "name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
   `,
         {
-          force: true
+          delay: 200,
+          force: true,
         }
       )
 
@@ -212,6 +214,7 @@ describe('Users', function() {
         }
       )
     })
+    cy.waitOverlay()
     cy.visit('/#/security/users')
     cy.contains(kuids[0])
     cy.contains(kuids[1])
@@ -239,6 +242,7 @@ describe('Users', function() {
         }
       }
     })
+    cy.waitOverlay()
     cy.visit('/#/security/users')
     cy.contains(kuid)
     cy.get('[data-cy="UsersManagement-createBtn"]').click()
@@ -421,8 +425,8 @@ describe('Users', function() {
     }
 
     cy.visit(`/#/security/users/create`)
-    cy.get('[data-cy="UserProfileList-select"]').select('admin')
 
+    cy.get('[data-cy="UserProfileList-select"]').select('admin')
     cy.get('[data-cy=CredentialsSelector-local-username]').type(
       `{selectall}${credentials.username}`
     )

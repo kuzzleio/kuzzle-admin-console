@@ -5,58 +5,37 @@
         <b-nav-item
           v-if="canManageUsers"
           :to="{ name: 'SecurityUsersList' }"
-          :class="
-            $route.path.includes('users')
-              ? 'activeItemClass'
-              : 'inactiveItemClass'
-          "
+          :class="$route.path.includes('users') ? 'activeItemClass' : 'inactiveItemClass'"
         >
           <b-row no-gutters>
             <b-col cols="2">
               <i class="fa fa-user fa-lg align-middle" aria-hidden="true" />
             </b-col>
-            <b-col cols="10" class="sideEntry pl-2 pt-1">
-              Users
-            </b-col>
+            <b-col cols="10" class="sideEntry pl-2 pt-1"> Users </b-col>
           </b-row>
         </b-nav-item>
         <b-nav-item
           v-if="canManageProfiles"
           :to="{ name: 'SecurityProfilesList' }"
-          :class="
-            $route.path.includes('profiles')
-              ? 'activeItemClass'
-              : 'inactiveItemClass'
-          "
+          :class="$route.path.includes('profiles') ? 'activeItemClass' : 'inactiveItemClass'"
         >
           <b-row no-gutters>
             <b-col cols="2">
               <i class="fa fa-id-badge fa-lg align-middle" aria-hidden="true" />
             </b-col>
-            <b-col cols="10" class="sideEntry pl-2 pt-1">
-              Profiles
-            </b-col>
+            <b-col cols="10" class="sideEntry pl-2 pt-1"> Profiles </b-col>
           </b-row>
         </b-nav-item>
         <b-nav-item
           v-if="canManageRoles"
           :to="{ name: 'SecurityRolesList' }"
-          :class="
-            $route.path.includes('roles')
-              ? 'activeItemClass'
-              : 'inactiveItemClass'
-          "
+          :class="$route.path.includes('roles') ? 'activeItemClass' : 'inactiveItemClass'"
         >
           <b-row no-gutters>
             <b-col cols="2">
-              <i
-                class="fa fa-unlock-alt fa-lg align-middle"
-                aria-hidden="true"
-              />
+              <i class="fa fa-unlock-alt fa-lg align-middle" aria-hidden="true" />
             </b-col>
-            <b-col cols="10" class="sideEntry pl-2 pt-1">
-              Roles
-            </b-col>
+            <b-col cols="10" class="sideEntry pl-2 pt-1"> Roles </b-col>
           </b-row>
         </b-nav-item>
       </b-nav>
@@ -66,7 +45,23 @@
     </div>
   </div>
 </template>
+
+<script>
+import { mapState } from 'pinia';
+
+import { useAuthStore } from '@/stores';
+
+export default {
+  name: 'SecurityLayout',
+  computed: {
+    ...mapState(useAuthStore, ['canManageUsers', 'canManageRoles', 'canManageProfiles']),
+  },
+};
+</script>
+
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 .activeItemClass {
   font-weight: 600;
   opacity: 1;
@@ -85,9 +80,9 @@
 }
 .SecurityLayout-sidebarWrapper {
   padding-top: 1em;
-  background-color: $light-grey-color;
-  flex-basis: $sidebar-width;
-  min-width: $sidebar-width;
+  background-color: variables.$light-grey-color;
+  flex-basis: variables.$sidebar-width;
+  min-width: variables.$sidebar-width;
   height: 100%;
   overflow: auto;
   box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
@@ -98,20 +93,6 @@
   flex-grow: 1;
   height: 100%;
   overflow: auto;
-  padding: $content-gutter;
+  padding: variables.$content-gutter;
 }
 </style>
-
-<script>
-import { mapGetters } from 'vuex'
-export default {
-  name: 'SecurityLayout',
-  computed: {
-    ...mapGetters('auth', [
-      'canManageUsers',
-      'canManageRoles',
-      'canManageProfiles'
-    ])
-  }
-}
-</script>

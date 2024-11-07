@@ -2,8 +2,8 @@
   <b-modal
     id="modal-save-query"
     title="Choose a name for this query"
-    @ok="handleOk"
     ok-title-html='<span data-cy="api-actions-modal-ok-button">OK</span>'
+    @ok="handleOk"
   >
     <form ref="form" @submit.stop.prevent="handleSubmit">
       <b-form-group
@@ -19,7 +19,7 @@
           autofocus
           :state="nameState"
           required
-        ></b-form-input>
+        />
       </b-form-group>
     </form>
   </b-modal>
@@ -29,42 +29,42 @@
 export default {
   props: {
     isQueryNameValid: {
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
       name: '',
       nameState: null,
-      feedback: ''
-    }
+      feedback: '',
+    };
   },
   methods: {
     checkFormValidity() {
-      const isPresent = this.$refs.form.checkValidity()
-      const isValid = this.isQueryNameValid(this.name)
-      this.nameState = isPresent && isValid
+      const isPresent = this.$refs.form.checkValidity();
+      const isValid = this.isQueryNameValid(this.name);
+      this.nameState = isPresent && isValid;
       if (!this.namestate) {
-        this.feedback = isPresent ? 'Name already used' : 'Name is required'
+        this.feedback = isPresent ? 'Name already used' : 'Name is required';
       }
-      return this.nameState
+      return this.nameState;
     },
     reset() {
-      this.name = ''
-      this.nameState = null
-      this.feedback = ''
+      this.name = '';
+      this.nameState = null;
+      this.feedback = '';
     },
     handleOk(bvModalEvt) {
-      bvModalEvt.preventDefault()
+      bvModalEvt.preventDefault();
       if (!this.checkFormValidity()) {
-        return
+        return;
       }
       this.$nextTick(() => {
-        this.$bvModal.hide('modal-save-query')
-      })
-      this.$emit('storeNewQuery', this.name)
-      this.reset()
-    }
-  }
-}
+        this.$bvModal.hide('modal-save-query');
+      });
+      this.$emit('storeNewQuery', this.name);
+      this.reset();
+    },
+  },
+};
 </script>

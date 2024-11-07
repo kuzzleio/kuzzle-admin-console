@@ -2,6 +2,7 @@
   "editor.formatOnSave": false,
   "vetur.format.defaultFormatter.html": "prettier",
   "vetur.format.defaultFormatter.js": "prettier-eslint",
+  "eslint.enable": false,
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -19,6 +20,6 @@
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   }
 }

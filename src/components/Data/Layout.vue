@@ -6,21 +6,18 @@
   >
     <div
       class="DataLayout-sidebarWrapper"
-      :style="{ width: this.paneSize }"
+      :style="{ width: paneSize }"
       data-cy="DataLayout-sidebarWrapper"
     >
       <treeview
-        :indexName="$route.params.indexName"
-        :collectionName="$route.params.collectionName"
+        :index-name="$route.params.indexName"
+        :collection-name="$route.params.collectionName"
       />
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
       <b-overlay :show="loading" opacity="0" class="h-100">
-        <data-not-found
-          v-if="!loading && dataNotFound"
-          class="mt-3"
-        ></data-not-found>
+        <data-not-found v-if="!loading && dataNotFound" class="mt-3" />
         <router-view
           v-if="!loading"
           @start-init="viewIsInitializing = true"
@@ -32,11 +29,14 @@
 </template>
 
 <script>
-import { Multipane, MultipaneResizer } from 'vue-multipane'
-import Treeview from '@/components/Data/Leftnav/Treeview'
-import DataNotFound from './Data404'
-import { mapGetters } from 'vuex'
-import { setPersistedItem, getPersistedItem } from './itemsStorage'
+import { mapState } from 'pinia';
+import { Multipane, MultipaneResizer } from 'vue-multipane';
+
+import { useAuthStore, useStorageIndexStore } from '@/stores';
+import { setPersistedItem, getPersistedItem } from './itemsStorage';
+
+import Treeview from '@/components/Data/Leftnav/Treeview.vue';
+import DataNotFound from './Data404.vue';
 
 export default {
   name: 'DataLayout',
@@ -44,182 +44,165 @@ export default {
     Treeview,
     Multipane,
     MultipaneResizer,
-    DataNotFound
+    DataNotFound,
+  },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   data() {
     return {
       isFetching: true,
       dataNotFound: false,
       viewIsInitializing: false,
-      paneSize: ''
-    }
+      paneSize: '',
+    };
   },
   computed: {
-    ...mapGetters('index', ['loadingIndexes', 'loadingCollections']),
-    ...mapGetters('auth', ['isAuthenticated']),
+    ...mapState(useStorageIndexStore, ['loadingIndexes', 'loadingCollections']),
+    ...mapState(useAuthStore, ['isAuthenticated']),
     indexName() {
-      return this.$route.params.indexName
+      return this.$route.params.indexName;
     },
     collectionName() {
-      return this.$route.params.collectionName
+      return this.$route.params.collectionName;
     },
     loading() {
       if (this.isFetching) {
-        return true
+        return true;
       }
 
       if (this.loadingIndexes) {
-        return true
+        return true;
       }
 
       if (this.indexName && this.loadingCollections(this.indexName)) {
-        return true
+        return true;
       }
 
-      return false
-    }
-  },
-  methods: {
-    saveNewPaneSize(size) {
-      setPersistedItem('paneSize', size.scrollWidth)
-      this.paneSize = `${getPersistedItem('paneSize')}px`
+      return false;
     },
-    async fetchIndexList() {
-      try {
-        await this.$store.direct.dispatch.index.fetchIndexList()
-      } catch (error) {
-        this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while fetching the indexes list.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
-      }
-    },
-    async fetchCollectionList() {
-      try {
-        const index = this.$store.direct.getters.index.getOneIndex(
-          this.indexName
-        )
-
-        if (!index) {
-          this.handleDataNotFound()
-          return
-        }
-
-        await this.$store.direct.dispatch.index.fetchCollectionList(index)
-      } catch (error) {
-        this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while fetching the collection list.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
-      }
-    },
-    async fetchCollectionMapping() {
-      try {
-        const index = this.$store.direct.getters.index.getOneIndex(
-          this.indexName
-        )
-
-        if (!index) {
-          this.handleDataNotFound()
-          return
-        }
-
-        const collection = this.$store.direct.getters.index.getOneCollection(
-          index,
-          this.collectionName
-        )
-
-        if (!collection) {
-          this.handleDataNotFound()
-          return
-        }
-
-        await this.$store.direct.dispatch.index.fetchCollectionMapping({
-          index,
-          collection
-        })
-      } catch (error) {
-        this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while fetching the collection mapping.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
-      }
-    },
-    handleDataNotFound() {
-      this.dataNotFound = true
-    },
-    // @todo : handle lazy loading sequence only on the authenticated routes
-    async lazyLoadingSequence() {
-      if (!this.isAuthenticated) {
-        this.$log.warn(
-          'Lazy loading sequence started with a non-authenticated user.'
-        )
-        return
-      }
-
-      this.isFetching = true
-      this.dataNotFound = false
-
-      await this.fetchIndexList()
-
-      if (this.$route.params.indexName) {
-        await this.fetchCollectionList()
-      }
-
-      if (this.$route.params.indexName && this.$route.params.collectionName) {
-        await this.fetchCollectionMapping()
-      }
-
-      this.isFetching = false
-    }
-  },
-  async mounted() {
-    await this.lazyLoadingSequence()
-    this.paneSize = `${getPersistedItem('paneSize')}px`
   },
   watch: {
     '$route.params.indexName': {
       handler() {
-        this.lazyLoadingSequence()
-      }
+        this.lazyLoadingSequence();
+      },
     },
     '$route.params.collectionName': {
       handler() {
-        this.lazyLoadingSequence()
+        this.lazyLoadingSequence();
+      },
+    },
+  },
+  async mounted() {
+    await this.lazyLoadingSequence();
+    this.paneSize = `${getPersistedItem('paneSize')}px`;
+  },
+  methods: {
+    saveNewPaneSize(size) {
+      setPersistedItem('paneSize', size.scrollWidth);
+      this.paneSize = `${getPersistedItem('paneSize')}px`;
+    },
+    async fetchIndexList() {
+      try {
+        await this.storageIndexStore.fetchIndexList();
+      } catch (error) {
+        this.$log.error(error);
+        this.$bvToast.toast('The complete error has been printed to the console.', {
+          title: 'Ooops! Something went wrong while fetching the indexes list.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true,
+        });
       }
-    }
-  }
-}
+    },
+    async fetchCollectionList() {
+      try {
+        const index = this.storageIndexStore.getOneIndex(this.indexName);
+
+        if (!index) {
+          this.handleDataNotFound();
+          return;
+        }
+
+        await this.storageIndexStore.fetchCollectionList(index);
+      } catch (error) {
+        this.$log.error(error);
+        this.$bvToast.toast('The complete error has been printed to the console.', {
+          title: 'Ooops! Something went wrong while fetching the collection list.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true,
+        });
+      }
+    },
+    async fetchCollectionMapping() {
+      try {
+        const index = this.storageIndexStore.getOneIndex(this.indexName);
+
+        if (!index) {
+          this.handleDataNotFound();
+          return;
+        }
+
+        const collection = this.storageIndexStore.getOneCollection(index, this.collectionName);
+
+        if (!collection) {
+          this.handleDataNotFound();
+          return;
+        }
+
+        await this.storageIndexStore.fetchCollectionMapping({ index, collection });
+      } catch (error) {
+        this.$log.error(error);
+        this.$bvToast.toast('The complete error has been printed to the console.', {
+          title: 'Ooops! Something went wrong while fetching the collection mapping.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true,
+        });
+      }
+    },
+    handleDataNotFound() {
+      this.dataNotFound = true;
+    },
+    // @todo : handle lazy loading sequence only on the authenticated routes
+    async lazyLoadingSequence() {
+      if (!this.isAuthenticated) {
+        this.$log.warn('Lazy loading sequence started with a non-authenticated user.');
+        return;
+      }
+
+      this.isFetching = true;
+      this.dataNotFound = false;
+
+      await this.fetchIndexList();
+
+      if (this.$route.params.indexName) {
+        await this.fetchCollectionList();
+      }
+
+      if (this.$route.params.indexName && this.$route.params.collectionName) {
+        await this.fetchCollectionMapping();
+      }
+
+      this.isFetching = false;
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 .DataLayout {
   height: 100%;
   display: flex;
@@ -228,8 +211,8 @@ export default {
 }
 
 .DataLayout-sidebarWrapper {
-  background-color: $light-grey-color;
-  min-width: $sidebar-width;
+  background-color: variables.$light-grey-color;
+  min-width: variables.$sidebar-width;
   height: 100%;
   overflow: auto;
   z-index: 1;
@@ -240,7 +223,7 @@ export default {
   flex-grow: 1;
   height: 100%;
   overflow: auto;
-  padding: $content-gutter;
+  padding: variables.$content-gutter;
 }
 
 .Custom-resizer > .multipane-resizer {

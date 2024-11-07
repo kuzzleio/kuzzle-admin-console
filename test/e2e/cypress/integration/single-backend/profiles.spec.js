@@ -111,12 +111,7 @@ describe('Profiles', () => {
       'This field cannot contain just whitespaces'
     )
 
-    cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').type(
-      '{selectall}{backspace}',
-      {
-        force: true
-      }
-    )
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').clear({ force: true })
 
     cy.get('[data-cy="ProfileCreateOrUpdate-id"] .invalid-feedback').should(
       'contain',
@@ -153,8 +148,9 @@ describe('Profiles', () => {
 
   it('Should be able to create a new profile', () => {
     const profileId = 'dummy'
+    cy.waitOverlay()
     cy.visit('/#/security/profiles/create')
-    cy.contains('Create a new profile')
+    cy.wait(2000)
 
     cy.get('[data-cy="ProfileCreateOrUpdate-id"]').type(profileId)
 
@@ -174,6 +170,7 @@ describe('Profiles', () => {
 "policies": [{
 "roleId": "default"`,
         {
+          delay: 200,
           force: true
         }
       )

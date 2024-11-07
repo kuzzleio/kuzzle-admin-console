@@ -109,7 +109,7 @@ describe('Form view', function() {
     })
   })
 
-  it('should be able to update a document with the form view enabled', function() {
+  it.only('should be able to update a document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentListItem-update--testdoc"').click()

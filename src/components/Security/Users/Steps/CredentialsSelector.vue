@@ -6,34 +6,23 @@
     <b-col>
       <b-card no-body class="Credentials-selector">
         <b-tabs card vertical>
-          <template v-slot:tabs-start>
-            <span class="text-secondary text-small mb-2 px-3"
-              >Auth strategies</span
-            >
+          <template #tabs-start>
+            <span class="text-secondary text-small mb-2 px-3">Auth strategies</span>
           </template>
 
           <!-- Render this if no tabs -->
-          <template v-slot:empty>
+          <template #empty>
             <div class="text-center text-muted">
               No strategies found<br />
-              It looks like no authentication strategies are installed on your
-              Kuzzle instance.
+              It looks like no authentication strategies are installed on your Kuzzle instance.
             </div>
           </template>
-          <b-tab
-            v-for="(strategy, index) in strategies"
-            :key="index"
-            :title="strategy"
-          >
+          <b-tab v-for="(strategy, index) in strategies" :key="index" :title="strategy">
             <div
               v-for="fieldName in credentialsMapping[strategy]"
               :key="`update-user-credential-${fieldName}`"
             >
-              <b-form-group
-                label-cols="2"
-                :label="getFieldHelp(fieldName)"
-                :label-for="fieldName"
-              >
+              <b-form-group label-cols="2" :label="getFieldHelp(fieldName)" :label-for="fieldName">
                 <b-form-input
                   :id="fieldName"
                   :data-cy="`CredentialsSelector-${strategy}-${fieldName}`"
@@ -58,53 +47,53 @@ export default {
   props: {
     strategies: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     credentials: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     credentialsMapping: {
       type: Object,
-      default: () => ({})
-    }
+      default: () => ({}),
+    },
   },
   data() {
     return {
       error: '',
       document: null,
-      id: null
-    }
+      id: null,
+    };
   },
   computed: {},
   methods: {
     getValue(strategy, fieldName) {
       if (!this.credentials[strategy]) {
-        return null
+        return null;
       }
-      return this.credentials[strategy][fieldName]
+      return this.credentials[strategy][fieldName];
     },
     getFieldHelp(fieldName) {
-      return fieldName.replace(/^\w/, c => c.toUpperCase())
+      return fieldName.replace(/^\w/, (c) => c.toUpperCase());
     },
     fieldType(fieldName) {
       if (fieldName === 'password') {
-        return 'password'
+        return 'password';
       }
 
-      return 'text'
+      return 'text';
     },
     onFieldChange(strategy, fieldName, value) {
       this.$emit('input', {
-        strategy: strategy,
+        strategy,
         credentials: {
           ...this.credentials[strategy],
-          [fieldName]: value
-        }
-      })
-    }
-  }
-}
+          [fieldName]: value,
+        },
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss">

@@ -1,31 +1,39 @@
-import Vue from 'vue'
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
-import createRoutes from './routes/index'
-import './plugins/logger'
+import Vue from 'vue';
+import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
+import { createPinia, PiniaVuePlugin } from 'pinia';
+import VueFormGenerator from 'vue-form-generator';
+import VueRouter from 'vue-router';
 
-import VueFormGenerator from 'vue-form-generator'
-import 'vue-form-generator/dist/vfg.css'
-import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue'
-import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue'
-import 'leaflet/dist/leaflet.css'
+import './plugins/logger';
+import 'leaflet/dist/leaflet.css';
+import 'vue-form-generator/dist/vfg.css';
 
-import App from './App.vue'
-import store from './vuex/store'
+import { useKuzzleStore } from './stores';
+
+import App from './App.vue';
+import createRoutes from './routes/index';
+import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue';
+import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue';
 
 Reflect.defineProperty(window, 'kuzzle', {
   get() {
-    return store.getters.kuzzle.$kuzzle
-  }
-})
+    const kuzzleStore = useKuzzleStore();
+    return kuzzleStore.$kuzzle;
+  },
+});
 
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
-const router = createRoutes(Vue.prototype.$log)
+Vue.use(PiniaVuePlugin);
+const pinia = createPinia();
 
-Vue.component('fieldJsonFormInput', JsonFormInput)
-Vue.component('fieldDateTimeFormInput', DateTimeFormInput)
-Vue.use(VueFormGenerator)
+Vue.use(VueRouter);
+const router = createRoutes(Vue.prototype.$log);
+
+Vue.component('FieldJsonFormInput', JsonFormInput);
+Vue.component('FieldDateTimeFormInput', DateTimeFormInput);
+Vue.use(VueFormGenerator);
 
 // Vue.config.errorHandler = (err, vm, info) => {
 //   // TODO : use vue-logger instead of console.error,
@@ -45,7 +53,7 @@ Vue.use(VueFormGenerator)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  pinia,
   router,
-  store: store.original,
-  render: h => h(App)
-})
+  render: (h) => h(App),
+});

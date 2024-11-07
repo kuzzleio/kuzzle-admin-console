@@ -14,24 +14,20 @@
           data-cy="Treeview-filter"
           placeholder="Search index &amp; collection"
           type="search"
-        ></b-form-input>
+        />
       </div>
       <div class="Treeview-items p-3">
-        <router-link
-          data-cy="Treeview-item"
-          class="text-secondary"
-          :to="{ name: 'Data' }"
-        >
-          <i class="fas fa-list mr-1"></i>
-          All indexes <b-spinner small v-if="isLoading"></b-spinner>
+        <router-link data-cy="Treeview-item" class="text-secondary" :to="{ name: 'Data' }">
+          <i class="fas fa-list mr-1" />
+          All indexes <b-spinner v-if="isLoading" small />
         </router-link>
         <index-branch
           v-for="index in orderedFilteredIndexes"
+          :key="index.name"
           :index="index"
           :browsed-index-name="indexName"
           :browsed-collection-name="collectionName"
           :filter="filter"
-          :key="index.name"
           :data-cy="`Treeview-item-index--${index.name}`"
         />
       </div>
@@ -40,39 +36,47 @@
 </template>
 
 <script>
-import IndexBranch from './IndexBranch'
-import { filterIndexesByKeyword } from '../../../services/indexHelpers'
-import { mapGetters } from 'vuex'
+import { mapState } from 'pinia';
+
+import { filterIndexesByKeyword } from '@/services/indexHelpers';
+import { useAuthStore, useStorageIndexStore } from '@/stores';
+
+import IndexBranch from './IndexBranch.vue';
 
 export default {
   name: 'Treeview',
   components: {
-    IndexBranch
+    IndexBranch,
   },
   props: {
     indexName: String,
-    collectionName: String
+    collectionName: String,
+  },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   data() {
     return {
-      filter: ''
-    }
+      filter: '',
+    };
   },
   computed: {
-    ...mapGetters('auth', ['canSearchIndex']),
+    ...mapState(useAuthStore, ['canSearchIndex']),
     orderedFilteredIndexes() {
-      return [
-        ...filterIndexesByKeyword(this.indexes, this.filter)
-      ].sort((a, b) => a.name.localeCompare(b.name))
+      return [...filterIndexesByKeyword(this.indexes, this.filter)].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
     },
     isLoading() {
-      return this.$store.direct.getters.index.loadingIndexes
+      return this.storageIndexStore.loadingIndexes;
     },
     indexes() {
-      return this.$store.direct.getters.index.indexes
-    }
-  }
-}
+      return this.storageIndexStore.indexes;
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

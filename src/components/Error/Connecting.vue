@@ -31,9 +31,9 @@ export default {
   name: 'KuzzleDisconnected',
   props: {
     host: String,
-    port: Number
-  }
-}
+    port: Number,
+  },
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

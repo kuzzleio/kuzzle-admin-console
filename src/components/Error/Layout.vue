@@ -3,9 +3,7 @@
     <b-container>
       <b-card>
         <b-card-body>
-          <slot>
-            An error occurred.
-          </slot>
+          <slot> An error occurred. </slot>
         </b-card-body>
       </b-card>
     </b-container>

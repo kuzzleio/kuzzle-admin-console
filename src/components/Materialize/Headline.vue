@@ -8,22 +8,24 @@
 </template>
 
 <script>
-import Breadcrumb from '../Common/Breadcrumb'
+import Breadcrumb from '@/components/Common/Breadcrumb.vue';
 
 export default {
   name: 'Headline',
   components: {
-    Breadcrumb
+    Breadcrumb,
   },
   props: {
-    title: String
-  }
-}
+    title: String,
+  },
+};
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 .Headline {
-  color: $primary-color;
+  color: variables.$primary-color;
 
   h1 {
     margin-top: 0;

@@ -47,6 +47,12 @@ describe('Roles', () => {
     cy.visit('/#/security/roles/create')
     cy.contains('Create a new role')
 
+    cy.get('[data-cy="RoleCreateOrUpdate-createBtn"]').click()
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+      'contain',
+      'This field cannot be empty'
+    )
+
     cy.get('[data-cy="RoleCreateOrUpdate-id"] input').type(' ', {
       force: true
     })

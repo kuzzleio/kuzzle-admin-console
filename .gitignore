@@ -19,3 +19,4 @@ test/e2e/failed-test/
 test/e2e/videos
 test/e2e/screenshots
 cypress
+stats.html

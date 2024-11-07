@@ -22,15 +22,48 @@
             </b-alert>
           </b-card-body>
 
-          <reset-password-form
-            :reset-token="token"
-            @reset-password::after="onReset"
-          />
+          <reset-password-form :reset-token="token" @reset-password::after="onReset" />
         </b-card>
       </b-col>
     </b-row>
   </div>
 </template>
+
+<script>
+import { useRoutingStore } from '@/stores';
+
+import ResetPasswordForm from './Common/Login/ResetPasswordForm.vue';
+
+export default {
+  name: 'ResetPassword',
+  components: {
+    ResetPasswordForm,
+  },
+  props: {
+    showIntro: Boolean,
+    token: String,
+  },
+  setup() {
+    return {
+      routingStore: useRoutingStore(),
+    };
+  },
+  methods: {
+    onReset() {
+      if (this.routingStore.routeBeforeRedirect) {
+        const route = this.routingStore.routeBeforeRedirect;
+        this.routingStore.routeBeforeRedirect = undefined;
+
+        this.$router.push({
+          name: route,
+        });
+      } else {
+        this.$router.push('/');
+      }
+    },
+  },
+};
+</script>
 
 <style type="text/css" scoped>
 .ResetPassword {
@@ -40,28 +73,3 @@
   align-items: center;
 }
 </style>
-
-<script>
-import ResetPasswordForm from './Common/Login/ResetPasswordForm'
-
-export default {
-  name: 'ResetPassword',
-  props: {
-    showIntro: Boolean,
-    token: String
-  },
-  components: {
-    ResetPasswordForm
-  },
-  methods: {
-    onReset() {
-      if (this.$store.getters.routeBeforeRedirect) {
-        this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
-        this.$router.push({ name: this.$store.getters.routeBeforeRedirect })
-      } else {
-        this.$router.push('/')
-      }
-    }
-  }
-}
-</script>

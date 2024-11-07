@@ -1,16 +1,16 @@
 export interface MappingAttributes {
-  [path: string]: AttributeProperties
+  [path: string]: AttributeProperties;
 }
 export interface AttributeProperties {
-  fullPath: string
-  type: string
+  fullPath: string;
+  type: string;
 }
 
 export const extractAttributesFromMapping = (
   mapping: object = {},
   attributes: MappingAttributes = {},
-  prefix: string = '',
-  path: string[] = []
+  prefix = '',
+  path: string[] = [],
 ): MappingAttributes => {
   for (const [name, value] of Object.entries(mapping)) {
     if (value.properties) {
@@ -18,13 +18,13 @@ export const extractAttributesFromMapping = (
         value.properties,
         attributes,
         `${prefix}${name}.`,
-        path.concat(name, 'properties')
-      )
+        path.concat(name, 'properties'),
+      );
     } else if (value.type) {
       attributes[`${prefix}${name}`] = {
         type: value.type,
-        fullPath: path.concat(name).join('.')
-      }
+        fullPath: path.concat(name).join('.'),
+      };
       // Other attribute types are listed in the "fields" property
       if (value.fields) {
         for (const type of Object.keys(value.fields)) {
@@ -32,11 +32,11 @@ export const extractAttributesFromMapping = (
             value.fields,
             attributes,
             `${prefix}${name}.`,
-            path.concat(name, '')
-          )
+            path.concat(name, ''),
+          );
         }
       }
     }
   }
-  return attributes
-}
+  return attributes;
+};

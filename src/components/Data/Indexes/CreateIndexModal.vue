@@ -1,17 +1,15 @@
 <template>
   <b-modal
-    class="CreateIndexModal"
+    :id="modalId"
     ref="createIndexModal"
+    class="CreateIndexModal"
     size="lg"
     title="Index creation"
     body-class="p-0"
-    :id="modalId"
     @hide="resetForm"
   >
-    <template v-slot:modal-footer>
-      <b-button variant="secondary" @click="onCancel" :disabled="modalBusy">
-        Cancel
-      </b-button>
+    <template #modal-footer>
+      <b-button variant="secondary" :disabled="modalBusy" @click="onCancel"> Cancel </b-button>
       <b-button
         data-cy="CreateIndexModal-createBtn"
         variant="primary"
@@ -22,43 +20,28 @@
       </b-button>
     </template>
     <b-overlay :show="modalBusy" rounded="sm" class="p-3">
-      <b-form v-on:submit.prevent="tryCreateIndex">
+      <b-form @submit.prevent="tryCreateIndex">
         <b-form-group
           data-cy="CreateIndexModal-name"
           label="Index name"
           label-for="indexName"
+          :invalid-feedback="indexFeedback"
         >
-          <template v-slot:description
-            >The index name should contain only lowercase characters and no
-            spaces. It also must not contain de following characters:
-            <code>\</code>, <code>/</code>, <code>*</code>, <code>?</code>,
-            <code>"</code>, <code>&lt;</code>, <code>></code>, <code>|</code>,
-            <code>,</code>, <code>#</code>, <code>:</code>, <code>%</code>,
-            <code>&</code>, <code>.</code>
-          </template>
-          <template v-slot:invalid-feedback id="profile-id-feedback">
-            <span v-if="!$v.index.required">This field cannot be empty</span>
-            <span v-else-if="!$v.index.isNotWhitespace"
-              >This field cannot contain just whitespaces</span
-            >
-            <span v-else-if="!$v.index.startsWithLetter"
-              >This field cannot start with a whitespace</span
-            >
-            <span v-else-if="!$v.index.isLowercase"
-              >This field cannot contain uppercase letters</span
-            >
-            <span v-else-if="!$v.index.validChars"
-              >This field cannnot contain invalid chars</span
-            >
+          <template #description
+            >The index name should contain only lowercase characters and no spaces. It also must not
+            contain de following characters: <code>\</code>, <code>/</code>, <code>*</code>,
+            <code>?</code>, <code>"</code>, <code>&lt;</code>, <code>></code>, <code>|</code>,
+            <code>,</code>, <code>#</code>, <code>:</code>, <code>%</code>, <code>&</code>,
+            <code>.</code>
           </template>
           <b-form-input
             id="indexName"
+            v-model="v$.index.$model"
             autofocus
             required
             type="text"
-            v-model="$v.index.$model"
             :state="validateState('index')"
-          ></b-form-input>
+          />
         </b-form-group>
         <b-alert
           data-cy="CreateIndexModal-alert"
@@ -72,79 +55,109 @@
   </b-modal>
 </template>
 
-<style lang="scss"></style>
-
 <script>
-import { validationMixin } from 'vuelidate'
-import { not, required } from 'vuelidate/lib/validators'
-import { startsWithSpace, isWhitespace, isUppercase } from '../../../validators'
+import { useVuelidate } from '@vuelidate/core';
+import { not, required, helpers } from '@vuelidate/validators';
+
+import { useStorageIndexStore } from '@/stores';
+import { startsWithSpace, isWhitespace, isUppercase } from '@/validators';
 
 function includesInvalidIndexChars(value) {
   // eslint-disable-next-line no-useless-escape
-  return /[@\\\/\*\?"<>,#:%&\|\.]/.test(value)
+  return /[@\\\/\*\?"<>,#:%&\|\.]/.test(value);
 }
+
 export default {
-  mixins: [validationMixin],
   name: 'CreateIndexModal',
   props: {
     modalId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
+  },
+  setup() {
+    return {
+      v$: useVuelidate(),
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   data() {
     return {
       error: '',
       index: '',
-      modalBusy: false
-    }
+      modalBusy: false,
+    };
   },
   validations() {
     return {
       index: {
-        isNotWhitespace: not(isWhitespace),
-        startsWithLetter: not(startsWithSpace),
-        isLowercase: not(isUppercase),
-        required,
-        validChars: not(includesInvalidIndexChars)
+        isNotWhitespace: helpers.withMessage(
+          'This field cannot contain just whitespaces',
+          not(isWhitespace),
+        ),
+        startsWithLetter: helpers.withMessage(
+          'This field cannot start with a whitespace',
+          not(startsWithSpace),
+        ),
+        isLowercase: helpers.withMessage(
+          'This field cannot contain uppercase letters',
+          not(isUppercase),
+        ),
+        required: helpers.withMessage('This field cannot be empty', required),
+        validChars: helpers.withMessage(
+          'This field cannnot contain invalid chars',
+          not(includesInvalidIndexChars),
+        ),
+      },
+    };
+  },
+  computed: {
+    indexFeedback() {
+      if (this.v$.index.$errors.length > 0) {
+        return this.v$.index.$errors[0].$message;
       }
-    }
+
+      return null;
+    },
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.$v[fieldName]
-      return $dirty ? !$error : null
+      const { $dirty, $error } = this.v$[fieldName];
+      return $dirty ? !$error : null;
     },
     resetForm() {
-      this.$v.$reset()
-      this.index = ''
-      this.error = ''
-      this.modalBusy = false
+      this.v$.$reset();
+      this.index = '';
+      this.error = '';
+      this.modalBusy = false;
     },
     async onCreateSuccess() {
-      this.resetForm()
-      this.$bvModal.hide(this.modalId)
-      this.$emit('create-successful')
+      this.resetForm();
+      this.$bvModal.hide(this.modalId);
+      this.$emit('create-successful');
     },
     async onCancel() {
-      this.resetForm()
-      this.$bvModal.hide(this.modalId)
+      this.resetForm();
+      this.$bvModal.hide(this.modalId);
     },
     async tryCreateIndex() {
-      this.modalBusy = true
-      this.$v.$touch()
-      if (this.$v.$anyError) {
-        return
+      this.v$.$touch();
+      if (this.v$.$errors.length > 0) {
+        return;
       }
 
+      this.modalBusy = true;
+
       try {
-        await this.$store.direct.dispatch.index.createIndex(this.index)
-        this.onCreateSuccess()
+        await this.storageIndexStore.createIndex(this.index);
+        this.onCreateSuccess();
       } catch (err) {
-        this.error = err.message
-        this.modalBusy = false
+        this.error = err.message;
+        this.modalBusy = false;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
+
+<style lang="scss"></style>

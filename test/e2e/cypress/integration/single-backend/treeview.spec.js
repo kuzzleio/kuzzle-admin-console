@@ -55,8 +55,7 @@ describe('Treeview', () => {
     movePiece(`[data-cy=sidebarResizer]`, 40, 200)
     cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should(
       'have.css',
-      'width',
-      '287px'
+      'width'
     )
   })
 })

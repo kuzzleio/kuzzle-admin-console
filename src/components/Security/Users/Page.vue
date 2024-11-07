@@ -15,13 +15,13 @@
             >Create User</b-button
           >
           <b-dropdown
+            id="users-dropdown"
             data-cy="UsersDropdown"
             no-caret
             toggle-class="usersDropdown"
             variant="light"
-            id="users-dropdown"
           >
-            <template v-slot:button-content>
+            <template #button-content>
               <i class="fas fa-ellipsis-v" />
             </template>
             <b-dropdown-item
@@ -46,12 +46,10 @@
         route-update="SecurityUsersUpdate"
         :mapping-attributes="mappingAttributes"
       >
-        <b-card class="EmptyState text-center" slot="emptySet">
-          <i class="text-secondary fas fa-user fa-6x mb-3"></i>
-          <h2 class="text-secondary font-weight-bold">
-            No user is defined
-          </h2>
-          <p class="text-secondary" v-if="canCreateUser">
+        <b-card slot="emptySet" class="EmptyState text-center">
+          <i class="text-secondary fas fa-user fa-6x mb-3" />
+          <h2 class="text-secondary font-weight-bold">No user is defined</h2>
+          <p v-if="canCreateUser" class="text-secondary">
             You can create a new user by hitting the button above
           </p>
         </b-card>
@@ -61,50 +59,55 @@
 </template>
 
 <script>
-import List from './List'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import Headline from '../../Materialize/Headline'
-import { mapGetters } from 'vuex'
-import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
+import { mapState } from 'pinia';
+
+import ListNotAllowed from '../../Common/ListNotAllowed.vue';
+import Headline from '../../Materialize/Headline.vue';
+import { extractAttributesFromMapping } from '@/services/mappingHelpers';
+import { useAuthStore, useKuzzleStore } from '@/stores';
+
+import List from './List.vue';
 
 export default {
   name: 'UsersManagement',
   components: {
     ListNotAllowed,
     List,
-    Headline
+    Headline,
   },
   data() {
     return {
-      userMapping: {}
-    }
+      userMapping: {},
+    };
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper']),
-    ...mapGetters('auth', ['canSearchUser', 'canCreateUser']),
+    ...mapState(useKuzzleStore, ['wrapper']),
+    ...mapState(useAuthStore, ['canSearchUser', 'canCreateUser']),
     mappingAttributes() {
-      return this.extractAttributesFromMapping(this.userMapping)
-    }
+      return this.extractAttributesFromMapping(this.userMapping);
+    },
   },
   async mounted() {
-    const mapping = await this.wrapper.getMappingUsers()
-    this.userMapping = mapping.mapping
+    const mapping = await this.wrapper.getMappingUsers();
+    this.userMapping = mapping.mapping;
   },
   methods: {
     extractAttributesFromMapping,
     createUser() {
-      this.$router.push({ name: 'SecurityUsersCreate' })
-    }
-  }
-}
+      this.$router.push({ name: 'SecurityUsersCreate' });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 .UserManagement {
   margin-bottom: 3em;
 }
 ::v-deep .usersDropdown {
-  background-color: $light-grey-color;
+  background-color: variables.$light-grey-color;
   border: none;
 }
 .UserList--container {

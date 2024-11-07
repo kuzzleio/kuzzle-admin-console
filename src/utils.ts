@@ -1,65 +1,82 @@
-// Pleas keep this export syntax, this file is used by the tests
-// (until nodejs supports js modules export)
+export const antiGlitchOverlayTimeout = 900;
 
-module.exports = {
-  /**
-   * Substitutes all the DOM-unfriendly characters with '-'
-   *
-   * @param {String} word the word to make DOM-friendly
-   */
-  formatForDom: word => {
-    return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
-  },
-  truncateName: (name, maxLength = 50) => {
-    if (!name) {
-      return ''
-    }
-    if (name.length <= maxLength) {
-      return name
-    }
-    if (name.length > maxLength) {
-      return `${name.substring(0, maxLength)}...`
-    }
-  },
-  dateFromTimestamp(value) {
-    let timestamp
+export const LS_ENVIRONMENTS = 'environments';
+export const LS_LAST_ENV = 'lastEnv';
+export const SS_CURRENT_ENV = 'currentEnv';
 
-    if (typeof value === 'string') {
-      if (!isNaN(Date.parse(value))) {
-        timestamp = Date.parse(value)
-      } else {
-        timestamp = parseInt(value, 10)
-      }
+export const NO_ADMIN_WARNING_HOSTS = ['localhost', '127.0.0.1'];
 
-      if (isNaN(timestamp)) {
-        return null
-      }
-    } else if (Number.isInteger(value)) {
-      timestamp = value
+export const DEFAULT_COLOR = 'darkblue';
+export const ENV_COLORS = [
+  DEFAULT_COLOR,
+  'lightblue',
+  'purple',
+  'green',
+  'orange',
+  'red',
+  'grey',
+  'magenta',
+];
+
+export const formatForDom = (word: string): string => {
+  return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-');
+};
+
+export const sortObject = (object: object): object => {
+  return Object.keys(object)
+    .sort()
+    .reduce((result, key) => {
+      result[key] = object[key];
+      return result;
+    }, {});
+};
+
+export const truncateName = (name: string, maxLength = 50): string => {
+  if (name.length === 0) {
+    return '';
+  } else if (name.length <= maxLength) {
+    return name;
+  }
+
+  return `${name.substring(0, maxLength)}...`;
+};
+
+export const dateFromTimestamp = (value: string | number): Date | null => {
+  let timestamp: number;
+
+  if (typeof value === 'string') {
+    if (!isNaN(Date.parse(value))) {
+      timestamp = Date.parse(value);
     } else {
-      return null
+      timestamp = parseInt(value, 10);
     }
 
-    const length = `${timestamp}`.length
-
-    let date
-    if (length === 10) {
-      date = new Date(timestamp * 1000)
-    } else if (length === 13) {
-      date = new Date(timestamp)
-    } else {
-      return null
+    if (isNaN(timestamp)) {
+      return null;
     }
+  } else if (Number.isInteger(value)) {
+    timestamp = value;
+  } else {
+    return null;
+  }
 
-    return date
-  },
-  wait: async ms =>
-    new Promise(resolve => {
-      setTimeout(() => {
-        resolve()
-      }, ms)
-    }),
-  antiGlitchOverlayTimeout: 900,
-  LS_ENVIRONMENTS: 'environments',
-  SS_CURRENT_ENV: 'currentEnv'
-}
+  const length = `${timestamp}`.length;
+
+  let date: Date;
+  if (length === 10) {
+    date = new Date(timestamp * 1000);
+  } else if (length === 13) {
+    date = new Date(timestamp);
+  } else {
+    return null;
+  }
+
+  return date;
+};
+
+export const wait = async (ms: number): Promise<void> =>
+  await new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, ms);
+  });

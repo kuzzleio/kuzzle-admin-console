@@ -1,12 +1,12 @@
 <template>
   <span>
     <b-dropdown
+      :id="`collection-${collection}`"
       data-cy="CollectionDropdownView"
       toggle-class="collectionDropdown"
       variant="light"
-      :id="`collection-${collection}`"
     >
-      <template v-slot:button-content>
+      <template #button-content>
         <b class="mr-2">View</b>
       </template>
 
@@ -63,7 +63,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState } from 'pinia';
+
+import { useAuthStore } from '@/stores';
+
 export default {
   name: 'CollectionDropdownView',
   components: {},
@@ -71,31 +74,33 @@ export default {
     mappingAttributes: Object,
     activeView: String,
     collection: String,
-    index: String
+    index: String,
   },
   computed: {
-    ...mapGetters('auth', ['canSubscribe']),
+    ...mapState(useAuthStore, ['canSubscribe']),
     mappingHasIntegerField() {
       return (
         Object.keys(this.mappingAttributes).filter(
-          a => this.mappingAttributes[a].type === 'integer'
+          (a) => this.mappingAttributes[a].type === 'integer',
         ).length > 0
-      )
+      );
     },
     mappingHasGeoField() {
       return (
-        Object.keys(this.mappingAttributes).filter(a =>
-          ['geo_point', 'geo_shape'].includes(this.mappingAttributes[a].type)
+        Object.keys(this.mappingAttributes).filter((a) =>
+          ['geo_point', 'geo_shape'].includes(this.mappingAttributes[a].type),
         ).length > 0
-      )
-    }
-  }
-}
+      );
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss';
+
 ::v-deep .collectionDropdown {
-  background-color: $light-grey-color;
+  background-color: variables.$light-grey-color;
   border: none;
 }
 

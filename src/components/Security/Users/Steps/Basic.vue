@@ -1,19 +1,10 @@
 <template>
   <form class="wrapper">
-    <b-form-group label-cols="2" data-cy="UserBasic-kuid">
-      <template v-slot:label><strong>KUID</strong></template>
-
-      <template v-slot:invalid-feedback>
-        <span v-if="!validations.kuid.notEmpty"
-          >The KUID cannot contain just whitespaces</span
-        >
-        <span v-else-if="!validations.kuid.notStartsWithSpace"
-          >The KUID cannot start with a whitespace</span
-        >
-      </template>
+    <b-form-group label-cols="2" data-cy="UserBasic-kuid" :invalid-feedback="kuidFeedback">
+      <template #label><strong>KUID</strong></template>
       <b-input
-        class="validate"
         id="custom-kuid"
+        class="validate"
         placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
         type="text"
         :disabled="!editKuid"
@@ -35,9 +26,7 @@
         <b-row>
           <b-col offset="6">
             <div class="text-danger" data-cy="UserProfileList-invalidFeedback">
-              <small v-if="validations.addedProfiles.$error"
-                >Please add at least one profile</small
-              >
+              <small v-if="validations.addedProfiles.$error">Please add at least one profile</small>
               <small v-else><br /></small>
             </div>
           </b-col>
@@ -48,46 +37,55 @@
 </template>
 
 <script type="text/javascript">
-import UserProfileList from './UserProfileList'
+import UserProfileList from './UserProfileList.vue';
 
 export default {
   name: 'UserBasicData',
   components: {
-    UserProfileList
+    UserProfileList,
   },
   props: {
     addedProfiles: {
       type: Array,
       default: () => {
-        return []
-      }
+        return [];
+      },
     },
     kuid: {
       type: String,
-      default: null
+      default: null,
     },
     editKuid: {
       type: Boolean,
-      default: false
+      default: false,
     },
     validations: {
-      type: Object
-    }
+      type: Object,
+    },
+  },
+  computed: {
+    kuidFeedback() {
+      if (this.validations.kuid.$errors.length > 0) {
+        return this.validations.kuid.$errors[0].$message;
+      }
+
+      return null;
+    },
   },
   methods: {
     validateState(fieldName) {
-      const { $dirty, $error } = this.validations[fieldName]
-      return $dirty ? !$error : null
+      const { $dirty, $error } = this.validations[fieldName];
+      return $dirty ? !$error : null;
     },
     setCustomKuid(value) {
-      this.$emit('set-custom-kuid', value)
+      this.$emit('set-custom-kuid', value);
     },
     onProfileSelected(profile) {
-      this.$emit('profile-add', profile)
+      this.$emit('profile-add', profile);
     },
     removeProfile(profile) {
-      this.$emit('profile-remove', profile)
-    }
-  }
-}
+      this.$emit('profile-remove', profile);
+    },
+  },
+};
 </script>

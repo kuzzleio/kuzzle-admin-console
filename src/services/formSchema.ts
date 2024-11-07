@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _ from 'lodash';
 
 export const typesCorrespondance = {
   boolean: 'checkbox',
@@ -36,8 +36,8 @@ export const typesCorrespondance = {
   shape: 'JsonFormInput',
   sparse_vector: 'JsonFormInput',
   nested: 'JsonFormInput',
-  join: 'JsonFormInput'
-}
+  join: 'JsonFormInput',
+};
 
 const inputTypesCorrespondance = {
   binary: 'text',
@@ -52,84 +52,82 @@ const inputTypesCorrespondance = {
   scaled_float: 'number',
   keyword: 'text',
   wildcard: 'text',
-  constant_keyword: 'text'
-}
+  constant_keyword: 'text',
+};
 
 class FormSchemaService {
   public generate(mapping: Object, document: Object) {
     const schema: Schema = {
       fields: [],
-      unavailable: []
-    }
+      unavailable: [],
+    };
 
-    const cleanedMapping = this.cleanMapping(mapping)
+    const cleanedMapping = this.cleanMapping(mapping);
 
     Object.entries(cleanedMapping).forEach(
       ([mappingFieldName, mappingFieldValues]: [string, any]) => {
-        const documentField: object = document[mappingFieldName]
-        const type: string = mappingFieldValues['properties']
-          ? 'object'
-          : mappingFieldValues['type']
+        const documentField: object = document[mappingFieldName];
+        const type: string = mappingFieldValues.properties ? 'object' : mappingFieldValues.type;
 
         if (this.isUnavailable(documentField, type)) {
-          schema.unavailable.push(mappingFieldName)
-          return
+          schema.unavailable.push(mappingFieldName);
+          return;
         }
 
-        const typeCorrespondance = this.getTypeCorrespondance(type)
+        const typeCorrespondance = this.getTypeCorrespondance(type);
 
         const field: FormField = {
           type: typeCorrespondance,
           inputType: this.getInputTypeCorrespondance(type),
           label: mappingFieldName,
           model: mappingFieldName,
-          mapping: mappingFieldValues
-        }
+          mapping: mappingFieldValues,
+        };
 
-        schema.fields.push(field)
-      }
-    )
+        schema.fields.push(field);
+      },
+    );
 
-    return schema
+    return schema;
   }
 
   private cleanMapping(mapping: object) {
-    const fieldsToRemove = ['_kuzzle_info']
-    return _.omit(mapping, fieldsToRemove)
+    const fieldsToRemove = ['_kuzzle_info'];
+    return _.omit(mapping, fieldsToRemove);
   }
 
   private isUnavailable(documentField: object, type: string) {
     if (!Object.keys(typesCorrespondance).includes(type)) {
-      return true
+      return true;
     }
 
     if (Array.isArray(documentField)) {
-      return true
+      return true;
     }
 
-    return false
+    return false;
   }
 
   private getTypeCorrespondance(mappingType: string) {
-    return typesCorrespondance[mappingType]
+    return typesCorrespondance[mappingType];
   }
 
   private getInputTypeCorrespondance(mappingType: string) {
-    return inputTypesCorrespondance[mappingType] || null
+    return inputTypesCorrespondance[mappingType] || null;
   }
 }
 
 interface FormField {
-  type: string
-  inputType: string
-  label: string
-  model: string
-  mapping: object
+  type: string;
+  inputType: string;
+  label: string;
+  model: string;
+  mapping: object;
 }
 
 interface Schema {
-  fields: FormField[]
-  unavailable: string[]
+  fields: FormField[];
+  unavailable: string[];
 }
 
-export const formSchemaService = new FormSchemaService()
+export const formSchemaService = new FormSchemaService();

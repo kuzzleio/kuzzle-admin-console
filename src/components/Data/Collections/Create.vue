@@ -1,5 +1,5 @@
 <template>
-  <b-container class="CollectionCreate h-100" v-if="index">
+  <b-container v-if="index" class="CollectionCreate h-100">
     <create-or-update
       v-if="hasRights"
       headline="Create a new collection"
@@ -12,52 +12,61 @@
 </template>
 
 <script>
-import PageNotAllowed from '../../Common/PageNotAllowed'
-import CreateOrUpdate from './CreateOrUpdate'
-import { mapGetters } from 'vuex'
+import { mapState } from 'pinia';
+
+import PageNotAllowed from '../../Common/PageNotAllowed.vue';
+import { useAuthStore, useStorageIndexStore } from '@/stores';
+
+import CreateOrUpdate from './CreateOrUpdate.vue';
+
 export default {
   name: 'CollectionCreate',
   components: {
     CreateOrUpdate,
-    PageNotAllowed
+    PageNotAllowed,
   },
   props: {
-    indexName: String
+    indexName: String,
+  },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   computed: {
-    ...mapGetters('auth', ['canCreateCollection']),
+    ...mapState(useAuthStore, ['canCreateCollection']),
     hasRights() {
-      return this.canCreateCollection(this.index.name)
+      return this.canCreateCollection(this.index.name);
     },
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName)
-    }
+      return this.storageIndexStore.getOneIndex(this.indexName);
+    },
   },
   methods: {
     async create(payload) {
       try {
-        await this.$store.direct.dispatch.index.createCollection({
+        await this.storageIndexStore.createCollection({
           index: this.index,
           name: payload.name,
-          mapping: payload.mapping
-        })
+          mapping: payload.mapping,
+        });
 
         this.$router.push({
           name: 'Collections',
-          params: { indexName: this.index.name }
-        })
+          params: { indexName: this.index.name },
+        });
       } catch (error) {
-        this.$log.error(error)
+        this.$log.error(error);
         this.$bvToast.toast(error.message, {
           title: 'Ooops! Something went wrong while creating the collection.',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
           appendToast: true,
           dismissible: true,
-          noAutoHide: true
-        })
+          noAutoHide: true,
+        });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

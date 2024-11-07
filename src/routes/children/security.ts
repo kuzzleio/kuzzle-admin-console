@@ -1,107 +1,94 @@
-/* istanbul ignore next */
+import ProfilesCreate from '@/components/Security/Profiles/Create.vue';
+import ProfilesPage from '@/components/Security/Profiles/Page.vue';
+import ProfilesUpdate from '@/components/Security/Profiles/Update.vue';
+import RolesCreateOrUpdate from '@/components/Security/Roles/CreateOrUpdate.vue';
+import RolesPage from '@/components/Security/Roles/Page.vue';
+import UsersCreateOrUpdate from '@/components/Security/Users/CreateOrUpdate.vue';
+import UsersEditCustomMapping from '@/components/Security/Users/EditCustomMapping.vue';
+import UsersPage from '@/components/Security/Users/Page.vue';
 
 export default [
   {
     path: '/security/users',
     name: 'SecurityUsersList',
     meta: {
-      section: 'users'
+      section: 'users',
     },
-    component(resolve) {
-      require(['../../components/Security/Users/Page'], resolve)
-    }
+    component: UsersPage,
   },
   {
     path: '/security/users/custom-mapping',
     name: 'SecurityUsersEditCustomMapping',
     meta: {
-      section: 'users'
+      section: 'users',
     },
-    component(resolve) {
-      require(['../../components/Security/Users/EditCustomMapping'], resolve)
-    }
+    component: UsersEditCustomMapping,
   },
   {
     path: '/security/users/create',
     name: 'SecurityUsersCreate',
     meta: {
-      section: 'users'
+      section: 'users',
     },
-    component(resolve) {
-      require(['../../components/Security/Users/CreateOrUpdate'], resolve)
-    }
+    component: UsersCreateOrUpdate,
   },
   {
     path: '/security/users/:id',
     name: 'SecurityUsersUpdate',
     meta: {
-      section: 'users'
+      section: 'users',
     },
-    component(resolve) {
-      require(['../../components/Security/Users/CreateOrUpdate'], resolve)
-    },
-    props: route => ({ id: route.params.id })
+    component: UsersCreateOrUpdate,
+    props: (route) => ({ id: route.params.id }),
   },
   {
     path: '/security/profiles',
     name: 'SecurityProfilesList',
     meta: {
-      section: 'profiles'
+      section: 'profiles',
     },
-    component(resolve) {
-      require(['../../components/Security/Profiles/Page'], resolve)
-    }
+    component: ProfilesPage,
   },
   {
     path: '/security/profiles/create',
     name: 'SecurityProfilesCreate',
     meta: {
-      section: 'profiles'
+      section: 'profiles',
     },
-    component(resolve) {
-      require(['../../components/Security/Profiles/Create'], resolve)
-    }
+    component: ProfilesCreate,
   },
   {
     path: '/security/profiles/:id',
     name: 'SecurityProfilesUpdate',
     meta: {
-      section: 'profiles'
+      section: 'profiles',
     },
-    component(resolve) {
-      require(['../../components/Security/Profiles/Update'], resolve)
-    },
-    props: route => ({ id: route.params.id })
+    component: ProfilesUpdate,
+    props: (route) => ({ id: route.params.id }),
   },
   {
     path: '/security/roles',
     name: 'SecurityRolesList',
     meta: {
-      section: 'roles'
+      section: 'roles',
     },
-    component(resolve) {
-      require(['../../components/Security/Roles/Page'], resolve)
-    }
+    component: RolesPage,
   },
   {
     path: '/security/roles/create',
     name: 'SecurityRolesCreate',
     meta: {
-      section: 'roles'
+      section: 'roles',
     },
-    component(resolve) {
-      require(['../../components/Security/Roles/CreateOrUpdate'], resolve)
-    }
+    component: RolesCreateOrUpdate,
   },
   {
     path: '/security/roles/:id',
     name: 'SecurityRolesUpdate',
     meta: {
-      section: 'roles'
+      section: 'roles',
     },
-    component(resolve) {
-      require(['../../components/Security/Roles/CreateOrUpdate'], resolve)
-    },
-    props: route => ({ id: route.params.id })
-  }
-]
+    component: RolesCreateOrUpdate,
+    props: (route) => ({ id: route.params.id }),
+  },
+];

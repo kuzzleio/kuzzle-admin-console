@@ -26,12 +26,10 @@
       route-update="SecurityProfilesUpdate"
       @create-clicked="createProfile"
     >
-      <b-card class="EmptyState text-center" slot="emptySet">
-        <i class="text-secondary fas fa-user fa-6x mb-3"></i>
-        <h2 class="text-secondary font-weight-bold">
-          No profile is defined
-        </h2>
-        <p class="text-secondary" v-if="canCreateProfile">
+      <b-card slot="emptySet" class="EmptyState text-center">
+        <i class="text-secondary fas fa-user fa-6x mb-3" />
+        <h2 class="text-secondary font-weight-bold">No profile is defined</h2>
+        <p v-if="canCreateProfile" class="text-secondary">
           You can create a new profile by hitting the button above
         </p> </b-card
       >iv>
@@ -40,32 +38,35 @@
 </template>
 
 <script>
-import List from './List'
-import ListNotAllowed from '../../Common/ListNotAllowed'
-import Headline from '../../Materialize/Headline'
-import { mapGetters } from 'vuex'
+import { mapState } from 'pinia';
+
+import ListNotAllowed from '../../Common/ListNotAllowed.vue';
+import Headline from '../../Materialize/Headline.vue';
+import { useAuthStore } from '@/stores';
+
+import List from './List.vue';
 
 export default {
   name: 'ProfileManagement',
   components: {
     List,
     ListNotAllowed,
-    Headline
+    Headline,
   },
   computed: {
-    ...mapGetters('auth', ['canSearchProfile', 'canCreateProfile'])
+    ...mapState(useAuthStore, ['canSearchProfile', 'canCreateProfile']),
   },
   methods: {
     createProfile() {
-      this.$router.push({ name: 'SecurityProfilesCreate' })
-    }
+      this.$router.push({ name: 'SecurityProfilesCreate' });
+    },
   },
   route: {
     data() {
-      this.$emit('crudl-refresh-search')
-    }
-  }
-}
+      this.$emit('crudl-refresh-search');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

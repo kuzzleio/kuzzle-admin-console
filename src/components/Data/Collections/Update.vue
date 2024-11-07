@@ -18,83 +18,87 @@
   </b-container>
 </template>
 <script>
-import PageNotAllowed from '../../Common/PageNotAllowed'
-import CreateOrUpdate from './CreateOrUpdate'
-import { mapGetters } from 'vuex'
-import { omit } from 'lodash'
+import { omit } from 'lodash';
+import { mapState } from 'pinia';
+
+import PageNotAllowed from '../../Common/PageNotAllowed.vue';
+import { useAuthStore, useStorageIndexStore } from '@/stores';
+
+import CreateOrUpdate from './CreateOrUpdate.vue';
 
 export default {
   name: 'CollectionUpdate',
   components: {
     CreateOrUpdate,
-    PageNotAllowed
+    PageNotAllowed,
   },
   props: {
     indexName: { type: String, required: true },
-    collectionName: { type: String, required: true }
+    collectionName: { type: String, required: true },
+  },
+  setup() {
+    return {
+      storageIndexStore: useStorageIndexStore(),
+    };
   },
   data() {
     return {
       mapping: {},
-      realtimeOnly: false
-    }
+      realtimeOnly: false,
+    };
   },
   computed: {
-    ...mapGetters('auth', ['canEditCollection']),
+    ...mapState(useAuthStore, ['canEditCollection']),
     hasRights() {
-      return this.canEditCollection(this.indexName, this.collectionName)
+      return this.canEditCollection(this.indexName, this.collectionName);
     },
     index() {
-      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+      return this.storageIndexStore.getOneIndex(this.indexName);
     },
     collection() {
-      return this.$store.direct.getters.index.getOneCollection(
-        this.index,
-        this.collectionName
-      )
+      return this.storageIndexStore.getOneCollection(this.index, this.collectionName);
     },
     fullMappings() {
       const mappings = {
         dynamic: this.collection.dynamic,
-        properties: omit(this.collection.mapping, '_kuzzle_info')
-      }
+        properties: omit(this.collection.mapping, '_kuzzle_info'),
+      };
 
-      return mappings
+      return mappings;
     },
     loading() {
-      return this.$store.direct.getters.index.loadingCollections(
-        this.index.name
-      )
-    }
+      return this.storageIndexStore.loadingCollections(this.index.name);
+    },
   },
   methods: {
     async update(payload) {
-      this.error = ''
+      this.error = '';
       try {
-        await this.$store.direct.dispatch.index.updateCollection({
+        this.storageIndexStore.updateCollection({
           index: this.index,
           name: payload.name,
-          mapping: payload.mapping
-        })
+          mapping: payload.mapping,
+        });
+
         this.$router.push({
           name: 'Collections',
-          params: { indexName: this.index.name }
-        })
+          params: { indexName: this.index.name },
+        });
       } catch (e) {
-        this.$log.error(e)
+        this.$log.error(e);
         this.$bvToast.toast(e.message, {
           title: 'Ooops! Something went wrong while updating the collection.',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
           appendToast: true,
           dismissible: true,
-          noAutoHide: true
-        })
+          noAutoHide: true,
+        });
       }
     },
     setError(payload) {
-      this.error = payload
-    }
-  }
-}
+      this.error = payload;
+    },
+  },
+};
 </script>

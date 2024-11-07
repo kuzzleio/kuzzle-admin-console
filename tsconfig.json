@@ -14,10 +14,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env",
-      "mocha",
-      "chai",
-      "jquery"
+      "vite/client"
     ],
     "paths": {
       "@/*": [

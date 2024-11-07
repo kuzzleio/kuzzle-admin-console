@@ -96,9 +96,7 @@ describe('Search', function() {
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
-    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', {
-      delay: 60
-    })
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.url().should('contain', 'active=basic')
     cy.url().should('contain', 'attribute')
@@ -199,9 +197,7 @@ describe('Search', function() {
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
-    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Keylogger', {
-      delay: 60
-    })
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Keylogger', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
     cy.get('.DocumentListView-item').should('have.length', 1)
@@ -252,9 +248,7 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select(
       '_kuzzle_info.author'
     )
-    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Luca', {
-      delay: 60
-    })
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Luca', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
     cy.get('.DocumentListView-item').should('have.length', 0)
@@ -264,9 +258,7 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select(
       '_kuzzle_info.author'
     )
-    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('{selectall}-1', {
-      delay: 60
-    })
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('{selectall}-1')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
     cy.get('.DocumentListView-item').should('have.length', 2)
@@ -281,9 +273,7 @@ describe('Search', function() {
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
-    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', {
-      delay: 60
-    })
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('.DocumentListView-item').should('have.length', 1)
 
@@ -388,9 +378,7 @@ describe('Search', function() {
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
-    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', {
-      delay: 60
-    })
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
@@ -481,9 +469,7 @@ describe('Search', function() {
     cy.get('[data-cy="Filters-basicTab"]').click()
 
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('firstName')
-    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('bar', {
-      delay: 60
-    })
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('bar', { delay: 60 })
     cy.get('[data-cy=BasicFilter-generateRawBtn]').click()
     cy.get('.ace_content')
       .and('contain', 'must')
