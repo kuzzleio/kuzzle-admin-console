@@ -83,7 +83,7 @@
             variant="primary"
             class="ml-2"
             :disabled="submitting || !isDocumentValid"
-            @click="submit"
+            @click="submit()"
           >
             <i class="fa fa-plus-circle left" />
             Create
@@ -94,7 +94,7 @@
             class="ml-2"
             data-cy="DocumentUpdate-btn"
             :disabled="submitting || !isDocumentValid"
-            @click="submit"
+            @click="submit()"
           >
             <i class="fa fa-pencil-alt left" />
             Update
