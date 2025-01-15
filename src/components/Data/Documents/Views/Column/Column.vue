@@ -1,52 +1,35 @@
 <template>
   <div class="Column" data-cy="DocumentList-Column">
     <div class="d-flex flex-row align-items-center">
-      <div class="flex-grow-1">
-        <b-dropdown
-          class="mr-2"
-          data-cy="SelectField"
-          variant="outline-secondary"
-          menu-class="dropdownScroll"
-          text="Fields"
-          no-flip
+      <div class="flex-grow-1 d-flex align-items-stretch">
+        <div class="d-inline-block mr-2 w-full max-w-24rem">
+          <multiselect
+            v-model="selectedFieldsComputed"
+            :options="dropdownFields.map((field) => field.text)"
+            :taggable="true"
+            tag-placeholder="Add custom field"
+            placeholder="Select fields"
+            :multiple="true"
+            :close-on-select="false"
+            :allow-empty="true"
+            @tag="addCustomField"
+          />
+        </div>
+        <b-button
+          variant="outline-dark"
+          class="mr-2 align-self-center"
+          @click="$emit('toggle-all')"
         >
-          <b-dropdown-item-button
-            v-if="selectedFields.length !== 0"
-            class="pl-4"
-            @click="resetColumns"
-          >
-            Unselect all
-          </b-dropdown-item-button>
-          <b-dropdown-text
-            v-for="field of dropdownFields"
-            :key="`dropdown-${field.text}`"
-            class="dropdown-text inlineDisplay pointer p-0"
-          >
-            <span class="inlineDisplay-item">
-              <b-form-checkbox
-                :id="field.text"
-                class="mx-2"
-                :checked="field.displayed"
-                :data-cy="`SelectField--${field.text}`"
-                @change="toggleColumn(field.text, $event)"
-              />
-            </span>
-            <label class="inlineDisplay-item code pointer" :for="field.text" :title="field.text">{{
-              field.text
-            }}</label>
-          </b-dropdown-text>
-          <b-dropdown-item v-if="dropdownFields.length === 0">
-            <span class="inlineDisplay-item"> No searchable field </span>
-          </b-dropdown-item>
-        </b-dropdown>
-        <b-button variant="outline-dark" class="mr-2" @click="$emit('toggle-all')">
           <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`" />
           Toggle all
+        </b-button>
+        <b-button variant="outline-secondary" class="mr-2 align-self-center" @click="resetColumns">
+          Reset
         </b-button>
 
         <b-button
           variant="outline-danger"
-          class="mr-2"
+          class="mr-2 align-self-center"
           :disabled="!bulkDeleteEnabled"
           @click="$emit('bulk-delete')"
         >
@@ -56,7 +39,7 @@
 
         <b-button
           variant="outline-secondary"
-          class="mr-2"
+          class="mr-2 align-self-center"
           data-cy="Column-btnExportCSV"
           title="Export columns to CSV"
           @click.prevent="displayModalExportCSV"
@@ -236,6 +219,8 @@ import NewDocumentsBadge from '@/components/Data/Documents/Common/NewDocumentsBa
 import HeaderTableView from './HeaderTableView.vue';
 import HighlightableRow from './HighlightableRow.vue';
 import TableCell from './TableCell.vue';
+import Multiselect from 'vue-multiselect';
+import {} from 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
   name: 'Column',
@@ -249,6 +234,7 @@ export default {
     TableCell,
     HighlightableRow,
     NewDocumentsBadge,
+    Multiselect,
   },
   props: {
     searchQuery: Object,
@@ -355,6 +341,14 @@ export default {
     fieldList() {
       return Object.keys(this.flatMapping);
     },
+    selectedFieldsComputed: {
+      get() {
+        return this.selectedFields;
+      },
+      set(value) {
+        this.selectedFields.splice(0, this.selectedFields.length, ...value);
+      },
+    },
   },
   watch: {
     $route: {
@@ -404,7 +398,7 @@ export default {
       };
     },
     resetColumns() {
-      this.selectedFields = [];
+      this.selectedFields.splice(0, this.selectedFields.length);
     },
     truncateName,
     isChecked(id) {
@@ -420,12 +414,10 @@ export default {
     initSelectedFields() {
       this.selectedFields = get(this.collectionSettings, 'columnView.fields', []);
     },
-    toggleColumn(field, value) {
-      if (value && !this.selectedFields.includes(field)) {
-        this.selectedFields.push(field);
-      }
-      if (!value) {
-        this.$delete(this.selectedFields, this.selectedFields.indexOf(field));
+    addCustomField(newField) {
+      const trimmedField = newField.trim();
+      if (trimmedField && !this.selectedFields.includes(trimmedField)) {
+        this.selectedFields.push(trimmedField);
       }
     },
     toggleJsonFormatter(id) {
@@ -501,5 +493,13 @@ export default {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+  background: #e64472 !important;
+}
+
+.max-w-24rem {
+  max-width: 24rem;
 }
 </style>

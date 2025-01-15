@@ -38,7 +38,7 @@
     "vue-color": "^2.8.1",
     "vue-form-generator": "^2.3.4",
     "vue-multipane": "^0.9.5",
-    "vue-multiselect": "^3.1.0",
+    "vue-multiselect": "^2.1.7",
     "vue-router": "^3.6.5",
     "vue2-leaflet": "^2.7.1",
     "vuedraggable": "^2.24.3",
