@@ -230,7 +230,7 @@ export default {
         const obj = {
           controller: query.controller,
           action: query.action,
-          body: query.body,
+          body: {},
         };
         this.jsonQuery = JSON.stringify(obj, null, 2);
         this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery);
@@ -244,6 +244,28 @@ export default {
       if (params) {
         for (const param of params) {
           query[param.name] = '';
+        }
+      }
+      const body = _.get(this.openapi, `${openApiPath}.${verb}.requestBody`, null);
+      if (body && body.content['application/json']) {
+        const prefilledBody = body.content['application/json'].schema.properties;
+        for (const key of Object.keys(prefilledBody)) {
+          switch (prefilledBody[key].type) {
+            case 'string':
+              query.body[key] = '';
+              break;
+            case 'number':
+              query.body[key] = 0;
+              break;
+            case 'boolean':
+              query.body[key] = false;
+              break;
+            case 'array':
+              query.body[key] = [];
+              break;
+            default:
+              query.body[key] = '';
+          }
         }
       }
       this.jsonQuery = JSON.stringify(query, null, 2);
