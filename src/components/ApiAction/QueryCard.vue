@@ -254,7 +254,7 @@ export default {
             case 'string':
               query.body[key] = '';
               break;
-            case 'number':
+            case 'number' || 'integer':
               query.body[key] = 0;
               break;
             case 'boolean':
@@ -262,6 +262,9 @@ export default {
               break;
             case 'array':
               query.body[key] = [];
+              break;
+            case 'object':
+              query.body[key] = {};
               break;
             default:
               query.body[key] = '';
