@@ -308,11 +308,17 @@ export default {
     },
     async getKuzzleOpenApi() {
       try {
-        const openApi = await this.$kuzzle.query({
+        const openApiKuzzle = await this.$kuzzle.query({
           controller: 'server',
           action: 'openapi',
+          scope: 'kuzzle',
         });
-        this.openapi = openApi.paths;
+        const openApiApp = await this.$kuzzle.query({
+          controller: 'server',
+          action: 'openapi',
+          scope: 'app',
+        });
+        this.openapi = { ...openApiApp.paths, ...openApiKuzzle.paths };
       } catch (error) {
         this.$log.error(error);
         this.$bvToast.toast(
