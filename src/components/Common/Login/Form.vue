@@ -46,8 +46,13 @@
           >
         </div>
 
-        <div v-for="strategy in strategies" class="w-100 d-flex justify-content-center mt-2">
+        <div
+          v-for="strategy in strategies"
+          v-bind:key="strategy"
+          class="w-100 d-flex justify-content-center mt-2"
+        >
           <b-button
+            v-bind:key="strategy"
             class="w-100"
             variant="primary"
             data-cy="Login-submitBtn-strategy"
