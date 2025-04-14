@@ -405,7 +405,7 @@ describe('Environments', function() {
     sessionStorage.setItem('currentEnv', envName)
     cy.visit('/')
     cy.contains('Edit a Connection')
-    cy.contains('You must select a backend version')
+    cy.contains('v2.x')
     cy.url().should('contain', `/#/edit-connection/${envName}`)
     cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
       `v${backendVersion}.x`
