@@ -33,10 +33,9 @@
     </div>
 
     <div class="LoginForm-buttons">
-      <div class="d-flex flex-column align-items-center w-100 gap-3">
-        <div class="w-100 d-flex justify-content-center mt-2">
+      <div class="d-flex flex-row-reverse">
+        <div class="ml-1">
           <b-button
-            class="w-100"
             variant="primary"
             data-cy="Login-submitBtn"
             type="submit"
@@ -46,15 +45,10 @@
           >
         </div>
 
-        <div
-          v-for="strategy in strategies"
-          v-bind:key="strategy"
-          class="w-100 d-flex justify-content-center mt-2"
-        >
+        <div v-for="strategy in strategies" v-bind:key="strategy">
           <b-button
             v-bind:key="strategy"
-            class="w-100"
-            variant="primary"
+            variant="outline-primary"
             data-cy="Login-submitBtn-strategy"
             name="action"
             @click="loginWithStrategy(strategy)"
@@ -63,12 +57,8 @@
           >
         </div>
 
-        <div class="w-100 d-flex justify-content-center mt-2">
-          <b-button
-            class="w-100"
-            data-cy="LoginAsAnonymous-Btn"
-            variant="primary"
-            @click="loginAsAnonymous"
+        <div>
+          <b-button data-cy="LoginAsAnonymous-Btn" variant="link" @click="loginAsAnonymous"
             >Login as Anonymous</b-button
           >
         </div>
