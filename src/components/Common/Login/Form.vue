@@ -50,7 +50,7 @@
           <b-button
             class="w-100"
             variant="primary"
-            data-cy="Login-submitBtn"
+            data-cy="Login-submitBtn-strategy"
             name="action"
             @click="loginWithStrategy(strategy)"
             tabindex="4"
