@@ -1,4 +1,12 @@
 services:
+  web:
+    image: kuzzleio/kuzzle-runner:22
+    command: npm run dev --prefix /var/app/ -- --host
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/var/app
+
   kuzzle:
     image: kuzzleio/kuzzle:2
     ports:
@@ -19,17 +27,6 @@ services:
       timeout: 5s
       interval: 5s
       retries: 30
-
-  web:
-    image: kuzzleio/kuzzle-runner:22
-    command: npm run dev --prefix /var/app/ -- --host
-    ports:
-      - 8080:8080
-    depends_on:
-      kuzzle:
-        condition: service_healthy
-    volumes:
-      - .:/var/app
 
   redis:
     image: redis:5

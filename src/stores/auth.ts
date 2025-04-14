@@ -243,8 +243,22 @@ export const useAuthStore = defineStore('auth', {
     async init() {
       this.reset();
       this.initializing = true;
+      const kuzzleStore = useKuzzleStore();
+      const kuzzle = kuzzleStore.$kuzzle;
+
+      if (kuzzle === null) {
+        throw new Error('Kuzzle is not initialized');
+      }
+
       await this.checkFirstAdmin();
-      await this.loginByToken();
+
+      const sessionId = localStorage.getItem('openid-sessionId');
+
+      if (sessionId) {
+        await this.loginByOpenId(sessionId);
+      } else {
+        await this.loginByToken();
+      }
     },
     async createSingleUseToken(): Promise<string> {
       const kuzzleStore = useKuzzleStore();
@@ -318,6 +332,45 @@ export const useAuthStore = defineStore('auth', {
       const jwt = await kuzzle.auth.login('local', credentials, '2h');
       return await this.setSession(jwt);
     },
+
+    async loginByOpenId(sessionId: string) {
+      const kuzzleStore = useKuzzleStore();
+      const kuzzle = kuzzleStore.$kuzzle;
+
+      if (kuzzle === null) {
+        throw new Error('Kuzzle is not initialized');
+      }
+
+      if (kuzzleStore.currentEnvironment === null) {
+        throw new Error('No current environment selected');
+      }
+
+      const response = await kuzzle.query({
+        controller: 'auth',
+        action: 'login',
+        strategy: 'keycloak',
+        body: {
+          sessionId: sessionId,
+          callbackUrl: window.location.href,
+        },
+      });
+
+      kuzzle.jwt = null;
+
+      if (response.status === 200) {
+        localStorage.removeItem('openid-sessionId');
+        const res = await kuzzle.auth.checkToken(response.result.jwt);
+
+        if (!res.valid) {
+          kuzzle.jwt = null;
+          return await this.setSession(null);
+        } else {
+          kuzzle.jwt = response.result.jwt;
+          return await this.setSession(response.result.jwt);
+        }
+      }
+    },
+
     async loginByToken() {
       const kuzzleStore = useKuzzleStore();
       const kuzzle = kuzzleStore.$kuzzle;

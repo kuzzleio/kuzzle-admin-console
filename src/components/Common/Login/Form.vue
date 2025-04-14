@@ -32,13 +32,42 @@
       <b-alert variant="danger" show dismissible> Login failed: {{ error }} </b-alert>
     </div>
 
-    <div class="LoginForm-buttons float-right mt-3">
-      <b-button class="mr-3" data-cy="LoginAsAnonymous-Btn" variant="link" @click="loginAsAnonymous"
-        >Login as Anonymous</b-button
-      >
-      <b-button variant="primary" data-cy="Login-submitBtn" type="submit" name="action" tabindex="3"
-        >Login</b-button
-      >
+    <div class="LoginForm-buttons">
+      <div class="d-flex flex-column align-items-center w-100 gap-3">
+        <div class="w-100 d-flex justify-content-center mt-2">
+          <b-button
+            class="w-100"
+            variant="primary"
+            data-cy="Login-submitBtn"
+            type="submit"
+            name="action"
+            tabindex="3"
+            >Login</b-button
+          >
+        </div>
+
+        <div v-for="strategy in strategies" class="w-100 d-flex justify-content-center mt-2">
+          <b-button
+            class="w-100"
+            variant="primary"
+            data-cy="Login-submitBtn"
+            name="action"
+            @click="loginWithStrategy(strategy)"
+            tabindex="4"
+            >Login with {{ strategy }}</b-button
+          >
+        </div>
+
+        <div class="w-100 d-flex justify-content-center mt-2">
+          <b-button
+            class="w-100"
+            data-cy="LoginAsAnonymous-Btn"
+            variant="primary"
+            @click="loginAsAnonymous"
+            >Login as Anonymous</b-button
+          >
+        </div>
+      </div>
     </div>
   </form>
 </template>
@@ -67,6 +96,7 @@ export default {
       username: null,
       password: null,
       error: '',
+      strategies: ['keycloak'],
     };
   },
   computed: {
@@ -112,6 +142,34 @@ export default {
         await this.onLogin();
       } catch (error) {
         this.error = error.message;
+      }
+    },
+
+    async loginWithStrategy(strategy) {
+      if (!strategy) {
+        return;
+      }
+
+      if (strategy !== 'keycloak') {
+        this.error = 'Strategy not supported yet.';
+        return;
+      }
+
+      this.error = '';
+      this.$kuzzle.jwt = null;
+
+      try {
+        const response = await this.$kuzzle.query({
+          controller: 'auth',
+          action: 'login',
+          strategy: 'keycloak',
+        });
+
+        localStorage.setItem('openid-sessionId', response.headers.keycloak);
+        window.location.href = response.headers.location;
+      } catch (error) {
+        this.error = error.message;
+        localStorage.removeItem('openid-sessionId');
       }
     },
   },
