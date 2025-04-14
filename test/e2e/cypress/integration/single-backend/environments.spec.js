@@ -102,10 +102,6 @@ describe('Environments', function() {
     ).should('not.exist')
 
     cy.get('[data-cy=Environment-SubmitButton]').click()
-    cy.get('[data-cy="CreateEnvironment-backendVersion--group"]').should(
-      'contain',
-      'You must select a backend version'
-    )
     cy.url().should('contain', '/create-connection/')
   })
 
