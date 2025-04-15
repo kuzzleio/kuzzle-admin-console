@@ -158,6 +158,9 @@ export default {
           controller: 'auth',
           action: 'login',
           strategy: 'keycloak',
+          body: {
+            redirectUri: window.location.origin,
+          },
         });
 
         localStorage.setItem('openid-sessionId', response.headers.keycloak);
