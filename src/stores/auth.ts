@@ -345,29 +345,34 @@ export const useAuthStore = defineStore('auth', {
         throw new Error('No current environment selected');
       }
 
-      const response = await kuzzle.query({
-        controller: 'auth',
-        action: 'login',
-        strategy: 'keycloak',
-        body: {
-          sessionId: sessionId,
-          callbackUrl: window.location.href,
-        },
-      });
+      try {
+        const response = await kuzzle.query({
+          controller: 'auth',
+          action: 'login',
+          strategy: 'keycloak',
+          body: {
+            sessionId: sessionId,
+            callbackUrl: window.location.href,
+          },
+        });
 
-      kuzzle.jwt = null;
+        kuzzle.jwt = null;
 
-      if (response.status === 200) {
-        localStorage.removeItem('openid-sessionId');
-        const res = await kuzzle.auth.checkToken(response.result.jwt);
+        if (response.status === 200) {
+          localStorage.removeItem('openid-sessionId');
+          const res = await kuzzle.auth.checkToken(response.result.jwt);
 
-        if (!res.valid) {
-          kuzzle.jwt = null;
-          return await this.setSession(null);
-        } else {
-          kuzzle.jwt = response.result.jwt;
-          return await this.setSession(response.result.jwt);
+          if (!res.valid) {
+            kuzzle.jwt = null;
+            return await this.setSession(null);
+          } else {
+            kuzzle.jwt = response.result.jwt;
+            return await this.setSession(response.result.jwt);
+          }
         }
+      } catch (error) {
+        console.error('Error during OpenID login:', error);
+        throw error;
       }
     },
 
