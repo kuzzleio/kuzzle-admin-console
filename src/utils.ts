@@ -24,12 +24,13 @@ export const formatForDom = (word: string): string => {
 
 export const sortObject = (object: object): object => {
   return Object.keys(object)
-    .sort()
+    .sort((a, b) => a.localeCompare(b))
     .reduce((result, key) => {
       result[key] = object[key];
       return result;
     }, {});
 };
+
 
 export const truncateName = (name: string, maxLength = 50): string => {
   if (name.length === 0) {
