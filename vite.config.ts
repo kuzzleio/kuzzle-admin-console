@@ -60,7 +60,7 @@ export default defineConfig({
   },
   plugins: [vue(), visualizer()],
   preview: {
-    port: 8083,
+    port: 8080,
   },
   resolve: {
     alias: {
@@ -68,6 +68,6 @@ export default defineConfig({
     },
   },
   server: {
-    port: 8083,
+    port: 8080,
   },
 });
