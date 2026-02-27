@@ -159,12 +159,12 @@ export default {
           action: 'login',
           strategy: 'keycloak',
           body: {
-            redirectUri: window.location.origin,
+            redirectUri: globalThis.location.origin,
           },
         });
 
         localStorage.setItem('openid-sessionId', response.headers.keycloak);
-        window.location.href = response.headers.location;
+        globalThis.location.href = response.headers.location;
       } catch (error) {
         this.error = error.message;
         localStorage.removeItem('openid-sessionId');
