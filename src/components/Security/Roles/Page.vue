@@ -84,70 +84,28 @@ export default {
   methods: {
     async revokeAnonymous() {
       try {
-        await this.$kuzzle.security.updateRole(
-          'anonymous',
-          {
-            controllers: {
-              '*': {
-                actions: {
-                  '*': false,
-                },
-              },
-              auth: {
-                actions: {
-                  checkToken: true,
-                  getCurrentUser: true,
-                  getMyRights: true,
-                  login: true,
-                },
-              },
-              server: {
-                actions: {
-                  publicApi: true,
-                  openapi: true,
-                },
-              },
-            },
-          },
-          { refresh: 'wait_for' },
-        );
-
-        await this.$kuzzle.security.updateRole(
-          'default',
-          {
-            controllers: {
-              '*': {
-                actions: {
-                  '*': false,
-                },
-              },
-              auth: {
-                actions: {
-                  checkToken: true,
-                  getCurrentUser: true,
-                  getMyRights: true,
-                  logout: true,
-                  updateSelf: true,
-                },
-              },
-              server: {
-                actions: {
-                  publicApi: true,
-                },
-              },
-            },
-          },
-          { refresh: 'wait_for' },
-        );
+        await this.$kuzzle.query({
+          controller: 'security',
+          action: 'restrictDefaultRights',
+        });
         this.$router.go(this.$router.currentRoute);
       } catch (err) {
-        this.$log.error(err);
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: 'Ooops! Something went wrong while revoking Anonymous role.',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        if (err.status === 404) {
+          this.$bvToast.toast('This action is not supported by your Kuzzle version. You might need to upgrade.', {
+            title: 'Not supported!',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+          });
+        } else {
+          this.$log.error(err);
+          this.$bvToast.toast('The complete error has been printed to the console.', {
+            title: 'Ooops! Something went wrong while revoking Anonymous role.',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+          });
+        }
       }
     },
   },
