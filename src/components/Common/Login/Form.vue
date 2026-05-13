@@ -45,16 +45,22 @@
           >
         </div>
 
-        <div v-for="strategy in strategies" v-bind:key="strategy">
-          <b-button
-            v-bind:key="strategy"
+        <div v-if="availableStrategies.length">
+          <b-dropdown
             variant="outline-primary"
             data-cy="Login-submitBtn-strategy"
-            name="action"
-            @click="loginWithStrategy(strategy)"
+            text="Login with"
             tabindex="4"
-            >Login with {{ strategy }}</b-button
           >
+            <b-dropdown-item
+              v-for="strategy in availableStrategies"
+              :key="strategy"
+              :data-cy="`Login-submitBtn-strategy-${strategy}`"
+              @click="loginWithStrategy(strategy)"
+            >
+              {{ strategy }}
+            </b-dropdown-item>
+          </b-dropdown>
         </div>
 
         <div>
@@ -92,10 +98,14 @@ export default {
       password: null,
       error: '',
       strategies: ['keycloak'],
+      availableStrategies: [],
     };
   },
   computed: {
     ...mapState(useKuzzleStore, ['$kuzzle']),
+  },
+  mounted() {
+    this.loadAvailableStrategies();
   },
   methods: {
     dismissError() {
@@ -140,13 +150,29 @@ export default {
       }
     },
 
+    async loadAvailableStrategies() {
+      const availableStrategies = [];
+
+      await Promise.all(
+        this.strategies.map(async (strategy) => {
+          try {
+            await this.$kuzzle.query({
+              controller: strategy,
+              action: 'getVersion',
+            });
+
+            availableStrategies.push(strategy);
+          } catch (error) {
+            // Ignore strategies whose plugin controller is not available.
+          }
+        }),
+      );
+
+      this.availableStrategies = availableStrategies;
+    },
+
     async loginWithStrategy(strategy) {
       if (!strategy) {
-        return;
-      }
-
-      if (strategy !== 'keycloak') {
-        this.error = 'Strategy not supported yet.';
         return;
       }
 
@@ -157,13 +183,13 @@ export default {
         const response = await this.$kuzzle.query({
           controller: 'auth',
           action: 'login',
-          strategy: 'keycloak',
+          strategy,
           body: {
             redirectUri: globalThis.location.origin,
           },
         });
 
-        localStorage.setItem('openid-sessionId', response.headers.keycloak);
+        localStorage.setItem('openid-sessionId', response.headers[strategy]);
         globalThis.location.href = response.headers.location;
       } catch (error) {
         this.error = error.message;
