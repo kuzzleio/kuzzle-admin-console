@@ -2,29 +2,12 @@
   <form id="loginForm" method="post" @submit.prevent="login()">
     <div class="loginForm-inputs">
       <b-form-group label="Login" label-for="username" label-cols-sm="4" label-cols-lg="3">
-        <b-form-input
-          id="username"
-          v-model="username"
-          autofocus
-          class="validate"
-          data-cy="Login-username"
-          name="username"
-          required
-          tabindex="1"
-          type="text"
-        />
+        <b-form-input id="username" v-model="username" autofocus class="validate" data-cy="Login-username"
+          name="username" required tabindex="1" type="text" />
       </b-form-group>
       <b-form-group label="Password" label-for="pass" label-cols-sm="4" label-cols-lg="3">
-        <b-form-input
-          id="pass"
-          v-model="password"
-          data-cy="Login-password"
-          type="password"
-          name="password"
-          required
-          tabindex="2"
-          class="validate"
-        />
+        <b-form-input id="pass" v-model="password" data-cy="Login-password" type="password" name="password" required
+          tabindex="2" class="validate" />
       </b-form-group>
     </div>
 
@@ -35,38 +18,22 @@
     <div class="LoginForm-buttons">
       <div class="d-flex flex-row-reverse">
         <div class="ml-1">
-          <b-button
-            variant="primary"
-            data-cy="Login-submitBtn"
-            type="submit"
-            name="action"
-            tabindex="3"
-            >Login</b-button
-          >
+          <b-button variant="primary" data-cy="Login-submitBtn" type="submit" name="action"
+            tabindex="3">Login</b-button>
         </div>
 
         <div v-if="availableStrategies.length">
-          <b-dropdown
-            variant="outline-primary"
-            data-cy="Login-submitBtn-strategy"
-            text="Login with"
-            tabindex="4"
-          >
-            <b-dropdown-item
-              v-for="strategy in availableStrategies"
-              :key="strategy"
-              :data-cy="`Login-submitBtn-strategy-${strategy}`"
-              @click="loginWithStrategy(strategy)"
-            >
+          <b-dropdown variant="outline-primary" data-cy="Login-submitBtn-strategy" text="Login with" tabindex="4">
+            <b-dropdown-item v-for="strategy in availableStrategies" :key="strategy"
+              :data-cy="`Login-submitBtn-strategy-${strategy}`" @click="loginWithStrategy(strategy)">
               {{ strategy }}
             </b-dropdown-item>
           </b-dropdown>
         </div>
 
         <div>
-          <b-button data-cy="LoginAsAnonymous-Btn" variant="link" @click="loginAsAnonymous"
-            >Login as Anonymous</b-button
-          >
+          <b-button data-cy="LoginAsAnonymous-Btn" variant="link" @click="loginAsAnonymous">Login as
+            Anonymous</b-button>
         </div>
       </div>
     </div>
@@ -85,7 +52,7 @@ export default {
     Focus,
   },
   props: {
-    onLogin: { type: Function, default: () => {} },
+    onLogin: { type: Function, default: () => { } },
   },
   setup() {
     return {
@@ -163,6 +130,8 @@ export default {
 
             availableStrategies.push(strategy);
           } catch (error) {
+            console.log("error in getversion", error)
+            console.log(`You either miss the getVersion from the ${strategy} controller, or the strategy does not implement the "connect with" on this console, in that case, you should use the local strategy`)
             // Ignore strategies whose plugin controller is not available.
           }
         }),
