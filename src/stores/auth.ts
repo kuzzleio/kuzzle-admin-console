@@ -493,7 +493,7 @@ export const useAuthStore = defineStore('auth', {
         const kuid = this.user?.id;
 
         await kuzzle.query({
-          controller: 'kiotp-keycloak',
+          controller: 'keycloak',
           action: 'closeSession',
           userId: kuid,
           sessionId: localStorage.getItem('openid-sessionId'),

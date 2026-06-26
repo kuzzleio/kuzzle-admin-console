@@ -133,6 +133,7 @@ export default {
             console.log("error in getversion", error)
             console.log(`You either miss the getVersion from the ${strategy} controller, or the strategy does not implement the "connect with" on this console, in that case, you should use the local strategy`)
             // Ignore strategies whose plugin controller is not available.
+            availableStrategies.push(strategy);
           }
         }),
       );
