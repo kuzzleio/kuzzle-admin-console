@@ -31,7 +31,6 @@ export const sortObject = (object: object): object => {
     }, {});
 };
 
-
 export const truncateName = (name: string, maxLength = 50): string => {
   if (name.length === 0) {
     return '';
