@@ -95,6 +95,8 @@ export const useKuzzleStore = defineStore('kuzzle', {
 
       localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(this.environments));
 
+      this.setCurrentEnvironment(payload.id);
+
       return payload.id;
     },
     deleteEnvironment(id: string) {

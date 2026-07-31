@@ -32,13 +32,43 @@
       <b-alert variant="danger" show dismissible> Login failed: {{ error }} </b-alert>
     </div>
 
-    <div class="LoginForm-buttons float-right mt-3">
-      <b-button class="mr-3" data-cy="LoginAsAnonymous-Btn" variant="link" @click="loginAsAnonymous"
-        >Login as Anonymous</b-button
-      >
-      <b-button variant="primary" data-cy="Login-submitBtn" type="submit" name="action" tabindex="3"
-        >Login</b-button
-      >
+    <div class="LoginForm-buttons">
+      <div class="d-flex flex-row-reverse">
+        <div class="ml-1">
+          <b-button
+            variant="primary"
+            data-cy="Login-submitBtn"
+            type="submit"
+            name="action"
+            tabindex="3"
+            >Login</b-button
+          >
+        </div>
+
+        <div v-if="availableStrategies.length">
+          <b-dropdown
+            variant="outline-primary"
+            data-cy="Login-submitBtn-strategy"
+            text="Login with"
+            tabindex="4"
+          >
+            <b-dropdown-item
+              v-for="strategy in availableStrategies"
+              :key="strategy"
+              :data-cy="`Login-submitBtn-strategy-${strategy}`"
+              @click="loginWithStrategy(strategy)"
+            >
+              {{ strategy }}
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+
+        <div>
+          <b-button data-cy="LoginAsAnonymous-Btn" variant="link" @click="loginAsAnonymous"
+            >Login as Anonymous</b-button
+          >
+        </div>
+      </div>
     </div>
   </form>
 </template>
@@ -67,10 +97,15 @@ export default {
       username: null,
       password: null,
       error: '',
+      strategies: ['keycloak'],
+      availableStrategies: [],
     };
   },
   computed: {
     ...mapState(useKuzzleStore, ['$kuzzle']),
+  },
+  mounted() {
+    this.loadAvailableStrategies();
   },
   methods: {
     dismissError() {
@@ -112,6 +147,58 @@ export default {
         await this.onLogin();
       } catch (error) {
         this.error = error.message;
+      }
+    },
+
+    async loadAvailableStrategies() {
+      const availableStrategies = [];
+
+      await Promise.all(
+        this.strategies.map(async (strategy) => {
+          try {
+            await this.$kuzzle.query({
+              controller: strategy,
+              action: 'getVersion',
+            });
+
+            availableStrategies.push(strategy);
+          } catch (error) {
+            console.error('error in getversion', error);
+            console.error(
+              `You either miss the getVersion from the ${strategy} controller, or the strategy does not implement the "connect with" on this console, in that case, you should use the local strategy`,
+            );
+            // Ignore strategies whose plugin controller is not available.
+            availableStrategies.push(strategy);
+          }
+        }),
+      );
+
+      this.availableStrategies = availableStrategies;
+    },
+
+    async loginWithStrategy(strategy) {
+      if (!strategy) {
+        return;
+      }
+
+      this.error = '';
+      this.$kuzzle.jwt = null;
+
+      try {
+        const response = await this.$kuzzle.query({
+          controller: 'auth',
+          action: 'login',
+          strategy,
+          body: {
+            redirectUri: globalThis.location.origin,
+          },
+        });
+
+        localStorage.setItem('openid-sessionId', response.headers[strategy]);
+        globalThis.location.href = response.headers.location;
+      } catch (error) {
+        this.error = error.message;
+        localStorage.removeItem('openid-sessionId');
       }
     },
   },

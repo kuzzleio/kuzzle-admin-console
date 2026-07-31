@@ -165,7 +165,7 @@ export default {
     isChartViewAvailable() {
       return Boolean(
         (this.mappingDateArray.length || this.customDateField) &&
-          (this.mappingNumberArray.length || this.customNumberFields.length),
+        (this.mappingNumberArray.length || this.customNumberFields.length),
       );
     },
   },

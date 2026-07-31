@@ -4,6 +4,9 @@ import { SessionUser } from '@/models/SessionUser';
 import { useKuzzleStore } from './kuzzle';
 import type { AuthState } from './types/auth';
 
+const TOKEN_EXPIRY_CHECK_INTERVAL_MS = 20_000;
+const TOKEN_REFRESH_THRESHOLD_MS = 30_000;
+
 const isActionAllowed = (user, controller, action, index = '*', collection = '*'): boolean => {
   if (!user) {
     return false;
@@ -56,6 +59,7 @@ const isActionAllowed = (user, controller, action, index = '*', collection = '*'
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
+    strategy: 'local',
     user: new SessionUser(),
     tokenValid: false,
     adminAlreadyExists: false,
@@ -243,8 +247,24 @@ export const useAuthStore = defineStore('auth', {
     async init() {
       this.reset();
       this.initializing = true;
+      const kuzzleStore = useKuzzleStore();
+      const kuzzle = kuzzleStore.$kuzzle;
+
+      if (kuzzle === null) {
+        throw new Error('Kuzzle is not initialized');
+      }
+
       await this.checkFirstAdmin();
-      await this.loginByToken();
+
+      const sessionId = localStorage.getItem('openid-sessionId');
+
+      if (sessionId) {
+        this.strategy = 'keycloak';
+        await this.loginByOpenId(sessionId);
+      } else {
+        this.strategy = 'local';
+        await this.loginByToken();
+      }
     },
     async createSingleUseToken(): Promise<string> {
       const kuzzleStore = useKuzzleStore();
@@ -318,6 +338,56 @@ export const useAuthStore = defineStore('auth', {
       const jwt = await kuzzle.auth.login('local', credentials, '2h');
       return await this.setSession(jwt);
     },
+
+    async loginByOpenId(sessionId: string) {
+      const kuzzleStore = useKuzzleStore();
+      const kuzzle = kuzzleStore.$kuzzle;
+
+      if (kuzzle === null) {
+        throw new Error('Kuzzle is not initialized');
+      }
+
+      if (kuzzleStore.currentEnvironment === null) {
+        throw new Error('No current environment selected');
+      }
+
+      if (await this.checkToken()) {
+        const result = await kuzzle.auth.checkToken(kuzzle.jwt);
+        await this.afterLogin(result.expiresAt);
+        return await this.setSession(kuzzle.jwt);
+      }
+
+      try {
+        const response = await kuzzle.query({
+          controller: 'auth',
+          action: 'login',
+          strategy: 'keycloak',
+          body: {
+            sessionId,
+            callbackUrl: globalThis.location.href,
+          },
+        });
+
+        kuzzle.jwt = null;
+
+        if (response.status === 200) {
+          const res = await kuzzle.auth.checkToken(response.result.jwt);
+
+          if (!res.valid) {
+            kuzzle.jwt = null;
+            return await this.setSession(null);
+          } else {
+            kuzzle.jwt = response.result.jwt;
+            await this.afterLogin(response.result.expiresAt);
+            return await this.setSession(response.result.jwt);
+          }
+        }
+      } catch (error) {
+        console.error('Error during OpenID login:', error);
+        throw error;
+      }
+    },
+
     async loginByToken() {
       const kuzzleStore = useKuzzleStore();
       const kuzzle = kuzzleStore.$kuzzle;
@@ -342,6 +412,7 @@ export const useAuthStore = defineStore('auth', {
           return await this.setSession(null);
         } else {
           kuzzle.jwt = kuzzleStore.currentEnvironment.token;
+          await this.afterLogin(res.expiresAt);
           return await this.setSession(kuzzleStore.currentEnvironment.token);
         }
       }
@@ -416,6 +487,19 @@ export const useAuthStore = defineStore('auth', {
         throw new Error('Kuzzle is not initialized');
       }
 
+      if (this.strategy === 'keycloak') {
+        const kuid = this.user?.id;
+
+        await kuzzle.query({
+          controller: 'keycloak',
+          action: 'closeSession',
+          userId: kuid,
+          sessionId: localStorage.getItem('openid-sessionId'),
+        });
+
+        localStorage.removeItem('openid-sessionId');
+      }
+
       if (kuzzle.jwt) {
         await kuzzle.auth.logout();
       }
@@ -433,6 +517,10 @@ export const useAuthStore = defineStore('auth', {
         throw new Error('Kuzzle is not initialized');
       }
 
+      if (this.strategy === 'keycloak') {
+        throw new Error('not implemented yet');
+      }
+
       kuzzle.jwt = null;
       const request = {
         controller: 'kuzzle-plugin-auth-passport-local/password',
@@ -446,6 +534,47 @@ export const useAuthStore = defineStore('auth', {
     },
     reset() {
       this.$reset();
+    },
+
+    async afterLogin(expiresAt: number) {
+      const tokenExpiryCheckIntervalMs = TOKEN_EXPIRY_CHECK_INTERVAL_MS;
+
+      const tokenRefreshThresholdMs = TOKEN_REFRESH_THRESHOLD_MS;
+
+      const intervalId = setInterval(async () => {
+        const timeBeforeExpiryMs = expiresAt - Date.now();
+        if (timeBeforeExpiryMs <= tokenRefreshThresholdMs) {
+          await this.tryRefreshConnection();
+          clearInterval(intervalId);
+        }
+      }, tokenExpiryCheckIntervalMs);
+    },
+
+    async tryRefreshConnection() {
+      const kuzzleStore = useKuzzleStore();
+      const kuzzle = kuzzleStore.$kuzzle;
+
+      if (kuzzle === null) {
+        throw new Error('Kuzzle is not initialized');
+      }
+
+      try {
+        let response: any;
+        if (this.strategy === 'keycloak') {
+          response = await kuzzle.auth.refreshToken({
+            sessionId: localStorage.getItem('openid-sessionId'),
+            strategy: 'keycloak',
+          });
+        } else {
+          response = await kuzzle.auth.refreshToken();
+        }
+
+        this.setSession(response.jwt);
+        this.afterLogin(response.expiresAt);
+      } catch (error) {
+        console.error('TRY_REFRESH_CONNECTION', error);
+        await this.doLogout();
+      }
     },
   },
 });

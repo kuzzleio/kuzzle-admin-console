@@ -114,9 +114,7 @@ export default {
       if (!this.errors.length) {
         this.$log.debug(`Finished import must switch: ${mustSwitch}, env:`);
         this.$log.debug(this.kuzzleStore.environments);
-        if (!this.kuzzleStore.currentEnvironment) {
-          this.$router.push({ name: 'SelectEnvironment' });
-        }
+        this.$router.push({ name: 'SelectEnvironment' });
         this.$bvModal.hide(this.id);
       }
     },

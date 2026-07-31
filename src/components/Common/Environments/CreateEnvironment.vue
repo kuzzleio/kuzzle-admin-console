@@ -286,7 +286,7 @@ export default {
       this.environment.port = 7512;
       this.environment.color = DEFAULT_COLOR;
       this.environment.ssl = useHttps;
-      this.environment.backendMajorVersion = null;
+      this.environment.backendMajorVersion = 2;
       this.environment.hideAdminWarning = false;
     }
   },

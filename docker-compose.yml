@@ -1,39 +1,55 @@
 services:
-  kuzzle:
-    image: kuzzleio/kuzzle:2.29.1
+  web:
+    image: kuzzleio/kuzzle-runner:22
+    command: npm run dev --prefix /var/app/ -- --host
     ports:
-      - "7512:7512"
+      - 8080:8080
+    volumes:
+      - .:/var/app
+
+  kuzzle:
+    image: kuzzleio/kuzzle:2
+    ports:
+      - 7512:7512
     depends_on:
       redis:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
     environment:
+      - kuzzle_services__storageEngine__majorVersion=8
       - kuzzle_services__storageEngine__client__node=http://elasticsearch:9200
       - kuzzle_services__storageEngine__commonMapping__dynamic=true
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
       - DEBUG=${DEBUG:-none}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://kuzzle:7512/_healthcheck"]
+      test: ['CMD', 'curl', '-f', 'http://kuzzle:7512/_healthcheck']
       timeout: 5s
       interval: 5s
       retries: 30
 
   redis:
-    image: redis:5
+    image: redis:8
+    ports:
+      - 6379:6379
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 30
 
   elasticsearch:
-    image: elasticsearch:7.17.24
+    image: docker.io/bitnamilegacy/elasticsearch:8.17.1-debian-12-r6
+    container_name: kuzzle_elasticsearch
     environment:
-      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+    ports:
+      - "9200:9200"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://elasticsearch:9200"]
-      interval: 5s
-      timeout: 5s
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 20s
+      timeout: 10s
       retries: 30
+    ulimits:
+      nofile: 65536
