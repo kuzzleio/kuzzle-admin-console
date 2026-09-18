@@ -50,30 +50,51 @@ généré par `bootstrap-vue` et sur quoi nous ne pouvons pas poser d'attribut e
 **isolé dans une commande Cypress** (`test/e2e/cypress/support/commands.js`).
 En phase 2, il n'y aura que ce bloc à reprendre, pas les 17 specs.
 
-#### ⚠️ Découverte : la couverture réelle est plus faible qu'annoncée
+#### ⚠️ Découverte : la CI est verte en n'exécutant qu'une fraction des tests
 
-**6 tests sont désactivés** (`it.skip`), soit 169 appels de sélecteur — 18 % du
-total — dans du code mort :
+L'audit a mis au jour **deux `.only` commités dans le dépôt**. Un `.only`
+désactive silencieusement tout le reste du fichier : Cypress ne signale rien,
+et la CI affiche « All specs passed » en ayant exécuté une fraction des tests.
 
-| Spec | Test désactivé |
-|---|---|
-| `docs` | `Should handle the time series view properly` |
-| `search` ×2 | agrégations dans les résultats de recherche |
-| `environments` ×3 | mise à jour d'un env, spinner de reconnexion, bascule d'env |
+| Fichier | Marqueur | Depuis | Tests masqués |
+|---|---|---|---|
+| `docs.spec.js:559` | `describe.only('Realtime')` | **janvier 2022** ([#938](https://github.com/kuzzleio/kuzzle-admin-console/pull/938)) | 11 — tout `Document List` et `Document update/replace` |
+| `formView.spec.js:112` | `it.only` | **septembre 2024** (`b575b77a`) | 3 |
 
-Le test time series de `docs` est mort pour une raison précise : les boutons de
-vue « time series » et « map » sont **commentés** dans
+S'ajoutent **6 tests explicitement désactivés** (`it.skip`) : `docs` ×1
+(time series), `search` ×2 (agrégations), `environments` ×3 (mise à jour d'un
+env, spinner de reconnexion, bascule d'env).
+
+**Soit 20 tests inactifs.** La spec `docs` en particulier exécute 8 tests sur
+les 20 qu'elle contient, et ce depuis plus de trois ans.
+
+En réactivant temporairement `docs.spec.js` pour valider les sélecteurs, **2 de
+ces tests échouent déjà sur la branche `4-dev` de référence**, indépendamment de
+tout changement :
+
+- `Should show the the _id even if collection has id field` — le test fait un
+  `.within()` en supposant une seule ligne de document, alors que la collection
+  en contient plusieurs à ce stade du fichier ;
+- `Should handle the map view properly for shapes` — Kuzzle renvoie `400` à la
+  création de la collection avec un mapping `geo_shape`.
+
+Le test time series (`it.skip`) est mort pour une raison distincte : les boutons
+de vue « time series » et « map » sont **commentés** dans
 `src/components/Data/Documents/ListViewButtons.vue`, et les classes qu'il cible
 (`.DocumentList-timeseries`, `.DocumentList-materializeCollection`) n'existent
-plus nulle part dans les sources. Il avait par ailleurs été enregistré avec
-Cypress Studio : il est fait de longues chaînes structurelles
-(`.card-panel > … > .col:nth-child(4)`, internes de `vue-color`) qui n'auraient
-de toute façon survécu à aucune refonte.
+plus dans les sources. Enregistré avec Cypress Studio, il est fait de longues
+chaînes structurelles qui n'auraient de toute façon survécu à aucune refonte.
 
-Ces tests n'ont **pas** été réparés ici : ce serait un autre chantier, avec une
+**Rien de tout cela n'a été réparé ici** : c'est un chantier distinct, avec une
 question produit derrière (la vue time series existe-t-elle encore ?). Mais il
-faut en être conscient — `environments` en particulier a la moitié de ses
-parcours désactivés, et c'est un domaine sensible. À trancher avant la phase 2.
+faut le trancher **avant la phase 2** : un filet de sécurité dont on surestime
+la couverture est plus dangereux qu'un filet dont on connaît les trous.
+
+Suivi : [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020).
+
+À noter, deux raisons pour lesquelles le problème a pu vivre si longtemps : le
+job `lint` de la CI est en `continue-on-error: true`, et ESLint ne scanne que
+`src` — jamais `test/`. Les deux sont à revoir en phase 0.
 
 ---
 
