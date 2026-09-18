@@ -25,12 +25,31 @@ Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dan
 
 Légende : ⬜ à faire · 🟡 en cours · ✅ fait · ⛔ bloqué · ➖ sans objet
 
-### Prérequis bloquant
+### Prérequis bloquant — ✅ levé le 2026-09-18
 
-- [ ] **Auditer les sélecteurs Cypress** ([#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017)). Les 17 specs sont le filet de sécurité
-      de tout le chantier. Si elles ciblent des classes Bootstrap, elles
-      casseront à chaque écran migré et le filet disparaît. À faire **avant** la
-      phase 2 : basculer les sélecteurs fragiles sur des attributs `data-cy`.
+- [x] **Auditer les sélecteurs Cypress** ([#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017)).
+
+**Verdict : le filet tient.** Sur 940 appels de sélecteur dans les 17 specs,
+**867 (92 %) sont sains** — 749 s'appuient sur des attributs `data-cy`
+(281 posés dans 82 des 140 composants), le reste sur du texte, des tags ou des
+sélecteurs de librairies tierces (Ace, Leaflet) qui ne bougeront pas.
+
+**73 appels (7 %) sont fragiles**, sur seulement 13 sélecteurs distincts. C'est
+une demi-journée de travail, pas un obstacle. À traiter **avant** la phase 2 :
+
+| Catégorie | Appels | Détail | Casse en |
+|---|---:|---|---|
+| Classe applicative | 49 | `.IndexesPage` (19), `.DocumentListView-item` (18), `.CollectionCreate` (3), `.CollectionList`, `.DocumentsListView`, `.BasicFilter-submitBtn`, `.BasicFilter-predicates`, `.RawFilter`, `.TimeSeriesColorPickerBtn`, une chaîne `.col > .col > .col > .Autocomplete > input` | phase 2 |
+| Classe Bootstrap | 16 | `.invalid-feedback` (14, presque toujours combiné à un `data-cy` parent), `.far`, chaîne de `.col`/`.row` | phase 2 |
+| `id` généré par `vue-form-generator` | 5 | `input#age`, `input#name`, `textarea#job` | phase 2 (réimplémentation VFG) |
+| Interne `bootstrap-vue` | 3 | `#UserUpdate-customTab___BV_tab_button__` (2), `.b-form-tag[title=document] > .b-form-tag-remove` | phase 2 |
+
+Specs les plus exposées : `search` (33), `docs` (11), `indexes` (8),
+`formView` (5). Les 7 autres specs ont 4 appels fragiles ou moins.
+
+**Action** : poser un `data-cy` sur les 13 cibles et réécrire les sélecteurs
+correspondants. Les `.invalid-feedback` ont déjà un parent `data-cy` : il suffit
+d'ajouter un `data-cy` sur le message d'erreur lui-même.
 
 ---
 
