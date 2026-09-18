@@ -223,6 +223,13 @@ produira — vrai à l'instant zéro, donc à protéger. `expectNoOfflineToast()
 affirme une **transition** — le toast est là quand on appelle, il doit partir :
 le réessai est ancré, il ne peut pas être faussement vert.
 
+Reste, hors périmètre d'ADR-0006 mais de la même famille — une action de
+l'interface suivie d'une commande non réessayée, sans ancre entre les deux :
+`watch.spec.js` publie un message juste après avoir cliqué `Watch-subscribeBtn`
+sur **4 de ses 5 sites**, sans attendre que la souscription soit établie. Le
+cinquième montre l'ancre à reprendre : le bouton passe de `Subscribe` à
+`Unsubscribe`. Non traité ici, pas encore observé en échec.
+
 Anti-récidive : la règle `no-restricted-syntax` de
 `test/e2e/cypress/.eslintrc.cjs` rejette `cy.wait(<littéral numérique>)`. ✅
 Elle est posée **sans bloc `overrides`** : les 57 appels étant traités avant
@@ -495,37 +502,56 @@ gros et le plus risqué.
 > Format : une entrée = le symptôme observé, la cause, la solution retenue.
 
 ### 5.1 Rencontrés
-
 #### G-001 — Les specs sont instables quand elles s'enchaînent, pas isolées
 
 - **Contexte** : phase 0, suite e2e complète.
 - **Symptôme** : `formView` échoue par intermittence sur
-  `expected 42 to equal 43` quand il tourne à la suite d'autres specs, et passe
-  4/4 exécuté seul. Même famille de symptôme sur `collections`
+  `expected 42 to equal 43`. Taux mesuré le 2026-09-18 : **1 échec sur 16** en
+  exécution isolée, machine au repos. Même famille de symptôme sur `collections`
   (`Should be able to update a collection`, assertion sur le contenu de
   l'éditeur Ace) observé une fois puis non reproduit.
-- **Cause** : deux sources distinctes, à ne pas confondre.
-  1. Les saisies clavier simulées dans les composants tiers (Ace, les champs
-     générés par `vue-form-generator`) utilisent `delay: 200` et `force: true`.
-     Sous charge, une frappe peut être perdue avant que le composant ait fini de
-     monter. `formView.spec.js` contient **zéro `cy.wait()`** et est pourtant le
-     plus instable : sa fragilité vient bien de là.
-  2. **56 `cy.wait(<durée fixe>)`** répartis sur 11 specs, soit **63 s de
+- **Cause** : trois sources distinctes, à ne pas confondre.
+  1. **`cy.request()` n'est pas réessayée, et rien n'attend que l'application
+     ait écrit.** Le test « update a document » clique
+     `DocumentUpdate-btn` puis enchaîne **directement** sur un `cy.request` :
+     Cypress rend la main dès le clic, sans attendre la soumission. La lecture
+     gagne la course et renvoie le document d'avant — d'où `42` au lieu de `43`.
+     Reproduit à volonté en retardant la persistance de 1,5 s. C'est le cas du
+     lot D d'[ADR-0006](adr/0006-attentes-sur-assertion-cypress.md), auquel
+     `formView.spec.js` avait échappé faute de contenir le moindre `cy.wait()`.
+  2. **57 `cy.wait(<durée fixe>)`** répartis sur 12 specs, soit **63 s de
      sommeil cumulé**. Une attente fixe est toujours soit trop longue (elle
-     ralentit la suite) soit trop courte (elle casse sous charge). `environments`
-     à lui seul en cumule 16 s.
-- **Solution** : `retries: { runMode: 2, openMode: 0 }` est configuré dans
-  `cypress.config.ts`. Ce n'est **pas** le correctif, c'est le garde-fou : le
-  bruit disparaît du signal CI sans que l'instabilité soit masquée, puisque
-  Cypress rapporte le nombre de tentatives.
-  Le vrai correctif est tranché par
-  [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md) : remplacer les
-  `cy.wait(N)` par des attentes sur assertion, qui s'ajustent à la charge au lieu
-  de la subir. **Fait** : les 57 appels sont traités, une règle ESLint interdit
-  la récidive. Détail en [§ 1.1](#11-attentes-cypress--adr-0006). ✅
-  La seconde source — les saisies clavier `delay: 200` / `force: true` dans Ace
-  et `vue-form-generator` — n'est traitée que pour Ace (`cy.aceReady()`).
-  `formView.spec.js` reste donc exposé : il ne contenait aucun `cy.wait()`.
+     ralentit la suite) soit trop courte (elle casse sous charge).
+  3. L'état du backend local, qui n'est pas réinitialisé entre les specs
+     (cf. [G-006](#g-006--un-backend-local-qui-vit-longtemps-fait-échouer-la-suite-et-les-messages-ne-pointent-pas-vers-la-cause)).
+- **Hypothèse invalidée — ne pas la reprendre.** Cette fiche a longtemps
+  attribué l'instabilité de `formView` aux saisies clavier `delay: 200` /
+  `force: true` dans Ace et `vue-form-generator` : « sous charge, une frappe peut
+  être perdue ». **C'est faux pour cette spec.** Vérifié le 2026-09-18 : sous
+  bridage CPU ×20 (la spec passe de 46 s à 3 min), elle reste **4/4 verte** ; en
+  retardant de 1,5 s le chargement du document, **4/4 verte** aussi. Seul le
+  retard sur l'écriture reproduit le symptôme. La perte de frappe existe bien
+  ailleurs — c'est ce que traite `cy.aceReady()` (lot C) — mais ce n'est pas ce
+  qui cassait `formView`.
+- **Solution** : ancrer le test sur l'état observable avant de lire le backend.
+  L'application ne retourne à la liste qu'une fois l'écriture persistée : c'est
+  le signal. Puis `cy.expectBackend()`, qui rejoue la requête et donne un diff
+  lisible. Garde-fou, persistance retardée de 1,5 s :
+
+  | Spec | Résultat |
+  |---|---|
+  | avant | ❌ `expected 42 to equal 43` |
+  | après | ✅ 4/4 |
+
+  `retries: { runMode: 2 }` reste en place : ce n'est pas le correctif, c'est ce
+  qui retire le bruit du signal CI. Les `cy.wait()` sont traités (source 2,
+  [§ 1.1](#11-attentes-cypress--adr-0006)). ✅
+- **Pourquoi la CI ne voit rien** : elle lance **un job par spec**, chacun avec
+  son `docker compose` neuf — 17 jobs parallèles. Zéro tentative rejouée sur les
+  5 derniers runs (85 exécutions de spec). La CI ne peut donc structurellement
+  pas observer ni l'enchaînement des specs, ni l'état de backend partagé. Une
+  suite verte en CI ne dit rien de sa stabilité en local, où elle tourne d'affilée
+  sur un seul backend.
 - **À retenir pour la phase 2** : ces instabilités vont empirer quand chaque
   écran sera réécrit. Elles seront alors difficiles à distinguer d'une vraie
   régression de migration. Autant les traiter avant.
@@ -670,6 +696,33 @@ Gabarit à copier :
   `HEAD` avec `git stash`, puis sur une stack neuve. La suite n'est pas isolée
   du backend ; son état se manifeste loin de sa cause.
 - **Ref** : rencontré pendant le lot E (ADR-0007).
+
+#### G-007 — `cy.aceReady()` ne s'applique pas aux éditeurs du formulaire document
+
+- **Contexte** : tentative d'étendre la commande du lot C
+  ([ADR-0006](adr/0006-attentes-sur-assertion-cypress.md)) aux éditeurs JSON de
+  la vue formulaire (`formView.spec.js`).
+- **Symptôme** : `cy.aceReady('[name="items"]')` échoue au bout de 60 s —
+  `expected '<div.ace_line>' to be 'visible'`, puis, en déplaçant la cible,
+  `<div.ace_content>` et `<div.ace_scroller>` tour à tour, avec le motif
+  « *is not visible because its content is being clipped by one of its parent
+  elements, which has a CSS property of overflow: hidden* ».
+- **Cause** : Ace dimensionne `.ace_content` **au contenu** et le laisse
+  déborder de `.ace_scroller`, en `overflow: hidden` — mesuré ici 589×292 dans
+  250 px de haut. Le débordement est normal, c'est ainsi qu'Ace défile ; mais il
+  suffit à ce que Cypress déclare l'élément masqué. Aucune cible de l'éditeur
+  n'est donc assertable en visibilité dans ce formulaire, et `.ace_line` est en
+  plus de hauteur nulle tant que l'éditeur est vide (formulaire de création).
+- **Solution** : ne pas utiliser `cy.aceReady()` là. Elle reste valable pour les
+  éditeurs plein écran de ses quatre specs (`api-actions`, `docs`, `search`,
+  `users`), où le contenu ne déborde pas. Pour la vue formulaire, les specs
+  tapent déjà en `force: true` — la visibilité ne leur est pas nécessaire — et
+  l'instabilité réelle venait d'ailleurs (cf. G-001).
+- **À retenir** : `should('be.visible')` sur un composant tiers qui gère son
+  propre défilement est un pari. Vérifier la géométrie réelle
+  (`getBoundingClientRect` sur une sonde jetable) avant de bâtir une commande
+  partagée dessus.
+- **Ref** : rencontré en corrigeant `formView.spec.js`.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
