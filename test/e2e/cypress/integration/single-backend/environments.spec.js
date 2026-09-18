@@ -243,7 +243,6 @@ describe('Environments', function() {
 
     cy.contains('Something went wrong while connecting to Kuzzle')
     cy.get('[data-cy="App-connectionError"]')
-    cy.wait(2000)
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()
     cy.get(
@@ -288,12 +287,9 @@ describe('Environments', function() {
     cy.visit('/')
     cy.get('[data-cy=App-online]').should('be.visible')
     cy.goOffline();
-    cy.wait(5000);
-    cy.get('#offline-toast')
-      .should('be.visible')
+    cy.expectOfflineToast();
     cy.goOnline();
-    cy.wait(1000);
-    cy.get('#offline-toast').should('not.exist')
+    cy.expectNoOfflineToast();
   })
 
   it('Should see an error when specifying the wrong backend version and should be able to fix it', () => {

@@ -121,14 +121,14 @@ remplacements : [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md).
 | **B** | Suivi d'une action non réessayée (`type`, `click`, `sessionStorage`) | 16 | 12,2 s | assertion explicite avant l'action | ✅ |
 | **C** | Initialisation de l'éditeur Ace | 5 | 6,5 s | commande `cy.aceReady()` | ✅ |
 | **D** | État backend via `cy.request()` | 5 | 6,0 s | commande `cy.expectBackend()` | ✅ |
-| **E** | Réseau simulé (`goOffline` / `goOnline`) | 3 | 8,0 s | conservé, isolé et nommé | ➖ |
+| **E** | Réseau simulé (`goOffline` / `goOnline`) | 3 | 8,0 s | `cy.expectOfflineToast()` / `cy.expectNoOfflineToast()`, + 1 suppression sèche ([ADR-0007](adr/0007-lot-e-assertion-plutot-que-sommeil.md)) | ✅ |
 | **F** | Timer applicatif (`antiGlitchOverlayTimeout`) | 1 | variable | conservé, déjà dans `commands.js` | ➖ |
 
-**A, B, C et D sont faits** : 52 des 57 appels traités. Il reste **5
-`cy.wait()`**, tous délibérés — les 3 du lot E (réseau simulé) et les 2 de
-`support/commands.js`.
+**Les 57 appels sont traités.** Il ne reste aucun `cy.wait()` dans les specs, et
+**2 dans `support/commands.js`** — `waitOverlay` (lot F) et `shouldStayOn`
+(lot A2) — tous deux par constante nommée et commentée.
 
-Deux commandes ont été écrites, chacune sondée avant d'être adoptée :
+Les lots C et D ont demandé une commande chacun, sondée avant d'être adoptée :
 
 - **`cy.aceReady(<scope>)`** — trois signaux d'initialisation (le `textarea`
   existe, les lignes sont rendues, le curseur est posé), vérifiés sur les deux
@@ -183,45 +183,53 @@ Deux remplacements du lot B sortent du cadre « assertion avant l'action » :
   les commandes qui le précèdent dans le source. L'attente ne le retardait pas ;
   elle ne retardait que le `cy.visit()` suivant. Remis dans la file.
 
-Le lot A2 a demandé une commande dédiée, `cy.shouldStayOn(hash)`. Asserter qu'une
-navigation **n'a pas** eu lieu demande une fenêtre de temps : une assertion
-instantanée est vraie avant même que l'application ait pu naviguer à tort.
-Vérifié expérimentalement sur `roles.spec.js`, validation sabotée pour naviguer
-après 300 ms :
-
-| Assertion | Face à la régression |
-|---|---|
-| instantanée (suppression sèche naïve) | **9/9 verts** — non détectée |
-| `cy.shouldStayOn()` | **1 échec** — détectée |
-
-La durée fixe subsiste donc à l'intérieur de la commande, mais elle est nommée,
-bornée et écrite une seule fois — la dérogation prévue par l'ADR pour les cas où
-un vrai délai est attendu. Un seul des 9 sites (`users.spec.js`) disposait déjà
-d'une ancre positive (`UserProfileList-invalidFeedback` + icône d'alerte) : elle
-a été remontée avant l'assertion négative, sans recourir à la commande.
-
 Répartition par fichier — la colonne « reste » est ce qu'il faut ramener à 0
-hors lots E et F :
+hors lot F :
 
 | Fichier | Départ | Reste | | Fichier | Départ | Reste |
 |---|---:|---:|---|---|---:|---:|
 | `docs.spec.js` | 11 | 0 | | `profiles.spec.js` | 4 | 0 |
 | `collections.spec.js` | 11 | 0 | | `api-actions.spec.js` | 4 | 0 |
-| `environments.spec.js` | 8 | 3 | | `search.spec.js` | 3 | 0 |
+| `environments.spec.js` | 8 | 0 | | `search.spec.js` | 3 | 0 |
 | `users.spec.js` | 7 | 0 | | `login.spec.js` | 2 | 0 |
 | `roles.spec.js` | 4 | 0 | | `treeview` / `watch` | 1 | 0 |
 
-Les 3 restants sont ceux d'`environments.spec.js` : bascule hors ligne / en
-ligne et attente du toast de reconnexion. Ils attendent un vrai délai, pas un
-état atteignable par assertion. Il reste à les isoler derrière une commande
-nommée, comme le prévoit l'ADR, avant de poser la règle ESLint.
+Le lot E devait être la dérogation : trois attentes sur un réseau simulé, à
+conserver en les nommant. En les reprenant, la prémisse est tombée — voir
+[ADR-0007](adr/0007-lot-e-assertion-plutot-que-sommeil.md), qui remplace la
+clause E d'ADR-0006.
+
+- Un des trois n'était pas du lot E : placé entre une assertion déjà réessayée et
+  un `click()`, il n'attendait rien. Du lot A1 mal classé, supprimé.
+- Les deux autres attendent `#offline-toast`, qui est un **état observable**.
+  `defaultCommandTimeout` vaut 60 s, très au-dessus des ~5 s que met le SDK à
+  déduire la perte de la websocket : l'assertion réessayée couvrait déjà le
+  délai, le sommeil ne faisait que s'y ajouter. Les commandes
+  `cy.expectOfflineToast()` / `cy.expectNoOfflineToast()` nomment non pas une
+  durée mais un **plafond de patience** (20 s), pour qu'une régression se
+  signale en 1 min au lieu de 3 avec les retries.
+
+Garde-fou, les deux sabotages attendus :
+
+| Sabotage | Résultat |
+|---|---|
+| `$bvToast.show('offline-toast')` neutralisé | ❌ échec (`never found it`) |
+| `$bvToast.hide('offline-toast')` neutralisé | ❌ échec (`continuously found`) |
+
+La distinction que ce lot a mise au jour, et qui manquait à ADR-0006 : ce qui
+demande une fenêtre de temps, ce n'est pas « une assertion négative », c'est
+**l'assertion d'un non-événement**. `shouldStayOn()` affirme que rien ne se
+produira — vrai à l'instant zéro, donc à protéger. `expectNoOfflineToast()`
+affirme une **transition** — le toast est là quand on appelle, il doit partir :
+le réessai est ancré, il ne peut pas être faussement vert.
 
 Anti-récidive : la règle `no-restricted-syntax` de
-`test/e2e/cypress/.eslintrc.cjs` rejette `cy.wait(<littéral numérique>)`, avec un
-`overrides` listant les specs pas encore reprises. **Cette liste ne peut que
-rétrécir** — elle est le compteur d'avancement, il n'y en a pas d'autre à tenir.
-⬜ *(règle pas encore posée : il reste le lot E à isoler. La liste d'`overrides`
-sera vide d'emblée, tous les lots étant traités.)*
+`test/e2e/cypress/.eslintrc.cjs` rejette `cy.wait(<littéral numérique>)`. ✅
+Elle est posée **sans bloc `overrides`** : les 57 appels étant traités avant
+qu'elle n'existe, la liste serait vide. Le compteur d'avancement prévu n'a
+jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée passée
+**par identifiant** aussi — c'est la forme réservée aux deux dérogations de
+`commands.js`.
 
 
 ---
@@ -513,7 +521,11 @@ gros et le plus risqué.
   Le vrai correctif est tranché par
   [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md) : remplacer les
   `cy.wait(N)` par des attentes sur assertion, qui s'ajustent à la charge au lieu
-  de la subir. Avancement détaillé en [§ 1.1](#11-attentes-cypress--adr-0006). ⬜
+  de la subir. **Fait** : les 57 appels sont traités, une règle ESLint interdit
+  la récidive. Détail en [§ 1.1](#11-attentes-cypress--adr-0006). ✅
+  La seconde source — les saisies clavier `delay: 200` / `force: true` dans Ace
+  et `vue-form-generator` — n'est traitée que pour Ace (`cy.aceReady()`).
+  `formView.spec.js` reste donc exposé : il ne contenait aucun `cy.wait()`.
 - **À retenir pour la phase 2** : ces instabilités vont empirer quand chaque
   écran sera réécrit. Elles seront alors difficiles à distinguer d'une vraie
   régression de migration. Autant les traiter avant.
@@ -600,6 +612,65 @@ Gabarit à copier :
   `curl -s localhost:7512/_publicApi | jq '.result.security | keys'`.
 
 
+#### G-005 — Un `defaultCommandTimeout` très large masque les attentes fixes inutiles
+
+- **Contexte** : ADR-0006 / ADR-0007, lot E d'`environments.spec.js`.
+- **Symptôme** : une `cy.wait(5000)` posée devant une assertion paraît
+  indispensable — on « sait » que le toast met 5 s à apparaître — alors que la
+  supprimer ne change rien : le test passe et devient plus court.
+- **Cause** : `cypress.config.ts` fixe `defaultCommandTimeout: 60000`. Toute
+  assertion réessayée dispose donc déjà de 60 s, soit douze fois le délai que
+  l'attente fixe prétendait couvrir. Le sommeil ne couvrait pas le délai, il
+  s'additionnait à un réessai qui le couvrait déjà.
+- **Solution** : avant de classer une attente comme « vrai délai à conserver »,
+  la retirer et regarder si la commande suivante est réessayée. Si oui, le
+  sommeil est du temps mort — quelle que soit l'intuition qu'on a du délai.
+  Le revers : un `defaultCommandTimeout` large est aussi ce qui rend un échec
+  lent (60 s × 3 tentatives = 3 min pour une seule assertion). D'où le plafond
+  explicite des commandes de `commands.js`, cf.
+  [ADR-0007](adr/0007-lot-e-assertion-plutot-que-sommeil.md).
+- **À retenir** : ne pas conclure d'un `cy.wait()` qu'il protège quelque chose.
+  Le seul verdict qui compte est expérimental — retirer, exécuter, et saboter le
+  comportement visé pour vérifier que le test échoue encore.
+- **Ref** : ADR-0007.
+
+#### G-006 — Un backend local qui vit longtemps fait échouer la suite, et les messages ne pointent pas vers la cause
+
+- **Contexte** : exécutions locales de la suite complète. La CI n'est pas
+  concernée : elle démarre un `docker compose` neuf à chaque run.
+- **Symptôme** : après quelques heures d'utilisation du même backend, **jusqu'à
+  5 specs sur 17** échouent avec des messages hétérogènes et sans rapport avec
+  le diff en cours — `412 Login "admin" is already used` sur `_createFirstAdmin`,
+  `404 User "kuid-…" not found` **sur `admin/_resetSecurity` lui-même**, suites
+  entières marquées *skipped* parce que l'échec tombe dans un `before each`
+  (`roles`, `profiles`, `users`, `environments`). Le même arbre passe en CI.
+- **Cause** : `admin/_resetSecurity` supprime les utilisateurs mais **laisse
+  leurs credentials `local`**. L'orpheline suffit à faire échouer toute
+  recréation du même login, et le `_resetSecurity` suivant part en 404 sur un
+  kuid qu'il ne retrouve plus — ce qui contamine les specs d'après par leurs
+  hooks. Tuer un `cypress run` en cours produit le même genre de résidu
+  (`500 Internal database inconsistency detected: existing credentials found on
+  non-existing user goofy`), le verrou `412 api.process.action_locked` en prime
+  tant que le reset interrompu s'achève.
+- **Solution** : repartir d'une stack neuve — c'est le seul nettoyage fiable,
+  `_resetSecurity` ne suffit pas :
+  ```sh
+  docker compose down -v && docker compose up --wait
+  ```
+  Vérifié : sur le backend sale, `login` (4 échecs) et `roles` (1 + 8 skipped)
+  échouaient **à l'identique sur `HEAD` avec le diff stashé** ; sur la stack
+  recréée, les 17 specs passent. Pour un diagnostic ciblé, une orpheline se
+  constate avec
+  `curl -s 'localhost:7512/credentials/local/<login>/_exists'` alors que
+  `users/_search` ne renvoie rien.
+- **À retenir** : deux réflexes avant de suspecter son propre diff devant une
+  fournée d'échecs hétérogènes. **Un** : rejouer la spec avec `--config
+  retries=0` — les retries masquent l'échec initial et n'exposent que la
+  cascade, ici un 404 qui cachait le 412 d'origine. **Deux** : rejouer sur
+  `HEAD` avec `git stash`, puis sur une stack neuve. La suite n'est pas isolée
+  du backend ; son état se manifeste loin de sa cause.
+- **Ref** : rencontré pendant le lot E (ADR-0007).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -639,3 +710,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-18 | Cible Node 24 LTS, versions alignées partout | [ADR-0004](adr/0004-node-24-lts.md) |
 | 2026-09-18 | Conserver les deux SDK `kuzzle-sdk` v6 et v7 | [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) |
 | 2026-09-18 | Interdire `cy.wait(<durée fixe>)` : attentes sur assertion | [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md) |
+| 2026-09-18 | Le lot E s'assertionne aussi : plafond de patience, pas de sommeil | [ADR-0007](adr/0007-lot-e-assertion-plutot-que-sommeil.md) |
