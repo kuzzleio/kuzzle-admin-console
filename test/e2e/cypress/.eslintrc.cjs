@@ -35,6 +35,20 @@ module.exports = {
         message:
           '`fdescribe`/`fit` désactivent silencieusement tous les autres tests du fichier.',
       },
+      // Cf. ADR-0006. On attend un état observable, jamais une durée.
+      //
+      // Le sélecteur ne vise que le littéral numérique : `cy.wait('@alias')`
+      // reste autorisé, et une durée passée par identifiant l'est aussi — c'est
+      // la forme réservée aux rares délais réellement subis, nommés et
+      // commentés dans `support/commands.js` (cf. `waitOverlay`,
+      // `shouldStayOn`). Un nombre nu dans une spec, lui, ne dit rien de ce
+      // qu'on attend.
+      {
+        selector:
+          "CallExpression[callee.object.name='cy'][callee.property.name='wait'] > Literal[raw=/^[.0-9]/]",
+        message:
+          "`cy.wait(<durée>)` n'exprime pas ce qu'on attend : trop courte elle casse sous charge, trop longue elle ralentit la suite sans rien garantir. Attendre un état observable — `.should()`, `cy.aceReady()`, `cy.expectBackend()`, `cy.shouldStayOn()` (cf. ADR-0006). `cy.wait('@alias')` reste autorisé.",
+      },
     ],
   },
 };

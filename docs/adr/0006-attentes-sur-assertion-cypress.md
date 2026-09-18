@@ -3,6 +3,10 @@
 - **Statut** : Acceptée
 - **Date** : 2026-09-18
 - **Décideurs** : Ricky
+- **Amendée par** :
+  [ADR-0007](0007-lot-e-assertion-plutot-que-sommeil.md) — la clause **E** de la
+  décision ci-dessous (« le sommeil reste, mais il est nommé » pour le réseau
+  simulé) est remplacée : ces trois attentes s'assertionnent. Le reste tient.
 
 ## Contexte
 

@@ -64,7 +64,8 @@ Cypress.Commands.add('shouldStayOn', hash => {
     })
 
   assertPath()
-  // eslint-disable-next-line no-restricted-syntax -- durée assumée, cf. ci-dessus
+  // La règle `no-restricted-syntax` ne vise que le littéral numérique : passer
+  // la durée par une constante nommée est la forme réservée à ces dérogations.
   cy.wait(NAVIGATION_GRACE_MS)
   assertPath()
 })
@@ -129,6 +130,42 @@ Cypress.Commands.add('expectBackend', (options, assertion) => {
   )
 
   cy.request(request).should(assertion)
+})
+
+// Délai de détection de la perte du backend.
+//
+// Rien ne signale la disparition du backend côté application : c'est le SDK qui
+// la déduit de l'absence de réponse sur sa websocket, et le toast n'apparaît
+// qu'ensuite. Mesuré à ~5 s sur la suite locale, mais c'est un délai subi, pas
+// un contrat : il dépend du SDK et de la charge.
+//
+// Ce n'est donc pas une durée qu'on attend, c'est un plafond. On assertionne
+// l'état observable — le toast — et on borne simplement la patience, plus court
+// que les 60 s de `defaultCommandTimeout` : une régression sur ce toast se
+// signale en 20 s plutôt qu'en 60, soit 1 min plutôt que 3 avec les deux
+// retries du mode CI.
+const BACKEND_LOSS_DETECTION_TIMEOUT = 20000
+
+/**
+ * Attend que le toast « backend injoignable » soit affiché.
+ */
+Cypress.Commands.add('expectOfflineToast', () => {
+  cy.get('#offline-toast', { timeout: BACKEND_LOSS_DETECTION_TIMEOUT }).should(
+    'be.visible'
+  )
+})
+
+/**
+ * Attend que le toast « backend injoignable » ait disparu.
+ *
+ * L'assertion négative est ici légitimement réessayée, contrairement au cas
+ * traité par `shouldStayOn()` : le toast est présent au moment où on l'appelle,
+ * donc sa disparition est une transition observable et non un non-événement.
+ */
+Cypress.Commands.add('expectNoOfflineToast', () => {
+  cy.get('#offline-toast', {
+    timeout: BACKEND_LOSS_DETECTION_TIMEOUT
+  }).should('not.exist')
 })
 
 Cypress.Commands.add(
