@@ -50,6 +50,20 @@ généré par `bootstrap-vue` et sur quoi nous ne pouvons pas poser d'attribut e
 **isolé dans une commande Cypress** (`test/e2e/cypress/support/commands.js`).
 En phase 2, il n'y aura que ce bloc à reprendre, pas les 17 specs.
 
+#### État du filet de sécurité au 2026-09-18
+
+| | Avant | Après |
+|---|---:|---:|
+| Tests actifs | 140 | **153** |
+| Tests inactifs (`.only` + `it.skip`) | 20 | **0** |
+| Sélecteurs fragiles (tests actifs) | 61 | **0** |
+| Politique de retry | aucune | `runMode: 2` |
+| ESLint sur `test/` | non | oui, bloquant |
+
+Suite complète vérifiée contre un backend Kuzzle réel : **17/17 specs,
+152 tests passants, 0 échec** (1 `pending` légitime, skip dynamique via
+`skipOnBackendVersion`).
+
 #### La CI était verte en n'exécutant qu'une fraction des tests — ✅ corrigé
 
 L'audit a mis au jour **deux `.only` commités dans le dépôt**. Un `.only`
