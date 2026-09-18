@@ -144,9 +144,10 @@ describe('Profiles', () => {
     const profileId = 'dummy'
     cy.waitOverlay()
     cy.visit('/#/security/profiles/create')
-    cy.wait(2000)
 
-    cy.get('[data-cy="ProfileCreateOrUpdate-id"]').type(profileId)
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"]')
+      .should('be.visible')
+      .type(profileId)
 
     cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line').should(
       'be.visible'

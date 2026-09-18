@@ -36,7 +36,11 @@ describe('Treeview', () => {
     cy.waitOverlay()
     cy.get(`[data-cy=Treeview-item-index--${indexes[1]}]`).should('be.visible')
     cy.get(`[data-cy=Treeview-item-index-link--${indexes[1]}]`).click()
-    cy.wait(500)
+
+    // Le dépliement de l'index est asynchrone : on attend que sa collection
+    // soit là, sinon le filtre s'applique à un arbre encore vide.
+    cy.get(`[data-cy=Treeview-item--${collections[1]}]`).should('be.visible')
+
     cy.get('[data-cy=Treeview-filter]').type(collections[1])
     cy.get(`[data-cy=Treeview-item-index--${indexes[1]}]`).should('be.visible')
 

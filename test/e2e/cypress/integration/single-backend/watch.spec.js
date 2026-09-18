@@ -243,7 +243,12 @@ describe('Watch', () => {
         }
       )
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
-    cy.wait(500)
+
+    // Le test vérifie que le filtre survit à un repli/dépli : il faut donc que
+    // le repli soit effectif avant de redéplier, sinon on ne teste rien.
+    // L'éditeur est retiré du DOM au repli, pas masqué — d'où `not.exist`.
+    cy.get('[data-cy="JSONEditor"]').should('not.exist')
+
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
     cy.get('.ace_content').should('contain', '"firstName": "Luca"')
   })

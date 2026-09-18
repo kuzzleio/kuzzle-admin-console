@@ -118,15 +118,57 @@ remplacements : [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md).
 | **A1** | L'assertion suivante est **positive** et déjà réessayée | 17 | 20,7 s | suppression sèche | ✅ |
 | **A2** | L'assertion suivante est **négative** (« rien ne doit se produire ») | 9 | 8,7 s | `cy.shouldStayOn()`, ou ancre positive quand il en existe une | ✅ |
 | **A3** | Indexation Elasticsearch avant un `cy.visit()` | 1 | 1,0 s | `?refresh=wait_for` sur l'écriture | ✅ |
-| **B** | Suivi d'une action non réessayée (`type`, `click`, `sessionStorage`) | 16 | 12,2 s | assertion explicite avant l'action | ⬜ |
+| **B** | Suivi d'une action non réessayée (`type`, `click`, `sessionStorage`) | 16 | 12,2 s | assertion explicite avant l'action | ✅ |
 | **C** | Initialisation de l'éditeur Ace | 5 | 6,5 s | commande `cy.aceReady()` | ⬜ |
 | **D** | État backend via `cy.request()` | 5 | 6,0 s | commande `cy.expectBackend()` | ⬜ |
 | **E** | Réseau simulé (`goOffline` / `goOnline`) | 3 | 8,0 s | conservé, isolé et nommé | ➖ |
 | **F** | Timer applicatif (`antiGlitchOverlayTimeout`) | 1 | variable | conservé, déjà dans `commands.js` | ➖ |
 
-**A1, A2 et A3 sont faits** : 26 appels retirés des specs, **28,4 s** de sommeil
-en moins par exécution complète. Reste **31 `cy.wait()`**, dont 2 assumés et
-isolés dans `support/commands.js`.
+**A1, A2, A3 et B sont faits** : 42 appels traités, **40,6 s** de sommeil fixe en
+moins dans les specs. Reste **15 `cy.wait()`** : 5 en C, 5 en D, 3 en E et 2
+assumés dans `support/commands.js`.
+
+> Le gain en temps d'exécution réel est plus modeste que le sommeil retiré : la
+> suite complète passe de 15:26 à 15:09 sur un même poste. Ces mesures sont des
+> exécutions uniques et bruitées, à ne pas prendre pour des chiffres fermes.
+> **Le gain qui compte n'est pas là** : il est dans le fait qu'un échec signifie
+> désormais « régression » et non « la machine était lente ».
+
+Le lot A2 a demandé une commande dédiée, `cy.shouldStayOn(hash)`. Asserter qu'une
+navigation **n'a pas** eu lieu demande une fenêtre de temps : une assertion
+instantanée est vraie avant même que l'application ait pu naviguer à tort.
+Vérifié expérimentalement sur `roles.spec.js`, validation sabotée pour naviguer
+après 300 ms :
+
+| Assertion | Face à la régression |
+|---|---|
+| instantanée (suppression sèche naïve) | **9/9 verts** — non détectée |
+| `cy.shouldStayOn()` | **1 échec** — détectée |
+
+La durée fixe subsiste donc à l'intérieur de la commande, mais elle est nommée,
+bornée et écrite une seule fois — la dérogation prévue par l'ADR pour les cas où
+un vrai délai est attendu. Un seul des 9 sites (`users.spec.js`) disposait déjà
+d'une ancre positive (`UserProfileList-invalidFeedback` + icône d'alerte) : elle
+a été remontée avant l'assertion négative, sans recourir à la commande. Les trois
+formulaires concernés n'affichant rien quand le JSON est invalide, ces ancres
+n'existaient pas ailleurs — d'où l'issue
+[#1027](https://github.com/kuzzleio/kuzzle-admin-console/issues/1027).
+
+Le lot B a été vérifié par une sonde jetable avant d'être validé : une ancre
+`.should('be.visible')` posée sur un élément **déjà visible avant l'action** ne
+prouverait rien. La sonde a confirmé que les items de menu sont bien masqués
+avant ouverture, et corrigé une erreur au passage — le `JSONEditor` de l'écran
+Watch est **retiré du DOM** au repli, pas masqué, donc `not.exist` et non
+`not.be.visible`.
+
+Deux remplacements du lot B sortent du cadre « assertion avant l'action » :
+
+- `search.spec.js` : suppression sèche, le document est créé avec
+  `?refresh=wait_for` et le test relance explicitement la recherche juste après.
+- `environments.spec.js` (2 sites) : `sessionStorage.setItem` écrit hors d'un
+  `cy.then()` s'exécute à l'évaluation du corps du test, donc **avant** toutes
+  les commandes qui le précèdent dans le source. L'attente ne le retardait pas ;
+  elle ne retardait que le `cy.visit()` suivant. Remis dans la file.
 
 Le lot A2 a demandé une commande dédiée, `cy.shouldStayOn(hash)`. Asserter qu'une
 navigation **n'a pas** eu lieu demande une fenêtre de temps : une assertion
@@ -150,11 +192,11 @@ hors lots E et F :
 
 | Fichier | Départ | Reste | | Fichier | Départ | Reste |
 |---|---:|---:|---|---|---:|---:|
-| `docs.spec.js` | 11 | 7 | | `profiles.spec.js` | 4 | 2 |
-| `collections.spec.js` | 11 | 2 | | `api-actions.spec.js` | 4 | 3 |
-| `environments.spec.js` | 8 | 7 | | `search.spec.js` | 3 | 3 |
+| `docs.spec.js` | 11 | 2 | | `profiles.spec.js` | 4 | 1 |
+| `collections.spec.js` | 11 | 0 | | `api-actions.spec.js` | 4 | 3 |
+| `environments.spec.js` | 8 | 3 | | `search.spec.js` | 3 | 1 |
 | `users.spec.js` | 7 | 1 | | `login.spec.js` | 2 | 0 |
-| `roles.spec.js` | 4 | 2 | | `treeview` / `watch` | 1 | 1 |
+| `roles.spec.js` | 4 | 2 | | `treeview` / `watch` | 1 | 0 |
 
 Anti-récidive : la règle `no-restricted-syntax` de
 `test/e2e/cypress/.eslintrc.cjs` rejette `cy.wait(<littéral numérique>)`, avec un

@@ -180,8 +180,7 @@ describe('Collection management', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
     cy.get('[data-cy="CollectionDropdownAction"]').click()
-    cy.wait(500)
-    cy.get('[data-cy="CollectionDropdown-delete"]').click()
+    cy.get('[data-cy="CollectionDropdown-delete"]').should('be.visible').click()
     cy.get('[data-cy="DeleteCollectionModal-confirm"]').type(collectionName)
     cy.get('[data-cy="DeleteCollectionModal-OK"]').click()
 
@@ -225,7 +224,10 @@ describe('Collection management', function() {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/`)
-    cy.wait(900)
+
+    // Le raccourci clavier vise la recherche de collections : il faut que la
+    // liste soit chargée, pas seulement que la page réponde.
+    cy.get('[data-cy="CollectionList-table"]').should('contain', 'foobar')
 
     cy.get('body').type('f{enter}')
 
