@@ -115,23 +115,28 @@ remplacements : [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md).
 
 | Lot | Nature | Appels | Sommeil | Remplacement | Statut |
 |---|---|---:|---:|---|---|
-| **A** | L'assertion suivante est déjà réessayée par Cypress | 27 | 30,4 s | suppression sèche | ⬜ |
+| **A1** | L'assertion suivante est **positive** et déjà réessayée | 17 | 20,7 s | suppression sèche | ✅ |
+| **A2** | L'assertion suivante est **négative** (« rien ne doit se produire ») | 9 | 8,7 s | ancre positive, puis assertion négative | ⬜ |
+| **A3** | Indexation Elasticsearch avant un `cy.visit()` | 1 | 1,0 s | `?refresh=wait_for` sur l'écriture | ✅ |
 | **B** | Suivi d'une action non réessayée (`type`, `click`, `sessionStorage`) | 16 | 12,2 s | assertion explicite avant l'action | ⬜ |
 | **C** | Initialisation de l'éditeur Ace | 5 | 6,5 s | commande `cy.aceReady()` | ⬜ |
 | **D** | État backend via `cy.request()` | 5 | 6,0 s | commande `cy.expectBackend()` | ⬜ |
 | **E** | Réseau simulé (`goOffline` / `goOnline`) | 3 | 8,0 s | conservé, isolé et nommé | ➖ |
 | **F** | Timer applicatif (`antiGlitchOverlayTimeout`) | 1 | variable | conservé, déjà dans `commands.js` | ➖ |
 
+**A1 et A3 sont faits** : 18 appels retirés, **21,7 s** de sommeil en moins par
+exécution complète. Reste **39 `cy.wait()`**.
+
 Répartition par fichier — la colonne « reste » est ce qu'il faut ramener à 0
 hors lots E et F :
 
-| Fichier | Appels | | Fichier | Appels |
-|---|---:|---|---|---:|
-| `docs.spec.js` | 11 | | `profiles.spec.js` | 4 |
-| `collections.spec.js` | 11 | | `api-actions.spec.js` | 4 |
-| `environments.spec.js` | 8 | | `search.spec.js` | 3 |
-| `users.spec.js` | 7 | | `login.spec.js` | 2 |
-| `roles.spec.js` | 4 | | `treeview` / `watch` / `commands.js` | 1 chacun |
+| Fichier | Départ | Reste | | Fichier | Départ | Reste |
+|---|---:|---:|---|---|---:|---:|
+| `docs.spec.js` | 11 | 7 | | `profiles.spec.js` | 4 | 4 |
+| `collections.spec.js` | 11 | 4 | | `api-actions.spec.js` | 4 | 3 |
+| `environments.spec.js` | 8 | 7 | | `search.spec.js` | 3 | 3 |
+| `users.spec.js` | 7 | 3 | | `login.spec.js` | 2 | 1 |
+| `roles.spec.js` | 4 | 4 | | `treeview` / `watch` / `commands.js` | 1 | 1 |
 
 Anti-récidive : la règle `no-restricted-syntax` de
 `test/e2e/cypress/.eslintrc.cjs` rejette `cy.wait(<littéral numérique>)`, avec un

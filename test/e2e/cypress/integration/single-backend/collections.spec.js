@@ -63,7 +63,6 @@ describe('Collection management', function() {
 
   it('Should be able to create a collection and access it', function() {
     cy.visit(`/#/data/${indexName}/create`)
-    cy.wait(1000)
 
     cy.get('[data-cy=CollectionCreate]').should('be.visible')
 
@@ -114,12 +113,11 @@ describe('Collection management', function() {
     })
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_create`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_create?refresh=wait_for`,
       {
         message: '...in a bottle...'
       }
     )
-    cy.wait(1000)
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(documentId)
     cy.get('[data-cy="CollectionDropdownAction"]').click()
@@ -137,7 +135,6 @@ describe('Collection management', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/`)
-    cy.wait(1000)
     cy.visit(`/#/data/${indexName}/`)
     cy.contains(indexName)
 
@@ -187,7 +184,6 @@ describe('Collection management', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.wait(500)
     cy.contains(collectionName)
     cy.get('[data-cy="CollectionDropdownAction"]').click()
     cy.wait(500)
@@ -206,7 +202,6 @@ describe('Collection management', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/`)
-    cy.wait(500)
     cy.visit(`/#/data/${indexName}/`)
     cy.contains(indexName)
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).should(
@@ -223,7 +218,6 @@ describe('Collection management', function() {
     cy.request('PUT', `${kuzzleUrl}/anotherindex/foo`)
 
     cy.visit(`/#/data/`)
-    cy.wait(500)
     cy.visit(`/#/data/${indexName}/`)
     cy.contains(indexName)
     cy.get('[data-cy="Treeview-item-index--anotherindex"]').click()
@@ -248,7 +242,6 @@ describe('Collection management', function() {
 
   it('Should be able to export a collection mapping', function() {
     cy.visit(`/#/data/${indexName}/create`)
-    cy.wait(1000)
 
     cy.get('[data-cy=CollectionCreate]').should('be.visible')
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').click({ force: true })

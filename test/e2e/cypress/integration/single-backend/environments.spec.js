@@ -333,7 +333,6 @@ describe('Environments', function() {
       `v${backendVersion}.x`
     )
     cy.get('[data-cy=Environment-SubmitButton]').click()
-    cy.wait(5000)
     cy.url().should('contain', 'login')
   })
 

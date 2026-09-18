@@ -35,16 +35,38 @@ commande qui suit immédiatement :
 
 | | Catégorie | Appels | Sommeil |
 |---|---|---:|---:|
-| **A** | La commande suivante est déjà une assertion réessayée par Cypress (`.should()`, `cy.contains()`, `cy.location()`, `cy.url()`) | 27 | 30,4 s |
+| **A1** | La commande suivante est une assertion **positive** déjà réessayée par Cypress (`.should()`, `cy.contains()`, `cy.location()`, `cy.url()`) | 17 | 20,7 s |
+| **A2** | La commande suivante est une assertion **négative** réessayée — « rien ne doit se produire » | 9 | 8,7 s |
+| **A3** | Attente de l'indexation Elasticsearch avant un `cy.visit()` | 1 | 1,0 s |
 | **B** | La commande suivante est une action non réessayée (`.type()`, `.click()`, écriture dans `sessionStorage`) | 16 | 12,2 s |
 | **C** | Attente de l'initialisation de l'éditeur Ace | 5 | 6,5 s |
 | **D** | Assertion sur l'état du backend via `cy.request()`, que Cypress ne réessaie pas | 5 | 6,0 s |
 | **E** | Réseau simulé (`goOffline` / `goOnline`, toast de reconnexion) | 3 | 8,0 s |
 | **F** | Timer applicatif réel (`antiGlitchOverlayTimeout`, dans `support/commands.js`) | 1 | variable |
 
-Les 27 appels de la catégorie A sont du **temps mort pur** : Cypress réessaie
-déjà l'assertion qui suit pendant 4 s par défaut. Les supprimer ne change
-strictement rien au comportement du test, seulement à sa durée.
+Les 17 appels d'**A1** sont du **temps mort pur** : Cypress réessaie déjà
+l'assertion qui suit pendant 4 s par défaut. Les supprimer ne change strictement
+rien au comportement du test, seulement à sa durée.
+
+**A2 est le piège de ce chantier, et il est contre-intuitif.** Ces neuf appels
+précèdent une assertion qui vérifie que *rien* ne s'est passé — typiquement,
+après la soumission d'un formulaire invalide :
+
+```js
+cy.get('[data-cy=RoleCreateOrUpdate-createBtn]').click()
+cy.wait(1000)
+cy.location().should(location => {
+  expect(location.hash).to.equal('#/security/roles/create')  // on n'a PAS navigué
+})
+```
+
+Le réessai ne protège rien ici : l'assertion est vraie **immédiatement**, avant
+même que l'application ait eu le temps de naviguer à tort. Supprimer l'attente
+rendrait le test vert quoi qu'il arrive — y compris le jour où le formulaire
+laisserait passer une valeur invalide. C'est exactement le faux vert décrit plus
+bas en conséquence négative, et il touche la catégorie qui paraissait la plus
+sûre. Une durée fixe n'est pas la bonne réponse pour autant : elle ne fait que
+rendre le faux vert moins probable, pas impossible.
 
 ## Décision
 
@@ -53,8 +75,18 @@ observable, jamais une durée.
 
 ### Remplacement par catégorie
 
-- **A — suppression sèche.** L'assertion qui suit fait déjà le travail. Aucun
+- **A1 — suppression sèche.** L'assertion qui suit fait déjà le travail. Aucun
   filet à ajouter.
+- **A2 — ancrer sur un signal positif, puis asserter le négatif.** On attend
+  d'abord la preuve observable que l'application a traité l'action et l'a
+  rejetée (le message de validation qui apparaît, l'onglet qui se marque en
+  erreur), *ensuite* on vérifie qu'on n'a pas navigué. L'ancre positive est ce
+  qui donne son sens à l'assertion négative : sans elle, le test ne teste rien.
+- **A3 — `?refresh=wait_for` sur la requête d'écriture.** Quand le test crée une
+  donnée par `cy.request()` puis charge une page qui doit l'afficher, c'est
+  l'indexation Elasticsearch qu'on attend. Kuzzle sait la rendre synchrone : le
+  besoin disparaît au lieu d'être temporisé. Réessayer côté DOM ne marcherait
+  pas — la liste n'est chargée qu'une fois, au `cy.visit()`.
 - **B — assertion d'abord, action ensuite.** On rend explicite la condition qui
   était implicite : `cy.get('[data-cy=…]').should('be.visible')` avant le
   `.type()` ou le `.click()`. Pour un menu, on assied l'attente sur l'élément
@@ -86,8 +118,9 @@ rétrécir : chaque PR de la série en retire une entrée, et le diff rend
 l'avancement visible sans qu'on ait à tenir un compteur à la main. Quand elle
 est vide, le bloc `overrides` disparaît.
 
-L'ordre de reprise suit le rapport valeur / risque : **A** (27 appels,
-suppression sans risque) d'abord, puis **B**, puis **C** et **D** qui demandent
+L'ordre de reprise suit le rapport valeur / risque : **A1** (17 appels,
+suppression sans risque) et **A3** d'abord, puis **A2** qui demande de trouver
+l'ancre positive cas par cas, puis **B**, puis **C** et **D** qui demandent
 d'écrire les deux commandes.
 
 ## Conséquences
