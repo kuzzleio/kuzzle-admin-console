@@ -27,29 +27,53 @@ Légende : ⬜ à faire · 🟡 en cours · ✅ fait · ⛔ bloqué · ➖ sans 
 
 ### Prérequis bloquant — ✅ levé le 2026-09-18
 
-- [x] **Auditer les sélecteurs Cypress** ([#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017)).
+- [x] **Auditer les sélecteurs Cypress** ([#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017))
+- [x] **Sécuriser les sélecteurs fragiles** — 0 restant dans les tests actifs
 
-**Verdict : le filet tient.** Sur 940 appels de sélecteur dans les 17 specs,
-**867 (92 %) sont sains** — 749 s'appuient sur des attributs `data-cy`
-(281 posés dans 82 des 140 composants), le reste sur du texte, des tags ou des
-sélecteurs de librairies tierces (Ace, Leaflet) qui ne bougeront pas.
+**Le filet tient.** Sur 940 appels de sélecteur dans les 17 specs, la très
+grande majorité s'appuyait déjà sur des attributs `data-cy` (281 posés dans 82
+des 140 composants). Le projet a été discipliné sur ce point, et c'est ce qui
+rend la phase 2 tenable.
 
-**73 appels (7 %) sont fragiles**, sur seulement 13 sélecteurs distincts. C'est
-une demi-journée de travail, pas un obstacle. À traiter **avant** la phase 2 :
+**Chiffres après exclusion des tests désactivés** (voir ci-dessous) : 771 appels
+actifs, dont **61 fragiles (7,9 %)**. Tous ont été repris. Il en reste **0**.
 
-| Catégorie | Appels | Détail | Casse en |
-|---|---:|---|---|
-| Classe applicative | 49 | `.IndexesPage` (19), `.DocumentListView-item` (18), `.CollectionCreate` (3), `.CollectionList`, `.DocumentsListView`, `.BasicFilter-submitBtn`, `.BasicFilter-predicates`, `.RawFilter`, `.TimeSeriesColorPickerBtn`, une chaîne `.col > .col > .col > .Autocomplete > input` | phase 2 |
-| Classe Bootstrap | 16 | `.invalid-feedback` (14, presque toujours combiné à un `data-cy` parent), `.far`, chaîne de `.col`/`.row` | phase 2 |
-| `id` généré par `vue-form-generator` | 5 | `input#age`, `input#name`, `textarea#job` | phase 2 (réimplémentation VFG) |
-| Interne `bootstrap-vue` | 3 | `#UserUpdate-customTab___BV_tab_button__` (2), `.b-form-tag[title=document] > .b-form-tag-remove` | phase 2 |
+| Catégorie | Appels | Traitement |
+|---|---:|---|
+| Classe applicative (`.IndexesPage`, `.DocumentListView-item`, `.CollectionCreate`…) | 39 | `data-cy` posé sur la racine du composant, sélecteur réécrit |
+| Classe Bootstrap (`.invalid-feedback` ×12, `.dropdown-toggle`) | 14 | commande `cy.invalidFeedback()` ; `:toggle-attrs` sur le `b-dropdown` |
+| `id` généré par `vue-form-generator` | 5 | `attributes.input` dans `formSchema.ts` → `data-cy="FormField-<champ>"` |
+| Interne `bootstrap-vue` | 3 | `data-cy` déjà présent via `title-link-attributes` ; commande `cy.removeFormTag()` |
 
-Specs les plus exposées : `search` (33), `docs` (11), `indexes` (8),
-`formView` (5). Les 7 autres specs ont 4 appels fragiles ou moins.
+**Principe retenu** : ce qui nous appartient reçoit un `data-cy`. Ce qui est
+généré par `bootstrap-vue` et sur quoi nous ne pouvons pas poser d'attribut est
+**isolé dans une commande Cypress** (`test/e2e/cypress/support/commands.js`).
+En phase 2, il n'y aura que ce bloc à reprendre, pas les 17 specs.
 
-**Action** : poser un `data-cy` sur les 13 cibles et réécrire les sélecteurs
-correspondants. Les `.invalid-feedback` ont déjà un parent `data-cy` : il suffit
-d'ajouter un `data-cy` sur le message d'erreur lui-même.
+#### ⚠️ Découverte : la couverture réelle est plus faible qu'annoncée
+
+**6 tests sont désactivés** (`it.skip`), soit 169 appels de sélecteur — 18 % du
+total — dans du code mort :
+
+| Spec | Test désactivé |
+|---|---|
+| `docs` | `Should handle the time series view properly` |
+| `search` ×2 | agrégations dans les résultats de recherche |
+| `environments` ×3 | mise à jour d'un env, spinner de reconnexion, bascule d'env |
+
+Le test time series de `docs` est mort pour une raison précise : les boutons de
+vue « time series » et « map » sont **commentés** dans
+`src/components/Data/Documents/ListViewButtons.vue`, et les classes qu'il cible
+(`.DocumentList-timeseries`, `.DocumentList-materializeCollection`) n'existent
+plus nulle part dans les sources. Il avait par ailleurs été enregistré avec
+Cypress Studio : il est fait de longues chaînes structurelles
+(`.card-panel > … > .col:nth-child(4)`, internes de `vue-color`) qui n'auraient
+de toute façon survécu à aucune refonte.
+
+Ces tests n'ont **pas** été réparés ici : ce serait un autre chantier, avec une
+question produit derrière (la vue time series existe-t-elle encore ?). Mais il
+faut en être conscient — `environments` en particulier a la moitié de ses
+parcours désactivés, et c'est un domaine sensible. À trancher avant la phase 2.
 
 ---
 

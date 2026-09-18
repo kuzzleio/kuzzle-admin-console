@@ -26,6 +26,7 @@
           <b-dropdown
             class="ml-1"
             data-cy="Refresh-dropdown"
+            :toggle-attrs="{ 'data-cy': 'Refresh-dropdown--toggle' }"
             split
             variant="outline-primary"
             :title="

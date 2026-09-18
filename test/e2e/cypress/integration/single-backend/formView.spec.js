@@ -64,7 +64,7 @@ describe('Form view', function() {
     cy.get('[data-cy="formView-switch"').click({ force: true })
     cy.get('[data-cy="DocumentCreate-input--id"').type('new-doc')
 
-    cy.get('input#age').type('31')
+    cy.get('[data-cy=FormField-age]').type('31')
 
     cy.get('[name="items"] > textarea.ace_text-input')
       .type(`{selectall}{backspace}{
@@ -85,8 +85,8 @@ describe('Form view', function() {
         }
       )
 
-    cy.get('textarea#job').type('webmestre enginer')
-    cy.get('input#name').type('Bombi')
+    cy.get('[data-cy=FormField-job]').type('webmestre enginer')
+    cy.get('[data-cy=FormField-name]').type('Bombi')
 
     cy.get('[data-cy="datePickerInput"').type('2020-01-01')
     cy.get('[data-cy="timePickerInput"').type('23:30:00')
@@ -116,7 +116,7 @@ describe('Form view', function() {
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
 
-    cy.get('input#age').type('{selectall}{backspace}43')
+    cy.get('[data-cy=FormField-age]').type('{selectall}{backspace}43')
 
     cy.get('[data-cy="datePickerInput"')
       .clear()
@@ -169,7 +169,7 @@ describe('Form view', function() {
 
     cy.get('[data-cy="formView-switch"').click({ force: true })
 
-    cy.get('input#name').should('have.value', 'PHP CEO')
+    cy.get('[data-cy=FormField-name]').should('have.value', 'PHP CEO')
   })
 
   it('should show a warning if a field type is unsuported', function() {

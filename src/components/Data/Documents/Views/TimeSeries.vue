@@ -20,7 +20,7 @@
             }
           "
         />
-        <form class="TimeSeriesValueSelector mt-4">
+        <form class="TimeSeriesValueSelector mt-4" data-cy="TimeSeriesValueSelector">
           <span>Values</span>
           <time-series-item
             v-for="(number, key) of customNumberFields"
