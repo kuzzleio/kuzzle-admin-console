@@ -72,7 +72,7 @@ describe('Search', function() {
       }
     )
     cy.visit('/')
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 60 })
     cy.url().should('contain', 'quick=Keylogger')
@@ -91,13 +91,13 @@ describe('Search', function() {
     )
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', { delay: 60 })
-    cy.get('.BasicFilter-submitBtn').click()
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.url().should('contain', 'active=basic')
     cy.url().should('contain', 'attribute')
     cy.url().should('contain', 'job')
@@ -138,7 +138,7 @@ describe('Search', function() {
 
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -149,13 +149,13 @@ describe('Search', function() {
     cy.get('[data-cy=CollectionList-name--anothercollection]').click()
 
     cy.url().should('not.contain', 'Keylogger')
-    cy.get('.DocumentListView-item').should('have.length', 2)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 2)
 
     cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
     cy.get(`[data-cy=CollectionList-name--${collectionName}]`).click()
 
     cy.url().should('contain', 'Keylogger')
-    cy.get('.DocumentListView-item').should('have.length', 1)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 1)
   })
 
   it('remembers the Basic Search query across collections', function() {
@@ -191,7 +191,7 @@ describe('Search', function() {
 
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
@@ -200,19 +200,19 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Keylogger', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
-    cy.get('.DocumentListView-item').should('have.length', 1)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 1)
 
     cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
     cy.get(`[data-cy=CollectionList-name--anothercollection]`).click()
 
     cy.url().should('not.contain', 'Keylogger')
-    cy.get('.DocumentListView-item').should('have.length', 2)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 2)
 
     cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
     cy.get(`[data-cy=CollectionList-name--${collectionName}]`).click()
 
     cy.url().should('contain', 'Keylogger')
-    cy.get('.DocumentListView-item').should('have.length', 1)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 1)
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').should(
@@ -239,7 +239,7 @@ describe('Search', function() {
 
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -251,7 +251,7 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Luca', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
-    cy.get('.DocumentListView-item').should('have.length', 0)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 0)
 
     cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
@@ -261,12 +261,12 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('{selectall}-1')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
-    cy.get('.DocumentListView-item').should('have.length', 2)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 2)
   })
 
   it('refreshes search when the Search button is hit twice', function() {
     cy.visit('/')
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -275,7 +275,7 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
-    cy.get('.DocumentListView-item').should('have.length', 1)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 1)
 
     cy.request(
       'POST',
@@ -290,7 +290,7 @@ describe('Search', function() {
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
-    cy.get('.DocumentListView-item').should('have.length', 2)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 2)
   })
 
   it('resets the search query but not the list view type, when the RESET button is hit', function() {
@@ -306,14 +306,14 @@ describe('Search', function() {
 
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 60 })
 
     cy.url().should('contain', 'Keylogger')
-    cy.get('.DocumentListView-item').should('have.length', 1)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 1)
 
     cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy=CollectionDropdown-column]').click()
@@ -371,7 +371,7 @@ describe('Search', function() {
 
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -385,9 +385,9 @@ describe('Search', function() {
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').select('lastName')
     cy.get('[data-cy="BasicFilter-sortOrderSelect"]').select('desc')
-    cy.get('.BasicFilter-submitBtn').click()
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
-    cy.get('.DocumentListView-item').should(function($el) {
+    cy.get('[data-cy^=DocumentListItem--]').should(function($el) {
       expect($el.first()).to.contain('maret')
       expect($el.last()).to.contain('marchesini')
     })
@@ -424,7 +424,7 @@ describe('Search', function() {
 
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -452,7 +452,7 @@ describe('Search', function() {
 
     cy.get('[data-cy="RawFilter-submitBtn"]').click()
 
-    cy.get('.DocumentListView-item').should(function($el) {
+    cy.get('[data-cy^=DocumentListItem--]').should(function($el) {
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
@@ -461,7 +461,7 @@ describe('Search', function() {
   it('transforms a search query from basic filter to raw filter', function() {
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -475,85 +475,6 @@ describe('Search', function() {
       .and('contain', 'must')
       .and('contain', 'match_phrase_prefix')
       .and('contain', 'bar')
-  })
-
-  it.skip('shows aggregations in search result when aggregations are specified in the raw filter', function() {
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
-      {
-        firstName: 'bar'
-      }
-    )
-
-    cy.visit('/')
-
-    cy.get('.IndexesPage').should('be.visible')
-
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
-
-    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
-    cy.get('[data-cy="Filters-rawTab"]').click()
-
-    cy.get('#rawsearch .ace_line').should('be.visible')
-
-    cy.get('#rawsearch .ace_line')
-      .contains('{')
-      .click({ force: true })
-    cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
-      .type(
-        `{
-        "query": {},
-        "aggregations": {
-          "my_aggs": {
-            "terms": {
-              "field": "firstName"
-            `,
-        {
-          force: true
-        }
-      )
-
-    cy.get('[data-cy="RawFilter-submitBtn"]').click()
-
-    cy.get('.DocumentListView-item').should(function($el) {
-      expect($el.first()).to.contain('Aggregations')
-    })
-  })
-
-  it.skip('does not show aggregations in search result when no aggregations are specified in the raw filter', function() {
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
-      {
-        firstName: 'bar'
-      }
-    )
-
-    cy.visit('/')
-    cy.get('.IndexesPage').should('be.visible')
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
-
-    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
-    cy.get('[data-cy="Filters-rawTab"]').click()
-
-    cy.get('#rawsearch .ace_line').should('be.visible')
-
-    cy.get('#rawsearch .ace_line')
-      .contains('{')
-      .click({ force: true })
-    cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
-      .type(
-        `{
-          "query": {}`,
-        {
-          force: true
-        }
-      )
-
-    cy.get('[data-cy="RawFilter-submitBtn"]').click()
   })
 
   it('properly paginates search results', () => {
@@ -829,7 +750,7 @@ describe('Search', function() {
 
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
@@ -861,15 +782,15 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.contains(indexName)
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-fullscreen]').click()
     cy.get('[data-cy="Filters"]').should('have.class', 'full-screen')
-    cy.get('.BasicFilter-predicates').should('be.visible')
+    cy.get('[data-cy=BasicFilter-predicates]').should('be.visible')
     cy.get('[data-cy=Filters-rawTab]').click()
-    cy.get('.RawFilter').should('be.visible')
+    cy.get('[data-cy=RawFilter]').should('be.visible')
 
     cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
     cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
@@ -900,7 +821,7 @@ describe('Search', function() {
 
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -927,7 +848,7 @@ describe('Search', function() {
 
     cy.visit('/')
 
-    cy.get('.IndexesPage').should('be.visible')
+    cy.get('[data-cy=IndexesPage]').should('be.visible')
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 

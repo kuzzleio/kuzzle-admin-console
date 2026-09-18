@@ -1,5 +1,5 @@
 <template>
-  <b-container ref="page-indexes" class="IndexesPage">
+  <b-container ref="page-indexes" class="IndexesPage" data-cy="IndexesPage">
     <headline>
       Indexes
       <b-button

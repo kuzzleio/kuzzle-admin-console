@@ -21,9 +21,7 @@ describe('Collection management', function() {
       force: true
     })
 
-    cy.get(
-      '#collection-name .invalid-feedback'
-    ).should('contain', 'Please fill-in a valid collection name.')
+    cy.invalidFeedback('#collection-name').should('contain', 'Please fill-in a valid collection name.')
 
     cy.get('[data-cy="CollectionCreateOrUpdate-name"] input').type(
       '{selectall}{backspace}',
@@ -32,9 +30,7 @@ describe('Collection management', function() {
       }
     )
 
-    cy.get(
-      '[data-cy="CollectionCreateOrUpdate-name"] .invalid-feedback'
-    ).should('contain', 'Please fill-in a valid collection name')
+    cy.invalidFeedback('[data-cy="CollectionCreateOrUpdate-name"]').should('contain', 'Please fill-in a valid collection name')
 
     cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click()
     cy.wait(1000)
@@ -69,7 +65,7 @@ describe('Collection management', function() {
     cy.visit(`/#/data/${indexName}/create`)
     cy.wait(1000)
 
-    cy.get('.CollectionCreate').should('be.visible')
+    cy.get('[data-cy=CollectionCreate]').should('be.visible')
 
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').click({ force: true })
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').type(collectionName)
@@ -176,13 +172,13 @@ describe('Collection management', function() {
     cy.get(`[data-cy=CollectionList-bulkDelete--btn]`).click()
 
     cy.get(
-      '[data-cy="BulkDeleteCollectionsModal-input-confirmation"'
+      '[data-cy="BulkDeleteCollectionsModal-input-confirmation"]'
     ).type('DELETE', { force: true })
 
     cy.get('[data-cy="BulkDeleteCollectionsModal-deleteBtn"]').click()
 
-    cy.get('.CollectionList').should('not.contain', `${collectionName}1`)
-    cy.get('.CollectionList').should('not.contain', `${collectionName}2`)
+    cy.get('[data-cy=CollectionList]').should('not.contain', `${collectionName}1`)
+    cy.get('[data-cy=CollectionList]').should('not.contain', `${collectionName}2`)
   })
 
   it('Should be able to delete a stored collection from its own dropdown action', function() {
@@ -254,7 +250,7 @@ describe('Collection management', function() {
     cy.visit(`/#/data/${indexName}/create`)
     cy.wait(1000)
 
-    cy.get('.CollectionCreate').should('be.visible')
+    cy.get('[data-cy=CollectionCreate]').should('be.visible')
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').click({ force: true })
     cy.get('[data-cy="CollectionCreateOrUpdate-name"]').type('testexport')
     cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')

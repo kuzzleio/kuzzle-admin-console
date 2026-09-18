@@ -1,6 +1,6 @@
 <template>
   <form class="BasicFilter" @submit.prevent="submitSearch">
-    <div class="BasicFilter-predicates">
+    <div class="BasicFilter-predicates" data-cy="BasicFilter-predicates">
       <div class="BasicFilter-predicate">
         <div
           v-for="(orBlock, groupIndex) in filters.basic"

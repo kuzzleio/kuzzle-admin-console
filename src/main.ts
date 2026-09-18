@@ -8,12 +8,12 @@ import './plugins/logger';
 import 'leaflet/dist/leaflet.css';
 import 'vue-form-generator/dist/vfg.css';
 
+import createRoutes from './routes/index';
 import { useKuzzleStore } from './stores';
 
-import App from './App.vue';
-import createRoutes from './routes/index';
 import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue';
 import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue';
+import App from './App.vue';
 
 Reflect.defineProperty(window, 'kuzzle', {
   get() {

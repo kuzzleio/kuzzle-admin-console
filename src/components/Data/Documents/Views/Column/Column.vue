@@ -206,6 +206,7 @@
 import defaultsDeep from 'lodash/defaultsDeep';
 import get from 'lodash/get';
 import { mapState } from 'pinia';
+import Multiselect from 'vue-multiselect';
 import draggable from 'vuedraggable';
 
 import JsonFormatter from '@/directives/json-formatter.directive';
@@ -219,7 +220,6 @@ import NewDocumentsBadge from '@/components/Data/Documents/Common/NewDocumentsBa
 import HeaderTableView from './HeaderTableView.vue';
 import HighlightableRow from './HighlightableRow.vue';
 import TableCell from './TableCell.vue';
-import Multiselect from 'vue-multiselect';
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
@@ -490,9 +490,10 @@ export default {
 }
 
 .downloadCSVLink {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
 }
 
 .multiselect__option--selected.multiselect__option--highlight {

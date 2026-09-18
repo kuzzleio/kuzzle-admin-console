@@ -48,7 +48,7 @@ describe('Roles', () => {
     cy.contains('Create a new role')
 
     cy.get('[data-cy="RoleCreateOrUpdate-createBtn"]').click()
-    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="RoleCreateOrUpdate-id"]').should(
       'contain',
       'This field cannot be empty'
     )
@@ -57,7 +57,7 @@ describe('Roles', () => {
       force: true
     })
 
-    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="RoleCreateOrUpdate-id"]').should(
       'contain',
       'This field cannot contain just whitespaces'
     )
@@ -69,7 +69,7 @@ describe('Roles', () => {
       }
     )
 
-    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="RoleCreateOrUpdate-id"]').should(
       'contain',
       'This field cannot be empty'
     )
@@ -216,7 +216,7 @@ describe('Roles', () => {
     cy.get('[data-cy="RoleFilters-searchBar"]').type('document{enter}')
     cy.get('[data-cy="RoleList-list"]').should('contain', roleId)
 
-    cy.get('.b-form-tag[title=document] > .b-form-tag-remove').click()
+    cy.removeFormTag('document').click()
     cy.get('[data-cy="RoleFilters-searchBar"]').type('security{enter}')
     cy.get('[data-cy="RoleList-list"]').should('not.contain', roleId)
   })
@@ -334,7 +334,7 @@ describe('Roles', () => {
 
       cy.visit('#/security/roles')
 
-      cy.get('[data-cy="RolesManagement-revokeAnonymous"').click()
+      cy.get('[data-cy="RolesManagement-revokeAnonymous"]').click()
       cy.get('[data-cy="revokeAnonymous-modal"] button')
         .contains('OK')
         .click()
@@ -347,12 +347,9 @@ describe('Roles', () => {
           Authorization: `Bearer ${token}`
         }
       }).should(getRoleResponse => {
+        // security:restrictDefaultRights réapplique la configuration standard
+        // du backend : pas de joker `*`, seules les actions listées passent.
         expect(getRoleResponse.body.result._source.controllers).to.eql({
-          '*': {
-            actions: {
-              '*': false
-            }
-          },
           auth: {
             actions: {
               checkToken: true,
@@ -365,6 +362,31 @@ describe('Roles', () => {
             actions: {
               publicApi: true,
               openapi: true
+            }
+          }
+        })
+      })
+
+      cy.request({
+        method: 'GET',
+        url: `${kuzzleUrl}/roles/default`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).should(getRoleResponse => {
+        expect(getRoleResponse.body.result._source.controllers).to.eql({
+          auth: {
+            actions: {
+              checkToken: true,
+              getCurrentUser: true,
+              getMyRights: true,
+              logout: true,
+              updateSelf: true
+            }
+          },
+          server: {
+            actions: {
+              publicApi: true
             }
           }
         })

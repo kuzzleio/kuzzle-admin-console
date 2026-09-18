@@ -1,7 +1,7 @@
 <template>
   <b-list-group-item
     class="DocumentListView-item p-2 realtime-highlight"
-    :data-cy="`DocumentListItem-${document._id}`"
+    :data-cy="`DocumentListItem--${document._id}`"
   >
     <b-container fluid>
       <b-row align-h="between" no-gutters>
@@ -21,9 +21,12 @@
             unchecked-value="false"
             @change="notifyCheckboxClick"
           />
-          <a class="d-inline-block align-middle code pointer" @click="toggleCollapse">{{
-            document._id
-          }}</a>
+          <a
+            class="d-inline-block align-middle code pointer"
+            data-cy="DocumentListItem-title"
+            @click="toggleCollapse"
+            >{{ document._id }}</a
+          >
           <b-badge
             v-if="!autoSync && notifBadgeText && notifBadgeText !== 'created'"
             :variant="notifBadgeVariant"

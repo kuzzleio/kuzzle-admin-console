@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container v-if="index" class="CollectionList">
+    <b-container v-if="index" class="CollectionList" data-cy="CollectionList">
       <headline>
         <div class="d-flex flex-row">
           <span class="flex-grow-1 text-truncate">

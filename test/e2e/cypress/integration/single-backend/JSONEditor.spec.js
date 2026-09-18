@@ -13,7 +13,7 @@ describe('JSON Editor', function() {
 
   it('Should show that there is an error when the input is syntactically invalid', function() {
     cy.visit(`/#/data/${indexName}/create`)
-    cy.get('.CollectionCreate').should('be.visible')
+    cy.get('[data-cy=CollectionCreate]').should('be.visible')
 
     cy.get('[data-cy="JSONEditor"] .ace_line')
       .contains('{')

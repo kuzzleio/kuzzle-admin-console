@@ -20,7 +20,7 @@
             }
           "
         />
-        <form class="TimeSeriesValueSelector mt-4">
+        <form class="TimeSeriesValueSelector mt-4" data-cy="TimeSeriesValueSelector">
           <span>Values</span>
           <time-series-item
             v-for="(number, key) of customNumberFields"
@@ -165,7 +165,7 @@ export default {
     isChartViewAvailable() {
       return Boolean(
         (this.mappingDateArray.length || this.customDateField) &&
-          (this.mappingNumberArray.length || this.customNumberFields.length),
+        (this.mappingNumberArray.length || this.customNumberFields.length),
       );
     },
   },

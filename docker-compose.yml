@@ -1,6 +1,11 @@
 services:
+  # Development only: requires dependencies to be installed beforehand
+  # (`npm ci`) since node_modules is mounted from the host.
+  # Start it with `docker compose --profile dev up`.
   web:
-    image: kuzzleio/kuzzle-runner:22
+    profiles:
+      - dev
+    image: kuzzleio/kuzzle-runner:24
     command: npm run dev --prefix /var/app/ -- --host
     ports:
       - 8080:8080

@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test": "npm run test:e2e",
     "test:e2e": "cypress run",
-    "test:lint": "eslint src --ext .ts,.vue",
+    "test:lint": "eslint src --ext .ts,.vue && eslint test/e2e/cypress --ext .js",
     "test:lint:fix": "npm run test:lint -- --fix",
     "test:types": "vue-tsc --noEmit -p tsconfig.test.json",
     "cy:open": "cypress open"
@@ -55,7 +55,6 @@
     "eslint-plugin-cypress": "3.5.0",
     "eslint-plugin-vue-kuzzle": "0.0.13",
     "file-loader": "6.2.0",
-    "kuzzle": "2.55.0",
     "rollup-plugin-visualizer": "5.14.0",
     "sass": "1.86.3",
     "ts-mock-imports": "1.3.16",
@@ -64,8 +63,8 @@
     "vue-tsc": "2.2.8"
   },
   "engines": {
-    "node": ">= 20.0.0",
-    "npm": ">= 10.0.0"
+    "node": ">= 24.0.0",
+    "npm": ">= 11.0.0"
   },
   "keywords": [
     "kuzzle",

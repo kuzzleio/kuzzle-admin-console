@@ -1,5 +1,5 @@
 <template>
-  <div class="DocumentsListView">
+  <div class="DocumentsListView" data-cy="DocumentsListView">
     <div class="mb-3 d-flex flex-row align-items-center">
       <div class="flex-grow-1">
         <b-button variant="outline-dark" class="mr-2" @click="$emit('toggle-all')">

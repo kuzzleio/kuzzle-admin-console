@@ -91,12 +91,15 @@ export default {
         this.$router.go(this.$router.currentRoute);
       } catch (err) {
         if (err.status === 404) {
-          this.$bvToast.toast('This action is not supported by your Kuzzle version. You might need to upgrade.', {
-            title: 'Not supported!',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-          });
+          this.$bvToast.toast(
+            'This action is not supported by your Kuzzle version. You might need to upgrade.',
+            {
+              title: 'Not supported!',
+              variant: 'warning',
+              toaster: 'b-toaster-bottom-right',
+              appendToast: true,
+            },
+          );
         } else {
           this.$log.error(err);
           this.$bvToast.toast('The complete error has been printed to the console.', {

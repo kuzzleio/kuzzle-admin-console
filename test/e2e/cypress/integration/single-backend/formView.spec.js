@@ -59,12 +59,12 @@ describe('Form view', function() {
   it('should be able to create a new document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="CreateDocument-btn"').click()
+    cy.get('[data-cy="CreateDocument-btn"]').click()
 
-    cy.get('[data-cy="formView-switch"').click({ force: true })
-    cy.get('[data-cy="DocumentCreate-input--id"').type('new-doc')
+    cy.get('[data-cy="formView-switch"]').click({ force: true })
+    cy.get('[data-cy="DocumentCreate-input--id"]').type('new-doc')
 
-    cy.get('input#age').type('31')
+    cy.get('[data-cy=FormField-age]').type('31')
 
     cy.get('[name="items"] > textarea.ace_text-input')
       .type(`{selectall}{backspace}{
@@ -85,13 +85,13 @@ describe('Form view', function() {
         }
       )
 
-    cy.get('textarea#job').type('webmestre enginer')
-    cy.get('input#name').type('Bombi')
+    cy.get('[data-cy=FormField-job]').type('webmestre enginer')
+    cy.get('[data-cy=FormField-name]').type('Bombi')
 
-    cy.get('[data-cy="datePickerInput"').type('2020-01-01')
-    cy.get('[data-cy="timePickerInput"').type('23:30:00')
+    cy.get('[data-cy="datePickerInput"]').type('2020-01-01')
+    cy.get('[data-cy="timePickerInput"]').type('23:30:00')
 
-    cy.get('[data-cy="DocumentCreate-btn"').click({ force: true })
+    cy.get('[data-cy="DocumentCreate-btn"]').click({ force: true })
 
     cy.contains('new-doc')
     cy.request(
@@ -109,19 +109,19 @@ describe('Form view', function() {
     })
   })
 
-  it.only('should be able to update a document with the form view enabled', function() {
+  it('should be able to update a document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
+    cy.get('[data-cy="DocumentListItem-update--testdoc"]').click()
 
-    cy.get('[data-cy="formView-switch"').click({ force: true })
+    cy.get('[data-cy="formView-switch"]').click({ force: true })
 
-    cy.get('input#age').type('{selectall}{backspace}43')
+    cy.get('[data-cy=FormField-age]').type('{selectall}{backspace}43')
 
-    cy.get('[data-cy="datePickerInput"')
+    cy.get('[data-cy="datePickerInput"]')
       .clear()
       .type('2020-01-02')
-    cy.get('[data-cy="timePickerInput"')
+    cy.get('[data-cy="timePickerInput"]')
       .clear()
       .type('23:30:00')
 
@@ -137,7 +137,7 @@ describe('Form view', function() {
         }
       )
 
-    cy.get('[data-cy="DocumentUpdate-btn"').click({ force: true })
+    cy.get('[data-cy="DocumentUpdate-btn"]').click({ force: true })
 
     cy.request(
       'GET',
@@ -156,7 +156,7 @@ describe('Form view', function() {
   it('should be able to keep synchronized the form view and the JSON view', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="DocumentListItem-update--testdoc"').click()
+    cy.get('[data-cy="DocumentListItem-update--testdoc"]').click()
 
     cy.get('textarea.ace_text-input')
       .type(`{selectall}{backspace}{
@@ -167,9 +167,9 @@ describe('Form view', function() {
         }
       )
 
-    cy.get('[data-cy="formView-switch"').click({ force: true })
+    cy.get('[data-cy="formView-switch"]').click({ force: true })
 
-    cy.get('input#name').should('have.value', 'PHP CEO')
+    cy.get('[data-cy=FormField-name]').should('have.value', 'PHP CEO')
   })
 
   it('should show a warning if a field type is unsuported', function() {
@@ -183,10 +183,10 @@ describe('Form view', function() {
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="DocumentListItem-update--witharraydoc"').click()
+    cy.get('[data-cy="DocumentListItem-update--witharraydoc"]').click()
 
-    cy.get('[data-cy="formView-switch"').click({ force: true })
+    cy.get('[data-cy="formView-switch"]').click({ force: true })
 
-    cy.get('[data-cy="form-view-warning"').should('be.visible')
+    cy.get('[data-cy="form-view-warning"]').should('be.visible')
   })
 })

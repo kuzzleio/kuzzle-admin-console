@@ -46,12 +46,12 @@ describe('Document List', function() {
       null
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.DocumentsListView').should('exist')
+    cy.get('[data-cy=DocumentsListView]').should('exist')
   })
 
   it('Should show list items when viewType is set to list', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.DocumentListView-item').should('exist')
+    cy.get('[data-cy^=DocumentListItem--]').should('exist')
   })
 
   it('Should show the the _id even if collection has id field', function() {
@@ -66,12 +66,14 @@ describe('Document List', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.DocumentListView-item').within(() => {
-      cy.get('a').contains('documentId')
-      cy.get('a')
-        .not()
-        .contains('Luca Marchesini')
-    })
+
+    // La collection déclare un champ `id` dont la valeur est 'Luca Marchesini' :
+    // la ligne doit afficher le `_id` du document, pas ce champ. On cible la
+    // ligne de ce document précis, le beforeEach en ayant déjà créé un autre.
+    cy.get('[data-cy=DocumentListItem--documentId]')
+      .find('[data-cy=DocumentListItem-title]')
+      .should('contain', 'documentId')
+      .should('not.contain', 'Luca Marchesini')
   })
 
   it('Should be able to set and persist the listViewType param when switching the list view', function() {
@@ -105,7 +107,7 @@ describe('Document List', function() {
         job: 'Blockchain Keylogger as a Service'
       }
     )
-    cy.get('[data-cy="CollectionDropdownView"').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
@@ -115,7 +117,7 @@ describe('Document List', function() {
 
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('contain', 'listViewType=list')
-    cy.get('.DocumentsListView').should('exist')
+    cy.get('[data-cy=DocumentsListView]').should('exist')
   })
 
   it('Should handle collections with more than 10k documents', () => {
@@ -140,81 +142,6 @@ describe('Document List', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains('of 10001 total items')
     cy.get('[data-cy=DocumentList-exceedESLimitMsg]').should('exist')
-  })
-
-  it.skip('Should handle the time series view properly', function() {
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
-      {
-        date: '2019-01-21',
-        value: 10,
-        value2: 4
-      }
-    )
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId2/_create`,
-      {
-        date: '2019-02-21',
-        value: 24,
-        value2: 56
-      }
-    )
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId3/_create`,
-      {
-        date: '2019-03-21',
-        value: 20,
-        value2: 10
-      }
-    )
-
-    cy.visit('/')
-    cy.get('[data-cy="AntiGlitchOverlay"]').should('not.be.visible')
-
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.contains(collectionName)
-
-    cy.get(
-      '.card-panel > .DocumentsPage-filtersAndButtons > .col > .ListViewButtons > .ListViewButtons-btn:nth-child(4)'
-    ).click()
-    cy.get('.col > .col > .col > .Autocomplete > input').click()
-    cy.get(
-      '.col > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result'
-    ).click()
-    cy.get(
-      '.TimeSeriesValueSelector > .row > .col > .Autocomplete > input'
-    ).click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)'
-    ).click()
-    cy.get('.TimeSeriesColorPickerBtn').click({ force: true, multiple: true })
-    cy.get(
-      '.TimeSeriesColorPicker:nth-child(3) > .vc-chrome-body > .vc-chrome-controls > .vc-chrome-sliders > .vc-chrome-hue-wrap > .vc-hue > .vc-hue-container'
-    ).click({ force: true })
-    cy.get(
-      '.card-panel > .row > .DocumentList-timeseries > .DocumentList-materializeCollection > .col'
-    ).click()
-    cy.get(
-      '.TimeSeriesValueSelector > .row > .col > .Autocomplete > input'
-    ).click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result'
-    ).click()
-    cy.get(
-      '.TimeSeriesValueSelector > .row > .col > .Autocomplete > input'
-    ).click()
-    cy.get(
-      '.card-panel > .row > .DocumentList-timeseries > .DocumentList-materializeCollection > .col'
-    ).click()
-    cy.get(
-      '.col > .TimeSeriesValueSelector > .row:nth-child(2) > .col > .far'
-    ).click()
-    cy.get('.col > .TimeSeriesValueSelector > .row > .col > .far').click()
   })
 
   it('Should handle the map view properly for markers', function() {
@@ -266,7 +193,7 @@ describe('Document List', function() {
     cy.wait(500)
     cy.contains(mapCollectionName)
 
-    cy.get('[data-cy="mapView-map"').should('exist')
+    cy.get('[data-cy="mapView-map"]').should('exist')
 
     cy.get('.leaflet-marker-pane .mapView-marker-default').should(
       'have.length',
@@ -274,16 +201,16 @@ describe('Document List', function() {
     )
     cy.get('.leaflet-marker-pane .mapView-marker-selected').should('not.exist')
 
-    cy.get('[data-cy="mapView-no-document-card"').should('exist')
-    cy.get('[data-cy="mapView-current-document-card"').should('not.exist')
+    cy.get('[data-cy="mapView-no-document-card"]').should('exist')
+    cy.get('[data-cy="mapView-current-document-card"]').should('not.exist')
 
     cy.get('.leaflet-marker-icon.documentId-mapViewTestDoc1').click({
       force: true
     })
 
-    cy.get('[data-cy="mapView-no-document-card"').should('not.exist')
-    cy.get('[data-cy="mapView-current-document-card"').should('exist')
-    cy.get('[data-cy="mapView-current-document-id"').contains('mapViewTestDoc1')
+    cy.get('[data-cy="mapView-no-document-card"]').should('not.exist')
+    cy.get('[data-cy="mapView-current-document-card"]').should('exist')
+    cy.get('[data-cy="mapView-current-document-id"]').contains('mapViewTestDoc1')
     cy.get('.leaflet-marker-pane .mapView-marker-default').should(
       'have.length',
       2
@@ -298,8 +225,10 @@ describe('Document List', function() {
           type: 'geo_point'
         },
         shapeLocation: {
-          type: 'geo_shape',
-          strategy: 'recursive'
+          // `strategy` était un paramètre de geo_shape sous Elasticsearch 6/7.
+          // Elasticsearch 8 le refuse : "using deprecated parameters [strategy]
+          // in mapper [shapeLocation] of type [geo_shape] is no longer allowed".
+          type: 'geo_shape'
         }
       }
     })
@@ -338,10 +267,22 @@ describe('Document List', function() {
       'POST',
       `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc4/_create?refresh=wait_for`,
       {
+        // Elasticsearch 8 ne supporte plus la géométrie CIRCLE dans geo_shape
+        // ("CIRCLE geometry is not supported") : c'était le rôle de la stratégie
+        // `recursive`, elle aussi supprimée. On exerce donc un polygone, que le
+        // backend accepte et que la vue carte rend avec les mêmes ancrages.
+        // Le rendu des cercles reste du code utile pour les backends Kuzzle v1.
         shapeLocation: {
-          type: 'circle',
-          coordinates: [43.730096133858524, 3.915556507504015],
-          radius: '1000m'
+          type: 'polygon',
+          coordinates: [
+            [
+              [43.730096133858524, 3.915556507504015],
+              [43.740096133858524, 3.915556507504015],
+              [43.740096133858524, 3.925556507504015],
+              [43.730096133858524, 3.925556507504015],
+              [43.730096133858524, 3.915556507504015]
+            ]
+          ]
         }
       }
     )
@@ -412,12 +353,12 @@ describe('Document List', function() {
     cy.wait(500)
     cy.contains(mapCollectionName)
 
-    cy.get('[data-cy="CollectionDropdownView"').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-map"]').click()
     cy.url().should('contain', 'listViewType=map')
 
-    cy.get('[data-cy="mapView-map"').should('exist')
+    cy.get('[data-cy="mapView-map"]').should('exist')
 
     // markers well displayed
     cy.get('.leaflet-marker-pane .mapView-marker-default').should(
@@ -430,16 +371,16 @@ describe('Document List', function() {
     cy.get('.data-cy-shape-selected').should('not.exist')
 
     // document card ok
-    cy.get('[data-cy="mapView-no-document-card"').should('exist')
-    cy.get('[data-cy="mapView-current-document-card"').should('not.exist')
+    cy.get('[data-cy="mapView-no-document-card"]').should('exist')
+    cy.get('[data-cy="mapView-current-document-card"]').should('not.exist')
 
     cy.get('.data-cy-shape-mapViewTestDoc4').click({
       force: true
     })
 
-    cy.get('[data-cy="mapView-no-document-card"').should('not.exist')
-    cy.get('[data-cy="mapView-current-document-card"').should('exist')
-    cy.get('[data-cy="mapView-current-document-id"').contains('mapViewTestDoc4')
+    cy.get('[data-cy="mapView-no-document-card"]').should('not.exist')
+    cy.get('[data-cy="mapView-current-document-card"]').should('exist')
+    cy.get('[data-cy="mapView-current-document-id"]').contains('mapViewTestDoc4')
     cy.get('.data-cy-shape-selected').should('exist')
   })
 })
@@ -469,7 +410,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
 
-    cy.get('.DocumentListView-item').should('be.visible')
+    cy.get('[data-cy^=DocumentListItem--]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('exist')
@@ -508,7 +449,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
 
-    cy.get('.DocumentListView-item').should('be.visible')
+    cy.get('[data-cy^=DocumentListItem--]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('exist')
@@ -531,7 +472,7 @@ describe('Document update/replace', () => {
       )
     cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
     cy.wait(1000)
-    cy.get('.DocumentListView-item').should('be.visible')
+    cy.get('[data-cy^=DocumentListItem--]').should('be.visible')
 
     cy.request(
       'GET',
@@ -556,7 +497,7 @@ describe('Document update/replace', () => {
   })
 })
 
-describe.only('Realtime', () => {
+describe('Realtime', () => {
   beforeEach(() => {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
@@ -600,7 +541,7 @@ describe.only('Realtime', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="Autosync-icon"]').should('have.class', 'text-secondary')
 
-    cy.get('[data-cy="Refresh-dropdown"] .dropdown-toggle').click()
+    cy.get('[data-cy=Refresh-dropdown--toggle]').click()
     cy.wait(1000)
     cy.get('[data-cy="Autosync-toggle"]').click()
     cy.get('[data-cy="Autosync-icon"]').should(
@@ -629,7 +570,7 @@ describe.only('Realtime', () => {
         lastName: 'Bombi'
       }
     )
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should(
       'contain',
       'updated'
     )
@@ -640,7 +581,7 @@ describe.only('Realtime', () => {
         job: 'CSS selector'
       }
     )
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should(
       'contain',
       'replaced'
     )
@@ -648,7 +589,7 @@ describe.only('Realtime', () => {
       'DELETE',
       `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}?refresh=wait_for`
     )
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should(
       'contain',
       'deleted'
     )
@@ -669,23 +610,23 @@ describe.only('Realtime', () => {
       }
     )
     cy.get(
-      `[data-cy=DocumentListItem-${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
+      `[data-cy=DocumentListItem--${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
     ).click()
 
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should(
       'contain',
       '"Luca"'
     )
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should(
       'contain',
       '"Marchesini"'
     )
     cy.get('[data-cy=Autosync-icon]').click()
     cy.get(
-      `[data-cy=DocumentListItem-${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
+      `[data-cy=DocumentListItem--${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
     ).click()
 
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should(
       'contain',
       '"Bombi"'
     )
@@ -706,10 +647,10 @@ describe.only('Realtime', () => {
       }
     )
     cy.get(
-      `[data-cy=DocumentListItem-${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
+      `[data-cy=DocumentListItem--${documentId}] [data-cy="DocumentListItem-toggleCollapse"]`
     ).click()
 
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should(
       'contain',
       '"Bombi"'
     )
@@ -720,7 +661,7 @@ describe.only('Realtime', () => {
         job: 'CSS selector'
       }
     )
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should(
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should(
       'contain',
       '"CSS selector"'
     )
@@ -728,7 +669,7 @@ describe.only('Realtime', () => {
       'DELETE',
       `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}?refresh=wait_for`
     )
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should('not.exist')
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should('not.exist')
   })
   it('Shows the new documents badge when new documents are added to the collection and refreshes when clicked (List View)', function() {
     cy.skipOnBackendVersion(1)
@@ -738,7 +679,7 @@ describe.only('Realtime', () => {
       null
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get(`[data-cy=DocumentListItem-${documentId}]`).should('exist')
+    cy.get(`[data-cy=DocumentListItem--${documentId}]`).should('exist')
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/${newDocId}/_create?refresh=wait_for`,
@@ -748,7 +689,7 @@ describe.only('Realtime', () => {
       }
     )
     cy.get('[data-cy="NewDocumentsBadge"]').click()
-    cy.get(`[data-cy=DocumentListItem-${newDocId}]`).should('exist')
+    cy.get(`[data-cy=DocumentListItem--${newDocId}]`).should('exist')
   })
   it('Shows the new documents badge when new documents are added to the collection and refreshes when clicked (Column View)', function() {
     cy.skipOnBackendVersion(1)

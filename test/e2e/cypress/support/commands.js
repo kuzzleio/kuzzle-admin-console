@@ -54,41 +54,6 @@ Cypress.Commands.add(
   }
 )
 
-function wait(ms) {
-  return new Promise(resolve => {
-    setTimeout(() => resolve(), ms)
-  })
-}
-
-async function poll(url, state = 'up', tries) {
-  for (let i = tries; i > 0; i--) {
-    try {
-      const r = await fetch(url)
-      if (r) {
-        console.log('Service is up')
-        if (state === 'up') {
-          return
-        } else {
-          await wait(3000)
-        }
-      }
-    } catch (error) {
-      console.log('Service is down')
-      console.error(error)
-      if (state === 'up') {
-        await wait(3000)
-      } else {
-        return
-      }
-    }
-  }
-  throw new Error('Poll timeout expired')
-}
-
-Cypress.Commands.add('waitForService', (url, state = 'up', tries = 30) => {
-  return poll(url, state, tries)
-})
-
 Cypress.Commands.add('skipOnBackendVersion', version => {
   const currentEnvName = sessionStorage.getItem('currentEnv')
   const currentEnv = JSON.parse(localStorage.getItem('environments'))[
@@ -146,4 +111,34 @@ Cypress.Commands.add('goOnline', () => {
         },
       });
     });
+});
+
+// ***********************************************************
+// Ancrages de test couplés à bootstrap-vue
+//
+// Ces commandes isolent les rares sélecteurs qui dépendent du markup généré
+// par bootstrap-vue plutôt que d'un attribut `data-cy` que nous contrôlons.
+// Bootstrap-vue disparaît en phase 2 du chantier de modernisation
+// (cf. docs/MIGRATION.md) : quand ce sera le cas, il n'y aura que ce bloc à
+// reprendre, pas les 17 specs.
+// ***********************************************************
+
+/**
+ * Message de validation d'un champ de formulaire.
+ * Rendu par `<b-form-group :invalid-feedback>` dans une div `.invalid-feedback`
+ * sur laquelle nous ne pouvons pas poser d'attribut.
+ *
+ * @param {string} parentSelector sélecteur du groupe de formulaire parent
+ */
+Cypress.Commands.add('invalidFeedback', (parentSelector) => {
+  return cy.get(`${parentSelector} .invalid-feedback`);
+});
+
+/**
+ * Bouton de suppression d'un tag rendu par `<b-form-tags>`.
+ *
+ * @param {string} title libellé du tag à supprimer
+ */
+Cypress.Commands.add('removeFormTag', (title) => {
+  return cy.get(`.b-form-tag[title="${title}"] > .b-form-tag-remove`);
 });

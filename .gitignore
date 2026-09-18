@@ -18,5 +18,10 @@ test/e2e/visual-regression/diff
 test/e2e/failed-test/
 test/e2e/videos
 test/e2e/screenshots
-cypress
+# Ancré à la racine : un `cypress` nu matcherait aussi test/e2e/cypress/, où
+# vivent les specs. Tout nouveau fichier y était silencieusement ignoré par
+# `git add`. Les artefacts de ce projet sont déjà couverts ci-dessus
+# (cf. screenshotsFolder / videosFolder dans cypress.config.ts) ; cette ligne ne
+# vise que le dossier `cypress/` que Cypress crée éventuellement à la racine.
+/cypress/
 stats.html

@@ -35,3 +35,14 @@ To build the Kuzzle Admin Console on your computer, follow these instructions:
 - `npm run build` : (build the Admin Console)
 - Serve the `dist` directory via your favorite HTTP server (e.g. `http-server dist`)
 - Access the served files in your favorite browser
+
+## Local development stack
+
+A Docker Compose stack (Kuzzle, Elasticsearch, Redis) is provided to develop against a local backend:
+
+```sh
+docker compose up --wait                # backend services only
+npm ci && docker compose --profile dev up  # backend services + the Admin Console dev server on http://localhost:8080
+```
+
+The `web` service is behind the `dev` profile: it mounts the repository into the container, so dependencies must be installed on the host (`npm ci`) before starting it.

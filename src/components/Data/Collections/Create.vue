@@ -1,5 +1,5 @@
 <template>
-  <b-container v-if="index" class="CollectionCreate h-100">
+  <b-container v-if="index" class="CollectionCreate h-100" data-cy="CollectionCreate">
     <create-or-update
       v-if="hasRights"
       headline="Create a new collection"

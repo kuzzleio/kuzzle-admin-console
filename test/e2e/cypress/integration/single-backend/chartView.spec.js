@@ -34,44 +34,111 @@ describe('Chart view', function() {
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
-  it('should be able to switch to the chart view', function() {
+  function openChartView() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
+    cy.get('[data-cy="CollectionDropdownView"]').click()
+    cy.get('[data-cy="CollectionDropdown-TimeSeries"]').click()
 
-    cy.get('[data-cy="CollectionDropdownView"').click()
-    cy.get('[data-cy="CollectionDropdown-TimeSeries"').click()
+    cy.get('[data-cy="TimeSeriesView-container"]').should('be.visible')
+  }
 
+  function addValue(field) {
+    cy.get('[data-cy="timeSeries-item"]').click()
+    cy.get(`[data-cy="autocomplete-item--${field}"]`).click()
+    cy.get(`[data-cy="timeSeries-item--${field}"]`).should('exist')
+  }
 
-    cy.get('[data-cy="TimeSeriesView-container"')
+  it('should be able to switch to the chart view', function() {
+    openChartView()
   })
 
   it('should be able to let user select a date field', function() {
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    openChartView()
 
-
-    cy.get('[data-cy="CollectionDropdownView"').click()
-    cy.get('[data-cy="CollectionDropdown-TimeSeries"').click()
-
-
-    cy.get('[data-cy="timeseriesView-dateSelector"').select('payloadDate')
+    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
   })
 
   it('should be able to let user select a value field and show the chart', function() {
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    openChartView()
 
+    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
 
-    cy.get('[data-cy="CollectionDropdownView"').click()
-    cy.get('[data-cy="CollectionDropdown-TimeSeries"').click()
-
-
-    cy.get('[data-cy="timeseriesView-dateSelector"').select('payloadDate')
-
-    cy.get('[data-cy="timeSeries-item"').click()
+    cy.get('[data-cy="timeSeries-item"]').click()
 
     cy.contains('battery')
     cy.contains('temperature')
 
-    cy.get('[data-cy="autocomplete-item--battery"').click()
-    cy.get('[data-cy="timeSeries-chart"')
+    cy.get('[data-cy="autocomplete-item--battery"]').click()
+    cy.get('[data-cy="timeSeries-chart"]')
+  })
+
+  it('should be able to plot several values at once', function() {
+    openChartView()
+
+    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
+
+    addValue('battery')
+    addValue('temperature')
+
+    cy.get('[data-cy="timeSeries-item--battery"]').should('exist')
+    cy.get('[data-cy="timeSeries-item--temperature"]').should('exist')
+    cy.get('[data-cy="timeSeries-chart"]').should('be.visible')
+  })
+
+  it('should be able to remove a value from the chart', function() {
+    openChartView()
+
+    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
+
+    addValue('battery')
+    addValue('temperature')
+
+    cy.get('[data-cy="timeSeries-item--battery"]')
+      .find('[data-cy="TimeSeriesItem-removeBtn"]')
+      .click()
+
+    cy.get('[data-cy="timeSeries-item--battery"]').should('not.exist')
+    cy.get('[data-cy="timeSeries-item--temperature"]').should('exist')
+  })
+
+  it('should be able to open the color picker of a plotted value', function() {
+    openChartView()
+
+    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
+
+    addValue('battery')
+
+    cy.get('[data-cy="timeSeries-item--battery"]')
+      .find('[data-cy="TimeSeriesItem-colorPicker"]')
+      .should('not.be.visible')
+
+    cy.get('[data-cy="timeSeries-item--battery"]')
+      .find('[data-cy="TimeSeriesItem-colorPickerBtn"]')
+      .click()
+
+    cy.get('[data-cy="timeSeries-item--battery"]')
+      .find('[data-cy="TimeSeriesItem-colorPicker"]')
+      .should('be.visible')
+  })
+
+  it('should not offer the chart view on a collection without any integer field', function() {
+    const textOnlyCollection = 'textonlycollection'
+
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${textOnlyCollection}`, {
+      properties: {
+        firstName: {
+          type: 'keyword'
+        }
+      }
+    })
+
+    cy.visit(`/#/data/${indexName}/${textOnlyCollection}`)
+
+    cy.get('[data-cy="CollectionDropdownView"]').click()
+    cy.get('[data-cy="CollectionDropdown-TimeSeries"]').should(
+      'have.class',
+      'disabled'
+    )
   })
 })
