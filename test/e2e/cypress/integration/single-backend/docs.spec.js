@@ -81,12 +81,10 @@ describe('Document List', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(collectionName)
     cy.get('[data-cy="CollectionDropdownView"]').click()
-    cy.wait(500)
-    cy.get('[data-cy="CollectionDropdown-column"]').click()
+    cy.get('[data-cy="CollectionDropdown-column"]').should('be.visible').click()
     cy.url().should('contain', 'listViewType=column')
     cy.get('[data-cy="CollectionDropdownView"]').click()
-    cy.wait(500)
-    cy.get('[data-cy="CollectionDropdown-list"]').click()
+    cy.get('[data-cy="CollectionDropdown-list"]').should('be.visible').click()
     cy.url().should('contain', 'listViewType=list')
   })
 
@@ -352,8 +350,7 @@ describe('Document List', function() {
     cy.contains(mapCollectionName)
 
     cy.get('[data-cy="CollectionDropdownView"]').click()
-    cy.wait(500)
-    cy.get('[data-cy="CollectionDropdown-map"]').click()
+    cy.get('[data-cy="CollectionDropdown-map"]').should('be.visible').click()
     cy.url().should('contain', 'listViewType=map')
 
     cy.get('[data-cy="mapView-map"]').should('exist')
@@ -411,8 +408,7 @@ describe('Document update/replace', () => {
     cy.get('[data-cy^=DocumentListItem--]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
-    cy.get('.ace_text-input').should('exist')
-    cy.wait(2000)
+    cy.aceReady('[data-cy="JSONEditor"]')
 
     cy.get('[data-cy="JSONEditor"] .ace_line')
       .contains('{')
@@ -450,8 +446,7 @@ describe('Document update/replace', () => {
     cy.get('[data-cy^=DocumentListItem--]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
-    cy.get('.ace_text-input').should('exist')
-    cy.wait(2000)
+    cy.aceReady()
 
     cy.get('.ace_line')
       .contains('{')
@@ -487,8 +482,9 @@ describe('Document update/replace', () => {
 
     cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
-    cy.wait(500)
-    cy.get(`[data-cy="ColumnView-table-edit-btn--${documentId}"]`).click()
+    cy.get(`[data-cy="ColumnView-table-edit-btn--${documentId}"]`)
+      .should('be.visible')
+      .click()
     cy.contains('Edit document')
   })
 })
@@ -538,8 +534,7 @@ describe('Realtime', () => {
     cy.get('[data-cy="Autosync-icon"]').should('have.class', 'text-secondary')
 
     cy.get('[data-cy=Refresh-dropdown--toggle]').click()
-    cy.wait(1000)
-    cy.get('[data-cy="Autosync-toggle"]').click()
+    cy.get('[data-cy="Autosync-toggle"]').should('be.visible').click()
     cy.get('[data-cy="Autosync-icon"]').should(
       'not.have.class',
       'text-secondary'

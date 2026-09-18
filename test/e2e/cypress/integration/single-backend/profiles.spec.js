@@ -144,9 +144,10 @@ describe('Profiles', () => {
     const profileId = 'dummy'
     cy.waitOverlay()
     cy.visit('/#/security/profiles/create')
-    cy.wait(2000)
 
-    cy.get('[data-cy="ProfileCreateOrUpdate-id"]').type(profileId)
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"]')
+      .should('be.visible')
+      .type(profileId)
 
     cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line').should(
       'be.visible'
@@ -205,8 +206,7 @@ describe('Profiles', () => {
     cy.get('[data-cy="ProfileCreateOrUpdate-updateBtn"]').click()
     cy.url().should('not.contain', profileId)
     cy.contains(profileId)
-    cy.wait(1000)
-    cy.request('GET', `${kuzzleUrl}/profiles/${profileId}`).should(response => {
+    cy.expectBackend(`${kuzzleUrl}/profiles/${profileId}`, response => {
       expect(response.body.result._source).to.deep.include({
         policies: [{ roleId: 'admin' }]
       })

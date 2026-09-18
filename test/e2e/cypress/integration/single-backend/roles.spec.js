@@ -160,8 +160,7 @@ describe('Roles', () => {
       )
     cy.get('[data-cy="RoleCreateOrUpdate-updateBtn"]').click({ force: true })
     cy.contains(roleId)
-    cy.wait(1000)
-    cy.request('GET', `${kuzzleUrl}/roles/${roleId}`).should(response => {
+    cy.expectBackend(`${kuzzleUrl}/roles/${roleId}`, response => {
       expect(response.body.result._source).to.deep.include({
         controllers: {
           document: {
@@ -333,33 +332,35 @@ describe('Roles', () => {
         .contains('OK')
         .click()
 
-      cy.wait(2000)
-      cy.request({
-        method: 'GET',
-        url: `${kuzzleUrl}/roles/anonymous`,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }).should(getRoleResponse => {
-        // security:restrictDefaultRights réapplique la configuration standard
-        // du backend : pas de joker `*`, seules les actions listées passent.
-        expect(getRoleResponse.body.result._source.controllers).to.eql({
-          auth: {
-            actions: {
-              checkToken: true,
-              getCurrentUser: true,
-              getMyRights: true,
-              login: true
-            }
-          },
-          server: {
-            actions: {
-              publicApi: true,
-              openapi: true
-            }
+      cy.expectBackend(
+        {
+          method: 'GET',
+          url: `${kuzzleUrl}/roles/anonymous`,
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        })
-      })
+        },
+        getRoleResponse => {
+          // security:restrictDefaultRights réapplique la configuration standard
+          // du backend : pas de joker `*`, seules les actions listées passent.
+          expect(getRoleResponse.body.result._source.controllers).to.eql({
+            auth: {
+              actions: {
+                checkToken: true,
+                getCurrentUser: true,
+                getMyRights: true,
+                login: true
+              }
+            },
+            server: {
+              actions: {
+                publicApi: true,
+                openapi: true
+              }
+            }
+          })
+        }
+      )
 
       cy.request({
         method: 'GET',

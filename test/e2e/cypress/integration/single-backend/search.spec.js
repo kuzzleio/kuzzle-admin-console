@@ -143,7 +143,10 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 250 })
-    cy.wait(250)
+
+    // Le filtre est reporté dans l'URL : c'est le signal que la saisie a été
+    // prise en compte.
+    cy.url().should('contain', 'Keylogger')
 
     cy.get('[data-cy=Treeview-item-index-link--testindex]').click()
     cy.get('[data-cy=CollectionList-name--anothercollection]').click()
@@ -286,7 +289,6 @@ describe('Search', function() {
         job: 'Blockchain Keylogger as a Service'
       }
     )
-    cy.wait(1500)
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
@@ -430,8 +432,7 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-rawTab"]').click()
-    cy.get('#rawsearch .ace_line').should('be.visible')
-    cy.wait(1000)
+    cy.aceReady('#rawsearch')
 
     cy.get('#rawsearch .ace_active-line').click({ force: true })
     cy.get('textarea.ace_text-input')

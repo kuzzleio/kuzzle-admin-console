@@ -171,16 +171,22 @@ describe('Environments', function() {
       .click()
 
     cy.get('[data-cy="Environment-SubmitButton"]').click()
-    cy.wait(500)
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy="EnvironmentSwitch"]').should('be.visible').click()
 
     cy.get(
       `[data-cy=EnvironmentSwitch-env_local] > .EnvironmentSwitch-env-name`
     ).click({
       force: true
     })
-    cy.wait(1000)
-    sessionStorage.setItem('currentEnv', envName)
+
+    // `sessionStorage.setItem` hors d'un `cy.then()` s'exécute à l'évaluation du
+    // corps du test, donc AVANT toutes les commandes ci-dessus — et non ici, où
+    // il est écrit. On le remet dans la file pour qu'il s'applique bien après la
+    // sélection de l'environnement.
+    cy.then(() => {
+      sessionStorage.setItem('currentEnv', envName)
+    })
+
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
@@ -353,16 +359,22 @@ describe('Environments', function() {
       .click()
 
     cy.get('[data-cy="Environment-SubmitButton"]').click()
-    cy.wait(500)
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy="EnvironmentSwitch"]').should('be.visible').click()
 
     cy.get(
       `[data-cy=EnvironmentSwitch-env_localEnvTestTabTitle] > .EnvironmentSwitch-env-name`
     ).click({
       force: true
     })
-    cy.wait(1000)
-    sessionStorage.setItem('currentEnv', 'localEnvTestTabTitle')
+
+    // `sessionStorage.setItem` hors d'un `cy.then()` s'exécute à l'évaluation du
+    // corps du test, donc AVANT toutes les commandes ci-dessus — et non ici, où
+    // il est écrit. On le remet dans la file pour qu'il s'applique bien après la
+    // sélection de l'environnement.
+    cy.then(() => {
+      sessionStorage.setItem('currentEnv', 'localEnvTestTabTitle')
+    })
+
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
