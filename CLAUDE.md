@@ -1,0 +1,71 @@
+# CLAUDE.md
+
+Contexte d'amorçage pour les agents travaillant sur ce repo.
+
+## Le projet
+
+Kuzzle Admin Console : console web d'administration d'instances Kuzzle (données,
+souscriptions temps réel, sécurité). Vue 2.7 + Vite + Pinia + bootstrap-vue 2,
+~25 000 LOC, 140 composants, quasi intégralement en Options API.
+
+Branche de travail : `4-dev`. Branche principale : `master`.
+
+## Chantier en cours : modernisation
+
+Un chantier de fond est en cours (Node, Vue 3, refonte UI/UX). **Avant toute
+intervention structurante, lire dans l'ordre :**
+
+1. [`docs/MIGRATION.md`](docs/MIGRATION.md) — où on en est, quelle phase, quels
+   pièges déjà rencontrés.
+2. [`docs/adr/`](docs/adr/) — pourquoi les choix ont été faits.
+
+Le point le plus important et le plus contre-intuitif :
+**on supprime bootstrap-vue en restant sur Vue 2, *avant* de migrer vers Vue 3**
+([ADR-0002](docs/adr/0002-sortir-de-bootstrap-vue-avant-vue-3.md)). Ne pas
+proposer de migrer Vue en premier : `bootstrap-vue` 2 ne tourne pas sous
+`@vue/compat`, et la console cesserait d'être livrable.
+
+## Règles de contribution au suivi
+
+- **Décision structurante** (y compris négative) → nouvelle ADR dans `docs/adr/`,
+  numérotée, plus une ligne dans le journal de `MIGRATION.md`. Une ADR acceptée
+  ne se réécrit pas : on en écrit une nouvelle qui la remplace.
+- **Piège rencontré** → section *Gotchas* de `MIGRATION.md`, **immédiatement**,
+  avec symptôme / cause / solution. C'est la partie qui a le plus de valeur.
+- **Avancement** → cocher la ligne correspondante dans `MIGRATION.md` dans la
+  même PR que le code. Un tableau de bord faux est pire que pas de tableau de
+  bord.
+- Les issues GitHub portent l'assignation et la priorisation ; elles
+  **référencent** les ADR, ne les dupliquent pas.
+
+## Garde-fou
+
+Les 17 specs Cypress (`test/e2e/cypress/integration/single-backend/`) sont le
+seul filet de sécurité du chantier — il n'y a pas de tests unitaires. Toute PR de
+migration doit passer les specs du domaine touché. Ne jamais désactiver une spec
+pour faire passer une migration : c'est le signal que la migration est fausse.
+
+## Commandes
+
+```sh
+npm run dev           # serveur de dev sur :8080
+npm run build
+npm run test:lint     # eslint sur src (--fix disponible via test:lint:fix)
+npm run test:types    # vue-tsc
+npm run test:e2e      # cypress run
+npm run cy:open       # cypress interactif
+
+docker compose up --wait                   # backend Kuzzle + ES + Redis
+npm ci && docker compose --profile dev up  # + le serveur de dev
+```
+
+## Conventions
+
+- TypeScript partout dans le code nouveau. Pas de `any` sans justification.
+- Alias `@` → `src/`.
+- Prettier + ESLint font foi sur le formatage : ne pas reformater à la main.
+- Les nouveaux composants d'UI vont dans `src/components/ui/` et suivent l'API
+  publique de shadcn-vue, même tant qu'ils sont écrits à la main en Vue 2
+  ([ADR-0003](docs/adr/0003-design-system-tailwind-shadcn-vue.md)).
+- Pas de valeur de design en dur (couleur, espacement, rayon) dans un composant :
+  elles viennent des tokens.
