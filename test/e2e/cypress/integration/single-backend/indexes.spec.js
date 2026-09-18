@@ -11,7 +11,7 @@ describe('Indexes', () => {
 
     cy.waitOverlay()
 
-    cy.get('[data-cy="IndexesPage-createBtn"').click()
+    cy.get('[data-cy="IndexesPage-createBtn"]').click()
     cy.get('[data-cy="CreateIndexModal-name"] input').type(indexName, {
       force: true
     })
@@ -22,7 +22,7 @@ describe('Indexes', () => {
   it('Should show visual feedback when creating invalid index', () => {
     cy.waitOverlay()
 
-    cy.get('[data-cy="IndexesPage-createBtn"').click()
+    cy.get('[data-cy="IndexesPage-createBtn"]').click()
 
     cy.get('[data-cy="CreateIndexModal-name"] input').clear({ force: true })
     cy.get('[data-cy="CreateIndexModal-createBtn"]').click()
@@ -70,7 +70,7 @@ describe('Indexes', () => {
 
     cy.waitOverlay()
 
-    cy.get('[data-cy="IndexesPage-createBtn"')
+    cy.get('[data-cy="IndexesPage-createBtn"]')
       .should('be.visible')
       .click()
     cy.get('[data-cy="CreateIndexModal-name"] input').type(indexName, {
@@ -92,7 +92,7 @@ describe('Indexes', () => {
 
     cy.get(`[data-cy=IndexesPage-delete--${indexName}]`).click()
 
-    cy.get('[data-cy="DeleteIndexModal-name"').type(indexName, { force: true })
+    cy.get('[data-cy="DeleteIndexModal-name"]').type(indexName, { force: true })
     cy.get('[data-cy="DeleteIndexModal-deleteBtn"]').click()
 
     cy.get('[data-cy=IndexesPage]').should('not.contain', indexName)
@@ -115,7 +115,7 @@ describe('Indexes', () => {
 
     cy.get(`[data-cy=IndexesPage-bulkDelete--btn]`).click()
 
-    cy.get('[data-cy="BulkDeleteIndexModal-input-confirmation"').type(
+    cy.get('[data-cy="BulkDeleteIndexModal-input-confirmation"]').type(
       'DELETE',
       { force: true }
     )

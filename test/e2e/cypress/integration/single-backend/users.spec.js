@@ -40,8 +40,8 @@ describe('Users', function() {
     cy.contains(kuids[1])
     cy.get('[data-cy=QuickFilter-input]').type(kuids[1])
     cy.wait(1000)
-    cy.get('[data-cy="UserList-items"').should('contain', kuids[1])
-    cy.get('[data-cy="UserList-items"').should('not.contain', kuids[0])
+    cy.get('[data-cy="UserList-items"]').should('contain', kuids[1])
+    cy.get('[data-cy="UserList-items"]').should('not.contain', kuids[0])
   })
 
   it('Should be able to search users via the advanced search', () => {
@@ -73,7 +73,7 @@ describe('Users', function() {
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(kuids[1])
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.contains(kuids[1])
-    cy.get('[data-cy="UserList-items"').should('not.contain', kuids[0])
+    cy.get('[data-cy="UserList-items"]').should('not.contain', kuids[0])
   })
 
   it('Should be able to search users via the raw JSON search', () => {

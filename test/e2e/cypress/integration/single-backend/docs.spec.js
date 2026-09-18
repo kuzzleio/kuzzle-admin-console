@@ -105,7 +105,7 @@ describe('Document List', function() {
         job: 'Blockchain Keylogger as a Service'
       }
     )
-    cy.get('[data-cy="CollectionDropdownView"').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
@@ -140,81 +140,6 @@ describe('Document List', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains('of 10001 total items')
     cy.get('[data-cy=DocumentList-exceedESLimitMsg]').should('exist')
-  })
-
-  it.skip('Should handle the time series view properly', function() {
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
-      {
-        date: '2019-01-21',
-        value: 10,
-        value2: 4
-      }
-    )
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId2/_create`,
-      {
-        date: '2019-02-21',
-        value: 24,
-        value2: 56
-      }
-    )
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId3/_create`,
-      {
-        date: '2019-03-21',
-        value: 20,
-        value2: 10
-      }
-    )
-
-    cy.visit('/')
-    cy.get('[data-cy="AntiGlitchOverlay"]').should('not.be.visible')
-
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.contains(collectionName)
-
-    cy.get(
-      '.card-panel > .DocumentsPage-filtersAndButtons > .col > .ListViewButtons > .ListViewButtons-btn:nth-child(4)'
-    ).click()
-    cy.get('.col > .col > .col > .Autocomplete > input').click()
-    cy.get(
-      '.col > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result'
-    ).click()
-    cy.get(
-      '.TimeSeriesValueSelector > .row > .col > .Autocomplete > input'
-    ).click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)'
-    ).click()
-    cy.get('[data-cy=TimeSeriesItem-colorPickerBtn]').click({ force: true, multiple: true })
-    cy.get(
-      '.TimeSeriesColorPicker:nth-child(3) > .vc-chrome-body > .vc-chrome-controls > .vc-chrome-sliders > .vc-chrome-hue-wrap > .vc-hue > .vc-hue-container'
-    ).click({ force: true })
-    cy.get(
-      '.card-panel > .row > .DocumentList-timeseries > .DocumentList-materializeCollection > .col'
-    ).click()
-    cy.get(
-      '.TimeSeriesValueSelector > .row > .col > .Autocomplete > input'
-    ).click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result'
-    ).click()
-    cy.get(
-      '.TimeSeriesValueSelector > .row > .col > .Autocomplete > input'
-    ).click()
-    cy.get(
-      '.card-panel > .row > .DocumentList-timeseries > .DocumentList-materializeCollection > .col'
-    ).click()
-    cy.get(
-      '.col > .TimeSeriesValueSelector > .row:nth-child(2) > .col > .far'
-    ).click()
-    cy.get('.col > .TimeSeriesValueSelector > .row > .col > .far').click()
   })
 
   it('Should handle the map view properly for markers', function() {
@@ -266,7 +191,7 @@ describe('Document List', function() {
     cy.wait(500)
     cy.contains(mapCollectionName)
 
-    cy.get('[data-cy="mapView-map"').should('exist')
+    cy.get('[data-cy="mapView-map"]').should('exist')
 
     cy.get('.leaflet-marker-pane .mapView-marker-default').should(
       'have.length',
@@ -274,16 +199,16 @@ describe('Document List', function() {
     )
     cy.get('.leaflet-marker-pane .mapView-marker-selected').should('not.exist')
 
-    cy.get('[data-cy="mapView-no-document-card"').should('exist')
-    cy.get('[data-cy="mapView-current-document-card"').should('not.exist')
+    cy.get('[data-cy="mapView-no-document-card"]').should('exist')
+    cy.get('[data-cy="mapView-current-document-card"]').should('not.exist')
 
     cy.get('.leaflet-marker-icon.documentId-mapViewTestDoc1').click({
       force: true
     })
 
-    cy.get('[data-cy="mapView-no-document-card"').should('not.exist')
-    cy.get('[data-cy="mapView-current-document-card"').should('exist')
-    cy.get('[data-cy="mapView-current-document-id"').contains('mapViewTestDoc1')
+    cy.get('[data-cy="mapView-no-document-card"]').should('not.exist')
+    cy.get('[data-cy="mapView-current-document-card"]').should('exist')
+    cy.get('[data-cy="mapView-current-document-id"]').contains('mapViewTestDoc1')
     cy.get('.leaflet-marker-pane .mapView-marker-default').should(
       'have.length',
       2
@@ -412,12 +337,12 @@ describe('Document List', function() {
     cy.wait(500)
     cy.contains(mapCollectionName)
 
-    cy.get('[data-cy="CollectionDropdownView"').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-map"]').click()
     cy.url().should('contain', 'listViewType=map')
 
-    cy.get('[data-cy="mapView-map"').should('exist')
+    cy.get('[data-cy="mapView-map"]').should('exist')
 
     // markers well displayed
     cy.get('.leaflet-marker-pane .mapView-marker-default').should(
@@ -430,16 +355,16 @@ describe('Document List', function() {
     cy.get('.data-cy-shape-selected').should('not.exist')
 
     // document card ok
-    cy.get('[data-cy="mapView-no-document-card"').should('exist')
-    cy.get('[data-cy="mapView-current-document-card"').should('not.exist')
+    cy.get('[data-cy="mapView-no-document-card"]').should('exist')
+    cy.get('[data-cy="mapView-current-document-card"]').should('not.exist')
 
     cy.get('.data-cy-shape-mapViewTestDoc4').click({
       force: true
     })
 
-    cy.get('[data-cy="mapView-no-document-card"').should('not.exist')
-    cy.get('[data-cy="mapView-current-document-card"').should('exist')
-    cy.get('[data-cy="mapView-current-document-id"').contains('mapViewTestDoc4')
+    cy.get('[data-cy="mapView-no-document-card"]').should('not.exist')
+    cy.get('[data-cy="mapView-current-document-card"]').should('exist')
+    cy.get('[data-cy="mapView-current-document-id"]').contains('mapViewTestDoc4')
     cy.get('.data-cy-shape-selected').should('exist')
   })
 })

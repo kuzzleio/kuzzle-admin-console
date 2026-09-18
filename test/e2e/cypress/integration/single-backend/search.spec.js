@@ -659,7 +659,7 @@ describe('Search', function() {
       cy.get('[data-cy=BasicFilter-submitBtn]').click()
       cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
       cy.get('[data-cy=Filters-historyTab]').click()
-      cy.get('[data-cy="FilterHistoryItem--' + item + '"]')
+      cy.get('[data-cy="FilterHistoryItem--]' + item + '"]')
       cy.get('[data-cy="Filters-close"]').click()
       cy.get('[data-cy="QuickFilter-resetBtn"]').click()
     }
@@ -806,7 +806,7 @@ describe('Search', function() {
       cy.get('[data-cy=BasicFilter-submitBtn]').click()
       cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
       cy.get('[data-cy=Filters-historyTab]').click()
-      cy.get('[data-cy="FilterHistoryItem--' + item + '"]')
+      cy.get('[data-cy="FilterHistoryItem--]' + item + '"]')
       cy.get('[data-cy="Filters-close"]').click()
       cy.get('[data-cy="QuickFilter-resetBtn"]').click()
     }

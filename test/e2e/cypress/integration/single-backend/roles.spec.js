@@ -334,7 +334,7 @@ describe('Roles', () => {
 
       cy.visit('#/security/roles')
 
-      cy.get('[data-cy="RolesManagement-revokeAnonymous"').click()
+      cy.get('[data-cy="RolesManagement-revokeAnonymous"]').click()
       cy.get('[data-cy="revokeAnonymous-modal"] button')
         .contains('OK')
         .click()

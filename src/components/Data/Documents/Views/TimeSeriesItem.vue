@@ -11,6 +11,7 @@
         v-show="showColorPicker"
         v-model="newColor"
         class="TimeSeriesColorPicker"
+        data-cy="TimeSeriesItem-colorPicker"
         @input="updateColor"
       />
     </div>
