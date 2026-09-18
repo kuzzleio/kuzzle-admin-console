@@ -33,6 +33,42 @@ Cypress.Commands.add('waitOverlay', () => {
   cy.wait(antiGlitchOverlayTimeout + 50)
 })
 
+// Fenêtre pendant laquelle on vérifie qu'une navigation n'a PAS lieu.
+//
+// Asserter un négatif — « on est resté sur la même page » — demande une fenêtre
+// de temps, et c'est le seul cas où une durée fixe reste justifiée côté specs
+// (cf. ADR-0006). Une assertion instantanée serait vraie AVANT même que
+// l'application ait eu le temps de naviguer à tort : le test passerait quoi
+// qu'il arrive, y compris le jour où le formulaire laisserait passer une valeur
+// invalide. Cypress n'a pas d'assertion de stabilité native.
+//
+// La durée est donc nommée et bornée ici, et n'est jamais écrite en clair dans
+// une spec.
+const NAVIGATION_GRACE_MS = 1000
+
+/**
+ * Vérifie qu'on est sur `hash` et qu'on y reste.
+ *
+ * La comparaison porte sur le chemin seul : les paramètres de requête peuvent
+ * changer sans qu'on ait quitté la page (`#/login` devient `#/login?to=Indexes`
+ * quand on sélectionne un environnement). Ce qu'on veut prouver, c'est qu'il
+ * n'y a pas eu de navigation, pas que l'URL est restée identique au caractère
+ * près.
+ *
+ * @param {string} hash chemin attendu, par ex. `#/security/roles/create`
+ */
+Cypress.Commands.add('shouldStayOn', hash => {
+  const assertPath = () =>
+    cy.location('hash').should(actual => {
+      expect(actual.split('?')[0]).to.equal(hash)
+    })
+
+  assertPath()
+  // eslint-disable-next-line no-restricted-syntax -- durée assumée, cf. ci-dessus
+  cy.wait(NAVIGATION_GRACE_MS)
+  assertPath()
+})
+
 Cypress.Commands.add(
   'initLocalEnv',
   (backendVersion = 2, token = 'anonymous', port = 7512, envName = 'valid') => {

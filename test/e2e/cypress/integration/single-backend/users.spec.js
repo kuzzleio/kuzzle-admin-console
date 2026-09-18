@@ -304,15 +304,17 @@ describe('Users', function() {
     cy.get('[data-cy=UserBasic-kuid] input').type('{selectall}valid')
 
     cy.get('[data-cy=UserUpdate-submit]').click()
-    cy.wait(1000)
-    cy.location().should(location => {
-      expect(location.hash).to.equal(`#/security/users/create`)
-    })
+
+    // Ancre positive : ces deux signaux n'apparaissent qu'une fois la
+    // soumission traitée puis refusée. Les asserter d'abord est ce qui donne
+    // son sens à l'assertion négative qui suit.
     cy.get('[data-cy="UserProfileList-invalidFeedback"]').should(
       'contain',
       'Please add at least one profile'
     )
     cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should('be.visible')
+
+    cy.location('hash').should('eq', '#/security/users/create')
 
     cy.get('[data-cy=UserProfileList-select]').select('default')
     cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should(
@@ -332,10 +334,7 @@ describe('Users', function() {
     cy.get('[data-cy="UserUpdate-customTab--dangerIcon"]').should('be.visible')
 
     cy.get('[data-cy=UserUpdate-submit]').click()
-    cy.wait(1000)
-    cy.location().should(location => {
-      expect(location.hash).to.equal(`#/security/users/create`)
-    })
+    cy.shouldStayOn('#/security/users/create')
   })
 
   it('Should be able to list the users with a wrong from url parameter', () => {

@@ -77,11 +77,18 @@ observable, jamais une durée.
 
 - **A1 — suppression sèche.** L'assertion qui suit fait déjà le travail. Aucun
   filet à ajouter.
-- **A2 — ancrer sur un signal positif, puis asserter le négatif.** On attend
-  d'abord la preuve observable que l'application a traité l'action et l'a
-  rejetée (le message de validation qui apparaît, l'onglet qui se marque en
-  erreur), *ensuite* on vérifie qu'on n'a pas navigué. L'ancre positive est ce
-  qui donne son sens à l'assertion négative : sans elle, le test ne teste rien.
+- **A2 — ancrer sur un signal positif quand il en existe un, sinon une fenêtre
+  de temps nommée.** L'idéal est d'attendre la preuve observable que
+  l'application a traité l'action et l'a rejetée (le message de validation qui
+  apparaît, l'onglet qui se marque en erreur), *puis* de vérifier qu'on n'a pas
+  navigué. À l'usage, **un seul des neuf sites** dispose d'un tel signal : les
+  trois formulaires concernés n'affichent rien du tout quand le JSON est
+  invalide (cf. conséquences). Pour les huit autres, une commande
+  `cy.shouldStayOn(<chemin>)` vérifie le chemin, laisse s'écouler une fenêtre
+  nommée, puis le revérifie. La durée fixe subsiste à l'intérieur de la
+  commande — c'est la même dérogation que E et F : asserter un négatif demande
+  du temps, Cypress n'ayant pas d'assertion de stabilité. Elle est nommée,
+  bornée, écrite une seule fois, jamais en clair dans une spec.
 - **A3 — `?refresh=wait_for` sur la requête d'écriture.** Quand le test crée une
   donnée par `cy.request()` puis charge une page qui doit l'afficher, c'est
   l'indexation Elasticsearch qu'on attend. Kuzzle sait la rendre synchrone : le
@@ -142,7 +149,16 @@ d'écrire les deux commandes.
 - Une assertion mal choisie peut rendre un test **faussement vert** : `.should(
   'be.visible')` sur un élément déjà présent avant l'action ne prouve rien. Le
   garde-fou est de vérifier, pour chaque remplacement, que le test échoue encore
-  quand on casse volontairement le comportement visé.
+  quand on casse volontairement le comportement visé. Ce garde-fou a servi dès
+  le lot A2 : sur `roles.spec.js`, validation sabotée pour naviguer après
+  300 ms, l'assertion instantanée laisse les 9 tests verts là où
+  `cy.shouldStayOn()` échoue.
+- **Constat produit, hors périmètre de ce chantier** : les formulaires de
+  création de collection, de profil et de rôle n'affichent **aucun retour**
+  lorsque le JSON saisi est invalide. L'utilisateur clique « Create » et rien ne
+  se passe. C'est ce qui rend ces tests si difficiles à ancrer : il n'y a rien à
+  observer. À traiter comme un correctif applicatif à part entière, pas dans une
+  PR de tests.
 
 ### Risques acceptés
 - La phase 2 va réécrire ces écrans et donc rebrasser une partie de ces
@@ -167,10 +183,11 @@ d'écrire les deux commandes.
   migration des specs. Réservé aux cas où l'état attendu n'est **pas** observable
   dans le DOM, ce qui ne se présente pas ici : la catégorie D s'assertionne mieux
   côté backend via `cy.expectBackend()`.
-- **Ajouter `cypress-wait-until`.** Une dépendance pour ce que `.should()` fait
-  déjà nativement dans les catégories A, B et C. Le seul cas qui justifierait un
-  plugin est la catégorie D — cinq appels, couverts par dix lignes de commande
-  maison. Le projet a déjà tranché dans ce sens pour l'interdiction des `.only`.
+- **Ajouter `cypress-wait-until`.** Sans objet : le paquet est **déjà une
+  dépendance du projet** (`package.json`) et déjà importé dans
+  `support/commands.js`, sans être utilisé nulle part. `cy.waitUntil` est donc
+  disponible sans rien ajouter, et c'est l'outil naturel pour la catégorie D.
+  Reste que `.should()` couvre nativement A, B et C : on n'y recourt pas.
 - **Augmenter `defaultCommandTimeout` et ne rien changer d'autre.** Ne traite pas
   le problème : les `cy.wait()` fixes ne sont pas des timeouts, ils s'ajoutent au
   temps d'exécution que l'application soit prête ou non.

@@ -116,8 +116,7 @@ describe('Login', function() {
     cy.url().should('contain', '/#/login')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${envName}"]`).click()
-    cy.wait(700)
-    cy.url().should('contain', '/#/login')
+    cy.shouldStayOn('#/login')
   })
 
   it('Should be able to disconnect from a token expired session', () => {
