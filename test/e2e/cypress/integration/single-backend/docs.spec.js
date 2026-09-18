@@ -190,7 +190,6 @@ describe('Document List', function() {
     )
 
     cy.visit(`/#/data/${indexName}/${mapCollectionName}`)
-    cy.wait(500)
     cy.contains(mapCollectionName)
 
     cy.get('[data-cy="mapView-map"]').should('exist')
@@ -350,7 +349,6 @@ describe('Document List', function() {
     )
 
     cy.visit(`/#/data/${indexName}/${mapCollectionName}`)
-    cy.wait(500)
     cy.contains(mapCollectionName)
 
     cy.get('[data-cy="CollectionDropdownView"]').click()
@@ -471,7 +469,6 @@ describe('Document update/replace', () => {
         }
       )
     cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
-    cy.wait(1000)
     cy.get('[data-cy^=DocumentListItem--]').should('be.visible')
 
     cy.request(
@@ -492,7 +489,6 @@ describe('Document update/replace', () => {
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.wait(500)
     cy.get(`[data-cy="ColumnView-table-edit-btn--${documentId}"]`).click()
-    cy.wait(500)
     cy.contains('Edit document')
   })
 })

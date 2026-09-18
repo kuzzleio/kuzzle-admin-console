@@ -39,7 +39,6 @@ describe('Users', function() {
     cy.contains(kuids[0])
     cy.contains(kuids[1])
     cy.get('[data-cy=QuickFilter-input]').type(kuids[1])
-    cy.wait(1000)
     cy.get('[data-cy="UserList-items"]').should('contain', kuids[1])
     cy.get('[data-cy="UserList-items"]').should('not.contain', kuids[0])
   })
@@ -152,7 +151,6 @@ describe('Users', function() {
     cy.contains(`Do you really want to delete ${kuid}`)
     cy.get('[data-cy=ModalDeleteUsers-submitBtn]').click()
 
-    cy.wait(2000)
     cy.contains('No user is defined')
   })
 
@@ -190,7 +188,6 @@ describe('Users', function() {
 
     cy.get('[data-cy=ModalDeleteUsers-submitBtn]').click()
 
-    cy.wait(2000)
     cy.contains('No user is defined')
   })
 
@@ -224,7 +221,6 @@ describe('Users', function() {
 
     cy.get('[data-cy=ModalDeleteUsers-submitBtn]').click()
 
-    cy.wait(2000)
     cy.contains('No user is defined')
   })
 

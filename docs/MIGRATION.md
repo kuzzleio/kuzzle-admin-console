@@ -107,6 +107,44 @@ build. Supprimé.
 
 Suivi : [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020).
 
+### 1.1 Attentes Cypress — ADR-0006
+
+Relevé au 2026-09-18 : **57 `cy.wait(<durée fixe>)`** sur 12 fichiers,
+**63 s de sommeil inconditionnel** par exécution complète. Décision et
+remplacements : [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md).
+
+| Lot | Nature | Appels | Sommeil | Remplacement | Statut |
+|---|---|---:|---:|---|---|
+| **A1** | L'assertion suivante est **positive** et déjà réessayée | 17 | 20,7 s | suppression sèche | ✅ |
+| **A2** | L'assertion suivante est **négative** (« rien ne doit se produire ») | 9 | 8,7 s | ancre positive, puis assertion négative | ⬜ |
+| **A3** | Indexation Elasticsearch avant un `cy.visit()` | 1 | 1,0 s | `?refresh=wait_for` sur l'écriture | ✅ |
+| **B** | Suivi d'une action non réessayée (`type`, `click`, `sessionStorage`) | 16 | 12,2 s | assertion explicite avant l'action | ⬜ |
+| **C** | Initialisation de l'éditeur Ace | 5 | 6,5 s | commande `cy.aceReady()` | ⬜ |
+| **D** | État backend via `cy.request()` | 5 | 6,0 s | commande `cy.expectBackend()` | ⬜ |
+| **E** | Réseau simulé (`goOffline` / `goOnline`) | 3 | 8,0 s | conservé, isolé et nommé | ➖ |
+| **F** | Timer applicatif (`antiGlitchOverlayTimeout`) | 1 | variable | conservé, déjà dans `commands.js` | ➖ |
+
+**A1 et A3 sont faits** : 18 appels retirés, **21,7 s** de sommeil en moins par
+exécution complète. Reste **39 `cy.wait()`**.
+
+Répartition par fichier — la colonne « reste » est ce qu'il faut ramener à 0
+hors lots E et F :
+
+| Fichier | Départ | Reste | | Fichier | Départ | Reste |
+|---|---:|---:|---|---|---:|---:|
+| `docs.spec.js` | 11 | 7 | | `profiles.spec.js` | 4 | 4 |
+| `collections.spec.js` | 11 | 4 | | `api-actions.spec.js` | 4 | 3 |
+| `environments.spec.js` | 8 | 7 | | `search.spec.js` | 3 | 3 |
+| `users.spec.js` | 7 | 3 | | `login.spec.js` | 2 | 1 |
+| `roles.spec.js` | 4 | 4 | | `treeview` / `watch` / `commands.js` | 1 | 1 |
+
+Anti-récidive : la règle `no-restricted-syntax` de
+`test/e2e/cypress/.eslintrc.cjs` rejette `cy.wait(<littéral numérique>)`, avec un
+`overrides` listant les specs pas encore reprises. **Cette liste ne peut que
+rétrécir** — elle est le compteur d'avancement, il n'y en a pas d'autre à tenir.
+⬜ *(règle pas encore posée)*
+
+
 ---
 
 ## 2. Toolchain (phase 0)
@@ -393,9 +431,10 @@ gros et le plus risqué.
   `cypress.config.ts`. Ce n'est **pas** le correctif, c'est le garde-fou : le
   bruit disparaît du signal CI sans que l'instabilité soit masquée, puisque
   Cypress rapporte le nombre de tentatives.
-  Le vrai correctif reste à faire : remplacer les `cy.wait(N)` par des attentes
-  sur assertion (`.should('be.visible')`, `.should('have.value', …)`), qui
-  s'ajustent à la charge au lieu de la subir. ⬜
+  Le vrai correctif est tranché par
+  [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md) : remplacer les
+  `cy.wait(N)` par des attentes sur assertion, qui s'ajustent à la charge au lieu
+  de la subir. Avancement détaillé en [§ 1.1](#11-attentes-cypress--adr-0006). ⬜
 - **À retenir pour la phase 2** : ces instabilités vont empirer quand chaque
   écran sera réécrit. Elles seront alors difficiles à distinguer d'une vraie
   régression de migration. Autant les traiter avant.
@@ -520,3 +559,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-18 | Design system : Tailwind CSS + shadcn-vue | [ADR-0003](adr/0003-design-system-tailwind-shadcn-vue.md) |
 | 2026-09-18 | Cible Node 24 LTS, versions alignées partout | [ADR-0004](adr/0004-node-24-lts.md) |
 | 2026-09-18 | Conserver les deux SDK `kuzzle-sdk` v6 et v7 | [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) |
+| 2026-09-18 | Interdire `cy.wait(<durée fixe>)` : attentes sur assertion | [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md) |

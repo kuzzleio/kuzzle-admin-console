@@ -160,7 +160,6 @@ describe('Login', function() {
       )
 
       cy.get('[data-cy=MainMenu-logoutBtn]').click()
-      cy.wait(700)
       cy.url().should('contain', '/#/login')
     })
   })
