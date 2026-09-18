@@ -71,17 +71,25 @@ une config ESLint isolée dans `test/e2e/cypress/` interdit `.only`,
 `test:lint` scanne les specs, et le job `Lint` est redevenu bloquant sur les
 trois workflows. Retirer les marqueurs sans ces trois points aurait été inutile.
 
-#### Tests désactivés (`it.skip`) — triage
+#### Tests désactivés (`it.skip`) — ✅ traités
+
+Les 6 `it.skip` ont été triés puis supprimés. **Il n'en reste aucun.**
 
 | Spec | Test | Diagnostic | Décision |
 |---|---|---|---|
-| `docs` | vue time series | **Obsolète** : vise l'ancienne UI à boutons de `ListViewButtons.vue`. La vue existe toujours et est atteignable via `DropdownView.vue` (« Chart view »), et elle est **déjà couverte** par `chartView.spec.js`. | ✅ Supprimé ; `chartView.spec.js` étendu à la place |
-| `search` ×2 | agrégations dans les résultats | **La fonctionnalité n'existe pas** : `grep -rn "aggregation" src` ne retourne rien. | ⬜ À trancher : supprimer les tests, ou implémenter |
-| `environments` | spinner de reconnexion | Appelle `cy.task('doco', …)`, une task **jamais enregistrée** (`setupNodeEvents` est vide dans `cypress.config.ts`). Ne peut physiquement pas tourner. | ⬜ À trancher : implémenter la task, ou supprimer |
-| `environments` ×2 | mise à jour d'un env, bascule d'env | Exigent un **second backend** sur le port 7514. La CI n'en lance qu'un (`single-backend`). | ⬜ À trancher : stack à deux backends, ou supprimer |
+| `docs` | vue time series | **Obsolète** : visait l'ancienne UI à boutons de `ListViewButtons.vue`. La vue existe toujours, elle est atteignable via `DropdownView.vue` (« Chart view ») et **déjà couverte** par `chartView.spec.js`. | Supprimé ; `chartView.spec.js` étendu de 3 à 7 tests à la place |
+| `search` ×2 | agrégations dans les résultats | **La fonctionnalité n'existe pas** : `grep -rn "aggregation" src` ne retourne rien. Ces tests décrivaient une intention, pas un comportement. | Supprimés |
+| `environments` | spinner de reconnexion | Appelait `cy.task('doco', …)`, une task **jamais enregistrée** (`setupNodeEvents` est vide). Ne pouvait physiquement pas tourner. | Supprimé, avec la commande `waitForService` devenue orpheline |
+| `environments` ×2 | mise à jour d'un env, bascule d'env | Exigeaient un **second backend** sur le port 7514, que la CI ne lance pas (`single-backend`). | Supprimés |
 
-La vue time series a par ailleurs livré un effet de bord : `ListViewButtons.vue`
-n'était **importé nulle part** et absent du build. Supprimé.
+Le principe : un test qui ne peut pas tourner n'est pas une couverture en
+attente, c'est une couverture imaginaire. Le supprimer rend la couverture réelle
+visible ; git en garde la trace si le besoin revient. Les fonctionnalités
+correspondantes (agrégations, multi-backend, reconnexion) restent des sujets
+produit ouverts, mais ils ne sont plus déguisés en dette de test.
+
+Effet de bord : `ListViewButtons.vue` n'était **importé nulle part** et absent du
+build. Supprimé.
 
 Suivi : [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020).
 
