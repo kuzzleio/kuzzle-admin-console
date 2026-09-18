@@ -357,7 +357,35 @@ gros et le plus risqué.
 
 ### 5.1 Rencontrés
 
-*(vide pour l'instant — à alimenter dès la phase 0)*
+#### G-001 — Les specs sont instables quand elles s'enchaînent, pas isolées
+
+- **Contexte** : phase 0, suite e2e complète.
+- **Symptôme** : `formView` échoue par intermittence sur
+  `expected 42 to equal 43` quand il tourne à la suite d'autres specs, et passe
+  4/4 exécuté seul. Même famille de symptôme sur `collections`
+  (`Should be able to update a collection`, assertion sur le contenu de
+  l'éditeur Ace) observé une fois puis non reproduit.
+- **Cause** : deux sources distinctes, à ne pas confondre.
+  1. Les saisies clavier simulées dans les composants tiers (Ace, les champs
+     générés par `vue-form-generator`) utilisent `delay: 200` et `force: true`.
+     Sous charge, une frappe peut être perdue avant que le composant ait fini de
+     monter. `formView.spec.js` contient **zéro `cy.wait()`** et est pourtant le
+     plus instable : sa fragilité vient bien de là.
+  2. **56 `cy.wait(<durée fixe>)`** répartis sur 11 specs, soit **63 s de
+     sommeil cumulé**. Une attente fixe est toujours soit trop longue (elle
+     ralentit la suite) soit trop courte (elle casse sous charge). `environments`
+     à lui seul en cumule 16 s.
+- **Solution** : `retries: { runMode: 2, openMode: 0 }` est configuré dans
+  `cypress.config.ts`. Ce n'est **pas** le correctif, c'est le garde-fou : le
+  bruit disparaît du signal CI sans que l'instabilité soit masquée, puisque
+  Cypress rapporte le nombre de tentatives.
+  Le vrai correctif reste à faire : remplacer les `cy.wait(N)` par des attentes
+  sur assertion (`.should('be.visible')`, `.should('have.value', …)`), qui
+  s'ajustent à la charge au lieu de la subir. ⬜
+- **À retenir pour la phase 2** : ces instabilités vont empirer quand chaque
+  écran sera réécrit. Elles seront alors difficiles à distinguer d'une vraie
+  régression de migration. Autant les traiter avant.
+
 
 <!--
 Gabarit à copier :
@@ -369,6 +397,28 @@ Gabarit à copier :
 - **Solution** : ce qu'on a fait
 - **Ref** : PR / issue
 -->
+
+#### G-002 — Elasticsearch 8 a retiré des fonctions `geo_shape` que la console utilise encore
+
+- **Contexte** : phase 0, `docs.spec.js`, vue carte (formes).
+- **Symptôme** : deux `400` successifs du backend, d'abord à la création de la
+  collection, puis à celle du document.
+- **Cause** : la stack `docker-compose` est passée à Elasticsearch 8, qui a
+  supprimé deux choses que le test utilisait, héritées d'ES 6/7 :
+  - le paramètre `strategy` sur un mapping `geo_shape` —
+    *« using deprecated parameters [strategy] in mapper […] is no longer allowed »* ;
+  - la géométrie `CIRCLE` elle-même — *« CIRCLE geometry is not supported »*.
+    C'était précisément ce que la stratégie `recursive` permettait de stocker.
+- **Solution** : le test exerce désormais un **polygone**, accepté par ES 8 et
+  rendu par la vue carte avec les mêmes ancrages (`data-cy-shape-<id>`).
+- **⚠️ Ce n'est pas qu'un problème de test.** `Map.vue` sait rendre `circle`,
+  `polygon` et `multipolygon`. Le rendu des cercles **n'est plus atteignable sur
+  un backend Elasticsearch 8** : plus personne ne peut stocker une telle forme.
+  Ce code n'est pour autant pas mort — il reste utile pour les backends
+  Kuzzle v1 / ES 6, dont le support est maintenu
+  ([ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md)). À garder en tête si
+  la question du support de Kuzzle v1 se repose : le jour où il s'arrête, ce
+  code part avec.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

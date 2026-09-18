@@ -66,12 +66,14 @@ describe('Document List', function() {
       }
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy^=DocumentListItem--]').within(() => {
-      cy.get('a').contains('documentId')
-      cy.get('a')
-        .not()
-        .contains('Luca Marchesini')
-    })
+
+    // La collection déclare un champ `id` dont la valeur est 'Luca Marchesini' :
+    // la ligne doit afficher le `_id` du document, pas ce champ. On cible la
+    // ligne de ce document précis, le beforeEach en ayant déjà créé un autre.
+    cy.get('[data-cy=DocumentListItem--documentId]')
+      .find('[data-cy=DocumentListItem-title]')
+      .should('contain', 'documentId')
+      .should('not.contain', 'Luca Marchesini')
   })
 
   it('Should be able to set and persist the listViewType param when switching the list view', function() {
@@ -223,8 +225,10 @@ describe('Document List', function() {
           type: 'geo_point'
         },
         shapeLocation: {
-          type: 'geo_shape',
-          strategy: 'recursive'
+          // `strategy` était un paramètre de geo_shape sous Elasticsearch 6/7.
+          // Elasticsearch 8 le refuse : "using deprecated parameters [strategy]
+          // in mapper [shapeLocation] of type [geo_shape] is no longer allowed".
+          type: 'geo_shape'
         }
       }
     })
@@ -263,10 +267,22 @@ describe('Document List', function() {
       'POST',
       `${kuzzleUrl}/${indexName}/${mapCollectionName}/mapViewTestDoc4/_create?refresh=wait_for`,
       {
+        // Elasticsearch 8 ne supporte plus la géométrie CIRCLE dans geo_shape
+        // ("CIRCLE geometry is not supported") : c'était le rôle de la stratégie
+        // `recursive`, elle aussi supprimée. On exerce donc un polygone, que le
+        // backend accepte et que la vue carte rend avec les mêmes ancrages.
+        // Le rendu des cercles reste du code utile pour les backends Kuzzle v1.
         shapeLocation: {
-          type: 'circle',
-          coordinates: [43.730096133858524, 3.915556507504015],
-          radius: '1000m'
+          type: 'polygon',
+          coordinates: [
+            [
+              [43.730096133858524, 3.915556507504015],
+              [43.740096133858524, 3.915556507504015],
+              [43.740096133858524, 3.925556507504015],
+              [43.730096133858524, 3.925556507504015],
+              [43.730096133858524, 3.915556507504015]
+            ]
+          ]
         }
       }
     )
