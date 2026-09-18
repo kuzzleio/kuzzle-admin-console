@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test": "npm run test:e2e",
     "test:e2e": "cypress run",
-    "test:lint": "eslint src --ext .ts,.vue",
+    "test:lint": "eslint src --ext .ts,.vue && eslint test/e2e/cypress --ext .js",
     "test:lint:fix": "npm run test:lint -- --fix",
     "test:types": "vue-tsc --noEmit -p tsconfig.test.json",
     "cy:open": "cypress open"

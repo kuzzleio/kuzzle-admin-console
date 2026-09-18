@@ -12,7 +12,6 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-24.04
-    continue-on-error: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

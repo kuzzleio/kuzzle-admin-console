@@ -556,7 +556,7 @@ describe('Document update/replace', () => {
   })
 })
 
-describe.only('Realtime', () => {
+describe('Realtime', () => {
   beforeEach(() => {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
