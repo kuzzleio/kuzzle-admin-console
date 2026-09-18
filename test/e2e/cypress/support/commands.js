@@ -69,6 +69,68 @@ Cypress.Commands.add('shouldStayOn', hash => {
   assertPath()
 })
 
+/**
+ * Attend qu'un éditeur Ace soit réellement utilisable.
+ *
+ * Ace est un composant tiers dont on ne contrôle pas le cycle de vie : entre le
+ * moment où son `textarea` existe dans le DOM et celui où il traite les frappes,
+ * il reste du travail (rendu des lignes, pose du curseur). Une frappe envoyée
+ * trop tôt est simplement perdue, sans erreur — d'où les `cy.wait(2000)` semés
+ * devant chaque éditeur.
+ *
+ * Les trois conditions ci-dessous sont les signaux observables de cette
+ * initialisation, vérifiés sur les deux éditeurs du projet (api-action et
+ * rawsearch). Le couplage aux classes internes d'Ace est assumé : il est
+ * concentré ici, il y aura un seul endroit à reprendre.
+ *
+ * @param {string} [scope] sélecteur du conteneur, si plusieurs éditeurs coexistent
+ */
+Cypress.Commands.add('aceReady', (scope = '') => {
+  const within = scope ? `${scope} ` : ''
+
+  cy.get(`${within}textarea.ace_text-input`).should('exist')
+  cy.get(`${within}.ace_content .ace_line`).should('be.visible')
+  cy.get(`${within}.ace_cursor`).should('exist')
+})
+
+/**
+ * Rejoue une requête jusqu'à ce qu'une assertion passe.
+ *
+ * `cy.request()` n'est pas réessayée : l'assertion qui la suit est évaluée une
+ * seule fois, sur la première réponse. Quand un test agit dans l'interface puis
+ * vérifie l'effet côté backend, il y a une course — que les specs réglaient
+ * jusqu'ici avec une attente fixe.
+ *
+ * On sonde donc en boucle, puis on rejoue l'assertion une dernière fois hors de
+ * la boucle : en cas d'échec, c'est ce dernier appel qui produit un diff
+ * lisible plutôt qu'un « timed out » opaque.
+ *
+ * @param {object|string} options options de `cy.request` (ou une URL)
+ * @param {(response: object) => void} assertion assertion sur la réponse
+ */
+Cypress.Commands.add('expectBackend', (options, assertion) => {
+  const request = typeof options === 'string' ? { url: options } : options
+
+  cy.waitUntil(
+    () =>
+      cy.request({ ...request, failOnStatusCode: false }).then(response => {
+        try {
+          assertion(response)
+          return true
+        } catch (e) {
+          return false
+        }
+      }),
+    {
+      timeout: 10000,
+      interval: 250,
+      errorMsg: `expectBackend: ${request.url} n'a pas atteint l'état attendu`
+    }
+  )
+
+  cy.request(request).should(assertion)
+})
+
 Cypress.Commands.add(
   'initLocalEnv',
   (backendVersion = 2, token = 'anonymous', port = 7512, envName = 'valid') => {

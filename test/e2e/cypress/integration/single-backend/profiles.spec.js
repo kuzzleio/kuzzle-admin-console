@@ -206,8 +206,7 @@ describe('Profiles', () => {
     cy.get('[data-cy="ProfileCreateOrUpdate-updateBtn"]').click()
     cy.url().should('not.contain', profileId)
     cy.contains(profileId)
-    cy.wait(1000)
-    cy.request('GET', `${kuzzleUrl}/profiles/${profileId}`).should(response => {
+    cy.expectBackend(`${kuzzleUrl}/profiles/${profileId}`, response => {
       expect(response.body.result._source).to.deep.include({
         policies: [{ roleId: 'admin' }]
       })

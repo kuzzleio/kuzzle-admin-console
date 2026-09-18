@@ -102,8 +102,7 @@ describe('Users', function() {
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-rawTab]').click()
 
-    cy.get('#rawsearch .ace_line').should('exist')
-    cy.wait(1000)
+    cy.aceReady('#rawsearch')
 
     cy.get('#rawsearch .ace_active-line').click({ force: true })
     cy.get('textarea.ace_text-input')
