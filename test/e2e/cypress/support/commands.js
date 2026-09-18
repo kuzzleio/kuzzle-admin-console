@@ -54,41 +54,6 @@ Cypress.Commands.add(
   }
 )
 
-function wait(ms) {
-  return new Promise(resolve => {
-    setTimeout(() => resolve(), ms)
-  })
-}
-
-async function poll(url, state = 'up', tries) {
-  for (let i = tries; i > 0; i--) {
-    try {
-      const r = await fetch(url)
-      if (r) {
-        console.log('Service is up')
-        if (state === 'up') {
-          return
-        } else {
-          await wait(3000)
-        }
-      }
-    } catch (error) {
-      console.log('Service is down')
-      console.error(error)
-      if (state === 'up') {
-        await wait(3000)
-      } else {
-        return
-      }
-    }
-  }
-  throw new Error('Poll timeout expired')
-}
-
-Cypress.Commands.add('waitForService', (url, state = 'up', tries = 30) => {
-  return poll(url, state, tries)
-})
-
 Cypress.Commands.add('skipOnBackendVersion', version => {
   const currentEnvName = sessionStorage.getItem('currentEnv')
   const currentEnv = JSON.parse(localStorage.getItem('environments'))[

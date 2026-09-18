@@ -26,6 +26,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0002](0002-sortir-de-bootstrap-vue-avant-vue-3.md) | Sortir de bootstrap-vue avant de migrer vers Vue 3 | Acceptée |
 | [0003](0003-design-system-tailwind-shadcn-vue.md) | Tailwind CSS + shadcn-vue comme design system | Acceptée |
 | [0004](0004-node-24-lts.md) | Cible Node 24 LTS et alignement de la toolchain | Acceptée |
+| [0005](0005-conserver-les-deux-sdk-kuzzle.md) | Conserver les deux SDK `kuzzle-sdk` v6 et v7 | Acceptée |
 
 ## Gabarit
 

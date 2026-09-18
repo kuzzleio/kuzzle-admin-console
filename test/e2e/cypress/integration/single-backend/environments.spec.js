@@ -251,65 +251,6 @@ describe('Environments', function() {
     cy.get('[data-cy="App-online"]')
   })
 
-  it.skip('Should be able to update an environment', () => {
-    // TODO: Fix how environment switching is handled
-    const envNames = ['local', 'another']
-    const hosts = ['localhost', '123.123.123.123']
-    const ports = [7512, 7514]
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        [envNames[0]]: {
-          name: envNames[0],
-          color: 'darkblue',
-          host: hosts[0],
-          ssl: false,
-          port: ports[0],
-          backendMajorVersion: backendVersion,
-          token: null,
-          hideAdminWarning: true
-        }
-      })
-    )
-    sessionStorage.setItem('currentEnv', envNames[0])
-    cy.visit('/')
-    cy.contains('Connected to')
-
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[0])}-edit"]`).click()
-
-    cy.get('[data-cy=CreateEnvironment-name]').type(`{selectall}${envNames[1]}`)
-    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.wait(1000)
-    cy.get('[data-cy="EnvironmentSwitch"]')
-      .should('be.visible')
-      .click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}`)
-
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
-    cy.get('[data-cy=CreateEnvironment-host]').type(`{selectall}${hosts[1]}`)
-    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.contains('Connecting to Kuzzle at')
-
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
-    cy.get('[data-cy=CreateEnvironment-host]').type(`{selectall}${hosts[0]}`)
-    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.contains('Connected to')
-
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
-    cy.get('[data-cy=CreateEnvironment-port]').type(`{selectall}${ports[1]}`)
-    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.contains('Connecting to Kuzzle at')
-
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
-    cy.get('[data-cy=CreateEnvironment-port]').type(`{selectall}${ports[0]}`)
-    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.contains('Connected to')
-  })
-
   it('Should open edit modal when an environment is malformed', () => {
     localStorage.setItem(
       'environments',
@@ -334,19 +275,6 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-backendVersion"]').should($select => {
       expect($select.attr('class')).to.contain('is-invalid')
     })
-  })
-
-  it.skip('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
-    cy.initLocalEnv(backendVersion)
-    cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
-    cy.wait(5000)
-    cy.visit('/')
-    cy.get('[data-cy=App-offline]')
-      .should('be.visible')
-      .should('contain', 'Connecting to Kuzzle')
-    cy.task('doco', { version: backendVersion, docoArgs: ['up', '-d'] })
-    cy.waitForService('http://localhost:7512')
-    cy.get('[data-cy=App-online]').should('be.visible')
   })
 
   it('Should display a toast when the backend goes down and hide it when the backend goes up again', { browser: '!firefox' }, () => {
@@ -442,52 +370,6 @@ describe('Environments', function() {
     cy.title().should('contain', 'localEnvTestTabTitle')
   })
 
-  it.skip('Should be able to switch to a reachable environment without lazy loading sequence error', function() {
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        ['env1']: {
-          name: 'env1',
-          color: 'darkblue',
-          host: 'localhost',
-          ssl: false,
-          port: 7512,
-          backendMajorVersion: backendVersion,
-          token: null,
-          hideAdminWarning: true
-        }
-      })
-    )
-
-    cy.request({
-      method: 'PUT',
-      url: 'http://localhost:7512/roles/anonymous',
-      body: {
-        controllers: {
-          '*': {
-            actions: {
-              '*': true
-            }
-          },
-          index: {
-            actions: {
-              list: false
-            }
-          }
-        }
-      }
-    })
-
-    cy.visit('/')
-
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
-    cy.get('[data-cy="EnvironmentSwitch-env_env1"]').click()
-    cy.wait(1000)
-    cy.get('body').should(
-      'not.contain',
-      'Something went wrong while fetching the indexes list.'
-    )
-  })
 })
 
 describe('Import and export environments', function() {

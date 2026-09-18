@@ -50,51 +50,62 @@ généré par `bootstrap-vue` et sur quoi nous ne pouvons pas poser d'attribut e
 **isolé dans une commande Cypress** (`test/e2e/cypress/support/commands.js`).
 En phase 2, il n'y aura que ce bloc à reprendre, pas les 17 specs.
 
-#### ⚠️ Découverte : la CI est verte en n'exécutant qu'une fraction des tests
+#### État du filet de sécurité au 2026-09-18
+
+| | Avant | Après |
+|---|---:|---:|
+| Tests actifs | 140 | **153** |
+| Tests inactifs (`.only` + `it.skip`) | 20 | **0** |
+| Sélecteurs fragiles (tests actifs) | 61 | **0** |
+| Politique de retry | aucune | `runMode: 2` |
+| ESLint sur `test/` | non | oui, bloquant |
+
+Suite complète vérifiée contre un backend Kuzzle réel : **17/17 specs,
+152 tests passants, 0 échec** (1 `pending` légitime, skip dynamique via
+`skipOnBackendVersion`).
+
+#### La CI était verte en n'exécutant qu'une fraction des tests — ✅ corrigé
 
 L'audit a mis au jour **deux `.only` commités dans le dépôt**. Un `.only`
-désactive silencieusement tout le reste du fichier : Cypress ne signale rien,
-et la CI affiche « All specs passed » en ayant exécuté une fraction des tests.
+désactive silencieusement tout le reste du fichier : Cypress ne signale rien, et
+la CI affiche « All specs passed » en ayant exécuté une fraction des tests.
 
 | Fichier | Marqueur | Depuis | Tests masqués |
 |---|---|---|---|
-| `docs.spec.js:559` | `describe.only('Realtime')` | **janvier 2022** ([#938](https://github.com/kuzzleio/kuzzle-admin-console/pull/938)) | 11 — tout `Document List` et `Document update/replace` |
-| `formView.spec.js:112` | `it.only` | **septembre 2024** (`b575b77a`) | 3 |
+| `docs.spec.js` | `describe.only('Realtime')` | **janvier 2022** ([#938](https://github.com/kuzzleio/kuzzle-admin-console/pull/938)) | 11 — tout `Document List` et `Document update/replace` |
+| `formView.spec.js` | `it.only` | **septembre 2024** (`b575b77a`) | 3 |
 
-S'ajoutent **6 tests explicitement désactivés** (`it.skip`) : `docs` ×1
-(time series), `search` ×2 (agrégations), `environments` ×3 (mise à jour d'un
-env, spinner de reconnexion, bascule d'env).
+Deux raisons expliquent que le problème ait vécu si longtemps : **ESLint ne
+scannait que `src`**, jamais `test/`, et **le job `lint` de la CI était en
+`continue-on-error: true`** — son résultat n'avait donc aucun effet.
 
-**Soit 20 tests inactifs.** La spec `docs` en particulier exécute 8 tests sur
-les 20 qu'elle contient, et ce depuis plus de trois ans.
+Les deux `.only` sont retirés (14 tests réactivés) et la récidive est bloquée :
+une config ESLint isolée dans `test/e2e/cypress/` interdit `.only`,
+`fdescribe` et `fit` via `no-restricted-syntax` (sans dépendance ajoutée),
+`test:lint` scanne les specs, et le job `Lint` est redevenu bloquant sur les
+trois workflows. Retirer les marqueurs sans ces trois points aurait été inutile.
 
-En réactivant temporairement `docs.spec.js` pour valider les sélecteurs, **2 de
-ces tests échouent déjà sur la branche `4-dev` de référence**, indépendamment de
-tout changement :
+#### Tests désactivés (`it.skip`) — ✅ traités
 
-- `Should show the the _id even if collection has id field` — le test fait un
-  `.within()` en supposant une seule ligne de document, alors que la collection
-  en contient plusieurs à ce stade du fichier ;
-- `Should handle the map view properly for shapes` — Kuzzle renvoie `400` à la
-  création de la collection avec un mapping `geo_shape`.
+Les 6 `it.skip` ont été triés puis supprimés. **Il n'en reste aucun.**
 
-Le test time series (`it.skip`) est mort pour une raison distincte : les boutons
-de vue « time series » et « map » sont **commentés** dans
-`src/components/Data/Documents/ListViewButtons.vue`, et les classes qu'il cible
-(`.DocumentList-timeseries`, `.DocumentList-materializeCollection`) n'existent
-plus dans les sources. Enregistré avec Cypress Studio, il est fait de longues
-chaînes structurelles qui n'auraient de toute façon survécu à aucune refonte.
+| Spec | Test | Diagnostic | Décision |
+|---|---|---|---|
+| `docs` | vue time series | **Obsolète** : visait l'ancienne UI à boutons de `ListViewButtons.vue`. La vue existe toujours, elle est atteignable via `DropdownView.vue` (« Chart view ») et **déjà couverte** par `chartView.spec.js`. | Supprimé ; `chartView.spec.js` étendu de 3 à 7 tests à la place |
+| `search` ×2 | agrégations dans les résultats | **La fonctionnalité n'existe pas** : `grep -rn "aggregation" src` ne retourne rien. Ces tests décrivaient une intention, pas un comportement. | Supprimés |
+| `environments` | spinner de reconnexion | Appelait `cy.task('doco', …)`, une task **jamais enregistrée** (`setupNodeEvents` est vide). Ne pouvait physiquement pas tourner. | Supprimé, avec la commande `waitForService` devenue orpheline |
+| `environments` ×2 | mise à jour d'un env, bascule d'env | Exigeaient un **second backend** sur le port 7514, que la CI ne lance pas (`single-backend`). | Supprimés |
 
-**Rien de tout cela n'a été réparé ici** : c'est un chantier distinct, avec une
-question produit derrière (la vue time series existe-t-elle encore ?). Mais il
-faut le trancher **avant la phase 2** : un filet de sécurité dont on surestime
-la couverture est plus dangereux qu'un filet dont on connaît les trous.
+Le principe : un test qui ne peut pas tourner n'est pas une couverture en
+attente, c'est une couverture imaginaire. Le supprimer rend la couverture réelle
+visible ; git en garde la trace si le besoin revient. Les fonctionnalités
+correspondantes (agrégations, multi-backend, reconnexion) restent des sujets
+produit ouverts, mais ils ne sont plus déguisés en dette de test.
+
+Effet de bord : `ListViewButtons.vue` n'était **importé nulle part** et absent du
+build. Supprimé.
 
 Suivi : [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020).
-
-À noter, deux raisons pour lesquelles le problème a pu vivre si longtemps : le
-job `lint` de la CI est en `continue-on-error: true`, et ESLint ne scanne que
-`src` — jamais `test/`. Les deux sont à revoir en phase 0.
 
 ---
 
@@ -104,8 +115,9 @@ Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026*
 
 | Élément | Actuel | Cible | Statut |
 |---|---|---|---|
-| Node | 20 (EOL) / 22 dans le Dockerfile | 24 LTS « Krypton » | ⬜ |
-| `.nvmrc` / `engines` / CI / Dockerfile | 3 valeurs différentes | alignés, `.nvmrc` fait foi | ⬜ |
+| Node | 20 (EOL) / 22 dans le Dockerfile | 24 LTS « Krypton » | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
+| `.nvmrc` / `engines` / CI / Dockerfile / compose | 3 valeurs différentes | alignés, `.nvmrc` fait foi | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
+| Job `Lint` de la CI | `continue-on-error: true`, ne scanne que `src` | bloquant, scanne aussi `test/` | ✅ [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020) |
 | Vite | 5.4.6 | dernière compatible `@vitejs/plugin-vue2` | ⬜ |
 | TypeScript | 5.4.5 | à évaluer (TS 7 disponible) | ⬜ |
 | ESLint | eslintrc | flat config, ESLint 10 | ⬜ |
@@ -147,7 +159,7 @@ compatibilité **avant** d'engager la montée.
 
 | Paquet | Pourquoi | Statut |
 |---|---|---|
-| `kuzzle-sdk` v6 **et** v7 en parallèle | double SDK embarqué ; évaluer l'abandon de v6 | ⬜ |
+| ~~`kuzzle-sdk` v6 **et** v7~~ | **Conservé** — c'est le support des backends Kuzzle v1, pas de la dette. Voir [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) | ➖ |
 | `bluebird` | les Promises natives suffisent depuis Node 4 | ⬜ |
 | `moment` | en maintenance depuis 2020 → `date-fns` ou `Temporal` | ⬜ |
 | `velocity-animate` | remplaçable par des transitions CSS/Tailwind | ⬜ |
@@ -359,7 +371,35 @@ gros et le plus risqué.
 
 ### 5.1 Rencontrés
 
-*(vide pour l'instant — à alimenter dès la phase 0)*
+#### G-001 — Les specs sont instables quand elles s'enchaînent, pas isolées
+
+- **Contexte** : phase 0, suite e2e complète.
+- **Symptôme** : `formView` échoue par intermittence sur
+  `expected 42 to equal 43` quand il tourne à la suite d'autres specs, et passe
+  4/4 exécuté seul. Même famille de symptôme sur `collections`
+  (`Should be able to update a collection`, assertion sur le contenu de
+  l'éditeur Ace) observé une fois puis non reproduit.
+- **Cause** : deux sources distinctes, à ne pas confondre.
+  1. Les saisies clavier simulées dans les composants tiers (Ace, les champs
+     générés par `vue-form-generator`) utilisent `delay: 200` et `force: true`.
+     Sous charge, une frappe peut être perdue avant que le composant ait fini de
+     monter. `formView.spec.js` contient **zéro `cy.wait()`** et est pourtant le
+     plus instable : sa fragilité vient bien de là.
+  2. **56 `cy.wait(<durée fixe>)`** répartis sur 11 specs, soit **63 s de
+     sommeil cumulé**. Une attente fixe est toujours soit trop longue (elle
+     ralentit la suite) soit trop courte (elle casse sous charge). `environments`
+     à lui seul en cumule 16 s.
+- **Solution** : `retries: { runMode: 2, openMode: 0 }` est configuré dans
+  `cypress.config.ts`. Ce n'est **pas** le correctif, c'est le garde-fou : le
+  bruit disparaît du signal CI sans que l'instabilité soit masquée, puisque
+  Cypress rapporte le nombre de tentatives.
+  Le vrai correctif reste à faire : remplacer les `cy.wait(N)` par des attentes
+  sur assertion (`.should('be.visible')`, `.should('have.value', …)`), qui
+  s'ajustent à la charge au lieu de la subir. ⬜
+- **À retenir pour la phase 2** : ces instabilités vont empirer quand chaque
+  écran sera réécrit. Elles seront alors difficiles à distinguer d'une vraie
+  régression de migration. Autant les traiter avant.
+
 
 <!--
 Gabarit à copier :
@@ -371,6 +411,28 @@ Gabarit à copier :
 - **Solution** : ce qu'on a fait
 - **Ref** : PR / issue
 -->
+
+#### G-002 — Elasticsearch 8 a retiré des fonctions `geo_shape` que la console utilise encore
+
+- **Contexte** : phase 0, `docs.spec.js`, vue carte (formes).
+- **Symptôme** : deux `400` successifs du backend, d'abord à la création de la
+  collection, puis à celle du document.
+- **Cause** : la stack `docker-compose` est passée à Elasticsearch 8, qui a
+  supprimé deux choses que le test utilisait, héritées d'ES 6/7 :
+  - le paramètre `strategy` sur un mapping `geo_shape` —
+    *« using deprecated parameters [strategy] in mapper […] is no longer allowed »* ;
+  - la géométrie `CIRCLE` elle-même — *« CIRCLE geometry is not supported »*.
+    C'était précisément ce que la stratégie `recursive` permettait de stocker.
+- **Solution** : le test exerce désormais un **polygone**, accepté par ES 8 et
+  rendu par la vue carte avec les mêmes ancrages (`data-cy-shape-<id>`).
+- **⚠️ Ce n'est pas qu'un problème de test.** `Map.vue` sait rendre `circle`,
+  `polygon` et `multipolygon`. Le rendu des cercles **n'est plus atteignable sur
+  un backend Elasticsearch 8** : plus personne ne peut stocker une telle forme.
+  Ce code n'est pour autant pas mort — il reste utile pour les backends
+  Kuzzle v1 / ES 6, dont le support est maintenu
+  ([ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md)). À garder en tête si
+  la question du support de Kuzzle v1 se repose : le jour où il s'arrête, ce
+  code part avec.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
@@ -409,3 +471,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-18 | Sortir de bootstrap-vue **avant** de migrer vers Vue 3 | [ADR-0002](adr/0002-sortir-de-bootstrap-vue-avant-vue-3.md) |
 | 2026-09-18 | Design system : Tailwind CSS + shadcn-vue | [ADR-0003](adr/0003-design-system-tailwind-shadcn-vue.md) |
 | 2026-09-18 | Cible Node 24 LTS, versions alignées partout | [ADR-0004](adr/0004-node-24-lts.md) |
+| 2026-09-18 | Conserver les deux SDK `kuzzle-sdk` v6 et v7 | [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) |

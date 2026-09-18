@@ -172,7 +172,7 @@ describe('Collection management', function() {
     cy.get(`[data-cy=CollectionList-bulkDelete--btn]`).click()
 
     cy.get(
-      '[data-cy="BulkDeleteCollectionsModal-input-confirmation"'
+      '[data-cy="BulkDeleteCollectionsModal-input-confirmation"]'
     ).type('DELETE', { force: true })
 
     cy.get('[data-cy="BulkDeleteCollectionsModal-deleteBtn"]').click()
