@@ -5,7 +5,7 @@ services:
   web:
     profiles:
       - dev
-    image: kuzzleio/kuzzle-runner:22
+    image: kuzzleio/kuzzle-runner:24
     command: npm run dev --prefix /var/app/ -- --host
     ports:
       - 8080:8080
