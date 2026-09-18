@@ -119,14 +119,27 @@ remplacements : [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md).
 | **A2** | L'assertion suivante est **négative** (« rien ne doit se produire ») | 9 | 8,7 s | `cy.shouldStayOn()`, ou ancre positive quand il en existe une | ✅ |
 | **A3** | Indexation Elasticsearch avant un `cy.visit()` | 1 | 1,0 s | `?refresh=wait_for` sur l'écriture | ✅ |
 | **B** | Suivi d'une action non réessayée (`type`, `click`, `sessionStorage`) | 16 | 12,2 s | assertion explicite avant l'action | ✅ |
-| **C** | Initialisation de l'éditeur Ace | 5 | 6,5 s | commande `cy.aceReady()` | ⬜ |
-| **D** | État backend via `cy.request()` | 5 | 6,0 s | commande `cy.expectBackend()` | ⬜ |
+| **C** | Initialisation de l'éditeur Ace | 5 | 6,5 s | commande `cy.aceReady()` | ✅ |
+| **D** | État backend via `cy.request()` | 5 | 6,0 s | commande `cy.expectBackend()` | ✅ |
 | **E** | Réseau simulé (`goOffline` / `goOnline`) | 3 | 8,0 s | conservé, isolé et nommé | ➖ |
 | **F** | Timer applicatif (`antiGlitchOverlayTimeout`) | 1 | variable | conservé, déjà dans `commands.js` | ➖ |
 
-**A1, A2, A3 et B sont faits** : 42 appels traités, **40,6 s** de sommeil fixe en
-moins dans les specs. Reste **15 `cy.wait()`** : 5 en C, 5 en D, 3 en E et 2
-assumés dans `support/commands.js`.
+**A, B, C et D sont faits** : 52 des 57 appels traités. Il reste **5
+`cy.wait()`**, tous délibérés — les 3 du lot E (réseau simulé) et les 2 de
+`support/commands.js`.
+
+Deux commandes ont été écrites, chacune sondée avant d'être adoptée :
+
+- **`cy.aceReady(<scope>)`** — trois signaux d'initialisation (le `textarea`
+  existe, les lignes sont rendues, le curseur est posé), vérifiés sur les deux
+  éditeurs du projet. Les specs asseyaient jusqu'ici l'attente sur la seule
+  existence du `textarea` puis dormaient 2 s : entre le montage du `textarea` et
+  le moment où Ace traite les frappes, une saisie est **perdue sans erreur**.
+- **`cy.expectBackend(<requête>, <assertion>)`** — `cy.request()` n'est pas
+  réessayée, son assertion est évaluée une seule fois sur la première réponse.
+  La commande sonde en boucle via `cy.waitUntil` (déjà une dépendance du
+  projet), puis rejoue l'assertion **hors de la boucle** pour qu'un échec donne
+  un diff lisible et non un « timed out » opaque.
 
 > Le gain en temps d'exécution réel est plus modeste que le sommeil retiré : la
 > suite complète passe de 15:26 à 15:09 sur un même poste. Ces mesures sont des
@@ -192,17 +205,23 @@ hors lots E et F :
 
 | Fichier | Départ | Reste | | Fichier | Départ | Reste |
 |---|---:|---:|---|---|---:|---:|
-| `docs.spec.js` | 11 | 2 | | `profiles.spec.js` | 4 | 1 |
-| `collections.spec.js` | 11 | 0 | | `api-actions.spec.js` | 4 | 3 |
-| `environments.spec.js` | 8 | 3 | | `search.spec.js` | 3 | 1 |
-| `users.spec.js` | 7 | 1 | | `login.spec.js` | 2 | 0 |
-| `roles.spec.js` | 4 | 2 | | `treeview` / `watch` | 1 | 0 |
+| `docs.spec.js` | 11 | 0 | | `profiles.spec.js` | 4 | 0 |
+| `collections.spec.js` | 11 | 0 | | `api-actions.spec.js` | 4 | 0 |
+| `environments.spec.js` | 8 | 3 | | `search.spec.js` | 3 | 0 |
+| `users.spec.js` | 7 | 0 | | `login.spec.js` | 2 | 0 |
+| `roles.spec.js` | 4 | 0 | | `treeview` / `watch` | 1 | 0 |
+
+Les 3 restants sont ceux d'`environments.spec.js` : bascule hors ligne / en
+ligne et attente du toast de reconnexion. Ils attendent un vrai délai, pas un
+état atteignable par assertion. Il reste à les isoler derrière une commande
+nommée, comme le prévoit l'ADR, avant de poser la règle ESLint.
 
 Anti-récidive : la règle `no-restricted-syntax` de
 `test/e2e/cypress/.eslintrc.cjs` rejette `cy.wait(<littéral numérique>)`, avec un
 `overrides` listant les specs pas encore reprises. **Cette liste ne peut que
 rétrécir** — elle est le compteur d'avancement, il n'y en a pas d'autre à tenir.
-⬜ *(règle pas encore posée)*
+⬜ *(règle pas encore posée : il reste le lot E à isoler. La liste d'`overrides`
+sera vide d'emblée, tous les lots étant traités.)*
 
 
 ---

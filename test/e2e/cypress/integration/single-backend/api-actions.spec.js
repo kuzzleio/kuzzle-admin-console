@@ -22,10 +22,7 @@ describe('API Actions - query', function() {
     })
     cy.get('[data-cy="api-actions-run-button-0"]').click()
 
-    cy.wait(1000)
-
-    cy.request('GET', `${kuzzleUrl}/${indexName}/_exists`)
-    .should((response) => {
+    cy.expectBackend(`${kuzzleUrl}/${indexName}/_exists`, response => {
       expect(response.body.result).to.equals(true)
     })
   })
@@ -34,7 +31,7 @@ describe('API Actions - query', function() {
     const indexName = "testindex"
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
-    cy.wait(500)
+    cy.aceReady('[data-cy="api-actions-query-JSONEditor-0"]')
     cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
     .type(`{selectall}{backspace}{
 "controller": "index",
@@ -217,10 +214,7 @@ describe('API Actions - tabs and save', function() {
     cy.get(`[data-cy="api-actions-saved-query-${queryName}"]`).click()
     cy.get('[data-cy="api-actions-run-button-1"]').click()
 
-    cy.wait(1000)
-
-    cy.request('GET', `${kuzzleUrl}/${indexName}/_exists`)
-    .should((response) => {
+    cy.expectBackend(`${kuzzleUrl}/${indexName}/_exists`, response => {
       expect(response.body.result).to.equals(true)
     })
   })

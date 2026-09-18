@@ -408,8 +408,7 @@ describe('Document update/replace', () => {
     cy.get('[data-cy^=DocumentListItem--]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
-    cy.get('.ace_text-input').should('exist')
-    cy.wait(2000)
+    cy.aceReady('[data-cy="JSONEditor"]')
 
     cy.get('[data-cy="JSONEditor"] .ace_line')
       .contains('{')
@@ -447,8 +446,7 @@ describe('Document update/replace', () => {
     cy.get('[data-cy^=DocumentListItem--]').should('be.visible')
     cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
-    cy.get('.ace_text-input').should('exist')
-    cy.wait(2000)
+    cy.aceReady()
 
     cy.get('.ace_line')
       .contains('{')
