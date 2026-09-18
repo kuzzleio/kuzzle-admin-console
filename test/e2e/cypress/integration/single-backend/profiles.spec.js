@@ -119,10 +119,7 @@ describe('Profiles', () => {
     )
 
     cy.get('[data-cy=ProfileCreateOrUpdate-createBtn]').click()
-    cy.wait(1000)
-    cy.location().should(location => {
-      expect(location.hash).to.equal('#/security/profiles/create')
-    })
+    cy.shouldStayOn('#/security/profiles/create')
 
     cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').type(
       '{selectall}validprofile',
@@ -140,10 +137,7 @@ describe('Profiles', () => {
       .type(`SuM UNV4L1d jayZON Kood`)
 
     cy.get('[data-cy=ProfileCreateOrUpdate-createBtn]').click()
-    cy.wait(1000)
-    cy.location().should(location => {
-      expect(location.hash).to.equal('#/security/profiles/create')
-    })
+    cy.shouldStayOn('#/security/profiles/create')
   })
 
   it('Should be able to create a new profile', () => {

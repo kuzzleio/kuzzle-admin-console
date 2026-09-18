@@ -75,10 +75,7 @@ describe('Roles', () => {
     )
 
     cy.get('[data-cy=RoleCreateOrUpdate-createBtn]').click()
-    cy.wait(1000)
-    cy.location().should(location => {
-      expect(location.hash).to.equal('#/security/roles/create')
-    })
+    cy.shouldStayOn('#/security/roles/create')
 
     cy.get('[data-cy="RoleCreateOrUpdate-id"] input').type('{selectall}valid', {
       force: true
@@ -93,10 +90,7 @@ describe('Roles', () => {
       .type(`SuM UNV4L1d jayZON Kood`)
 
     cy.get('[data-cy=RoleCreateOrUpdate-createBtn]').click()
-    cy.wait(1000)
-    cy.location().should(location => {
-      expect(location.hash).to.equal('#/security/roles/create')
-    })
+    cy.shouldStayOn('#/security/roles/create')
   })
 
   it('Should be able to create a new role', () => {

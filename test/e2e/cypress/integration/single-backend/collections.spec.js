@@ -33,10 +33,7 @@ describe('Collection management', function() {
     cy.invalidFeedback('[data-cy="CollectionCreateOrUpdate-name"]').should('contain', 'Please fill-in a valid collection name')
 
     cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click()
-    cy.wait(1000)
-    cy.location().should(location => {
-      expect(location.hash).to.equal(`#/data/${indexName}/create`)
-    })
+    cy.shouldStayOn(`#/data/${indexName}/create`)
 
     cy.get('[data-cy="CollectionCreateOrUpdate-name"] input').type(
       '{selectall}validcoll',
@@ -55,10 +52,7 @@ describe('Collection management', function() {
       .type(`SuM UNV4L1d jayZON Kood`)
 
     cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click()
-    cy.wait(1000)
-    cy.location().should(location => {
-      expect(location.hash).to.equal(`#/data/${indexName}/create`)
-    })
+    cy.shouldStayOn(`#/data/${indexName}/create`)
   })
 
   it('Should be able to create a collection and access it', function() {
