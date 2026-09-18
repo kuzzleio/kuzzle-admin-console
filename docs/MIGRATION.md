@@ -223,12 +223,22 @@ produira — vrai à l'instant zéro, donc à protéger. `expectNoOfflineToast()
 affirme une **transition** — le toast est là quand on appelle, il doit partir :
 le réessai est ancré, il ne peut pas être faussement vert.
 
-Reste, hors périmètre d'ADR-0006 mais de la même famille — une action de
-l'interface suivie d'une commande non réessayée, sans ancre entre les deux :
-`watch.spec.js` publie un message juste après avoir cliqué `Watch-subscribeBtn`
-sur **4 de ses 5 sites**, sans attendre que la souscription soit établie. Le
-cinquième montre l'ancre à reprendre : le bouton passe de `Subscribe` à
-`Unsubscribe`. Non traité ici, pas encore observé en échec.
+Même famille, hors périmètre d'ADR-0006 — une action de l'interface suivie d'une
+commande non réessayée, sans ancre entre les deux — et **traité** : `watch.spec.js`
+publiait un message juste après avoir cliqué `Watch-subscribeBtn` sur **5 de ses
+6 sites**, sans attendre que la souscription soit établie. Le sixième portait
+déjà l'ancre : le libellé du bouton passe de `Subscribe` à `Unsubscribe` quand
+`realtime.subscribe()` est résolue. Garde-fou, souscription retardée de 1,5 s :
+
+| `watch.spec.js` | Résultat |
+|---|---|
+| avant | ❌ **5 échecs** — exactement les 5 sites non ancrés ; le 6ᵉ tient |
+| après | ✅ 9/9 |
+
+Publier avant que la souscription soit établie, c'est publier dans le vide : le
+message part, personne ne l'écoute encore, et la notification attendue
+n'arrivera jamais. Aucun échec n'avait encore été observé sur ces sites — la
+fenêtre est étroite en local — mais c'est le même mécanisme que G-001.
 
 Anti-récidive : la règle `no-restricted-syntax` de
 `test/e2e/cypress/.eslintrc.cjs` rejette `cy.wait(<littéral numérique>)`. ✅

@@ -67,7 +67,12 @@ describe('Watch', () => {
 
   it('Should display last notification', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
-    cy.get('[data-cy="Watch-subscribeBtn"]').click()
+    cy.get('[data-cy="Watch-subscribeBtn"]')
+      .click()
+      // Le libellé ne bascule qu'une fois `realtime.subscribe()` résolue :
+      // c'est le signal que la souscription est établie. Publier avant, c'est
+      // publier dans le vide — le message part, personne ne l'écoute encore.
+      .should('contain', 'Unsubscribe')
 
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
       message: 'This is a notification'
@@ -103,7 +108,9 @@ describe('Watch', () => {
           force: true
         }
       )
-    cy.get('[data-cy="Watch-subscribeBtn"]').click()
+    cy.get('[data-cy="Watch-subscribeBtn"]')
+      .click()
+      .should('contain', 'Unsubscribe')
 
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
       firstName: 'Luca'
@@ -144,7 +151,9 @@ describe('Watch', () => {
 
   it('Should properly clear notifications without unsubscribing', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
-    cy.get('[data-cy="Watch-subscribeBtn"]').click()
+    cy.get('[data-cy="Watch-subscribeBtn"]')
+      .click()
+      .should('contain', 'Unsubscribe')
 
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
       firstName: 'Luca'
@@ -177,7 +186,9 @@ describe('Watch', () => {
       )
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
     cy.get('[data-cy="Watch-filterAppliedPill"]').should('be.visible')
-    cy.get('[data-cy="Watch-subscribeBtn"]').click()
+    cy.get('[data-cy="Watch-subscribeBtn"]')
+      .click()
+      .should('contain', 'Unsubscribe')
 
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
       firstName: 'Luca'
@@ -190,7 +201,9 @@ describe('Watch', () => {
 
   it('Should limit the number of displayed notifications', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
-    cy.get('[data-cy="Watch-subscribeBtn"]').click()
+    cy.get('[data-cy="Watch-subscribeBtn"]')
+      .click()
+      .should('contain', 'Unsubscribe')
 
     for (let i = 0; i < 60; i++) {
       cy.request(
