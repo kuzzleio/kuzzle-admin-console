@@ -26,7 +26,7 @@ describe('Indexes', () => {
 
     cy.get('[data-cy="CreateIndexModal-name"] input').clear({ force: true })
     cy.get('[data-cy="CreateIndexModal-createBtn"]').click()
-    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="CreateIndexModal-name"]').should(
       'contain',
       'This field cannot be empty'
     )
@@ -34,7 +34,7 @@ describe('Indexes', () => {
     cy.get('[data-cy="CreateIndexModal-name"] input').type(' ', {
       force: true
     })
-    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="CreateIndexModal-name"]').should(
       'contain',
       'This field cannot contain just whitespaces'
     )
@@ -42,7 +42,7 @@ describe('Indexes', () => {
     cy.get('[data-cy="CreateIndexModal-name"] input').type('s', {
       force: true
     })
-    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="CreateIndexModal-name"]').should(
       'contain',
       'This field cannot start with a whitespace'
     )
@@ -50,7 +50,7 @@ describe('Indexes', () => {
     cy.get('[data-cy="CreateIndexModal-name"] input').type('{selectall}A', {
       force: true
     })
-    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="CreateIndexModal-name"]').should(
       'contain',
       'This field cannot contain uppercase letters'
     )
@@ -58,7 +58,7 @@ describe('Indexes', () => {
     cy.get('[data-cy="CreateIndexModal-name"] input').type('{selectall}asd#', {
       force: true
     })
-    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="CreateIndexModal-name"]').should(
       'contain',
       'This field cannnot contain invalid chars'
     )
@@ -95,7 +95,7 @@ describe('Indexes', () => {
     cy.get('[data-cy="DeleteIndexModal-name"').type(indexName, { force: true })
     cy.get('[data-cy="DeleteIndexModal-deleteBtn"]').click()
 
-    cy.get('.IndexesPage').should('not.contain', indexName)
+    cy.get('[data-cy=IndexesPage]').should('not.contain', indexName)
   })
 
   it('Should be able to bulk delete some indexes', () => {
@@ -121,7 +121,7 @@ describe('Indexes', () => {
     )
     cy.get('[data-cy="BulkDeleteIndexModal-deleteBtn"]').click()
 
-    cy.get('.IndexesPage').should('not.contain', `${indexName}1`)
-    cy.get('.IndexesPage').should('not.contain', `${indexName}2`)
+    cy.get('[data-cy=IndexesPage]').should('not.contain', `${indexName}1`)
+    cy.get('[data-cy=IndexesPage]').should('not.contain', `${indexName}2`)
   })
 })

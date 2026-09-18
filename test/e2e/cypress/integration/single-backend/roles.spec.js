@@ -48,7 +48,7 @@ describe('Roles', () => {
     cy.contains('Create a new role')
 
     cy.get('[data-cy="RoleCreateOrUpdate-createBtn"]').click()
-    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="RoleCreateOrUpdate-id"]').should(
       'contain',
       'This field cannot be empty'
     )
@@ -57,7 +57,7 @@ describe('Roles', () => {
       force: true
     })
 
-    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="RoleCreateOrUpdate-id"]').should(
       'contain',
       'This field cannot contain just whitespaces'
     )
@@ -69,7 +69,7 @@ describe('Roles', () => {
       }
     )
 
-    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="RoleCreateOrUpdate-id"]').should(
       'contain',
       'This field cannot be empty'
     )
@@ -216,7 +216,7 @@ describe('Roles', () => {
     cy.get('[data-cy="RoleFilters-searchBar"]').type('document{enter}')
     cy.get('[data-cy="RoleList-list"]').should('contain', roleId)
 
-    cy.get('.b-form-tag[title=document] > .b-form-tag-remove').click()
+    cy.removeFormTag('document').click()
     cy.get('[data-cy="RoleFilters-searchBar"]').type('security{enter}')
     cy.get('[data-cy="RoleList-list"]').should('not.contain', roleId)
   })

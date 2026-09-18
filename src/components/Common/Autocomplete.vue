@@ -2,6 +2,7 @@
   <div class="Autocomplete">
     <b-form-input
       v-model="inputValue"
+      data-cy="Autocomplete-input"
       type="text"
       :class="inputClass"
       :placeholder="placeholder"
@@ -13,7 +14,7 @@
       @keydown.enter.prevent="onEnter"
     />
 
-    <ul v-show="isOpen" class="Autocomplete-results">
+    <ul v-show="isOpen" class="Autocomplete-results" data-cy="Autocomplete-results">
       <li
         v-for="(result, i) in results"
         :key="result"

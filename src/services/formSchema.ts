@@ -82,6 +82,12 @@ class FormSchemaService {
           label: mappingFieldName,
           model: mappingFieldName,
           mapping: mappingFieldValues,
+          // Ancrage de test stable : les ids rendus par vue-form-generator
+          // dépendent du nom du champ de mapping et disparaîtront avec la
+          // réimplémentation de VFG (cf. docs/MIGRATION.md § 3.1).
+          attributes: {
+            input: { 'data-cy': `FormField-${mappingFieldName}` },
+          },
         };
 
         schema.fields.push(field);
@@ -123,6 +129,9 @@ interface FormField {
   label: string;
   model: string;
   mapping: object;
+  attributes: {
+    input: Record<string, string>;
+  };
 }
 
 interface Schema {

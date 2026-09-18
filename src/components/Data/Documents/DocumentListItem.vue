@@ -1,7 +1,7 @@
 <template>
   <b-list-group-item
     class="DocumentListView-item p-2 realtime-highlight"
-    :data-cy="`DocumentListItem-${document._id}`"
+    :data-cy="`DocumentListItem--${document._id}`"
   >
     <b-container fluid>
       <b-row align-h="between" no-gutters>

@@ -106,14 +106,14 @@ describe('Profiles', () => {
       force: true
     })
 
-    cy.get('[data-cy="ProfileCreateOrUpdate-id"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="ProfileCreateOrUpdate-id"]').should(
       'contain',
       'This field cannot contain just whitespaces'
     )
 
     cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').clear({ force: true })
 
-    cy.get('[data-cy="ProfileCreateOrUpdate-id"] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy="ProfileCreateOrUpdate-id"]').should(
       'contain',
       'This field cannot be empty'
     )

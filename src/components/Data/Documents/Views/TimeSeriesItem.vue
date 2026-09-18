@@ -3,6 +3,7 @@
     <div class="col relative m-1">
       <button
         class="TimeSeriesColorPickerBtn btn btn-small"
+        data-cy="TimeSeriesItem-colorPickerBtn"
         :style="{ 'background-color': newColor }"
         @click.prevent="togglePicker"
       />
@@ -28,6 +29,7 @@
       <i
         v-if="isUpdatable"
         class="far fa-times-circle TimeSeriesColorPickerRemoveBtn"
+        data-cy="TimeSeriesItem-removeBtn"
         @click.prevent="$emit('timeseriesitem::remove', index)"
       />
     </div>

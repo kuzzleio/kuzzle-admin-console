@@ -1,5 +1,5 @@
 <template>
-  <form class="RawFilter">
+  <form class="RawFilter" data-cy="RawFilter">
     <json-editor
       id="rawsearch"
       ref="jsoneditor"

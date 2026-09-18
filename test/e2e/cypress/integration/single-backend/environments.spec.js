@@ -62,7 +62,7 @@ describe('Environments', function() {
       `v${backendVersion}.x`
     )
     cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.get('#env-name .invalid-feedback')
+    cy.invalidFeedback('#env-name')
       .should('be.visible')
       .should('contain', `An environment with the same name already exists`)
   })
@@ -97,9 +97,7 @@ describe('Environments', function() {
     )
 
     cy.get('[data-cy=CreateEnvironment-port]').type('{selectall} tralala')
-    cy.get(
-      '[data-cy="CreateEnvironment-port--group"] .invalid-feedback'
-    ).should('not.exist')
+    cy.invalidFeedback('[data-cy="CreateEnvironment-port--group"]').should('not.exist')
 
     cy.get('[data-cy=Environment-SubmitButton]').click()
     cy.url().should('contain', '/create-connection/')

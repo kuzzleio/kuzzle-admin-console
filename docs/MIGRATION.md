@@ -27,29 +27,74 @@ Légende : ⬜ à faire · 🟡 en cours · ✅ fait · ⛔ bloqué · ➖ sans 
 
 ### Prérequis bloquant — ✅ levé le 2026-09-18
 
-- [x] **Auditer les sélecteurs Cypress** ([#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017)).
+- [x] **Auditer les sélecteurs Cypress** ([#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017))
+- [x] **Sécuriser les sélecteurs fragiles** — 0 restant dans les tests actifs
 
-**Verdict : le filet tient.** Sur 940 appels de sélecteur dans les 17 specs,
-**867 (92 %) sont sains** — 749 s'appuient sur des attributs `data-cy`
-(281 posés dans 82 des 140 composants), le reste sur du texte, des tags ou des
-sélecteurs de librairies tierces (Ace, Leaflet) qui ne bougeront pas.
+**Le filet tient.** Sur 940 appels de sélecteur dans les 17 specs, la très
+grande majorité s'appuyait déjà sur des attributs `data-cy` (281 posés dans 82
+des 140 composants). Le projet a été discipliné sur ce point, et c'est ce qui
+rend la phase 2 tenable.
 
-**73 appels (7 %) sont fragiles**, sur seulement 13 sélecteurs distincts. C'est
-une demi-journée de travail, pas un obstacle. À traiter **avant** la phase 2 :
+**Chiffres après exclusion des tests désactivés** (voir ci-dessous) : 771 appels
+actifs, dont **61 fragiles (7,9 %)**. Tous ont été repris. Il en reste **0**.
 
-| Catégorie | Appels | Détail | Casse en |
-|---|---:|---|---|
-| Classe applicative | 49 | `.IndexesPage` (19), `.DocumentListView-item` (18), `.CollectionCreate` (3), `.CollectionList`, `.DocumentsListView`, `.BasicFilter-submitBtn`, `.BasicFilter-predicates`, `.RawFilter`, `.TimeSeriesColorPickerBtn`, une chaîne `.col > .col > .col > .Autocomplete > input` | phase 2 |
-| Classe Bootstrap | 16 | `.invalid-feedback` (14, presque toujours combiné à un `data-cy` parent), `.far`, chaîne de `.col`/`.row` | phase 2 |
-| `id` généré par `vue-form-generator` | 5 | `input#age`, `input#name`, `textarea#job` | phase 2 (réimplémentation VFG) |
-| Interne `bootstrap-vue` | 3 | `#UserUpdate-customTab___BV_tab_button__` (2), `.b-form-tag[title=document] > .b-form-tag-remove` | phase 2 |
+| Catégorie | Appels | Traitement |
+|---|---:|---|
+| Classe applicative (`.IndexesPage`, `.DocumentListView-item`, `.CollectionCreate`…) | 39 | `data-cy` posé sur la racine du composant, sélecteur réécrit |
+| Classe Bootstrap (`.invalid-feedback` ×12, `.dropdown-toggle`) | 14 | commande `cy.invalidFeedback()` ; `:toggle-attrs` sur le `b-dropdown` |
+| `id` généré par `vue-form-generator` | 5 | `attributes.input` dans `formSchema.ts` → `data-cy="FormField-<champ>"` |
+| Interne `bootstrap-vue` | 3 | `data-cy` déjà présent via `title-link-attributes` ; commande `cy.removeFormTag()` |
 
-Specs les plus exposées : `search` (33), `docs` (11), `indexes` (8),
-`formView` (5). Les 7 autres specs ont 4 appels fragiles ou moins.
+**Principe retenu** : ce qui nous appartient reçoit un `data-cy`. Ce qui est
+généré par `bootstrap-vue` et sur quoi nous ne pouvons pas poser d'attribut est
+**isolé dans une commande Cypress** (`test/e2e/cypress/support/commands.js`).
+En phase 2, il n'y aura que ce bloc à reprendre, pas les 17 specs.
 
-**Action** : poser un `data-cy` sur les 13 cibles et réécrire les sélecteurs
-correspondants. Les `.invalid-feedback` ont déjà un parent `data-cy` : il suffit
-d'ajouter un `data-cy` sur le message d'erreur lui-même.
+#### ⚠️ Découverte : la CI est verte en n'exécutant qu'une fraction des tests
+
+L'audit a mis au jour **deux `.only` commités dans le dépôt**. Un `.only`
+désactive silencieusement tout le reste du fichier : Cypress ne signale rien,
+et la CI affiche « All specs passed » en ayant exécuté une fraction des tests.
+
+| Fichier | Marqueur | Depuis | Tests masqués |
+|---|---|---|---|
+| `docs.spec.js:559` | `describe.only('Realtime')` | **janvier 2022** ([#938](https://github.com/kuzzleio/kuzzle-admin-console/pull/938)) | 11 — tout `Document List` et `Document update/replace` |
+| `formView.spec.js:112` | `it.only` | **septembre 2024** (`b575b77a`) | 3 |
+
+S'ajoutent **6 tests explicitement désactivés** (`it.skip`) : `docs` ×1
+(time series), `search` ×2 (agrégations), `environments` ×3 (mise à jour d'un
+env, spinner de reconnexion, bascule d'env).
+
+**Soit 20 tests inactifs.** La spec `docs` en particulier exécute 8 tests sur
+les 20 qu'elle contient, et ce depuis plus de trois ans.
+
+En réactivant temporairement `docs.spec.js` pour valider les sélecteurs, **2 de
+ces tests échouent déjà sur la branche `4-dev` de référence**, indépendamment de
+tout changement :
+
+- `Should show the the _id even if collection has id field` — le test fait un
+  `.within()` en supposant une seule ligne de document, alors que la collection
+  en contient plusieurs à ce stade du fichier ;
+- `Should handle the map view properly for shapes` — Kuzzle renvoie `400` à la
+  création de la collection avec un mapping `geo_shape`.
+
+Le test time series (`it.skip`) est mort pour une raison distincte : les boutons
+de vue « time series » et « map » sont **commentés** dans
+`src/components/Data/Documents/ListViewButtons.vue`, et les classes qu'il cible
+(`.DocumentList-timeseries`, `.DocumentList-materializeCollection`) n'existent
+plus dans les sources. Enregistré avec Cypress Studio, il est fait de longues
+chaînes structurelles qui n'auraient de toute façon survécu à aucune refonte.
+
+**Rien de tout cela n'a été réparé ici** : c'est un chantier distinct, avec une
+question produit derrière (la vue time series existe-t-elle encore ?). Mais il
+faut le trancher **avant la phase 2** : un filet de sécurité dont on surestime
+la couverture est plus dangereux qu'un filet dont on connaît les trous.
+
+Suivi : [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020).
+
+À noter, deux raisons pour lesquelles le problème a pu vivre si longtemps : le
+job `lint` de la CI est en `continue-on-error: true`, et ESLint ne scanne que
+`src` — jamais `test/`. Les deux sont à revoir en phase 0.
 
 ---
 

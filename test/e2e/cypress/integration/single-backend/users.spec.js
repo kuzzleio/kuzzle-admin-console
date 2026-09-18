@@ -294,13 +294,13 @@ describe('Users', function() {
   it('Should render a visual feedback and prevent submitting when input is not valid', () => {
     cy.visit(`/#/security/users/create`)
     cy.get('[data-cy=UserBasic-kuid] input').type(' ')
-    cy.get('[data-cy=UserBasic-kuid] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy=UserBasic-kuid]').should(
       'contain',
       'The KUID cannot contain just whitespaces'
     )
 
     cy.get('[data-cy=UserBasic-kuid] input').type(' someKuid')
-    cy.get('[data-cy=UserBasic-kuid] .invalid-feedback').should(
+    cy.invalidFeedback('[data-cy=UserBasic-kuid]').should(
       'contain',
       'The KUID cannot start with a whitespace'
     )
@@ -384,7 +384,7 @@ describe('Users', function() {
       `{selectall}${credentials.password}`
     )
 
-    cy.get('#UserUpdate-customTab___BV_tab_button__').click()
+    cy.get('[data-cy=UserUpdate-customTab]').click()
     cy.get('[data-cy="UserCustomContent-jsonEditor"] .ace_line').should(
       'be.visible'
     )
@@ -485,7 +485,7 @@ describe('Users', function() {
       `{selectall}${newCredentials.password}`
     )
 
-    cy.get('#UserUpdate-customTab___BV_tab_button__').click()
+    cy.get('[data-cy=UserUpdate-customTab]').click()
     cy.get('[data-cy="UserCustomContent-jsonEditor"] .ace_line').should(
       'be.visible'
     )
