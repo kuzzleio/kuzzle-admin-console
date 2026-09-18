@@ -347,12 +347,9 @@ describe('Roles', () => {
           Authorization: `Bearer ${token}`
         }
       }).should(getRoleResponse => {
+        // security:restrictDefaultRights réapplique la configuration standard
+        // du backend : pas de joker `*`, seules les actions listées passent.
         expect(getRoleResponse.body.result._source.controllers).to.eql({
-          '*': {
-            actions: {
-              '*': false
-            }
-          },
           auth: {
             actions: {
               checkToken: true,
@@ -365,6 +362,31 @@ describe('Roles', () => {
             actions: {
               publicApi: true,
               openapi: true
+            }
+          }
+        })
+      })
+
+      cy.request({
+        method: 'GET',
+        url: `${kuzzleUrl}/roles/default`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).should(getRoleResponse => {
+        expect(getRoleResponse.body.result._source.controllers).to.eql({
+          auth: {
+            actions: {
+              checkToken: true,
+              getCurrentUser: true,
+              getMyRights: true,
+              logout: true,
+              updateSelf: true
+            }
+          },
+          server: {
+            actions: {
+              publicApi: true
             }
           }
         })

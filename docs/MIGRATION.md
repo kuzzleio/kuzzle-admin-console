@@ -434,6 +434,54 @@ Gabarit à copier :
   la question du support de Kuzzle v1 se repose : le jour où il s'arrête, ce
   code part avec.
 
+#### G-003 — Cypress se connecte à `127.0.0.1`, Vite n'écoute que sur `::1`
+
+- **Contexte** : exécution locale d'une spec e2e sur macOS (PR #1013).
+- **Symptôme** : les 9 tests de `roles.spec.js` échouent tous sur
+  `cy.visit()` — *« Error: connect ECONNREFUSED 127.0.0.1:8080 »* — alors que
+  `curl http://localhost:8080` répond bien et que la CI, elle, est verte.
+- **Cause** : `npm run dev` sans `--host` fait écouter Vite sur `localhost`,
+  que macOS résout en IPv6 `::1` uniquement. `curl` suit la même résolution et
+  réussit ; le proxy Node de Cypress, lui, compose `127.0.0.1` en dur. Les deux
+  adresses ne désignent pas la même socket. Sur Ubuntu (la CI) le cas ne se pose
+  pas, d'où l'asymétrie local / CI.
+- **Solution** : lancer le serveur avec une adresse IPv4 explicite —
+  `npm run dev -- --host 127.0.0.1 --port 8080 --strictPort`. Le `--strictPort`
+  n'est pas cosmétique : sans lui, Vite bascule silencieusement sur 8081 quand
+  8080 est pris et on croit tester un serveur qui n'est pas celui visé.
+- **À retenir** : un « tous les tests échouent au tout premier `cy.visit()` »
+  est presque toujours un problème d'adresse, pas d'application.
+
+#### G-004 — `security:restrictDefaultRights` n'existe qu'à partir de Kuzzle 2.56
+
+- **Contexte** : PR #1013, remplacement de la révocation des droits anonymes
+  faite côté console par l'action backend dédiée.
+- **Symptôme** : le job *E2E Test - roles* échoue sur la PR alors que le code
+  est correct ; en local, le clic sur « Revoke anonymous rights » ne change
+  rien et la console affiche le toast *« This action is not supported by your
+  Kuzzle version »*.
+- **Cause** : deux causes empilées.
+  1. L'action `security:restrictDefaultRights` a été livrée dans Kuzzle
+     **2.56.0**. La PR avait aligné la devDependency `kuzzle` sur 2.55.0, qui
+     ne l'expose pas — et de toute façon cette devDependency ne pilote rien :
+     le backend des tests vient de `docker-compose` (`kuzzleio/kuzzle:2`), qui
+     était encore en 2.55 au moment de la PR.
+  2. L'assertion de la spec décrivait la sortie de l'ancien code côté console,
+     qui écrivait un joker `'*': { actions: { '*': false } }` explicite. La
+     configuration standard du backend ne contient pas ce joker : elle
+     n'énumère que les actions autorisées. La restriction est identique — ce
+     qui n'est pas listé est refusé — mais la forme du document diffère.
+- **Solution** : l'assertion vérifie désormais la forme produite par le backend
+  (sans joker), et couvre aussi le rôle `default`, que l'action restreint au
+  même titre que `anonymous`. La devDependency `kuzzle` a été retirée par
+  ailleurs (voir #988) : elle n'a jamais servi à rien ici.
+- **À retenir** : `docker-compose.yml` épingle `kuzzleio/kuzzle:2`, un tag
+  flottant. Une PR qui dépend d'une action backend récente peut donc échouer
+  puis passer sans qu'une ligne de code ait bougé, au gré des publications de
+  l'image. Vérifier la version réellement servie avant de conclure à un bug :
+  `curl -s localhost:7512/_publicApi | jq '.result.security | keys'`.
+
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
