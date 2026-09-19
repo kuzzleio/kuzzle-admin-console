@@ -256,8 +256,11 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | Tailwind CSS 4 branché (`@tailwindcss/vite`, compatible Vite 5.4) | ✅ |
 | Tokens de design en variables CSS (`src/assets/tokens.css`) | ✅ |
 | Stratégie de cohabitation avec Bootstrap ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) | ✅ |
-| Première primitive `src/components/ui/` à l'API shadcn-vue | ⬜ |
-| `reka-ui` pour les composants interactifs (modale, dropdown, combobox) | ⬜ |
+| Contrat des primitives ([ADR-0009](adr/0009-contrat-des-primitives-ui.md)) | ✅ |
+| Première primitive : `Button` (`src/components/ui/button/`) | ✅ |
+| `cn()` et les utilitaires shadcn-vue (`cva`, `clsx`, `tailwind-merge`) | ✅ |
+| Primitives suivantes (Badge, Card, Input) | ⬜ |
+| Primitives interactives — écrites à la main, `reka-ui` reporté en phase 4 | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
 plomberie est posée, l'apparence n'est pas décidée. La refonte visuelle se fera
@@ -777,6 +780,43 @@ Gabarit à copier :
   au rendu à l'œil — 4,8 px et 6 px sont indiscernables sur une capture.
 - **Ref** : ADR-0008.
 
+#### G-009 — `tailwind-merge` mal configuré supprime des classes Bootstrap
+
+- **Contexte** : phase 1, écriture de `cn()` pour la première primitive.
+- **Symptôme** : sur un composant portant encore des classes Bootstrap, une
+  classe disparaît du DOM. `cn('m-0 m-3')` rend `m-3`, `cn('bg-primary bg-light')`
+  rend `bg-light`, `cn('text-left text-center')` rend `text-center`.
+- **Cause** : `tailwind-merge` déduplique par groupe d'utilitaires. Sans lui
+  dire que nos classes portent le préfixe `tw:` (ADR-0008), il prend les classes
+  Bootstrap pour des classes Tailwind et en garde une seule — alors que les deux
+  ont un sens pour Bootstrap.
+- **Solution** : `extendTailwindMerge({ prefix: 'tw' })` dans `src/lib/utils.ts`.
+  Vérifié : avec la configuration, `cn('m-0 m-3')` rend bien `m-0 m-3`. À retirer
+  avec le préfixe, en fin de phase 2.
+- **À retenir** : tant que les deux vocabulaires coexistent, tout outil qui
+  *raisonne* sur les noms de classes doit savoir lequel est le nôtre.
+- **Ref** : [ADR-0009](adr/0009-contrat-des-primitives-ui.md).
+
+#### G-010 — Le `<style scoped>` d'un SFC bat les utilitaires Tailwind
+
+- **Contexte** : phase 1, vérification de la cohabitation sur le bundle construit.
+- **Symptôme** : `tw:text-primary-foreground` seule donne `rgb(255, 255, 255)`.
+  La **même** classe, sur un élément portant une règle scopée de SFC, donne
+  `rgb(0, 0, 0)` : l'utilitaire est écrasée. Là encore, aucune erreur.
+- **Cause** : les `<style scoped>` des SFC — et les CSS importés par les
+  composants, comme `vue-form-generator` — sont émis **hors couche**, en tête de
+  bundle. Le CSS hors couche l'emporte sur *toutes* les couches, `utilities`
+  comprise. Ranger le legacy dans une couche (ADR-0008) règle le cas Bootstrap,
+  pas celui-là.
+- **Solution** : reprendre un écran, c'est retirer ses classes Bootstrap **et**
+  ses styles scopés décoratifs (couleur, espacement, rayon, typographie). Un
+  `<style scoped>` qui subsiste gagne en silence
+  ([ADR-0009](adr/0009-contrat-des-primitives-ui.md), règle 4).
+- **À retenir** : la garantie d'ADR-0008 vaut face à Bootstrap, pas face au
+  style scopé du composant qu'on reprend. Vérifier avec `getComputedStyle`, pas
+  à l'œil.
+- **Ref** : [ADR-0009](adr/0009-contrat-des-primitives-ui.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -818,3 +858,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-18 | Interdire `cy.wait(<durée fixe>)` : attentes sur assertion | [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md) |
 | 2026-09-18 | Le lot E s'assertionne aussi : plafond de patience, pas de sommeil | [ADR-0007](adr/0007-lot-e-assertion-plutot-que-sommeil.md) |
 | 2026-09-19 | Cohabitation Tailwind / Bootstrap : pas de preflight, couche `legacy`, préfixe `tw:` | [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md) |
+| 2026-09-19 | Contrat des primitives UI en Vue 2 : API shadcn-vue, deux écarts nommés | [ADR-0009](adr/0009-contrat-des-primitives-ui.md) |
