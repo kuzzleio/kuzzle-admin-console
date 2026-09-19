@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-18 · **Phase courante** : 0 — Toolchain
+**Dernière mise à jour** : 2026-09-19 · **Phase courante** : 1 — Fondations design
 
 ---
 
@@ -15,7 +15,7 @@
 | Phase | Objet | Epic | Statut |
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
-| **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ⬜ À faire |
+| **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ⬜ À faire |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
@@ -249,6 +249,30 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 `commands.js`.
 
 
+### 1.2 Fondations design — phase 1
+
+| Élément | Statut |
+|---|---|
+| Tailwind CSS 4 branché (`@tailwindcss/vite`, compatible Vite 5.4) | ✅ |
+| Tokens de design en variables CSS (`src/assets/tokens.css`) | ✅ |
+| Stratégie de cohabitation avec Bootstrap ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) | ✅ |
+| Contrat des primitives ([ADR-0009](adr/0009-contrat-des-primitives-ui.md)) | ✅ |
+| Première primitive : `Button` (`src/components/ui/button/`) | ✅ |
+| `cn()` et les utilitaires shadcn-vue (`cva`, `clsx`, `tailwind-merge`) | ✅ |
+| Primitives suivantes (Badge, Card, Input) | ⬜ |
+| Primitives interactives — écrites à la main, `reka-ui` reporté en phase 4 | ⬜ |
+
+Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
+plomberie est posée, l'apparence n'est pas décidée. La refonte visuelle se fera
+en changeant ces valeurs, à un seul endroit — c'est précisément ce qu'on achète.
+Le jeu sombre est défini mais branché sur rien.
+
+Trois réglages temporaires rendent la cohabitation tenable pendant la phase 2,
+tous mesurés plutôt que supposés (cf. [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) :
+**pas de preflight**, **legacy rangé dans une couche CSS**, et **utilitaires
+préfixées `tw:`**. Les trois se retirent mécaniquement avec Bootstrap, en fin de
+phase 2.
+
 ---
 
 ## 2. Toolchain (phase 0)
@@ -276,8 +300,8 @@ compatibilité **avant** d'engager la montée.
 
 | Paquet | Problème | Traitement | Phase | Statut |
 |---|---|---|---|---|
-| `bootstrap-vue` 2.23.1 | aucune version Vue 3, **incompatible `@vue/compat`** | supprimé, remplacé par Tailwind + primitives locales | 2 | ⬜ |
-| `bootstrap` 4.6.2 | supprimé avec le précédent | Tailwind | 2 | ⬜ |
+| `bootstrap-vue` 2.23.1 | aucune version Vue 3, **incompatible `@vue/compat`** | supprimé, remplacé par Tailwind + primitives locales | 2 | 🟡 Tailwind branché, cohabitation cadrée ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) |
+| `bootstrap` 4.6.2 | supprimé avec le précédent | Tailwind | 2 | 🟡 idem |
 | `vue-form-generator` 2.3.4 | **abandonné**, aucun successeur | à réimplémenter — cœur de l'édition de documents | 2 | ⬜ |
 | `vue-multipane` 0.9.5 | **abandonné** | splitter à réimplémenter (layout Data) | 2 | ⬜ |
 | `vuejs-logger` 1.5.5 | Vue 2 uniquement | remplacer par un wrapper maison | 3 | ⬜ |
@@ -734,6 +758,92 @@ Gabarit à copier :
   partagée dessus.
 - **Ref** : rencontré en corrigeant `formView.spec.js`.
 
+#### G-008 — Une utilitaire Tailwind peut perdre contre Bootstrap sans rien signaler
+
+- **Contexte** : phase 1, branchement de Tailwind à côté de Bootstrap 4.
+- **Symptôme** : sur `<button class="btn btn-primary tw:bg-accent rounded-lg">`,
+  le fond prend bien la valeur du token — mais le rayon vaut **4,8 px** au lieu
+  des 6 px attendus. Aucune erreur, aucun avertissement : juste la mauvaise
+  valeur.
+- **Cause** : Bootstrap 4 définit lui aussi `.rounded-lg`, en
+  `border-radius: .3rem !important`. Ranger Bootstrap dans une couche CSS basse
+  ne suffit pas : une déclaration `!important` **inverse** l'ordre des couches,
+  la couche la plus basse l'emporte. Les collisions de noms sont nombreuses —
+  `rounded`, `border`, `shadow`, `text-center`, `m-0`, `p-0`, `w-100`,
+  `d-block`, `bg-primary`…
+- **Solution** : préfixer les utilitaires Tailwind (`tw:`) tant que Bootstrap
+  est présent. Vérifié : avec le préfixe, fond **et** rayon prennent les valeurs
+  attendues. Décision et retrait en
+  [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md).
+- **À retenir** : un conflit de CSS ne casse rien, il décale. Sur un écran
+  repris, mesurer la valeur calculée (`getComputedStyle`) plutôt que de se fier
+  au rendu à l'œil — 4,8 px et 6 px sont indiscernables sur une capture.
+- **Ref** : ADR-0008.
+
+#### G-009 — `tailwind-merge` mal configuré supprime des classes Bootstrap
+
+- **Contexte** : phase 1, écriture de `cn()` pour la première primitive.
+- **Symptôme** : sur un composant portant encore des classes Bootstrap, une
+  classe disparaît du DOM. `cn('m-0 m-3')` rend `m-3`, `cn('bg-primary bg-light')`
+  rend `bg-light`, `cn('text-left text-center')` rend `text-center`.
+- **Cause** : `tailwind-merge` déduplique par groupe d'utilitaires. Sans lui
+  dire que nos classes portent le préfixe `tw:` (ADR-0008), il prend les classes
+  Bootstrap pour des classes Tailwind et en garde une seule — alors que les deux
+  ont un sens pour Bootstrap.
+- **Solution** : `extendTailwindMerge({ prefix: 'tw' })` dans `src/lib/utils.ts`.
+  Vérifié : avec la configuration, `cn('m-0 m-3')` rend bien `m-0 m-3`. À retirer
+  avec le préfixe, en fin de phase 2.
+- **À retenir** : tant que les deux vocabulaires coexistent, tout outil qui
+  *raisonne* sur les noms de classes doit savoir lequel est le nôtre.
+- **Ref** : [ADR-0009](adr/0009-contrat-des-primitives-ui.md).
+
+#### G-010 — Le `<style scoped>` d'un SFC bat les utilitaires Tailwind
+
+- **Contexte** : phase 1, vérification de la cohabitation sur le bundle construit.
+- **Symptôme** : `tw:text-primary-foreground` seule donne `rgb(255, 255, 255)`.
+  La **même** classe, sur un élément portant une règle scopée de SFC, donne
+  `rgb(0, 0, 0)` : l'utilitaire est écrasée. Là encore, aucune erreur.
+- **Cause** : les `<style scoped>` des SFC — et les CSS importés par les
+  composants, comme `vue-form-generator` — sont émis **hors couche**, en tête de
+  bundle. Le CSS hors couche l'emporte sur *toutes* les couches, `utilities`
+  comprise. Ranger le legacy dans une couche (ADR-0008) règle le cas Bootstrap,
+  pas celui-là.
+- **Solution** : reprendre un écran, c'est retirer ses classes Bootstrap **et**
+  ses styles scopés décoratifs (couleur, espacement, rayon, typographie). Un
+  `<style scoped>` qui subsiste gagne en silence
+  ([ADR-0009](adr/0009-contrat-des-primitives-ui.md), règle 4).
+- **À retenir** : la garantie d'ADR-0008 vaut face à Bootstrap, pas face au
+  style scopé du composant qu'on reprend. Vérifier avec `getComputedStyle`, pas
+  à l'œil.
+- **Ref** : [ADR-0009](adr/0009-contrat-des-primitives-ui.md).
+
+#### G-013 — Un `@import` de `.css` placé dans un `@layer` sort du bundle
+
+- **Contexte** : phase 1, mise de `style.scss` dans la couche `legacy` (ADR-0008).
+- **Symptôme** : six specs e2e échouent d'un coup avec
+  `cy.click() failed because this element is not visible: <a data-cy="MainMenu-logoutBtn">`,
+  `effective width and height of: 0 x 0 pixels`. Le build passe, le lint passe,
+  la preview se déploie. En réalité **toutes les icônes de la console ont
+  disparu** : un `<a>` dont le seul contenu est un `<i class="fas fa-…">` mesure
+  0 × 0 sans la fonte.
+- **Cause** : `@import '@fortawesome/fontawesome-free/css/all.css'` était dans
+  `style.scss`. Sass hisse l'`@import` d'un fichier `.css` **hors** du bloc
+  `@layer`, en tête de feuille ; Vite cesse alors de le résoudre et le laisse
+  tel quel. Le bundle contient `@import"@fortawesome/fontawesome-free/css/all.css"`,
+  un spécificateur que le navigateur ne sait pas résoudre. Aucune erreur nulle
+  part — ni au build, ni à l'exécution.
+- **Solution** : importer la feuille depuis `tailwind.css`, où c'est
+  `@tailwindcss/vite` qui résout, avec la couche en toutes lettres :
+  `@import '@fortawesome/fontawesome-free/css/all.css' layer(legacy);`.
+  Vérifié : la fonte est de retour dans le bundle, dans la couche `legacy`, et
+  les `.woff2` sont émis.
+- **À retenir** : après une intervention sur la feuille de styles, vérifier que
+  les dépendances CSS sont **encore dans le bundle** — `grep` sur une règle
+  connue — et pas seulement que le build passe. Et rejouer les specs contre un
+  `vite preview` du build, pas contre le serveur de dev : les sept specs de
+  `login` passaient en dev et échouaient sur le bundle.
+- **Ref** : [#1034](https://github.com/kuzzleio/kuzzle-admin-console/pull/1034).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -774,3 +884,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-18 | Conserver les deux SDK `kuzzle-sdk` v6 et v7 | [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) |
 | 2026-09-18 | Interdire `cy.wait(<durée fixe>)` : attentes sur assertion | [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md) |
 | 2026-09-18 | Le lot E s'assertionne aussi : plafond de patience, pas de sommeil | [ADR-0007](adr/0007-lot-e-assertion-plutot-que-sommeil.md) |
+| 2026-09-19 | Cohabitation Tailwind / Bootstrap : pas de preflight, couche `legacy`, préfixe `tw:` | [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md) |
+| 2026-09-19 | Contrat des primitives UI en Vue 2 : API shadcn-vue, deux écarts nommés | [ADR-0009](adr/0009-contrat-des-primitives-ui.md) |

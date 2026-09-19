@@ -1,0 +1,35 @@
+/*
+ * Fondations Tailwind — phase 1 du chantier de modernisation.
+ *
+ * Deux écarts par rapport à l'import standard `@import "tailwindcss"`, tous
+ * deux imposés par la cohabitation avec Bootstrap 4 pendant la phase 2
+ * (cf. ADR-0008) :
+ *
+ * 1. **Pas de preflight.** La réinitialisation de Tailwind remettrait à plat
+ *    ce sur quoi reposent les 140 composants encore en Bootstrap. Elle sera
+ *    réintroduite quand Bootstrap sortira, en fin de phase 2.
+ *
+ * 2. **Le legacy est rangé dans une couche.** Une règle d'une couche perd
+ *    toujours face à une règle d'une couche déclarée après elle, quelle que
+ *    soit sa spécificité. Bootstrap et nos feuilles SCSS historiques sont donc
+ *    dans `legacy`, déclarée en premier : une utilitaire Tailwind posée sur un
+ *    écran en cours de reprise gagne sans qu'on ait à surenchérir en `!important`
+ *    ou en sélecteurs plus spécifiques.
+ */
+@layer legacy, theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme) prefix(tw);
+@import 'tailwindcss/utilities.css' layer(utilities) prefix(tw);
+
+@import './tokens.css';
+
+/*
+ * FontAwesome, rangé dans la même couche que le reste du legacy.
+ *
+ * Il ne peut pas être importé depuis `style.scss` : Sass hisse l'`@import`
+ * d'un fichier `.css` hors du bloc `@layer`, Vite cesse alors de le résoudre,
+ * et la feuille sort du bundle sans que rien ne le signale — toutes les icônes
+ * de la console disparaissent (G-013). Ici, c'est `@tailwindcss/vite` qui
+ * résout l'import, et `layer()` qui le range.
+ */
+@import '@fortawesome/fontawesome-free/css/all.css' layer(legacy);

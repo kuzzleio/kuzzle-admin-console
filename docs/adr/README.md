@@ -29,6 +29,8 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0005](0005-conserver-les-deux-sdk-kuzzle.md) | Conserver les deux SDK `kuzzle-sdk` v6 et v7 | Acceptée |
 | [0006](0006-attentes-sur-assertion-cypress.md) | Remplacer les attentes à durée fixe par des attentes sur assertion | Acceptée, clause E amendée par [0007](0007-lot-e-assertion-plutot-que-sommeil.md) |
 | [0007](0007-lot-e-assertion-plutot-que-sommeil.md) | Borner la patience plutôt que dormir, y compris pour le réseau simulé | Acceptée |
+| [0008](0008-cohabitation-tailwind-bootstrap.md) | Faire cohabiter Tailwind et Bootstrap 4 pendant la phase 2 | Acceptée |
+| [0009](0009-contrat-des-primitives-ui.md) | Contrat des primitives UI écrites à la main en Vue 2 | Acceptée |
 
 ## Gabarit
 

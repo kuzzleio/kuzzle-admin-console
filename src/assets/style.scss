@@ -1,15 +1,26 @@
-// App
-@import 'styles/variables';
-@import 'styles/fonts';
-@import 'styles/layout';
-@import 'styles/animations';
-@import 'styles/realtime';
-@import 'styles/pages';
-@import 'styles/environment';
-@import 'styles/utility';
-@import 'styles/override';
+// Styles historiques — Bootstrap 4, bootstrap-vue et nos feuilles SCSS.
+//
+// Rangés dans la couche `legacy` pour que les utilitaires Tailwind prennent le
+// dessus sans surenchère de spécificité pendant la reprise écran par écran
+// (cf. `tailwind.css` et ADR-0008). L'ordre des couches est déclaré dans
+// `tailwind.css`, importé avant ce fichier.
+@layer legacy {
+  // App
+  @import 'styles/variables';
+  @import 'styles/fonts';
+  @import 'styles/layout';
+  @import 'styles/animations';
+  @import 'styles/realtime';
+  @import 'styles/pages';
+  @import 'styles/environment';
+  @import 'styles/utility';
+  @import 'styles/override';
 
-// Dependencies
-@import 'bootstrap/scss/bootstrap.scss';
-@import 'bootstrap-vue/src/index.scss';
-@import '@fortawesome/fontawesome-free/css/all.css';
+  // Dependencies
+  @import 'bootstrap/scss/bootstrap.scss';
+  @import 'bootstrap-vue/src/index.scss';
+}
+
+// FontAwesome est importé depuis `tailwind.css`, pas d'ici : Sass hisse
+// l'`@import` d'un fichier `.css` hors du bloc `@layer`, et Vite ne le résout
+// plus — la feuille disparaît du bundle sans erreur (cf. G-013).
