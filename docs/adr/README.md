@@ -31,6 +31,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0007](0007-lot-e-assertion-plutot-que-sommeil.md) | Borner la patience plutôt que dormir, y compris pour le réseau simulé | Acceptée |
 | [0008](0008-cohabitation-tailwind-bootstrap.md) | Faire cohabiter Tailwind et Bootstrap 4 pendant la phase 2 | Acceptée |
 | [0009](0009-contrat-des-primitives-ui.md) | Contrat des primitives UI écrites à la main en Vue 2 | Acceptée |
+| [0010](0010-primitive-dialog-en-vue-2.md) | Écrire `Dialog` à la main, et abandonner l'API impérative des modales | Acceptée |
 
 ## Gabarit
 
