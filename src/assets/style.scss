@@ -19,5 +19,8 @@
   // Dependencies
   @import 'bootstrap/scss/bootstrap.scss';
   @import 'bootstrap-vue/src/index.scss';
-  @import '@fortawesome/fontawesome-free/css/all.css';
 }
+
+// FontAwesome est importé depuis `tailwind.css`, pas d'ici : Sass hisse
+// l'`@import` d'un fichier `.css` hors du bloc `@layer`, et Vite ne le résout
+// plus — la feuille disparaît du bundle sans erreur (cf. G-013).

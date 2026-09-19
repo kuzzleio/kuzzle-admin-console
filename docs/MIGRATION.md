@@ -817,6 +817,33 @@ Gabarit à copier :
   à l'œil.
 - **Ref** : [ADR-0009](adr/0009-contrat-des-primitives-ui.md).
 
+#### G-013 — Un `@import` de `.css` placé dans un `@layer` sort du bundle
+
+- **Contexte** : phase 1, mise de `style.scss` dans la couche `legacy` (ADR-0008).
+- **Symptôme** : six specs e2e échouent d'un coup avec
+  `cy.click() failed because this element is not visible: <a data-cy="MainMenu-logoutBtn">`,
+  `effective width and height of: 0 x 0 pixels`. Le build passe, le lint passe,
+  la preview se déploie. En réalité **toutes les icônes de la console ont
+  disparu** : un `<a>` dont le seul contenu est un `<i class="fas fa-…">` mesure
+  0 × 0 sans la fonte.
+- **Cause** : `@import '@fortawesome/fontawesome-free/css/all.css'` était dans
+  `style.scss`. Sass hisse l'`@import` d'un fichier `.css` **hors** du bloc
+  `@layer`, en tête de feuille ; Vite cesse alors de le résoudre et le laisse
+  tel quel. Le bundle contient `@import"@fortawesome/fontawesome-free/css/all.css"`,
+  un spécificateur que le navigateur ne sait pas résoudre. Aucune erreur nulle
+  part — ni au build, ni à l'exécution.
+- **Solution** : importer la feuille depuis `tailwind.css`, où c'est
+  `@tailwindcss/vite` qui résout, avec la couche en toutes lettres :
+  `@import '@fortawesome/fontawesome-free/css/all.css' layer(legacy);`.
+  Vérifié : la fonte est de retour dans le bundle, dans la couche `legacy`, et
+  les `.woff2` sont émis.
+- **À retenir** : après une intervention sur la feuille de styles, vérifier que
+  les dépendances CSS sont **encore dans le bundle** — `grep` sur une règle
+  connue — et pas seulement que le build passe. Et rejouer les specs contre un
+  `vite preview` du build, pas contre le serveur de dev : les sept specs de
+  `login` passaient en dev et échouaient sur le bundle.
+- **Ref** : [#1034](https://github.com/kuzzleio/kuzzle-admin-console/pull/1034).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

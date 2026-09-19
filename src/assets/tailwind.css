@@ -22,3 +22,14 @@
 @import 'tailwindcss/utilities.css' layer(utilities) prefix(tw);
 
 @import './tokens.css';
+
+/*
+ * FontAwesome, rangé dans la même couche que le reste du legacy.
+ *
+ * Il ne peut pas être importé depuis `style.scss` : Sass hisse l'`@import`
+ * d'un fichier `.css` hors du bloc `@layer`, Vite cesse alors de le résoudre,
+ * et la feuille sort du bundle sans que rien ne le signale — toutes les icônes
+ * de la console disparaissent (G-013). Ici, c'est `@tailwindcss/vite` qui
+ * résout l'import, et `layer()` qui le range.
+ */
+@import '@fortawesome/fontawesome-free/css/all.css' layer(legacy);
