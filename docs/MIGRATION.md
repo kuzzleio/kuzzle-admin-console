@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-19 · **Phase courante** : 1 — Fondations design
+**Dernière mise à jour** : 2026-09-19 · **Phase courante** : 2 — Dé-bootstrapisation
 
 ---
 
@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ⬜ À faire |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 2 / 140 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -275,6 +275,26 @@ phase 2.
 
 ---
 
+### 1.3 Dé-bootstrapisation — phase 2
+
+**2 composants repris sur 140**, 10 balises `<b-*>` sur 813.
+
+Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
+possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
+trois choses d'un coup — la prop `as` de `Button` sur un `router-link` réel, la
+famille `Card` assemblée sur un écran, et la règle 4 d'ADR-0009 (le
+`<style scoped>` décoratif s'en va avec les classes Bootstrap).
+
+Ce qu'une reprise doit vérifier, dans cet ordre :
+
+1. plus aucune balise `<b-*>` ni classe Bootstrap dans le composant ;
+2. plus de `<style scoped>` décoratif (couleur, espacement, rayon, typographie) —
+   il gagnerait en silence contre les utilitaires (G-010) ;
+3. les specs du domaine passent **contre un `vite preview` du build**, pas contre
+   le serveur de dev (G-013) ;
+4. le rendu est regardé, pas supposé : les specs valident le comportement, pas
+   l'apparence.
+
 ## 2. Toolchain (phase 0)
 
 Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026**.
@@ -371,7 +391,7 @@ gros et le plus risqué.
 | `Data/Documents/FormInputs/JsonFormInput.vue` | 5 | 49 | ⬜ |
 | `Data/Collections/DropdownAction.vue` | 5 | 135 | ⬜ |
 | `Data/Documents/DeleteModal.vue` | 4 | 52 | ⬜ |
-| `Data/Data404.vue` | 4 | 30 | ⬜ |
+| `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Data/Documents/Views/List.vue` | 4 | 126 | ⬜ |
 | `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
 | `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ⬜ |
@@ -481,7 +501,7 @@ gros et le plus risqué.
 |---|---:|---:|---|
 | `Signup.vue` | 19 | 245 | ⬜ |
 | `ApiAction.vue` | 12 | 432 | ⬜ |
-| `404.vue` | 6 | 35 | ⬜ |
+| `404.vue` | 6 | 35 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Login.vue` | 6 | 110 | ⬜ |
 | `ResetPassword.vue` | 5 | 75 | ⬜ |
 | `TelemetryBanner.vue` | 4 | 60 | ⬜ |
