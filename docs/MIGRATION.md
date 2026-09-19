@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 2 / 140 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 9 / 140 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -279,7 +279,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**6 composants repris sur 140**, 30 balises `<b-*>` sur 813.
+**9 composants repris sur 140**, 42 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -446,9 +446,9 @@ gros et le plus risqué.
 | `Security/Users/Steps/Basic.vue` | 7 | 91 | ⬜ |
 | `Security/Profiles/Page.vue` | 6 | 76 | ⬜ |
 | `Security/Users/UserItem.vue` | 6 | 204 | ⬜ |
-| `Security/Users/DeleteModal.vue` | 4 | 57 | ⬜ |
-| `Security/Roles/DeleteModal.vue` | 4 | 57 | ⬜ |
-| `Security/Profiles/DeleteModal.vue` | 4 | 57 | ⬜ |
+| `Security/Users/DeleteModal.vue` | 4 | 57 | ✅ reprise |
+| `Security/Roles/DeleteModal.vue` | 4 | 57 | ✅ reprise |
+| `Security/Profiles/DeleteModal.vue` | 4 | 57 | ✅ reprise |
 | `Security/Users/Steps/CustomData.vue` | 3 | 80 | ⬜ |
 | `Security/Profiles/Update.vue` | 2 | 120 | ⬜ |
 | `Security/Profiles/Create.vue` | 1 | 71 | ⬜ |

@@ -92,7 +92,7 @@
       </b-row>
     </template>
     <delete-modal
-      id="modal-delete-roles"
+      :open.sync="deleteModalOpen"
       :candidates-for-deletion="candidatesForDeletion"
       :is-loading="deleteModalIsLoading"
       @confirm="onDeleteConfirmed"
@@ -130,6 +130,7 @@ export default {
   },
   data() {
     return {
+      deleteModalOpen: false,
       candidatesForDeletion: [],
       currentFilter: new filterManager.Filter(),
       currentPage: 1,
@@ -186,7 +187,7 @@ export default {
       this.deleteModalIsLoading = true;
       try {
         await this.wrapper.performDeleteRoles(this.candidatesForDeletion);
-        this.$bvModal.hide('modal-delete-roles');
+        this.deleteModalOpen = false;
         this.deleteModalIsLoading = false;
         this.fetchRoles();
       } catch (e) {
@@ -201,11 +202,11 @@ export default {
     },
     deleteRole(id) {
       this.candidatesForDeletion.push(id);
-      this.$bvModal.show('modal-delete-roles');
+      this.deleteModalOpen = true;
     },
     deleteBulk() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
-      this.$bvModal.show('modal-delete-roles');
+      this.deleteModalOpen = true;
     },
     resetCandidatesForDeletion() {
       this.candidatesForDeletion = [];
