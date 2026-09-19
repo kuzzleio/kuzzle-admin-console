@@ -45,6 +45,7 @@
     "vuejs-logger": "1.5.5"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "@types/leaflet": "1.9.17",
     "@types/node": "22.5.5",
     "@vitejs/plugin-vue2": "2.3.1",
@@ -57,6 +58,7 @@
     "file-loader": "6.2.0",
     "rollup-plugin-visualizer": "5.14.0",
     "sass": "1.86.3",
+    "tailwindcss": "^4.3.3",
     "ts-mock-imports": "1.3.16",
     "typescript": "5.4.5",
     "vite": "5.4.6",

@@ -1,0 +1,24 @@
+/*
+ * Fondations Tailwind — phase 1 du chantier de modernisation.
+ *
+ * Deux écarts par rapport à l'import standard `@import "tailwindcss"`, tous
+ * deux imposés par la cohabitation avec Bootstrap 4 pendant la phase 2
+ * (cf. ADR-0008) :
+ *
+ * 1. **Pas de preflight.** La réinitialisation de Tailwind remettrait à plat
+ *    ce sur quoi reposent les 140 composants encore en Bootstrap. Elle sera
+ *    réintroduite quand Bootstrap sortira, en fin de phase 2.
+ *
+ * 2. **Le legacy est rangé dans une couche.** Une règle d'une couche perd
+ *    toujours face à une règle d'une couche déclarée après elle, quelle que
+ *    soit sa spécificité. Bootstrap et nos feuilles SCSS historiques sont donc
+ *    dans `legacy`, déclarée en premier : une utilitaire Tailwind posée sur un
+ *    écran en cours de reprise gagne sans qu'on ait à surenchérir en `!important`
+ *    ou en sélecteurs plus spécifiques.
+ */
+@layer legacy, theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme) prefix(tw);
+@import 'tailwindcss/utilities.css' layer(utilities) prefix(tw);
+
+@import './tokens.css';

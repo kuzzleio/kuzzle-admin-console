@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-18 · **Phase courante** : 0 — Toolchain
+**Dernière mise à jour** : 2026-09-19 · **Phase courante** : 1 — Fondations design
 
 ---
 
@@ -15,7 +15,7 @@
 | Phase | Objet | Epic | Statut |
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
-| **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ⬜ À faire |
+| **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ⬜ À faire |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
@@ -249,6 +249,27 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 `commands.js`.
 
 
+### 1.2 Fondations design — phase 1
+
+| Élément | Statut |
+|---|---|
+| Tailwind CSS 4 branché (`@tailwindcss/vite`, compatible Vite 5.4) | ✅ |
+| Tokens de design en variables CSS (`src/assets/tokens.css`) | ✅ |
+| Stratégie de cohabitation avec Bootstrap ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) | ✅ |
+| Première primitive `src/components/ui/` à l'API shadcn-vue | ⬜ |
+| `reka-ui` pour les composants interactifs (modale, dropdown, combobox) | ⬜ |
+
+Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
+plomberie est posée, l'apparence n'est pas décidée. La refonte visuelle se fera
+en changeant ces valeurs, à un seul endroit — c'est précisément ce qu'on achète.
+Le jeu sombre est défini mais branché sur rien.
+
+Trois réglages temporaires rendent la cohabitation tenable pendant la phase 2,
+tous mesurés plutôt que supposés (cf. [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) :
+**pas de preflight**, **legacy rangé dans une couche CSS**, et **utilitaires
+préfixées `tw:`**. Les trois se retirent mécaniquement avec Bootstrap, en fin de
+phase 2.
+
 ---
 
 ## 2. Toolchain (phase 0)
@@ -276,8 +297,8 @@ compatibilité **avant** d'engager la montée.
 
 | Paquet | Problème | Traitement | Phase | Statut |
 |---|---|---|---|---|
-| `bootstrap-vue` 2.23.1 | aucune version Vue 3, **incompatible `@vue/compat`** | supprimé, remplacé par Tailwind + primitives locales | 2 | ⬜ |
-| `bootstrap` 4.6.2 | supprimé avec le précédent | Tailwind | 2 | ⬜ |
+| `bootstrap-vue` 2.23.1 | aucune version Vue 3, **incompatible `@vue/compat`** | supprimé, remplacé par Tailwind + primitives locales | 2 | 🟡 Tailwind branché, cohabitation cadrée ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) |
+| `bootstrap` 4.6.2 | supprimé avec le précédent | Tailwind | 2 | 🟡 idem |
 | `vue-form-generator` 2.3.4 | **abandonné**, aucun successeur | à réimplémenter — cœur de l'édition de documents | 2 | ⬜ |
 | `vue-multipane` 0.9.5 | **abandonné** | splitter à réimplémenter (layout Data) | 2 | ⬜ |
 | `vuejs-logger` 1.5.5 | Vue 2 uniquement | remplacer par un wrapper maison | 3 | ⬜ |
@@ -734,6 +755,28 @@ Gabarit à copier :
   partagée dessus.
 - **Ref** : rencontré en corrigeant `formView.spec.js`.
 
+#### G-008 — Une utilitaire Tailwind peut perdre contre Bootstrap sans rien signaler
+
+- **Contexte** : phase 1, branchement de Tailwind à côté de Bootstrap 4.
+- **Symptôme** : sur `<button class="btn btn-primary tw:bg-accent rounded-lg">`,
+  le fond prend bien la valeur du token — mais le rayon vaut **4,8 px** au lieu
+  des 6 px attendus. Aucune erreur, aucun avertissement : juste la mauvaise
+  valeur.
+- **Cause** : Bootstrap 4 définit lui aussi `.rounded-lg`, en
+  `border-radius: .3rem !important`. Ranger Bootstrap dans une couche CSS basse
+  ne suffit pas : une déclaration `!important` **inverse** l'ordre des couches,
+  la couche la plus basse l'emporte. Les collisions de noms sont nombreuses —
+  `rounded`, `border`, `shadow`, `text-center`, `m-0`, `p-0`, `w-100`,
+  `d-block`, `bg-primary`…
+- **Solution** : préfixer les utilitaires Tailwind (`tw:`) tant que Bootstrap
+  est présent. Vérifié : avec le préfixe, fond **et** rayon prennent les valeurs
+  attendues. Décision et retrait en
+  [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md).
+- **À retenir** : un conflit de CSS ne casse rien, il décale. Sur un écran
+  repris, mesurer la valeur calculée (`getComputedStyle`) plutôt que de se fier
+  au rendu à l'œil — 4,8 px et 6 px sont indiscernables sur une capture.
+- **Ref** : ADR-0008.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -774,3 +817,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-18 | Conserver les deux SDK `kuzzle-sdk` v6 et v7 | [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) |
 | 2026-09-18 | Interdire `cy.wait(<durée fixe>)` : attentes sur assertion | [ADR-0006](adr/0006-attentes-sur-assertion-cypress.md) |
 | 2026-09-18 | Le lot E s'assertionne aussi : plafond de patience, pas de sommeil | [ADR-0007](adr/0007-lot-e-assertion-plutot-que-sommeil.md) |
+| 2026-09-19 | Cohabitation Tailwind / Bootstrap : pas de preflight, couche `legacy`, préfixe `tw:` | [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md) |

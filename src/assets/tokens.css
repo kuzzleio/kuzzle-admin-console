@@ -1,0 +1,109 @@
+/*
+ * Tokens de design — source de vérité unique (ADR-0003).
+ *
+ * Aucune valeur de design en dur dans un composant : couleur, rayon et
+ * typographie viennent d'ici. Le vocabulaire est celui de shadcn-vue
+ * (`background` / `foreground`, `muted`, `accent`, `destructive`…) pour que les
+ * primitives écrites à la main en Vue 2 puissent être remplacées en phase 4 par
+ * les vrais composants shadcn-vue sans toucher aux sites d'appel.
+ *
+ * Les valeurs claires reprennent la palette existante de la console
+ * (`styles/_variables.scss`) : cette PR pose la plomberie, elle ne décide pas
+ * de l'apparence. La refonte visuelle se fera en changeant ces valeurs, à un
+ * seul endroit — c'est précisément ce qu'on achète ici.
+ *
+ * Le jeu sombre est défini mais n'est branché sur aucun sélecteur de thème :
+ * rien ne l'active aujourd'hui.
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Surfaces */
+  --background: #ffffff;
+  --foreground: #002835;
+  --card: #ffffff;
+  --card-foreground: #002835;
+  --popover: #ffffff;
+  --popover-foreground: #002835;
+
+  /* Couleurs de marque */
+  --primary: #002835;
+  --primary-foreground: #ffffff;
+  --secondary: #3498db;
+  --secondary-foreground: #ffffff;
+  --accent: #efc94c;
+  --accent-foreground: #002835;
+
+  /* Neutres et états */
+  --muted: #f5f5f5;
+  --muted-foreground: #7b7b7b;
+  --destructive: #e94e77;
+  --destructive-foreground: #ffffff;
+
+  /* Traits */
+  --border: #eeeeee;
+  --input: #eeeeee;
+  --ring: #73626e;
+
+  /* Rayon — aligné sur Bootstrap 4 pour ne pas glisser une décision
+     visuelle dans une PR de plomberie. C'est un des premiers tokens que la
+     refonte fera bouger. */
+  --radius: 0.25rem;
+}
+
+.dark {
+  --background: #0b1a20;
+  --foreground: #e6edf0;
+  --card: #10242c;
+  --card-foreground: #e6edf0;
+  --popover: #10242c;
+  --popover-foreground: #e6edf0;
+
+  --primary: #7fd3f2;
+  --primary-foreground: #002835;
+  --secondary: #3498db;
+  --secondary-foreground: #ffffff;
+  --accent: #efc94c;
+  --accent-foreground: #002835;
+
+  --muted: #17313a;
+  --muted-foreground: #9db0b8;
+  --destructive: #e94e77;
+  --destructive-foreground: #ffffff;
+
+  --border: #23414c;
+  --input: #23414c;
+  --ring: #7fd3f2;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+
+  --font-sans: 'Ubuntu', sans-serif;
+}

@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import '@/assets/tailwind.css';
 import '@/assets/style.scss';
 import ModalCreateOrUpdate from '@/components/Common/Environments/ModalCreateOrUpdate.vue';
 import ModalDelete from '@/components/Common/Environments/ModalDelete.vue';

@@ -1,6 +1,7 @@
 import childProcess from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
+import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue2';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
@@ -58,7 +59,7 @@ export default defineConfig({
     '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
     '__COMMIT_HASH__': JSON.stringify(commitHash),
   },
-  plugins: [vue(), visualizer()],
+  plugins: [tailwindcss(), vue(), visualizer()],
   preview: {
     port: 8080,
   },
