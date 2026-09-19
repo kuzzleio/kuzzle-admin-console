@@ -260,6 +260,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | Première primitive : `Button` (`src/components/ui/button/`) | ✅ |
 | `cn()` et les utilitaires shadcn-vue (`cva`, `clsx`, `tailwind-merge`) | ✅ |
 | Primitives suivantes : `Badge`, `Card`, `Input` | ✅ |
+| `Spinner` (ajoutée en reprenant `Offline.vue`) | ✅ |
 | Primitives interactives — écrites à la main, `reka-ui` reporté en phase 4 | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
@@ -277,7 +278,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**2 composants repris sur 140**, 10 balises `<b-*>` sur 813.
+**4 composants repris sur 140**, 22 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -294,6 +295,12 @@ Ce qu'une reprise doit vérifier, dans cet ordre :
    le serveur de dev (G-013) ;
 4. le rendu est regardé, pas supposé : les specs valident le comportement, pas
    l'apparence.
+
+Point 4, concrètement : `ListNotAllowed` ne s'affiche qu'avec des droits
+insuffisants et `Offline` que pendant la connexion. Les specs des domaines
+passent sans jamais les rendre. Pour les voir, il a fallu les monter sur une
+route temporaire, non commitée — c'est le prix à payer pour ne pas livrer un
+composant qu'on n'a jamais vu.
 
 ## 2. Toolchain (phase 0)
 
@@ -468,7 +475,7 @@ gros et le plus risqué.
 | `Common/Filters/FilterHistoryItem.vue` | 12 | 134 | ⬜ |
 | `Common/Filters/FavoriteFilterItem.vue` | 11 | 111 | ⬜ |
 | `Common/Login/Form.vue` | 9 | 208 | ⬜ |
-| `Common/Offline.vue` | 8 | 88 | ⬜ |
+| `Common/Offline.vue` | 8 | 88 | ✅ reprise |
 | `Common/Environments/ModalImport.vue` | 7 | 159 | ⬜ |
 | `Common/Environments/SelectEnvironmentPage.vue` | 6 | 59 | ⬜ |
 | `Common/Filters/Filters.vue` | 6 | 349 | ⬜ |
@@ -477,7 +484,7 @@ gros et le plus risqué.
 | `Common/Environments/CreateEnvironmentPage.vue` | 6 | 104 | ⬜ |
 | `Common/Filters/RawFilter.vue` | 5 | 147 | ⬜ |
 | `Common/Environments/ModalDelete.vue` | 5 | 118 | ⬜ |
-| `Common/ListNotAllowed.vue` | 4 | 22 | ⬜ |
+| `Common/ListNotAllowed.vue` | 4 | 22 | ✅ reprise |
 | `Common/Environments/ModalCreateOrUpdate.vue` | 3 | 49 | ⬜ |
 | `Common/MainSpinner.vue` | 2 | 16 | ⬜ |
 | `Common/PerPageSelector.vue` | 1 | 35 | ⬜ |
