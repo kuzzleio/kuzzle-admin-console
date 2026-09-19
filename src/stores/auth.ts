@@ -541,12 +541,25 @@ export const useAuthStore = defineStore('auth', {
 
       const tokenRefreshThresholdMs = TOKEN_REFRESH_THRESHOLD_MS;
 
-      const intervalId = setInterval(async () => {
+      // Le rappel de `setInterval` ne peut pas être `async` : la promesse
+      // rendue n'est attendue par personne, donc un rejet passerait sans bruit
+      // (`@typescript-eslint/no-misused-promises`). On la chaîne explicitement.
+      //
+      // L'intervalle est arrêté *avant* de lancer le rafraîchissement, et non
+      // après : sinon un rafraîchissement qui échoue laisse l'intervalle vivant
+      // et le relance à chaque tick, et un rafraîchissement plus long que le
+      // tick se chevauche avec le suivant.
+      const intervalId = setInterval(() => {
         const timeBeforeExpiryMs = expiresAt - Date.now();
-        if (timeBeforeExpiryMs <= tokenRefreshThresholdMs) {
-          await this.tryRefreshConnection();
-          clearInterval(intervalId);
+        if (timeBeforeExpiryMs > tokenRefreshThresholdMs) {
+          return;
         }
+
+        clearInterval(intervalId);
+
+        void this.tryRefreshConnection().catch((error) => {
+          console.error('TRY_REFRESH_CONNECTION', error);
+        });
       }, tokenExpiryCheckIntervalMs);
     },
 
