@@ -259,7 +259,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | Contrat des primitives ([ADR-0009](adr/0009-contrat-des-primitives-ui.md)) | ✅ |
 | Première primitive : `Button` (`src/components/ui/button/`) | ✅ |
 | `cn()` et les utilitaires shadcn-vue (`cva`, `clsx`, `tailwind-merge`) | ✅ |
-| Primitives suivantes (Badge, Card, Input) | ⬜ |
+| Primitives suivantes : `Badge`, `Card`, `Input` | ✅ |
 | Primitives interactives — écrites à la main, `reka-ui` reporté en phase 4 | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
@@ -817,6 +817,39 @@ Gabarit à copier :
   à l'œil.
 - **Ref** : [ADR-0009](adr/0009-contrat-des-primitives-ui.md).
 
+#### G-011 — Le job Lint porte le portillon du job E2E
+
+- **Contexte** : phase 1, première PR du chantier design ([#1034](https://github.com/kuzzleio/kuzzle-admin-console/pull/1034)).
+- **Symptôme** : la PR échoue sur `Lint`, et les 17 specs sortent en
+  `skipping` — alors que la PR ne touche ni les specs ni le fichier fautif.
+- **Cause** : le job `E2E Test` dépend du job `Lint`. Une seule erreur ESLint
+  **préexistante** (`stores/auth.ts`, `@typescript-eslint/no-misused-promises`)
+  suffit donc à retirer le filet de sécurité sur *toutes* les PR, y compris
+  celles qui n'y sont pour rien.
+- **Solution** : corrigée dans [#1035](https://github.com/kuzzleio/kuzzle-admin-console/pull/1035).
+  Tant que le chantier dure, traiter une erreur de lint préexistante comme
+  bloquante et non comme du bruit : elle coûte le e2e à tout le monde.
+- **À retenir** : vérifier que le e2e a **tourné**, pas seulement que la PR est
+  verte. Un job `skipping` n'est pas un job qui passe.
+- **Ref** : [#1035](https://github.com/kuzzleio/kuzzle-admin-console/pull/1035).
+
+#### G-012 — `v-model` sur une primitive ne porte pas le même nom en Vue 2 et en Vue 3
+
+- **Contexte** : phase 1, écriture de la primitive `Input`.
+- **Symptôme** : `<Input v-model="valeur" />` affiche bien la valeur initiale,
+  mais la saisie ne remonte jamais. Aucune erreur.
+- **Cause** : l'amont shadcn-vue nomme la prop `modelValue` et l'événement
+  `update:modelValue` (Vue 3). Le `v-model` de Vue 2, lui, attend `value` et
+  `input` : il pose la valeur sur une prop `value` que la primitive ne déclare
+  pas, et écoute un événement qu'elle n'émet pas.
+- **Solution** : l'option `model` de Vue 2
+  (`model: { prop: 'modelValue', event: 'update:modelValue' }`) fait le pont.
+  L'API publique reste celle de l'amont, et les noms n'auront pas à changer en
+  phase 4.
+- **À retenir** : toute primitive à valeur (`Input`, `Textarea`, `Select`,
+  `Checkbox`, `Switch`) porte cette option. L'oublier ne casse rien de visible —
+  le champ s'affiche, il ne remonte simplement rien.
+- **Ref** : [ADR-0009](adr/0009-contrat-des-primitives-ui.md).
 #### G-013 — Un `@import` de `.css` placé dans un `@layer` sort du bundle
 
 - **Contexte** : phase 1, mise de `style.scss` dans la couche `legacy` (ADR-0008).
