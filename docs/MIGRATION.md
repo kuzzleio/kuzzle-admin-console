@@ -261,7 +261,8 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `cn()` et les utilitaires shadcn-vue (`cva`, `clsx`, `tailwind-merge`) | ✅ |
 | Primitives suivantes : `Badge`, `Card`, `Input` | ✅ |
 | `Spinner` (ajoutée en reprenant `Offline.vue`) | ✅ |
-| Primitives interactives — écrites à la main, `reka-ui` reporté en phase 4 | ⬜ |
+| `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) | ✅ |
+| Primitives interactives restantes (dropdown, combobox) | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
 plomberie est posée, l'apparence n'est pas décidée. La refonte visuelle se fera
@@ -278,7 +279,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**4 composants repris sur 140**, 22 balises `<b-*>` sur 813.
+**6 composants repris sur 140**, 30 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -483,9 +484,9 @@ gros et le plus risqué.
 | `Common/Login/ResetPasswordForm.vue` | 6 | 145 | ⬜ |
 | `Common/Environments/CreateEnvironmentPage.vue` | 6 | 104 | ⬜ |
 | `Common/Filters/RawFilter.vue` | 5 | 147 | ⬜ |
-| `Common/Environments/ModalDelete.vue` | 5 | 118 | ⬜ |
+| `Common/Environments/ModalDelete.vue` | 5 | 118 | ✅ reprise |
 | `Common/ListNotAllowed.vue` | 4 | 22 | ✅ reprise |
-| `Common/Environments/ModalCreateOrUpdate.vue` | 3 | 49 | ⬜ |
+| `Common/Environments/ModalCreateOrUpdate.vue` | 3 | 49 | ✅ reprise |
 | `Common/MainSpinner.vue` | 2 | 16 | ⬜ |
 | `Common/PerPageSelector.vue` | 1 | 35 | ⬜ |
 | `Common/PageNotAllowed.vue` | 1 | 30 | ⬜ |
@@ -904,6 +905,27 @@ Gabarit à copier :
   `login` passaient en dev et échouaient sur le bundle.
 - **Ref** : [#1034](https://github.com/kuzzleio/kuzzle-admin-console/pull/1034).
 
+#### G-014 — `props: ['x']` fait perdre la vérification de types aux sites d'appel
+
+- **Contexte** : phase 2, reprise de `ModalCreateOrUpdate.vue` en TypeScript.
+- **Symptôme** : `vue-tsc` échoue sur le **parent**, pas sur le composant fautif :
+  `Argument of type '{ environmentId: string; … }' is not assignable to
+  parameter of type '…Readonly<ExtractPropTypes<string[]>>…'`. Le composant
+  enfant, lui, ne signale rien.
+- **Cause** : `CreateEnvironment.vue` déclarait `props: ['environmentId']`. La
+  forme tableau ne porte aucun type : `vue-tsc` en déduit `string[]` et refuse
+  tout attribut passé depuis un parent typé. Tant que le parent est en
+  JavaScript, personne ne s'en aperçoit.
+- **Solution** : passer la forme objet (`{ environmentId: { type: String,
+  default: null } }`) sur l'enfant. Un composant encore en Bootstrap peut rester
+  en JavaScript, mais ses props doivent être déclarées en forme objet dès qu'un
+  parent repris le rend.
+- **À retenir** : reprendre un composant en TypeScript fait remonter des erreurs
+  chez ses **voisins**. Ce n'est pas une régression, c'est de la dette qui
+  devient visible — mais ça élargit le périmètre d'une PR de reprise, et il vaut
+  mieux l'avoir prévu.
+- **Ref** : [ADR-0010](adr/0010-primitive-dialog-en-vue-2.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -946,3 +968,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-18 | Le lot E s'assertionne aussi : plafond de patience, pas de sommeil | [ADR-0007](adr/0007-lot-e-assertion-plutot-que-sommeil.md) |
 | 2026-09-19 | Cohabitation Tailwind / Bootstrap : pas de preflight, couche `legacy`, préfixe `tw:` | [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md) |
 | 2026-09-19 | Contrat des primitives UI en Vue 2 : API shadcn-vue, deux écarts nommés | [ADR-0009](adr/0009-contrat-des-primitives-ui.md) |
+| 2026-09-19 | `Dialog` écrite à la main, et abandon de l'API impérative des modales | [ADR-0010](adr/0010-primitive-dialog-en-vue-2.md) |

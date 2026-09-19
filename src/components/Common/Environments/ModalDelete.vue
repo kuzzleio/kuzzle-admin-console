@@ -1,118 +1,136 @@
 <template>
-  <b-modal :id="id" @cancel="reset" @close="reset" @hide="reset">
-    <template #modal-header>
-      <h4>
-        Environment <span class="code">{{ environmentName }}</span> deletion
-      </h4>
-    </template>
+  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent labelled-by="env-delete-title" described-by="env-delete-hint">
+      <DialogHeader>
+        <DialogTitle id="env-delete-title">
+          Environment <span class="code">{{ environmentName }}</span> deletion
+        </DialogTitle>
+      </DialogHeader>
 
-    <b-form-group
-      id="fieldset-1"
-      description="This operation is not undoable."
-      label="Confirm environment name"
-      label-for="env-to-delete-name"
-    >
-      <b-form-input
-        id="env-to-delete-name"
-        v-model="envConfirmation"
-        data-cy="EnvironmentDeleteModal-envName"
-        trim
-        autofocus
-        @keydown.enter="confirmDeleteEnvironment"
-      />
-    </b-form-group>
+      <div class="tw:flex tw:flex-col tw:gap-1.5">
+        <label class="tw:text-sm tw:font-medium" for="env-to-delete-name">
+          Confirm environment name
+        </label>
+        <Input
+          id="env-to-delete-name"
+          v-model="envConfirmation"
+          data-cy="EnvironmentDeleteModal-envName"
+          @keydown.enter="confirmDeleteEnvironment"
+        />
+        <p id="env-delete-hint" class="tw:m-0 tw:text-sm tw:text-muted-foreground">
+          This operation is not undoable.
+        </p>
+      </div>
 
-    <template #modal-footer>
-      <b-button variant="secondary" @click="$bvModal.hide(id)"> Cancel </b-button>
-      <b-button
-        data-cy="EnvironmentDeleteModal-submit"
-        variant="primary"
-        :disabled="!confirmationOk"
-        @click="confirmDeleteEnvironment"
-      >
-        OK
-      </b-button>
-    </template>
-  </b-modal>
+      <DialogFooter>
+        <Button variant="outline" @click="close"> Cancel </Button>
+        <Button
+          data-cy="EnvironmentDeleteModal-submit"
+          :disabled="!confirmationOk"
+          @click="confirmDeleteEnvironment"
+        >
+          OK
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
-<script>
-import Focus from '@/directives/focus.directive';
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
-export default {
+export default defineComponent({
   name: 'EnvironmentDeleteModal',
-  directives: {
-    Focus,
+  components: {
+    Button,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    Input,
   },
-  components: {},
-  props: ['environmentId', 'id'],
-  setup() {
-    return {
-      authStore: useAuthStore(),
-      kuzzleStore: useKuzzleStore(),
-    };
+  // `dismissible: false` sur le Dialog : la suppression d'une connexion ne doit
+  // pas se fermer sur un clic à côté. Le geste est trop facile à faire par
+  // accident au milieu d'une saisie de confirmation.
+  props: {
+    environmentId: {
+      default: null,
+      type: String,
+    },
+    open: {
+      default: false,
+      type: Boolean,
+    },
   },
   data() {
     return {
-      envConfirmation: null,
+      envConfirmation: '',
     };
   },
   computed: {
-    environments() {
+    environments(): Record<string, { name: string }> {
       return this.kuzzleStore.environments;
     },
-    confirmationOk() {
+    confirmationOk(): boolean {
       return this.environmentName !== null && this.environmentName === this.envConfirmation;
     },
-    environmentName() {
+    environmentName(): string | null {
       if (this.environmentId && this.environments[this.environmentId]) {
         return this.environments[this.environmentId].name;
       }
       return null;
     },
   },
-  methods: {
-    reset() {
-      this.envConfirmation = null;
-    },
-    async confirmDeleteEnvironment() {
-      if (this.confirmationOk) {
-        if (this.kuzzleStore.currentId === this.environmentId && this.kuzzleStore.online) {
-          await this.authStore.doLogout();
-        }
-
-        this.kuzzleStore.deleteEnvironment(this.environmentId);
-
-        if (this.kuzzleStore.hasEnvironment) {
-          this.$router.push({ name: 'SelectEnvironment' });
-        } else {
-          this.$router.push({ name: 'CreateEnvironment' });
-        }
-
-        this.$bvModal.hide(this.id);
+  setup() {
+    return {
+      authStore: useAuthStore(),
+      kuzzleStore: useKuzzleStore(),
+    };
+  },
+  watch: {
+    // Remplace les trois écouteurs `@cancel` / `@close` / `@hide` de `b-modal` :
+    // la fermeture est un seul état, quelle que soit la façon dont elle arrive.
+    open(open: boolean) {
+      if (!open) {
+        this.envConfirmation = '';
       }
     },
   },
-};
-</script>
+  methods: {
+    close(): void {
+      this.$emit('update:open', false);
+    },
+    async confirmDeleteEnvironment(): Promise<void> {
+      if (!this.confirmationOk) {
+        return;
+      }
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-.error {
-  strong {
-    display: block;
-  }
-}
-.input-field {
-  label {
-    left: 0;
-  }
-}
-button {
-  &.btn-flat {
-    &:focus {
-      background-color: #eee;
-    }
-  }
-}
-</style>
+      if (this.kuzzleStore.currentId === this.environmentId && this.kuzzleStore.online) {
+        await this.authStore.doLogout();
+      }
+
+      this.kuzzleStore.deleteEnvironment(this.environmentId);
+
+      if (this.kuzzleStore.hasEnvironment) {
+        this.$router.push({ name: 'SelectEnvironment' });
+      } else {
+        this.$router.push({ name: 'CreateEnvironment' });
+      }
+
+      this.close();
+    },
+  },
+});
+</script>

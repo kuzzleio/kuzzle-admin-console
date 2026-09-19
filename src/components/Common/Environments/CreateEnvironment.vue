@@ -151,7 +151,14 @@ function nameIsUnique(value) {
 export default {
   name: 'CreateEnvironment',
   components: {},
-  props: ['environmentId'],
+  // Forme objet plutôt que tableau : c'est ce qui permet à `vue-tsc` de
+  // vérifier les sites d'appel depuis un composant repris en TypeScript.
+  props: {
+    environmentId: {
+      default: null,
+      type: String,
+    },
+  },
   setup() {
     return {
       v$: useVuelidate(),

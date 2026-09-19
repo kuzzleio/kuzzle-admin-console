@@ -9,11 +9,11 @@
     </template>
 
     <modal-create-or-update
-      id="modal-env-create-or-update"
       :environment-id="environmentId"
+      :open.sync="createOrUpdateOpen"
       @environment::importEnv="importEnvironment"
     />
-    <modal-delete id="modal-env-delete" :environment-id="environmentId" />
+    <modal-delete :environment-id="environmentId" :open.sync="deleteOpen" />
     <modal-import id="modal-env-import" />
     <telemetry-banner />
   </div>
@@ -37,17 +37,19 @@ export default {
   },
   data() {
     return {
+      createOrUpdateOpen: false,
+      deleteOpen: false,
       environmentId: null,
     };
   },
   methods: {
     editEnvironment(id) {
       this.environmentId = id;
-      this.$bvModal.show('modal-env-create-or-update');
+      this.createOrUpdateOpen = true;
     },
     deleteEnvironment(id) {
       this.environmentId = id;
-      this.$bvModal.show('modal-env-delete');
+      this.deleteOpen = true;
     },
     importEnvironment() {
       this.$bvModal.show('modal-env-import');

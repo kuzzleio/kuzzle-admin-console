@@ -1,49 +1,80 @@
 <template>
-  <b-modal
-    :id="id"
-    ref="modal-create-env"
-    size="xl"
-    :title="`${environmentId ? 'Update' : 'Create'} Connection`"
-  >
-    <create-environment
-      ref="createEnvironmentComponent"
-      :environment-id="environmentId"
-      @environment::importEnv="importEnv"
-    />
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent class="tw:max-w-4xl" labelled-by="env-create-title">
+      <DialogHeader>
+        <DialogTitle id="env-create-title">
+          {{ environmentId ? 'Update' : 'Create' }} Connection
+        </DialogTitle>
+      </DialogHeader>
 
-    <template #modal-footer>
-      <b-button variant="outline-secondary" @click="$bvModal.hide(id)"> Cancel </b-button>
-      <b-button data-cy="EnvironmentCreateModal-submit" variant="primary" @click="submit">
-        OK
-      </b-button>
-    </template>
-  </b-modal>
+      <create-environment
+        ref="createEnvironmentComponent"
+        :environment-id="environmentId"
+        @environment::importEnv="importEnv"
+      />
+
+      <DialogFooter>
+        <Button variant="outline" @click="close"> Cancel </Button>
+        <Button data-cy="EnvironmentCreateModal-submit" @click="submit"> OK </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+
 import CreateEnvironment from './CreateEnvironment.vue';
 
-export default {
+export default defineComponent({
   name: 'EnvironmentsCreateModal',
   components: {
+    Button,
     CreateEnvironment,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
   },
-  props: ['environmentId', 'id'],
+  props: {
+    environmentId: {
+      default: null,
+      type: String,
+    },
+    open: {
+      default: false,
+      type: Boolean,
+    },
+  },
   methods: {
-    importEnv() {
-      this.$bvModal.hide(this.id);
+    close(): void {
+      this.$emit('update:open', false);
+    },
+    importEnv(): void {
+      this.close();
       this.$emit('environment::importEnv');
     },
-    submit() {
-      const submitted = this.$refs.createEnvironmentComponent.submit();
+    submit(): void {
+      const submitted = (
+        this.$refs.createEnvironmentComponent as unknown as { submit: () => boolean }
+      ).submit();
+
       this.$nextTick(() => {
         if (submitted) {
-          this.$bvModal.hide(this.id);
+          this.close();
         }
       });
     },
   },
-};
+});
 </script>
-
-<style lang="scss" rel="stylesheet/scss" scoped></style>
