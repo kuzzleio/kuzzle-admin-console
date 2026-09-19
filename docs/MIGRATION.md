@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 9 / 140 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 11 / 140 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -261,6 +261,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `cn()` et les utilitaires shadcn-vue (`cva`, `clsx`, `tailwind-merge`) | ✅ |
 | Primitives suivantes : `Badge`, `Card`, `Input` | ✅ |
 | `Spinner` (ajoutée en reprenant `Offline.vue`) | ✅ |
+| `Label` et `Alert` (ajoutées en reprenant les modales d'import et de requête) | ✅ |
 | `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) | ✅ |
 | Primitives interactives restantes (dropdown, combobox) | ⬜ |
 
@@ -279,7 +280,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**9 composants repris sur 140**, 42 balises `<b-*>` sur 813.
+**11 composants repris sur 140**, 52 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -477,7 +478,7 @@ gros et le plus risqué.
 | `Common/Filters/FavoriteFilterItem.vue` | 11 | 111 | ⬜ |
 | `Common/Login/Form.vue` | 9 | 208 | ⬜ |
 | `Common/Offline.vue` | 8 | 88 | ✅ reprise |
-| `Common/Environments/ModalImport.vue` | 7 | 159 | ⬜ |
+| `Common/Environments/ModalImport.vue` | 7 | 159 | ✅ reprise |
 | `Common/Environments/SelectEnvironmentPage.vue` | 6 | 59 | ⬜ |
 | `Common/Filters/Filters.vue` | 6 | 349 | ⬜ |
 | `Common/Environments/EnvironmentsSwitch.vue` | 6 | 159 | ⬜ |
@@ -523,7 +524,7 @@ gros et le plus risqué.
 | `ApiAction/QueryCard.vue` | 24 | 349 | ⬜ |
 | `ApiAction/QueryList.vue` | 14 | 128 | ⬜ |
 | `ApiAction/ResponseCard.vue` | 8 | 85 | ⬜ |
-| `ApiAction/SaveQueryModal.vue` | 3 | 70 | ⬜ |
+| `ApiAction/SaveQueryModal.vue` | 3 | 70 | ✅ reprise |
 
 ### Error — 5 composants, 9 balises `<b-*>`
 

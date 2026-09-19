@@ -67,7 +67,11 @@
         </b-row>
       </b-container>
     </div>
-    <SaveQueryModal :is-query-name-valid="isQueryNameValid" @storeNewQuery="storeNewQuery" />
+    <SaveQueryModal
+      :is-query-name-valid="isQueryNameValid"
+      :open.sync="saveQueryOpen"
+      @storeNewQuery="storeNewQuery"
+    />
   </Multipane>
 </template>
 
@@ -93,6 +97,7 @@ export default {
   },
   data() {
     return {
+      saveQueryOpen: false,
       tabs: [],
       currentTabIdx: 0,
       showAlert: true,
@@ -252,7 +257,7 @@ export default {
         this.storeQueriesToLocalStorage();
       } else {
         this.newSaveTabIdx = tabIdx;
-        this.$bvModal.show('modal-save-query');
+        this.saveQueryOpen = true;
       }
     },
     loadStoredQueriesFromLocalStorage() {

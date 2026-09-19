@@ -14,7 +14,7 @@
       @environment::importEnv="importEnvironment"
     />
     <modal-delete :environment-id="environmentId" :open.sync="deleteOpen" />
-    <modal-import id="modal-env-import" />
+    <modal-import :open.sync="importOpen" />
     <telemetry-banner />
   </div>
 </template>
@@ -38,6 +38,7 @@ export default {
   data() {
     return {
       createOrUpdateOpen: false,
+      importOpen: false,
       deleteOpen: false,
       environmentId: null,
     };
@@ -52,7 +53,7 @@ export default {
       this.deleteOpen = true;
     },
     importEnvironment() {
-      this.$bvModal.show('modal-env-import');
+      this.importOpen = true;
     },
   },
 };
