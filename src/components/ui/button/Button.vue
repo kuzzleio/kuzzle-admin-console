@@ -7,9 +7,8 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import { cva, type VariantProps } from 'class-variance-authority';
-import type { ClassValue } from 'clsx';
 
-import { cn } from '@/lib/utils';
+import { classMerge } from '../class-merge';
 
 /*
  * Première primitive du design system (ADR-0003, ADR-0009).
@@ -70,6 +69,7 @@ export type ButtonSize = NonNullable<ButtonVariantProps['size']>;
 
 export default defineComponent({
   name: 'Button',
+  mixins: [classMerge],
   // Les attributs non déclarés (`type`, `disabled`, `data-cy`, `aria-*`) sont
   // posés à la main sur l'élément rendu, pas sur la racine par défaut.
   inheritAttrs: false,
@@ -89,20 +89,7 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
-      // En Vue 2, la classe posée par le site d'appel n'arrive pas dans
-      // `$attrs` : elle est lue sur le vnode. La passer à `cn` est ce qui
-      // permet à l'appelant de surcharger une variante — sans elle, c'est
-      // l'ordre dans la feuille de styles qui tranche, pas le site d'appel.
-      //
-      // Vue recopie de son côté cette même classe sur l'élément racine : elle
-      // apparaît donc deux fois dans l'attribut `class`. Sans effet — ce qui
-      // compte est que la classe *de la variante* en conflit, elle, a bien été
-      // retirée.
-      return cn(
-        buttonVariants({ size: this.size, variant: this.variant }),
-        this.$vnode?.data?.staticClass,
-        this.$vnode?.data?.class as ClassValue,
-      );
+      return this.mergeClasses(buttonVariants({ size: this.size, variant: this.variant }));
     },
   },
 });
