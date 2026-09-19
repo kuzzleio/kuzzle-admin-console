@@ -94,19 +94,19 @@ describe('Form view', function() {
     cy.get('[data-cy="DocumentCreate-btn"]').click({ force: true })
 
     cy.contains('new-doc')
-    cy.request(
-      'GET',
-      `${kuzzleUrl}/${indexName}/${collectionName}/new-doc`
-    ).then(res => {
-      const date = new Date('2020-01-01 23:30:00')
+    cy.expectBackend(
+      `${kuzzleUrl}/${indexName}/${collectionName}/new-doc`,
+      res => {
+        const date = new Date('2020-01-01 23:30:00')
 
-      expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals(
-        date.getTime().toString()
-      )
-      expect(res.body.result._source.items.desktop).to.be.equals('standing')
-      expect(res.body.result._source.skill.name).to.be.equals('CSS')
-      expect(res.body.result._source.skill.level).to.be.equals(60)
-    })
+        expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals(
+          date.getTime().toString()
+        )
+        expect(res.body.result._source.items.desktop).to.be.equals('standing')
+        expect(res.body.result._source.skill.name).to.be.equals('CSS')
+        expect(res.body.result._source.skill.level).to.be.equals(60)
+      }
+    )
   })
 
   it('should be able to update a document with the form view enabled', function() {
@@ -139,18 +139,26 @@ describe('Form view', function() {
 
     cy.get('[data-cy="DocumentUpdate-btn"]').click({ force: true })
 
-    cy.request(
-      'GET',
-      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}`
-    ).then(res => {
-      const date = new Date('2020-01-02 23:30:00')
+    // L'application ne retourne à la liste qu'une fois l'écriture persistée :
+    // c'est le signal observable que la soumission a abouti. Sans lui, le
+    // `cy.request` qui suit lisait le document AVANT sa mise à jour et le test
+    // échouait sur `expected 42 to equal 43` (cf. docs/MIGRATION.md, G-001).
+    cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).should(
+      'be.visible'
+    )
 
-      expect(res.body.result._source.age).to.be.equals(43)
-      expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals(
-        date.getTime().toString()
-      )
-      expect(res.body.result._source.skill.level).to.be.equals(0)
-    })
+    cy.expectBackend(
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}`,
+      res => {
+        const date = new Date('2020-01-02 23:30:00')
+
+        expect(res.body.result._source.age).to.be.equals(43)
+        expect(res.body.result._source.employeeOfTheMonthSince).to.be.equals(
+          date.getTime().toString()
+        )
+        expect(res.body.result._source.skill.level).to.be.equals(0)
+      }
+    )
   })
 
   it('should be able to keep synchronized the form view and the JSON view', function() {
