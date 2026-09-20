@@ -1,12 +1,14 @@
 <template>
-  <b-container class="UpdateProfile d-flex flex-column h-100">
+  <div
+    class="UpdateProfile tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+  >
     <Headline>
       Edit profile - <span class="bold">{{ id }}</span>
     </Headline>
     <Notice />
-    <b-alert variant="warning" :show="displayWarningAlert">
+    <Alert v-if="displayWarningAlert" class="tw:mb-4" variant="warning">
       Warning, you are editing a profile that applies to yourself!
-    </b-alert>
+    </Alert>
     <create-or-update
       v-if="!loading"
       :id="id"
@@ -14,7 +16,7 @@
       @cancel="onCancel"
       @submit="onSubmit"
     />
-  </b-container>
+  </div>
 </template>
 
 <script>
@@ -23,6 +25,7 @@ import { mapState } from 'pinia';
 
 import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
+import { Alert } from '@/components/ui/alert';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import CreateOrUpdate from './CreateOrUpdate.vue';
@@ -30,6 +33,7 @@ import CreateOrUpdate from './CreateOrUpdate.vue';
 export default {
   name: 'UpdateProfile',
   components: {
+    Alert,
     Headline,
     CreateOrUpdate,
     Notice,

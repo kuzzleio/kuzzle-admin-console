@@ -280,7 +280,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**15 composants repris sur 140**, 67 balises `<b-*>` sur 813.
+**20 composants repris sur 140**, 85 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -312,6 +312,13 @@ choisir entre garder un `<select>` natif habillé aux tokens et réécrire les
 quatre specs. La décision vaut une ADR ; elle n'est pas prise ici, et le
 composant reste sur Bootstrap en attendant. Même remarque pour `Autocomplete.vue`
 et `MSelect.vue`, qui dépendent de `vue-multiselect`.
+
+Dans Security, même situation pour `Users/Page.vue` : son menu « … » est un
+`<b-dropdown>`, et le `DropdownMenu` de shadcn-vue est une surcouche flottante
+avec navigation au clavier — une primitive de l'ampleur de `Dialog`, donc une
+ADR à elle seule. Les trois `List.vue` attendent la même chose du côté
+`<b-pagination>`. Les pages Roles et Profiles sont donc reprises avant la page
+Users : l'incohérence visuelle est temporaire et assumée.
 
 ## 2. Toolchain (phase 0)
 
@@ -449,20 +456,20 @@ gros et le plus risqué.
 | `Security/Users/CreateOrUpdate.vue` | 9 | 356 | ⬜ |
 | `Security/Profiles/ProfileItem.vue` | 9 | 186 | ⬜ |
 | `Security/Roles/RoleItem.vue` | 9 | 109 | ⬜ |
-| `Security/Roles/Page.vue` | 8 | 167 | ⬜ |
+| `Security/Roles/Page.vue` | 8 | 167 | ✅ reprise |
 | `Security/Users/Page.vue` | 8 | 120 | ⬜ |
 | `Security/Users/Steps/UserProfileList.vue` | 8 | 118 | ⬜ |
 | `Security/Users/Steps/CredentialsSelector.vue` | 8 | 112 | ⬜ |
 | `Security/Users/Steps/Basic.vue` | 7 | 91 | ⬜ |
-| `Security/Profiles/Page.vue` | 6 | 76 | ⬜ |
+| `Security/Profiles/Page.vue` | 6 | 76 | ✅ reprise |
 | `Security/Users/UserItem.vue` | 6 | 204 | ⬜ |
 | `Security/Users/DeleteModal.vue` | 4 | 57 | ✅ reprise |
 | `Security/Roles/DeleteModal.vue` | 4 | 57 | ✅ reprise |
 | `Security/Profiles/DeleteModal.vue` | 4 | 57 | ✅ reprise |
 | `Security/Users/Steps/CustomData.vue` | 3 | 80 | ⬜ |
-| `Security/Profiles/Update.vue` | 2 | 120 | ⬜ |
-| `Security/Profiles/Create.vue` | 1 | 71 | ⬜ |
-| `Security/Common/Notice.vue` | 1 | 26 | ⬜ |
+| `Security/Profiles/Update.vue` | 2 | 120 | ✅ reprise |
+| `Security/Profiles/Create.vue` | 1 | 71 | ✅ reprise |
+| `Security/Common/Notice.vue` | 1 | 26 | ✅ reprise |
 | `Security/Common/JsonWithMapping.vue` | 0 | 97 | ⬜ |
 | `Security/Users/Steps/Mapping.vue` | 0 | 87 | ⬜ |
 | `Security/Profiles/RoleChips.vue` | 0 | 83 | ⬜ |
@@ -957,6 +964,27 @@ Gabarit à copier :
   sinon la navigation retombe sur la garde d'environnement ; et une assertion
   `should('be.visible')` sur un élément situé sous la ligne de flottaison échoue
   alors que `.click()`, lui, défile tout seul.
+
+#### G-016 — `disabled` ne désactive rien sur un `Button` rendu en `router-link`
+
+- **Contexte** : phase 2, reprise des pages Security. « Create Role » et
+  « Create Profile » sont des liens de navigation qui doivent être inertes quand
+  l'utilisateur n'a pas le droit de créer.
+- **Symptôme** : le bouton se grise (`disabled:opacity-50` s'applique) mais reste
+  cliquable, et la navigation a lieu. Aucune spec ne le voit : elles sont
+  toujours jouées en administrateur.
+- **Cause** : `b-button` arbitrait tout seul — avec `to` **et** `disabled`, il
+  rendait un `<a>` inerte. La prop `as` de notre `Button` ne fait pas cet
+  arbitrage : elle rend ce qu'on lui demande, et `disabled` n'a aucun effet sur
+  un `<a>` ni sur un `router-link`.
+- **Solution** : faire l'arbitrage au site d'appel —
+  `:as="peut ? 'router-link' : 'button'"` et `:to="peut ? { … } : undefined"`.
+  Le cas interdit rend un vrai `<button disabled>`, que le navigateur sait
+  rendre inerte au clavier comme à la souris.
+- **À retenir** : chaque `Button` avec `:to` **et** `:disabled` est à traiter
+  ainsi. Il en reste dans `Security/Users/Page.vue` et dans Data. Ne pas
+  « corriger » en ajoutant un `disabled` à la primitive : c'est l'absence de
+  magie qui est le contrat d'ADR-0009.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
