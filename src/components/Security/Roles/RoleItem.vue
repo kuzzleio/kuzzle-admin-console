@@ -1,69 +1,66 @@
 <template>
-  <b-container fluid data-cy="RoleItem">
-    <b-row align-h="between" no-gutters>
-      <b-col cols="10" class="py-1 vertical-align">
-        <i
-          aria-hidden="true"
-          :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2  d-inline-block align-middle`"
-          :data-cy="`RoleItem-${document._id}--toggle`"
-          @click="toggleCollapse"
-        />
-        <b-form-checkbox
-          v-model="checked"
-          class="d-inline-block align-middle"
-          type="checkbox"
-          value="true"
-          unchecked-value="false"
-          :data-cy="`RoleItem-checkbox--${document._id}`"
-          @change="notifyCheckboxClick"
-        />
-        <a class="d-inline-block align-middle code pointer mr-2" @click="toggleCollapse">{{
-          document._id
-        }}</a>
-      </b-col>
-      <b-col class="text-right">
-        <b-button
+  <div class="tw:px-3" data-cy="RoleItem">
+    <div class="tw:flex tw:items-center tw:gap-2 tw:py-1">
+      <i
+        aria-hidden="true"
+        class="fa tw:cursor-pointer tw:px-1"
+        :class="`fa-caret-${expanded ? 'down' : 'right'}`"
+        :data-cy="`RoleItem-${document._id}--toggle`"
+        @click="toggleCollapse"
+      />
+      <Checkbox
+        v-model="checked"
+        :data-cy="`RoleItem-checkbox--${document._id}`"
+        @change="notifyCheckboxClick"
+      />
+      <a class="code tw:cursor-pointer" @click="toggleCollapse">{{ document._id }}</a>
+
+      <div class="tw:ms-auto tw:flex tw:items-center">
+        <Button
           class="RoleItem-update"
-          href=""
-          variant="link"
           :data-cy="`RoleItem-update--${document._id}`"
           :disabled="!canEditRole"
+          size="icon"
           :title="canEditRole ? 'Edit Role' : 'You are not allowed to edit this role'"
+          variant="ghost"
           @click.prevent="update"
         >
-          <i class="fa fa-pencil-alt" :class="{ disabled: !canEditRole }" />
-        </b-button>
-        <b-button
+          <i class="fa fa-pencil-alt" aria-hidden="true" />
+        </Button>
+        <Button
           class="RoleItem-delete"
-          href=""
-          variant="link"
           :data-cy="`RoleItem-delete--${document._id}`"
           :disabled="!canDeleteRole"
+          size="icon"
           :title="canDeleteRole ? 'Delete role' : 'You are not allowed to delete this role'"
+          variant="ghost"
           @click.prevent="deleteDocument(document._id)"
         >
-          <i class="fa fa-trash" :class="{ disabled: !canDeleteRole }" />
-        </b-button>
-      </b-col>
-    </b-row>
+          <i class="fa fa-trash" aria-hidden="true" />
+        </Button>
+      </div>
+    </div>
 
-    <b-row>
-      <b-collapse v-model="expanded" class="mt-3 ml-3 RoleItem-content">
-        <pre v-json-formatter="{ content: document, open: true }" />
-      </b-collapse>
-    </b-row>
-  </b-container>
+    <div v-show="expanded" class="RoleItem-content tw:ms-3 tw:mt-3">
+      <pre v-json-formatter="{ content: document, open: true }" />
+    </div>
+  </div>
 </template>
 
 <script>
 import { mapState } from 'pinia';
 
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import jsonFormatter from '@/directives/json-formatter.directive';
 import { useAuthStore } from '@/stores';
 
 export default {
   name: 'RoleItem',
-  components: {},
+  components: {
+    Button,
+    Checkbox,
+  },
   directives: {
     jsonFormatter,
   },

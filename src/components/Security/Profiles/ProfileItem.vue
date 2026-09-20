@@ -1,85 +1,80 @@
 <template>
-  <b-container fluid data-cy="ProfileItem">
-    <b-row align-h="between" no-gutters>
-      <b-col cols="10" class="py-1">
-        <i
-          aria-role="button"
-          :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2  d-inline-block align-middle`"
-          :data-cy="`ProfileItem-${document._id}--toggle`"
-          @click="toggleCollapse"
-        />
-        <b-form-checkbox
-          :id="checkboxId"
-          v-model="checked"
-          class="d-inline-block align-middle"
-          type="checkbox"
-          value="true"
-          unchecked-value="false"
-          :data-cy="`ProfileListItem-checkbox--${document._id}`"
-          @change="notifyCheckboxClick"
-        />
-        <a class="d-inline-block align-middle code pointer" @click="toggleCollapse">{{
-          document._id
-        }}</a>
-        <label
-          v-if="document.additionalAttribute && document.additionalAttribute.value"
-          class="ProfileItem-additionalAttribute"
-        >
-          ({{ document.additionalAttribute.name }}: {{ document.additionalAttribute.value }})
-        </label>
-      </b-col>
-      <b-col cols="2">
-        <div class="float-right">
-          <b-button
-            class="ProfileListItem-update"
-            href=""
-            variant="link"
-            :data-cy="`ProfileListItem-update--${document._id}`"
-            :disabled="!canEditProfile"
-            :title="canEditProfile ? 'Edit Profile' : 'You are not allowed to edit this profile'"
-            @click.prevent="update"
-          >
-            <i class="fa fa-pencil-alt" :class="{ disabled: !canEditProfile }" />
-          </b-button>
-          <b-button
-            class="ProfileListItem-delete"
-            href=""
-            variant="link"
-            :data-cy="`ProfileListItem-delete--${document._id}`"
-            :disabled="!canDeleteProfile"
-            :title="
-              canDeleteProfile ? 'Delete profile' : 'You are not allowed to delete this profile'
-            "
-            @click.prevent="deleteDocument(document._id)"
-          >
-            <i class="fa fa-trash" :class="{ disabled: !canDeleteProfile }" />
-          </b-button>
-        </div>
-      </b-col>
-    </b-row>
-
-    <b-row>
-      <b-collapse
-        :id="`collapse-${document._id}`"
-        v-model="expanded"
-        :data-cy="`ProfileListItem-collapse--${document._id}`"
-        class="mt-3 ml-3 DocumentListItem-content"
+  <div class="tw:px-3" data-cy="ProfileItem">
+    <div class="tw:flex tw:items-center tw:gap-2 tw:py-1">
+      <i
+        aria-hidden="true"
+        class="fa tw:cursor-pointer tw:px-1"
+        :class="`fa-caret-${expanded ? 'down' : 'right'}`"
+        :data-cy="`ProfileItem-${document._id}--toggle`"
+        @click="toggleCollapse"
+      />
+      <Checkbox
+        :id="checkboxId"
+        v-model="checked"
+        :data-cy="`ProfileListItem-checkbox--${document._id}`"
+        @change="notifyCheckboxClick"
+      />
+      <a class="code tw:cursor-pointer" @click="toggleCollapse">{{ document._id }}</a>
+      <span
+        v-if="document.additionalAttribute && document.additionalAttribute.value"
+        class="tw:text-sm tw:italic tw:text-muted-foreground"
       >
-        <pre v-json-formatter="{ content: document, open: true }" />
-      </b-collapse>
-    </b-row>
-  </b-container>
+        ({{ document.additionalAttribute.name }}: {{ document.additionalAttribute.value }})
+      </span>
+
+      <div class="tw:ms-auto tw:flex tw:items-center">
+        <Button
+          class="ProfileListItem-update"
+          :data-cy="`ProfileListItem-update--${document._id}`"
+          :disabled="!canEditProfile"
+          size="icon"
+          :title="canEditProfile ? 'Edit Profile' : 'You are not allowed to edit this profile'"
+          variant="ghost"
+          @click.prevent="update"
+        >
+          <i class="fa fa-pencil-alt" aria-hidden="true" />
+        </Button>
+        <Button
+          class="ProfileListItem-delete"
+          :data-cy="`ProfileListItem-delete--${document._id}`"
+          :disabled="!canDeleteProfile"
+          size="icon"
+          :title="
+            canDeleteProfile ? 'Delete profile' : 'You are not allowed to delete this profile'
+          "
+          variant="ghost"
+          @click.prevent="deleteDocument(document._id)"
+        >
+          <i class="fa fa-trash" aria-hidden="true" />
+        </Button>
+      </div>
+    </div>
+
+    <div
+      v-show="expanded"
+      :id="`collapse-${document._id}`"
+      :data-cy="`ProfileListItem-collapse--${document._id}`"
+      class="ProfileItem-content tw:ms-3 tw:mt-3 tw:max-h-75 tw:overflow-y-auto"
+    >
+      <pre v-json-formatter="{ content: document, open: true }" />
+    </div>
+  </div>
 </template>
 
 <script>
 import { mapState } from 'pinia';
 
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import jsonFormatter from '@/directives/json-formatter.directive';
 import { useAuthStore } from '@/stores';
 
 export default {
   name: 'ProfileItem',
-  components: {},
+  components: {
+    Button,
+    Checkbox,
+  },
   directives: {
     jsonFormatter,
   },
@@ -126,61 +121,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.ProfileItem-toggle {
-  padding: 0 10px;
-  margin-left: -10px;
-  cursor: pointer;
-  transition-duration: 0.2s;
-}
-
-/* HACK for centring the checkbox between the caret and the title */
-[type='checkbox'] + span:not(.lever) {
-  height: 15px;
-  padding-left: 30px;
-}
-
-.ProfileItem-title {
-  cursor: pointer;
-  font-size: 1rem;
-  color: #272727;
-}
-
-.ProfileItem-content {
-  transition-duration: 0.2s;
-  max-height: 300px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 10px 10px 0 0;
-
-  pre {
-    margin: 0;
-    width: 70%;
-    display: inline-block;
-  }
-}
-
-.collapsed {
-  .ProfileItem-toggle {
-    transform: rotate(-90deg);
-  }
-  .ProfileItem-content {
-    max-height: 0;
-    transition-duration: 0;
-    padding: 0 10px 0 0;
-  }
-}
-
-.ProfileItem-additionalAttribute {
-  color: grey;
-  font-style: italic;
-  color: black;
-  line-height: 21px;
-}
-
-.ProfileItem-actions {
-  margin-top: 1px;
-  font-size: 1em;
-}
-</style>

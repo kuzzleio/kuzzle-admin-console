@@ -262,6 +262,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | Primitives suivantes : `Badge`, `Card`, `Input` | ✅ |
 | `Spinner` (ajoutée en reprenant `Offline.vue`) | ✅ |
 | `Label` et `Alert` (ajoutées en reprenant les modales d'import et de requête) | ✅ |
+| `Checkbox` (ajoutée en reprenant les trois lignes de liste de Security) | ✅ |
 | `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) | ✅ |
 | Primitives interactives restantes (dropdown, combobox) | ⬜ |
 
@@ -280,7 +281,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**20 composants repris sur 140**, 85 balises `<b-*>` sur 813.
+**23 composants repris sur 140**, 109 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -454,15 +455,15 @@ gros et le plus risqué.
 | `Security/Profiles/Filters.vue` | 10 | 155 | ⬜ |
 | `Security/Roles/Filters.vue` | 10 | 115 | ⬜ |
 | `Security/Users/CreateOrUpdate.vue` | 9 | 356 | ⬜ |
-| `Security/Profiles/ProfileItem.vue` | 9 | 186 | ⬜ |
-| `Security/Roles/RoleItem.vue` | 9 | 109 | ⬜ |
+| `Security/Profiles/ProfileItem.vue` | 9 | 186 | ✅ reprise |
+| `Security/Roles/RoleItem.vue` | 9 | 109 | ✅ reprise |
 | `Security/Roles/Page.vue` | 8 | 167 | ✅ reprise |
 | `Security/Users/Page.vue` | 8 | 120 | ⬜ |
 | `Security/Users/Steps/UserProfileList.vue` | 8 | 118 | ⬜ |
 | `Security/Users/Steps/CredentialsSelector.vue` | 8 | 112 | ⬜ |
 | `Security/Users/Steps/Basic.vue` | 7 | 91 | ⬜ |
 | `Security/Profiles/Page.vue` | 6 | 76 | ✅ reprise |
-| `Security/Users/UserItem.vue` | 6 | 204 | ⬜ |
+| `Security/Users/UserItem.vue` | 6 | 204 | ✅ reprise |
 | `Security/Users/DeleteModal.vue` | 4 | 57 | ✅ reprise |
 | `Security/Roles/DeleteModal.vue` | 4 | 57 | ✅ reprise |
 | `Security/Profiles/DeleteModal.vue` | 4 | 57 | ✅ reprise |
@@ -985,6 +986,25 @@ Gabarit à copier :
   ainsi. Il en reste dans `Security/Users/Page.vue` et dans Data. Ne pas
   « corriger » en ajoutant un `disabled` à la primitive : c'est l'absence de
   magie qui est le contrat d'ADR-0009.
+
+#### G-017 — Une spec peut cibler un `id`, pas seulement un `data-cy`
+
+- **Contexte** : phase 2, reprise de `UserItem.vue`. Le `<b-collapse>` qui montre
+  le JSON du document devient un simple `v-show` — aucune primitive n'est
+  nécessaire pour masquer un bloc.
+- **Symptôme** : `users.spec.js` échoue sur un seul test,
+  `Expected to find element: [id="collapse-without-credentials"], but never
+  found it`. Les dix-sept autres passent, le rendu est correct à l'œil.
+- **Cause** : `b-collapse` exigeait un `id` (il le relie à son déclencheur par
+  `aria-controls`). Le composant le portait donc, et une spec s'en est servie
+  comme point d'ancrage. En remplaçant la balise par un `<div v-show>`, l'`id`
+  est parti avec elle.
+- **Solution** : reporter l'`id` sur le `<div>`. Il est du reste utile en propre,
+  pour `aria-controls`.
+- **À retenir** : avant de supprimer une balise `<b-*>`, relever **tous** ses
+  attributs qui peuvent servir d'ancrage — `id`, `name`, `aria-*` —, pas
+  seulement les `data-cy` et les classes. Un `grep` de l'`id` dans
+  `test/e2e/` coûte dix secondes ; ce test-là en a coûté six minutes.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
