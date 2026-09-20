@@ -1,16 +1,18 @@
 <template>
-  <b-container class="center-screen">
-    <b-spinner variant="primary" data-cy="main-spinner" />
-  </b-container>
+  <div class="tw:flex tw:min-h-full tw:flex-col tw:items-center tw:justify-center tw:text-center">
+    <Spinner class="tw:text-primary" data-cy="main-spinner" label="Loading" size="lg" />
+  </div>
 </template>
 
-<style>
-.center-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: 100%;
-}
-</style>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import { Spinner } from '@/components/ui/spinner';
+
+export default defineComponent({
+  name: 'MainSpinner',
+  components: {
+    Spinner,
+  },
+});
+</script>
