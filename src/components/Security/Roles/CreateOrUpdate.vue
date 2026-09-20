@@ -1,57 +1,52 @@
 <template>
-  <b-container class="CreateOrUpdateRole d-flex flex-column h-100" data-cy="CreateOrUpdateRole">
+  <div
+    class="CreateOrUpdateRole tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+    data-cy="CreateOrUpdateRole"
+  >
     <Headline v-if="id">
       Update role - <span class="code">{{ id }}</span>
     </Headline>
     <Headline v-else> Create a new role </Headline>
     <Notice />
-    <b-alert variant="warning" :show="displayWarningAlert">
+    <Alert v-if="displayWarningAlert" class="tw:mb-4" variant="warning">
       Warning, you are editing a role that applies to yourself!
-    </b-alert>
+    </Alert>
     <template v-if="loading" />
     <template v-else>
-      <b-card class="h-100">
-        <b-row class="h-100">
-          <b-col lg="7" md="12" class="d-flex flex-column">
-            <b-form-group
-              v-if="!id"
-              data-cy="RoleCreateOrUpdate-id"
-              label="Role ID"
-              label-cols="3"
-              :description="!id ? 'This field is mandatory' : ''"
-              :invalid-feedback="idFeedback"
-            >
-              <b-input
+      <Card class="tw:h-full">
+        <CardContent class="tw:flex tw:h-full tw:flex-col tw:gap-6 tw:lg:flex-row">
+          <div class="tw:flex tw:flex-col tw:gap-4 tw:lg:w-7/12">
+            <FormItem v-if="!id" data-cy="RoleCreateOrUpdate-id">
+              <Label for="role-id">Role ID</Label>
+              <Input
+                id="role-id"
                 v-model="v$.idValue.$model"
-                :disabled="id"
-                :state="validateState('idValue')"
+                :aria-invalid="idFeedback ? 'true' : undefined"
               />
-            </b-form-group>
-            <b-form-group
-              v-else
-              label="Role ID"
-              label-cols="3"
-              :description="!id ? 'This field is mandatory' : ''"
-            >
-              <b-input :disabled="true" :value="id" />
-            </b-form-group>
+              <FormMessage v-if="idFeedback">{{ idFeedback }}</FormMessage>
+              <FormDescription v-else>This field is mandatory</FormDescription>
+            </FormItem>
+            <FormItem v-else>
+              <Label for="role-id">Role ID</Label>
+              <Input id="role-id" disabled :value="id" />
+            </FormItem>
             <json-editor
               ref="jsoneditor"
               class="CreateOrUpdateRole-jsonEditor"
-              data-cy="RoleCreateOrUpdate-jsonEditor"
               :content="documentValue"
+              data-cy="RoleCreateOrUpdate-jsonEditor"
               @change="onContentChange"
             />
-          </b-col>
-          <b-col lg="5" md="12" class="d-flex flex-column">
-            <div class="CreateOrUpdateRole-cheatsheet">
-              <h3>Cheatsheet</h3>
-              Your role consists of a <code>controllers</code> object, in which each key represents
-              a controller in your Kuzzle. Each contoller key contains an
-              <code>actions</code> object, in which each key represents a valid action within that
-              controller. Whitelist your actions by setting their value to <code>true</code> to
-              allow them in the role, like the example below:
-              <pre class="my-3 ml-3">
+          </div>
+
+          <div class="CreateOrUpdateRole-cheatsheet tw:lg:w-5/12">
+            <h3>Cheatsheet</h3>
+            Your role consists of a <code>controllers</code> object, in which each key represents a
+            controller in your Kuzzle. Each contoller key contains an <code>actions</code> object,
+            in which each key represents a valid action within that controller. Whitelist your
+            actions by setting their value to <code>true</code> to allow them in the role, like the
+            example below:
+            <pre class="tw:my-3 tw:ms-3">
 {
   "controllers": {
     "document": {
@@ -62,42 +57,34 @@
     }
   }
 }
-            </pre
-              >
-            </div>
-          </b-col>
-        </b-row>
-
-        <template #footer>
-          <div class="text-right">
-            <b-button @click="cancel">Cancel</b-button>
-            <b-button
-              v-if="!id"
-              class="ml-2"
-              data-cy="RoleCreateOrUpdate-createBtn"
-              variant="primary"
-              :disabled="submitting"
-              @click="submit"
-            >
-              <i class="fa fa-plus-circle left" />
-              Create
-            </b-button>
-            <b-button
-              v-if="!!id"
-              class="ml-2"
-              data-cy="RoleCreateOrUpdate-updateBtn"
-              variant="primary"
-              :disabled="submitting"
-              @click="submit"
-            >
-              <i class="fa fa-pencil-alt left" />
-              Update
-            </b-button>
+            </pre>
           </div>
-        </template>
-      </b-card>
+        </CardContent>
+
+        <CardFooter class="tw:justify-end tw:gap-2">
+          <Button variant="outline" @click="cancel">Cancel</Button>
+          <Button
+            v-if="!id"
+            data-cy="RoleCreateOrUpdate-createBtn"
+            :disabled="submitting"
+            @click="submit"
+          >
+            <i class="fa fa-plus-circle" aria-hidden="true" />
+            Create
+          </Button>
+          <Button
+            v-if="!!id"
+            data-cy="RoleCreateOrUpdate-updateBtn"
+            :disabled="submitting"
+            @click="submit"
+          >
+            <i class="fa fa-pencil-alt" aria-hidden="true" />
+            Update
+          </Button>
+        </CardFooter>
+      </Card>
     </template>
-  </b-container>
+  </div>
 </template>
 
 <script>
@@ -109,14 +96,30 @@ import { mapState } from 'pinia';
 import JsonEditor from '../../Common/JsonEditor.vue';
 import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 import { startsWithSpace, isWhitespace } from '@/validators';
 
 export default {
   name: 'CreateOrUpdateRole',
   components: {
+    Alert,
+    Button,
+    Card,
+    CardContent,
+    CardFooter,
+    FormDescription,
+    FormItem,
+    FormMessage,
     Headline,
+    Input,
     JsonEditor,
+    Label,
     Notice,
   },
   props: {
@@ -212,10 +215,6 @@ export default {
       } catch (error) {
         this.$log.error(error);
       }
-    },
-    validateState(fieldName) {
-      const { $dirty, $error } = this.v$[fieldName];
-      return $dirty ? !$error : null;
     },
     onContentChange(value) {
       this.v$.documentValue.$model = value;
