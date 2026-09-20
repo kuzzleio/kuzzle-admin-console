@@ -110,7 +110,7 @@
       </b-row>
     </template>
     <delete-modal
-      id="modal-delete-profiles"
+      :open.sync="deleteModalOpen"
       :candidates-for-deletion="candidatesForDeletion"
       :is-loading="deleteModalIsLoading"
       @confirm="onDeleteConfirmed"
@@ -150,6 +150,7 @@ export default {
   },
   data() {
     return {
+      deleteModalOpen: false,
       candidatesForDeletion: [],
       currentFilter: [],
       currentPage: 1,
@@ -295,16 +296,16 @@ export default {
           noAutoHide: true,
         });
       }
-      this.$bvModal.hide('modal-delete-profiles');
+      this.deleteModalOpen = false;
       this.deleteModalIsLoading = false;
     },
     deleteBulk() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
-      this.$bvModal.show('modal-delete-profiles');
+      this.deleteModalOpen = true;
     },
     deleteProfile(id) {
       this.candidatesForDeletion.push(id);
-      this.$bvModal.show('modal-delete-profiles');
+      this.deleteModalOpen = true;
     },
     resetCandidatesForDeletion() {
       this.candidatesForDeletion = [];

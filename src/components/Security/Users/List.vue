@@ -118,7 +118,7 @@
         />
       </b-row>
       <delete-modal
-        id="modal-delete-users"
+        :open.sync="deleteModalOpen"
         :candidates-for-deletion="candidatesForDeletion"
         :is-loading="deleteModalIsLoading"
         @confirm="onDeleteConfirmed"
@@ -171,6 +171,7 @@ export default {
   },
   data() {
     return {
+      deleteModalOpen: false,
       currentFilter: new filterManager.Filter(),
       currentPage: 1,
       deleteModalIsLoading: false,
@@ -352,7 +353,7 @@ export default {
           this.candidatesForDeletion,
         );
         this.deleteModalIsLoading = false;
-        this.$bvModal.hide('modal-delete-users');
+        this.deleteModalOpen = false;
         await this.fetchDocuments();
         if (this.authStore.adminAlreadyExists) {
           try {
@@ -376,11 +377,11 @@ export default {
     },
     deleteUser(id) {
       this.candidatesForDeletion.push(id);
-      this.$bvModal.show('modal-delete-users');
+      this.deleteModalOpen = true;
     },
     deleteBulk() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
-      this.$bvModal.show('modal-delete-users');
+      this.deleteModalOpen = true;
     },
     resetCandidatesForDeletion() {
       this.candidatesForDeletion = [];
