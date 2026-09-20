@@ -280,7 +280,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**11 composants repris sur 140**, 52 balises `<b-*>` sur 813.
+**15 composants repris sur 140**, 67 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -303,6 +303,15 @@ insuffisants et `Offline` que pendant la connexion. Les specs des domaines
 passent sans jamais les rendre. Pour les voir, il a fallu les monter sur une
 route temporaire, non commitée — c'est le prix à payer pour ne pas livrer un
 composant qu'on n'a jamais vu.
+
+**Ce qui reste bloqué dans Common** : `PerPageSelector.vue` porte un
+`<b-form-select>` que quatre specs pilotent avec `cy.select('10')` — une
+commande qui exige un `<select>` natif. Le `Select` de shadcn-vue n'en est pas
+un : c'est un bouton plus une liste en surcouche. Le reprendre, c'est donc
+choisir entre garder un `<select>` natif habillé aux tokens et réécrire les
+quatre specs. La décision vaut une ADR ; elle n'est pas prise ici, et le
+composant reste sur Bootstrap en attendant. Même remarque pour `Autocomplete.vue`
+et `MSelect.vue`, qui dépendent de `vue-multiselect`.
 
 ## 2. Toolchain (phase 0)
 
@@ -479,18 +488,18 @@ gros et le plus risqué.
 | `Common/Login/Form.vue` | 9 | 208 | ⬜ |
 | `Common/Offline.vue` | 8 | 88 | ✅ reprise |
 | `Common/Environments/ModalImport.vue` | 7 | 159 | ✅ reprise |
-| `Common/Environments/SelectEnvironmentPage.vue` | 6 | 59 | ⬜ |
+| `Common/Environments/SelectEnvironmentPage.vue` | 6 | 59 | ✅ reprise |
 | `Common/Filters/Filters.vue` | 6 | 349 | ⬜ |
 | `Common/Environments/EnvironmentsSwitch.vue` | 6 | 159 | ⬜ |
 | `Common/Login/ResetPasswordForm.vue` | 6 | 145 | ⬜ |
-| `Common/Environments/CreateEnvironmentPage.vue` | 6 | 104 | ⬜ |
+| `Common/Environments/CreateEnvironmentPage.vue` | 6 | 104 | ✅ reprise |
 | `Common/Filters/RawFilter.vue` | 5 | 147 | ⬜ |
 | `Common/Environments/ModalDelete.vue` | 5 | 118 | ✅ reprise |
 | `Common/ListNotAllowed.vue` | 4 | 22 | ✅ reprise |
 | `Common/Environments/ModalCreateOrUpdate.vue` | 3 | 49 | ✅ reprise |
-| `Common/MainSpinner.vue` | 2 | 16 | ⬜ |
+| `Common/MainSpinner.vue` | 2 | 16 | ✅ reprise |
 | `Common/PerPageSelector.vue` | 1 | 35 | ⬜ |
-| `Common/PageNotAllowed.vue` | 1 | 30 | ⬜ |
+| `Common/PageNotAllowed.vue` | 1 | 30 | ✅ reprise |
 | `Common/Autocomplete.vue` | 1 | 166 | ⬜ |
 | `Common/Filters/HistoryFilter.vue` | 0 | 80 | ⬜ |
 | `Common/Filters/FavoriteFilters.vue` | 0 | 65 | ⬜ |
@@ -926,6 +935,28 @@ Gabarit à copier :
   devient visible — mais ça élargit le périmètre d'une PR de reprise, et il vaut
   mieux l'avoir prévu.
 - **Ref** : [ADR-0010](adr/0010-primitive-dialog-en-vue-2.md).
+
+#### G-015 — La route temporaire de revue rend une page blanche, sans erreur
+
+- **Contexte** : phase 2, reprise de `MainSpinner` et `PageNotAllowed`. Aucun
+  des deux ne s'affiche pendant une spec : il faut les monter sur une route
+  temporaire pour les regarder (§ 1.3, point 4).
+- **Symptôme** : la route répond, le routeur navigue, la console du navigateur
+  est vide — et la page est blanche. Rien dans le build, rien dans le lint.
+- **Cause** : la route était déclarée avec un composant en ligne
+  (`component: { components: {...}, template: '<div>…</div>' }`). Le bundle
+  embarque le **runtime seul** de Vue, sans compilateur de templates : une
+  option `template` y est ignorée en silence. En dev le comportement est le même,
+  mais on l'attribue plus volontiers à la route.
+- **Solution** : écrire la page de revue dans un vrai `.vue` temporaire
+  (`src/components/TmpPreview.vue`, non commité) et l'importer. Le SFC est
+  compilé à la build, donc il rend.
+- **À retenir** : le raccourci « juste un `template:` en ligne » ne marche jamais
+  ici. Deux autres pièges de cette route de revue, du même coup : le routeur est
+  en mode **hash**, donc l'URL à visiter est `/#/ma-route` et non `/ma-route` —
+  sinon la navigation retombe sur la garde d'environnement ; et une assertion
+  `should('be.visible')` sur un élément situé sous la ligne de flottaison échoue
+  alors que `.click()`, lui, défile tout seul.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
