@@ -1,9 +1,11 @@
 <template>
-  <b-container class="CreateProfile d-flex flex-column h-100">
+  <div
+    class="CreateProfile tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+  >
     <Headline> Create a new profile </Headline>
     <Notice />
     <create-or-update @cancel="onCancel" @submit="onSubmit" />
-  </b-container>
+  </div>
 </template>
 
 <script>

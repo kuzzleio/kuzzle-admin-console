@@ -1,33 +1,32 @@
 <template>
-  <b-container class="RolesManagement">
-    <b-row>
-      <b-col cols="8">
-        <headline>Roles</headline>
-      </b-col>
-      <b-col class="text-right">
-        <b-button
-          v-b-modal.revokeAnonymous-modal
+  <div class="RolesManagement tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12">
+    <div class="tw:flex tw:flex-wrap tw:items-start tw:justify-between tw:gap-4">
+      <headline>Roles</headline>
+      <div class="tw:flex tw:flex-wrap tw:gap-2">
+        <Button
+          data-cy="RolesManagement-revokeAnonymous"
           :disabled="!displayRevokeAnonymous"
           :title="
             displayRevokeAnonymous
               ? 'Reduce anonymous rights to the minimum'
               : 'You cannot revoke anonymous rights either because you don\'t have the permissions to do it or because there is no administrator user yet in the system.'
           "
-          class="mr-2"
-          data-cy="RolesManagement-revokeAnonymous"
-          variant="primary"
-          >Revoke anonymous rights</b-button
+          @click="revokeAnonymousOpen = true"
+          >Revoke anonymous rights</Button
         >
-        <b-button
-          class="mr-2"
+        <!--
+          `as` bascule sur `button` quand l'action est interdite : un
+          `router-link` ignore `disabled` et resterait cliquable (G-016).
+        -->
+        <Button
+          :as="canCreateRole ? 'router-link' : 'button'"
           data-cy="RolesManagement-createBtn"
-          variant="primary"
           :disabled="!canCreateRole"
-          :to="{ name: 'SecurityRolesCreate' }"
-          >Create Role</b-button
+          :to="canCreateRole ? { name: 'SecurityRolesCreate' } : undefined"
+          >Create Role</Button
         >
-      </b-col>
-    </b-row>
+      </div>
+    </div>
 
     <list-not-allowed v-if="!canSearchRole" />
 
@@ -37,27 +36,38 @@
       route-create="SecurityRolesCreate"
       route-update="SecurityRolesUpdate"
     >
-      <b-card slot="emptySet" class="EmptyState text-center">
-        <i class="text-secondary fas fa-unlock-alt fa-6x mb-3" />
-        <h2 class="text-secondary font-weight-bold">No role is defined</h2>
-        <p v-if="canCreateRole" class="text-secondary">
-          You can create a new role by hitting the button above
-        </p>
-      </b-card>
+      <template #emptySet>
+        <Card class="EmptyState">
+          <CardContent class="tw:flex tw:flex-col tw:items-center tw:text-center">
+            <i class="fas fa-unlock-alt fa-6x tw:mb-4 tw:text-secondary" aria-hidden="true" />
+            <CardTitle class="tw:text-secondary">No role is defined</CardTitle>
+            <CardDescription v-if="canCreateRole" class="tw:mt-2 tw:text-secondary">
+              You can create a new role by hitting the button above
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </template>
     </role-list>
-    <b-modal
-      id="revokeAnonymous-modal"
-      title="Revoke anonymous rights"
-      data-cy="revokeAnonymous-modal"
-      @ok="revokeAnonymous"
-    >
-      <p class="my-4">
-        The anonymous users will only be able to perform some basic authentication actions, like
-        logging-in, see their rights and see their user ID. You will still be able to add more
-        rights if needed.
-      </p>
-    </b-modal>
-  </b-container>
+
+    <Dialog :open="revokeAnonymousOpen" @update:open="revokeAnonymousOpen = $event">
+      <DialogContent data-cy="revokeAnonymous-modal" labelled-by="revoke-anonymous-title">
+        <DialogHeader>
+          <DialogTitle id="revoke-anonymous-title">Revoke anonymous rights</DialogTitle>
+        </DialogHeader>
+
+        <DialogDescription>
+          The anonymous users will only be able to perform some basic authentication actions, like
+          logging-in, see their rights and see their user ID. You will still be able to add more
+          rights if needed.
+        </DialogDescription>
+
+        <DialogFooter>
+          <Button variant="outline" @click="revokeAnonymousOpen = false">Cancel</Button>
+          <Button @click="confirmRevokeAnonymous">OK</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </div>
 </template>
 
 <script>
@@ -65,6 +75,16 @@ import { mapState } from 'pinia';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import RoleList from './List.vue';
@@ -72,6 +92,17 @@ import RoleList from './List.vue';
 export default {
   name: 'RolesManagement',
   components: {
+    Button,
+    Card,
+    CardContent,
+    CardDescription,
+    CardTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
     ListNotAllowed,
     RoleList,
     Headline,
@@ -81,7 +112,16 @@ export default {
       authStore: useAuthStore(),
     };
   },
+  data() {
+    return {
+      revokeAnonymousOpen: false,
+    };
+  },
   methods: {
+    async confirmRevokeAnonymous() {
+      this.revokeAnonymousOpen = false;
+      await this.revokeAnonymous();
+    },
     async revokeAnonymous() {
       try {
         await this.$kuzzle.query({
