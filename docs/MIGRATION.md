@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 62 / 137 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 63 / 137 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -293,7 +293,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**62 composants repris sur 137**, **410 balises `<b-*>` retirées sur 813**.
+**63 composants repris sur 137**, **423 balises `<b-*>` retirées sur 813**.
 
 > Ces deux compteurs disaient `49 / 140` et `289` jusqu'ici, alors que le
 > tableau ci-dessus annonçait `59 / 138` : la ligne n'avait pas été reprise
@@ -392,6 +392,18 @@ Trois points méritaient d'être tranchés plutôt que transposés :
   lien et un `<pre>` ; le `flex: 1 1 1px; overflow: auto` du `<style scoped>`
   supprimé devient `min-h-0 overflow-auto` sur un bloc ordinaire.
 
+**Le champ date ne prend pas de primitive** ([ADR-0015](adr/0015-pas-de-primitive-calendar.md)).
+`<b-form-datepicker>` et `<b-form-timepicker>` n'apparaissent que dans
+`DateTimeFormInput.vue`, et l'amont n'a pas de « champ date » : il compose un
+*Date Picker* à partir de `Popover` et de `Calendar`, que `reka-ui` fournit en
+Vue 3. Écrire `Calendar` à la main aurait coûté plusieurs centaines de lignes —
+grille du mois, navigation clavier, bornes, locale — pour **un** champ, dont le
+panneau n'est couvert par aucune spec, et dans un formulaire que
+`vue-form-generator` emportera de toute façon. Les deux champs passent aux types
+natifs `date` et `time` de la primitive `Input`, qui exposent exactement les
+formats que le composant parsait déjà. Ce n'est pas l'alternative écartée par
+ADR-0014 : aucun composant n'est créé, donc aucune API à défaire en phase 4.
+
 `Data/Collections/Tabs.vue` a été **supprimé plutôt que repris** : il n'était
 importé nulle part, et il lisait `$store.state.collection.isRealtimeOnly` — un
 store Vuex que la console n'a plus depuis le passage à Pinia. Il ne rendait donc
@@ -488,7 +500,7 @@ gros et le plus risqué.
 | `Data/Indexes/Page.vue` | 18 | 352 | ✅ reprise ([#1050](https://github.com/kuzzleio/kuzzle-admin-console/pull/1050)) |
 | `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Page.vue` | 13 | 955 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
-| `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ⬜ |
+| `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ✅ reprise ([#1055](https://github.com/kuzzleio/kuzzle-admin-console/pull/1055)) |
 | `Data/Collections/CreateOrUpdate.vue` | 12 | 309 | ✅ reprise ([#1054](https://github.com/kuzzleio/kuzzle-admin-console/pull/1054)) |
 | `Data/Documents/DocumentListItem.vue` | 11 | 218 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
 | `Data/Documents/Views/TimeSeries.vue` | 8 | 351 | ✅ reprise ([#1053](https://github.com/kuzzleio/kuzzle-admin-console/pull/1053)) |
@@ -1425,3 +1437,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-21 | `DropdownMenu` à la main, panneau dans `<body>`, élément courant en bouton radio | [ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md) |
 | 2026-09-21 | `Pagination` à la main en huit pièces, composition partagée dans `Common/` | [ADR-0013](adr/0013-primitive-pagination-en-vue-2.md) |
 | 2026-09-21 | `Select` à la main en neuf pièces, panneau flottant extrait en mixin partagé | [ADR-0014](adr/0014-primitive-select-en-vue-2.md) |
+| 2026-09-21 | Pas de primitive `Calendar` : types natifs `date` et `time` pour le seul champ date | [ADR-0015](adr/0015-pas-de-primitive-calendar.md) |

@@ -35,6 +35,8 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0011](0011-table-sans-data-table.md) | `Table` est du balisage, et le tri/filtre reste dans les pages | Acceptée |
 | [0012](0012-primitive-dropdown-menu-en-vue-2.md) | `DropdownMenu` écrite à la main, déplacée dans `<body>`, et l'élément courant devient un bouton radio | Acceptée |
 | [0013](0013-primitive-pagination-en-vue-2.md) | `Pagination` écrite à la main en huit pièces, et la composition partagée dans `Common/` | Acceptée |
+| [0014](0014-primitive-select-en-vue-2.md) | `Select` écrite à la main en neuf pièces, et le panneau flottant extrait en mixin partagé | Acceptée |
+| [0015](0015-pas-de-primitive-calendar.md) | Pas de primitive `Calendar` : les types natifs `date` et `time` | Acceptée |
 
 ## Gabarit
 

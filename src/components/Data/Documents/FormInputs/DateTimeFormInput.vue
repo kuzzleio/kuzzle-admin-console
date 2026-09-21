@@ -1,49 +1,30 @@
 <template>
-  <b-card class="w-100">
-    <b-card-body class="m-0 p-0">
-      <b-row>
-        <b-col cols="6">
-          <b-input-group>
-            <b-form-input
-              v-model="date"
-              data-cy="datePickerInput"
-              type="text"
-              class="w-50"
-              placeholder="YYYY-MM-DD"
-              autocomplete="off"
-              @input="onDateChange"
-            />
-            <b-input-group-append>
-              <b-form-datepicker v-model="date" button-only locale="en-GB" @input="onDateChange" />
-            </b-input-group-append>
-          </b-input-group>
-        </b-col>
-        <b-col cols="6">
-          <b-input-group>
-            <b-form-input
-              v-model="time"
-              data-cy="timePickerInput"
-              type="text"
-              class="w-50"
-              placeholder="HH:mm:ss"
-              autocomplete="off"
-              @input="onTimeChange"
-            />
-            <b-input-group-append>
-              <b-form-timepicker
-                v-model="time"
-                button-only
-                locale="en-GB"
-                :show-seconds="true"
-                :hour12="false"
-                @input="onTimeChange"
-              />
-            </b-input-group-append>
-          </b-input-group>
-        </b-col>
-      </b-row>
-    </b-card-body>
-  </b-card>
+  <Card class="tw:w-full">
+    <CardContent class="tw:flex tw:flex-col tw:gap-4 tw:sm:flex-row">
+      <div class="tw:flex tw:flex-col tw:gap-2 tw:sm:w-1/2">
+        <Label :for="`${schema.model}-date`">Date</Label>
+        <Input
+          :id="`${schema.model}-date`"
+          data-cy="datePickerInput"
+          :model-value="date"
+          type="date"
+          @input="onDateChange"
+        />
+      </div>
+
+      <div class="tw:flex tw:flex-col tw:gap-2 tw:sm:w-1/2">
+        <Label :for="`${schema.model}-time`">Time</Label>
+        <Input
+          :id="`${schema.model}-time`"
+          data-cy="timePickerInput"
+          :model-value="time"
+          step="1"
+          type="time"
+          @input="onTimeChange"
+        />
+      </div>
+    </CardContent>
+  </Card>
 </template>
 
 <script>
@@ -51,10 +32,29 @@
 import moment from 'moment';
 import { abstractField } from 'vue-form-generator';
 
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
 const DATE_PICKER_FORMAT = 'YYYY-MM-DD';
 const TIME_PICKER_FORMAT = 'HH:mm:ss';
 
+/*
+ * Le champ date est le seul de la console (ADR-0015). Il s'appuie sur les
+ * types natifs `date` et `time` plutôt que sur une primitive `Calendar`, que
+ * `b-form-datepicker` et `b-form-timepicker` auraient demandé d'écrire à la
+ * main pour ce seul site d'appel.
+ *
+ * `value` vient du mixin `abstractField` de vue-form-generator : y écrire
+ * remonte la valeur au modèle du formulaire.
+ */
 export default {
+  components: {
+    Card,
+    CardContent,
+    Input,
+    Label,
+  },
   mixins: [abstractField],
   data() {
     return {
@@ -74,11 +74,22 @@ export default {
     this.time = dateTime.format(TIME_PICKER_FORMAT);
   },
   methods: {
-    onDateChange(date) {
-      this.value = moment(`${date} ${this.time}`).format('x');
+    /*
+     * Les deux champs lisent l'événement natif plutôt que la valeur émise par
+     * `Input` : `v-model` et un `@input` posé par le site d'appel visent le
+     * même événement, et rien ne garantit lequel des deux est appliqué en
+     * premier. `event.target.value` est vrai dans les deux cas.
+     */
+    onDateChange(event) {
+      this.date = event.target.value;
+      this.emitValue();
     },
-    onTimeChange(time) {
-      this.value = moment(`${this.date} ${time}`).format('x');
+    onTimeChange(event) {
+      this.time = event.target.value;
+      this.emitValue();
+    },
+    emitValue() {
+      this.value = moment(`${this.date} ${this.time}`).format('x');
     },
   },
 };
