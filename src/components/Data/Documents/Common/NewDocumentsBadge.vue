@@ -1,27 +1,39 @@
 <template>
-  <b-badge
-    class="ml-2"
+  <Badge
+    class="tw:ms-2 tw:min-h-4 tw:min-w-4 tw:justify-center tw:rounded-full"
+    :class="{ 'tw:cursor-pointer': hasNewDocuments }"
     data-cy="NewDocumentsBadge"
-    pill
-    :class="{ pointer: hasNewDocuments }"
-    :variant="hasNewDocuments ? 'info' : 'secondary'"
     :title="
       hasNewDocuments
         ? 'New documents that might match your filters have been created. Click to refresh.'
         : 'This circle will turn green when new documents are added to this collection'
     "
+    :variant="hasNewDocuments ? 'default' : 'secondary'"
     @click="hasNewDocuments ? $emit('refresh') : $emit('noop')"
-    >{{ hasNewDocuments ? 'new documents' : '' }}</b-badge
+    >{{ hasNewDocuments ? 'new documents' : '' }}</Badge
   >
 </template>
 
-<script>
-export default {
-  name: 'NewDocumentsBadge',
-  props: {
-    hasNewDocuments: Boolean,
-  },
-};
-</script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 
-<style></style>
+import { Badge } from '@/components/ui/badge';
+
+/*
+ * `rounded-full` et une taille minimale : sans document nouveau, le badge n'a
+ * pas de texte et c'est sa seule forme visible — une pastille. `Badge` est en
+ * `rounded-md` par défaut, ce qui donnerait un carré de 4 px.
+ */
+export default defineComponent({
+  name: 'NewDocumentsBadge',
+  components: {
+    Badge,
+  },
+  props: {
+    hasNewDocuments: {
+      default: false,
+      type: Boolean,
+    },
+  },
+});
+</script>

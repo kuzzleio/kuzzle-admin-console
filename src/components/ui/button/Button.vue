@@ -18,6 +18,12 @@ import { classMerge } from '../class-merge';
  * par le vrai composant amont soit un changement d'import, pas une reprise des
  * sites d'appel.
  *
+ * Une variante en plus de l'amont : `warning`, sur le token `accent`. La
+ * console s'en sert pour les actions qui écrasent sans supprimer — « Replace »
+ * sur un document en est le cas type. `destructive` dirait « ça détruit »,
+ * `secondary` ne dirait rien ; `Alert` porte déjà la même variante pour la même
+ * raison.
+ *
  * Deux écarts, tous deux dus à Vue 2 et à la cohabitation avec Bootstrap :
  *
  * - pas de `asChild` : il repose sur `Primitive` de `reka-ui`, qui demande
@@ -58,6 +64,7 @@ export const buttonVariants = cva(
         link: 'tw:text-secondary tw:underline-offset-4 tw:hover:underline',
         outline: 'tw:border-input tw:bg-background tw:text-foreground tw:hover:bg-muted',
         secondary: 'tw:bg-secondary tw:text-secondary-foreground tw:hover:bg-secondary/80',
+        warning: 'tw:bg-accent tw:text-accent-foreground tw:hover:bg-accent/90',
       },
     },
   },

@@ -1,28 +1,25 @@
 <template>
-  <b-card class="w-100">
-    <b-card-body class="m-0 p-0">
-      <b-row>
-        <b-col lg="8">
-          <json-editor
-            :id="schema.label"
-            class="h-100"
-            :content="JSON.stringify(value, null, 2) || '{}'"
-            @change="onChange"
-          />
-        </b-col>
-
-        <b-col lg="4">
-          <pre v-json-formatter="{ content: schema.mapping, open: true }" />
-        </b-col>
-      </b-row>
-    </b-card-body>
-  </b-card>
+  <Card class="tw:w-full">
+    <CardContent class="tw:flex tw:flex-col tw:gap-4 tw:lg:flex-row">
+      <json-editor
+        :id="schema.label"
+        class="tw:h-full tw:lg:w-8/12"
+        :content="JSON.stringify(value, null, 2) || '{}'"
+        @change="onChange"
+      />
+      <pre
+        v-json-formatter="{ content: schema.mapping, open: true }"
+        class="tw:mb-0 tw:overflow-auto tw:lg:w-4/12"
+      />
+    </CardContent>
+  </Card>
 </template>
 
 <script>
 // https://vue-generators.gitbook.io/vue-generators/fields/custom_fields
 import { abstractField } from 'vue-form-generator';
 
+import { Card, CardContent } from '@/components/ui/card';
 import JsonFormatter from '@/directives/json-formatter.directive';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
@@ -32,6 +29,8 @@ export default {
     JsonFormatter,
   },
   components: {
+    Card,
+    CardContent,
     JsonEditor,
   },
   mixins: [abstractField],
