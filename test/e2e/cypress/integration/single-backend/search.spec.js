@@ -509,7 +509,7 @@ describe('Search', function() {
     cy.get('[data-cy=BasicFilter-sortAttributeSelect]').select('lastName')
 
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
-    cy.get('[data-cy=perPageSelector]').select('10')
+    cy.selectOption('[data-cy=perPageSelector]', 10)
 
     cy.paginationPage('[data-cy=DocumentList-pagination]', 4).click()
 

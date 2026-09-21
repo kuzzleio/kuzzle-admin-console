@@ -1,40 +1,56 @@
 <template>
-  <div class="ViewMap">
-    <b-row class="pb-2">
-      <b-col cols="9" class="text-left">
-        <b-row no-gutters>
-          <div v-if="mappingGeopoints.length">
-            GeoPoint field
-            <b-form-select
-              class="mx-2"
-              style="width: unset"
-              :options="mappingGeopoints"
-              :value="selectedGeopoint || ''"
-              @change="$emit('on-select-geopoint', $event)"
-            />
-          </div>
-          <div v-if="mappingGeoshapes.length">
-            GeoShape field
-            <b-form-select
-              class="mx-2"
-              style="width: unset"
-              :options="mappingGeoshapes"
-              :value="selectedGeoshape || ''"
-              @change="$emit('on-select-geoshape', $event)"
-            />
-          </div>
-        </b-row>
-      </b-col>
-      <b-col cols="3" class="text-right">
-        <PerPageSelector
-          :current-page-size="currentPageSize"
-          :total-documents="totalDocuments"
-          @change-page-size="$emit('change-page-size', $event)"
-        />
-      </b-col>
-    </b-row>
-    <b-row class="align-self-stretch">
-      <b-col cols="8" class="viewMap-document-map">
+  <div class="ViewMap" data-cy="mapView">
+    <div class="tw:mb-3 tw:flex tw:flex-row tw:items-center tw:gap-6">
+      <div class="tw:flex tw:flex-grow tw:flex-row tw:items-center tw:gap-6">
+        <div v-if="mappingGeopoints.length" class="tw:flex tw:items-center tw:gap-2 tw:text-sm">
+          <span id="mapView-geopointLabel">GeoPoint field</span>
+          <Select
+            :model-value="selectedGeopoint || ''"
+            @update:modelValue="$emit('on-select-geopoint', $event)"
+          >
+            <SelectTrigger
+              aria-labelledby="mapView-geopointLabel"
+              class="tw:w-auto tw:min-w-40"
+              data-cy="mapView-geopointSelector"
+            >
+              <SelectValue placeholder="None" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="field of mappingGeopoints" :key="field" :value="field">
+                {{ field }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div v-if="mappingGeoshapes.length" class="tw:flex tw:items-center tw:gap-2 tw:text-sm">
+          <span id="mapView-geoshapeLabel">GeoShape field</span>
+          <Select
+            :model-value="selectedGeoshape || ''"
+            @update:modelValue="$emit('on-select-geoshape', $event)"
+          >
+            <SelectTrigger
+              aria-labelledby="mapView-geoshapeLabel"
+              class="tw:w-auto tw:min-w-40"
+              data-cy="mapView-geoshapeSelector"
+            >
+              <SelectValue placeholder="None" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="field of mappingGeoshapes" :key="field" :value="field">
+                {{ field }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <PerPageSelector
+        :current-page-size="currentPageSize"
+        :total-documents="totalDocuments"
+        @change-page-size="$emit('change-page-size', $event)"
+      />
+    </div>
+    <div class="tw:grid tw:grid-cols-12 tw:gap-4">
+      <div class="tw:col-span-8 tw:h-150">
         <l-map ref="map" data-cy="mapView-map">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
@@ -78,80 +94,78 @@
             />
           </div>
         </l-map>
-      </b-col>
-      <b-col cols="4">
-        <b-card v-if="currentDocument" no-body data-cy="mapView-current-document-card">
-          <b-card-header>
-            <b-row align-v="center">
-              <b-col cols="8" align-v="center">
-                <span data-cy="mapView-current-document-id">{{ currentDocument._id }}</span>
-              </b-col>
-              <b-col cols="4" class="pr-1 text-right">
-                <b-button
-                  class="DocumentMapItem-update"
-                  href=""
-                  variant="link"
-                  :data-cy="`DocumentMapItem-update--${currentDocument._id}`"
-                  :disabled="!canEdit"
-                  :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
-                  @click.prevent="editCurrentDocument"
-                >
-                  <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
-                </b-button>
-
-                <b-button
-                  class="DocumentListItem-delete"
-                  href=""
-                  variant="link"
-                  :data-cy="`DocumentListItem-delete--${currentDocument._id}`"
-                  :disabled="!canDelete"
-                  :title="
-                    canDelete ? 'Delete Document' : 'You are not allowed to delete this Document'
-                  "
-                  @click.prevent="deleteCurrentDocument"
-                >
-                  <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
-                </b-button>
-                <b-button class="ml-2" title="Close" @click.prevent="closeDocument">
-                  <i class="fa fa-times" />
-                </b-button>
-              </b-col>
-            </b-row>
-          </b-card-header>
-          <b-card-body class="pt-1 pb-1">
-            <b-row class="viewMap-document-json">
-              <pre
-                v-json-formatter="{
-                  content: currentDocument,
-                  open: true,
-                }"
-                class="json-formatter"
-              />
-            </b-row>
-          </b-card-body>
-        </b-card>
-        <b-card
-          v-else
-          class="light-shadow viewMap-document-map"
-          data-cy="mapView-no-document-card"
-          bg-variant="light"
+      </div>
+      <div class="tw:col-span-4">
+        <Card
+          v-if="currentDocument"
+          class="tw:h-150 tw:gap-3 tw:py-4"
+          data-cy="mapView-current-document-card"
         >
-          <b-card-text class="p-0">
-            <b-row align-h="center" class="valign-center empty-set h-100">
-              <b-col cols="2" class="text-center">
-                <i class="fa fa-3x fa-search text-secondary mt-3" aria-hidden="true" />
-              </b-col>
-              <b-col md="10">
-                <h3 class="text-secondary font-weight-bold">No document selected.</h3>
-                <p>
-                  <em> You can view a document content by clicking on a marker </em>
-                </p>
-              </b-col>
-            </b-row>
-          </b-card-text>
-        </b-card>
-      </b-col>
-    </b-row>
+          <CardHeader
+            class="tw:flex-row tw:items-center tw:justify-between tw:gap-2 tw:px-4 tw:pb-2"
+          >
+            <span class="tw:truncate tw:font-medium" data-cy="mapView-current-document-id">
+              {{ currentDocument._id }}
+            </span>
+            <div class="tw:flex tw:shrink-0 tw:items-center tw:gap-1">
+              <Button
+                class="DocumentMapItem-update"
+                :data-cy="`DocumentMapItem-update--${currentDocument._id}`"
+                :disabled="!canEdit"
+                size="icon"
+                :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
+                variant="ghost"
+                @click="editCurrentDocument"
+              >
+                <i aria-hidden="true" class="fa fa-pencil-alt" />
+              </Button>
+              <Button
+                class="DocumentListItem-delete"
+                :data-cy="`DocumentListItem-delete--${currentDocument._id}`"
+                :disabled="!canDelete"
+                size="icon"
+                :title="
+                  canDelete ? 'Delete Document' : 'You are not allowed to delete this Document'
+                "
+                variant="ghost"
+                @click="deleteCurrentDocument"
+              >
+                <i aria-hidden="true" class="fa fa-trash" />
+              </Button>
+              <Button size="icon" title="Close" variant="ghost" @click="closeDocument">
+                <i aria-hidden="true" class="fa fa-times" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent class="tw:min-h-0 tw:flex-grow tw:px-4">
+            <pre
+              v-json-formatter="{
+                content: currentDocument,
+                open: true,
+              }"
+              class="json-formatter tw:m-0 tw:h-full tw:overflow-auto"
+            />
+          </CardContent>
+        </Card>
+        <Card
+          v-else
+          class="tw:h-150 tw:items-center tw:justify-center tw:bg-muted"
+          data-cy="mapView-no-document-card"
+        >
+          <CardContent class="tw:flex tw:items-center tw:gap-4">
+            <i aria-hidden="true" class="fa fa-3x fa-search tw:text-muted-foreground" />
+            <div>
+              <h3 class="tw:m-0 tw:text-lg tw:font-bold tw:text-muted-foreground">
+                No document selected.
+              </h3>
+              <p class="tw:m-0 tw:text-sm tw:text-muted-foreground">
+                <em>You can view a document content by clicking on a marker</em>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -162,6 +176,15 @@ import { mapState } from 'pinia';
 import { LMap, LTileLayer, LMarker, LCircle, LPolygon } from 'vue2-leaflet';
 
 import '@/assets/leaflet.css';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { useAuthStore } from '@/stores';
 
@@ -170,12 +193,21 @@ import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 export default {
   name: 'ViewMap',
   components: {
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
     LMap,
     LTileLayer,
     LMarker,
     LCircle,
     LPolygon,
     PerPageSelector,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
   },
   directives: {
     JsonFormatter,
@@ -214,7 +246,6 @@ export default {
   },
   data() {
     return {
-      itemsPerPage: [10, 25, 50, 100, 500],
       latField: null,
       lngField: null,
       map: null,
@@ -411,19 +442,3 @@ export default {
   },
 };
 </script>
-
-<style scoped lang="scss">
-.ViewMap {
-  .viewMap-document-map {
-    height: 600px;
-  }
-  .viewMap-document-json {
-    height: 525px;
-  }
-  .json-formatter {
-    max-height: 525px;
-    width: 100%;
-    overflow-y: auto;
-  }
-}
-</style>

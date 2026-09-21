@@ -56,13 +56,13 @@ describe('Chart view', function() {
   it('should be able to let user select a date field', function() {
     openChartView()
 
-    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
+    cy.selectOption('[data-cy="timeseriesView-dateSelector"]', 'payloadDate')
   })
 
   it('should be able to let user select a value field and show the chart', function() {
     openChartView()
 
-    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
+    cy.selectOption('[data-cy="timeseriesView-dateSelector"]', 'payloadDate')
 
     cy.get('[data-cy="timeSeries-item"]').click()
 
@@ -76,7 +76,7 @@ describe('Chart view', function() {
   it('should be able to plot several values at once', function() {
     openChartView()
 
-    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
+    cy.selectOption('[data-cy="timeseriesView-dateSelector"]', 'payloadDate')
 
     addValue('battery')
     addValue('temperature')
@@ -89,7 +89,7 @@ describe('Chart view', function() {
   it('should be able to remove a value from the chart', function() {
     openChartView()
 
-    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
+    cy.selectOption('[data-cy="timeseriesView-dateSelector"]', 'payloadDate')
 
     addValue('battery')
     addValue('temperature')
@@ -105,7 +105,7 @@ describe('Chart view', function() {
   it('should be able to open the color picker of a plotted value', function() {
     openChartView()
 
-    cy.get('[data-cy="timeseriesView-dateSelector"]').select('payloadDate')
+    cy.selectOption('[data-cy="timeseriesView-dateSelector"]', 'payloadDate')
 
     addValue('battery')
 

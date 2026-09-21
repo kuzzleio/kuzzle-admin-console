@@ -294,7 +294,7 @@ describe('Roles', () => {
     cy.visit('#/security/roles')
     cy.contains('Roles')
     cy.get('[data-cy="RoleItem"]').should('have.length', 17)
-    cy.get('[data-cy=perPageSelector]').select('10')
+    cy.selectOption('[data-cy=perPageSelector]', 10)
     cy.get('[data-cy="RoleItem"]').should('have.length', 10)
     cy.paginationPage('[data-cy="RolesManagement-pagination"]', 2).click({ force: true })
     cy.get('[data-cy="RoleItem"]').should('have.length', 7)
