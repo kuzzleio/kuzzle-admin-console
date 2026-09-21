@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 73 / 107 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 78 / 107 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -293,7 +293,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**73 composants repris sur 107**, **524 balises `<b-*>` retirées sur 813**.
+**78 composants repris sur 107**, **568 balises `<b-*>` retirées sur 813**.
 
 > Le dénominateur passe de 134 à 107 : 27 composants non atteignables ont été
 > supprimés ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)). Ce
@@ -305,7 +305,7 @@ phase 2.
 > des mentions en commentaire** dans les primitives (« Remplace
 > `<b-pagination>` ») : elles ne sont pas du balisage. Le compte réel est
 > `grep -rhn '<b-[a-z-]*' src --include='*.vue' | grep -vE '^[0-9]+:\s*(\*|//|/\*)'
-> | grep -o '<b-[a-z-]*' | wc -l` = **289 restantes**, à retrancher de 813.
+> | grep -o '<b-[a-z-]*' | wc -l` = **245 restantes**, à retrancher de 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -495,6 +495,24 @@ Deux pièges y ont été rencontrés, tous deux invisibles pour les specs et
 visibles à l'œil dès la première capture : G-030 (les puces d'un `<ul>` sans
 preflight) et **G-031**, le plus coûteux — une primitive réutilisée d'une
 branche `v-if` à l'autre garde les classes de la branche précédente.
+
+**Les quatre écrans d'authentification** — connexion, inscription,
+réinitialisation de mot de passe, et les deux formulaires qu'ils montent —
+passent eux aussi **sans primitive nouvelle**. Trois points valent d'être notés :
+
+- **`b-alert dismissible` posait sa propre croix ; `Alert` n'en rend pas.**
+  Le bouton de fermeture est écrit au site d'appel, et il appelle
+  `dismissError()`, une méthode qui existait déjà **sans être branchée à rien**.
+- **`b-jumbotron` disparaît sans remplaçant** : c'était un bloc gris à gros
+  titre, soit du balisage ordinaire et trois utilitaires.
+- **Deux boutons de `Signup.vue` portaient le même `data-cy`**
+  (`LoginAsAnonymous-Btn`) : « Go to Login Page » et « Login as Anonymous ».
+  Un `cy.get()` visant cet écran aurait échoué sur « found 2 elements ». Les
+  deux appels de `login.spec.js` visent celui de l'écran de connexion ; le
+  premier bouton devient `Signup-goToLoginBtn`.
+
+L'alerte « pas d'administrateur » passe de `variant="info"` à `warning` : la
+primitive n'a pas d'`info`, et le message commence par « Warning! ».
 
 #### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
 
@@ -716,13 +734,13 @@ gros et le plus risqué.
 | `Common/MainMenu.vue` | 14 | 200 | ⬜ |
 | `Common/Filters/FilterHistoryItem.vue` | 12 | 134 | ⬜ |
 | `Common/Filters/FavoriteFilterItem.vue` | 11 | 111 | ⬜ |
-| `Common/Login/Form.vue` | 9 | 208 | ⬜ |
+| `Common/Login/Form.vue` | 9 | 208 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `Common/Offline.vue` | 8 | 88 | ✅ reprise |
 | `Common/Environments/ModalImport.vue` | 7 | 159 | ✅ reprise |
 | `Common/Environments/SelectEnvironmentPage.vue` | 6 | 59 | ✅ reprise |
 | `Common/Filters/Filters.vue` | 6 | 349 | ⬜ |
 | `Common/Environments/EnvironmentsSwitch.vue` | 6 | 159 | ⬜ |
-| `Common/Login/ResetPasswordForm.vue` | 6 | 145 | ⬜ |
+| `Common/Login/ResetPasswordForm.vue` | 6 | 145 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `Common/Environments/CreateEnvironmentPage.vue` | 6 | 104 | ✅ reprise |
 | `Common/Filters/RawFilter.vue` | 5 | 147 | ⬜ |
 | `Common/Environments/ModalDelete.vue` | 5 | 118 | ✅ reprise |
@@ -748,11 +766,11 @@ gros et le plus risqué.
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Signup.vue` | 19 | 245 | ⬜ |
+| `Signup.vue` | 19 | 245 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `ApiAction.vue` | 12 | 432 | ⬜ |
 | `404.vue` | 6 | 35 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
-| `Login.vue` | 6 | 110 | ⬜ |
-| `ResetPassword.vue` | 5 | 75 | ⬜ |
+| `Login.vue` | 6 | 110 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
+| `ResetPassword.vue` | 5 | 75 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `TelemetryBanner.vue` | 4 | 60 | ⬜ |
 | `Home.vue` | 3 | 173 | ⬜ |
 | `ConnectionAwareContainer.vue` | 1 | 226 | ⬜ |

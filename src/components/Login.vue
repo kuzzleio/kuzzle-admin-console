@@ -1,45 +1,52 @@
 <template>
-  <div class="LoginPage">
-    <b-row align-h="center" class="w-100">
-      <b-col xl="6" lg="7" md="8" sm="10">
-        <b-card>
-          <b-card-body>
-            <div class="text-center">
-              <img
-                src="../assets/logo.svg"
-                alt="Welcome to the Kuzzle Admin Console"
-                class="mb-5 img-fluid"
-              />
-            </div>
-            <b-alert
-              class="text-center"
-              variant="info"
-              data-cy="noAdminWarning"
-              :show="displayNoAdminWarning"
-            >
-              <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended
-              <a class="alert-link" data-cy="NoAdminWarning-link" href="#/signup">
-                that you create one.</a
-              >
-            </b-alert>
-            <b-form-group label="Connected to" label-cols-sm="4" label-cols-lg="3">
-              <environment-switch
-                @environment::create="editEnvironment"
-                @environment::delete="deleteEnvironment"
-                @environment::importEnv="importEnv"
-              />
-            </b-form-group>
-            <login-form :on-login="onLogin" />
-          </b-card-body>
-        </b-card>
-      </b-col>
-    </b-row>
+  <div class="LoginPage tw:flex tw:min-h-screen tw:items-center tw:justify-center tw:p-4">
+    <Card class="tw:w-full tw:max-w-2xl">
+      <CardContent>
+        <div class="tw:text-center">
+          <img
+            src="../assets/logo.svg"
+            alt="Welcome to the Kuzzle Admin Console"
+            class="tw:mb-8 tw:inline-block tw:h-auto tw:max-w-full"
+          />
+        </div>
+        <Alert
+          v-if="displayNoAdminWarning"
+          class="tw:mb-4 tw:text-center"
+          data-cy="noAdminWarning"
+          variant="warning"
+        >
+          <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended
+          <a class="tw:font-semibold tw:underline" data-cy="NoAdminWarning-link" href="#/signup">
+            that you create one.</a
+          >
+        </Alert>
+
+        <!--
+          `<b-form-group label="Connected to">` rendait un libellé sans champ
+          associé : `environment-switch` est un menu, pas un contrôle de
+          formulaire. Le mot reste, en texte, et le menu porte son propre nom
+          accessible.
+        -->
+        <div class="tw:mb-4 tw:flex tw:flex-wrap tw:items-center tw:gap-3">
+          <span class="tw:text-sm tw:text-muted-foreground">Connected to</span>
+          <environment-switch
+            @environment::create="editEnvironment"
+            @environment::delete="deleteEnvironment"
+            @environment::importEnv="importEnv"
+          />
+        </div>
+
+        <login-form :on-login="onLogin" />
+      </CardContent>
+    </Card>
   </div>
 </template>
 
 <script>
 import { mapState } from 'pinia';
 
+import { Alert } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
 import { useAuthStore, useKuzzleStore, useRoutingStore } from '@/stores';
 
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
@@ -48,8 +55,11 @@ import LoginForm from './Common/Login/Form.vue';
 export default {
   name: 'Login',
   components: {
-    LoginForm,
+    Alert,
+    Card,
+    CardContent,
     EnvironmentSwitch,
+    LoginForm,
   },
   setup() {
     return {
@@ -99,12 +109,3 @@ export default {
   },
 };
 </script>
-
-<style type="text/css" scoped>
-.LoginPage {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-</style>

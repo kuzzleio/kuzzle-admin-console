@@ -1,74 +1,82 @@
 <template>
   <form id="loginForm" method="post" @submit.prevent="login()">
-    <div class="loginForm-inputs">
-      <b-form-group label="Login" label-for="username" label-cols-sm="4" label-cols-lg="3">
-        <b-form-input
+    <div class="loginForm-inputs tw:flex tw:flex-col tw:gap-4">
+      <FormItem>
+        <Label for="username">Login</Label>
+        <Input
           id="username"
           v-model="username"
-          autofocus
-          class="validate"
+          v-focus
           data-cy="Login-username"
           name="username"
           required
           tabindex="1"
           type="text"
         />
-      </b-form-group>
-      <b-form-group label="Password" label-for="pass" label-cols-sm="4" label-cols-lg="3">
-        <b-form-input
+      </FormItem>
+
+      <FormItem>
+        <Label for="pass">Password</Label>
+        <Input
           id="pass"
           v-model="password"
           data-cy="Login-password"
-          type="password"
           name="password"
           required
           tabindex="2"
-          class="validate"
+          type="password"
         />
-      </b-form-group>
+      </FormItem>
     </div>
 
-    <div v-if="error" class="LoginForm-error">
-      <b-alert variant="danger" show dismissible> Login failed: {{ error }} </b-alert>
+    <!--
+      `b-alert dismissible` posait sa propre croix ; la primitive `Alert` n'en
+      rend pas. Le bouton est écrit ici, et il appelle `dismissError()`, qui
+      existait déjà sans être branché à rien.
+    -->
+    <div v-if="error" class="LoginForm-error tw:mt-4">
+      <Alert class="tw:flex tw:items-start tw:gap-3" variant="destructive">
+        <span class="tw:flex-1">Login failed: {{ error }}</span>
+        <button
+          aria-label="Dismiss"
+          class="tw:cursor-pointer tw:leading-none"
+          type="button"
+          @click="dismissError"
+        >
+          <i class="fa fa-times" aria-hidden="true" />
+        </button>
+      </Alert>
     </div>
 
-    <div class="LoginForm-buttons">
-      <div class="d-flex flex-row-reverse">
-        <div class="ml-1">
-          <b-button
-            variant="primary"
-            data-cy="Login-submitBtn"
-            type="submit"
-            name="action"
-            tabindex="3"
-            >Login</b-button
-          >
-        </div>
+    <div
+      class="LoginForm-buttons tw:mt-4 tw:flex tw:flex-wrap tw:items-center tw:justify-end tw:gap-2"
+    >
+      <Button data-cy="LoginAsAnonymous-Btn" variant="link" @click="loginAsAnonymous"
+        >Login as Anonymous</Button
+      >
 
-        <div v-if="availableStrategies.length">
-          <b-dropdown
-            variant="outline-primary"
-            data-cy="Login-submitBtn-strategy"
-            text="Login with"
-            tabindex="4"
+      <DropdownMenu v-if="availableStrategies.length">
+        <DropdownMenuTrigger
+          :as="Button"
+          data-cy="Login-submitBtn-strategy"
+          tabindex="4"
+          variant="outline"
+        >
+          Login with
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            v-for="strategy in availableStrategies"
+            :key="strategy"
+            :data-cy="`Login-submitBtn-strategy-${strategy}`"
+            @select="loginWithStrategy(strategy)"
           >
-            <b-dropdown-item
-              v-for="strategy in availableStrategies"
-              :key="strategy"
-              :data-cy="`Login-submitBtn-strategy-${strategy}`"
-              @click="loginWithStrategy(strategy)"
-            >
-              {{ strategy }}
-            </b-dropdown-item>
-          </b-dropdown>
-        </div>
+            {{ strategy }}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-        <div>
-          <b-button data-cy="LoginAsAnonymous-Btn" variant="link" @click="loginAsAnonymous"
-            >Login as Anonymous</b-button
-          >
-        </div>
-      </div>
+      <Button data-cy="Login-submitBtn" name="action" tabindex="3" type="submit">Login</Button>
     </div>
   </form>
 </template>
@@ -76,11 +84,33 @@
 <script>
 import { mapState } from 'pinia';
 
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import Focus from '@/directives/focus.directive';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 export default {
   name: 'LoginForm',
+  components: {
+    Alert,
+    Button,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    FormItem,
+    Input,
+    Label,
+  },
   directives: {
     Focus,
   },
@@ -94,6 +124,8 @@ export default {
   },
   data() {
     return {
+      /* `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom. */
+      Button: Object.freeze(Button),
       username: null,
       password: null,
       error: '',
@@ -204,5 +236,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" rel="stylesheet/scss" scoped></style>
