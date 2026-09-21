@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-21 · **Phase courante** : 2 — Dé-bootstrapisation
+**Dernière mise à jour** : 2026-09-22 · **Phase courante** : 2 — Dé-bootstrapisation
 
 ---
 
@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 91 / 107 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 93 / 107 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -279,6 +279,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `DropdownMenu` — panneau dans `<body>` ([ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md)) | ✅ |
 | `Pagination` ([ADR-0013](adr/0013-primitive-pagination-en-vue-2.md)) et `Select` ([ADR-0014](adr/0014-primitive-select-en-vue-2.md)) | ✅ |
 | `Tabs` — pilotée par valeur, panneau caché démonté ([ADR-0017](adr/0017-primitive-tabs-en-vue-2.md)) | ✅ |
+| `TagsInput` — pour le seul champ à étiquettes ([ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md)) | ✅ |
 | Dernière primitive interactive : `Combobox` (pour `vue-multiselect`) | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
@@ -296,7 +297,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**91 composants repris sur 107**, **725 balises `<b-*>` retirées sur 813**.
+**93 composants repris sur 107**, **745 balises `<b-*>` retirées sur 813**.
 
 > Le dénominateur passe de 134 à 107 : 27 composants non atteignables ont été
 > supprimés ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)). Ce
@@ -308,7 +309,7 @@ phase 2.
 > des mentions en commentaire** dans les primitives (« Remplace
 > `<b-pagination>` ») : elles ne sont pas du balisage. Le compte réel est
 > `grep -rhn '<b-[a-z-]*' src --include='*.vue' | grep -vE '^[0-9]+:\s*(\*|//|/\*)'
-> | grep -o '<b-[a-z-]*' | wc -l` = **88 restantes**, à retrancher de 813.
+> | grep -o '<b-[a-z-]*' | wc -l` = **68 restantes**, à retrancher de 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -608,6 +609,23 @@ Côté specs, dix-huit `cy.select()` passent à `cy.selectOption()`, une asserti
 et **trois assertions lisaient des `<option>` d'une liste fermée** — G-033 pour
 la troisième fois. Elles ouvrent la liste et lisent les `[role="option"]`.
 
+**Security est entièrement dé-bootstrapisé** : `grep -rn "<b-" src/components/Security`
+ne retourne plus que deux mentions en commentaire. Les deux derniers écrans
+sont ses filtres, et ils ont demandé la cinquième et dernière primitive écrite
+à la main, `TagsInput`
+([ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md)).
+
+C'est la décision inverse d'ADR-0015, pour un composant qui n'a lui aussi qu'un
+seul site d'appel — et c'est justifié par quatre écarts : le coût est d'un autre
+ordre (cinq fichiers courts, aucun calcul de position), **le champ est couvert
+par les specs**, il n'existe aucun équivalent natif, et l'hôte n'est pas
+condamné.
+
+Le filtre par rôle des profils, lui, n'a rien demandé : `b-dropdown-text`
+enveloppait une case à cocher et son libellé dans un élément qui n'était ni un
+bouton ni un élément de menu. `DropdownMenuCheckboxItem` existait depuis
+ADR-0012 et annonce `aria-checked`.
+
 #### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
 
 Le `grep` répond à la mauvaise question : il dit « ce nom est écrit quelque
@@ -787,8 +805,8 @@ gros et le plus risqué.
 | `Security/Roles/CreateOrUpdate.vue` | 13 | 275 | ✅ reprise |
 | `Security/Users/EditCustomMapping.vue` | 13 | 176 | ✅ reprise |
 | `Security/Profiles/CreateOrUpdate.vue` | 11 | 216 | ✅ reprise |
-| `Security/Profiles/Filters.vue` | 10 | 155 | ⬜ |
-| `Security/Roles/Filters.vue` | 10 | 115 | ⬜ |
+| `Security/Profiles/Filters.vue` | 10 | 155 | ✅ reprise ([#1065](https://github.com/kuzzleio/kuzzle-admin-console/pull/1065)) |
+| `Security/Roles/Filters.vue` | 10 | 115 | ✅ reprise ([#1065](https://github.com/kuzzleio/kuzzle-admin-console/pull/1065)) |
 | `Security/Users/CreateOrUpdate.vue` | 9 | 356 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
 | `Security/Profiles/ProfileItem.vue` | 9 | 186 | ✅ reprise |
 | `Security/Roles/RoleItem.vue` | 9 | 109 | ✅ reprise |
@@ -1835,3 +1853,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-21 | Supprimer le code non atteignable, et rendre le contrôle bloquant dans la CI | [ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md) |
 | 2026-09-21 | `Tabs` à la main, pilotée par valeur, panneau caché démonté | [ADR-0017](adr/0017-primitive-tabs-en-vue-2.md) |
 | 2026-09-21 | Les panneaux flottants passent au-dessus de `Dialog` (1035) | [ADR-0018](adr/0018-panneaux-flottants-au-dessus-des-modales.md) |
+| 2026-09-22 | `TagsInput` à la main, malgré un site d'appel unique | [ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md) |

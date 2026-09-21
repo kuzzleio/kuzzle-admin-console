@@ -1,72 +1,77 @@
 <template>
-  <b-card no-body data-cy="ProfileFilters">
-    <template #header>
-      <b-row>
-        <b-col cols="9" class="vertical-align">
-          Search by role
-          <b-dropdown
-            class="ml-2"
-            data-cy="ProfileFilters-roleSelect"
-            variant="outline-primary"
-            menu-class="dropdownScroll"
-            text="Select roles to be contained in the profiles"
-            no-flip
+  <Card data-cy="ProfileFilters">
+    <CardContent class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+      <span class="tw:text-sm tw:text-foreground">Search by role</span>
+
+      <!--
+        `b-dropdown-text` enveloppait une case à cocher et son libellé dans un
+        élément qui n'était ni un bouton ni un élément de menu. C'est un
+        `menuitemcheckbox` : il annonce son état, et le menu ne se ferme pas
+        quand on coche.
+      -->
+      <DropdownMenu data-cy="ProfileFilters-roleSelect">
+        <DropdownMenuTrigger :as="Button" variant="outline">
+          Select roles to be contained in the profiles
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" class="tw:max-h-96 tw:overflow-y-auto">
+          <DropdownMenuCheckboxItem
+            v-for="role of roleList"
+            :key="`dropdown-${role}`"
+            :checked="roleIsSelected(role)"
+            class="code"
+            :data-cy="`RoleSelect--${role}`"
+            :title="role"
+            @update:checked="(checked) => toggleRole(role, checked)"
           >
-            <b-dropdown-text
-              v-for="role of roleList"
-              :key="`dropdown-${role}`"
-              class="dropdown-text inlineDisplay pointer p-0"
-              :data-cy="`RoleSelect--${role}`"
-            >
-              <span class="inlineDisplay-item">
-                <b-form-checkbox
-                  :id="role"
-                  class="mx-2"
-                  :checked="roleIsSelected(role)"
-                  @change="toggleRole(role, $event)"
-                />
-              </span>
-              <label class="inlineDisplay-item code pointer" :for="role" :title="role">{{
-                role
-              }}</label>
-            </b-dropdown-text>
-            <b-dropdown-item v-if="roleList.length === 0">
-              <span class="inlineDisplay-item"> No roles found. </span>
-            </b-dropdown-item>
-          </b-dropdown>
-          <b-badge
-            v-if="hasFilter"
-            data-cy="ProfileFilters-filterAppliedPill"
-            pill
-            variant="info"
-            class="ml-2 py-2 px-3"
-            >Filters are being applied</b-badge
+            {{ role }}
+          </DropdownMenuCheckboxItem>
+          <p
+            v-if="roleList.length === 0"
+            class="tw:px-3 tw:py-2 tw:text-sm tw:text-muted-foreground"
           >
-        </b-col>
-        <b-col class="text-right">
-          <b-button
-            class="mr-2"
-            data-cy="ProfileFilters-resetBtn"
-            variant="outline-primary"
-            @click="reset"
-          >
-            Reset
-          </b-button>
-        </b-col>
-      </b-row>
-    </template>
-  </b-card>
+            No roles found.
+          </p>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Badge v-if="hasFilter" data-cy="ProfileFilters-filterAppliedPill" variant="secondary">
+        Filters are being applied
+      </Badge>
+
+      <Button class="tw:ml-auto" data-cy="ProfileFilters-resetBtn" variant="outline" @click="reset">
+        Reset
+      </Button>
+    </CardContent>
+  </Card>
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'pinia';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useKuzzleStore } from '@/stores';
-import { truncateName } from '@/utils';
 
 export default {
   name: 'Filters',
-  components: {},
+  components: {
+    Badge,
+    Button,
+    Card,
+    CardContent,
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+  },
   props: {
     labelSearchButton: {
       type: String,
@@ -80,6 +85,8 @@ export default {
   },
   data() {
     return {
+      /* `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom. */
+      Button: markRaw(Button),
       roleList: [],
       selectedRoles: [],
     };
@@ -100,7 +107,6 @@ export default {
     this.selectedRoles = this.currentFilter.map((role) => role);
   },
   methods: {
-    truncateName,
     async fetchRoleList() {
       const res = await this.wrapper.performSearchRoles();
       this.roleList = res.documents.map((role) => role._id);
@@ -122,34 +128,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.Filters-actions {
-  height: 48px;
-  line-height: 48px;
-}
-.inlineDisplay {
-  display: table;
-
-  &-item {
-    display: table-cell;
-  }
-}
-
-::v-deep .dropdownScroll {
-  max-height: 250px;
-  overflow-y: scroll;
-}
-
-.dropdown-text {
-  display: block;
-  width: 100%;
-  clear: both;
-  font-weight: 400;
-  color: #212529;
-  text-align: inherit;
-  white-space: nowrap;
-  background-color: transparent;
-  border: 0;
-}
-</style>

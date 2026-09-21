@@ -317,7 +317,10 @@ Cypress.Commands.add('paginationPage', (parentSelector, page) => {
  * @param {string} title libellé du tag à supprimer
  */
 Cypress.Commands.add('removeFormTag', (title) => {
-  return cy.get(`.b-form-tag[title="${title}"] > .b-form-tag-remove`);
+  return cy.get(
+    `.b-form-tag[title="${title}"] > .b-form-tag-remove, ` +
+      `[data-slot="tags-input-item"][title="${title}"] [data-slot="tags-input-item-delete"]`
+  );
 });
 
 /**
