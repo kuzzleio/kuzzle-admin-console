@@ -422,8 +422,8 @@ gros et le plus risqué.
 | `Data/Collections/Watch.vue` | 38 | 496 | ⬜ |
 | `Data/Documents/Views/Map.vue` | 24 | 429 | ⬜ |
 | `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
-| `Data/Collections/CollectionList.vue` | 19 | 426 | ✅ reprise |
-| `Data/Indexes/Page.vue` | 18 | 352 | ✅ reprise |
+| `Data/Collections/CollectionList.vue` | 19 | 426 | ✅ reprise ([#1050](https://github.com/kuzzleio/kuzzle-admin-console/pull/1050)) |
+| `Data/Indexes/Page.vue` | 18 | 352 | ✅ reprise ([#1050](https://github.com/kuzzleio/kuzzle-admin-console/pull/1050)) |
 | `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Page.vue` | 13 | 955 | ⬜ |
 | `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ⬜ |
