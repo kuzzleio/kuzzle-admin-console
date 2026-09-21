@@ -1,16 +1,20 @@
 <template>
-  <b-card
-    data-cy="Filters"
+  <Card
+    class="Filters"
     :class="{ 'full-screen': isFullscreen && advancedFiltersVisible }"
-    :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
-    :no-body="!advancedFiltersVisible"
-    :text-variant="complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'"
+    data-cy="Filters"
   >
-    <template #header>
-      <b-nav card-header tabs>
+    <!--
+      `b-card` basculait son en-tête de `<div>` à `<nav>` selon l'état, et
+      `b-nav card-header tabs` faisait passer une liste de liens pour des
+      onglets. Ce sont de vrais onglets : `Tabs` les annonce comme tels
+      (ADR-0017), et le bandeau reste un bandeau.
+    -->
+    <Tabs v-model="complexFiltersSelectedTab">
+      <div class="tw:relative tw:border-b tw:border-border tw:px-4 tw:pt-3">
         <quick-filter
           v-if="!advancedFiltersVisible"
-          style="flex-grow: 1"
+          class="tw:grow"
           submit-button-label="Quick Search"
           :action-buttons-visible="actionButtonsVisible"
           :advanced-filters-visible="advancedFiltersVisible"
@@ -25,91 +29,98 @@
           @reset="onReset"
           @submit="onQuickFilterSubmitted"
         />
+
         <template v-if="advancedFiltersVisible">
-          <b-nav-item
-            data-cy="Filters-basicTab"
-            :active="complexFiltersSelectedTab === 'basic'"
-            @click="complexFiltersSelectedTab = 'basic'"
-            ><i class="fas fa-filter" />&nbsp;Advanced</b-nav-item
-          >
-          <b-nav-item
-            data-cy="Filters-rawTab"
-            :active="complexFiltersSelectedTab === 'raw'"
-            @click="complexFiltersSelectedTab = 'raw'"
-            ><i class="fas fa-scroll" />&nbsp;Raw JSON</b-nav-item
-          >
-          <b-nav-item
-            data-cy="Filters-historyTab"
-            :active="complexFiltersSelectedTab === 'history'"
-            @click="complexFiltersSelectedTab = 'history'"
-            ><i class="fas fa-history" />&nbsp;History</b-nav-item
-          >
-          <b-nav-item
-            data-cy="Filters-favoriteTab"
-            :active="complexFiltersSelectedTab === 'favorite'"
-            @click="complexFiltersSelectedTab = 'favorite'"
-            ><i class="fas fa-star" />&nbsp;Saved</b-nav-item
-          >
-          <div class="Filters-headerActions">
-            <i
-              v-if="!isFullscreen"
-              class="Filters-headerBtn ml-3 fas fa-expand-arrows-alt"
+          <TabsList class="tw:border-b-0 tw:pr-24">
+            <TabsTrigger data-cy="Filters-basicTab" value="basic">
+              <i class="fas fa-filter" aria-hidden="true" />&nbsp;Advanced
+            </TabsTrigger>
+            <TabsTrigger data-cy="Filters-rawTab" value="raw">
+              <i class="fas fa-scroll" aria-hidden="true" />&nbsp;Raw JSON
+            </TabsTrigger>
+            <TabsTrigger data-cy="Filters-historyTab" value="history">
+              <i class="fas fa-history" aria-hidden="true" />&nbsp;History
+            </TabsTrigger>
+            <TabsTrigger data-cy="Filters-favoriteTab" value="favorite">
+              <i class="fas fa-star" aria-hidden="true" />&nbsp;Saved
+            </TabsTrigger>
+          </TabsList>
+
+          <!--
+            Les deux icônes du bandeau étaient des `<i>` cliquables : ni
+            atteignables au clavier, ni annoncées.
+          -->
+          <div class="tw:absolute tw:right-4 tw:top-3 tw:flex tw:items-center tw:gap-2">
+            <Button
+              :aria-label="isFullscreen ? 'Leave fullscreen' : 'Toggle fullscreen'"
+              class="tw:text-muted-foreground"
               data-cy="Filters-fullscreen"
-              title="Toggle fullscreen"
+              size="icon"
+              :title="isFullscreen ? 'Leave fullscreen' : 'Toggle fullscreen'"
+              variant="ghost"
               @click="toggleFullscreen"
-            />
-            <i
-              v-else
-              class="Filters-headerBtn ml-3 fas fa-compress-arrows-alt"
-              data-cy="Filters-fullscreen"
-              title="Toggle fullscreen"
-              @click="toggleFullscreen"
-            />
-            <i
+            >
+              <i
+                :class="isFullscreen ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt'"
+                aria-hidden="true"
+                class="fas"
+              />
+            </Button>
+            <Button
+              aria-label="Close the filters"
+              class="tw:text-muted-foreground"
               data-cy="Filters-close"
-              class="Filters-headerBtn ml-3 fas fa-times-circle"
+              size="icon"
+              title="Close the filters"
+              variant="ghost"
               @click="close"
-            />
+            >
+              <i class="fas fa-times-circle" aria-hidden="true" />
+            </Button>
           </div>
         </template>
-      </b-nav>
-    </template>
-    <template v-if="advancedFiltersVisible">
-      <raw-filter
-        v-if="complexFiltersSelectedTab === 'raw'"
-        :action-buttons-visible="actionButtonsVisible"
-        :current-filter="currentFilter"
-        :sorting-enabled="sortingEnabled"
-        @filter-submitted="onRawFilterSubmitted"
-        @reset="onReset"
-      />
-      <basic-filter
-        v-if="complexFiltersSelectedTab === 'basic'"
-        :action-buttons-visible="actionButtonsVisible"
-        :available-operands="availableOperands"
-        :basic-filter="basicFilter"
-        :mapping-attributes="mappingAttributes"
-        :sorting="sorting"
-        :sorting-enabled="sortingEnabled"
-        @filter-submitted="onBasicFilterSubmitted"
-        @generate-raw-filter="onGenerateRawFilter"
-        @reset="onReset"
-      />
-      <history-filter
-        v-if="complexFiltersSelectedTab === 'history'"
-        :index="index"
-        :collection="collection"
-        @submit="onSubmitFromHistory"
-      />
-      <favorite-filters
-        v-if="complexFiltersSelectedTab === 'favorite'"
-        :index="index"
-        :collection="collection"
-        @filter-basic-submitted="onBasicFilterSubmitted"
-        @filter-raw-submitted="onRawFilterSubmitted"
-      />
-    </template>
-  </b-card>
+      </div>
+
+      <template v-if="advancedFiltersVisible">
+        <TabsContent class="tw:p-4" value="raw">
+          <raw-filter
+            :action-buttons-visible="actionButtonsVisible"
+            :current-filter="currentFilter"
+            :sorting-enabled="sortingEnabled"
+            @filter-submitted="onRawFilterSubmitted"
+            @reset="onReset"
+          />
+        </TabsContent>
+
+        <TabsContent class="tw:p-4" value="basic">
+          <basic-filter
+            :action-buttons-visible="actionButtonsVisible"
+            :available-operands="availableOperands"
+            :basic-filter="basicFilter"
+            :mapping-attributes="mappingAttributes"
+            :sorting="sorting"
+            :sorting-enabled="sortingEnabled"
+            @filter-submitted="onBasicFilterSubmitted"
+            @generate-raw-filter="onGenerateRawFilter"
+            @reset="onReset"
+          />
+        </TabsContent>
+
+        <TabsContent class="tw:p-4" value="history">
+          <history-filter :index="index" :collection="collection" @submit="onSubmitFromHistory" />
+        </TabsContent>
+
+        <TabsContent class="tw:p-4" value="favorite">
+          <favorite-filters
+            :index="index"
+            :collection="collection"
+            @filter-basic-submitted="onBasicFilterSubmitted"
+            @filter-raw-submitted="onRawFilterSubmitted"
+          />
+        </TabsContent>
+      </template>
+    </Tabs>
+  </Card>
 </template>
 
 <script>
@@ -120,6 +131,9 @@ import {
   ACTIVE_RAW,
   Filter,
 } from '../../../services/filterManager';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import BasicFilter from './BasicFilter.vue';
 import FavoriteFilters from './FavoriteFilters.vue';
@@ -130,11 +144,17 @@ import RawFilter from './RawFilter.vue';
 export default {
   name: 'Filters',
   components: {
-    QuickFilter,
     BasicFilter,
-    RawFilter,
-    HistoryFilter,
+    Button,
+    Card,
     FavoriteFilters,
+    HistoryFilter,
+    QuickFilter,
+    RawFilter,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
   },
   props: {
     index: {
@@ -317,33 +337,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.Filters-headerActions {
-  position: absolute;
-  top: 17px;
-  right: 17px;
-}
-.Filters-headerBtn {
-  cursor: pointer;
-  font-size: 20px;
-  opacity: 0.5;
-
-  &:hover {
-    opacity: 0.9;
-  }
-}
-.Filters-advanced {
-  .card-action {
-    padding: 15px;
-    margin-bottom: 0;
-    button {
-      margin-right: 10px;
-    }
-  }
-
-  .select-wrapper span.caret {
-    top: 10px;
-  }
-}
-</style>

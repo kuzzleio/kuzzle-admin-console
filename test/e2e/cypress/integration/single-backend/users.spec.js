@@ -68,7 +68,7 @@ describe('Users', function() {
     cy.contains(kuids[1])
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('name')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'name')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(kuids[1])
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.contains(kuids[1])

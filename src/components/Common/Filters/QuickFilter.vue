@@ -1,89 +1,106 @@
 <template>
   <div class="QuickFilter">
-    <b-row v-if="!complexFilterActive" no-gutters>
-      <b-col cols="6">
-        <div class="QuickFilter-searchBar">
-          <b-input-group>
-            <b-input-group-prepend is-text>
-              <i class="fa fa-search search" />
-            </b-input-group-prepend>
-            <div class="QuickFilter-searchBar-input-wrapper">
-              <b-form-input
-                autofocus
-                data-cy="QuickFilter-input"
-                debounce="600"
-                type="search"
-                :value="value"
-                :placeholder="placeholder"
-                @input="onInput"
-                @keyup.enter="submit"
-              />
-            </div>
-          </b-input-group>
-        </div>
-      </b-col>
-      <b-col cols="2">
-        <a
-          v-if="!advancedFiltersVisible"
-          data-cy="QuickFilter-optionBtn"
-          class="QuickFilter-optionBtn"
-          href="#"
-          @click.prevent="displayAdvancedFilters"
-          >{{ advancedQueryLabel }}</a
+    <div v-if="!complexFilterActive" class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+      <div
+        class="QuickFilter-searchBar tw:flex tw:min-w-0 tw:flex-1 tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
+      >
+        <span
+          class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:text-muted-foreground"
+          aria-hidden="true"
         >
-        <a v-else class="QuickFilter-optionBtn" href="#" @click.prevent="displayAdvancedFilters"
-          >Less query options</a
-        >
-      </b-col>
-
-      <b-col v-if="actionButtonsVisible" class="text-right" cols="4">
-        <b-button type="submit" class="m-2" variant="primary" @click.prevent="submitSearch">
-          {{ submitButtonLabel }}
-        </b-button>
-        <b-button
-          class="m-2"
-          data-cy="QuickFilter-resetBtn"
-          variant="outline-secondary"
-          @click="resetSearch"
-        >
-          Reset
-        </b-button>
-      </b-col>
-    </b-row>
-    <div v-else class="QuickFilter-warning mx-4 mb-3">
-      <div class="align-middle QuickFilter-warning-message">
-        <b-row align-v="center">
-          <b-button
-            data-cy="QuickFilter-displayActiveFilters"
-            variant="outline-info"
-            @click.prevent="displayAdvancedFilters"
-          >
-            <i class="fa left fa-filter mr-2" />{{
-              advancedFiltersVisible ? 'Hide filters' : 'Show filters'
-            }}</b-button
-          >
-          <b-badge v-if="!advancedFiltersVisible" pill variant="info" class="ml-2 py-2 px-3" align-v
-            >Filters are being applied</b-badge
-          >
-        </b-row>
+          <i class="fa fa-search" />
+        </span>
+        <Input
+          v-focus
+          class="tw:rounded-none tw:border-0"
+          data-cy="QuickFilter-input"
+          :model-value="value"
+          :placeholder="placeholder"
+          type="search"
+          @update:modelValue="onInput"
+          @keyup.enter="submitNow"
+        />
       </div>
-      <b-row>
-        <b-button
-          class="align-right d-inline ml-3"
-          data-cy="QuickFilter-resetBtn"
-          variant="outline-secondary"
-          @click="resetSearch"
-        >
+
+      <Button
+        v-if="!advancedFiltersVisible"
+        class="QuickFilter-optionBtn"
+        data-cy="QuickFilter-optionBtn"
+        variant="link"
+        @click.prevent="displayAdvancedFilters"
+        >{{ advancedQueryLabel }}</Button
+      >
+      <Button
+        v-else
+        class="QuickFilter-optionBtn"
+        variant="link"
+        @click.prevent="displayAdvancedFilters"
+        >Less query options</Button
+      >
+
+      <template v-if="actionButtonsVisible">
+        <!--
+          Ce bouton appelait `submitSearch`, une méthode qui n'existe nulle
+          part : depuis toujours, il ne faisait rien. Personne ne s'en est
+          aperçu parce que `submitOnType` vaut `true` par défaut et que la
+          saisie déclenche déjà la recherche. Il appelle maintenant la même
+          chose que la touche Entrée.
+        -->
+        <Button type="submit" @click.prevent="submitNow">{{ submitButtonLabel }}</Button>
+        <Button data-cy="QuickFilter-resetBtn" variant="outline" @click="resetSearch">
           Reset
-        </b-button>
-      </b-row>
+        </Button>
+      </template>
+    </div>
+
+    <div
+      v-else
+      class="QuickFilter-warning tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-2 tw:px-4"
+    >
+      <div class="QuickFilter-warning-message tw:flex tw:items-center tw:gap-2">
+        <Button
+          data-cy="QuickFilter-displayActiveFilters"
+          variant="outline"
+          @click.prevent="displayAdvancedFilters"
+        >
+          <i class="fa fa-filter" aria-hidden="true" />{{
+            advancedFiltersVisible ? 'Hide filters' : 'Show filters'
+          }}
+        </Button>
+        <Badge v-if="!advancedFiltersVisible" variant="secondary">Filters are being applied</Badge>
+      </div>
+
+      <Button data-cy="QuickFilter-resetBtn" variant="outline" @click="resetSearch">Reset</Button>
     </div>
   </div>
 </template>
 
 <script>
+import { debounce } from 'lodash';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Focus from '@/directives/focus.directive';
+
+/*
+ * `b-form-input` avait une prop `debounce="600"` : la saisie n'était propagée
+ * qu'après 600 ms de silence. La primitive `Input` n'en a pas — un champ ne
+ * décide pas du rythme auquel son hôte veut être prévenu — donc l'attente vit
+ * ici, où l'on sait qu'elle sert à ne pas lancer une recherche par frappe.
+ */
+const SEARCH_DEBOUNCE_MS = 600;
+
 export default {
   name: 'QuickFilter',
+  components: {
+    Badge,
+    Button,
+    Input,
+  },
+  directives: {
+    Focus,
+  },
   props: {
     advancedFiltersVisible: Boolean,
     advancedQueryLabel: {
@@ -115,9 +132,22 @@ export default {
       type: String,
     },
   },
+  created() {
+    this.emitTerm = debounce((term) => {
+      this.$emit(this.submitOnType ? 'submit' : 'input', term);
+    }, SEARCH_DEBOUNCE_MS);
+  },
+  beforeDestroy() {
+    this.emitTerm.cancel();
+  },
   methods: {
     submit() {
       this.$emit('submit', this.value);
+    },
+    /* `Entrée` ne se fait pas attendre : la frappe en cours part tout de suite. */
+    submitNow() {
+      this.emitTerm.flush();
+      this.submit();
     },
     resetSearch() {
       this.$emit('reset');
@@ -126,90 +156,8 @@ export default {
       this.$emit('display-advanced-filters');
     },
     onInput(term) {
-      this.$emit(this.submitOnType ? 'submit' : 'input', term);
+      this.emitTerm(term);
     },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@use '@/assets/styles/variables.scss';
-
-.QuickFilter {
-  margin-bottom: 0;
-  color: #002835;
-}
-.QuickFilter-searchBar {
-  position: relative;
-  height: 48px;
-  border-bottom: solid 1px #e4e1e1;
-
-  &-input-wrapper {
-    width: 90%;
-
-    input {
-      height: 48px;
-      margin-bottom: 0;
-      width: 100%;
-      box-sizing: border-box;
-      border-bottom: solid 1px #e4e1e1;
-    }
-  }
-}
-
-.QuickFilter-searchIcon {
-  position: absolute;
-  font-size: 1.3rem;
-  margin-left: 4px;
-  color: grey;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.QuickFilter-chip {
-  margin-top: 9px;
-  margin-left: 30px;
-  cursor: pointer;
-
-  .QuickFilter-chipLabel {
-    display: inline-block;
-    padding-right: 10px;
-  }
-}
-
-.QuickFilter-optionBtn {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  text-decoration: underline;
-  color: variables.$primary-color;
-}
-
-.QuickFilter-actions {
-  height: 48px;
-  line-height: 48px;
-}
-
-.QuickFilter-warning {
-  display: flex;
-  flex-direction: row;
-  justify-items: center;
-  justify-content: space-between;
-}
-
-.QuickFilter-warning-message {
-  display: flex;
-  flex-direction: row;
-  justify-items: center;
-}
-
-.QuickFilter-warning-icon {
-  color: #ffc107;
-}
-
-.QuickFilter-displayActiveFilters {
-  color: #002835;
-  border-width: 2px;
-}
-</style>

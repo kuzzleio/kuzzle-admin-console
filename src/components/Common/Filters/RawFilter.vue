@@ -8,42 +8,31 @@
       :content="rawFilter"
       @change="onFilterChange"
     />
-    <b-alert :show="!isFilterValid && showError" variant="danger" class="mt-2"
-      >Your JSON filter contains errors.</b-alert
-    >
-    <b-row v-if="actionButtonsVisible" no-gutters>
-      <b-col sm="12" class="text-right">
-        <b-button
-          class="mr-2"
-          data-cy="RawFilter-resetBtn"
-          variant="outline-secondary"
-          @click="reset"
-        >
-          Reset
-        </b-button>
-        <b-button
-          class="mt-2 mb-2"
-          data-cy="RawFilter-submitBtn"
-          variant="primary"
-          :disabled="!isFilterValid"
-          @click.prevent="submit"
-        >
-          {{ submitButtonLabel }}
-        </b-button>
-      </b-col>
-    </b-row>
+    <Alert v-if="!isFilterValid && showError" class="tw:mt-2" variant="destructive">
+      Your JSON filter contains errors.
+    </Alert>
+    <div v-if="actionButtonsVisible" class="tw:mt-3 tw:flex tw:justify-end tw:gap-2">
+      <Button data-cy="RawFilter-resetBtn" variant="outline" @click="reset">Reset</Button>
+      <Button data-cy="RawFilter-submitBtn" :disabled="!isFilterValid" @click.prevent="submit">
+        {{ submitButtonLabel }}
+      </Button>
+    </div>
   </form>
 </template>
 
 <script>
 import { mapState } from 'pinia';
 
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { useKuzzleStore } from '@/stores';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
 
 export default {
   components: {
+    Alert,
+    Button,
     JsonEditor,
   },
   props: {

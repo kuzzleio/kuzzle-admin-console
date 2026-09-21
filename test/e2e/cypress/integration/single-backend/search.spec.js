@@ -95,7 +95,7 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.url().should('contain', 'active=basic')
@@ -199,7 +199,7 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Keylogger', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
@@ -218,10 +218,9 @@ describe('Search', function() {
     cy.get('[data-cy^=DocumentListItem--]').should('have.length', 1)
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').should(
-      'have.value',
-      'job'
-    )
+    // Le déclencheur d'un `Select` est un bouton : il porte son libellé, pas
+    // une `value` (G-024).
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').should('contain', 'job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').should(
       'have.value',
       'Keylogger'
@@ -248,9 +247,7 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select(
-      '_kuzzle_info.author'
-    )
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', '_kuzzle_info.author')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Luca', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
@@ -258,9 +255,7 @@ describe('Search', function() {
 
     cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select(
-      '_kuzzle_info.author'
-    )
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', '_kuzzle_info.author')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('{selectall}-1')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
@@ -275,7 +270,7 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('[data-cy^=DocumentListItem--]').should('have.length', 1)
@@ -329,7 +324,7 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Keylogger')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('[data-cy="ColumnView-table-id"] tbody tr').should('have.length', 1)
@@ -379,14 +374,16 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'job')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', { delay: 60 })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
-    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').select('lastName')
-    cy.get('[data-cy="BasicFilter-sortOrderSelect"]').select('desc')
+    cy.selectOption('[data-cy="BasicFilter-sortAttributeSelect"]', 'lastName')
+    // `select('desc')` visait la *valeur* de l'<option> ; `cy.selectOption`
+    // clique un élément de liste, donc son libellé.
+    cy.selectOption('[data-cy="BasicFilter-sortOrderSelect"]', 'Descending')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
     cy.get('[data-cy^=DocumentListItem--]').should(function($el) {
@@ -469,7 +466,7 @@ describe('Search', function() {
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
 
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('firstName')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'firstName')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('bar', { delay: 60 })
     cy.get('[data-cy=BasicFilter-generateRawBtn]').click()
     cy.get('.ace_content')
@@ -504,9 +501,9 @@ describe('Search', function() {
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
 
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('firstName')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'firstName')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Dummy')
-    cy.get('[data-cy=BasicFilter-sortAttributeSelect]').select('lastName')
+    cy.selectOption('[data-cy=BasicFilter-sortAttributeSelect]', 'lastName')
 
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.selectOption('[data-cy=perPageSelector]', 10)
@@ -543,7 +540,7 @@ describe('Search', function() {
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'lastName')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('4')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
@@ -576,7 +573,7 @@ describe('Search', function() {
 
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
-      cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+      cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'lastName')
       cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(i)
       cy.get('[data-cy=BasicFilter-submitBtn]').click()
       cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
@@ -601,7 +598,7 @@ describe('Search', function() {
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'lastName')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(0)
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
@@ -639,7 +636,7 @@ describe('Search', function() {
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'lastName')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('1')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
@@ -684,7 +681,7 @@ describe('Search', function() {
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'lastName')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('1')
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
@@ -723,7 +720,7 @@ describe('Search', function() {
 
       cy.get('[data-cy=QuickFilter-optionBtn]').click()
       cy.get('[data-cy=Filters-basicTab]').click()
-      cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+      cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'lastName')
       cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(i)
       cy.get('[data-cy=BasicFilter-submitBtn]').click()
       cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
@@ -756,7 +753,7 @@ describe('Search', function() {
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
-    cy.get('[data-cy="BasicFilter-operator"]').select('Range')
+    cy.selectOption('[data-cy="BasicFilter-operator"]', 'Range')
     cy.get(`[data-cy="BasicFilter-operator-Range-Value1"]`)
       .invoke('innerWidth')
       .should('be.gt', 100)
@@ -828,7 +825,11 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-sortAttributeSelect"] option').should(
+    // La liste des attributs de tri se lit menu ouvert : la primitive `Select`
+    // ne monte son panneau qu'à l'ouverture, là où `<option>` existait toujours
+    // (G-033).
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').click()
+    cy.get('[data-slot="select-content"] [role="option"]').should(
       'not.contain',
       'fullName'
     )
@@ -855,11 +856,12 @@ describe('Search', function() {
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="Filters-basicTab"]').click()
-    cy.get('[data-cy="BasicFilter-sortAttributeSelect"] option').should(
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').click()
+    cy.get('[data-slot="select-content"] [role="option"]').should(
       'contain',
       'lastName'
     )
-    cy.get('[data-cy="BasicFilter-sortAttributeSelect"] option').should(
+    cy.get('[data-slot="select-content"] [role="option"]').should(
       'contain',
       'lastName.keyword'
     )

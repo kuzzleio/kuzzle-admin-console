@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 85 / 107 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 91 / 107 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -296,7 +296,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**85 composants repris sur 107**, **637 balises `<b-*>` retirées sur 813**.
+**91 composants repris sur 107**, **725 balises `<b-*>` retirées sur 813**.
 
 > Le dénominateur passe de 134 à 107 : 27 composants non atteignables ont été
 > supprimés ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)). Ce
@@ -308,7 +308,7 @@ phase 2.
 > des mentions en commentaire** dans les primitives (« Remplace
 > `<b-pagination>` ») : elles ne sont pas du balisage. Le compte réel est
 > `grep -rhn '<b-[a-z-]*' src --include='*.vue' | grep -vE '^[0-9]+:\s*(\*|//|/\*)'
-> | grep -o '<b-[a-z-]*' | wc -l` = **176 restantes**, à retrancher de 813.
+> | grep -o '<b-[a-z-]*' | wc -l` = **88 restantes**, à retrancher de 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -577,6 +577,37 @@ lecture :
   montage. Le cas était prévu par la primitive : le libellé passe par son slot.
   C'est le premier champ de la console dont la valeur et le libellé diffèrent.
 
+**Le panneau de filtres** est le plus gros morceau restant de `Common/` et le
+plus regardé de la console : `search.spec.js` le pilote sur 22 tests, et
+`users`, `roles` et `profiles` s'en servent aussi. Les six fichiers passent
+d'un coup, sans primitive nouvelle — `Tabs` venait d'arriver.
+
+Quatre choses y ont changé de nature :
+
+- **Le bouton « Quick Search » ne faisait rien.** Il appelait `submitSearch`,
+  une méthode qui n'existe nulle part. Personne ne s'en est aperçu parce que
+  `submitOnType` vaut `true` par défaut et que la saisie déclenche déjà la
+  recherche. Il appelle désormais le même chemin que la touche Entrée.
+- **`b-form-input debounce="600"` n'a pas d'équivalent dans `Input`**, et c'est
+  voulu : un champ ne décide pas du rythme auquel son hôte veut être prévenu.
+  L'attente vit dans `QuickFilter`, nommée, où l'on sait qu'elle sert à ne pas
+  lancer une recherche par frappe. `Entrée` la court-circuite.
+- **Les deux modales de renommage passaient par `$bvModal.show()`**, l'API
+  impérative qu'ADR-0010 abandonne. Elles ont un état local, et **toute**
+  fermeture qui n'est pas « OK » restaure le nom — `b-modal` ne le faisait ni
+  sur `Échap` ni au clic extérieur.
+- **`b-nav card-header tabs` faisait passer une liste de liens pour des
+  onglets.** Ce sont de vrais onglets, et `Tabs` les annonce comme tels.
+
+Les deux `b-collapse` deviennent une grille `0fr` → `1fr`, comme l'arborescence
+de Data, et les chevrons cliquables deviennent des boutons qui portent
+`aria-expanded`.
+
+Côté specs, dix-huit `cy.select()` passent à `cy.selectOption()`, une assertion
+`have.value` devient `contain` (le déclencheur est un bouton, pas un `<select>`),
+et **trois assertions lisaient des `<option>` d'une liste fermée** — G-033 pour
+la troisième fois. Elles ouvrent la liste et lisent les `[role="option"]`.
+
 #### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
 
 Le `grep` répond à la mauvaise question : il dit « ce nom est écrit quelque
@@ -791,21 +822,21 @@ gros et le plus risqué.
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Common/Filters/BasicFilter.vue` | 40 | 469 | ⬜ |
+| `Common/Filters/BasicFilter.vue` | 40 | 469 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
 | `Common/Environments/CreateEnvironment.vue` | 17 | 380 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
-| `Common/Filters/QuickFilter.vue` | 14 | 215 | ⬜ |
+| `Common/Filters/QuickFilter.vue` | 14 | 215 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
 | `Common/MainMenu.vue` | 14 | 200 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) |
-| `Common/Filters/FilterHistoryItem.vue` | 12 | 134 | ⬜ |
-| `Common/Filters/FavoriteFilterItem.vue` | 11 | 111 | ⬜ |
+| `Common/Filters/FilterHistoryItem.vue` | 12 | 134 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
+| `Common/Filters/FavoriteFilterItem.vue` | 11 | 111 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
 | `Common/Login/Form.vue` | 9 | 208 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `Common/Offline.vue` | 8 | 88 | ✅ reprise |
 | `Common/Environments/ModalImport.vue` | 7 | 159 | ✅ reprise |
 | `Common/Environments/SelectEnvironmentPage.vue` | 6 | 59 | ✅ reprise |
-| `Common/Filters/Filters.vue` | 6 | 349 | ⬜ |
+| `Common/Filters/Filters.vue` | 6 | 349 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
 | `Common/Environments/EnvironmentsSwitch.vue` | 6 | 159 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) |
 | `Common/Login/ResetPasswordForm.vue` | 6 | 145 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `Common/Environments/CreateEnvironmentPage.vue` | 6 | 104 | ✅ reprise |
-| `Common/Filters/RawFilter.vue` | 5 | 147 | ⬜ |
+| `Common/Filters/RawFilter.vue` | 5 | 147 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
 | `Common/Environments/ModalDelete.vue` | 5 | 118 | ✅ reprise |
 | `Common/ListNotAllowed.vue` | 4 | 22 | ✅ reprise |
 | `Common/Environments/ModalCreateOrUpdate.vue` | 3 | 49 | ✅ reprise |
@@ -1634,7 +1665,12 @@ Gabarit à copier :
 - **À retenir** : un test qui lit le contenu d'un menu fermé teste le DOM de
   `bootstrap-vue`, pas l'application. Même famille que G-024 et G-026, mais ce
   n'est pas un sélecteur qu'il faut reprendre ici : c'est le scénario.
-- **Rencontré une deuxième fois** au lot suivant, sur une liste déroulante :
+- **Rencontré trois fois de plus** : au lot suivant sur une liste déroulante, et
+  deux fois dans `search.spec.js`, qui lisait les `<option>` de la liste des
+  attributs de tri **sans l'ouvrir** pour vérifier qu'un champ `text` n'y figure
+  pas. Les assertions ouvrent maintenant la liste et lisent les
+  `[role="option"]` ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)).
+- **Le détail du deuxième cas** :
   `cy.contains('v2.x')` trouvait une `<option>` que `b-form-select` rendait même
   fermée — sur un environnement **malformé**, c'est-à-dire justement dépourvu de
   version. L'assertion ne disait rien ; elle porte désormais sur l'état réel du
