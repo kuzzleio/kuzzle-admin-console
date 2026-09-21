@@ -290,6 +290,28 @@ Cypress.Commands.add('invalidFeedback', (parentSelector) => {
 });
 
 /**
+ * Bouton d'une page donnée dans une barre de pagination.
+ *
+ * Même motif que `notificationBadge` : `.page-link` est une classe Bootstrap,
+ * et `aria-posinset` un attribut que `b-pagination` pose de lui-même — deux
+ * sélecteurs que nous ne contrôlons pas. La primitive `Pagination` rend, elle,
+ * un `[data-slot="pagination-link"]` portant le numéro dans `value`, comme
+ * l'amont (ADR-0013).
+ *
+ * Les deux sont acceptés le temps que les trois listes de Security restent sur
+ * `b-pagination` — elles attendent leur propre reprise.
+ *
+ * @param {string} parentSelector conteneur qui porte la barre
+ * @param {number|string} page numéro de page visé
+ */
+Cypress.Commands.add('paginationPage', (parentSelector, page) => {
+  return cy.get(
+    `${parentSelector} .page-link[aria-posinset="${page}"], ` +
+      `${parentSelector} [data-slot="pagination-link"][value="${page}"]`
+  );
+});
+
+/**
  * Bouton de suppression d'un tag rendu par `<b-form-tags>`.
  *
  * @param {string} title libellé du tag à supprimer

@@ -1,77 +1,68 @@
 <template>
-  <b-list-group-item
-    class="DocumentListView-item p-2 realtime-highlight"
+  <li
+    class="DocumentListView-item realtime-highlight tw:rounded-md tw:border tw:border-border tw:bg-card tw:px-3 tw:py-2"
     :data-cy="`DocumentListItem--${document._id}`"
   >
-    <b-container fluid>
-      <b-row align-h="between" no-gutters>
-        <b-col cols="10" class="py-1">
-          <i
-            aria-hidden="true"
-            data-cy="DocumentListItem-toggleCollapse"
-            :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2  d-inline-block align-middle`"
-            @click="toggleCollapse"
-          />
-          <b-form-checkbox
-            :id="checkboxId"
-            v-model="checked"
-            class="d-inline-block align-middle"
-            type="checkbox"
-            value="true"
-            unchecked-value="false"
-            @change="notifyCheckboxClick"
-          />
-          <a
-            class="d-inline-block align-middle code pointer"
-            data-cy="DocumentListItem-title"
-            @click="toggleCollapse"
-            >{{ document._id }}</a
-          >
-          <b-badge
-            v-if="!autoSync && notifBadgeText && notifBadgeText !== 'created'"
-            :variant="notifBadgeVariant"
-            class="mx-2"
-            >{{ notifBadgeText }}
-          </b-badge>
-        </b-col>
-        <b-col cols="2">
-          <div class="float-right">
-            <b-button
-              class="DocumentListItem-update"
-              href=""
-              variant="link"
-              :data-cy="`DocumentListItem-update--${document._id}`"
-              :disabled="!canEdit"
-              :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
-              @click.prevent="editDocument"
-            >
-              <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
-            </b-button>
-            <b-button
-              class="DocumentListItem-delete"
-              href=""
-              variant="link"
-              :data-cy="`DocumentListItem-delete--${document._id}`"
-              :disabled="!canDelete"
-              :title="canDelete ? 'Delete Document' : 'You are not allowed to delete this Document'"
-              @click.prevent="deleteDocument"
-            >
-              <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
-            </b-button>
-          </div>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-collapse
-          :id="`collapse-${document._id}`"
-          v-model="expanded"
-          class="ml-3 DocumentListItem-content w-100"
+    <div class="tw:flex tw:items-start tw:justify-between tw:gap-2">
+      <div class="tw:flex tw:min-w-0 tw:flex-1 tw:items-center tw:gap-2">
+        <button
+          :aria-controls="contentId"
+          :aria-expanded="String(expanded)"
+          :aria-label="expanded ? 'Collapse document' : 'Expand document'"
+          class="tw:inline-flex tw:size-6 tw:shrink-0 tw:cursor-pointer tw:items-center tw:justify-center tw:rounded-md tw:border-none tw:bg-transparent tw:text-foreground tw:hover:bg-muted tw:focus-visible:ring-2 tw:focus-visible:ring-ring"
+          data-cy="DocumentListItem-toggleCollapse"
+          type="button"
+          @click="toggleCollapse"
         >
-          <pre v-json-formatter="{ content: formattedDocument, open: true }" />
-        </b-collapse>
-      </b-row>
-    </b-container>
-  </b-list-group-item>
+          <i aria-hidden="true" :class="`fa fa-caret-${expanded ? 'down' : 'right'}`" />
+        </button>
+        <Checkbox
+          :id="checkboxId"
+          v-model="checked"
+          :aria-label="`Select document ${document._id}`"
+          @update:modelValue="notifyCheckboxClick"
+        />
+        <a
+          class="code pointer tw:min-w-0 tw:truncate"
+          data-cy="DocumentListItem-title"
+          @click="toggleCollapse"
+          >{{ document._id }}</a
+        >
+        <Badge
+          v-if="!autoSync && notifBadgeText && notifBadgeText !== 'created'"
+          :variant="notifBadgeVariant"
+          >{{ notifBadgeText }}</Badge
+        >
+      </div>
+      <div class="tw:flex tw:shrink-0 tw:items-center tw:gap-1">
+        <Button
+          class="DocumentListItem-update"
+          :data-cy="`DocumentListItem-update--${document._id}`"
+          :disabled="!canEdit"
+          size="icon"
+          :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
+          variant="ghost"
+          @click="editDocument"
+        >
+          <i aria-hidden="true" class="fa fa-pencil-alt" />
+        </Button>
+        <Button
+          class="DocumentListItem-delete"
+          :data-cy="`DocumentListItem-delete--${document._id}`"
+          :disabled="!canDelete"
+          size="icon"
+          :title="canDelete ? 'Delete Document' : 'You are not allowed to delete this Document'"
+          variant="ghost"
+          @click="deleteDocument"
+        >
+          <i aria-hidden="true" class="fa fa-trash" />
+        </Button>
+      </div>
+    </div>
+    <div v-show="expanded" :id="contentId" class="DocumentListItem-content tw:mt-2 tw:pl-8">
+      <pre v-json-formatter="{ content: formattedDocument, open: true }" class="tw:text-base" />
+    </div>
+  </li>
 </template>
 
 <script>
@@ -80,6 +71,9 @@ import get from 'lodash/get';
 import set from 'lodash/set';
 import { mapState } from 'pinia';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
 import { useAuthStore } from '@/stores';
@@ -87,6 +81,11 @@ import { dateFromTimestamp } from '@/utils';
 
 export default {
   name: 'DocumentListItem',
+  components: {
+    Badge,
+    Button,
+    Checkbox,
+  },
   directives: {
     JsonFormatter,
   },
@@ -105,7 +104,7 @@ export default {
   data() {
     return {
       expanded: false,
-      checked: false,
+      checked: this.isChecked,
     };
   },
   watch: {
@@ -127,9 +126,6 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['canEditDocument', 'canDeleteDocument']),
     notifBadgeVariant() {
-      if (!get(this.notification, 'action')) {
-        return '';
-      }
       return getBadgeVariant(get(this.notification, 'action'));
     },
     notifBadgeText() {
@@ -153,6 +149,9 @@ export default {
     checkboxId() {
       return `checkbox-${this.document._id}`;
     },
+    contentId() {
+      return `collapse-${this.document._id}`;
+    },
     formattedDocument() {
       // NOTE: This solution (cloning the object) is shitty.
       // The good way to do this is to define a renderer function to apply
@@ -169,8 +168,6 @@ export default {
       return formatted;
     },
   },
-  beforeUpdate() {},
-  updated() {},
   methods: {
     toggleCollapse() {
       this.expanded = !this.expanded;
@@ -194,28 +191,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-pre {
-  font-size: 16px;
-}
-
-// .DocumentListView-item {
-//   transition: background-color 1.2s ease;
-
-//   &.updated,
-//   &.replaced {
-//     transition: background-color 0.1s ease;
-//     background-color: rgb(255, 238, 161);
-//   }
-
-//   &.deleted {
-//     transition: background-color 0.1s ease;
-//     background-color: rgb(251, 119, 148);
-//   }
-//   &.created {
-//     transition: background-color 0.1s ease;
-//     background-color: rgb(153, 230, 123);
-//   }
-// }
-</style>

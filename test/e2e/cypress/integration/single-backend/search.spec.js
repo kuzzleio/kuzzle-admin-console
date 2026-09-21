@@ -511,7 +511,7 @@ describe('Search', function() {
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('[data-cy=perPageSelector]').select('10')
 
-    cy.get('[data-cy=DocumentList-pagination] [aria-posinset=4]').click()
+    cy.paginationPage('[data-cy=DocumentList-pagination]', 4).click()
 
     cy.contains('dummy-40')
     cy.contains('dummy-41')

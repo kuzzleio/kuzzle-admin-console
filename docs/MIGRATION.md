@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 53 / 140 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 56 / 138 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -349,9 +349,20 @@ ADR-0011. Au passage, la prop `active` de `b-dropdown-item`, qui ne posait
 qu'une classe, devient un `role="menuitemradio"` avec `aria-checked` : l'écran
 temps réel annonce enfin quelle vue est la vue courante.
 
-Il reste `<b-pagination>` pour les trois `List.vue` de Security : les pages
-Roles et Profiles sont donc reprises avant la page Users, et l'incohérence
-visuelle est temporaire et assumée.
+**La pagination est débloquée** ([ADR-0013](adr/0013-primitive-pagination-en-vue-2.md)).
+C'était le dernier composant `bootstrap-vue` partagé entre les deux domaines
+restants : le même `<b-pagination>` à trois props, quatre fois, dans
+`Documents/Page.vue` et les trois `List.vue` de Security. La primitive suit le
+découpage en huit pièces de l'amont ; la composition que les quatre écrans
+partagent vit dans `Common/ListPagination.vue`, comme `useTableFilterSort` vit
+à côté de `Table` (ADR-0011). Les trois listes de Security n'attendent donc plus
+rien — l'ordre Roles / Profiles avant Users n'a plus de raison technique.
+
+**Deux composants ont été supprimés plutôt que repris**, d'où le dénominateur à
+138 : `ListViewButtons.vue` (importé nulle part, relevé le 2026-09-18 mais resté
+coché ⬜ dans le tableau) et `ListActions.vue` (importé nulle part non plus —
+`Views/List.vue` réécrit ses trois boutons en propre). Le recensement initial
+comptait des fichiers, pas des composants atteignables.
 
 ## 2. Toolchain (phase 0)
 
@@ -433,13 +444,13 @@ gros et le plus risqué.
 | `Data/Collections/CollectionList.vue` | 19 | 426 | ✅ reprise ([#1050](https://github.com/kuzzleio/kuzzle-admin-console/pull/1050)) |
 | `Data/Indexes/Page.vue` | 18 | 352 | ✅ reprise ([#1050](https://github.com/kuzzleio/kuzzle-admin-console/pull/1050)) |
 | `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
-| `Data/Documents/Page.vue` | 13 | 955 | ⬜ |
+| `Data/Documents/Page.vue` | 13 | 955 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
 | `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ⬜ |
 | `Data/Collections/CreateOrUpdate.vue` | 12 | 309 | ⬜ |
-| `Data/Documents/DocumentListItem.vue` | 11 | 218 | ⬜ |
+| `Data/Documents/DocumentListItem.vue` | 11 | 218 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
 | `Data/Documents/Views/TimeSeries.vue` | 8 | 351 | ⬜ |
 | `Data/Indexes/CreateIndexModal.vue` | 8 | 163 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
-| `Data/Documents/ListActions.vue` | 7 | 68 | ⬜ |
+| `Data/Documents/ListActions.vue` | 7 | 68 | ➖ supprimé — importé nulle part ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
 | `Data/Collections/DropdownView.vue` | 7 | 110 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
 | `Data/Indexes/BulkDeleteIndexesModal.vue` | 6 | 98 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Indexes/DeleteIndexModal.vue` | 6 | 87 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
@@ -450,7 +461,7 @@ gros et le plus risqué.
 | `Data/Collections/DropdownAction.vue` | 5 | 135 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
 | `Data/Documents/DeleteModal.vue` | 4 | 52 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
-| `Data/Documents/Views/List.vue` | 4 | 126 | ⬜ |
+| `Data/Documents/Views/List.vue` | 4 | 126 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
 | `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
 | `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Indexes/DropdownActions.vue` | 3 | 75 | ⬜ |
@@ -470,7 +481,7 @@ gros et le plus risqué.
 | `Data/Documents/RealtimeOnlyEmptyState.vue` | 0 | 45 | ⬜ |
 | `Data/Documents/Views/TimeSeriesItem.vue` | 0 | 151 | ⬜ |
 | `Data/Documents/DocumentBoxItem.vue` | 0 | 114 | ⬜ |
-| `Data/Documents/ListViewButtons.vue` | 0 | 104 | ⬜ |
+| `Data/Documents/ListViewButtons.vue` | 0 | 104 | ➖ supprimé — importé nulle part ([#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020)) |
 | `Data/Collections/Tabs.vue` | 0 | 102 | ⬜ |
 
 ### Security — 37 composants, 217 balises `<b-*>`
@@ -1219,6 +1230,83 @@ Gabarit à copier :
   passer le clic**. Seul le fait que l'action derrière ne faisait rien évitait
   le dégât.
 
+#### G-025 — Échapper les moustaches en entités HTML n'empêche pas l'interpolation
+
+- **Contexte** : phase 2, reprise de `Documents/Page.vue`
+  ([ADR-0013](adr/0013-primitive-pagination-en-vue-2.md)).
+- **Symptôme** : sous le message « Due to limitations imposed by Elasticsearch,
+  you won't be able to browse documents beyond 10000 », l'écran affiche un
+  nombre nu, sans libellé. Dans le source, ce n'est pas une interpolation :
+  c'est `&lcub;&lcub;totalDocuments&rcub;&rcub;`.
+- **Cause** : `vue-template-compiler` **décode les entités HTML avant** de
+  chercher les moustaches. Vérifié :
+
+  ```js
+  compile('<div>&lcub;&lcub;total&rcub;&rcub;</div>').render
+  // with(this){return _c('div',[_v(_s(total))])}
+  ```
+
+  L'échappement produit donc exactement le même rendu que `{{ total }}`. Celui
+  qui l'a écrit voulait vraisemblablement afficher les accolades littéralement,
+  ou neutraliser un reste de mise au point ; il a obtenu l'interpolation, et
+  personne ne l'a relu depuis [#938](https://github.com/kuzzleio/kuzzle-admin-console/pull/938)
+  (janvier 2022) — la PR qui portait aussi le `describe.only` de `docs.spec.js`.
+- **Solution** : supprimé. Le seuil est devenu une constante,
+  `ES_RESULT_WINDOW_LIMIT`, partagée entre le `v-if` et le message — les deux
+  disaient 10000 chacun de leur côté.
+- **À retenir** : pour afficher des accolades littérales en Vue 2, il faut
+  `v-pre` ou `{{ '{{' }}`, pas des entités. Et un nombre nu dans une interface
+  est presque toujours un reste : la spec `Should handle collections with more
+  than 10k documents` vérifiait que le message **existe**, jamais ce qu'il
+  contient.
+
+#### G-026 — Une troisième classe Bootstrap avait échappé à l'audit des sélecteurs
+
+- **Contexte** : phase 2, reprise de `Documents/Page.vue`
+  ([ADR-0013](adr/0013-primitive-pagination-en-vue-2.md)).
+- **Symptôme** : quatre specs pilotent la pagination par
+  `.page-link[aria-posinset="N"]` (`roles`, `profiles`, `users`) ou
+  `[aria-posinset=N]` (`search`).
+- **Cause** : `.page-link` est une classe Bootstrap, et `aria-posinset` un
+  attribut que `b-pagination` pose lui-même sur chaque lien. Aucun des deux ne
+  nous appartient. Troisième escapée du même type après `.badge` (G-024 en cite
+  la première) et `.disabled`.
+- **Solution** : commande `cy.paginationPage(parent, n)`, qui accepte
+  `.page-link[aria-posinset]` **et**
+  `[data-slot="pagination-link"][value]`. Contrairement à G-024, la
+  cohabitation est nécessaire : les trois listes de Security restent sur
+  `b-pagination` jusqu'à leur propre reprise.
+- **À retenir** : l'audit du 2026-09-18 comptait les classes qu'il savait
+  reconnaître. Les trois escapées ont le même profil — un nom court qui
+  ressemble à une classe applicative. Il n'y a pas de raison de croire que la
+  liste est close ; elles continueront de se déclarer à la reprise, une par une,
+  et c'est le bon moment.
+
+#### G-027 — `npm run <script> -- --fix` n'atteint que la dernière commande d'un `&&`
+
+- **Contexte** : phase 2, en corrigeant le lint de ce lot.
+- **Symptôme** : `npm run test:lint:fix` ne corrige rien dans `src`. Les mêmes
+  avertissements `import/order` reviennent identiques à chaque exécution, alors
+  qu'ils sont marqués « potentially fixable with the `--fix` option ».
+- **Cause** : le script était
+  `"test:lint:fix": "npm run test:lint -- --fix"`, et `test:lint` vaut
+  `eslint src --ext .ts,.vue && eslint test/e2e/cypress --ext .js`. npm **colle
+  les arguments à la fin de la chaîne entière**, pas à chaque commande : la
+  ligne exécutée est donc
+
+  ```sh
+  eslint src --ext .ts,.vue && eslint test/e2e/cypress --ext .js --fix
+  ```
+
+  `--fix` n'a jamais porté que sur les specs. La commande annonçait l'inverse de
+  ce qu'elle faisait.
+- **Solution** : le drapeau est écrit sur chacune des deux commandes.
+- **À retenir** : même famille que G-022 (une colonne `sortable` qui ne trie
+  pas) et que le `disabled` de G-024 qui laissait passer le clic — une
+  déclaration qui a l'air de faire quelque chose, et dont personne n'a vérifié
+  l'effet. Ici le coût était invisible : chaque contributeur corrigeait le
+  formatage à la main en croyant que l'outil ne pouvait pas.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -1266,3 +1354,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-19 | Contrat des primitives UI en Vue 2 : API shadcn-vue, deux écarts nommés | [ADR-0009](adr/0009-contrat-des-primitives-ui.md) |
 | 2026-09-19 | `Dialog` écrite à la main, et abandon de l'API impérative des modales | [ADR-0010](adr/0010-primitive-dialog-en-vue-2.md) |
 | 2026-09-21 | `Table` est du balisage : pas de `DataTable`, tri et filtre dans les pages | [ADR-0011](adr/0011-table-sans-data-table.md) |
+| 2026-09-21 | `DropdownMenu` à la main, panneau dans `<body>`, élément courant en bouton radio | [ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md) |
+| 2026-09-21 | `Pagination` à la main en huit pièces, composition partagée dans `Common/` | [ADR-0013](adr/0013-primitive-pagination-en-vue-2.md) |

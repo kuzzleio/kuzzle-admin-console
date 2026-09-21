@@ -296,9 +296,7 @@ describe('Roles', () => {
     cy.get('[data-cy="RoleItem"]').should('have.length', 17)
     cy.get('[data-cy=perPageSelector]').select('10')
     cy.get('[data-cy="RoleItem"]').should('have.length', 10)
-    cy.get(
-      '[data-cy="RolesManagement-pagination"] .page-link[aria-posinset="2"]'
-    ).click({ force: true })
+    cy.paginationPage('[data-cy="RolesManagement-pagination"]', 2).click({ force: true })
     cy.get('[data-cy="RoleItem"]').should('have.length', 7)
   })
 

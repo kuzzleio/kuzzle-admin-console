@@ -1,23 +1,27 @@
 <template>
   <div class="DocumentsListView" data-cy="DocumentsListView">
-    <div class="mb-3 d-flex flex-row align-items-center">
-      <div class="flex-grow-1">
-        <b-button variant="outline-dark" class="mr-2" @click="$emit('toggle-all')">
-          <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`" />
+    <div class="tw:mb-3 tw:flex tw:flex-row tw:items-center tw:gap-2">
+      <div class="tw:flex tw:flex-grow tw:items-center tw:gap-2">
+        <Button
+          data-cy="DocumentsListView-toggleAllBtn"
+          variant="outline"
+          @click="$emit('toggle-all')"
+        >
+          <i aria-hidden="true" :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`" />
           Toggle all
-        </b-button>
+        </Button>
 
-        <b-button
-          variant="outline-danger"
-          class="mr-2"
+        <Button
+          data-cy="DocumentsListView-bulkDeleteBtn"
           :disabled="!bulkDeleteEnabled"
+          variant="destructive"
           @click="$emit('bulk-delete')"
         >
-          <i class="fa fa-minus-circle left" />
+          <i aria-hidden="true" class="fa fa-minus-circle" />
           Delete
-        </b-button>
+        </Button>
       </div>
-      <b-spinner v-if="isFetching" class="mr-3" variant="info" small />
+      <Spinner v-if="isFetching" class="tw:text-secondary" label="Loading documents" size="sm" />
       <PerPageSelector
         :current-page-size="currentPageSize"
         :total-documents="totalDocuments"
@@ -25,7 +29,7 @@
       />
       <new-documents-badge :has-new-documents="hasNewDocuments" @refresh="$emit('refresh')" />
     </div>
-    <b-list-group class="w-100">
+    <ul class="tw:m-0 tw:flex tw:w-full tw:list-none tw:flex-col tw:gap-1 tw:p-0">
       <document-list-item
         v-for="document in documents"
         :key="document._id"
@@ -39,7 +43,7 @@
         @checkbox-click="$emit('checkbox-click', $event)"
         @delete="$emit('delete', $event)"
       />
-    </b-list-group>
+    </ul>
   </div>
 </template>
 
@@ -48,6 +52,8 @@ import { mapState } from 'pinia';
 
 import NewDocumentsBadge from '../Common/NewDocumentsBadge.vue';
 import DocumentListItem from '../DocumentListItem.vue';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore } from '@/stores';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
@@ -55,9 +61,11 @@ import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 export default {
   name: 'DocumentsListView',
   components: {
+    Button,
     DocumentListItem,
-    PerPageSelector,
     NewDocumentsBadge,
+    PerPageSelector,
+    Spinner,
   },
   props: {
     allChecked: {
@@ -101,11 +109,6 @@ export default {
     hasNewDocuments: Boolean,
     autoSync: Boolean,
   },
-  data() {
-    return {
-      itemsPerPage: [10, 25, 50, 100, 500],
-    };
-  },
   computed: {
     ...mapState(useAuthStore, ['canDeleteDocument']),
     hasSelectedDocuments() {
@@ -122,5 +125,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss"></style>
