@@ -3,7 +3,7 @@
     <slot v-if="isCollectionEmpty && !loading" name="emptySet" />
     <template v-else>
       <filters
-        class="mb-3"
+        class="tw:mb-3"
         :available-operands="searchFilterOperands"
         :current-filter="currentFilter"
         :mapping-attributes="mappingAttributes"
@@ -12,111 +12,81 @@
         @filters-updated="onFiltersUpdated"
         @reset="onFiltersUpdated"
       />
-      <template v-if="loading">
-        <b-row class="text-center">
-          <b-col>
-            <b-spinner v-if="loading" variant="primary" class="mt-5" />
-          </b-col>
-        </b-row>
-      </template>
-      <template v-else>
-        <template v-if="!isCollectionEmpty">
-          <b-card class="light-shadow" :bg-variant="documents.length === 0 ? 'light' : 'default'">
-            <b-card-text class="p-0">
-              <div v-show="!documents.length" class="row valign-center empty-set">
-                <b-row align-h="center" class="valign-center empty-set">
-                  <b-col cols="2" class="text-center">
-                    <i class="fa fa-5x fa-search text-secondary mt-3" aria-hidden="true" />
-                  </b-col>
-                  <b-col md="6">
-                    <h3 class="text-secondary font-weight-bold">
-                      There is no result matching your query. Please try with another filter.
-                    </h3>
-                    <p>
-                      <em
-                        >Learn more about filtering syntax on
-                        <a
-                          href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/basic-queries/"
-                          target="_blank"
-                          >Kuzzle Elasticsearch Cookbook</a
-                        ></em
-                      >
-                    </p>
-                  </b-col>
-                </b-row>
-              </div>
 
-              <div v-if="documents.length">
-                <b-row no-gutters class="mb-2">
-                  <b-col cols="8">
-                    <b-button
-                      variant="outline-dark"
-                      class="mr-2"
-                      data-cy="UserList-toggleAllBtn"
-                      @click="toggleAll"
-                    >
-                      <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`" />
-                      Toggle all
-                    </b-button>
-                    <b-button
-                      variant="outline-danger"
-                      class="mr-2"
-                      data-cy="UserList-bulkDeleteBtn"
-                      :disabled="!displayBulkDelete"
-                      @click="deleteBulk"
-                    >
-                      <i class="fa fa-minus-circle left" />
-                      Delete selected
-                    </b-button>
-                  </b-col>
-                  <b-col cols="4" class="text-right">
-                    <PerPageSelector
-                      :current-page-size="paginationSize"
-                      :total-documents="totalDocuments"
-                      @change-page-size="changePaginationSize($event)"
-                    />
-                  </b-col>
-                </b-row>
-              </div>
-              <div
-                v-show="documents.length"
-                class="row CrudlDocument-collection"
-                data-cy="UserList-items"
+      <div v-if="loading" class="tw:flex tw:justify-center tw:py-8">
+        <Spinner size="lg" />
+      </div>
+
+      <template v-else>
+        <Card v-if="!isCollectionEmpty" key="list">
+          <CardContent>
+            <NoSearchResult v-show="!documents.length" />
+
+            <div
+              v-if="documents.length"
+              class="tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2"
+            >
+              <Button data-cy="UserList-toggleAllBtn" variant="outline" @click="toggleAll">
+                <i
+                  :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`"
+                  aria-hidden="true"
+                />
+                Toggle all
+              </Button>
+
+              <Button
+                data-cy="UserList-bulkDeleteBtn"
+                :disabled="!displayBulkDelete"
+                variant="destructive"
+                @click="deleteBulk"
               >
-                <div class="col s12">
-                  <b-list-group class="w-100">
-                    <b-list-group-item
-                      v-for="document in documents"
-                      :key="document.id"
-                      class="p-2"
-                      data-cy="UserList-item"
-                    >
-                      <UserItem
-                        :document="document"
-                        :is-checked="isChecked(document.id)"
-                        :index="index"
-                        :collection="collection"
-                        @checkbox-click="toggleSelectDocuments"
-                        @edit="editUser"
-                        @delete="deleteUser"
-                      />
-                    </b-list-group-item>
-                  </b-list-group>
-                </div>
-              </div>
-            </b-card-text>
-          </b-card>
-        </template>
-      </template>
-      <b-row v-if="!loading" align-h="center">
-        <b-pagination
-          v-model="currentPage"
-          class="m-2 mt-4"
+                <i class="fa fa-minus-circle" aria-hidden="true" />
+                Delete selected
+              </Button>
+
+              <PerPageSelector
+                class="tw:ml-auto"
+                :current-page-size="paginationSize"
+                :total-documents="totalDocuments"
+                @change-page-size="changePaginationSize($event)"
+              />
+            </div>
+
+            <ul
+              v-show="documents.length"
+              class="UserList-list tw:flex tw:list-none tw:flex-col tw:gap-2 tw:pl-0"
+              data-cy="UserList-items"
+            >
+              <li
+                v-for="document in documents"
+                :key="document.id"
+                class="tw:rounded-md tw:border tw:border-border tw:p-2"
+                data-cy="UserList-item"
+              >
+                <UserItem
+                  :document="document"
+                  :is-checked="isChecked(document.id)"
+                  :index="index"
+                  :collection="collection"
+                  @checkbox-click="toggleSelectDocuments"
+                  @edit="editUser"
+                  @delete="deleteUser"
+                />
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <ListPagination
+          v-show="totalDocuments > paginationSize"
+          class="tw:mt-4"
           data-cy="UserManagement-pagination"
-          :total-rows="totalDocuments"
-          :per-page="paginationSize"
+          :items-per-page="paginationSize"
+          :page.sync="currentPage"
+          :total="totalDocuments"
         />
-      </b-row>
+      </template>
+
       <delete-modal
         :open.sync="deleteModalOpen"
         :candidates-for-deletion="candidatesForDeletion"
@@ -132,20 +102,31 @@
 import { mapState } from 'pinia';
 
 import Filters from '../../Common/Filters/Filters.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import * as filterManager from '@/services/filterManager';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
+import ListPagination from '@/components/Common/ListPagination.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
+import NoSearchResult from '@/components/Security/Common/NoSearchResult.vue';
 import DeleteModal from './DeleteModal.vue';
 import UserItem from './UserItem.vue';
 
 export default {
   name: 'UserList',
   components: {
+    Button,
+    Card,
+    CardContent,
     DeleteModal,
     Filters,
-    UserItem,
+    ListPagination,
+    NoSearchResult,
     PerPageSelector,
+    Spinner,
+    UserItem,
   },
   props: {
     index: String,
@@ -182,7 +163,6 @@ export default {
       totalDocuments: 0,
       candidatesForDeletion: [],
       paginationSize: 25,
-      itemsPerPage: [10, 25, 50, 100, 500],
     };
   },
   computed: {
@@ -392,5 +372,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" rel="stylesheet/scss" scoped></style>

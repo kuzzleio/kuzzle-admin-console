@@ -8,106 +8,77 @@
         :collection="collection"
         @filters-updated="onFiltersUpdated"
       />
-      <b-card class="light-shadow mt-3" :bg-variant="documents.length === 0 ? 'light' : 'default'">
-        <template v-if="loading">
-          <b-row class="text-center">
-            <b-col>
-              <b-spinner variant="primary" class="mt-5" />
-            </b-col>
-          </b-row>
-        </template>
-        <b-card-text class="p-0">
-          <div v-show="!documents.length" class="row valign-center empty-set">
-            <b-row align-h="center" class="valign-center empty-set">
-              <b-col cols="2" class="text-center">
-                <i class="fa fa-5x fa-search text-secondary mt-3" aria-hidden="true" />
-              </b-col>
-              <b-col md="6">
-                <h3 class="text-secondary font-weight-bold">
-                  There is no result matching your query. Please try with another filter.
-                </h3>
-                <p>
-                  <em
-                    >Learn more about filtering syntax on
-                    <a href="https://docs.kuzzle.io/guide/1/elasticsearch/" target="_blank"
-                      >Kuzzle Elasticsearch Cookbook</a
-                    ></em
-                  >
-                </p>
-              </b-col>
-            </b-row>
+      <Card key="list" class="tw:mt-3">
+        <CardContent>
+          <div v-if="loading" class="tw:flex tw:justify-center tw:py-8">
+            <Spinner size="lg" />
           </div>
-          <div v-if="documents.length">
-            <b-row no-gutters class="mb-2">
-              <b-col cols="8">
-                <b-button
-                  variant="outline-dark"
-                  class="mr-2"
-                  data-cy="ProfileList-toggleAllBtn"
-                  @click="toggleAll"
-                >
-                  <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`" />
-                  Toggle all
-                </b-button>
 
-                <b-button
-                  variant="outline-danger"
-                  class="mr-2"
-                  data-cy="ProfileList-bulkDeleteBtn"
-                  :disabled="!displayBulkDelete"
-                  @click="deleteBulk"
-                >
-                  <i class="fa fa-minus-circle left" />
-                  Delete selected
-                </b-button>
-              </b-col>
-              <b-col cols="4" class="text-right">
-                <PerPageSelector
-                  :current-page-size="paginationSize"
-                  :total-documents="totalDocuments"
-                  @change-page-size="changePaginationSize($event)"
-                />
-              </b-col>
-            </b-row>
-          </div>
+          <NoSearchResult v-show="!documents.length" />
 
           <div
+            v-if="documents.length"
+            class="tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2"
+          >
+            <Button data-cy="ProfileList-toggleAllBtn" variant="outline" @click="toggleAll">
+              <i
+                :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`"
+                aria-hidden="true"
+              />
+              Toggle all
+            </Button>
+
+            <Button
+              data-cy="ProfileList-bulkDeleteBtn"
+              :disabled="!displayBulkDelete"
+              variant="destructive"
+              @click="deleteBulk"
+            >
+              <i class="fa fa-minus-circle" aria-hidden="true" />
+              Delete selected
+            </Button>
+
+            <PerPageSelector
+              class="tw:ml-auto"
+              :current-page-size="paginationSize"
+              :total-documents="totalDocuments"
+              @change-page-size="changePaginationSize($event)"
+            />
+          </div>
+
+          <ul
             v-show="documents.length"
-            class="row CrudlDocument-collection"
+            class="ProfileList-list tw:flex tw:list-none tw:flex-col tw:gap-2 tw:pl-0"
             data-cy="ProfileList-items"
           >
-            <div class="col s12">
-              <b-list-group class="w-100">
-                <b-list-group-item
-                  v-for="document in documents"
-                  :key="document._id"
-                  class="p-2"
-                  data-cy="ProfileList-item"
-                >
-                  <ProfileItem
-                    :document="document"
-                    :is-checked="isChecked(document._id)"
-                    :index="index"
-                    :collection="collection"
-                    @checkbox-click="toggleSelectDocuments"
-                    @edit="editProfile(document._id)"
-                    @delete="deleteProfile"
-                  />
-                </b-list-group-item>
-              </b-list-group>
-            </div>
-          </div>
-        </b-card-text>
-      </b-card>
-      <b-row align-h="center">
-        <b-pagination
-          v-model="currentPage"
-          class="m-2 mt-4"
-          data-cy="ProfileManagement-pagination"
-          :total-rows="totalDocuments"
-          :per-page="paginationSize"
-        />
-      </b-row>
+            <li
+              v-for="document in documents"
+              :key="document._id"
+              class="tw:rounded-md tw:border tw:border-border tw:p-2"
+              data-cy="ProfileList-item"
+            >
+              <ProfileItem
+                :document="document"
+                :is-checked="isChecked(document._id)"
+                :index="index"
+                :collection="collection"
+                @checkbox-click="toggleSelectDocuments"
+                @edit="editProfile(document._id)"
+                @delete="deleteProfile"
+              />
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      <ListPagination
+        v-show="totalDocuments > paginationSize"
+        class="tw:mt-4"
+        data-cy="ProfileManagement-pagination"
+        :items-per-page="paginationSize"
+        :page.sync="currentPage"
+        :total="totalDocuments"
+      />
     </template>
     <delete-modal
       :open.sync="deleteModalOpen"
@@ -123,19 +94,30 @@
 import { mapState } from 'pinia';
 
 import ProfileItem from '../Profiles/ProfileItem.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import { useKuzzleStore } from '@/stores';
 
+import ListPagination from '@/components/Common/ListPagination.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
+import NoSearchResult from '@/components/Security/Common/NoSearchResult.vue';
 import DeleteModal from './DeleteModal.vue';
 import Filters from './Filters.vue';
 
 export default {
   name: 'ProfileList',
   components: {
+    Button,
+    Card,
+    CardContent,
     DeleteModal,
     Filters,
-    ProfileItem,
+    ListPagination,
+    NoSearchResult,
     PerPageSelector,
+    ProfileItem,
+    Spinner,
   },
   props: {
     index: String,
@@ -160,7 +142,6 @@ export default {
       selectedDocuments: [],
       totalDocuments: 0,
       paginationSize: 25,
-      itemsPerPage: [10, 25, 50, 100, 500],
     };
   },
   computed: {
@@ -328,9 +309,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" rel="stylesheet/scss" scoped>
-.ProfileList-list {
-  overflow: visible;
-}
-</style>

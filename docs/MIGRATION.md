@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 68 / 107 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 73 / 107 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -293,7 +293,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**68 composants repris sur 107**, **454 balises `<b-*>` retirées sur 813**.
+**73 composants repris sur 107**, **524 balises `<b-*>` retirées sur 813**.
 
 > Le dénominateur passe de 134 à 107 : 27 composants non atteignables ont été
 > supprimés ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)). Ce
@@ -305,7 +305,7 @@ phase 2.
 > des mentions en commentaire** dans les primitives (« Remplace
 > `<b-pagination>` ») : elles ne sont pas du balisage. Le compte réel est
 > `grep -rhn '<b-[a-z-]*' src --include='*.vue' | grep -vE '^[0-9]+:\s*(\*|//|/\*)'
-> | grep -o '<b-[a-z-]*' | wc -l` = **359 restantes**, à retrancher de 813.
+> | grep -o '<b-[a-z-]*' | wc -l` = **289 restantes**, à retrancher de 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -466,6 +466,35 @@ découvert au moment où on allait le migrer :
 Le recensement initial comptait des fichiers, pas des composants atteignables.
 Le réflexe était acquis — on vérifie qu'un composant est atteint **avant** de le
 reprendre — mais il se pratiquait au `grep`, un fichier à la fois.
+
+**Les trois listes de Security passent sans primitive nouvelle**, comme le
+formulaire de collection avant elles. `Card`, `Button`, `Spinner`, `Checkbox`,
+`ListPagination` et `PerPageSelector` couvraient `<b-card>`, `<b-list-group>`,
+`<b-pagination>` et le reste ; les `<b-row>` / `<b-col>` deviennent des
+utilitaires. `Security/Layout.vue` et `Users/Page.vue` suivent dans le même lot
+parce qu'ils encadrent ces listes.
+
+Quatre points tranchés plutôt que transposés :
+
+- **Les trois copies de l'état « aucun résultat » deviennent une**,
+  `Security/Common/NoSearchResult.vue`. Elles étaient identiques au mot près —
+  sauf le lien : Profiles pointait vers la documentation de **Kuzzle 1**, les
+  deux autres vers le *cookbook* v2. C'est ce qu'une copie finit par faire.
+- **`<b-list-group>` devient un vrai `<ul>`**, pas une pile de `<div>`. Une
+  liste d'éléments est une liste ; le lecteur d'écran l'annonce et en donne le
+  nombre.
+- **La barre latérale de Security devient un `<nav>`** avec `aria-current` sur
+  la section ouverte. `<b-nav vertical>` ne rendait qu'un `<ul>` en colonne :
+  ni rôle de navigation, ni indication de la page courante autrement que par la
+  graisse et l'opacité.
+- **L'ombre portée de la barre latérale disparaît.** C'était une valeur de
+  design en dur (`0 0 5px rgba(112,112,112,1)`) ; la barre passe au `bg-muted`
+  des tokens, comme celle de Data.
+
+Deux pièges y ont été rencontrés, tous deux invisibles pour les specs et
+visibles à l'œil dès la première capture : G-030 (les puces d'un `<ul>` sans
+preflight) et **G-031**, le plus coûteux — une primitive réutilisée d'une
+branche `v-if` à l'autre garde les classes de la branche précédente.
 
 #### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
 
@@ -639,10 +668,10 @@ gros et le plus risqué.
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Security/Users/List.vue` | 17 | 395 | ⬜ |
-| `Security/Profiles/List.vue` | 17 | 335 | ⬜ |
-| `Security/Roles/List.vue` | 16 | 306 | ⬜ |
-| `Security/Layout.vue` | 13 | 98 | ⬜ |
+| `Security/Users/List.vue` | 17 | 395 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
+| `Security/Profiles/List.vue` | 17 | 335 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
+| `Security/Roles/List.vue` | 16 | 306 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
+| `Security/Layout.vue` | 13 | 98 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
 | `Security/Roles/CreateOrUpdate.vue` | 13 | 275 | ✅ reprise |
 | `Security/Users/EditCustomMapping.vue` | 13 | 176 | ✅ reprise |
 | `Security/Profiles/CreateOrUpdate.vue` | 11 | 216 | ✅ reprise |
@@ -652,7 +681,7 @@ gros et le plus risqué.
 | `Security/Profiles/ProfileItem.vue` | 9 | 186 | ✅ reprise |
 | `Security/Roles/RoleItem.vue` | 9 | 109 | ✅ reprise |
 | `Security/Roles/Page.vue` | 8 | 167 | ✅ reprise |
-| `Security/Users/Page.vue` | 8 | 120 | ⬜ |
+| `Security/Users/Page.vue` | 8 | 120 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
 | `Security/Users/Steps/UserProfileList.vue` | 8 | 118 | ⬜ |
 | `Security/Users/Steps/CredentialsSelector.vue` | 8 | 112 | ⬜ |
 | `Security/Users/Steps/Basic.vue` | 7 | 91 | ✅ reprise |
@@ -1482,6 +1511,51 @@ Gabarit à copier :
   (`BasicFilter`, `UserProfileList`, `CreateEnvironment`) poseront exactement la
   même question à leur reprise : `BasicFilter` seul est piloté par 20 appels de
   `cy.select()`, tous dans `search.spec.js`.
+
+#### G-030 — Sans preflight, un `<ul>` garde ses puces et son retrait
+
+- **Contexte** : phase 2, reprise des trois listes de Security. `<b-list-group>`
+  remplacé par un `<ul>` porteur d'utilitaires Tailwind.
+- **Symptôme** : chaque ligne de la liste s'affiche précédée d'une puce noire,
+  et la liste entière est décalée de 40 px vers la droite. Aucune spec ne le
+  voit : les `data-cy` sont au bon endroit, le contenu est le bon.
+- **Cause** : ADR-0008 désactive le preflight de Tailwind pour ne pas casser
+  Bootstrap. Or c'est le preflight qui remet `list-style: none` et
+  `padding: 0` sur `ul`. Sans lui, la feuille de style par défaut du navigateur
+  s'applique — `list-style: disc` et `padding-inline-start: 40px`. Même famille
+  que G-021 (`<button>` sans fond déclaré) : ce que le preflight normalisait,
+  il faut le demander.
+- **Solution** : `tw:list-none tw:pl-0` sur chaque `<ul>` rendu par nos soins.
+- **À retenir** : la liste des éléments que le preflight normalise est la liste
+  des surprises à venir. Les prochaines vraisemblables : `ol`, `blockquote`,
+  `fieldset`, `table` — à vérifier au premier usage, pas après.
+- **Ref** : [#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)
+
+#### G-031 — Une primitive réutilisée d'une branche `v-if` à l'autre garde les classes de la précédente
+
+- **Contexte** : phase 2, `Security/Roles/List.vue`. Le composant rend
+  `<slot name="emptySet">` tant que la liste est vide, et sa propre `<Card>`
+  dès que les documents arrivent.
+- **Symptôme** : la liste s'affiche centrée et large de 400 px au milieu d'une
+  carte qui en fait 1 070. Mesuré dans le navigateur, le `CardContent` porte
+  `tw:flex tw:flex-col tw:items-center tw:text-center` — trois classes que ce
+  fichier **n'écrit nulle part**. Elles viennent de l'état vide, défini dans
+  `Roles/Page.vue`, qui n'est plus rendu.
+- **Cause** : les deux branches occupent la même position dans la liste
+  d'enfants, et rendent toutes deux une `Card`. Sans `key`, Vue réutilise
+  l'instance plutôt que de la recréer, et la `class` statique de la branche
+  précédente reste attachée. Le premier rendu passe toujours par l'état vide —
+  `totalDocuments` vaut 0 avant la réponse du backend — donc **le cas se
+  produit systématiquement**, jamais au premier coup d'œil sur le code.
+- **Solution** : une `key` distincte sur la branche liste (`<Card key="list">`).
+  Vérifié en mesurant `getComputedStyle` avant et après : `text-align` repasse
+  de `center` à `left`, et l'élément de liste de 257 px à 1 018 px.
+- **À retenir** : deux branches d'un `v-if` qui rendent **la même primitive**
+  doivent porter des `key` distinctes. Le symptôme n'est pas une erreur, c'est
+  une mise en page qui a l'air « presque bien » — et aucune spec ne le verra,
+  puisque le DOM et les `data-cy` sont corrects. C'est le cas d'école du point 4
+  de la procédure de reprise : le rendu se regarde.
+- **Ref** : [#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)
 
 #### G-029 — `grep` dit qu'un composant est utilisé, alors que rien ne l'atteint
 

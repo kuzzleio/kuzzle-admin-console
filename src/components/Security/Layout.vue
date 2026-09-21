@@ -1,46 +1,35 @@
 <template>
-  <div class="SecurityLayout">
-    <div class="SecurityLayout-sidebarWrapper">
-      <b-nav vertical>
-        <b-nav-item
-          v-if="canManageUsers"
-          :to="{ name: 'SecurityUsersList' }"
-          :class="$route.path.includes('users') ? 'activeItemClass' : 'inactiveItemClass'"
-        >
-          <b-row no-gutters>
-            <b-col cols="2">
-              <i class="fa fa-user fa-lg align-middle" aria-hidden="true" />
-            </b-col>
-            <b-col cols="10" class="sideEntry pl-2 pt-1"> Users </b-col>
-          </b-row>
-        </b-nav-item>
-        <b-nav-item
-          v-if="canManageProfiles"
-          :to="{ name: 'SecurityProfilesList' }"
-          :class="$route.path.includes('profiles') ? 'activeItemClass' : 'inactiveItemClass'"
-        >
-          <b-row no-gutters>
-            <b-col cols="2">
-              <i class="fa fa-id-badge fa-lg align-middle" aria-hidden="true" />
-            </b-col>
-            <b-col cols="10" class="sideEntry pl-2 pt-1"> Profiles </b-col>
-          </b-row>
-        </b-nav-item>
-        <b-nav-item
-          v-if="canManageRoles"
-          :to="{ name: 'SecurityRolesList' }"
-          :class="$route.path.includes('roles') ? 'activeItemClass' : 'inactiveItemClass'"
-        >
-          <b-row no-gutters>
-            <b-col cols="2">
-              <i class="fa fa-unlock-alt fa-lg align-middle" aria-hidden="true" />
-            </b-col>
-            <b-col cols="10" class="sideEntry pl-2 pt-1"> Roles </b-col>
-          </b-row>
-        </b-nav-item>
-      </b-nav>
+  <div class="SecurityLayout tw:flex tw:h-full tw:flex-row tw:flex-nowrap">
+    <div
+      class="SecurityLayout-sidebarWrapper tw:z-1 tw:h-full tw:min-w-[var(--sidebar-width)] tw:overflow-auto tw:bg-muted tw:pt-4"
+      data-cy="SecurityLayout-sidebarWrapper"
+    >
+      <!--
+        `<b-nav vertical>` ne rendait qu'un `<ul>` en colonne. Le rôle de
+        navigation, lui, n'était porté par rien : c'est le `<nav>` qui le dit.
+      -->
+      <nav aria-label="Security sections">
+        <ul class="tw:flex tw:list-none tw:flex-col tw:pl-0">
+          <li v-for="section of visibleSections" :key="section.route">
+            <router-link
+              class="tw:flex tw:items-center tw:gap-2 tw:px-4 tw:py-2 tw:text-foreground tw:hover:bg-accent tw:hover:text-accent-foreground"
+              :class="
+                isCurrent(section)
+                  ? 'tw:font-semibold tw:opacity-100'
+                  : 'tw:font-light tw:opacity-60'
+              "
+              :aria-current="isCurrent(section) ? 'page' : undefined"
+              :data-cy="`SecurityLayout-${section.segment}`"
+              :to="{ name: section.route }"
+            >
+              <i class="fa fa-lg tw:w-6 tw:text-center" :class="section.icon" aria-hidden="true" />
+              {{ section.label }}
+            </router-link>
+          </li>
+        </ul>
+      </nav>
     </div>
-    <div class="SecurityLayout-contentWrapper">
+    <div class="SecurityLayout-contentWrapper tw:h-full tw:grow tw:overflow-auto tw:p-6">
       <router-view />
     </div>
   </div>
@@ -55,44 +44,42 @@ export default {
   name: 'SecurityLayout',
   computed: {
     ...mapState(useAuthStore, ['canManageUsers', 'canManageRoles', 'canManageProfiles']),
+    visibleSections() {
+      return [
+        {
+          icon: 'fa-user',
+          label: 'Users',
+          route: 'SecurityUsersList',
+          segment: 'users',
+          visible: this.canManageUsers,
+        },
+        {
+          icon: 'fa-id-badge',
+          label: 'Profiles',
+          route: 'SecurityProfilesList',
+          segment: 'profiles',
+          visible: this.canManageProfiles,
+        },
+        {
+          icon: 'fa-unlock-alt',
+          label: 'Roles',
+          route: 'SecurityRolesList',
+          segment: 'roles',
+          visible: this.canManageRoles,
+        },
+      ].filter((section) => section.visible);
+    },
+  },
+  methods: {
+    /*
+     * Le test porte sur le segment d'URL et non sur le nom de route : une
+     * section reste la section courante quand on est sur la création ou
+     * l'édition d'un de ses éléments. C'est ce que faisait déjà le `:class`
+     * du `<b-nav-item>`.
+     */
+    isCurrent(section) {
+      return this.$route.path.includes(section.segment);
+    },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@use '@/assets/styles/variables.scss';
-
-.activeItemClass {
-  font-weight: 600;
-  opacity: 1;
-}
-
-.inactiveItemClass {
-  font-weight: 100;
-  opacity: 0.6;
-}
-
-.SecurityLayout {
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-}
-.SecurityLayout-sidebarWrapper {
-  padding-top: 1em;
-  background-color: variables.$light-grey-color;
-  flex-basis: variables.$sidebar-width;
-  min-width: variables.$sidebar-width;
-  height: 100%;
-  overflow: auto;
-  box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
-  z-index: 1;
-}
-
-.SecurityLayout-contentWrapper {
-  flex-grow: 1;
-  height: 100%;
-  overflow: auto;
-  padding: variables.$content-gutter;
-}
-</style>

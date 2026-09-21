@@ -3,72 +3,54 @@
     <slot v-if="!currentFilter.basic && totalDocuments === 0" name="emptySet" />
     <template v-else>
       <filters
-        class="mb-3"
+        class="tw:mb-3"
         :current-filter="currentFilter.basic"
         @filters-updated="onFiltersUpdated"
         @reset="onFiltersUpdated"
       />
-      <b-card class="light-shadow" :bg-variant="documents.length === 0 ? 'light' : 'default'">
-        <template v-if="loading">
-          <b-row class="text-center">
-            <b-col>
-              <b-spinner variant="primary" class="mt-5" />
-            </b-col>
-          </b-row>
-        </template>
+      <Card key="list">
+        <CardContent>
+          <div v-if="loading" class="tw:flex tw:justify-center tw:py-8">
+            <Spinner size="lg" />
+          </div>
 
-        <b-card-text class="p-0">
-          <div v-show="!documents.length" class="row valign-center empty-set">
-            <b-row align-h="center" class="valign-center empty-set">
-              <b-col cols="2" class="text-center">
-                <i class="fa fa-5x fa-search text-secondary mt-3" aria-hidden="true" />
-              </b-col>
-              <b-col md="6">
-                <h3 class="text-secondary font-weight-bold">
-                  There is no result matching your query. Please try with another filter.
-                </h3>
-                <p>
-                  <em
-                    >Learn more about filtering syntax on
-                    <a
-                      href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/basic-queries/"
-                      target="_blank"
-                      >Kuzzle Elasticsearch Cookbook</a
-                    ></em
-                  >
-                </p>
-              </b-col>
-            </b-row>
+          <NoSearchResult v-show="!documents.length" />
+
+          <div
+            v-if="documents.length"
+            class="tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2"
+          >
+            <!--
+              `data-cy="UserList-bulkDeleteBtn"` sur la liste des rôles : le
+              `data-cy` a été copié depuis `Users/List.vue` à l'origine, et
+              `roles.spec.js` s'y accroche. Le renommer est une reprise de spec,
+              pas une reprise d'UI — hors de ce lot.
+            -->
+            <Button
+              class="tw:flex-none"
+              data-cy="UserList-bulkDeleteBtn"
+              :disabled="!displayBulkDelete"
+              variant="destructive"
+              @click="deleteBulk"
+            >
+              <i class="fa fa-minus-circle" aria-hidden="true" />
+              Delete selected
+            </Button>
+
+            <PerPageSelector
+              class="tw:ml-auto"
+              :current-page-size="paginationSize"
+              :total-documents="totalDocuments"
+              @change-page-size="changePaginationSize($event)"
+            />
           </div>
-          <div v-if="documents.length">
-            <b-row no-gutters class="mb-2">
-              <b-col cols="8">
-                <b-button
-                  variant="outline-danger"
-                  class="mr-2"
-                  data-cy="UserList-bulkDeleteBtn"
-                  :disabled="!displayBulkDelete"
-                  @click="deleteBulk"
-                >
-                  <i class="fa fa-minus-circle left" />
-                  Delete selected
-                </b-button>
-              </b-col>
-              <b-col cols="4" class="text-right">
-                <PerPageSelector
-                  :current-page-size="paginationSize"
-                  :total-documents="totalDocuments"
-                  @change-page-size="changePaginationSize($event)"
-                />
-              </b-col>
-            </b-row>
-          </div>
-          <b-list-group class="RoleList-list collection">
-            <b-list-group-item
+
+          <ul class="RoleList-list tw:flex tw:list-none tw:flex-col tw:gap-2 tw:pl-0">
+            <li
               v-for="document in documents"
               :key="document.id"
+              class="tw:rounded-md tw:border tw:border-border tw:p-2"
               data-cy="RoleList-list"
-              class="p-2"
             >
               <RoleItem
                 :document="document"
@@ -77,19 +59,19 @@
                 @common-list::edit-document="editDocument"
                 @delete-document="deleteRole"
               />
-            </b-list-group-item>
-          </b-list-group>
-        </b-card-text>
-      </b-card>
-      <b-row align-h="center">
-        <b-pagination
-          v-model="currentPage"
-          class="m-2 mt-4"
-          data-cy="RolesManagement-pagination"
-          :total-rows="totalDocuments"
-          :per-page="paginationSize"
-        />
-      </b-row>
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      <ListPagination
+        v-show="totalDocuments > paginationSize"
+        class="tw:mt-4"
+        data-cy="RolesManagement-pagination"
+        :items-per-page="paginationSize"
+        :page.sync="currentPage"
+        :total="totalDocuments"
+      />
     </template>
     <delete-modal
       :open.sync="deleteModalOpen"
@@ -105,20 +87,31 @@
 import { mapState } from 'pinia';
 
 import RoleItem from '../Roles/RoleItem.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import * as filterManager from '@/services/filterManager';
 import { useKuzzleStore } from '@/stores';
 
+import ListPagination from '@/components/Common/ListPagination.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
+import NoSearchResult from '@/components/Security/Common/NoSearchResult.vue';
 import DeleteModal from './DeleteModal.vue';
 import Filters from './Filters.vue';
 
 export default {
   name: 'RoleList',
   components: {
+    Button,
+    Card,
+    CardContent,
     DeleteModal,
     Filters,
-    RoleItem,
+    ListPagination,
+    NoSearchResult,
     PerPageSelector,
+    RoleItem,
+    Spinner,
   },
   props: {
     displayCreate: {
@@ -141,7 +134,6 @@ export default {
       selectedDocuments: [],
       totalDocuments: 0,
       paginationSize: 25,
-      itemsPerPage: [10, 25, 50, 100, 500],
     };
   },
   computed: {
@@ -299,9 +291,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" rel="stylesheet/scss" scoped>
-.RoleList-list {
-  overflow: visible;
-}
-</style>
