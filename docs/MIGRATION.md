@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 56 / 138 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 59 / 138 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -317,14 +317,9 @@ passent sans jamais les rendre. Pour les voir, il a fallu les monter sur une
 route temporaire, non commitée — c'est le prix à payer pour ne pas livrer un
 composant qu'on n'a jamais vu.
 
-**Ce qui reste bloqué dans Common** : `PerPageSelector.vue` porte un
-`<b-form-select>` que quatre specs pilotent avec `cy.select('10')` — une
-commande qui exige un `<select>` natif. Le `Select` de shadcn-vue n'en est pas
-un : c'est un bouton plus une liste en surcouche. Le reprendre, c'est donc
-choisir entre garder un `<select>` natif habillé aux tokens et réécrire les
-quatre specs. La décision vaut une ADR ; elle n'est pas prise ici, et le
-composant reste sur Bootstrap en attendant. Même remarque pour `Autocomplete.vue`
-et `MSelect.vue`, qui dépendent de `vue-multiselect`.
+**Ce qui reste bloqué dans Common** : `Autocomplete.vue` et `MSelect.vue`
+dépendent de `vue-multiselect`. `PerPageSelector.vue` l'était aussi ; il ne
+l'est plus ([ADR-0014](adr/0014-primitive-select-en-vue-2.md)).
 
 **Les tableaux de Data sont débloqués** ([ADR-0011](adr/0011-table-sans-data-table.md)).
 Le sujet n'en était pas un mais deux : `Views/Column/` n'utilisait que du
@@ -357,6 +352,16 @@ découpage en huit pièces de l'amont ; la composition que les quatre écrans
 partagent vit dans `Common/ListPagination.vue`, comme `useTableFilterSort` vit
 à côté de `Table` (ADR-0011). Les trois listes de Security n'attendent donc plus
 rien — l'ordre Roles / Profiles avant Users n'a plus de raison technique.
+
+**Les listes déroulantes sont débloquées**
+([ADR-0014](adr/0014-primitive-select-en-vue-2.md)). `<b-form-select>` était le
+deuxième composant `bootstrap-vue` partagé entre Data et Security — le contexte
+d'ADR-0013 disait à tort que `<b-pagination>` était le dernier. Il en reste
+15 occurrences dans trois fichiers non repris (`BasicFilter.vue`,
+`UserProfileList.vue`, `CreateEnvironment.vue`), qui gardent `cy.select()` ; les
+deux champs repris passent par `cy.selectOption()`, qui accepte les deux formes.
+Le placement du panneau flottant est désormais un mixin partagé,
+`ui/floating-panel.ts`, écrit pour `DropdownMenu` (ADR-0012) et reporté tel quel.
 
 **Deux composants ont été supprimés plutôt que repris**, d'où le dénominateur à
 138 : `ListViewButtons.vue` (importé nulle part, relevé le 2026-09-18 mais resté
@@ -439,7 +444,7 @@ gros et le plus risqué.
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
 | `Data/Collections/Watch.vue` | 38 | 496 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
-| `Data/Documents/Views/Map.vue` | 24 | 429 | ⬜ |
+| `Data/Documents/Views/Map.vue` | 24 | 429 | ✅ reprise ([#1053](https://github.com/kuzzleio/kuzzle-admin-console/pull/1053)) |
 | `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Collections/CollectionList.vue` | 19 | 426 | ✅ reprise ([#1050](https://github.com/kuzzleio/kuzzle-admin-console/pull/1050)) |
 | `Data/Indexes/Page.vue` | 18 | 352 | ✅ reprise ([#1050](https://github.com/kuzzleio/kuzzle-admin-console/pull/1050)) |
@@ -448,7 +453,7 @@ gros et le plus risqué.
 | `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ⬜ |
 | `Data/Collections/CreateOrUpdate.vue` | 12 | 309 | ⬜ |
 | `Data/Documents/DocumentListItem.vue` | 11 | 218 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
-| `Data/Documents/Views/TimeSeries.vue` | 8 | 351 | ⬜ |
+| `Data/Documents/Views/TimeSeries.vue` | 8 | 351 | ✅ reprise ([#1053](https://github.com/kuzzleio/kuzzle-admin-console/pull/1053)) |
 | `Data/Indexes/CreateIndexModal.vue` | 8 | 163 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Documents/ListActions.vue` | 7 | 68 | ➖ supprimé — importé nulle part ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
 | `Data/Collections/DropdownView.vue` | 7 | 110 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
@@ -549,7 +554,7 @@ gros et le plus risqué.
 | `Common/ListNotAllowed.vue` | 4 | 22 | ✅ reprise |
 | `Common/Environments/ModalCreateOrUpdate.vue` | 3 | 49 | ✅ reprise |
 | `Common/MainSpinner.vue` | 2 | 16 | ✅ reprise |
-| `Common/PerPageSelector.vue` | 1 | 35 | ⬜ |
+| `Common/PerPageSelector.vue` | 1 | 35 | ✅ reprise ([#1053](https://github.com/kuzzleio/kuzzle-admin-console/pull/1053)) |
 | `Common/PageNotAllowed.vue` | 1 | 30 | ✅ reprise |
 | `Common/Autocomplete.vue` | 1 | 166 | ⬜ |
 | `Common/Filters/HistoryFilter.vue` | 0 | 80 | ⬜ |
@@ -1307,6 +1312,31 @@ Gabarit à copier :
   l'effet. Ici le coût était invisible : chaque contributeur corrigeait le
   formatage à la main en croyant que l'outil ne pouvait pas.
 
+#### G-028 — Reprendre un composant de `Common/` casse des specs d'un domaine qu'on n'a pas touché
+
+- **Contexte** : phase 2, reprise de `PerPageSelector.vue` avec `Select`
+  (ADR-0014). Le lot porte sur Data.
+- **Symptôme** : `profiles.spec.js` et `users.spec.js` échouent sur
+  `cy.select() can only be called on a <select>. Your subject is a: <button
+  role="combobox">`. Aucun des deux ne concerne Data, et aucun fichier de
+  Security n'a été touché par le lot.
+- **Cause** : `PerPageSelector` est monté par cinq écrans de trois domaines, et
+  **quatre specs** le pilotent — `roles`, `profiles`, `users`, `search`. La
+  règle de contribution (« toute PR de migration doit passer les specs du
+  domaine touché ») suppose qu'un composant appartient à un domaine ; celui-ci
+  n'appartient à aucun. Le relevé initial n'en avait vu que deux parce que le
+  `grep` avait été tronqué à l'affichage — deux appels sur quatre n'ont jamais
+  été regardés.
+- **Solution** : les quatre appels passent par `cy.selectOption()`. Suite
+  complète relancée : 17/17.
+- **À retenir** : pour tout composant de `Common/`, la liste des specs à passer
+  se lit dans les specs, pas dans l'arborescence des composants —
+  `grep -rn '<data-cy>' test/` sur le `data-cy` du composant, sans tronquer la
+  sortie. Les trois composants de `Common/` qui gardent un `<b-form-select>`
+  (`BasicFilter`, `UserProfileList`, `CreateEnvironment`) poseront exactement la
+  même question à leur reprise : `BasicFilter` seul est piloté par 20 appels de
+  `cy.select()`, tous dans `search.spec.js`.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -1356,3 +1386,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-21 | `Table` est du balisage : pas de `DataTable`, tri et filtre dans les pages | [ADR-0011](adr/0011-table-sans-data-table.md) |
 | 2026-09-21 | `DropdownMenu` à la main, panneau dans `<body>`, élément courant en bouton radio | [ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md) |
 | 2026-09-21 | `Pagination` à la main en huit pièces, composition partagée dans `Common/` | [ADR-0013](adr/0013-primitive-pagination-en-vue-2.md) |
+| 2026-09-21 | `Select` à la main en neuf pièces, panneau flottant extrait en mixin partagé | [ADR-0014](adr/0014-primitive-select-en-vue-2.md) |

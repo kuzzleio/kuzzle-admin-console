@@ -1,10 +1,10 @@
 <template>
   <div
-    v-if="menu.isOpen"
+    v-if="isOpen"
     ref="content"
     :class="classes"
-    data-slot="dropdown-menu-content"
-    role="menu"
+    data-slot="select-content"
+    role="listbox"
     :style="panelStyle"
     tabindex="-1"
     v-bind="$attrs"
@@ -20,41 +20,48 @@ import { defineComponent } from 'vue';
 
 import { classMerge } from '../class-merge';
 import { floatingPanel } from '../floating-panel';
-import { dropdownMenuContext } from './context';
+import { selectContext } from './context';
 
 /*
- * DropdownMenuContent — le panneau (ADR-0012).
+ * SelectContent — le panneau de la liste (ADR-0014).
  *
- * Le placement — déplacement dans `<body>`, `position: fixed` d'après le
- * rectangle du déclencheur, bascule au-dessus quand le bas manque de place —
- * est dans le mixin `floatingPanel`, partagé avec `Select` (ADR-0014). Ce qui
- * reste ici est ce qui fait un *menu* :
+ * Le placement est dans le mixin `floatingPanel`, partagé avec
+ * `DropdownMenuContent` (ADR-0012). Ce qui reste ici est ce qui fait une
+ * *liste* plutôt qu'un menu :
  *
- * - **la navigation au clavier** : flèches, `Début`/`Fin`, `Tab`. `Échap` est
- *   écouté par la racine, sur le document — le focus n'est pas forcément dans
- *   le panneau. Le panneau ne piège pas le focus — un menu n'est pas modal,
- *   `Tab` le ferme et rend la main au reste de la page.
+ * - **l'ouverture pose le focus sur l'option retenue**, pas sur la première :
+ *   une liste déroulante s'ouvre là où on l'a laissée. C'est ce que faisait le
+ *   `<select>` natif derrière `<b-form-select>`, et le perdre ferait
+ *   recommencer la navigation au clavier depuis le haut à chaque ouverture ;
+ * - `Échap` est écouté par la racine, sur le document : le focus n'est pas
+ *   forcément dans le panneau.
  *
- * Le `z-index` est à 1020, soit sous `Dialog` (1030) et sous la bande modale de
- * Bootstrap : un menu ouvert derrière une modale ne doit pas passer devant.
+ * Le panneau ne piège pas le focus, pour la même raison que le menu : il n'est
+ * pas modal, et `Tab` le ferme en rendant la main au reste de la page.
+ *
+ * `z-index` à 1020, comme le menu : sous `Dialog` (1030) et sous la bande
+ * modale de Bootstrap.
  */
-const ITEM_SELECTOR = '[role="menuitem"],[role="menuitemradio"],[role="menuitemcheckbox"]';
+const ITEM_SELECTOR = '[role="option"]';
 
 export default defineComponent({
-  name: 'DropdownMenuContent',
-  mixins: [classMerge, floatingPanel, dropdownMenuContext],
+  name: 'SelectContent',
+  mixins: [classMerge, floatingPanel, selectContext],
   inheritAttrs: false,
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:z-1020 tw:min-w-32 tw:overflow-hidden tw:rounded-md',
+        'tw:z-1020 tw:min-w-32 tw:max-h-96 tw:overflow-y-auto tw:rounded-md',
         'tw:border tw:border-border tw:bg-popover tw:text-popover-foreground',
         'tw:p-1 tw:shadow-md tw:outline-none',
       );
     },
+    isOpen(): boolean {
+      return this.select.isOpen;
+    },
   },
   watch: {
-    'menu.isOpen': {
+    isOpen: {
       immediate: true,
       handler(open: boolean) {
         if (!open) {
@@ -74,20 +81,20 @@ export default defineComponent({
       if (!el) {
         return;
       }
-      this.attachPanel(el, (this.menu as unknown as { triggerEl: HTMLElement | null }).triggerEl);
-      this.menu.setContent(el);
+      this.attachPanel(el, (this.select as unknown as { triggerEl: HTMLElement | null }).triggerEl);
+      this.select.setContent(el);
 
-      const edge = this.menu.pendingFocus;
-      this.menu.pendingFocus = null;
-      if (edge) {
-        this.focusEdge(edge);
-        return;
-      }
-      el.focus();
+      const items = this.items();
+      const selected = items.find((item) => item.getAttribute('aria-selected') === 'true');
+      (selected ?? items[0] ?? el).focus();
+      // Le placement a été calculé avant que le panneau ne défile sur l'option
+      // retenue ; la hauteur n'a pas changé, mais le navigateur peut avoir fait
+      // défiler un ancêtre pour amener le focus à l'écran.
+      this.placePanel();
     },
     teardown(): void {
       this.detachPanel();
-      this.menu.setContent(null);
+      this.select.setContent(null);
     },
     items(): HTMLElement[] {
       const el = this.$refs.content as HTMLElement | undefined;
@@ -109,8 +116,6 @@ export default defineComponent({
         return;
       }
       const current = items.indexOf(document.activeElement as HTMLElement);
-      // Depuis le panneau lui-même (`current === -1`), la flèche bas va au
-      // premier élément et la flèche haut au dernier.
       const next = current === -1 ? (step > 0 ? 0 : items.length - 1) : current + step;
       items[(next + items.length) % items.length].focus();
     },
@@ -133,7 +138,7 @@ export default defineComponent({
           this.focusEdge('last');
           break;
         case 'Tab':
-          this.menu.close({ focusTrigger: true });
+          this.select.close({ focusTrigger: true });
           break;
       }
     },

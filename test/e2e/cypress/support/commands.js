@@ -319,3 +319,35 @@ Cypress.Commands.add('paginationPage', (parentSelector, page) => {
 Cypress.Commands.add('removeFormTag', (title) => {
   return cy.get(`.b-form-tag[title="${title}"] > .b-form-tag-remove`);
 });
+
+/**
+ * Choisit une option, que le champ soit un `<select>` natif ou un `Select`
+ * (ADR-0014).
+ *
+ * `cy.select()` de Cypress ne parle qu'au `<select>` natif : la primitive rend
+ * un bouton et un panneau de `[role="option"]` déplacé dans `<body>`, sur
+ * lesquels la commande native échoue. Les deux formes sont acceptées le temps
+ * que `BasicFilter` et `CreateEnvironment` restent sur `b-form-select` — elles
+ * attendent leur propre reprise.
+ *
+ * Le libellé est comparé en entier, et non par `contains` : `10` désignerait
+ * aussi `100`.
+ *
+ * @param {string} selector le champ — le `<select>`, ou le déclencheur du `Select`
+ * @param {string|number} label libellé de l'option visée
+ */
+Cypress.Commands.add('selectOption', (selector, label) => {
+  const text = String(label);
+
+  return cy.get(selector).then(($field) => {
+    if ($field.is('select')) {
+      return cy.wrap($field).select(text);
+    }
+
+    cy.wrap($field).click();
+    return cy
+      .get('[data-slot="select-content"] [role="option"]')
+      .contains(new RegExp(`^\\s*${Cypress._.escapeRegExp(text)}\\s*$`))
+      .click();
+  });
+});
