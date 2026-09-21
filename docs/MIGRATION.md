@@ -419,7 +419,7 @@ gros et le plus risqué.
 |---|---:|---:|---|
 | `Data/Collections/Watch.vue` | 38 | 496 | ⬜ |
 | `Data/Documents/Views/Map.vue` | 24 | 429 | ⬜ |
-| `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ✅ reprise (PRNUM) |
+| `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Collections/CollectionList.vue` | 19 | 426 | ⬜ |
 | `Data/Indexes/Page.vue` | 18 | 352 | ⬜ |
 | `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
@@ -442,16 +442,16 @@ gros et le plus risqué.
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Data/Documents/Views/List.vue` | 4 | 126 | ⬜ |
 | `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
-| `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ✅ reprise (PRNUM) |
+| `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Indexes/DropdownActions.vue` | 3 | 75 | ⬜ |
 | `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Update.vue` | 3 | 173 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Realtime/Notification.vue` | 3 | 147 | ⬜ |
 | `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ⬜ |
 | `Data/Collections/Create.vue` | 1 | 72 | ⬜ |
-| `Data/Documents/Views/Column/HeaderTableView.vue` | 1 | 56 | ✅ reprise (PRNUM) |
+| `Data/Documents/Views/Column/HeaderTableView.vue` | 1 | 56 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Documents/EmptyState.vue` | 1 | 39 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
-| `Data/Documents/Views/Column/HighlightableRow.vue` | 1 | 30 | ✅ reprise (PRNUM) |
+| `Data/Documents/Views/Column/HighlightableRow.vue` | 1 | 30 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Documents/Common/NewDocumentsBadge.vue` | 1 | 27 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Layout.vue` | 1 | 253 | ⬜ |
 | `Data/Documents/Create.vue` | 1 | 138 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
