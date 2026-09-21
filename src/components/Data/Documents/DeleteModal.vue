@@ -22,6 +22,7 @@
       <DialogFooter>
         <Button variant="outline" @click.prevent="close"> Cancel </Button>
         <Button
+          data-cy="DeleteDocumentsModal-confirmBtn"
           :disabled="isLoading"
           variant="destructive"
           @click="$emit('confirm', candidatesForDeletion)"

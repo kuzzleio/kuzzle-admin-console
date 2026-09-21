@@ -279,9 +279,7 @@ describe('Users', function() {
     cy.get('[data-cy=perPageSelector]').select('10')
     cy.get('[data-cy=UserItem]').should('have.length', 10)
 
-    cy.get(
-      '[data-cy="UserManagement-pagination"] .page-link[aria-posinset="2"]'
-    ).click({ force: true })
+    cy.paginationPage('[data-cy="UserManagement-pagination"]', 2).click({ force: true })
     cy.get('[data-cy=UserItem]').should('have.length', 4)
     cy.url().should('contain', 'from=10')
   })

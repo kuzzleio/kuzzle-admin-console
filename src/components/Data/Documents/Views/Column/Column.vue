@@ -234,13 +234,6 @@ import HighlightableRow from './HighlightableRow.vue';
 import ColumnCell from './TableCell.vue';
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css';
 
-// `getBadgeVariant` rend encore des noms bootstrap : `DocumentListItem.vue`,
-// qui l'appelle aussi, est toujours sur `b-badge`. La table part avec lui.
-const BADGE_VARIANTS = {
-  danger: 'destructive',
-  warning: 'warning',
-};
-
 export default {
   name: 'Column',
   directives: {
@@ -435,7 +428,7 @@ export default {
       }
       return {
         label: getBadgeText(n.action),
-        variant: BADGE_VARIANTS[getBadgeVariant(n.action)] ?? 'secondary',
+        variant: getBadgeVariant(n.action),
       };
     },
     resetColumns() {

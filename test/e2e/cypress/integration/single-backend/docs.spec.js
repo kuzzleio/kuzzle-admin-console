@@ -54,6 +54,42 @@ describe('Document List', function() {
     cy.get('[data-cy^=DocumentListItem--]').should('exist')
   })
 
+  it('Should select every document with Toggle all, then bulk delete them (List view)', function() {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/second-doc/_create?refresh=wait_for`,
+      {
+        firstName: 'Dorothee',
+        lastName: 'Bizet'
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy^=DocumentListItem--]').should('have.length', 2)
+
+    // Rien n'est coché : la suppression groupée n'a pas de candidat.
+    cy.get('[data-cy=DocumentsListView-bulkDeleteBtn]').should('be.disabled')
+
+    cy.get('[data-cy=DocumentsListView-toggleAllBtn]').click()
+    cy.get('[data-cy^=DocumentListItem--] input[type=checkbox]')
+      .should('have.length', 2)
+      .each($checkbox => {
+        cy.wrap($checkbox).should('be.checked')
+      })
+
+    cy.get('[data-cy=DocumentsListView-bulkDeleteBtn]')
+      .should('not.be.disabled')
+      .click()
+    cy.get('[data-cy=DeleteDocumentsModal-confirmBtn]').click()
+
+    cy.get('[data-cy^=DocumentListItem--]').should('not.exist')
+    cy.expectBackend(
+      `${kuzzleUrl}/${indexName}/${collectionName}/_search`,
+      response => {
+        expect(response.body.result.total).to.equal(0)
+      }
+    )
+  })
+
   it('Should show the the _id even if collection has id field', function() {
     cy.request(
       'POST',
@@ -531,20 +567,18 @@ describe('Realtime', () => {
       null
     )
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy="Autosync-icon"]').should('have.class', 'text-secondary')
+    cy.get('[data-cy="Autosync-icon"]').should('have.attr', 'data-autosync', 'off')
 
     cy.get('[data-cy=Refresh-dropdown--toggle]').click()
-    cy.get('[data-cy="Autosync-toggle"]').should('be.visible').click()
-    cy.get('[data-cy="Autosync-icon"]').should(
-      'not.have.class',
-      'text-secondary'
-    )
+    cy.get('[data-cy="Autosync-toggle"]')
+      .should('be.visible')
+      .should('have.attr', 'aria-checked', 'false')
+      .click()
+    cy.get('[data-cy="Autosync-toggle"]').should('have.attr', 'aria-checked', 'true')
+    cy.get('[data-cy="Autosync-icon"]').should('have.attr', 'data-autosync', 'on')
 
     cy.reload()
-    cy.get('[data-cy="Autosync-icon"]').should(
-      'not.have.class',
-      'text-secondary'
-    )
+    cy.get('[data-cy="Autosync-icon"]').should('have.attr', 'data-autosync', 'on')
   })
   it('[auto-update OFF] Shows badges for pending notifications (List view)', function() {
     cy.skipOnBackendVersion(1)

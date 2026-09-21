@@ -76,9 +76,7 @@ describe('Profiles', () => {
     cy.get('[data-cy=ProfileItem]').should('have.length', 17)
     cy.get('[data-cy=perPageSelector]').select('10')
     cy.get('[data-cy=ProfileItem]').should('have.length', 10)
-    cy.get(
-      '[data-cy="ProfileManagement-pagination"] .page-link[aria-posinset="2"]'
-    ).click()
+    cy.paginationPage('[data-cy="ProfileManagement-pagination"]', 2).click()
     cy.get('[data-cy=ProfileItem]').should('have.length', 7)
     cy.url().should('contain', 'from=10')
   })

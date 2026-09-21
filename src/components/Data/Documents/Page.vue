@@ -1,63 +1,78 @@
 <template>
-  <div class="DocumentList">
-    <b-container
-      :class="{
-        'DocumentList--containerFluid': listViewType !== LIST_VIEW_LIST,
-      }"
-      class="DocumentList--container"
+  <div class="DocumentList tw:mb-20">
+    <div
+      class="tw:mx-auto tw:w-full tw:px-4 tw:transition-[max-width] tw:duration-500"
+      :class="listViewType === LIST_VIEW_LIST ? 'tw:max-w-6xl' : 'tw:max-w-full'"
     >
-      <b-row>
-        <b-col>
-          <headline>
-            <span class="code" :title="collectionName">{{ truncateName(collectionName, 20) }}</span>
-          </headline>
-        </b-col>
-        <b-col sm="6" class="text-right mt-3">
-          <b-button
-            variant="primary"
+      <div class="tw:flex tw:flex-wrap tw:items-start tw:justify-between tw:gap-4">
+        <headline>
+          <span class="code" :title="collectionName">{{ truncateName(collectionName, 20) }}</span>
+        </headline>
+
+        <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+          <Button
+            :as="cannotCreateDocument ? 'button' : 'router-link'"
             data-cy="CreateDocument-btn"
-            :disabled="indexOrCollectionNotFound || !canCreateDocument(indexName, collectionName)"
-            :to="{
-              name: 'CreateDocument',
-              params: { indexName, collectionName },
-            }"
-            >Create New Document</b-button
-          >
-          <b-dropdown
-            class="ml-1"
-            data-cy="Refresh-dropdown"
-            :toggle-attrs="{ 'data-cy': 'Refresh-dropdown--toggle' }"
-            split
-            variant="outline-primary"
-            :title="
-              autoSync
-                ? 'Documents are updated in real-time'
-                : 'Refresh the list to apply pending changes'
+            :disabled="cannotCreateDocument"
+            :to="
+              cannotCreateDocument
+                ? undefined
+                : { name: 'CreateDocument', params: { indexName, collectionName } }
             "
-            @click="fetchDocuments"
           >
-            <template #button-content>
+            Create New Document
+          </Button>
+
+          <!-- Bouton scindé : la partie gauche rafraîchit, la flèche ouvre les
+               options. Les deux moitiés sont collées par les rayons plutôt que
+               par un composant dédié — c'est le seul de la console. -->
+          <div class="tw:inline-flex" data-cy="Refresh-dropdown">
+            <Button
+              class="tw:rounded-r-none"
+              :title="
+                autoSync
+                  ? 'Documents are updated in real-time'
+                  : 'Refresh the list to apply pending changes'
+              "
+              variant="outline"
+              @click="fetchDocuments"
+            >
               <i
-                class="fas fa-sync mr-1"
+                aria-hidden="true"
+                :class="['fas', 'fa-sync', { 'fa-spin': autoSync }]"
+                :data-autosync="autoSync ? 'on' : 'off'"
                 data-cy="Autosync-icon"
-                :class="{ 'fa-spin': autoSync, 'text-secondary': !autoSync }"
               />
               Refresh
-            </template>
-            <b-dropdown-item
-              data-cy="Autosync-toggle"
-              :disabled="!displayRealtimeButton.includes(listViewType)"
-              @click="autoSync = !autoSync"
-            >
-              <i :class="`far ${autoSync ? 'fa-check-square' : 'fa-square'} left`" />
-              Auto-Sync
-            </b-dropdown-item>
-          </b-dropdown>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                :as="Button"
+                aria-label="Refresh options"
+                class="tw:rounded-l-none tw:border-l-0"
+                data-cy="Refresh-dropdown--toggle"
+                size="icon"
+                variant="outline"
+              >
+                <i aria-hidden="true" class="fa fa-caret-down" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuCheckboxItem
+                  :checked="autoSync"
+                  data-cy="Autosync-toggle"
+                  :disabled="!displayRealtimeButton.includes(listViewType)"
+                  @update:checked="autoSync = $event"
+                >
+                  Auto-Sync
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           <collection-dropdown-view
-            class="icon-medium icon-black ml-2"
             :active-view="listViewType"
-            :index="indexName"
             :collection="collectionName"
+            :index="indexName"
             :mapping-attributes="mappingAttributes"
             @list="switchListView(LIST_VIEW_LIST)"
             @map="switchListView(LIST_VIEW_MAP)"
@@ -65,20 +80,20 @@
             @time-series="switchListView(LIST_VIEW_TIME_SERIES)"
           />
           <collection-dropdown-action
-            class="icon-medium icon-black ml-2"
             :index-name="indexName"
             :collection-name="collectionName"
             @delete-collection-clicked="showDeleteCollectionModal"
             @clear="afterCollectionClear"
           />
-        </b-col>
-      </b-row>
+        </div>
+      </div>
+
       <list-not-allowed
         v-if="!canSearchDocument(indexName, collectionName) && index && collection"
       />
       <template v-else>
         <filters
-          class="mb-3"
+          class="tw:mb-3"
           :available-operands="searchFilterOperands"
           :collection="collectionName"
           :current-filter="currentFilter"
@@ -89,8 +104,8 @@
           @submit="onFilterSubmit"
         />
         <template v-if="documents.length === 0">
-          <div v-if="isFetching" class="mt-5 text-center">
-            <b-spinner />
+          <div v-if="isFetching" class="tw:mt-10 tw:text-center">
+            <Spinner label="Loading documents" />
           </div>
           <template v-else>
             <no-geopoint-field-state v-if="hasGeopoints" />
@@ -102,110 +117,105 @@
             />
           </template>
         </template>
-        <template v-else>
-          <b-card class="light-shadow" :bg-variant="documents.length === 0 ? 'light' : 'default'">
-            <b-card-text class="p-0">
-              <List
-                v-if="listViewType === LIST_VIEW_LIST"
-                :all-checked="allChecked"
-                :auto-sync="autoSync"
-                :collection="collectionName"
-                :current-page-size="paginationSize"
-                :documents="documents"
-                :date-fields="dateFields"
-                :has-new-documents="hasNewDocuments"
-                :index="indexName"
-                :is-fetching="isFetching"
-                :notifications="notificationsById"
-                :selected-documents="selectedDocuments"
-                :total-documents="totalDocuments"
-                @bulk-delete="onBulkDeleteClicked"
-                @change-page-size="changePaginationSize"
-                @checkbox-click="toggleSelectDocuments"
-                @delete="onDeleteClicked"
-                @refresh="onRefresh"
-                @toggle-all="onToggleAllClicked"
-              />
+        <Card v-else>
+          <CardContent>
+            <List
+              v-if="listViewType === LIST_VIEW_LIST"
+              :all-checked="allChecked"
+              :auto-sync="autoSync"
+              :collection="collectionName"
+              :current-page-size="paginationSize"
+              :documents="documents"
+              :date-fields="dateFields"
+              :has-new-documents="hasNewDocuments"
+              :index="indexName"
+              :is-fetching="isFetching"
+              :notifications="notificationsById"
+              :selected-documents="selectedDocuments"
+              :total-documents="totalDocuments"
+              @bulk-delete="onBulkDeleteClicked"
+              @change-page-size="changePaginationSize"
+              @checkbox-click="toggleSelectDocuments"
+              @delete="onDeleteClicked"
+              @refresh="onRefresh"
+              @toggle-all="onToggleAllClicked"
+            />
 
-              <Column
-                v-if="listViewType === LIST_VIEW_COLUMN"
-                :search-query="searchQuery"
-                :all-checked="allChecked"
-                :auto-sync="autoSync"
-                :current-page-size="paginationSize"
-                :collection="collectionName"
-                :collection-settings="collectionSettings"
-                :documents="documents"
-                :has-new-documents="hasNewDocuments"
-                :index="indexName"
-                :is-fetching="isFetching"
-                :mapping="collectionMapping"
-                :notifications="notificationsById"
-                :selected-documents="selectedDocuments"
-                :total-documents="totalDocuments"
-                @edit="onEditClicked"
-                @delete="onDeleteClicked"
-                @bulk-delete="onBulkDeleteClicked"
-                @change-page-size="changePaginationSize"
-                @checkbox-click="toggleSelectDocuments"
-                @settings-updated="onSettingsUpdated"
-                @refresh="onRefresh"
-                @toggle-all="onToggleAllClicked"
-              />
+            <Column
+              v-if="listViewType === LIST_VIEW_COLUMN"
+              :search-query="searchQuery"
+              :all-checked="allChecked"
+              :auto-sync="autoSync"
+              :current-page-size="paginationSize"
+              :collection="collectionName"
+              :collection-settings="collectionSettings"
+              :documents="documents"
+              :has-new-documents="hasNewDocuments"
+              :index="indexName"
+              :is-fetching="isFetching"
+              :mapping="collectionMapping"
+              :notifications="notificationsById"
+              :selected-documents="selectedDocuments"
+              :total-documents="totalDocuments"
+              @edit="onEditClicked"
+              @delete="onDeleteClicked"
+              @bulk-delete="onBulkDeleteClicked"
+              @change-page-size="changePaginationSize"
+              @checkbox-click="toggleSelectDocuments"
+              @settings-updated="onSettingsUpdated"
+              @refresh="onRefresh"
+              @toggle-all="onToggleAllClicked"
+            />
 
-              <TimeSeries
-                v-if="listViewType === LIST_VIEW_TIME_SERIES"
-                :index="indexName"
-                :collection="collectionName"
-                :documents="documents"
-                :mapping="collectionMapping"
-                :current-page-size="paginationSize"
-                :total-documents="totalDocuments"
-                @change-page-size="changePaginationSize"
-                @changeDisplayPagination="changeDisplayPagination"
-              />
+            <TimeSeries
+              v-if="listViewType === LIST_VIEW_TIME_SERIES"
+              :index="indexName"
+              :collection="collectionName"
+              :documents="documents"
+              :mapping="collectionMapping"
+              :current-page-size="paginationSize"
+              :total-documents="totalDocuments"
+              @change-page-size="changePaginationSize"
+              @changeDisplayPagination="changeDisplayPagination"
+            />
 
-              <Map
-                v-if="listViewType === LIST_VIEW_MAP"
-                :selected-geopoint="selectedGeopoint"
-                :selected-geoshape="selectedGeoshape"
-                :current-page-size="paginationSize"
-                :index="indexName"
-                :geo-documents="geoDocuments"
-                :shapes-documents="shapesDocuments"
-                :collection="collectionName"
-                :mapping-geopoints="mappingGeopoints"
-                :mapping-geoshapes="mappingGeoshapes"
-                @change-page-size="changePaginationSize"
-                @on-select-geopoint="onSelectGeopoint"
-                @on-select-geoshape="onSelectGeoshape"
-                @edit="onEditClicked"
-                @delete="onDeleteClicked"
-              />
-              <b-row v-show="totalDocuments > paginationSize && displayPagination" align-h="center">
-                <b-pagination
-                  v-model="currentPage"
-                  aria-controls="my-table"
-                  class="m-2 mt-4"
-                  data-cy="DocumentList-pagination"
-                  :total-rows="totalDocuments"
-                  :per-page="paginationSize"
-                />
-              </b-row>
-              <div
-                v-if="totalDocuments > 10000"
-                class="text-center mt-2"
-                data-cy="DocumentList-exceedESLimitMsg"
-              >
-                <small class="text-secondary"
-                  >Due to limitations imposed by Elasticsearch, you won't be able to browse
-                  documents beyond 10000.</small
-                >
-                &lcub;&lcub;totalDocuments&rcub;&rcub;
-              </div>
-            </b-card-text>
-          </b-card>
-        </template>
+            <Map
+              v-if="listViewType === LIST_VIEW_MAP"
+              :selected-geopoint="selectedGeopoint"
+              :selected-geoshape="selectedGeoshape"
+              :current-page-size="paginationSize"
+              :index="indexName"
+              :geo-documents="geoDocuments"
+              :shapes-documents="shapesDocuments"
+              :collection="collectionName"
+              :mapping-geopoints="mappingGeopoints"
+              :mapping-geoshapes="mappingGeoshapes"
+              @change-page-size="changePaginationSize"
+              @on-select-geopoint="onSelectGeopoint"
+              @on-select-geoshape="onSelectGeoshape"
+              @edit="onEditClicked"
+              @delete="onDeleteClicked"
+            />
+
+            <ListPagination
+              v-show="totalDocuments > paginationSize && displayPagination"
+              class="tw:mt-4"
+              data-cy="DocumentList-pagination"
+              :items-per-page="paginationSize"
+              :page.sync="currentPage"
+              :total="totalDocuments"
+            />
+
+            <p
+              v-if="totalDocuments > ES_RESULT_WINDOW_LIMIT"
+              class="tw:mt-2 tw:text-center tw:text-sm tw:text-muted-foreground"
+              data-cy="DocumentList-exceedESLimitMsg"
+            >
+              Due to limitations imposed by Elasticsearch, you won't be able to browse documents
+              beyond {{ ES_RESULT_WINDOW_LIMIT }}.
+            </p>
+          </CardContent>
+        </Card>
       </template>
       <DeleteCollectionModal
         :index="index"
@@ -220,16 +230,7 @@
         @confirm="onDeleteConfirmed"
         @hide="resetCandidatesForDeletion"
       />
-      <b-toast
-        id="realtime-notification-toast"
-        variant="info"
-        title="toast title"
-        toaster="b-toaster-bottom-right"
-        no-auto-hide
-      >
-        Some documents has changed. Refresh your list plz
-      </b-toast>
-    </b-container>
+    </div>
   </div>
 </template>
 
@@ -244,6 +245,15 @@ import { mapState } from 'pinia';
 
 import DeleteCollectionModal from '../Collections/DeleteCollectionModal.vue';
 import CollectionDropdownAction from '../Collections/DropdownAction.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Spinner } from '@/components/ui/spinner';
 import { flattenObjectMapping } from '@/services/collectionHelper';
 import * as filterManager from '@/services/filterManager';
 import {
@@ -260,6 +270,7 @@ import { truncateName } from '@/utils';
 
 import Filters from '@/components/Common/Filters/Filters.vue';
 import ListNotAllowed from '@/components/Common/ListNotAllowed.vue';
+import ListPagination from '@/components/Common/ListPagination.vue';
 import CollectionDropdownView from '@/components/Data/Collections/DropdownView.vue';
 import Headline from '@/components/Materialize/Headline.vue';
 import DeleteModal from './DeleteModal.vue';
@@ -270,16 +281,35 @@ import List from './Views/List.vue';
 import Map from './Views/Map.vue';
 import TimeSeries from './Views/TimeSeries.vue';
 
+/*
+ * Plafond de la fenêtre de résultats d'Elasticsearch (`index.max_result_window`).
+ *
+ * Au-delà, `from + size` est refusé : la barre de pagination continue
+ * d'afficher des pages que le backend ne servira pas. Le message qui le dit à
+ * l'utilisateur et le seuil qui le déclenche viennent maintenant de la même
+ * constante.
+ */
+const ES_RESULT_WINDOW_LIMIT = 10000;
+
 export default {
   name: 'DocumentsPage',
   components: {
+    Button,
+    Card,
+    CardContent,
     CollectionDropdownView,
     CollectionDropdownAction,
     DeleteCollectionModal,
     DeleteModal,
     Column,
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
     Map,
     List,
+    ListPagination,
+    Spinner,
     TimeSeries,
     EmptyState,
     Headline,
@@ -298,6 +328,10 @@ export default {
   },
   data() {
     return {
+      ES_RESULT_WINDOW_LIMIT,
+      // Le composant passé à `as` n'a pas à être réactif : il est rangé hors
+      // de `data()` réactive par `Object.freeze` faute de `markRaw` en Vue 2.
+      Button: Object.freeze(Button),
       searchQuery: null,
       subscribeRoomId: null,
       isFetching: false,
@@ -314,14 +348,12 @@ export default {
       candidatesForDeletion: [],
       mappingGeopoints: [],
       selectedGeopoint: '',
-      resultPerPage: [10, 25, 50, 100, 500],
       currentPage: 1,
       deleteCollectionOpen: false,
       displayPagination: true,
       notificationsById: {},
       newDocumentNotifications: [],
       hasNewDocuments: false,
-      enableRealtime: true,
       mappingGeoshapes: [],
       selectedGeoshape: '',
       handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon'],
@@ -421,6 +453,12 @@ export default {
     },
     indexOrCollectionNotFound() {
       return !!(!this.index || !this.collection);
+    },
+    cannotCreateDocument() {
+      return (
+        this.indexOrCollectionNotFound ||
+        !this.canCreateDocument(this.indexName, this.collectionName)
+      );
     },
     mappingAttributes() {
       return this.collectionMapping
@@ -934,23 +972,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.DocumentList {
-  margin-bottom: 5em;
-}
-.DocumentList--container {
-  transition: max-width 0.6s;
-}
-.DocumentList--containerFluid {
-  max-width: 100%;
-}
-.ResultPerPage {
-  &--active {
-    color: 'primary';
-  }
-  &--link {
-    color: grey;
-  }
-}
-</style>
