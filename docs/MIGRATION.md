@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 67 / 134 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 68 / 134 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -293,7 +293,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**67 composants repris sur 134**, **431 balises `<b-*>` retirées sur 813**.
+**68 composants repris sur 134**, **432 balises `<b-*>` retirées sur 813**.
 
 > Ces deux compteurs disaient `49 / 140` et `289` jusqu'ici, alors que le
 > tableau ci-dessus annonçait `59 / 138` : la ligne n'avait pas été reprise
@@ -410,9 +410,22 @@ store Vuex que la console n'a plus depuis le passage à Pinia. Il ne rendait don
 pas ce qu'il prétendait rendre, et personne ne l'aurait vu. C'est le troisième
 composant dans ce cas.
 
-**Il ne reste qu'un fichier `<b-*>` dans Data** : `Layout.vue`, et sa balise
-n'est pas le sujet — c'est `vue-multipane`, abandonné, qui y tient le
-redimensionnement de la barre latérale (§ 3.1). Le reste du domaine est repris.
+**Data est entièrement dé-bootstrapisé** : `grep -rn "<b-" src/components/Data`
+ne retourne plus rien. Le domaine le plus gros et le plus risqué — celui qu'on
+avait mis en dernier pour cette raison — est passé.
+
+Ce qui reste dans `Data/Layout.vue` n'est pas du `bootstrap-vue` mais
+`vue-multipane`, abandonné, qui y tient le redimensionnement de la barre
+latérale (§ 3.1). Il n'est pas traité ici parce qu'il n'appartient pas à Data :
+`ApiAction.vue` et `ApiAction/QueryCard.vue` l'utilisent aussi. Le splitter est
+une décision à prendre avec ApiAction, pas un reste de ce lot. La seule chose
+qui demeure dans le `<style scoped>` du layout est la poignée que la
+bibliothèque rend elle-même, sous sa propre classe : ses couleurs passent par
+les tokens en attendant, et le bloc s'en ira avec elle.
+
+`--sidebar-width` rejoint les tokens à cette occasion. La largeur minimale de la
+barre latérale est une contrainte de mise en page, pas une décision visuelle,
+mais elle n'a pas à être codée en dur dans un composant pour autant.
 
 Le dernier lot a porté sur l'arborescence (`Leftnav/`), le menu d'actions d'un
 index et la ligne de la vue graphique. Trois choses y ont changé de nature
@@ -474,7 +487,7 @@ compatibilité **avant** d'engager la montée.
 | `bootstrap-vue` 2.23.1 | aucune version Vue 3, **incompatible `@vue/compat`** | supprimé, remplacé par Tailwind + primitives locales | 2 | 🟡 Tailwind branché, cohabitation cadrée ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) |
 | `bootstrap` 4.6.2 | supprimé avec le précédent | Tailwind | 2 | 🟡 idem |
 | `vue-form-generator` 2.3.4 | **abandonné**, aucun successeur | à réimplémenter — cœur de l'édition de documents | 2 | ⬜ |
-| `vue-multipane` 0.9.5 | **abandonné** | splitter à réimplémenter (layout Data) | 2 | ⬜ |
+| `vue-multipane` 0.9.5 | **abandonné** | splitter à réimplémenter — layout Data **et** ApiAction (3 fichiers) ; à décider avec ApiAction, dernier domaine | 2 | ⬜ |
 | `vuejs-logger` 1.5.5 | Vue 2 uniquement | remplacer par un wrapper maison | 3 | ⬜ |
 
 ### 3.2 Migration directe disponible
@@ -556,7 +569,7 @@ gros et le plus risqué.
 | `Data/Documents/EmptyState.vue` | 1 | 39 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Views/Column/HighlightableRow.vue` | 1 | 30 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Documents/Common/NewDocumentsBadge.vue` | 1 | 27 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
-| `Data/Layout.vue` | 1 | 253 | ⬜ |
+| `Data/Layout.vue` | 1 | 253 | ✅ reprise ([#1058](https://github.com/kuzzleio/kuzzle-admin-console/pull/1058)) |
 | `Data/Documents/Create.vue` | 1 | 138 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/NoGeopointFieldState.vue` | 1 | 12 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Collections/Update.vue` | 1 | 104 | ✅ reprise ([#1054](https://github.com/kuzzleio/kuzzle-admin-console/pull/1054)) |
