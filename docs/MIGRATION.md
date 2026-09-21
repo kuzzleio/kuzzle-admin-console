@@ -63,14 +63,14 @@ En phase 2, il n'y aura que ce bloc à reprendre, pas les 17 specs.
 
 | | Avant | Après |
 |---|---:|---:|
-| Tests actifs | 140 | **153** |
+| Tests actifs | 140 | **157** |
 | Tests inactifs (`.only` + `it.skip`) | 20 | **0** |
 | Sélecteurs fragiles (tests actifs) | 61 | **0** |
 | Politique de retry | aucune | `runMode: 2` |
 | ESLint sur `test/` | non | oui, bloquant |
 
 Suite complète vérifiée contre un backend Kuzzle réel : **17/17 specs,
-152 tests passants, 0 échec** (1 `pending` légitime, skip dynamique via
+156 tests passants, 0 échec** (1 `pending` légitime, skip dynamique via
 `skipOnBackendVersion`).
 
 #### La CI était verte en n'exécutant qu'une fraction des tests — ✅ corrigé
@@ -293,7 +293,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**47 composants repris sur 140**, 257 balises `<b-*>` sur 813.
+**49 composants repris sur 140**, 289 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -326,15 +326,17 @@ quatre specs. La décision vaut une ADR ; elle n'est pas prise ici, et le
 composant reste sur Bootstrap en attendant. Même remarque pour `Autocomplete.vue`
 et `MSelect.vue`, qui dépendent de `vue-multiselect`.
 
-**Ce qui bloque Data** : les trois écrans qui portent le plus de balises —
-`Indexes/Page.vue`, `Collections/CollectionList.vue`,
-`Documents/Views/Column/Column.vue` — tiennent sur un `<b-table>` avec `:fields`,
-tri et filtre. `Table` chez shadcn-vue n'est que du balisage : reprendre ces
-écrans, c'est écrire le tri et le filtre à la main dans chaque page, ou se
-donner un composant de tableau qui n'existe pas dans l'amont. La décision vaut
-une ADR, elle n'est pas prise ici. Les sept modales de Data sont donc reprises
-d'abord : elles ne dépendent que de primitives existantes, et elles vident les
-trois pages de leur `$bvModal`.
+**Les tableaux de Data sont débloqués** ([ADR-0011](adr/0011-table-sans-data-table.md)).
+Le sujet n'en était pas un mais deux : `Views/Column/` n'utilisait que du
+balisage — repris avec la primitive `Table` — tandis que `Indexes/Page.vue` et
+`Collections/CollectionList.vue` s'appuyaient sur le `b-table` piloté par les
+données. Ces deux-là redéfinissaient déjà **9 colonnes sur 9** par un
+`#cell(...)` : `b-table` ne leur apportait plus que la boucle, le filtre et le
+tri. Ils passent au `v-for` explicite, avec le filtre et le tri dans
+`useTableFilterSort` — un composable, pas une primitive : ça n'a pas de rendu.
+Le tri des trois colonnes concernées a été couvert par des specs **avant** la
+réécriture, comme l'ADR l'engage ; c'est ce qui a mis au jour
+[G-022](#g-022--une-colonne-sortable-peut-ne-rien-trier-et-rien-ne-le-dit).
 
 Dans Security, même situation pour `Users/Page.vue` : son menu « … » est un
 `<b-dropdown>`, et le `DropdownMenu` de shadcn-vue est une surcouche flottante
@@ -420,8 +422,8 @@ gros et le plus risqué.
 | `Data/Collections/Watch.vue` | 38 | 496 | ⬜ |
 | `Data/Documents/Views/Map.vue` | 24 | 429 | ⬜ |
 | `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
-| `Data/Collections/CollectionList.vue` | 19 | 426 | ⬜ |
-| `Data/Indexes/Page.vue` | 18 | 352 | ⬜ |
+| `Data/Collections/CollectionList.vue` | 19 | 426 | ✅ reprise |
+| `Data/Indexes/Page.vue` | 18 | 352 | ✅ reprise |
 | `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Page.vue` | 13 | 955 | ⬜ |
 | `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ⬜ |
@@ -1136,6 +1138,55 @@ Gabarit à copier :
   styles par défaut, y compris « un bouton est transparent ». Et ce genre de
   défaut ne se voit qu'en regardant l'écran — les specs cliquent, elles ne
   regardent pas.
+
+#### G-022 — Une colonne `sortable` peut ne rien trier, et rien ne le dit
+
+- **Contexte** : phase 2, reprise de `Indexes/Page.vue` et de
+  `Collections/CollectionList.vue` ([ADR-0011](adr/0011-table-sans-data-table.md)).
+- **Symptôme** : la spec de tri écrite **avant** la réécriture, comme l'ADR
+  l'engage, échoue sur la page Indexes — contre le code de production, pas
+  contre la reprise. Les deux colonnes déclarées `sortable` y sont inertes :
+  l'en-tête prend bien `aria-sort="ascending"` au clic, et l'ordre des lignes ne
+  bouge pas d'un pouce.
+- **Cause** : `b-table` trie sur `item[field.key]`. Les deux clés déclarées —
+  `indexName` et `collectionCount` — ne correspondent à **aucune** propriété de
+  la classe `Index`, qui porte `name` et le getter `collectionsCount`. Toutes
+  les valeurs comparées valent donc `undefined`, et le tri est un `sort`
+  stable sur rien. Rien ne le signale, parce que la colonne s'affiche quand
+  même : un slot `#cell(indexName)` la rend explicitement. La déclaration
+  indirecte sépare le nom qui **rend** du nom qui **trie**, et seul le premier
+  est vérifié par l'œil.
+- **Portée** : deux colonnes sur trois. Seul le `name` de `CollectionList`
+  triait — sa clé tombe juste. Les deux autres ne fonctionnaient pas depuis
+  qu'elles existent.
+- **Solution** : dans le `v-for` explicite, la colonne triée est nommée par une
+  **fonction** (`sorters: { collections: (index) => index.collectionsCount }`),
+  pas par une clé à faire correspondre. Une faute de frappe devient une erreur
+  de compilation ou un `undefined` visible, pas un tri silencieusement mort.
+- **À retenir** : c'est le même défaut que le `#cell(count)` mort de
+  `CollectionList` relevé dans ADR-0011, dans l'autre sens. Toute API qui
+  associe deux déclarations par une **chaîne de caractères** peut se désaccorder
+  sans bruit. Et une fonctionnalité sans spec n'est pas « à risque de casser » :
+  elle peut être déjà cassée, et l'être depuis des années.
+
+#### G-023 — L'attribut `autofocus` ne remplace pas la prop `autofocus` de bootstrap-vue
+
+- **Contexte** : phase 2, reprise des deux listes de Data. Le champ de filtre
+  passait de `<b-form-input autofocus>` à `<Input autofocus>`.
+- **Symptôme** : `collections.spec.js`, « Should be able to autofocus collection
+  search », échoue. La spec tape `f{enter}` sur le `body` en comptant sur le
+  champ focalisé ; l'URL ne change pas. Rien d'autre ne régresse — c'est la
+  seule spec qui exerce le focus initial.
+- **Cause** : l'attribut HTML `autofocus` n'est honoré par le navigateur qu'au
+  **chargement du document**. Un élément inséré plus tard par Vue, quand la
+  liste arrive, ne le déclenche pas. `b-form-input` ne se reposait pas dessus :
+  sa prop `autofocus` appelle `focus()` au montage, en JavaScript.
+- **Solution** : `v-focus`, la directive maison qui existait déjà
+  (`src/directives/focus.directive.ts`) et qui appelle `focus()` au `nextTick`.
+- **À retenir** : une prop de `bootstrap-vue` qui porte le nom d'un attribut
+  HTML n'est pas forcément cet attribut. Avant de la traduire en attribut natif,
+  vérifier ce qu'elle fait — ici, l'écart tient à ce que le composant amont
+  compensait une limite du navigateur.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

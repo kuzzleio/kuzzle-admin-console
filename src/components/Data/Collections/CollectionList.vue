@@ -1,27 +1,34 @@
 <template>
   <div>
-    <b-container v-if="index" class="CollectionList" data-cy="CollectionList">
+    <div
+      v-if="index"
+      class="CollectionList tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12"
+      data-cy="CollectionList"
+    >
       <headline>
-        <div class="d-flex flex-row">
-          <span class="flex-grow-1 text-truncate">
-            <i class="fa fa-database text-secondary" /> &nbsp;
+        <div class="tw:flex tw:flex-row">
+          <span class="tw:flex-1 tw:truncate">
+            <i class="fa fa-database tw:text-secondary" /> &nbsp;
             <span class="code">{{ indexName }}</span>
           </span>
-          <span class="text-right">
-            <b-button
-              class="align-middle"
+          <span class="tw:flex tw:items-center tw:gap-2">
+            <Button
+              :as="canCreateCollection(indexName) && index ? 'router-link' : 'button'"
               data-cy="CollectionList-create"
-              variant="primary"
               :disabled="!canCreateCollection(indexName) || !index"
               :title="
                 !canCreateCollection(indexName)
                   ? `Your rights disallow you to create collections on index ${indexName}`
                   : ''
               "
-              :to="{ name: 'CreateCollection', params: { indexName } }"
+              :to="
+                canCreateCollection(indexName) && index
+                  ? { name: 'CreateCollection', params: { indexName } }
+                  : undefined
+              "
             >
               <i class="fa fa-plus" /> Create a collection
-            </b-button>
+            </Button>
             <IndexDropdownAction
               :index-name="indexName"
               @delete-index-clicked="onDeleteIndexClicked"
@@ -32,181 +39,159 @@
 
       <list-not-allowed v-if="!canSearchCollection(indexName)" />
       <div v-else-if="collections" class="CollectionList-content">
-        <template>
-          <b-row class="mb-3">
-            <b-col sm="2" class="text-secondary">
-              {{ collections.length }}
-              {{ collections.length === 1 ? 'collection' : 'collections' }}
-            </b-col>
-            <b-col sm="10">
-              <b-row>
-                <b-col cols="6" class="text-right">
-                  <b-button variant="outline-dark" class="mr-2" @click="onToggleAllClicked">
-                    <i
-                      :class="`far ${
-                        selectedCollections.length === filteredCollections.length
-                          ? 'fa-check-square'
-                          : 'fa-square'
-                      } left`"
-                    />
-                    Toggle all
-                  </b-button>
+        <div class="tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+          <span class="tw:flex-1 tw:text-sm tw:text-secondary">
+            {{ collections.length }}
+            {{ collections.length === 1 ? 'collection' : 'collections' }}
+          </span>
 
-                  <b-button
-                    v-if="currentEnvironment.backendMajorVersion !== 1"
-                    variant="outline-danger"
-                    :data-cy="`CollectionList-bulkDelete--btn`"
-                    :disabled="!bulkDeleteEnabled"
-                    @click="deleteCollections"
-                  >
-                    <i class="fa fa-minus-circle left" />
-                    Delete
-                  </b-button>
-                </b-col>
-                <b-col cols="6">
-                  <b-input-group>
-                    <template #prepend>
-                      <b-input-group-text>Filter</b-input-group-text>
-                    </template>
-                    <b-form-input
-                      v-model="filter"
-                      autofocus
-                      debounce="300"
-                      :disabled="collections.length === 0"
-                      @keyup.enter="navigateToCollection"
-                    />
-                  </b-input-group>
-                </b-col>
-              </b-row>
-            </b-col>
-          </b-row>
+          <Button variant="outline" @click="onToggleAllClicked">
+            <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`" />
+            Toggle all
+          </Button>
 
-          <b-table
-            striped
-            outlined
-            show-empty
-            data-cy="CollectionList-table"
-            :items="collections"
-            :fields="tableFields"
-            :filter="filter"
-            @filtered="updateFilteredCollections"
+          <Button
+            v-if="currentEnvironment.backendMajorVersion !== 1"
+            data-cy="CollectionList-bulkDelete--btn"
+            :disabled="!bulkDeleteEnabled"
+            variant="destructive"
+            @click="deleteCollections"
           >
-            <template #empty>
-              <h4 class="text-secondary text-center">This index has no collections.</h4>
-              <p v-if="canCreateCollection(index.name)" class="text-secondary text-center">
-                You can create the collection by hitting the button above.
-              </p>
-            </template>
-            <template #emptyfiltered>
-              <h4 class="text-secondary text-center">
-                There is no collection matching your filter.
-              </h4>
-            </template>
-            <template #cell(selected)="row">
-              <b-form-checkbox
-                class="d-inline-block align-middle"
-                type="checkbox"
-                unchecked-value="false"
-                value="true"
-                :data-cy="`CollectionList-checkbox--${row.item.name}`"
-                :checked="isChecked(row.item)"
-                @change="onCheckboxClick(row.item)"
-              />
-            </template>
-            <template #cell(type)="row">
-              <i
-                class="fa fa-2x"
-                :class="{
-                  'fa-bolt ml-2': row.item.type === 'realtime',
-                  'fa-th-list': row.item.type === 'stored',
-                }"
-                :title="row.item.type === 'realtime' ? 'Realtime' : 'Stored'"
-              />
-            </template>
-            <template #cell(name)="row">
-              <b-link
-                class="code"
-                :data-cy="`CollectionList-name--${row.item.name}`"
-                :title="row.item.name"
-                :to="
-                  row.item.type === 'realtime'
-                    ? {
-                        name: 'WatchCollection',
-                        params: {
-                          indexName: indexName,
-                          collectionName: row.item.name,
-                        },
-                      }
-                    : {
-                        name: 'DocumentList',
-                        params: {
-                          indexName: indexName,
-                          collectionName: row.item.name,
-                        },
-                      }
-                "
-                >{{ truncateName(row.item.name) }}</b-link
-              >
-            </template>
-            <template #cell(count)="row">
-              {{ row.item.count }}
-            </template>
-            <template #cell(actions)="row">
-              <b-button
-                class="mx-1"
-                variant="link"
-                title="Browse contents"
-                :to="
-                  row.item.type === 'realtime'
-                    ? {
-                        name: 'WatchCollection',
-                        params: {
-                          indexName: indexName,
-                          collectionName: row.item.name,
-                        },
-                      }
-                    : {
-                        name: 'DocumentList',
-                        params: {
-                          indexName: indexName,
-                          collectionName: row.item.name,
-                        },
-                      }
-                "
-                ><i class="fa fa-eye"
-              /></b-button>
-              <b-button
-                class="mx-1"
-                variant="link"
-                title="Edit collection"
-                :data-cy="`CollectionList-edit--${row.item.name}`"
-                :disabled="row.item.type !== 'stored' || !canEditCollection(row.item.name)"
-                :to="
-                  canEditCollection(row.item.name)
-                    ? {
-                        name: 'EditCollection',
-                        params: {
-                          indexName: indexName,
-                          collectionName: row.item.name,
-                        },
-                      }
-                    : ''
-                "
-                ><i class="fa fa-pencil-alt"
-              /></b-button>
-              <b-button
-                v-if="currentEnvironment.backendMajorVersion !== 1 && !row.item.isRealtime()"
-                class="mx-1"
-                variant="link"
-                title="Delete collection"
-                :data-cy="`CollectionList-delete--${row.item.name}`"
-                @click="onDeleteCollectionClicked(row.item)"
-                ><i class="fa fa-trash"
-              /></b-button>
-            </template>
-          </b-table>
-        </template>
+            <i class="fa fa-minus-circle" />
+            Delete
+          </Button>
+
+          <div
+            class="tw:flex tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
+          >
+            <label
+              class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:font-sans tw:text-sm tw:text-muted-foreground"
+              for="collections-filter"
+              >Filter</label
+            >
+            <Input
+              id="collections-filter"
+              v-model="filter"
+              v-focus
+              class="tw:rounded-none tw:border-0"
+              data-cy="CollectionList-filter"
+              :disabled="collections.length === 0"
+              @keyup.enter="navigateToCollection"
+            />
+          </div>
+        </div>
+
+        <Table class="tw:border tw:border-border" data-cy="CollectionList-table">
+          <TableHeader>
+            <TableRow>
+              <TableHead class="tw:w-8" />
+              <TableHead class="tw:w-10" />
+              <TableHead :aria-sort="ariaSort('name')">
+                <Button
+                  class="tw:px-1 tw:text-muted-foreground"
+                  data-cy="CollectionList-sort--name"
+                  size="sm"
+                  variant="ghost"
+                  @click="toggleSort('name')"
+                >
+                  Name
+                  <i :class="sortIcon('name')" />
+                </Button>
+              </TableHead>
+              <TableHead class="tw:w-56" />
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            <TableRow v-if="rows.length === 0">
+              <TableCell class="tw:py-6 tw:text-center" colspan="4">
+                <template v-if="filtering">
+                  <h4 class="tw:text-secondary">There is no collection matching your filter.</h4>
+                </template>
+                <template v-else>
+                  <h4 class="tw:text-secondary">This index has no collections.</h4>
+                  <p v-if="canCreateCollection(index.name)" class="tw:text-secondary">
+                    You can create the collection by hitting the button above.
+                  </p>
+                </template>
+              </TableCell>
+            </TableRow>
+
+            <TableRow v-for="collection of rows" :key="collection.name">
+              <TableCell>
+                <Checkbox
+                  :checked="isChecked(collection)"
+                  :data-cy="`CollectionList-checkbox--${collection.name}`"
+                  @change="onCheckboxClick(collection)"
+                />
+              </TableCell>
+              <TableCell class="tw:text-secondary">
+                <i
+                  class="fa fa-2x"
+                  :class="{
+                    'fa-bolt': collection.type === 'realtime',
+                    'fa-th-list': collection.type === 'stored',
+                  }"
+                  :title="collection.type === 'realtime' ? 'Realtime' : 'Stored'"
+                />
+              </TableCell>
+              <TableCell class="code">
+                <router-link
+                  class="tw:font-medium tw:text-foreground tw:hover:underline"
+                  :data-cy="`CollectionList-name--${collection.name}`"
+                  :title="collection.name"
+                  :to="collectionRoute(collection)"
+                  >{{ truncateName(collection.name) }}</router-link
+                >
+              </TableCell>
+              <TableCell class="tw:text-right">
+                <Button
+                  as="router-link"
+                  size="icon"
+                  title="Browse contents"
+                  :to="collectionRoute(collection)"
+                  variant="ghost"
+                  ><i class="fa fa-eye"
+                /></Button>
+                <!--
+                  `as` bascule sur `button` quand l'édition est interdite : un
+                  `router-link` ignore `disabled` et resterait cliquable (G-016).
+                -->
+                <Button
+                  :as="canEditCollection(collection.name) ? 'router-link' : 'button'"
+                  :data-cy="`CollectionList-edit--${collection.name}`"
+                  :disabled="collection.type !== 'stored' || !canEditCollection(collection.name)"
+                  size="icon"
+                  title="Edit collection"
+                  :to="
+                    canEditCollection(collection.name)
+                      ? {
+                          name: 'EditCollection',
+                          params: {
+                            indexName: indexName,
+                            collectionName: collection.name,
+                          },
+                        }
+                      : undefined
+                  "
+                  variant="ghost"
+                  ><i class="fa fa-pencil-alt"
+                /></Button>
+                <Button
+                  v-if="currentEnvironment.backendMajorVersion !== 1 && !collection.isRealtime()"
+                  :data-cy="`CollectionList-delete--${collection.name}`"
+                  size="icon"
+                  title="Delete collection"
+                  variant="ghost"
+                  @click="onDeleteCollectionClicked(collection)"
+                  ><i class="fa fa-trash"
+                /></Button>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </div>
+
       <DeleteCollectionModal
         :index="index"
         :collection="collectionToDelete"
@@ -219,7 +204,7 @@
         :open.sync="bulkDeleteCollectionsOpen"
         @delete-successful="onDeleteModalSuccess"
       />
-    </b-container>
+    </div>
     <DeleteIndexModal
       ref="deleteIndexModal"
       :index="index"
@@ -237,6 +222,19 @@ import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
 import DeleteIndexModal from '../Indexes/DeleteIndexModal.vue';
 import IndexDropdownAction from '../Indexes/DropdownActions.vue';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { useTableFilterSort } from '@/composables/useTableFilterSort';
+import Focus from '@/directives/focus.directive';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
 
@@ -252,26 +250,52 @@ export default {
     BulkDeleteCollectionsModal,
     Headline,
     ListNotAllowed,
+    Button,
+    Checkbox,
+    Input,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+  },
+  // `v-focus` plutôt que l'attribut `autofocus` : le navigateur ne l'honore
+  // qu'au chargement du document, pas quand Vue insère l'élément plus tard.
+  // `b-form-input` avait sa propre prop `autofocus`, qui appelait `focus()`
+  // au montage (G-023).
+  directives: {
+    Focus,
   },
   props: {
     indexName: String,
   },
-  setup() {
-    return {
-      kuzzleStore: useKuzzleStore(),
-      storageIndexStore: useStorageIndexStore(),
-    };
+  setup(props) {
+    const kuzzleStore = useKuzzleStore();
+    const storageIndexStore = useStorageIndexStore();
+
+    // Le filtre ne porte que sur le nom. `b-table` sérialisait la ligne
+    // entière : taper `stored` remontait toutes les collections stockées,
+    // parce que `type` fait partie de l'objet même si la colonne n'affiche
+    // qu'une icône (ADR-0011).
+    const { filter, rows, filtering, toggleSort, ariaSort } = useTableFilterSort(
+      () => storageIndexStore.getOneIndex(props.indexName)?.collections ?? [],
+      {
+        filterOn: (collection) => [collection.name],
+        sorters: {
+          name: (collection) => collection.name,
+        },
+      },
+    );
+
+    return { kuzzleStore, storageIndexStore, filter, rows, filtering, toggleSort, ariaSort };
   },
   data() {
     return {
       bulkDeleteCollectionsOpen: false,
       deleteCollectionOpen: false,
       deleteIndexOpen: false,
-      filter: '',
       collectionToDelete: null,
-      deleteConfirmation: '',
-      rawStoredCollections: [],
-      filteredCollections: [],
       selectedCollections: [],
     };
   },
@@ -288,45 +312,32 @@ export default {
       return this.selectedCollections.length > 0;
     },
     allChecked() {
-      if (!this.selectedCollections || !this.filteredCollections) {
-        return false;
-      }
-      return this.selectedCollections.length === this.filteredCollections.length;
-    },
-    tableFields() {
-      return [
-        {
-          class: 'CollectionList-type align-middle',
-          key: 'selected',
-          label: '',
-        },
-        {
-          class: 'CollectionList-type align-middle',
-          key: 'type',
-          label: '',
-        },
-        {
-          key: 'name',
-          label: 'Name',
-          sortable: true,
-          class: 'CollectionList-name align-middle',
-        },
-        {
-          class: 'CollectionList-actions align-middle text-right',
-          key: 'actions',
-          label: '',
-        },
-      ];
+      return this.selectedCollections.length === this.rows.length;
     },
     currentEnvironment() {
       return this.kuzzleStore.currentEnvironment;
     },
   },
-  async created() {
-    this.updateFilteredCollections(this.collections);
-  },
   methods: {
     truncateName,
+    sortIcon(key) {
+      const sort = this.ariaSort(key);
+
+      if (sort === 'none') {
+        return 'fa fa-sort tw:opacity-50';
+      }
+
+      return sort === 'ascending' ? 'fa fa-sort-up' : 'fa fa-sort-down';
+    },
+    collectionRoute(collection) {
+      return {
+        name: collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
+        params: {
+          indexName: this.indexName,
+          collectionName: collection.name,
+        },
+      };
+    },
     onDeleteIndexCancel() {
       this.deleteIndexOpen = false;
     },
@@ -356,7 +367,7 @@ export default {
       }
 
       this.selectedCollections = [];
-      this.selectedCollections = this.filteredCollections;
+      this.selectedCollections = this.rows;
     },
     isChecked(collection) {
       return !!this.selectedCollections.find((el) => el.name === collection.name);
@@ -375,49 +386,18 @@ export default {
         (el) => el.name !== collection.name,
       );
     },
-    async onDeleteModalSuccess() {
-      this.updateFilteredCollections(this.collections);
+    onDeleteModalSuccess() {
+      this.selectedCollections = [];
     },
     navigateToCollection() {
-      const collection = this.filteredCollections[0];
+      const collection = this.rows[0];
 
       if (!collection) {
         return;
       }
 
-      const route = {
-        name: collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
-        params: {
-          indexName: this.index.name,
-          collectionName: collection.name,
-        },
-      };
-
-      this.$router.push(route);
-    },
-    updateFilteredCollections(filteredCollections) {
-      this.filteredCollections = filteredCollections;
+      this.$router.push(this.collectionRoute(collection));
     },
   },
 };
 </script>
-
-<style lang="scss" rel="stylesheet/scss">
-.CollectionList-type {
-  width: 2em;
-  color: #555;
-}
-.CollectionList-actions {
-  width: 30%;
-}
-.CollectionList-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  a {
-    color: #222;
-    font-weight: 500;
-  }
-}
-</style>

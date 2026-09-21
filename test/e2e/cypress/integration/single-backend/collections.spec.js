@@ -284,4 +284,53 @@ describe('Collection management', function() {
       )
       .should('equal', `{"firstName":{"type":"keyword"}}`)
   })
+
+  // Le tri de la colonne « Name » n'a jamais eu de spec : il est couvert ici
+  // AVANT d'être réécrit sans `b-table` (ADR-0011, décision 4).
+  it('Should be able to sort the collections by name', function() {
+    const collections = ['charliecoll', 'alphacoll', 'bravocoll']
+    collections.forEach(name =>
+      cy.request('PUT', `${kuzzleUrl}/${indexName}/${name}`)
+    )
+
+    cy.visit(`/#/data/${indexName}`)
+    cy.get('[data-cy=CollectionList-table] tbody tr').should('have.length', 3)
+
+    cy.get('[data-cy=CollectionList-table] thead th')
+      .contains('Name')
+      .click()
+    cy.get('[data-cy=CollectionList-table] tbody tr')
+      .eq(0)
+      .should('contain', 'alphacoll')
+    cy.get('[data-cy=CollectionList-table] tbody tr')
+      .eq(2)
+      .should('contain', 'charliecoll')
+
+    cy.get('[data-cy=CollectionList-table] thead th')
+      .contains('Name')
+      .click()
+    cy.get('[data-cy=CollectionList-table] tbody tr')
+      .eq(0)
+      .should('contain', 'charliecoll')
+    cy.get('[data-cy=CollectionList-table] tbody tr')
+      .eq(2)
+      .should('contain', 'alphacoll')
+  })
+
+  // Le filtre porte sur le nom, pas sur la ligne entière : `stored` est le type
+  // de toutes les collections listées ici, et ne doit rien remonter (ADR-0011).
+  it('Should filter the collections on their name only', function() {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/foocollection`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/barcollection`)
+
+    cy.visit(`/#/data/${indexName}`)
+    cy.get('[data-cy=CollectionList-table] tbody tr').should('have.length', 2)
+
+    cy.get('[data-cy=CollectionList-filter]').type('stored')
+
+    cy.get('[data-cy=CollectionList-table]').should(
+      'contain',
+      'There is no collection matching your filter'
+    )
+  })
 })
