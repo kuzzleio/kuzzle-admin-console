@@ -412,7 +412,7 @@ gros et le plus risqué.
 | `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ⬜ |
 | `Data/Collections/CollectionList.vue` | 19 | 426 | ⬜ |
 | `Data/Indexes/Page.vue` | 18 | 352 | ⬜ |
-| `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise (PRNUM) |
+| `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Page.vue` | 13 | 955 | ⬜ |
 | `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ⬜ |
 | `Data/Collections/CreateOrUpdate.vue` | 12 | 309 | ⬜ |
@@ -426,7 +426,7 @@ gros et le plus risqué.
 | `Data/Collections/DeleteCollectionModal.vue` | 6 | 112 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Collections/BulkDeleteCollectionsModal.vue` | 6 | 108 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Collections/ModalClear.vue` | 5 | 95 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
-| `Data/Documents/FormInputs/JsonFormInput.vue` | 5 | 49 | ✅ reprise (PRNUM) |
+| `Data/Documents/FormInputs/JsonFormInput.vue` | 5 | 49 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Collections/DropdownAction.vue` | 5 | 135 | ⬜ |
 | `Data/Documents/DeleteModal.vue` | 4 | 52 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
@@ -434,18 +434,18 @@ gros et le plus risqué.
 | `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
 | `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ⬜ |
 | `Data/Indexes/DropdownActions.vue` | 3 | 75 | ⬜ |
-| `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ✅ reprise (PRNUM) |
-| `Data/Documents/Update.vue` | 3 | 173 | ✅ reprise (PRNUM) |
+| `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
+| `Data/Documents/Update.vue` | 3 | 173 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Realtime/Notification.vue` | 3 | 147 | ⬜ |
 | `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ⬜ |
 | `Data/Collections/Create.vue` | 1 | 72 | ⬜ |
 | `Data/Documents/Views/Column/HeaderTableView.vue` | 1 | 56 | ⬜ |
-| `Data/Documents/EmptyState.vue` | 1 | 39 | ✅ reprise (PRNUM) |
+| `Data/Documents/EmptyState.vue` | 1 | 39 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Views/Column/HighlightableRow.vue` | 1 | 30 | ⬜ |
-| `Data/Documents/Common/NewDocumentsBadge.vue` | 1 | 27 | ✅ reprise (PRNUM) |
+| `Data/Documents/Common/NewDocumentsBadge.vue` | 1 | 27 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Layout.vue` | 1 | 253 | ⬜ |
-| `Data/Documents/Create.vue` | 1 | 138 | ✅ reprise (PRNUM) |
-| `Data/Documents/NoGeopointFieldState.vue` | 1 | 12 | ✅ reprise (PRNUM) |
+| `Data/Documents/Create.vue` | 1 | 138 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
+| `Data/Documents/NoGeopointFieldState.vue` | 1 | 12 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Collections/Update.vue` | 1 | 104 | ⬜ |
 | `Data/Documents/RealtimeOnlyEmptyState.vue` | 0 | 45 | ⬜ |
 | `Data/Documents/Views/TimeSeriesItem.vue` | 0 | 151 | ⬜ |
