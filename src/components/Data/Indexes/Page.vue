@@ -150,17 +150,17 @@
         </template>
       </b-table>
     </template>
-    <CreateIndexModal :modal-id="createIndexModalId" @create-successful="onCreateModalSuccess" />
+    <CreateIndexModal :open.sync="createIndexOpen" @create-successful="onCreateModalSuccess" />
     <DeleteIndexModal
       ref="deleteIndexModal"
       :index="indexToDelete"
-      :modal-id="deleteIndexModalId"
+      :open.sync="deleteIndexOpen"
       @confirm-deletion="onConfirmDeleteModal"
       @cancel="onCancelDeleteModal"
     />
     <BulkDeleteIndexesModal
       :indexes="selectedIndexes"
-      :modal-id="bulkDeleteIndexesModalId"
+      :open.sync="bulkDeleteIndexesOpen"
       @delete-successful="onDeleteModalSuccess"
     />
   </b-container>
@@ -193,9 +193,9 @@ export default {
   },
   data() {
     return {
-      createIndexModalId: 'createIndexModal',
-      deleteIndexModalId: 'deleteIndexModal',
-      bulkDeleteIndexesModalId: 'bulkDeleteIndexesModal',
+      bulkDeleteIndexesOpen: false,
+      createIndexOpen: false,
+      deleteIndexOpen: false,
       filter: '',
       indexToDelete: null,
       tableFields: [
@@ -249,24 +249,23 @@ export default {
   },
   methods: {
     openCreateModal() {
-      this.$bvModal.show(this.createIndexModalId);
+      this.createIndexOpen = true;
     },
     openDeleteModal(index) {
       this.indexToDelete = index;
-      this.$bvModal.show(this.deleteIndexModalId);
+      this.deleteIndexOpen = true;
     },
     openBulkDeleteModal() {
-      this.$bvModal.show(this.bulkDeleteIndexesModalId);
+      this.bulkDeleteIndexesOpen = true;
     },
     async onCancelDeleteModal() {
-      this.$refs.deleteIndexModal.resetForm();
-      this.$bvModal.hide(this.deleteIndexModalId);
+      this.deleteIndexOpen = false;
       await this.refreshIndexes();
     },
     async onConfirmDeleteModal() {
       try {
         await this.storageIndexStore.deleteIndex(this.indexToDelete);
-        this.$bvModal.hide(this.deleteIndexModalId);
+        this.deleteIndexOpen = false;
         await this.refreshIndexes();
       } catch (err) {
         this.$refs.deleteIndexModal.setError(err.message);

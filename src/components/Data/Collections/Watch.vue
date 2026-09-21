@@ -245,7 +245,7 @@
     <DeleteCollectionModal
       :index="index"
       :collection="collection"
-      :modal-id="modalDeleteId"
+      :open.sync="deleteCollectionOpen"
       @delete-successful="afterDeleteCollection"
     />
   </div>
@@ -294,7 +294,7 @@ export default {
   data() {
     return {
       advancedFiltersVisible: false,
-      modalDeleteId: 'modal-collection-delete',
+      deleteCollectionOpen: false,
       rawFilter: '{}',
       room: null,
       notifications: [],
@@ -382,10 +382,10 @@ export default {
     truncateName,
     extractAttributesFromMapping,
     showDeleteCollectionModal() {
-      this.$bvModal.show(this.modalDeleteId);
+      this.deleteCollectionOpen = true;
     },
     onDeleteCollectionClicked() {
-      this.$bvModal.show(this.modalDeleteId);
+      this.deleteCollectionOpen = true;
     },
     afterDeleteCollection() {
       this.$router.push({

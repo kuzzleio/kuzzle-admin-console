@@ -210,11 +210,11 @@
       <DeleteCollectionModal
         :index="index"
         :collection="collection"
-        :modal-id="modalDeleteId"
+        :open.sync="deleteCollectionOpen"
         @delete-successful="afterDeleteCollection"
       />
       <delete-modal
-        id="modal-delete"
+        :open.sync="deleteModalIsOpen"
         :candidates-for-deletion="candidatesForDeletion"
         :is-loading="deleteModalIsLoading"
         @confirm="onDeleteConfirmed"
@@ -316,7 +316,7 @@ export default {
       selectedGeopoint: '',
       resultPerPage: [10, 25, 50, 100, 500],
       currentPage: 1,
-      modalDeleteId: 'modal-collection-delete',
+      deleteCollectionOpen: false,
       displayPagination: true,
       notificationsById: {},
       newDocumentNotifications: [],
@@ -674,7 +674,7 @@ export default {
         if (!this.autoSync) {
           this.fetchDocuments();
         }
-        this.$bvModal.hide('modal-delete');
+        this.deleteModalIsOpen = false;
         this.resetCandidatesForDeletion();
       } catch (e) {
         this.$log.error(e);
@@ -692,11 +692,11 @@ export default {
     },
     onBulkDeleteClicked() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
-      this.$bvModal.show('modal-delete');
+      this.deleteModalIsOpen = true;
     },
     onDeleteClicked(id) {
       this.candidatesForDeletion.push(id);
-      this.$bvModal.show('modal-delete');
+      this.deleteModalIsOpen = true;
     },
     onEditClicked(id) {
       this.$router.push({
@@ -708,7 +708,7 @@ export default {
     // DELETE COLLECTION
     // =========================================================================
     showDeleteCollectionModal() {
-      this.$bvModal.show(this.modalDeleteId);
+      this.deleteCollectionOpen = true;
     },
     afterDeleteCollection() {
       this.$router.push({

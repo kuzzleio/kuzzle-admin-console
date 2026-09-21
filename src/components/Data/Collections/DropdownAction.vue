@@ -58,7 +58,7 @@
     </b-dropdown>
 
     <modal-clear
-      :id="'collection-clear-' + collectionName"
+      :open.sync="clearOpen"
       :index="indexName"
       :collection="collectionName"
       @clear="$emit('clear')"
@@ -95,6 +95,7 @@ export default {
   },
   data: function () {
     return {
+      clearOpen: false,
       deleteConfirmation: '',
     };
   },
@@ -114,7 +115,7 @@ export default {
     },
     openModal() {
       if (this.canTruncateCollection(this.indexName, this.collectionName)) {
-        this.$bvModal.show(`collection-clear-${this.collectionName}`);
+        this.clearOpen = true;
       }
     },
   },

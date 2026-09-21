@@ -1,78 +1,99 @@
 <template>
-  <b-modal
-    :id="modalId"
-    ref="createIndexModal"
-    class="CreateIndexModal"
-    size="lg"
-    title="Index creation"
-    body-class="p-0"
-    @hide="resetForm"
-  >
-    <template #modal-footer>
-      <b-button variant="secondary" :disabled="modalBusy" @click="onCancel"> Cancel </b-button>
-      <b-button
-        data-cy="CreateIndexModal-createBtn"
-        variant="primary"
-        :disabled="modalBusy"
-        @click="tryCreateIndex"
-      >
-        OK
-      </b-button>
-    </template>
-    <b-overlay :show="modalBusy" rounded="sm" class="p-3">
-      <b-form @submit.prevent="tryCreateIndex">
-        <b-form-group
-          data-cy="CreateIndexModal-name"
-          label="Index name"
-          label-for="indexName"
-          :invalid-feedback="indexFeedback"
-        >
-          <template #description
-            >The index name should contain only lowercase characters and no spaces. It also must not
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent class="tw:max-w-2xl" labelled-by="create-index-title">
+      <DialogHeader>
+        <DialogTitle id="create-index-title">Index creation</DialogTitle>
+      </DialogHeader>
+
+      <form @submit.prevent="tryCreateIndex">
+        <FormItem data-cy="CreateIndexModal-name">
+          <Label for="indexName">Index name</Label>
+          <Input
+            id="indexName"
+            v-model="v$.index.$model"
+            :aria-invalid="indexFeedback ? 'true' : undefined"
+            required
+            type="text"
+          />
+          <FormMessage v-if="indexFeedback">{{ indexFeedback }}</FormMessage>
+          <FormDescription v-else>
+            The index name should contain only lowercase characters and no spaces. It also must not
             contain de following characters: <code>\</code>, <code>/</code>, <code>*</code>,
             <code>?</code>, <code>"</code>, <code>&lt;</code>, <code>></code>, <code>|</code>,
             <code>,</code>, <code>#</code>, <code>:</code>, <code>%</code>, <code>&</code>,
             <code>.</code>
-          </template>
-          <b-form-input
-            id="indexName"
-            v-model="v$.index.$model"
-            autofocus
-            required
-            type="text"
-            :state="validateState('index')"
-          />
-        </b-form-group>
-        <b-alert
+          </FormDescription>
+        </FormItem>
+        <Alert
+          v-if="error"
+          class="tw:mt-4 tw:overflow-auto"
           data-cy="CreateIndexModal-alert"
-          style="overflow: auto"
-          :show="error.length"
-          variant="danger"
-          >{{ error }}</b-alert
+          variant="destructive"
+          >{{ error }}</Alert
         >
-      </b-form>
-    </b-overlay>
-  </b-modal>
+      </form>
+
+      <DialogFooter>
+        <Spinner v-if="modalBusy" class="tw:me-auto" label="Creating the index" />
+        <Button variant="outline" :disabled="modalBusy" @click="close"> Cancel </Button>
+        <Button data-cy="CreateIndexModal-createBtn" :disabled="modalBusy" @click="tryCreateIndex">
+          OK
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { not, required, helpers } from '@vuelidate/validators';
 
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 import { useStorageIndexStore } from '@/stores';
 import { startsWithSpace, isWhitespace, isUppercase } from '@/validators';
 
-function includesInvalidIndexChars(value) {
+function includesInvalidIndexChars(value: string): boolean {
   // eslint-disable-next-line no-useless-escape
   return /[@\\\/\*\?"<>,#:%&\|\.]/.test(value);
 }
 
-export default {
+export default defineComponent({
   name: 'CreateIndexModal',
+  components: {
+    Alert,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    FormDescription,
+    FormItem,
+    FormMessage,
+    Input,
+    Label,
+    Spinner,
+  },
+  // Pas d'`autofocus` : `DialogContent` pose le focus sur le premier élément
+  // focalisable à l'ouverture, et c'est ce champ. L'attribut natif, lui, n'est
+  // pas rejoué quand le nœud est déplacé dans `<body>` (G-012).
   props: {
-    modalId: {
-      type: String,
-      required: true,
+    open: {
+      default: false,
+      type: Boolean,
     },
   },
   setup() {
@@ -112,35 +133,34 @@ export default {
     };
   },
   computed: {
-    indexFeedback() {
+    indexFeedback(): string | null {
       if (this.v$.index.$errors.length > 0) {
-        return this.v$.index.$errors[0].$message;
+        return this.v$.index.$errors[0].$message as string;
       }
 
       return null;
     },
   },
-  methods: {
-    validateState(fieldName) {
-      const { $dirty, $error } = this.v$[fieldName];
-      return $dirty ? !$error : null;
+  watch: {
+    // Remplace `@hide` de `b-modal` : la fermeture est un seul état, quelle que
+    // soit la façon dont elle arrive.
+    open(open: boolean) {
+      if (!open) {
+        this.resetForm();
+      }
     },
-    resetForm() {
+  },
+  methods: {
+    close(): void {
+      this.$emit('update:open', false);
+    },
+    resetForm(): void {
       this.v$.$reset();
       this.index = '';
       this.error = '';
       this.modalBusy = false;
     },
-    async onCreateSuccess() {
-      this.resetForm();
-      this.$bvModal.hide(this.modalId);
-      this.$emit('create-successful');
-    },
-    async onCancel() {
-      this.resetForm();
-      this.$bvModal.hide(this.modalId);
-    },
-    async tryCreateIndex() {
+    async tryCreateIndex(): Promise<void> {
       this.v$.$touch();
       if (this.v$.$errors.length > 0) {
         return;
@@ -150,14 +170,13 @@ export default {
 
       try {
         await this.storageIndexStore.createIndex(this.index);
-        this.onCreateSuccess();
+        this.close();
+        this.$emit('create-successful');
       } catch (err) {
-        this.error = err.message;
+        this.error = (err as Error).message;
         this.modalBusy = false;
       }
     },
   },
-};
+});
 </script>
-
-<style lang="scss"></style>

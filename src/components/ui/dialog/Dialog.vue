@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="open"
-    class="tw:fixed tw:inset-0 tw:z-1050 tw:flex tw:items-start tw:justify-center tw:overflow-y-auto tw:p-4 tw:sm:p-6"
+    class="tw:fixed tw:inset-0 tw:z-1030 tw:flex tw:items-start tw:justify-center tw:overflow-y-auto tw:p-4 tw:sm:p-6"
   >
     <!-- Fond assombri. `aria-hidden` : il double la touche Échap et le bouton
          de fermeture, il n'ajoute rien pour un lecteur d'écran. -->
@@ -33,6 +33,15 @@ import { defineComponent } from 'vue';
  *   resterait orphelin dans le DOM ;
  * - **le blocage du défilement du fond** ;
  * - **la touche Échap**.
+ *
+ * Le `z-index` est à 1030, soit **sous** la bande modale de Bootstrap
+ * (`.modal-backdrop` 1040, `.modal` 1050) et au-dessus de tout le reste de la
+ * console. Tant que les deux familles de modales cohabitent, une `b-modal`
+ * ouverte par-dessus un `Dialog` doit gagner — c'est le cas de l'écran
+ * « session expirée », qui peut surgir sur n'importe quel écran (G-019). Mettre
+ * les deux à 1050 laisse l'ordre dans le DOM trancher, et le `Dialog`, déplacé
+ * en fin de `<body>` à l'ouverture, gagnait toujours. La valeur remonte quand
+ * bootstrap-vue s'en va.
  *
  * Le piège de focus, lui, est dans `DialogContent` : c'est lui qui connaît les
  * éléments focalisables.
