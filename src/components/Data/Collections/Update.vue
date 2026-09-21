@@ -1,6 +1,8 @@
 <template>
-  <b-container class="CollectionUpdate h-100">
-    <div v-if="hasRights" class="h-100">
+  <div
+    class="CollectionUpdate tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+  >
+    <div v-if="hasRights" class="tw:flex tw:h-full tw:flex-col">
       <create-or-update
         v-if="index && collection"
         headline="Update collection"
@@ -15,7 +17,7 @@
     <div v-else>
       <page-not-allowed />
     </div>
-  </b-container>
+  </div>
 </template>
 <script>
 import { omit } from 'lodash';
