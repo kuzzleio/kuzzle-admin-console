@@ -29,7 +29,11 @@ describe('Environments', function() {
       `v${backendVersion}.x`
     )
     cy.get('[data-cy="Environment-SubmitButton"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
+    // La primitive `DropdownMenu` ne rend son panneau que lorsqu'il est
+    // ouvert, là où `b-dropdown` gardait ses éléments dans le DOM en
+    // permanence : la liste des connexions se lit menu ouvert.
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`).should('be.visible')
   })
 
   it('Should not be able to create an environment with the same name of an existing one', () => {
@@ -445,10 +449,10 @@ describe('Import and export environments', function() {
       `v${backendVersion}.x`
     )
     cy.get('[data-cy="Environment-SubmitButton"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
 
     cy.url().should('contain', 'login')
     cy.get(`[data-cy="EnvironmentSwitch"]`).click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`).should('be.visible')
     cy.get(`[data-cy="EnvironmentSwitch-newConnectionBtn"]`).click()
 
     cy.get('[data-cy="CreateEnvironment-name"]').type(secondEnvName, {
@@ -461,7 +465,8 @@ describe('Import and export environments', function() {
       `v${backendVersion}.x`
     )
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(secondEnvName)}"]`)
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(secondEnvName)}"]`).should('be.visible')
 
     // test filename
     cy.get('[data-cy="export-environments"]').should(

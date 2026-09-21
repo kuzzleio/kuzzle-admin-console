@@ -1,38 +1,38 @@
 <template>
-  <div class="KuzzleErrorPage">
-    <b-container>
-      <b-jumbotron>
-        <template #header>
+  <div class="KuzzleErrorPage tw:flex tw:min-h-screen tw:items-center tw:justify-center tw:p-4">
+    <Card class="tw:w-full tw:max-w-4xl">
+      <CardContent>
+        <header class="tw:rounded-md tw:bg-muted tw:p-8">
           <img
             alt="Welcome to the Kuzzle Admin Console"
-            class="mb-3"
+            class="tw:mb-4 tw:h-15 tw:w-auto"
             height="60"
             src="../../assets/logo.svg"
           />
-          <h2>Something went wrong while connecting to Kuzzle</h2>
-        </template>
+          <h2 class="tw:text-2xl tw:font-bold tw:text-foreground">
+            Something went wrong while connecting to Kuzzle
+          </h2>
 
-        <hr class="my-4" />
+          <hr class="tw:my-6 tw:border-border" />
 
-        <b-row align-v="center">
-          <b-col sm="7" class="align-middle code">{{ kuzzleError }}</b-col>
-          <b-col sm="2" class="text-right">
-            <span class="text-muted align-middle">Connecting to</span>
-          </b-col>
-          <b-col sm="2" class="text-right">
+          <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-3">
+            <span class="code tw:min-w-0 tw:flex-1 tw:break-words">{{ kuzzleError }}</span>
+            <span class="tw:text-sm tw:text-muted-foreground">Connecting to</span>
             <environment-switch
+              :block="false"
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"
               @environment::importEnv="importEnv"
             />
-          </b-col>
-        </b-row>
-      </b-jumbotron>
-    </b-container>
+          </div>
+        </header>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
 <script>
+import { Card, CardContent } from '@/components/ui/card';
 import { useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue';
@@ -40,6 +40,8 @@ import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwit
 export default {
   name: 'KuzzleErrorPage',
   components: {
+    Card,
+    CardContent,
     EnvironmentSwitch,
   },
   setup() {
@@ -71,12 +73,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" rel="stylesheet/scss" scoped>
-.KuzzleErrorPage {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-</style>

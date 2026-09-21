@@ -1,6 +1,6 @@
 <template>
-  <div class="Home">
-    <div class="Home-menuWrapper">
+  <div class="Home tw:m-0 tw:flex tw:h-full tw:flex-col">
+    <div class="Home-menuWrapper tw:shrink-0">
       <main-menu
         @environment::create="$emit('environment::create', $event)"
         @environment::delete="$emit('environment::delete', $event)"
@@ -8,7 +8,7 @@
       />
     </div>
 
-    <div class="Home-routeWrapper" data-cy="App-loggedIn">
+    <div class="Home-routeWrapper tw:grow tw:overflow-hidden" data-cy="App-loggedIn">
       <main-spinner v-if="authInitializing" />
       <router-view v-else />
     </div>
@@ -37,21 +37,21 @@
       </div>
     </b-toast>
 
-    <b-modal
-      id="tokenExpired"
-      v-model="tokenExpiredIsOpen"
-      data-cy="Modal-tokenExpired"
-      hide-footer
-      title="Sorry, your session has expired"
-    >
-      <login-form />
-    </b-modal>
+    <Dialog :open="tokenExpiredIsOpen" @update:open="tokenExpiredIsOpen = $event">
+      <DialogContent data-cy="Modal-tokenExpired" labelled-by="token-expired-title">
+        <DialogHeader>
+          <DialogTitle id="token-expired-title">Sorry, your session has expired</DialogTitle>
+        </DialogHeader>
+        <login-form />
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'pinia';
 
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import LoginForm from './Common/Login/Form.vue';
@@ -61,6 +61,10 @@ import MainSpinner from './Common/MainSpinner.vue';
 export default {
   name: 'Home',
   components: {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
     LoginForm,
     MainMenu,
     MainSpinner,
@@ -151,23 +155,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" rel="stylesheet/scss" scoped>
-.Home {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-items: stretch;
-}
-
-.Home-menuWrapper {
-  flex-basis: 66px;
-}
-
-.Home-routeWrapper {
-  flex-grow: 1;
-  flex-basis: 300px;
-  overflow: hidden;
-}
-</style>

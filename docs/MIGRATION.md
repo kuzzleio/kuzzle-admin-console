@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 78 / 107 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 81 / 107 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -293,7 +293,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**78 composants repris sur 107**, **568 balises `<b-*>` retirées sur 813**.
+**81 composants repris sur 107**, **595 balises `<b-*>` retirées sur 813**.
 
 > Le dénominateur passe de 134 à 107 : 27 composants non atteignables ont été
 > supprimés ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)). Ce
@@ -305,7 +305,7 @@ phase 2.
 > des mentions en commentaire** dans les primitives (« Remplace
 > `<b-pagination>` ») : elles ne sont pas du balisage. Le compte réel est
 > `grep -rhn '<b-[a-z-]*' src --include='*.vue' | grep -vE '^[0-9]+:\s*(\*|//|/\*)'
-> | grep -o '<b-[a-z-]*' | wc -l` = **245 restantes**, à retrancher de 813.
+> | grep -o '<b-[a-z-]*' | wc -l` = **218 restantes**, à retrancher de 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -513,6 +513,40 @@ passent eux aussi **sans primitive nouvelle**. Trois points valent d'être noté
 
 L'alerte « pas d'administrateur » passe de `variant="info"` à `warning` : la
 primitive n'a pas d'`info`, et le message commence par « Warning! ».
+
+**La barre de navigation, le sélecteur de connexion et la page d'erreur de
+connexion** ferment l'ossature de l'application. `b-navbar` + `b-navbar-toggle`
++ `b-collapse` deviennent un `<nav>`, un bouton qui annonce `aria-expanded` et
+un repli en `hidden`/`flex` sous le point de rupture `sm`.
+
+- **Une connexion n'est plus un lien contenant des boutons.**
+  `b-dropdown-item` empilait le nom, l'icône d'édition et celle de suppression
+  dans un même `<a>` — des zones cliquables imbriquées dans un lien. L'élément
+  de menu ne porte plus que le nom ; éditer et supprimer sont deux boutons à
+  côté, avec un `aria-label` chacun.
+- **`v-b-tooltip.hover` disparaît sans remplaçant** : la directive doublait
+  l'attribut `title` que le navigateur affiche déjà.
+- **`--navbar-height` rejoint les tokens.** `Home.vue` réservait 66 px à son
+  menu et `MainMenu` les atteignait par la taille de son logo : deux valeurs
+  qui devaient coïncider sans que rien ne le dise. Même traitement que
+  `--sidebar-width`.
+- **Un `<style>` non `scoped` posait `max-height: 98vh` sur *tous* les
+  `.dropdown-menu` de la console**, depuis `EnvironmentsSwitch.vue`. La
+  primitive porte désormais sa propre hauteur maximale ; les `b-dropdown`
+  restants perdent une règle qui ne leur était pas destinée.
+
+`Home.vue` n'est repris qu'à moitié : la modale de session expirée passe à
+`Dialog`, le `<b-toast>` reste. Les toasts sont le prochain sujet structurant
+— `$bvToast` est appelé depuis une trentaine de fichiers, et trois écrans
+montent un `<b-toast>` déclaratif. C'est une ADR à écrire, pas une
+transposition.
+
+Le lot a coûté deux pièges. **G-032** : `Object.freeze` sur un composant passé
+en prop `as` casse son rendu — le motif venait de Data et dormait depuis quatre
+lots, dans cinq fichiers déjà sur `4-dev`. **G-033** : trois assertions
+d'`environments.spec.js` lisaient la liste des connexions **sans ouvrir le
+menu**, ce que `b-dropdown` permettait puisqu'il rendait ses éléments en
+permanence. Le scénario est repris, pas le sélecteur.
 
 #### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
 
@@ -731,7 +765,7 @@ gros et le plus risqué.
 | `Common/Filters/BasicFilter.vue` | 40 | 469 | ⬜ |
 | `Common/Environments/CreateEnvironment.vue` | 17 | 380 | ⬜ |
 | `Common/Filters/QuickFilter.vue` | 14 | 215 | ⬜ |
-| `Common/MainMenu.vue` | 14 | 200 | ⬜ |
+| `Common/MainMenu.vue` | 14 | 200 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) |
 | `Common/Filters/FilterHistoryItem.vue` | 12 | 134 | ⬜ |
 | `Common/Filters/FavoriteFilterItem.vue` | 11 | 111 | ⬜ |
 | `Common/Login/Form.vue` | 9 | 208 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
@@ -739,7 +773,7 @@ gros et le plus risqué.
 | `Common/Environments/ModalImport.vue` | 7 | 159 | ✅ reprise |
 | `Common/Environments/SelectEnvironmentPage.vue` | 6 | 59 | ✅ reprise |
 | `Common/Filters/Filters.vue` | 6 | 349 | ⬜ |
-| `Common/Environments/EnvironmentsSwitch.vue` | 6 | 159 | ⬜ |
+| `Common/Environments/EnvironmentsSwitch.vue` | 6 | 159 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) |
 | `Common/Login/ResetPasswordForm.vue` | 6 | 145 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `Common/Environments/CreateEnvironmentPage.vue` | 6 | 104 | ✅ reprise |
 | `Common/Filters/RawFilter.vue` | 5 | 147 | ⬜ |
@@ -772,7 +806,7 @@ gros et le plus risqué.
 | `Login.vue` | 6 | 110 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `ResetPassword.vue` | 5 | 75 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `TelemetryBanner.vue` | 4 | 60 | ⬜ |
-| `Home.vue` | 3 | 173 | ⬜ |
+| `Home.vue` | 3 | 173 | 🟡 modale et mise en page reprises ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) ; le `<b-toast>` attend la décision sur les toasts |
 | `ConnectionAwareContainer.vue` | 1 | 226 | ⬜ |
 
 ### ApiAction — 4 composants, 49 balises `<b-*>`
@@ -788,7 +822,7 @@ gros et le plus risqué.
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Error/KuzzleErrorPage.vue` | 6 | 82 | ⬜ |
+| `Error/KuzzleErrorPage.vue` | 6 | 82 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) |
 | `Error/Layout.vue` | 3 | 20 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 | `Error/KuzzleDisconnectedPage.vue` | 0 | 94 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 | `Error/KuzzleDisconnected.vue` | 0 | 70 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
@@ -1529,6 +1563,59 @@ Gabarit à copier :
   (`BasicFilter`, `UserProfileList`, `CreateEnvironment`) poseront exactement la
   même question à leur reprise : `BasicFilter` seul est piloté par 20 appels de
   `cy.select()`, tous dans `search.spec.js`.
+
+#### G-033 — Un menu `bootstrap-vue` garde ses éléments dans le DOM même fermé
+
+- **Contexte** : phase 2, reprise d'`EnvironmentsSwitch.vue` avec la primitive
+  `DropdownMenu`.
+- **Symptôme** : deux tests d'`environments.spec.js` échouent sur
+  `Expected to find element: [data-cy="EnvironmentSwitch-env_local"], but never
+  found it` — après avoir créé la connexion, donc au moment précis où elle
+  devrait apparaître. Les douze autres tests du fichier passent, y compris ceux
+  qui lisent la même liste.
+- **Cause** : `b-dropdown` rend son menu en permanence et se contente de le
+  masquer ; la primitive (ADR-0012) ne monte son panneau **que lorsqu'il est
+  ouvert**, et dans `<body>`. Les deux tests en échec lisaient la liste des
+  connexions **sans ouvrir le menu** — ce que les douze autres faisaient.
+- **Solution** : les trois assertions concernées ouvrent le menu d'abord, et
+  passent de « existe » à `should('be.visible')`. L'intention du test ne change
+  pas : la nouvelle connexion apparaît bien dans le sélecteur.
+- **À retenir** : un test qui lit le contenu d'un menu fermé teste le DOM de
+  `bootstrap-vue`, pas l'application. Même famille que G-024 et G-026, mais ce
+  n'est pas un sélecteur qu'il faut reprendre ici : c'est le scénario.
+- **Ref** : [#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)
+
+#### G-032 — `Object.freeze` sur un composant passé en prop `as` casse son rendu
+
+- **Contexte** : phase 2, reprise de `MainMenu.vue` et `EnvironmentsSwitch.vue`.
+  `DropdownMenuTrigger` prend le composant lui-même en prop `as` (ADR-0012), il
+  faut donc l'exposer au template. Le motif retenu depuis
+  `Collections/DropdownAction.vue` était `Button: Object.freeze(Button)` dans
+  `data()`, pour éviter de rendre l'objet réactif.
+- **Symptôme** : l'écran de connexion s'arrête net après « Connected to » —
+  ni sélecteur de connexion, ni formulaire. Aucune erreur visible à l'écran,
+  aucune spec en échec **avant** celle qui visait justement ces écrans. En
+  console : `[Vue warn]: Error in render: "TypeError: Cannot add property
+  _Ctor, object is not extensible"`, répété pour six composants.
+- **Cause** : Vue 2 met en cache le constructeur d'un composant **sur son objet
+  d'options**, dans `_Ctor`, la première fois qu'il le résout. Un objet gelé
+  refuse cette écriture, le rendu lève, et Vue abandonne **tout le sous-arbre**
+  sans rien afficher. Le gel est global : figer `Button` dans un composant le
+  fige pour toute l'application.
+- **Pourquoi ça ne s'était jamais vu** : le motif marchait par ordre de rendu.
+  Dans Data, un `<Button>` ordinaire était rendu **avant** que le composant
+  gelant ne s'initialise, si bien que `_Ctor` était déjà posé. Sur l'écran de
+  connexion, `EnvironmentSwitch` gèle avant tout rendu de `Button` — et
+  l'application tombe.
+- **Solution** : `markRaw()`, que Vue 2.7 fournit. Il pose `__v_skip` et
+  n'empêche aucune écriture. Les **huit** sites du motif sont repris, dont les
+  cinq déjà sur `4-dev` : le bug y dormait.
+- **À retenir** : ne jamais geler un objet que Vue doit instancier — composant,
+  options, `defineComponent`. Pour sortir une valeur de la réactivité,
+  `markRaw` ; `Object.freeze` n'est pas un substitut. Et un rendu qui s'arrête
+  au milieu d'un écran, sans erreur affichée, se diagnostique dans la console
+  du navigateur, pas dans le diff.
+- **Ref** : [#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)
 
 #### G-030 — Sans preflight, un `<ul>` garde ses puces et son retrait
 

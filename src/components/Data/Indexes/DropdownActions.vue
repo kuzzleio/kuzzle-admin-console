@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, markRaw } from 'vue';
 import { mapState } from 'pinia';
 
 import { Button } from '@/components/ui/button';
@@ -81,7 +81,7 @@ export default defineComponent({
   },
   data() {
     return {
-      Button: Object.freeze(Button),
+      Button: markRaw(Button),
     };
   },
   computed: {

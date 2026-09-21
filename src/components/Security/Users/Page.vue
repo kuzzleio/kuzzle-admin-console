@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'pinia';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
@@ -105,10 +106,11 @@ export default {
       /*
        * `DropdownMenuTrigger` prend le composant lui-même en prop `as`, pas
        * son nom : c'est l'API de l'amont, et `Button` doit donc être une
-       * valeur lisible depuis le template. `Object.freeze` évite d'en faire un
-       * objet réactif, comme dans `Collections/DropdownAction.vue`.
+       * valeur lisible depuis le template. `markRaw` et non `Object.freeze` :
+       * Vue met en cache le constructeur sur les options du composant, et un
+       * objet gelé le lui interdit (G-032).
        */
-      Button: Object.freeze(Button),
+      Button: markRaw(Button),
       userMapping: {},
     };
   },

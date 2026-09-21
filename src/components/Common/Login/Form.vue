@@ -82,6 +82,7 @@
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'pinia';
 
 import { Alert } from '@/components/ui/alert';
@@ -124,8 +125,13 @@ export default {
   },
   data() {
     return {
-      /* `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom. */
-      Button: Object.freeze(Button),
+      /*
+       * `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom.
+       * `markRaw` et non `Object.freeze` : Vue met en cache le constructeur
+       * sur les options du composant, et un objet gelé le lui interdit
+       * (G-032).
+       */
+      Button: markRaw(Button),
       username: null,
       password: null,
       error: '',
