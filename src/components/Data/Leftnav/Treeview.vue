@@ -1,25 +1,25 @@
 <template>
-  <aside class="Treeview h-100">
-    <div v-if="!canSearchIndex" class="Treeview-notAuth px-3 text-center">
-      <b-alert show variant="info">
-        <i class="fa fa-lock fa-2x" aria-hidden="true" />
+  <aside class="Treeview tw:flex tw:h-full tw:flex-col">
+    <div v-if="!canSearchIndex" class="Treeview-notAuth tw:px-3 tw:text-center">
+      <Alert>
+        <i aria-hidden="true" class="fa fa-lock fa-2x" />
         <br />
         <em>You are not allowed to list indexes</em>
-      </b-alert>
+      </Alert>
     </div>
     <template v-else>
-      <div class="Treeview-search p-3">
-        <b-form-input
+      <div class="tw:border-b tw:border-border tw:p-3">
+        <Input
           v-model="filter"
           data-cy="Treeview-filter"
           placeholder="Search index &amp; collection"
           type="search"
         />
       </div>
-      <div class="Treeview-items p-3">
-        <router-link data-cy="Treeview-item" class="text-secondary" :to="{ name: 'Data' }">
-          <i class="fas fa-list mr-1" />
-          All indexes <b-spinner v-if="isLoading" small />
+      <div class="tw:min-h-0 tw:flex-1 tw:overflow-y-auto tw:p-3">
+        <router-link class="tw:text-secondary" data-cy="Treeview-item" :to="{ name: 'Data' }">
+          <i class="fas fa-list tw:mr-1" aria-hidden="true" />
+          All indexes <Spinner v-if="isLoading" size="sm" />
         </router-link>
         <index-branch
           v-for="index in orderedFilteredIndexes"
@@ -34,10 +34,12 @@
     </template>
   </aside>
 </template>
-
 <script>
 import { mapState } from 'pinia';
 
+import { Alert } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { filterIndexesByKeyword } from '@/services/indexHelpers';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
 
@@ -46,7 +48,10 @@ import IndexBranch from './IndexBranch.vue';
 export default {
   name: 'Treeview',
   components: {
+    Alert,
     IndexBranch,
+    Input,
+    Spinner,
   },
   props: {
     indexName: String,
@@ -78,20 +83,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.Treeview {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.Treeview-search {
-  border-bottom: 1px solid #dbdbdb;
-}
-
-.Treeview-items {
-  flex: 1;
-  overflow-y: auto;
-}
-</style>

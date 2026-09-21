@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 59 / 138 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 68 / 134 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -293,7 +293,14 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**49 composants repris sur 140**, 289 balises `<b-*>` sur 813.
+**68 composants repris sur 134**, **432 balises `<b-*>` retirées sur 813**.
+
+> Ces deux compteurs disaient `49 / 140` et `289` jusqu'ici, alors que le
+> tableau ci-dessus annonçait `59 / 138` : la ligne n'avait pas été reprise
+> depuis le lot `DropdownMenu`, et la phrase ne disait pas si les balises
+> étaient celles qui restent ou celles qui sont parties. Les deux sont
+> recalculées ici — `grep -rho "<b-[a-z-]*" src --include="*.vue" | wc -l`,
+> à retrancher de 813 — et le libellé dit lequel des deux sens il porte.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -363,11 +370,94 @@ deux champs repris passent par `cy.selectOption()`, qui accepte les deux formes.
 Le placement du panneau flottant est désormais un mixin partagé,
 `ui/floating-panel.ts`, écrit pour `DropdownMenu` (ADR-0012) et reporté tel quel.
 
-**Deux composants ont été supprimés plutôt que repris**, d'où le dénominateur à
-138 : `ListViewButtons.vue` (importé nulle part, relevé le 2026-09-18 mais resté
-coché ⬜ dans le tableau) et `ListActions.vue` (importé nulle part non plus —
-`Views/List.vue` réécrit ses trois boutons en propre). Le recensement initial
-comptait des fichiers, pas des composants atteignables.
+**Le formulaire de collection n'a demandé aucune primitive nouvelle** — c'est le
+premier lot de Data dans ce cas, et c'est en soi un résultat. `Card`, `Button`,
+`FormItem`, `Label`, `Input`, `FormDescription` et `FormMessage` couvraient
+`<b-form-group>`, `<b-input>`, `<b-form-file>` et `<b-card>` sans retouche ;
+les `<b-row>` / `<b-col>` deviennent des utilitaires, et `<b-container>` la même
+enveloppe `mx-auto max-w-6xl px-4` que les six écrans déjà repris.
+
+Trois points méritaient d'être tranchés plutôt que transposés :
+
+- **Le champ fichier suit le précédent de `EditCustomMapping.vue`** : un
+  `<Input type="file">` avec un `<Label>` **visible**. Un `<input type="file">`
+  natif ignore `placeholder`, et « Select a JSON file to import mappings.. »
+  était la seule indication que `b-form-file` affichait. La perdre sans la
+  remplacer aurait retiré le seul mot qui disait à quoi sert le champ.
+- **« Export Mapping » est un cas de G-016** : `<b-button :href :disabled>`
+  arbitrait tout seul, notre `Button` non. Le bouton est rendu en `<a>` quand le
+  mapping est un JSON valide, et en `<button disabled>` sinon — le cas interdit
+  n'est plus un lien grisé qui reste cliquable.
+- **Le bloc d'aide n'est pas une colonne flex** (G-018). Il mêle du texte, un
+  lien et un `<pre>` ; le `flex: 1 1 1px; overflow: auto` du `<style scoped>`
+  supprimé devient `min-h-0 overflow-auto` sur un bloc ordinaire.
+
+**Le champ date ne prend pas de primitive** ([ADR-0015](adr/0015-pas-de-primitive-calendar.md)).
+`<b-form-datepicker>` et `<b-form-timepicker>` n'apparaissent que dans
+`DateTimeFormInput.vue`, et l'amont n'a pas de « champ date » : il compose un
+*Date Picker* à partir de `Popover` et de `Calendar`, que `reka-ui` fournit en
+Vue 3. Écrire `Calendar` à la main aurait coûté plusieurs centaines de lignes —
+grille du mois, navigation clavier, bornes, locale — pour **un** champ, dont le
+panneau n'est couvert par aucune spec, et dans un formulaire que
+`vue-form-generator` emportera de toute façon. Les deux champs passent aux types
+natifs `date` et `time` de la primitive `Input`, qui exposent exactement les
+formats que le composant parsait déjà. Ce n'est pas l'alternative écartée par
+ADR-0014 : aucun composant n'est créé, donc aucune API à défaire en phase 4.
+
+`Data/Collections/Tabs.vue` a été **supprimé plutôt que repris** : il n'était
+importé nulle part, et il lisait `$store.state.collection.isRealtimeOnly` — un
+store Vuex que la console n'a plus depuis le passage à Pinia. Il ne rendait donc
+pas ce qu'il prétendait rendre, et personne ne l'aurait vu. C'est le troisième
+composant dans ce cas.
+
+**Data est entièrement dé-bootstrapisé** : `grep -rn "<b-" src/components/Data`
+ne retourne plus rien. Le domaine le plus gros et le plus risqué — celui qu'on
+avait mis en dernier pour cette raison — est passé.
+
+Ce qui reste dans `Data/Layout.vue` n'est pas du `bootstrap-vue` mais
+`vue-multipane`, abandonné, qui y tient le redimensionnement de la barre
+latérale (§ 3.1). Il n'est pas traité ici parce qu'il n'appartient pas à Data :
+`ApiAction.vue` et `ApiAction/QueryCard.vue` l'utilisent aussi. Le splitter est
+une décision à prendre avec ApiAction, pas un reste de ce lot. La seule chose
+qui demeure dans le `<style scoped>` du layout est la poignée que la
+bibliothèque rend elle-même, sous sa propre classe : ses couleurs passent par
+les tokens en attendant, et le bloc s'en ira avec elle.
+
+`--sidebar-width` rejoint les tokens à cette occasion. La largeur minimale de la
+barre latérale est une contrainte de mise en page, pas une décision visuelle,
+mais elle n'a pas à être codée en dur dans un composant pour autant.
+
+Le dernier lot a porté sur l'arborescence (`Leftnav/`), le menu d'actions d'un
+index et la ligne de la vue graphique. Trois choses y ont changé de nature
+plutôt que de classes :
+
+- **le chevron d'une branche était un `<i>` cliquable** : ni atteignable au
+  clavier, ni annoncé. C'est un bouton, et il porte `aria-expanded` ;
+- **le dépliement animait un `max-height: 0` vers un `max-height: 2000px`**
+  arbitraire, qui tronquait les très longues listes. La grille passe de `0fr` à
+  `1fr` : la hauteur réelle du contenu, sans nombre magique. Replié, le contenu
+  fait toujours zéro pixel — ce que les specs lisent comme « non visible », et
+  c'est ce qui les fait tenir ;
+- **le menu d'un index ne ressemblait pas à celui d'une collection** — fond gris
+  de `variant="light"` d'un côté, bouton clair de l'autre, pour deux menus qui
+  font la même chose au même endroit. Les deux passent par la même variante.
+
+**Six composants ont été supprimés plutôt que repris**, d'où le dénominateur
+à 134 :
+
+| Composant | Pourquoi |
+|---|---|
+| `Documents/ListViewButtons.vue` | importé nulle part (relevé le 2026-09-18, resté coché ⬜) |
+| `Documents/ListActions.vue` | importé nulle part — `Views/List.vue` réécrit ses trois boutons en propre |
+| `Collections/Tabs.vue` | importé nulle part, et lisait un store Vuex que la console n'a plus |
+| `Documents/RealtimeOnlyEmptyState.vue` | importé nulle part — encore en balisage Materialize (`col s1 offset-s1`) |
+| `Documents/DocumentBoxItem.vue` | importé nulle part — idem, et seul client de `Materialize/Dropdown.vue` |
+| `Materialize/Dropdown.vue` | orphelin une fois le précédent parti |
+
+Le recensement initial comptait des fichiers, pas des composants atteignables.
+Six sur 140 en huit lots, et les deux derniers étaient encore écrits pour
+Materialize — un framework sorti du projet avant Bootstrap. Le réflexe est
+acquis : on vérifie qu'un composant est atteint **avant** de le reprendre.
 
 ## 2. Toolchain (phase 0)
 
@@ -397,7 +487,7 @@ compatibilité **avant** d'engager la montée.
 | `bootstrap-vue` 2.23.1 | aucune version Vue 3, **incompatible `@vue/compat`** | supprimé, remplacé par Tailwind + primitives locales | 2 | 🟡 Tailwind branché, cohabitation cadrée ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) |
 | `bootstrap` 4.6.2 | supprimé avec le précédent | Tailwind | 2 | 🟡 idem |
 | `vue-form-generator` 2.3.4 | **abandonné**, aucun successeur | à réimplémenter — cœur de l'édition de documents | 2 | ⬜ |
-| `vue-multipane` 0.9.5 | **abandonné** | splitter à réimplémenter (layout Data) | 2 | ⬜ |
+| `vue-multipane` 0.9.5 | **abandonné** | splitter à réimplémenter — layout Data **et** ApiAction (3 fichiers) ; à décider avec ApiAction, dernier domaine | 2 | ⬜ |
 | `vuejs-logger` 1.5.5 | Vue 2 uniquement | remplacer par un wrapper maison | 3 | ⬜ |
 
 ### 3.2 Migration directe disponible
@@ -450,8 +540,8 @@ gros et le plus risqué.
 | `Data/Indexes/Page.vue` | 18 | 352 | ✅ reprise ([#1050](https://github.com/kuzzleio/kuzzle-admin-console/pull/1050)) |
 | `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Page.vue` | 13 | 955 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
-| `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ⬜ |
-| `Data/Collections/CreateOrUpdate.vue` | 12 | 309 | ⬜ |
+| `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ✅ reprise ([#1055](https://github.com/kuzzleio/kuzzle-admin-console/pull/1055)) |
+| `Data/Collections/CreateOrUpdate.vue` | 12 | 309 | ✅ reprise ([#1054](https://github.com/kuzzleio/kuzzle-admin-console/pull/1054)) |
 | `Data/Documents/DocumentListItem.vue` | 11 | 218 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
 | `Data/Documents/Views/TimeSeries.vue` | 8 | 351 | ✅ reprise ([#1053](https://github.com/kuzzleio/kuzzle-admin-console/pull/1053)) |
 | `Data/Indexes/CreateIndexModal.vue` | 8 | 163 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
@@ -467,27 +557,27 @@ gros et le plus risqué.
 | `Data/Documents/DeleteModal.vue` | 4 | 52 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Data/Documents/Views/List.vue` | 4 | 126 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
-| `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
+| `Data/Leftnav/Treeview.vue` | 3 | 97 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
-| `Data/Indexes/DropdownActions.vue` | 3 | 75 | ⬜ |
+| `Data/Indexes/DropdownActions.vue` | 3 | 75 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Update.vue` | 3 | 173 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Realtime/Notification.vue` | 3 | 147 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
-| `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ⬜ |
-| `Data/Collections/Create.vue` | 1 | 72 | ⬜ |
+| `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
+| `Data/Collections/Create.vue` | 1 | 72 | ✅ reprise ([#1054](https://github.com/kuzzleio/kuzzle-admin-console/pull/1054)) |
 | `Data/Documents/Views/Column/HeaderTableView.vue` | 1 | 56 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Documents/EmptyState.vue` | 1 | 39 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Views/Column/HighlightableRow.vue` | 1 | 30 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Documents/Common/NewDocumentsBadge.vue` | 1 | 27 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
-| `Data/Layout.vue` | 1 | 253 | ⬜ |
+| `Data/Layout.vue` | 1 | 253 | ✅ reprise ([#1058](https://github.com/kuzzleio/kuzzle-admin-console/pull/1058)) |
 | `Data/Documents/Create.vue` | 1 | 138 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/NoGeopointFieldState.vue` | 1 | 12 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
-| `Data/Collections/Update.vue` | 1 | 104 | ⬜ |
-| `Data/Documents/RealtimeOnlyEmptyState.vue` | 0 | 45 | ⬜ |
-| `Data/Documents/Views/TimeSeriesItem.vue` | 0 | 151 | ⬜ |
-| `Data/Documents/DocumentBoxItem.vue` | 0 | 114 | ⬜ |
+| `Data/Collections/Update.vue` | 1 | 104 | ✅ reprise ([#1054](https://github.com/kuzzleio/kuzzle-admin-console/pull/1054)) |
+| `Data/Documents/RealtimeOnlyEmptyState.vue` | 0 | 45 | ➖ supprimé — importé nulle part ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
+| `Data/Documents/Views/TimeSeriesItem.vue` | 0 | 151 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
+| `Data/Documents/DocumentBoxItem.vue` | 0 | 114 | ➖ supprimé — importé nulle part ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Data/Documents/ListViewButtons.vue` | 0 | 104 | ➖ supprimé — importé nulle part ([#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020)) |
-| `Data/Collections/Tabs.vue` | 0 | 102 | ⬜ |
+| `Data/Collections/Tabs.vue` | 0 | 102 | ➖ supprimé — importé nulle part ([#1054](https://github.com/kuzzleio/kuzzle-admin-console/pull/1054)) |
 
 ### Security — 37 composants, 217 balises `<b-*>`
 
@@ -606,7 +696,7 @@ gros et le plus risqué.
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
 | `Materialize/Tabs.vue` | 0 | 87 | ⬜ |
-| `Materialize/Dropdown.vue` | 0 | 69 | ⬜ |
+| `Materialize/Dropdown.vue` | 0 | 69 | ➖ supprimé — orphelin avec `DocumentBoxItem.vue` ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Materialize/Tab.vue` | 0 | 53 | ⬜ |
 | `Materialize/Headline.vue` | 0 | 36 | ⬜ |
 | `Materialize/Toaster.vue` | 0 | 22 | ⬜ |
@@ -1387,3 +1477,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-21 | `DropdownMenu` à la main, panneau dans `<body>`, élément courant en bouton radio | [ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md) |
 | 2026-09-21 | `Pagination` à la main en huit pièces, composition partagée dans `Common/` | [ADR-0013](adr/0013-primitive-pagination-en-vue-2.md) |
 | 2026-09-21 | `Select` à la main en neuf pièces, panneau flottant extrait en mixin partagé | [ADR-0014](adr/0014-primitive-select-en-vue-2.md) |
+| 2026-09-21 | Pas de primitive `Calendar` : types natifs `date` et `time` pour le seul champ date | [ADR-0015](adr/0015-pas-de-primitive-calendar.md) |

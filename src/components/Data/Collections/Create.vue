@@ -1,5 +1,9 @@
 <template>
-  <b-container v-if="index" class="CollectionCreate h-100" data-cy="CollectionCreate">
+  <div
+    v-if="index"
+    class="CollectionCreate tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+    data-cy="CollectionCreate"
+  >
     <create-or-update
       v-if="hasRights"
       headline="Create a new collection"
@@ -8,7 +12,7 @@
       @submit="create"
     />
     <page-not-allowed v-else />
-  </b-container>
+  </div>
 </template>
 
 <script>

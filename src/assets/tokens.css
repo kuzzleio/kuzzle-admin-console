@@ -59,6 +59,12 @@
      visuelle dans une PR de plomberie. C'est un des premiers tokens que la
      refonte fera bouger. */
   --radius: 0.25rem;
+
+  /* Largeur minimale de la barre latérale de Data. Reprise telle quelle de
+     `$sidebar-width` : c'est une contrainte de mise en page, pas une décision
+     visuelle, et elle doit vivre au même endroit que les autres valeurs pour
+     qu'un composant n'ait pas à la coder en dur. */
+  --sidebar-width: 252px;
 }
 
 .dark {

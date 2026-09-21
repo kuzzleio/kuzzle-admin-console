@@ -1,11 +1,11 @@
 <template>
   <Multipane
-    class="DataLayout Custom-resizer"
+    class="DataLayout Custom-resizer tw:flex tw:h-full tw:flex-row tw:flex-nowrap"
     layout="vertical"
     @paneResizeStop="saveNewPaneSize($event)"
   >
     <div
-      class="DataLayout-sidebarWrapper"
+      class="DataLayout-sidebarWrapper tw:z-1 tw:h-full tw:min-w-[var(--sidebar-width)] tw:overflow-auto tw:bg-muted"
       :style="{ width: paneSize }"
       data-cy="DataLayout-sidebarWrapper"
     >
@@ -15,23 +15,30 @@
       />
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
-    <div class="DataLayout-contentWrapper">
-      <b-overlay :show="loading" opacity="0" class="h-100">
-        <data-not-found v-if="!loading && dataNotFound" class="mt-3" />
+    <div class="DataLayout-contentWrapper tw:h-full tw:grow tw:overflow-auto tw:p-6">
+      <!--
+        `b-overlay` avec `opacity="0"` ne servait qu'à centrer une roue de
+        chargement : son voile était transparent, et le contenu qu'il
+        recouvrait n'était de toute façon pas rendu (`v-if="!loading"`).
+      -->
+      <div v-if="loading" class="tw:flex tw:h-full tw:items-center tw:justify-center">
+        <Spinner size="lg" />
+      </div>
+      <template v-else>
+        <data-not-found v-if="dataNotFound" class="tw:mt-3" />
         <router-view
-          v-if="!loading"
           @start-init="viewIsInitializing = true"
           @end-init="viewIsInitializing = false"
         />
-      </b-overlay>
+      </template>
     </div>
   </Multipane>
 </template>
-
 <script>
 import { mapState } from 'pinia';
 import { Multipane, MultipaneResizer } from 'vue-multipane';
 
+import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
 import { setPersistedItem, getPersistedItem } from './itemsStorage';
 
@@ -41,10 +48,11 @@ import DataNotFound from './Data404.vue';
 export default {
   name: 'DataLayout',
   components: {
-    Treeview,
+    DataNotFound,
     Multipane,
     MultipaneResizer,
-    DataNotFound,
+    Spinner,
+    Treeview,
   },
   setup() {
     return {
@@ -201,38 +209,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@use '@/assets/styles/variables.scss';
-
-.DataLayout {
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-}
-
-.DataLayout-sidebarWrapper {
-  background-color: variables.$light-grey-color;
-  min-width: variables.$sidebar-width;
-  height: 100%;
-  overflow: auto;
-  z-index: 1;
-}
-
-.DataLayout-contentWrapper {
-  position: unset;
-  flex-grow: 1;
-  height: 100%;
-  overflow: auto;
-  padding: variables.$content-gutter;
-}
-
+/*
+ * Ce qui reste ici appartient à `vue-multipane` : la poignée est un nœud que
+ * la bibliothèque rend elle-même, sous sa propre classe, et sur laquelle nous
+ * ne pouvons pas poser d'utilitaire. Ce bloc s'en va avec elle (§ 3.1) ; ses
+ * couleurs passent en attendant par les tokens.
+ */
 .Custom-resizer > .multipane-resizer {
   margin: 0;
   left: 0;
   position: relative;
   padding: 3px;
-  border: 1px solid #ccc;
-  box-shadow: 2px 0px 5px -2px rgba(112, 112, 112, 1);
+  border: 1px solid var(--border);
+  box-shadow: 2px 0 5px -2px rgb(0 0 0 / 30%);
   &:before {
     display: block;
     content: '';
@@ -241,12 +230,12 @@ export default {
     position: absolute;
     top: 45%;
     left: 50%;
-    border-left: 1px solid #aaa;
+    border-left: 1px solid var(--muted-foreground);
   }
   &:hover {
     &:before {
-      border-color: #777;
-      background-color: #f5f5f5;
+      border-color: var(--foreground);
+      background-color: var(--muted);
     }
   }
 }
