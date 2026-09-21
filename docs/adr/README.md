@@ -37,6 +37,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0013](0013-primitive-pagination-en-vue-2.md) | `Pagination` écrite à la main en huit pièces, et la composition partagée dans `Common/` | Acceptée |
 | [0014](0014-primitive-select-en-vue-2.md) | `Select` écrite à la main en neuf pièces, et le panneau flottant extrait en mixin partagé | Acceptée |
 | [0015](0015-pas-de-primitive-calendar.md) | Pas de primitive `Calendar` : les types natifs `date` et `time` | Acceptée |
+| [0016](0016-supprimer-le-code-non-atteignable.md) | Supprimer le code non atteignable, et le contrôler dans la CI | Acceptée |
 
 ## Gabarit
 

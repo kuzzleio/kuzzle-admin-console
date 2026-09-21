@@ -13,6 +13,7 @@
     "test:lint": "eslint src --ext .ts,.vue && eslint test/e2e/cypress --ext .js",
     "test:lint:fix": "eslint src --ext .ts,.vue --fix && eslint test/e2e/cypress --ext .js --fix",
     "test:types": "vue-tsc --noEmit -p tsconfig.test.json",
+    "check:unreachable": "node scripts/unreachable-modules.ts",
     "cy:open": "cypress open"
   },
   "dependencies": {
@@ -35,7 +36,6 @@
     "moment": "2.30.1",
     "pinia": "2.2.4",
     "tailwind-merge": "^3.7.0",
-    "velocity-animate": "1.5.2",
     "vue": "2.7.16",
     "vue-apexcharts": "1.6.2",
     "vue-color": "2.8.1",
