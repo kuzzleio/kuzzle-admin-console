@@ -1,110 +1,146 @@
 <template>
-  <span>
-    <b-dropdown
-      :id="`collection-${collection}`"
+  <DropdownMenu>
+    <DropdownMenuTrigger
+      :as="Button"
       data-cy="CollectionDropdownView"
-      toggle-class="collectionDropdown"
-      variant="light"
+      :title="`Change the view of ${collection}`"
+      variant="outline"
     >
-      <template #button-content>
-        <b class="mr-2">View</b>
-      </template>
+      <strong>View</strong>
+      <i aria-hidden="true" class="fa fa-caret-down" />
+    </DropdownMenuTrigger>
 
-      <b-dropdown-group id="collection-dd-group-views" header="View type">
-        <b-dropdown-item
-          data-cy="CollectionDropdown-list"
-          :active="activeView === 'list'"
-          @click="$emit('list')"
-        >
-          List view
-        </b-dropdown-item>
-        <b-dropdown-item
-          data-cy="CollectionDropdown-column"
-          :active="activeView === 'column'"
-          @click="$emit('column')"
-        >
-          Column view
-        </b-dropdown-item>
-        <b-dropdown-item
-          data-cy="CollectionDropdown-TimeSeries"
-          :active="activeView === 'time-series'"
-          :disabled="!mappingHasIntegerField"
-          @click="$emit('time-series')"
-        >
-          Chart view
-        </b-dropdown-item>
-        <b-dropdown-item
-          data-cy="CollectionDropdown-map"
-          :active="activeView === 'map'"
-          :disabled="!mappingHasGeoField"
-          @click="$emit('map')"
-        >
-          Map view
-        </b-dropdown-item>
-        <b-dropdown-item
-          :active="activeView === 'realtime'"
-          :disabled="!canSubscribe(index, collection)"
-          :title="
-            !canSubscribe(index, collection)
-              ? 'Your rights do not allow you to subscribe to this collection'
-              : ''
-          "
-          :to="
-            canSubscribe(index, collection)
-              ? { name: 'WatchCollection', params: { collection, index } }
-              : ''
-          "
-        >
-          Realtime view
-        </b-dropdown-item>
-      </b-dropdown-group>
-    </b-dropdown>
-  </span>
+    <DropdownMenuContent align="end">
+      <DropdownMenuGroup>
+        <DropdownMenuLabel>View type</DropdownMenuLabel>
+        <DropdownMenuRadioGroup :model-value="activeView">
+          <DropdownMenuRadioItem
+            data-cy="CollectionDropdown-list"
+            value="list"
+            @select="$emit('list')"
+          >
+            List view
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem
+            data-cy="CollectionDropdown-column"
+            value="column"
+            @select="$emit('column')"
+          >
+            Column view
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem
+            data-cy="CollectionDropdown-TimeSeries"
+            :disabled="!mappingHasIntegerField"
+            :title="mappingHasIntegerField ? '' : 'This collection has no numeric field to chart'"
+            value="time-series"
+            @select="$emit('time-series')"
+          >
+            Chart view
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem
+            data-cy="CollectionDropdown-map"
+            :disabled="!mappingHasGeoField"
+            :title="mappingHasGeoField ? '' : 'This collection has no geographic field to map'"
+            value="map"
+            @select="$emit('map')"
+          >
+            Map view
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem
+            :as="canSubscribeHere ? 'router-link' : 'button'"
+            data-cy="CollectionDropdown-realtime"
+            :disabled="!canSubscribeHere"
+            :title="
+              canSubscribeHere ? '' : 'Your rights do not allow you to subscribe to this collection'
+            "
+            :to="canSubscribeHere ? watchRoute : undefined"
+            value="realtime"
+          >
+            Realtime view
+          </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuGroup>
+    </DropdownMenuContent>
+  </DropdownMenu>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
+import type { RawLocation } from 'vue-router';
 
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useAuthStore } from '@/stores';
 
-export default {
+type MappingAttributes = Record<string, { type?: string }>;
+
+export default defineComponent({
   name: 'CollectionDropdownView',
-  components: {},
+  components: {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuTrigger,
+  },
   props: {
-    mappingAttributes: Object,
-    activeView: String,
-    collection: String,
-    index: String,
+    activeView: {
+      default: '',
+      type: String,
+    },
+    collection: {
+      default: '',
+      type: String,
+    },
+    index: {
+      default: '',
+      type: String,
+    },
+    mappingAttributes: {
+      default: null,
+      type: Object as PropType<MappingAttributes | null>,
+    },
+  },
+  data() {
+    return {
+      // Le composant passé à `as` n'a pas à être réactif : il est rangé hors
+      // de `data()` réactive par `Object.freeze` faute de `markRaw` en Vue 2.
+      Button: Object.freeze(Button),
+    };
   },
   computed: {
     ...mapState(useAuthStore, ['canSubscribe']),
-    mappingHasIntegerField() {
-      return (
-        Object.keys(this.mappingAttributes).filter(
-          (a) => this.mappingAttributes[a].type === 'integer',
-        ).length > 0
+    attributes(): MappingAttributes {
+      return this.mappingAttributes ?? {};
+    },
+    canSubscribeHere(): boolean {
+      return this.canSubscribe(this.index, this.collection);
+    },
+    mappingHasGeoField(): boolean {
+      return Object.values(this.attributes).some((attribute) =>
+        ['geo_point', 'geo_shape'].includes(attribute?.type ?? ''),
       );
     },
-    mappingHasGeoField() {
-      return (
-        Object.keys(this.mappingAttributes).filter((a) =>
-          ['geo_point', 'geo_shape'].includes(this.mappingAttributes[a].type),
-        ).length > 0
-      );
+    mappingHasIntegerField(): boolean {
+      return Object.values(this.attributes).some((attribute) => attribute?.type === 'integer');
+    },
+    watchRoute(): RawLocation {
+      return {
+        name: 'WatchCollection',
+        params: { collection: this.collection, index: this.index },
+      };
     },
   },
-};
+});
 </script>
-
-<style lang="scss" scoped>
-@use '@/assets/styles/variables.scss';
-
-::v-deep .collectionDropdown {
-  background-color: variables.$light-grey-color;
-  border: none;
-}
-
-::v-deep .show .collectionDropdown i {
-  transform: rotate(90deg);
-}
-</style>

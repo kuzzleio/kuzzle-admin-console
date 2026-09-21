@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 47 / 140 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 53 / 140 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -338,12 +338,20 @@ Le tri des trois colonnes concernées a été couvert par des specs **avant** la
 réécriture, comme l'ADR l'engage ; c'est ce qui a mis au jour
 [G-022](#g-022--une-colonne-sortable-peut-ne-rien-trier-et-rien-ne-le-dit).
 
-Dans Security, même situation pour `Users/Page.vue` : son menu « … » est un
-`<b-dropdown>`, et le `DropdownMenu` de shadcn-vue est une surcouche flottante
-avec navigation au clavier — une primitive de l'ampleur de `Dialog`, donc une
-ADR à elle seule. Les trois `List.vue` attendent la même chose du côté
-`<b-pagination>`. Les pages Roles et Profiles sont donc reprises avant la page
-Users : l'incohérence visuelle est temporaire et assumée.
+**Les menus déroulants sont débloqués** ([ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md)).
+`b-dropdown` et sa famille comptaient 34 balises dans 10 composants, répartis
+sur les trois domaines restants : tant que la primitive manquait, dix fichiers
+étaient bloqués, dont `Documents/Page.vue` et `Security/Users/Page.vue`. La
+primitive est écrite à la main, et son panneau est **déplacé dans `<body>`**
+comme celui de `Dialog` — un menu en `position: absolute` serait tronqué dans
+toute cellule de `Table`, dont l'enveloppe est en `overflow-x-auto` depuis
+ADR-0011. Au passage, la prop `active` de `b-dropdown-item`, qui ne posait
+qu'une classe, devient un `role="menuitemradio"` avec `aria-checked` : l'écran
+temps réel annonce enfin quelle vue est la vue courante.
+
+Il reste `<b-pagination>` pour les trois `List.vue` de Security : les pages
+Roles et Profiles sont donc reprises avant la page Users, et l'incohérence
+visuelle est temporaire et assumée.
 
 ## 2. Toolchain (phase 0)
 
@@ -419,7 +427,7 @@ gros et le plus risqué.
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Data/Collections/Watch.vue` | 38 | 496 | ⬜ |
+| `Data/Collections/Watch.vue` | 38 | 496 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
 | `Data/Documents/Views/Map.vue` | 24 | 429 | ⬜ |
 | `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Collections/CollectionList.vue` | 19 | 426 | ✅ reprise ([#1050](https://github.com/kuzzleio/kuzzle-admin-console/pull/1050)) |
@@ -432,14 +440,14 @@ gros et le plus risqué.
 | `Data/Documents/Views/TimeSeries.vue` | 8 | 351 | ⬜ |
 | `Data/Indexes/CreateIndexModal.vue` | 8 | 163 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Documents/ListActions.vue` | 7 | 68 | ⬜ |
-| `Data/Collections/DropdownView.vue` | 7 | 110 | ⬜ |
+| `Data/Collections/DropdownView.vue` | 7 | 110 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
 | `Data/Indexes/BulkDeleteIndexesModal.vue` | 6 | 98 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Indexes/DeleteIndexModal.vue` | 6 | 87 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Collections/DeleteCollectionModal.vue` | 6 | 112 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Collections/BulkDeleteCollectionsModal.vue` | 6 | 108 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Collections/ModalClear.vue` | 5 | 95 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Documents/FormInputs/JsonFormInput.vue` | 5 | 49 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
-| `Data/Collections/DropdownAction.vue` | 5 | 135 | ⬜ |
+| `Data/Collections/DropdownAction.vue` | 5 | 135 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
 | `Data/Documents/DeleteModal.vue` | 4 | 52 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Data/Documents/Views/List.vue` | 4 | 126 | ⬜ |
@@ -448,7 +456,7 @@ gros et le plus risqué.
 | `Data/Indexes/DropdownActions.vue` | 3 | 75 | ⬜ |
 | `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Update.vue` | 3 | 173 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
-| `Data/Realtime/Notification.vue` | 3 | 147 | ⬜ |
+| `Data/Realtime/Notification.vue` | 3 | 147 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
 | `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ⬜ |
 | `Data/Collections/Create.vue` | 1 | 72 | ⬜ |
 | `Data/Documents/Views/Column/HeaderTableView.vue` | 1 | 56 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
@@ -1187,6 +1195,29 @@ Gabarit à copier :
   HTML n'est pas forcément cet attribut. Avant de la traduire en attribut natif,
   vérifier ce qu'elle fait — ici, l'écart tient à ce que le composant amont
   compensait une limite du navigateur.
+
+#### G-024 — Une deuxième classe Bootstrap avait échappé à l'audit des sélecteurs
+
+- **Contexte** : phase 2, reprise de `Collections/DropdownView.vue`
+  ([ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md)).
+- **Symptôme** : `chartView.spec.js`, « should not offer the chart view on a
+  collection without any integer field », échoue sur
+  `.should('have.class', 'disabled')`. L'élément de menu est bien désactivé à
+  l'écran, et la classe n'existe plus.
+- **Cause** : `disabled` est une classe de Bootstrap, posée par
+  `b-dropdown-item` sur le `<a>` qu'il rend. Comme `.badge` avant elle, elle
+  ressemblait trop à une classe applicative pour que l'audit du 2026-09-18 la
+  reconnaisse.
+- **Solution** : l'assertion porte sur `aria-disabled`, que la primitive pose.
+  Pas de commande Cypress cette fois, contrairement à `cy.notificationBadge()` :
+  ce sélecteur n'a qu'un seul site d'appel, et il est migré dans la même PR —
+  il n'y a pas de cohabitation à couvrir.
+- **À retenir** : c'est la deuxième escapée du même type, et probablement pas la
+  dernière. Le point important n'est pas qu'elle ait échappé à l'audit, c'est
+  que la spec l'ait attrapée — et qu'elle ait attrapé au passage un vrai
+  changement de comportement : `b-dropdown-item` posait la classe **et laissait
+  passer le clic**. Seul le fait que l'action derrière ne faisait rien évitait
+  le dégât.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

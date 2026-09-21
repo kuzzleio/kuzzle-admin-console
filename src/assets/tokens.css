@@ -46,6 +46,15 @@
   --input: #eeeeee;
   --ring: #73626e;
 
+  /* Notifications temps réel — quatre familles à distinguer d'un coup d'œil
+     dans un flux qui défile. Ce ne sont pas des états (`destructive` dirait
+     « erreur », pas « un document a été supprimé ») : elles ont donc leurs
+     propres tokens plutôt que d'emprunter ceux des états. */
+  --notification-publish: #e3eff4;
+  --notification-document: #cae6d3;
+  --notification-subscribe: #e1c8e8;
+  --notification-delete: #e6c6c4;
+
   /* Rayon — aligné sur Bootstrap 4 pour ne pas glisser une décision
      visuelle dans une PR de plomberie. C'est un des premiers tokens que la
      refonte fera bouger. */
@@ -75,6 +84,11 @@
   --border: #23414c;
   --input: #23414c;
   --ring: #7fd3f2;
+
+  --notification-publish: #1d3a46;
+  --notification-document: #1c4433;
+  --notification-subscribe: #3a2542;
+  --notification-delete: #4a2726;
 }
 
 @theme inline {
@@ -100,6 +114,11 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  --color-notification-publish: var(--notification-publish);
+  --color-notification-document: var(--notification-document);
+  --color-notification-subscribe: var(--notification-subscribe);
+  --color-notification-delete: var(--notification-delete);
 
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
