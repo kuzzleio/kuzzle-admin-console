@@ -1,87 +1,122 @@
 <template>
-  <b-modal :id="modalId" class="DeleteIndexModal" size="lg" @hide="resetForm">
-    <template #modal-title>
-      Index
-      <strong>{{ truncateName(index ? index.name : '') }}</strong> deletion
-    </template>
+  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent class="tw:max-w-2xl" labelled-by="delete-index-title">
+      <DialogHeader>
+        <DialogTitle id="delete-index-title">
+          Index <strong>{{ truncateName(index ? index.name : '') }}</strong> deletion
+        </DialogTitle>
+      </DialogHeader>
 
-    <template #modal-footer>
-      <b-button variant="secondary" @click="onCancel()"> Cancel </b-button>
-      <b-button
-        variant="danger"
-        data-cy="DeleteIndexModal-deleteBtn"
-        :disabled="!isConfirmationValid"
-        @click="performDelete()"
-      >
-        OK
-      </b-button>
-    </template>
-    <form ref="form" @submit.prevent="performDelete()">
-      <b-form-group
-        label="Type the name of the index to confirm deletion"
-        label-for="inputConfirmation"
-        description="This operation is NOT reversible"
-      >
-        <b-form-input
-          id="inputConfirmation"
-          v-model="confirmation"
-          autofocus
-          data-cy="DeleteIndexModal-name"
-          type="text"
-          required
-        />
-      </b-form-group>
-      <b-alert :show="error.length" variant="danger">{{ error }}</b-alert>
-    </form>
-  </b-modal>
+      <form @submit.prevent="performDelete">
+        <FormItem>
+          <Label for="inputConfirmation">Type the name of the index to confirm deletion</Label>
+          <Input
+            id="inputConfirmation"
+            v-model="confirmation"
+            data-cy="DeleteIndexModal-name"
+            required
+            type="text"
+          />
+          <FormDescription>This operation is NOT reversible</FormDescription>
+        </FormItem>
+        <Alert v-if="error" class="tw:mt-4" variant="destructive">{{ error }}</Alert>
+      </form>
+
+      <DialogFooter>
+        <Button variant="outline" @click="onCancel"> Cancel </Button>
+        <Button
+          data-cy="DeleteIndexModal-deleteBtn"
+          :disabled="!isConfirmationValid"
+          variant="destructive"
+          @click="performDelete"
+        >
+          OK
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { FormDescription, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { Index } from '@/stores/types/storage-index';
 import { truncateName } from '@/utils';
 
-export default {
+export default defineComponent({
   name: 'DeleteIndexModal',
+  components: {
+    Alert,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    FormDescription,
+    FormItem,
+    Input,
+    Label,
+  },
+  // `dismissible: false` : une suppression ne se ferme pas sur un clic à côté.
   props: {
-    modalId: {
-      type: String,
-      required: true,
-    },
     index: {
-      type: Object,
-      required: false,
+      default: null,
+      type: Object as PropType<Index | null>,
+    },
+    open: {
+      default: false,
+      type: Boolean,
     },
   },
   data() {
     return {
-      error: '',
       confirmation: '',
+      error: '',
     };
   },
   computed: {
-    isConfirmationValid() {
-      return this.index && this.confirmation === this.index.name;
+    isConfirmationValid(): boolean {
+      return Boolean(this.index) && this.confirmation === this.index?.name;
+    },
+  },
+  watch: {
+    open(open: boolean) {
+      if (!open) {
+        this.resetForm();
+      }
     },
   },
   methods: {
     truncateName,
-    resetForm() {
+    resetForm(): void {
       this.confirmation = '';
       this.error = '';
     },
-    setError(error) {
+    setError(error: string): void {
       this.error = error;
     },
-    onCancel() {
-      this.resetForm();
+    onCancel(): void {
       this.$emit('cancel');
     },
-
-    async performDelete() {
+    performDelete(): void {
       if (!this.isConfirmationValid) {
         return;
       }
       this.$emit('confirm-deletion');
     },
   },
-};
+});
 </script>

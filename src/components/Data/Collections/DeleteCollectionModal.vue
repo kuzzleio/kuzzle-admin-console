@@ -1,60 +1,93 @@
 <template>
-  <b-modal :id="modalId" :ref="modalId" class="DeleteCollectionModal" size="lg" @hide="resetForm">
-    <template #modal-title>
-      <template v-if="collection">
-        Collection
-        <strong>{{ truncateName(collection.name) }}</strong> deletion</template
-      >
-    </template>
+  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent class="tw:max-w-2xl" labelled-by="delete-collection-title">
+      <DialogHeader>
+        <DialogTitle id="delete-collection-title">
+          <template v-if="collection">
+            Collection <strong>{{ truncateName(collection.name) }}</strong> deletion
+          </template>
+        </DialogTitle>
+      </DialogHeader>
 
-    <template #modal-footer>
-      <b-button variant="secondary" @click="onCancel()"> Cancel </b-button>
-      <b-button
-        variant="danger"
-        data-cy="DeleteCollectionModal-OK"
-        :disabled="!isConfirmationValid"
-        @click="performDelete()"
-      >
-        OK
-      </b-button>
-    </template>
-    <form ref="form" @submit.prevent="performDelete()">
-      <b-form-group
-        label="Type the name of the collection to confirm deletion"
-        label-for="inputConfirmation"
-        description="This operation is NOT reversible"
-      >
-        <b-form-input
-          id="inputConfirmation"
-          v-model="confirmation"
-          data-cy="DeleteCollectionModal-confirm"
-          type="text"
-          required
-        />
-      </b-form-group>
-      <b-alert :show="error.length" variant="danger">{{ error }}</b-alert>
-    </form>
-  </b-modal>
+      <form @submit.prevent="performDelete">
+        <FormItem>
+          <Label for="inputConfirmation">
+            Type the name of the collection to confirm deletion
+          </Label>
+          <Input
+            id="inputConfirmation"
+            v-model="confirmation"
+            data-cy="DeleteCollectionModal-confirm"
+            required
+            type="text"
+          />
+          <FormDescription>This operation is NOT reversible</FormDescription>
+        </FormItem>
+        <Alert v-if="error" class="tw:mt-4" variant="destructive">{{ error }}</Alert>
+      </form>
+
+      <DialogFooter>
+        <Button variant="outline" @click="onCancel"> Cancel </Button>
+        <Button
+          data-cy="DeleteCollectionModal-OK"
+          :disabled="!isConfirmationValid"
+          variant="destructive"
+          @click="performDelete"
+        >
+          OK
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { FormDescription, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useStorageIndexStore } from '@/stores';
+import type { Collection, Index } from '@/stores/types/storage-index';
 import { truncateName } from '@/utils';
 
-export default {
+export default defineComponent({
   name: 'DeleteCollectionModal',
+  components: {
+    Alert,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    FormDescription,
+    FormItem,
+    Input,
+    Label,
+  },
+  // `dismissible: false` : une suppression ne se ferme pas sur un clic à côté.
   props: {
-    modalId: {
-      type: String,
-      required: true,
-    },
     collection: {
-      type: Object,
-      required: false,
+      default: null,
+      type: Object as PropType<Collection | null>,
     },
     index: {
-      type: Object,
-      required: false,
+      default: null,
+      type: Object as PropType<Index | null>,
+    },
+    open: {
+      default: false,
+      type: Boolean,
     },
   },
   setup() {
@@ -64,34 +97,37 @@ export default {
   },
   data() {
     return {
-      error: '',
       confirmation: '',
+      error: '',
     };
   },
   computed: {
-    isConfirmationValid() {
+    isConfirmationValid(): boolean {
       return this.collection ? this.confirmation === this.collection.name : false;
+    },
+  },
+  watch: {
+    open(open: boolean) {
+      if (!open) {
+        this.resetForm();
+      }
     },
   },
   methods: {
     truncateName,
-    resetForm() {
+    resetForm(): void {
       this.confirmation = '';
       this.error = '';
     },
-    onDeleteSuccess() {
-      this.resetForm();
-      this.$bvModal.hide(this.modalId);
-      this.$emit('delete-successful');
+    close(): void {
+      this.$emit('update:open', false);
     },
-    onCancel() {
-      this.resetForm();
-      this.$bvModal.hide(this.modalId);
+    onCancel(): void {
+      this.close();
       this.$emit('cancel');
     },
-
-    async performDelete() {
-      if (!this.isConfirmationValid) {
+    performDelete(): void {
+      if (!this.isConfirmationValid || !this.index || !this.collection) {
         return;
       }
 
@@ -101,12 +137,13 @@ export default {
           collection: this.collection,
         });
 
-        this.onDeleteSuccess();
+        this.close();
+        this.$emit('delete-successful');
       } catch (err) {
         this.$log.error(err);
-        this.error = err.message;
+        this.error = (err as Error).message;
       }
     },
   },
-};
+});
 </script>

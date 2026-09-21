@@ -1,53 +1,83 @@
 <template>
-  <b-modal :id="id" data-cy="CollectionClearModal" additional-class="left-align" @hide="reset">
-    <template #modal-header
-      ><h5>
-        Clear <span class="code">{{ collection }}</span>
-      </h5>
-    </template>
-    <template #modal-footer="{ cancel }">
-      <b-button @click="cancel()">Cancel</b-button>
-      <b-button
-        data-cy="CollectionClearModal-submit"
-        variant="danger"
-        :disabled="!confirmationOk"
-        @click="clearCollection(index, collection)"
-        >Delete All Documents</b-button
-      >
-    </template>
+  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent data-cy="CollectionClearModal" labelled-by="collection-clear-title">
+      <DialogHeader>
+        <DialogTitle id="collection-clear-title">
+          Clear <span class="code">{{ collection }}</span>
+        </DialogTitle>
+      </DialogHeader>
 
-    <b-form-group
-      id="fieldset-1"
-      description="This operation is not undoable."
-      label="Confirm collection name"
-      label-for="env-to-delete-name"
-    >
-      <b-form-input
-        id="env-to-delete-name"
-        v-model="confirmation"
-        data-cy="CollectionClearModal-collectionName"
-        trim
-        @keydown.enter="clearCollection(index, collection)"
-      />
-    </b-form-group>
-  </b-modal>
+      <FormItem>
+        <Label for="env-to-delete-name">Confirm collection name</Label>
+        <Input
+          id="env-to-delete-name"
+          v-model="confirmation"
+          data-cy="CollectionClearModal-collectionName"
+          @keydown.enter="clearCollection"
+        />
+        <FormDescription>This operation is not undoable.</FormDescription>
+      </FormItem>
+
+      <DialogFooter>
+        <Button variant="outline" @click="close">Cancel</Button>
+        <Button
+          data-cy="CollectionClearModal-submit"
+          :disabled="!confirmationOk"
+          variant="destructive"
+          @click="clearCollection"
+          >Delete All Documents</Button
+        >
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
-import Focus from '@/directives/focus.directive';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { FormDescription, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useKuzzleStore } from '@/stores';
 
-export default {
+export default defineComponent({
   name: 'ClearCollectionModal',
-  directives: {
-    Focus,
+  components: {
+    Button,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    FormDescription,
+    FormItem,
+    Input,
+    Label,
   },
+  // `dismissible: false` : vider une collection n'est pas annulable, la modale
+  // ne se ferme pas sur un clic à côté.
   props: {
-    id: String,
-    index: String,
-    collection: String,
+    collection: {
+      default: '',
+      type: String,
+    },
+    index: {
+      default: '',
+      type: String,
+    },
+    open: {
+      default: false,
+      type: Boolean,
+    },
   },
   data() {
     return {
@@ -56,16 +86,28 @@ export default {
   },
   computed: {
     ...mapState(useKuzzleStore, ['$kuzzle']),
-    confirmationOk() {
+    confirmationOk(): boolean {
       return this.collection !== null && this.collection === this.confirmation;
     },
   },
-  methods: {
-    reset() {
-      this.confirmation = '';
+  watch: {
+    open(open: boolean) {
+      if (!open) {
+        this.confirmation = '';
+      }
     },
-    async clearCollection() {
-      if (this.index.trim() === '' || this.collection.trim() === '' || !this.confirmationOk) {
+  },
+  methods: {
+    close(): void {
+      this.$emit('update:open', false);
+    },
+    async clearCollection(): Promise<void> {
+      if (
+        !this.$kuzzle ||
+        this.index.trim() === '' ||
+        this.collection.trim() === '' ||
+        !this.confirmationOk
+      ) {
         return;
       }
 
@@ -78,8 +120,7 @@ export default {
           refresh: 'wait_for',
         });
         this.$emit('clear');
-        this.reset();
-        this.$bvModal.hide(this.id);
+        this.close();
       } catch (err) {
         this.$log.error(err);
         this.$bvToast.toast('The complete error has been printed to the console.', {
@@ -91,5 +132,5 @@ export default {
       }
     },
   },
-};
+});
 </script>

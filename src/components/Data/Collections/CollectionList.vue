@@ -210,20 +210,20 @@
       <DeleteCollectionModal
         :index="index"
         :collection="collectionToDelete"
-        :modal-id="deleteCollectionModalId"
+        :open.sync="deleteCollectionOpen"
         @delete-successful="onDeleteModalSuccess"
       />
       <BulkDeleteCollectionsModal
         :index="index"
         :collections="selectedCollections"
-        :modal-id="bulkDeleteCollectionsModalId"
+        :open.sync="bulkDeleteCollectionsOpen"
         @delete-successful="onDeleteModalSuccess"
       />
     </b-container>
     <DeleteIndexModal
-      :ref="deleteIndexModalId"
+      ref="deleteIndexModal"
       :index="index"
-      :modal-id="deleteIndexModalId"
+      :open.sync="deleteIndexOpen"
       @confirm-deletion="onDeleteIndexConfirm"
       @cancel="onDeleteIndexCancel"
     />
@@ -264,8 +264,9 @@ export default {
   },
   data() {
     return {
-      deleteCollectionModalId: 'deleteCollectionModal',
-      bulkDeleteCollectionsModalId: 'bulkDeleteCollectionsModal',
+      bulkDeleteCollectionsOpen: false,
+      deleteCollectionOpen: false,
+      deleteIndexOpen: false,
       filter: '',
       collectionToDelete: null,
       deleteConfirmation: '',
@@ -317,9 +318,6 @@ export default {
         },
       ];
     },
-    deleteIndexModalId() {
-      return `delete-index-${this.indexName}`;
-    },
     currentEnvironment() {
       return this.kuzzleStore.currentEnvironment;
     },
@@ -330,27 +328,26 @@ export default {
   methods: {
     truncateName,
     onDeleteIndexCancel() {
-      this.$refs[this.deleteIndexModalId].resetForm();
-      this.$bvModal.hide(this.deleteIndexModalId);
+      this.deleteIndexOpen = false;
     },
     async onDeleteIndexConfirm() {
       try {
         await this.storageIndexStore.deleteIndex(this.index);
-        this.$bvModal.hide(this.deleteIndexModalId);
+        this.deleteIndexOpen = false;
         this.$router.push({ name: 'Indexes', params: {} });
       } catch (err) {
-        this.$refs[this.deleteIndexModalId].setError(err.message);
+        this.$refs.deleteIndexModal.setError(err.message);
       }
     },
     onDeleteIndexClicked() {
-      this.$bvModal.show(`delete-index-${this.indexName}`);
+      this.deleteIndexOpen = true;
     },
     onDeleteCollectionClicked(collection) {
       this.collectionToDelete = collection;
-      this.$bvModal.show(this.deleteCollectionModalId);
+      this.deleteCollectionOpen = true;
     },
     deleteCollections() {
-      this.$bvModal.show(this.bulkDeleteCollectionsModalId);
+      this.bulkDeleteCollectionsOpen = true;
     },
     onToggleAllClicked() {
       if (this.allChecked) {

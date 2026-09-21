@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-19 · **Phase courante** : 2 — Dé-bootstrapisation
+**Dernière mise à jour** : 2026-09-21 · **Phase courante** : 2 — Dé-bootstrapisation
 
 ---
 
@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 11 / 140 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 35 / 140 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -282,7 +282,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**28 composants repris sur 140**, 156 balises `<b-*>` sur 813.
+**35 composants repris sur 140**, 197 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -314,6 +314,16 @@ choisir entre garder un `<select>` natif habillé aux tokens et réécrire les
 quatre specs. La décision vaut une ADR ; elle n'est pas prise ici, et le
 composant reste sur Bootstrap en attendant. Même remarque pour `Autocomplete.vue`
 et `MSelect.vue`, qui dépendent de `vue-multiselect`.
+
+**Ce qui bloque Data** : les trois écrans qui portent le plus de balises —
+`Indexes/Page.vue`, `Collections/CollectionList.vue`,
+`Documents/Views/Column/Column.vue` — tiennent sur un `<b-table>` avec `:fields`,
+tri et filtre. `Table` chez shadcn-vue n'est que du balisage : reprendre ces
+écrans, c'est écrire le tri et le filtre à la main dans chaque page, ou se
+donner un composant de tableau qui n'existe pas dans l'amont. La décision vaut
+une ADR, elle n'est pas prise ici. Les sept modales de Data sont donc reprises
+d'abord : elles ne dépendent que de primitives existantes, et elles vident les
+trois pages de leur `$bvModal`.
 
 Dans Security, même situation pour `Users/Page.vue` : son menu « … » est un
 `<b-dropdown>`, et le `DropdownMenu` de shadcn-vue est une surcouche flottante
@@ -407,17 +417,17 @@ gros et le plus risqué.
 | `Data/Collections/CreateOrUpdate.vue` | 12 | 309 | ⬜ |
 | `Data/Documents/DocumentListItem.vue` | 11 | 218 | ⬜ |
 | `Data/Documents/Views/TimeSeries.vue` | 8 | 351 | ⬜ |
-| `Data/Indexes/CreateIndexModal.vue` | 8 | 163 | ⬜ |
+| `Data/Indexes/CreateIndexModal.vue` | 8 | 163 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Documents/ListActions.vue` | 7 | 68 | ⬜ |
 | `Data/Collections/DropdownView.vue` | 7 | 110 | ⬜ |
-| `Data/Indexes/BulkDeleteIndexesModal.vue` | 6 | 98 | ⬜ |
-| `Data/Indexes/DeleteIndexModal.vue` | 6 | 87 | ⬜ |
-| `Data/Collections/DeleteCollectionModal.vue` | 6 | 112 | ⬜ |
-| `Data/Collections/BulkDeleteCollectionsModal.vue` | 6 | 108 | ⬜ |
-| `Data/Collections/ModalClear.vue` | 5 | 95 | ⬜ |
+| `Data/Indexes/BulkDeleteIndexesModal.vue` | 6 | 98 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
+| `Data/Indexes/DeleteIndexModal.vue` | 6 | 87 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
+| `Data/Collections/DeleteCollectionModal.vue` | 6 | 112 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
+| `Data/Collections/BulkDeleteCollectionsModal.vue` | 6 | 108 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
+| `Data/Collections/ModalClear.vue` | 5 | 95 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Documents/FormInputs/JsonFormInput.vue` | 5 | 49 | ⬜ |
 | `Data/Collections/DropdownAction.vue` | 5 | 135 | ⬜ |
-| `Data/Documents/DeleteModal.vue` | 4 | 52 | ⬜ |
+| `Data/Documents/DeleteModal.vue` | 4 | 52 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Data/Documents/Views/List.vue` | 4 | 126 | ⬜ |
 | `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
@@ -1027,6 +1037,38 @@ Gabarit à copier :
   l'ancien code ne le posait pas là. Traduire une classe pour la traduire est le
   bon moyen d'en introduire une qui n'existait pas.
 
+#### G-019 — Deux familles de modales à 1050 : c'est le DOM qui tranche, pas l'intention
+
+- **Contexte** : phase 2, reprise des sept modales de Data. `Dialog` était à
+  `z-index: 1050`, la même valeur que `.modal` de Bootstrap.
+- **Symptôme** : `login.spec.js`, « login without losing context when token
+  expires ». Le jeton expire pendant une création d'index, la modale
+  « Sorry, your session has expired » s'ouvre *et est visible* — `cy.contains`
+  la trouve — mais son bouton « Login as anonymous » est **recouvert** par
+  l'alerte d'erreur du `Dialog` resté ouvert derrière. Trois minutes quarante de
+  `cy.click()` qui réessaie, puis l'échec.
+- **Cause** : à `z-index` égal, c'est l'ordre dans le document qui décide. Or
+  `Dialog` déplace son nœud en fin de `<body>` à l'ouverture (G-012) et
+  `b-modal` fait de même — mais le `Dialog` était déjà ouvert, donc déplacé en
+  dernier. Le `Dialog` gagnait donc **toujours**, y compris contre la modale qui
+  doit interrompre tout le reste.
+- **Solution** : `Dialog` passe à `z-index: 1030`, c'est-à-dire **sous** la bande
+  modale de Bootstrap (`.modal-backdrop` 1040, `.modal` 1050) et au-dessus de
+  tout ce que la console utilise par ailleurs (le maximum est 1003, dans
+  `Materialize/Modal.vue`). Pendant la cohabitation, une `b-modal` ouverte
+  par-dessus un `Dialog` gagne, ce qui est le comportement voulu : la seule
+  modale capable de surgir sur n'importe quel écran est justement une `b-modal`.
+  La valeur remonte quand bootstrap-vue s'en va.
+- **Fausse piste** : relever le `z-index` de la seule modale « session expirée »
+  via `modal-class`. Deux échecs successifs — d'abord parce qu'un `<style
+  scoped>` ne s'applique plus à un nœud déplacé dans `<body>` (l'attribut de
+  scope n'a plus d'ancêtre où s'accrocher), ensuite parce qu'à spécificité égale
+  c'est l'ordre des feuilles dans le bundle qui tranche, et Bootstrap passe
+  après. Corriger la primitive une fois vaut mieux que corriger chaque site
+  d'appel qui la croise.
+- **À retenir** : un composant qui se déplace dans `<body>` sort du raisonnement
+  habituel sur les styles **et** sur l'empilement. Les deux se sont mordus ici.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -1035,8 +1077,11 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 
 - **`v-model` sur composant** : `value`/`input` devient `modelValue`/
   `update:modelValue`. Touche toute la couche formulaires.
-- **`.sync`** : supprimé au profit de `v-model:prop`. ✅ *Vérifié le 2026-09-18 :
-  aucune occurrence dans `src/`.*
+- **`.sync`** : supprimé au profit de `v-model:prop`. *Relevé le 2026-09-18 :
+  aucune occurrence. Depuis, la phase 2 en introduit une par modale reprise
+  (`:open.sync`), soit 14 au 2026-09-21* — c'est le prix assumé d'ADR-0010, qui
+  remplace l'API impérative `$bvModal` par un état possédé par le site d'appel.
+  La bascule vers `v-model:open` est mécanique et se fait en phase 3.
 - **Filtres de template (`{{ x | y }}`)** : supprimés en Vue 3. Une seule
   occurrence détectée + `src/filters/highlight.filter.ts` à convertir en
   fonction ou composable.
