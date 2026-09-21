@@ -1,25 +1,28 @@
 <template>
-  <b-row class="UserProfileList">
-    <b-col cols="6"
-      ><div v-if="profileList.length">
-        <b-form-select
-          v-model="selectedProfiled"
-          data-cy="UserProfileList-select"
-          @change="onProfileSelected"
-        >
-          <b-select-option v-if="availableProfiles.length" :value="0">
-            Select a Profile to add
-          </b-select-option>
-          <b-select-option
-            v-if="profileList.length && availableProfiles.length === 0"
-            :value="null"
-            disabled
-            >The user has all the profiles (are you sure?)
-          </b-select-option>
-          <b-select-option v-for="profile of availableProfiles" :key="profile._id" :value="profile">
-            {{ profile }}
-          </b-select-option>
-        </b-form-select>
+  <div class="UserProfileList tw:flex tw:flex-wrap tw:items-center tw:gap-4">
+    <div class="tw:min-w-0 tw:flex-1">
+      <div v-if="profileList.length">
+        <Select :model-value="selectedProfiled" @update:modelValue="onProfileSelected">
+          <SelectTrigger aria-label="Add a profile" data-cy="UserProfileList-select">
+            <SelectValue placeholder="Select a Profile to add" />
+          </SelectTrigger>
+          <SelectContent>
+            <!--
+              `b-select-option` rendait un élément désactivé pour dire qu'il
+              n'y a plus rien à choisir. Un choix qu'on ne peut pas faire n'est
+              pas un choix : le message prend sa place et n'est plus une option.
+            -->
+            <p
+              v-if="availableProfiles.length === 0"
+              class="tw:px-3 tw:py-2 tw:text-sm tw:text-muted-foreground"
+            >
+              The user has all the profiles (are you sure?)
+            </p>
+            <SelectItem v-for="profile of availableProfiles" :key="profile" :value="profile">
+              {{ profile }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div v-else>
         No profiles found (you should
@@ -27,40 +30,64 @@
           create one
         </router-link>
         before creating a user)
-      </div></b-col
-    >
-    <b-col cols="6" class="UserProfileList-badges vertical-align">
+      </div>
+    </div>
+
+    <div class="UserProfileList-badges tw:flex tw:flex-1 tw:flex-wrap tw:items-center tw:gap-2">
       <template v-if="addedProfiles.length">
-        <b-badge
+        <!--
+          La corbeille était une icône cliquable posée dans un badge : ni
+          atteignable au clavier, ni annoncée. C'est un bouton, et il dit ce
+          qu'il retire.
+        -->
+        <Badge
           v-for="(profile, index) in addedProfiles"
           :key="index"
-          class="p-2 mr-2 my-1"
-          title="Click to remove"
+          class="tw:gap-1 tw:py-1"
           :data-cy="`UserProfileList-badge--${profile}`"
         >
-          {{ profile }}&nbsp;
-          <i
-            class="UserProfileList-delete ml-1 fa fa-trash"
+          {{ profile }}
+          <button
+            :aria-label="`Remove the profile ${profile}`"
+            class="UserProfileList-delete tw:cursor-pointer"
             :data-cy="`UserProfileList-${profile}--delete`"
+            type="button"
             @click="removeProfile(profile)"
-          />
-        </b-badge>
+          >
+            <i class="fa fa-trash" aria-hidden="true" />
+          </button>
+        </Badge>
       </template>
       <template v-else>
-        <span class="text-secondary">No profiles selected</span>
+        <span class="tw:text-secondary">No profiles selected</span>
       </template>
-    </b-col>
-  </b-row>
+    </div>
+  </div>
 </template>
 
 <script type="text/javascript">
 import { mapState } from 'pinia';
 
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useKuzzleStore } from '@/stores';
 
 export default {
   name: 'UserProfileList',
-  components: {},
+  components: {
+    Badge,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  },
   props: {
     addedProfiles: {
       type: Array,
@@ -69,7 +96,13 @@ export default {
   data() {
     return {
       profileList: [],
-      selectedProfiled: 0,
+      /*
+       * `null` et non `0` : le champ n'a pas de valeur tant qu'aucun profil
+       * n'est choisi, et c'est le `placeholder` du `SelectValue` qui porte le
+       * « Select a Profile to add ». L'ancien `0` était une option à part
+       * entière dans la liste.
+       */
+      selectedProfiled: null,
     };
   },
   computed: {
@@ -99,7 +132,7 @@ export default {
         return;
       }
       this.$emit('selected-profile', profile);
-      this.selectedProfiled = 0;
+      this.selectedProfiled = null;
     },
     removeProfile(profile) {
       this.$emit('remove-profile', profile);
@@ -107,12 +140,3 @@ export default {
   },
 };
 </script>
-
-<style type="text/css" scoped>
-.UserProfileList-delete {
-  cursor: pointer;
-}
-.UserProfileList-badges {
-  flex-wrap: wrap;
-}
-</style>

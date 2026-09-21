@@ -1,6 +1,6 @@
 <template>
-  <div class="UserUpdate">
-    <b-container class="UserUpdate--container">
+  <div class="UserUpdate tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12">
+    <div class="UserUpdate--container">
       <headline v-if="!!id">
         Edit user - <span class="code">{{ $route.params.id }}</span>
       </headline>
@@ -8,27 +8,31 @@
 
       <Notice />
 
-      <b-card no-body>
-        <template v-if="loading">
-          <MainSpinner class="my-5" />
-        </template>
-        <template v-else>
-          <b-tabs
-            v-if="!loading"
-            card
-            :active="activeTab"
-            :object-tab-active="activeTabObject"
-            @tab-changed="switchTab"
-          >
-            <b-tab id="UserUpdate-basicTab">
-              <template #title>
+      <Card>
+        <CardContent>
+          <MainSpinner v-if="loading" class="tw:my-8" />
+
+          <Tabs v-else v-model="activeTab">
+            <TabsList>
+              <TabsTrigger data-cy="UserUpdate-basicTab" value="basic">
                 <i
                   v-if="v$.$validationGroups.basic.$errors.length > 0"
-                  class="fas fa-exclamation-circle text-danger"
+                  class="fas fa-exclamation-circle tw:text-destructive"
                   data-cy="UserUpdate-basicTab--dangerIcon"
                 />
                 Basic
-              </template>
+              </TabsTrigger>
+              <TabsTrigger data-cy="UserUpdate-customTab" value="custom">
+                <i
+                  v-if="v$.customContentValue.$errors.length > 0"
+                  class="fas fa-exclamation-circle tw:text-destructive"
+                  data-cy="UserUpdate-customTab--dangerIcon"
+                />
+                Custom
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent class="tw:pt-4" value="basic">
               <basic
                 :edit-kuid="!id"
                 :added-profiles="addedProfiles"
@@ -39,54 +43,38 @@
                 @profile-remove="onProfileRemoved"
               />
               <credentials-selector
-                class="mt-3"
+                class="tw:mt-4"
                 :credentials="credentials"
                 :strategies="strategies"
                 :credentials-mapping="credentialsMapping"
                 @input="onCredentialsChanged"
               />
-            </b-tab>
-            <b-tab
-              id="UserUpdate-customTab"
-              :title-link-attributes="{ 'data-cy': 'UserUpdate-customTab' }"
-            >
-              <template #title>
-                <i
-                  v-if="v$.customContentValue.$errors.length > 0"
-                  class="fas fa-exclamation-circle text-danger"
-                  data-cy="UserUpdate-customTab--dangerIcon"
-                />
-                Custom
-              </template>
+            </TabsContent>
+
+            <TabsContent class="tw:pt-4" value="custom">
               <custom-data
                 :mapping="customContentMapping"
                 :value="customContent"
                 @input="onCustomContentChanged"
               />
-            </b-tab>
-          </b-tabs>
-        </template>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
 
-        <template #footer>
-          <b-row class="mt-2">
-            <b-col offset="9" class="text-right">
-              <b-button class="m-1" tabindex="6" @click.prevent="cancel">Cancel</b-button>
-              <b-button
-                class="m-1"
-                data-cy="UserUpdate-submit"
-                type="submit"
-                variant="primary"
-                :disabled="submitting"
-                @click.prevent="submit"
-              >
-                <span v-if="id">Save</span>
-                <span v-else>Create</span>
-              </b-button>
-            </b-col>
-          </b-row>
-        </template>
-      </b-card>
-    </b-container>
+        <CardFooter class="tw:justify-end tw:gap-2">
+          <Button tabindex="6" variant="outline" @click.prevent="cancel">Cancel</Button>
+          <Button
+            data-cy="UserUpdate-submit"
+            :disabled="submitting"
+            type="submit"
+            @click.prevent="submit"
+          >
+            <span v-if="id">Save</span>
+            <span v-else>Create</span>
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   </div>
 </template>
 
@@ -99,6 +87,9 @@ import { mapState } from 'pinia';
 import MainSpinner from '../../Common/MainSpinner.vue';
 import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 import { startsWithSpace, isWhitespace } from '@/validators';
 
@@ -110,11 +101,19 @@ export default {
   name: 'CreateOrUpdateUser',
   components: {
     Basic,
+    Button,
+    Card,
+    CardContent,
+    CardFooter,
     CredentialsSelector,
     CustomData,
     Headline,
     MainSpinner,
     Notice,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
   },
   props: {
     id: {
@@ -131,7 +130,6 @@ export default {
     return {
       loading: false,
       activeTab: 'basic',
-      activeTabObject: null,
       submitting: false,
       kuid: null,
       addedProfiles: [],
@@ -266,12 +264,6 @@ export default {
     },
     onCustomContentChanged(value) {
       this.v$.customContentValue.$model = value;
-    },
-    switchTab(name) {
-      this.activeTab = name;
-    },
-    setActiveTabObject(tab) {
-      this.activeTabObject = tab;
     },
     async submit() {
       this.v$.$touch();

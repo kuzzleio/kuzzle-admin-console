@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 81 / 107 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 85 / 107 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -276,7 +276,10 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) | ✅ |
 | `Switch` (ajoutée en reprenant la bascule « Form view » des documents) | ✅ |
 | `Table` — du balisage, pas de `DataTable` ([ADR-0011](adr/0011-table-sans-data-table.md)) | ✅ |
-| Primitives interactives restantes (dropdown, combobox) | ⬜ |
+| `DropdownMenu` — panneau dans `<body>` ([ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md)) | ✅ |
+| `Pagination` ([ADR-0013](adr/0013-primitive-pagination-en-vue-2.md)) et `Select` ([ADR-0014](adr/0014-primitive-select-en-vue-2.md)) | ✅ |
+| `Tabs` — pilotée par valeur, panneau caché démonté ([ADR-0017](adr/0017-primitive-tabs-en-vue-2.md)) | ✅ |
+| Dernière primitive interactive : `Combobox` (pour `vue-multiselect`) | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
 plomberie est posée, l'apparence n'est pas décidée. La refonte visuelle se fera
@@ -293,7 +296,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**81 composants repris sur 107**, **595 balises `<b-*>` retirées sur 813**.
+**85 composants repris sur 107**, **637 balises `<b-*>` retirées sur 813**.
 
 > Le dénominateur passe de 134 à 107 : 27 composants non atteignables ont été
 > supprimés ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)). Ce
@@ -305,7 +308,7 @@ phase 2.
 > des mentions en commentaire** dans les primitives (« Remplace
 > `<b-pagination>` ») : elles ne sont pas du balisage. Le compte réel est
 > `grep -rhn '<b-[a-z-]*' src --include='*.vue' | grep -vE '^[0-9]+:\s*(\*|//|/\*)'
-> | grep -o '<b-[a-z-]*' | wc -l` = **218 restantes**, à retrancher de 813.
+> | grep -o '<b-[a-z-]*' | wc -l` = **176 restantes**, à retrancher de 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -548,6 +551,32 @@ d'`environments.spec.js` lisaient la liste des connexions **sans ouvrir le
 menu**, ce que `b-dropdown` permettait puisqu'il rendait ses éléments en
 permanence. Le scénario est repris, pas le sélecteur.
 
+**Les formulaires restants de Security et de Common** demandent la dernière
+primitive à panneau : `Tabs` ([ADR-0017](adr/0017-primitive-tabs-en-vue-2.md)).
+Elle est la moins chère des quatre écrites à la main, parce qu'elle ne flotte
+pas — tout est dans le document. Deux choses qu'elle change :
+
+- **un onglet est désigné par une valeur, pas par un rang.**
+  `Users/CreateOrUpdate.vue` passait à `b-tabs` une prop `:object-tab-active`
+  qui n'existe pas et écoutait un `@tab-changed` qu'il n'émet pas : son
+  pilotage d'onglet ne faisait rien, et personne ne l'avait vu parce que
+  l'onglet par défaut est le bon ;
+- **le panneau caché est démonté** (`v-if`). Les champs de l'onglet « Custom »
+  n'existent plus pendant qu'on remplit « Basic ».
+
+Deux corrections de fond sont sorties de ce lot, toutes deux invisibles en
+lecture :
+
+- **Un panneau flottant ouvert dans une modale passait derrière elle.**
+  `CreateEnvironment` vit à deux endroits — une page et la modale de connexion.
+  La clause de `z-index` d'ADR-0012 et d'ADR-0014 est amendée par
+  [ADR-0018](adr/0018-panneaux-flottants-au-dessus-des-modales.md) : 1035 au
+  lieu de 1020, au-dessus de `Dialog` et sous la bande modale de Bootstrap.
+- **`SelectValue` n'affichait que la valeur brute tant que la liste n'avait pas
+  été ouverte** (`2` au lieu de `v2.x`), les `SelectItem` s'enregistrant à leur
+  montage. Le cas était prévu par la primitive : le libellé passe par son slot.
+  C'est le premier champ de la console dont la valeur et le libellé diffèrent.
+
 #### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
 
 Le `grep` répond à la mauvaise question : il dit « ce nom est écrit quelque
@@ -729,13 +758,13 @@ gros et le plus risqué.
 | `Security/Profiles/CreateOrUpdate.vue` | 11 | 216 | ✅ reprise |
 | `Security/Profiles/Filters.vue` | 10 | 155 | ⬜ |
 | `Security/Roles/Filters.vue` | 10 | 115 | ⬜ |
-| `Security/Users/CreateOrUpdate.vue` | 9 | 356 | ⬜ |
+| `Security/Users/CreateOrUpdate.vue` | 9 | 356 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
 | `Security/Profiles/ProfileItem.vue` | 9 | 186 | ✅ reprise |
 | `Security/Roles/RoleItem.vue` | 9 | 109 | ✅ reprise |
 | `Security/Roles/Page.vue` | 8 | 167 | ✅ reprise |
 | `Security/Users/Page.vue` | 8 | 120 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
-| `Security/Users/Steps/UserProfileList.vue` | 8 | 118 | ⬜ |
-| `Security/Users/Steps/CredentialsSelector.vue` | 8 | 112 | ⬜ |
+| `Security/Users/Steps/UserProfileList.vue` | 8 | 118 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
+| `Security/Users/Steps/CredentialsSelector.vue` | 8 | 112 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
 | `Security/Users/Steps/Basic.vue` | 7 | 91 | ✅ reprise |
 | `Security/Profiles/Page.vue` | 6 | 76 | ✅ reprise |
 | `Security/Users/UserItem.vue` | 6 | 204 | ✅ reprise |
@@ -763,7 +792,7 @@ gros et le plus risqué.
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
 | `Common/Filters/BasicFilter.vue` | 40 | 469 | ⬜ |
-| `Common/Environments/CreateEnvironment.vue` | 17 | 380 | ⬜ |
+| `Common/Environments/CreateEnvironment.vue` | 17 | 380 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
 | `Common/Filters/QuickFilter.vue` | 14 | 215 | ⬜ |
 | `Common/MainMenu.vue` | 14 | 200 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) |
 | `Common/Filters/FilterHistoryItem.vue` | 12 | 134 | ⬜ |
@@ -1564,6 +1593,28 @@ Gabarit à copier :
   même question à leur reprise : `BasicFilter` seul est piloté par 20 appels de
   `cy.select()`, tous dans `search.spec.js`.
 
+#### G-034 — Un panneau flottant ouvert dans une modale passe derrière elle
+
+- **Contexte** : phase 2, reprise de `CreateEnvironment.vue`. Son champ
+  « Kuzzle version » devient un `Select` ; le composant est monté à deux
+  endroits, une page et la modale de connexion d'`App.vue`.
+- **Symptôme** : cinq tests d'`environments.spec.js` échouent sur
+  `cy.click() failed because this element: <span
+  data-slot="select-item-text">v2.x</span> is being covered by another element:
+  <div class="tw:sm:w-1/3">`. Le message ne parle ni de `z-index` ni de modale,
+  et l'élément « couvrant » est un bloc du formulaire lui-même. Le test qui
+  ouvre le **même composant sur sa page** passe.
+- **Cause** : le panneau est à `z-index: 1020`, `Dialog` à 1030. ADR-0012 avait
+  posé cette valeur sur l'idée qu'« un menu ouvert derrière une modale ne doit
+  pas passer devant » — mais le cas courant est le menu ouvert **depuis** une
+  modale, et il était alors invisible et non cliquable.
+- **Solution** : 1035, au-dessus de `Dialog` et sous la bande modale de
+  Bootstrap ([ADR-0018](adr/0018-panneaux-flottants-au-dessus-des-modales.md)).
+- **À retenir** : quand Cypress dit « couvert par un autre élément », l'élément
+  nommé est celui du dessus à ce point de l'écran, pas la cause. Ici il
+  appartenait à la modale — c'est ça, l'indice.
+- **Ref** : [#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)
+
 #### G-033 — Un menu `bootstrap-vue` garde ses éléments dans le DOM même fermé
 
 - **Contexte** : phase 2, reprise d'`EnvironmentsSwitch.vue` avec la primitive
@@ -1583,6 +1634,12 @@ Gabarit à copier :
 - **À retenir** : un test qui lit le contenu d'un menu fermé teste le DOM de
   `bootstrap-vue`, pas l'application. Même famille que G-024 et G-026, mais ce
   n'est pas un sélecteur qu'il faut reprendre ici : c'est le scénario.
+- **Rencontré une deuxième fois** au lot suivant, sur une liste déroulante :
+  `cy.contains('v2.x')` trouvait une `<option>` que `b-form-select` rendait même
+  fermée — sur un environnement **malformé**, c'est-à-dire justement dépourvu de
+  version. L'assertion ne disait rien ; elle porte désormais sur l'état réel du
+  champ, le placeholder « Select version »
+  ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)).
 - **Ref** : [#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)
 
 #### G-032 — `Object.freeze` sur un composant passé en prop `as` casse son rendu
@@ -1740,3 +1797,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-21 | `Select` à la main en neuf pièces, panneau flottant extrait en mixin partagé | [ADR-0014](adr/0014-primitive-select-en-vue-2.md) |
 | 2026-09-21 | Pas de primitive `Calendar` : types natifs `date` et `time` pour le seul champ date | [ADR-0015](adr/0015-pas-de-primitive-calendar.md) |
 | 2026-09-21 | Supprimer le code non atteignable, et rendre le contrôle bloquant dans la CI | [ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md) |
+| 2026-09-21 | `Tabs` à la main, pilotée par valeur, panneau caché démonté | [ADR-0017](adr/0017-primitive-tabs-en-vue-2.md) |
+| 2026-09-21 | Les panneaux flottants passent au-dessus de `Dialog` (1035) | [ADR-0018](adr/0018-panneaux-flottants-au-dessus-des-modales.md) |

@@ -35,8 +35,11 @@ import { dropdownMenuContext } from './context';
  *   le panneau. Le panneau ne piège pas le focus — un menu n'est pas modal,
  *   `Tab` le ferme et rend la main au reste de la page.
  *
- * Le `z-index` est à 1020, soit sous `Dialog` (1030) et sous la bande modale de
- * Bootstrap : un menu ouvert derrière une modale ne doit pas passer devant.
+ * Le `z-index` est à 1035, soit **au-dessus** de `Dialog` (1030) et sous la
+ * bande modale de Bootstrap (`.modal-backdrop` 1040). Il valait 1020, sur
+ * l'idée qu'un menu ouvert derrière une modale ne doit pas passer devant —
+ * sauf que le menu ouvert *depuis* une modale est le cas courant, et il était
+ * alors invisible. Voir ADR-0018.
  */
 const ITEM_SELECTOR = '[role="menuitem"],[role="menuitemradio"],[role="menuitemcheckbox"]';
 
@@ -47,7 +50,7 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:z-1020 tw:min-w-32 tw:overflow-hidden tw:rounded-md',
+        'tw:z-1035 tw:min-w-32 tw:overflow-hidden tw:rounded-md',
         'tw:border tw:border-border tw:bg-popover tw:text-popover-foreground',
         'tw:p-1 tw:shadow-md tw:outline-none',
       );
