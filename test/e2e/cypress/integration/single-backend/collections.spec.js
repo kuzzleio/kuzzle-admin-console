@@ -236,6 +236,24 @@ describe('Collection management', function() {
     cy.get('[data-cy=DocumentsEmptyState]').should('exist')
   })
 
+  // Le menu d'actions d'un index n'avait aucune spec : il n'est monté que par
+  // l'en-tête de la liste des collections, et la suppression d'index n'était
+  // couverte que depuis la page Indexes, qui passe par un autre bouton.
+  it('Should be able to delete the index from the collection list', function() {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+    cy.visit(`/#/data/${indexName}`)
+
+    cy.get('[data-cy="CollectionList-name--' + collectionName + '"]').should('be.visible')
+
+    cy.get('[data-cy="IndexDropdownAction"]').click()
+    cy.get('[data-cy="IndexDropdown-delete"]').click()
+
+    cy.get('[data-cy="DeleteIndexModal-name"]').type(indexName, { force: true })
+    cy.get('[data-cy="DeleteIndexModal-deleteBtn"]').click()
+
+    cy.get('[data-cy=IndexesPage]').should('not.contain', indexName)
+  })
+
   it('Should be able to export a collection mapping', function() {
     cy.visit(`/#/data/${indexName}/create`)
 

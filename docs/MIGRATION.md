@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 63 / 137 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 67 / 134 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -293,7 +293,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**63 composants repris sur 137**, **423 balises `<b-*>` retirées sur 813**.
+**67 composants repris sur 134**, **431 balises `<b-*>` retirées sur 813**.
 
 > Ces deux compteurs disaient `49 / 140` et `289` jusqu'ici, alors que le
 > tableau ci-dessus annonçait `59 / 138` : la ligne n'avait pas été reprise
@@ -410,14 +410,41 @@ store Vuex que la console n'a plus depuis le passage à Pinia. Il ne rendait don
 pas ce qu'il prétendait rendre, et personne ne l'aurait vu. C'est le troisième
 composant dans ce cas.
 
-**Trois composants ont été supprimés plutôt que repris**, d'où le dénominateur
-à 137 : `ListViewButtons.vue` (importé nulle part, relevé le 2026-09-18 mais
-resté coché ⬜ dans le tableau), `ListActions.vue` (importé nulle part non plus
-— `Views/List.vue` réécrit ses trois boutons en propre) et
-`Collections/Tabs.vue` (ci-dessus). Le recensement initial comptait des
-fichiers, pas des composants atteignables. Trois sur 140 en sept lots : c'est
-assez pour vérifier qu'un composant est atteint avant de le reprendre, pas
-après.
+**Il ne reste qu'un fichier `<b-*>` dans Data** : `Layout.vue`, et sa balise
+n'est pas le sujet — c'est `vue-multipane`, abandonné, qui y tient le
+redimensionnement de la barre latérale (§ 3.1). Le reste du domaine est repris.
+
+Le dernier lot a porté sur l'arborescence (`Leftnav/`), le menu d'actions d'un
+index et la ligne de la vue graphique. Trois choses y ont changé de nature
+plutôt que de classes :
+
+- **le chevron d'une branche était un `<i>` cliquable** : ni atteignable au
+  clavier, ni annoncé. C'est un bouton, et il porte `aria-expanded` ;
+- **le dépliement animait un `max-height: 0` vers un `max-height: 2000px`**
+  arbitraire, qui tronquait les très longues listes. La grille passe de `0fr` à
+  `1fr` : la hauteur réelle du contenu, sans nombre magique. Replié, le contenu
+  fait toujours zéro pixel — ce que les specs lisent comme « non visible », et
+  c'est ce qui les fait tenir ;
+- **le menu d'un index ne ressemblait pas à celui d'une collection** — fond gris
+  de `variant="light"` d'un côté, bouton clair de l'autre, pour deux menus qui
+  font la même chose au même endroit. Les deux passent par la même variante.
+
+**Six composants ont été supprimés plutôt que repris**, d'où le dénominateur
+à 134 :
+
+| Composant | Pourquoi |
+|---|---|
+| `Documents/ListViewButtons.vue` | importé nulle part (relevé le 2026-09-18, resté coché ⬜) |
+| `Documents/ListActions.vue` | importé nulle part — `Views/List.vue` réécrit ses trois boutons en propre |
+| `Collections/Tabs.vue` | importé nulle part, et lisait un store Vuex que la console n'a plus |
+| `Documents/RealtimeOnlyEmptyState.vue` | importé nulle part — encore en balisage Materialize (`col s1 offset-s1`) |
+| `Documents/DocumentBoxItem.vue` | importé nulle part — idem, et seul client de `Materialize/Dropdown.vue` |
+| `Materialize/Dropdown.vue` | orphelin une fois le précédent parti |
+
+Le recensement initial comptait des fichiers, pas des composants atteignables.
+Six sur 140 en huit lots, et les deux derniers étaient encore écrits pour
+Materialize — un framework sorti du projet avant Bootstrap. Le réflexe est
+acquis : on vérifie qu'un composant est atteint **avant** de le reprendre.
 
 ## 2. Toolchain (phase 0)
 
@@ -517,13 +544,13 @@ gros et le plus risqué.
 | `Data/Documents/DeleteModal.vue` | 4 | 52 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Data/Documents/Views/List.vue` | 4 | 126 | ✅ reprise ([#1052](https://github.com/kuzzleio/kuzzle-admin-console/pull/1052)) |
-| `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
+| `Data/Leftnav/Treeview.vue` | 3 | 97 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
-| `Data/Indexes/DropdownActions.vue` | 3 | 75 | ⬜ |
+| `Data/Indexes/DropdownActions.vue` | 3 | 75 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Update.vue` | 3 | 173 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Realtime/Notification.vue` | 3 | 147 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
-| `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ⬜ |
+| `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Data/Collections/Create.vue` | 1 | 72 | ✅ reprise ([#1054](https://github.com/kuzzleio/kuzzle-admin-console/pull/1054)) |
 | `Data/Documents/Views/Column/HeaderTableView.vue` | 1 | 56 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Documents/EmptyState.vue` | 1 | 39 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
@@ -533,9 +560,9 @@ gros et le plus risqué.
 | `Data/Documents/Create.vue` | 1 | 138 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/NoGeopointFieldState.vue` | 1 | 12 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Collections/Update.vue` | 1 | 104 | ✅ reprise ([#1054](https://github.com/kuzzleio/kuzzle-admin-console/pull/1054)) |
-| `Data/Documents/RealtimeOnlyEmptyState.vue` | 0 | 45 | ⬜ |
-| `Data/Documents/Views/TimeSeriesItem.vue` | 0 | 151 | ⬜ |
-| `Data/Documents/DocumentBoxItem.vue` | 0 | 114 | ⬜ |
+| `Data/Documents/RealtimeOnlyEmptyState.vue` | 0 | 45 | ➖ supprimé — importé nulle part ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
+| `Data/Documents/Views/TimeSeriesItem.vue` | 0 | 151 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
+| `Data/Documents/DocumentBoxItem.vue` | 0 | 114 | ➖ supprimé — importé nulle part ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Data/Documents/ListViewButtons.vue` | 0 | 104 | ➖ supprimé — importé nulle part ([#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020)) |
 | `Data/Collections/Tabs.vue` | 0 | 102 | ➖ supprimé — importé nulle part ([#1054](https://github.com/kuzzleio/kuzzle-admin-console/pull/1054)) |
 
@@ -656,7 +683,7 @@ gros et le plus risqué.
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
 | `Materialize/Tabs.vue` | 0 | 87 | ⬜ |
-| `Materialize/Dropdown.vue` | 0 | 69 | ⬜ |
+| `Materialize/Dropdown.vue` | 0 | 69 | ➖ supprimé — orphelin avec `DocumentBoxItem.vue` ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Materialize/Tab.vue` | 0 | 53 | ⬜ |
 | `Materialize/Headline.vue` | 0 | 36 | ⬜ |
 | `Materialize/Toaster.vue` | 0 | 22 | ⬜ |

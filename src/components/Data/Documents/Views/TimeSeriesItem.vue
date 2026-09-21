@@ -1,21 +1,29 @@
 <template>
-  <div class="row mr-1 no-gutters mb-2">
-    <div class="col relative m-1">
+  <div class="tw:mb-2 tw:mr-1 tw:flex tw:items-center tw:gap-2">
+    <div class="tw:relative tw:flex-1">
+      <!--
+        Le bouton n'a pas de contenu : c'est la pastille de couleur elle-même.
+        Sans libellé, il n'existe pas pour un lecteur d'écran — d'où
+        `aria-label`, et `aria-expanded` pour l'état du sélecteur.
+      -->
       <button
-        class="TimeSeriesColorPickerBtn btn btn-small"
+        :aria-expanded="showColorPicker ? 'true' : 'false'"
+        aria-label="Choose the color of this value"
+        class="tw:h-5 tw:w-full tw:cursor-pointer tw:appearance-none tw:rounded-md tw:border tw:border-border"
         data-cy="TimeSeriesItem-colorPickerBtn"
         :style="{ 'background-color': newColor }"
+        type="button"
         @click.prevent="togglePicker"
       />
       <color-picker
         v-show="showColorPicker"
         v-model="newColor"
-        class="TimeSeriesColorPicker"
+        class="tw:absolute tw:z-50"
         data-cy="TimeSeriesItem-colorPicker"
         @input="updateColor"
       />
     </div>
-    <div class="col mr-1 ml-1">
+    <div class="tw:flex-1">
       <autocomplete
         v-if="!isUpdatable"
         placeholder="Add a value"
@@ -24,21 +32,28 @@
         :notify-change="false"
         @autocomplete::change="(attribute) => addItem(attribute)"
       />
-      <input v-else :value="value" :disabled="true" class="form-control" />
+      <Input v-else disabled :model-value="value" />
     </div>
-    <div class="col-1 ml-1 TimeSeriesColorPickerRemoveContanainer">
-      <i
+    <div class="tw:flex tw:w-8 tw:items-center tw:justify-center">
+      <Button
         v-if="isUpdatable"
-        class="far fa-times-circle TimeSeriesColorPickerRemoveBtn"
+        aria-label="Remove this value from the chart"
+        class="tw:size-8"
         data-cy="TimeSeriesItem-removeBtn"
+        size="icon"
+        variant="ghost"
         @click.prevent="$emit('timeseriesitem::remove', index)"
-      />
+      >
+        <i aria-hidden="true" class="far fa-times-circle tw:text-muted-foreground" />
+      </Button>
     </div>
   </div>
 </template>
-
 <script>
 import { Chrome as ColorPicker } from 'vue-color';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 import Autocomplete from '@/components/Common/Autocomplete.vue';
 
@@ -56,7 +71,9 @@ export default {
   name: 'TimeSeriesItem',
   components: {
     Autocomplete,
+    Button,
     ColorPicker,
+    Input,
   },
   props: {
     value: {
@@ -122,33 +139,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.TimeSeriesView {
-  margin-top: 10px;
-}
-.TimeSeriesColorPickerBtn {
-  width: 100%;
-  height: 20px;
-  margin-top: 5px;
-}
-
-.TimeSeriesColorPicker {
-  position: absolute;
-  z-index: 999;
-}
-
-.TimeSeriesColorPickerRemoveContanainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.TimeSeriesColorPickerRemoveBtn {
-  cursor: pointer;
-}
-
-.relative {
-  position: relative;
-}
-</style>

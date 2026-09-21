@@ -1,82 +1,123 @@
 <template>
-  <div :class="{ open }" class="IndexBranch mt-2">
-    <i
-      aria-hidden="true"
-      class="fa fa-caret-right pointer tree-toggle"
+  <div class="IndexBranch tw:mt-2 tw:overflow-hidden tw:whitespace-nowrap">
+    <!--
+      Le chevron était un `<i>` cliquable : invisible au clavier, et muet pour
+      un lecteur d'écran. C'est un bouton, et il annonce l'état de la branche.
+    -->
+    <Button
+      :aria-expanded="open ? 'true' : 'false'"
+      :aria-label="`Collections of index ${index.name}`"
+      class="tw:size-5 tw:align-middle"
       :data-cy="`IndexBranch-toggle--${index.name}`"
+      size="icon"
+      variant="ghost"
       @click="onToggleBranchClicked"
-    />
+    >
+      <i
+        aria-hidden="true"
+        class="fa fa-caret-right tw:text-muted-foreground tw:transition-transform tw:duration-200"
+        :class="{ 'tw:rotate-90': open }"
+      />
+    </Button>
     <router-link
-      class="tree-item truncate mt-2"
+      class="tw:mx-1 tw:truncate tw:px-1 tw:text-foreground"
       :data-cy="`Treeview-item-index-link--${index.name}`"
-      :class="{ active: isIndexActive(index.name) }"
+      :class="{ 'tw:font-bold': isIndexActive(index.name) }"
       :title="index.name"
       :to="{ name: 'Collections', params: { indexName: index.name } }"
     >
-      <i class="fa fa-database" aria-hidden="true" />
+      <i class="fa fa-database tw:mr-1 tw:text-muted-foreground" aria-hidden="true" />
       <HighlightedSpan :value="index.name" :filter="filter" />
 
       <template v-if="index.collectionsCount !== undefined"
         >&nbsp;({{ index.collectionsCount }})</template
       >
     </router-link>
-    <b-spinner v-if="isLoading" small />
-    <div v-if="collectionsFetched" class="collections">
-      <template v-if="orderedFilteredCollections.length">
-        <div
-          v-for="collection in orderedFilteredCollections"
-          :key="`${collection.name}-${collection.type}`"
-          class="tree-item truncate mt-2"
-          :class="{ active: isCollectionActive(index.name, collection.name) }"
-          :data-cy="`Treeview-item--${collection.name}`"
-          :title="collection.name"
+    <Spinner v-if="isLoading" size="sm" />
+    <!--
+      Le dépliement animait un `max-height: 0` vers un `max-height: 2000px`
+      arbitraire, qui plafonnait les très longues listes. La grille passe de
+      `0fr` à `1fr` : la hauteur réelle du contenu, sans nombre magique. Replié,
+      le contenu fait toujours zéro pixel — ce que les specs lisent comme
+      « non visible ».
+    -->
+    <div
+      v-if="collectionsFetched"
+      class="tw:grid tw:pl-6 tw:transition-[grid-template-rows] tw:duration-500 tw:ease-out"
+      :class="open ? 'tw:grid-rows-[1fr]' : 'tw:grid-rows-[0fr]'"
+    >
+      <div class="tw:overflow-hidden">
+        <template v-if="orderedFilteredCollections.length">
+          <div
+            v-for="collection in orderedFilteredCollections"
+            :key="`${collection.name}-${collection.type}`"
+            class="tw:mx-1 tw:mt-2 tw:truncate tw:px-1 tw:text-foreground"
+            :class="{
+              'tw:font-bold': isCollectionActive(index.name, collection.name),
+            }"
+            :data-cy="`Treeview-item--${collection.name}`"
+            :title="collection.name"
+          >
+            <template v-if="collection.isRealtime()">
+              <i
+                class="fa fa-bolt tw:mr-2 tw:ml-1 tw:text-muted-foreground"
+                aria-hidden="true"
+                title="Volatile collection"
+              />
+              <router-link
+                class="tw:text-foreground"
+                :to="{
+                  name: 'WatchCollection',
+                  params: {
+                    indexName: index.name,
+                    collectionName: collection.name,
+                  },
+                }"
+              >
+                <HighlightedSpan :value="collection.name" :filter="filter" />
+              </router-link>
+            </template>
+            <template v-else>
+              <i
+                class="fa fa-th-list tw:mr-1 tw:text-muted-foreground"
+                aria-hidden="true"
+                title="Persisted collection"
+              />
+              <router-link
+                class="tw:text-foreground"
+                :to="{
+                  name: 'DocumentList',
+                  params: {
+                    indexName: index.name,
+                    collectionName: collection.name,
+                  },
+                }"
+              >
+                <HighlightedSpan :value="collection.name" :filter="filter" />
+              </router-link>
+            </template>
+          </div>
+        </template>
+        <template v-else><span class="tw:text-muted-foreground">no collections</span></template>
+        <Button
+          v-if="showMoreCollectionsDisplay"
+          class="tw:mx-1 tw:h-auto tw:px-1"
+          size="sm"
+          variant="link"
+          @click="toggleShowMoreCollections"
         >
-          <template v-if="collection.isRealtime()">
-            <i class="fa fa-bolt ml-1 mr-2" aria-hidden="true" title="Volatile collection" />
-            <router-link
-              :to="{
-                name: 'WatchCollection',
-                params: {
-                  indexName: index.name,
-                  collectionName: collection.name,
-                },
-              }"
-            >
-              <HighlightedSpan :value="collection.name" :filter="filter" />
-            </router-link>
-          </template>
-          <template v-else>
-            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection" />
-            <router-link
-              :to="{
-                name: 'DocumentList',
-                params: {
-                  indexName: index.name,
-                  collectionName: collection.name,
-                },
-              }"
-            >
-              <HighlightedSpan :value="collection.name" :filter="filter" />
-            </router-link>
-          </template>
-        </div>
-      </template>
-      <template v-else><span class="text-muted">no collections</span></template>
-      <b-link
-        v-if="showMoreCollectionsDisplay"
-        class="tree-item truncate"
-        @click="toggleShowMoreCollections"
-      >
-        <u v-if="!showMoreCollections">Show More</u>
-        <u v-else>Show only results</u>
-      </b-link>
+          <template v-if="!showMoreCollections">Show More</template>
+          <template v-else>Show only results</template>
+        </Button>
+      </div>
     </div>
   </div>
 </template>
-
 <script>
 import { mapActions, mapState } from 'pinia';
 
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
 
@@ -84,7 +125,9 @@ import HighlightedSpan from '@/components/Common/HighlightedSpan.vue';
 
 export default {
   components: {
+    Button,
     HighlightedSpan,
+    Spinner,
   },
   props: {
     forceOpen: {
@@ -212,62 +255,3 @@ export default {
   },
 };
 </script>
-
-<style scoped lang="scss">
-.IndexBranch {
-  white-space: nowrap;
-  overflow-y: hidden;
-  overflow-x: hidden;
-}
-
-.collections {
-  padding-left: 25px;
-  overflow-y: hidden;
-  max-height: 0;
-  overflow: hidden;
-}
-
-.open .collections {
-  max-height: 2000px;
-  transition: max-height 0.5s ease-out;
-}
-
-a {
-  color: #002835;
-}
-
-.tree-item {
-  padding: 0 5px;
-  margin: 0 5px;
-  color: #002835;
-  &.active {
-    font-weight: bold;
-  }
-}
-
-.fa {
-  margin-right: 5px;
-  color: rgb(100, 100, 100);
-  &:hover {
-    margin-right: 5px;
-    color: rgb(50, 50, 50);
-  }
-}
-
-.pointer {
-  cursor: pointer;
-}
-
-.tree-toggle {
-  transition-duration: 0.2s;
-  transform-origin: 50% 50%;
-}
-
-.open .tree-toggle {
-  transform: rotate(90deg);
-}
-
-.no-caret {
-  margin: 0 0.35em;
-}
-</style>

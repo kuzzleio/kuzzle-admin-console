@@ -1,45 +1,77 @@
 <template>
   <span>
-    <b-dropdown
-      v-if="backendMajorVersion !== 1"
-      :id="`index-${indexName}`"
-      data-cy="IndexDropdownAction"
-      no-caret
-      toggle-class="indexDropdown"
-      variant="light"
-    >
-      <template #button-content>
-        <i class="fas fa-ellipsis-v" />
-      </template>
+    <DropdownMenu v-if="backendMajorVersion !== 1">
+      <DropdownMenuTrigger
+        :as="Button"
+        :aria-label="`Actions on index ${indexName}`"
+        data-cy="IndexDropdownAction"
+        size="icon"
+        variant="outline"
+      >
+        <i aria-hidden="true" class="fas fa-ellipsis-v" />
+      </DropdownMenuTrigger>
 
-      <b-dropdown-group header="Actions">
-        <b-dropdown-item
-          v-if="backendMajorVersion !== 1"
-          data-cy="IndexDropdown-delete"
-          :disabled="!canDeleteIndex(indexName)"
-          :title="
-            !canDeleteIndex(indexName) ? 'Your rights do not allow you to delete this index' : ''
-          "
-          @click="onDeleteIndexClicked"
-        >
-          Delete index
-        </b-dropdown-item>
-      </b-dropdown-group>
-    </b-dropdown>
+      <DropdownMenuContent align="end">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+          <DropdownMenuItem
+            data-cy="IndexDropdown-delete"
+            :disabled="!canDeleteIndex(indexName)"
+            :title="
+              !canDeleteIndex(indexName) ? 'Your rights do not allow you to delete this index' : ''
+            "
+            variant="destructive"
+            @select="$emit('delete-index-clicked')"
+          >
+            Delete index
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   </span>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
-export default {
+/*
+ * Jumeau de `Collections/DropdownAction.vue` (ADR-0012). Deux choses de
+ * `b-dropdown` ne sont pas reportées :
+ *
+ * - la rotation de l'icône à l'ouverture, qui reposait sur la classe `.show`
+ *   que bootstrap-vue posait sur le conteneur. Le déclencheur porte désormais
+ *   `aria-expanded`, qui dit la même chose à qui ne voit pas l'écran ;
+ * - le fond gris de `variant="light"`, remplacé par la variante `outline` du
+ *   bouton — la même que le menu des collections, pour que deux menus
+ *   identiques se ressemblent enfin.
+ */
+export default defineComponent({
   name: 'IndexDropdownAction',
+  components: {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+  },
   props: {
     indexName: {
-      type: String,
       required: true,
+      type: String,
     },
   },
   setup() {
@@ -47,29 +79,16 @@ export default {
       kuzzleStore: useKuzzleStore(),
     };
   },
+  data() {
+    return {
+      Button: Object.freeze(Button),
+    };
+  },
   computed: {
     ...mapState(useAuthStore, ['canDeleteIndex']),
-    backendMajorVersion() {
+    backendMajorVersion(): number | undefined {
       return this.kuzzleStore.currentEnvironment?.backendMajorVersion;
     },
   },
-  methods: {
-    onDeleteIndexClicked() {
-      this.$emit('delete-index-clicked');
-    },
-  },
-};
+});
 </script>
-
-<style lang="scss" scoped>
-@use '@/assets/styles/variables.scss';
-
-::v-deep .indexDropdown {
-  background-color: variables.$light-grey-color;
-  border: none;
-}
-
-::v-deep .show .indexDropdown i {
-  transform: rotate(90deg);
-}
-</style>
