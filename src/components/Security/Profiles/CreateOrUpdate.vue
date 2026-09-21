@@ -1,59 +1,48 @@
 <template>
-  <b-card class="ProfileCreateOrUpdate">
-    <!-- Json view -->
-    <b-row class="h-100">
-      <b-col lg="7" md="12" class="d-flex flex-column">
-        <b-form-group
-          v-if="!id"
-          data-cy="ProfileCreateOrUpdate-id"
-          label="Profile ID"
-          label-cols="3"
-          label-for="profile-id"
-          :description="!id ? 'This field is mandatory' : ''"
-          :invalid-feedback="idFeedback"
-        >
-          <b-input
+  <Card class="ProfileCreateOrUpdate">
+    <CardContent class="tw:flex tw:h-full tw:flex-col tw:gap-6 tw:lg:flex-row">
+      <!-- Json view -->
+      <div class="tw:flex tw:flex-col tw:gap-4 tw:lg:w-7/12">
+        <FormItem v-if="!id" data-cy="ProfileCreateOrUpdate-id">
+          <Label for="profile-id">Profile ID</Label>
+          <Input
             id="profile-id"
             v-model="v$.idValue.$model"
-            :disabled="id"
-            :state="validateState('idValue')"
+            :aria-invalid="idFeedback ? 'true' : undefined"
           />
-        </b-form-group>
-        <b-form-group
-          v-else
-          label="Profile ID"
-          label-cols="3"
-          :description="!id ? 'This field is mandatory' : ''"
-        >
-          <b-input :disabled="true" :value="id" />
-        </b-form-group>
+          <FormMessage v-if="idFeedback">{{ idFeedback }}</FormMessage>
+          <FormDescription v-else>This field is mandatory</FormDescription>
+        </FormItem>
+        <FormItem v-else>
+          <Label for="profile-id">Profile ID</Label>
+          <Input id="profile-id" disabled :value="id" />
+        </FormItem>
 
         <json-editor
           ref="jsoneditor"
           class="ProfileCreateOrUpdate-jsonEditor"
-          data-cy="ProfileCreateOrUpdate-jsonEditor"
           :content="profile"
+          data-cy="ProfileCreateOrUpdate-jsonEditor"
           @change="onContentChange"
         />
-      </b-col>
+      </div>
 
       <!-- Mapping -->
-      <b-col lg="5" md="12" class="d-flex flex-column">
+      <div class="tw:lg:w-5/12">
         <h3>Cheatsheet</h3>
         <div class="ProfileCreateOrUpdate-cheatsheet">
           Your profile is a set of <code>policies</code>, each of which will contain a set of roles,
           like the example below:
-          <pre class="my-3 ml-3">
+          <pre class="tw:my-3 tw:ms-3">
 {
   "policies": [{
       "roleId": "roleId"
     }]
 }
-        </pre
-          >
+          </pre>
           You can also restrict your policy to a set of indexes and collections, so that your roles
           will be valid to a specific subset of your data, like the example below:
-          <pre class="my-3 ml-3">
+          <pre class="tw:my-3 tw:ms-3">
 {
   "policies": [{
       "roleId": "roleId"
@@ -66,46 +55,44 @@
       }
     }]
 }
-        </pre
-          >
+          </pre>
         </div>
-      </b-col>
-    </b-row>
-
-    <template #footer>
-      <div class="text-right">
-        <b-button @click="$emit('cancel')">Cancel</b-button>
-        <b-button
-          v-if="!id"
-          class="ml-2"
-          data-cy="ProfileCreateOrUpdate-createBtn"
-          variant="primary"
-          :disabled="submitting"
-          @click="submit"
-        >
-          <i class="fa fa-plus-circle left" />
-          Create
-        </b-button>
-        <b-button
-          v-if="!!id"
-          class="ml-2"
-          data-cy="ProfileCreateOrUpdate-updateBtn"
-          variant="primary"
-          :disabled="submitting"
-          @click="submit"
-        >
-          <i class="fa fa-pencil-alt left" />
-          Update
-        </b-button>
       </div>
-    </template>
-  </b-card>
+    </CardContent>
+
+    <CardFooter class="tw:justify-end tw:gap-2">
+      <Button variant="outline" @click="$emit('cancel')">Cancel</Button>
+      <Button
+        v-if="!id"
+        data-cy="ProfileCreateOrUpdate-createBtn"
+        :disabled="submitting"
+        @click="submit"
+      >
+        <i class="fa fa-plus-circle" aria-hidden="true" />
+        Create
+      </Button>
+      <Button
+        v-if="!!id"
+        data-cy="ProfileCreateOrUpdate-updateBtn"
+        :disabled="submitting"
+        @click="submit"
+      >
+        <i class="fa fa-pencil-alt" aria-hidden="true" />
+        Update
+      </Button>
+    </CardFooter>
+  </Card>
 </template>
 
 <script>
 import { useVuelidate } from '@vuelidate/core';
 import { not, requiredUnless, helpers } from '@vuelidate/validators';
 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { startsWithSpace, isWhitespace } from '@/validators';
 
@@ -114,7 +101,16 @@ import JsonEditor from '@/components/Common/JsonEditor.vue';
 export default {
   name: 'ProfileCreateOrUpdate',
   components: {
+    Button,
+    Card,
+    CardContent,
+    CardFooter,
+    FormDescription,
+    FormItem,
+    FormMessage,
+    Input,
     JsonEditor,
+    Label,
   },
   directives: {
     JsonFormatter,
@@ -176,10 +172,6 @@ export default {
     },
   },
   methods: {
-    validateState(fieldName) {
-      const { $dirty, $error } = this.v$[fieldName];
-      return $dirty ? !$error : null;
-    },
     onContentChange(value) {
       this.profileValue = value;
     },

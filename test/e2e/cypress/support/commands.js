@@ -260,13 +260,20 @@ Cypress.Commands.add('goOnline', () => {
 
 /**
  * Message de validation d'un champ de formulaire.
- * Rendu par `<b-form-group :invalid-feedback>` dans une div `.invalid-feedback`
- * sur laquelle nous ne pouvons pas poser d'attribut.
+ *
+ * Deux rendus cohabitent pendant la phase 2 : `<b-form-group :invalid-feedback>`
+ * produit une div `.invalid-feedback` sur laquelle nous ne pouvons pas poser
+ * d'attribut, et la primitive `FormMessage` produit un `<p>` marqué
+ * `data-slot="form-message"` — la convention de shadcn-vue. La commande
+ * accepte les deux, pour que la migration d'un formulaire ne touche pas les
+ * specs. La première branche disparaîtra avec le dernier `b-form-group`.
  *
  * @param {string} parentSelector sélecteur du groupe de formulaire parent
  */
 Cypress.Commands.add('invalidFeedback', (parentSelector) => {
-  return cy.get(`${parentSelector} .invalid-feedback`);
+  return cy.get(
+    `${parentSelector} .invalid-feedback, ${parentSelector} [data-slot="form-message"]`
+  );
 });
 
 /**

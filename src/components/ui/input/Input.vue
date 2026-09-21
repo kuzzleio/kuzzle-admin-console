@@ -26,6 +26,14 @@ export const inputClasses = [
   'tw:font-sans tw:text-sm tw:leading-none tw:text-foreground',
   'tw:transition-colors tw:outline-none',
   'tw:placeholder:text-muted-foreground',
+  // `type="file"` : l'input natif dessine son propre bouton, que le preflight
+  // absent laisse tel quel. Les variantes `file:` le raccordent aux tokens.
+  'tw:file:mr-3 tw:file:border-0 tw:file:bg-transparent tw:file:font-sans tw:file:text-sm tw:file:font-medium tw:file:text-foreground',
+  'tw:cursor-pointer tw:file:cursor-pointer',
+  // L'état invalide se déclare avec `aria-invalid`, pas avec une prop `state`
+  // comme `b-input` : l'attribut porte l'information pour le lecteur d'écran
+  // **et** pour la feuille de styles, au lieu de la dupliquer.
+  'tw:aria-invalid:border-destructive tw:aria-invalid:focus-visible:ring-destructive',
   'tw:focus-visible:ring-2 tw:focus-visible:ring-ring tw:focus-visible:ring-offset-2 tw:focus-visible:ring-offset-background',
   'tw:disabled:cursor-not-allowed tw:disabled:opacity-50',
 ].join(' ');

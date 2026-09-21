@@ -263,6 +263,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `Spinner` (ajoutée en reprenant `Offline.vue`) | ✅ |
 | `Label` et `Alert` (ajoutées en reprenant les modales d'import et de requête) | ✅ |
 | `Checkbox` (ajoutée en reprenant les trois lignes de liste de Security) | ✅ |
+| `FormItem`, `FormDescription`, `FormMessage` (sans `FormField` ni `FormControl`) | ✅ |
 | `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) | ✅ |
 | Primitives interactives restantes (dropdown, combobox) | ⬜ |
 
@@ -281,7 +282,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**23 composants repris sur 140**, 109 balises `<b-*>` sur 813.
+**28 composants repris sur 140**, 156 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -449,9 +450,9 @@ gros et le plus risqué.
 | `Security/Profiles/List.vue` | 17 | 335 | ⬜ |
 | `Security/Roles/List.vue` | 16 | 306 | ⬜ |
 | `Security/Layout.vue` | 13 | 98 | ⬜ |
-| `Security/Roles/CreateOrUpdate.vue` | 13 | 275 | ⬜ |
-| `Security/Users/EditCustomMapping.vue` | 13 | 176 | ⬜ |
-| `Security/Profiles/CreateOrUpdate.vue` | 11 | 216 | ⬜ |
+| `Security/Roles/CreateOrUpdate.vue` | 13 | 275 | ✅ reprise |
+| `Security/Users/EditCustomMapping.vue` | 13 | 176 | ✅ reprise |
+| `Security/Profiles/CreateOrUpdate.vue` | 11 | 216 | ✅ reprise |
 | `Security/Profiles/Filters.vue` | 10 | 155 | ⬜ |
 | `Security/Roles/Filters.vue` | 10 | 115 | ⬜ |
 | `Security/Users/CreateOrUpdate.vue` | 9 | 356 | ⬜ |
@@ -461,13 +462,13 @@ gros et le plus risqué.
 | `Security/Users/Page.vue` | 8 | 120 | ⬜ |
 | `Security/Users/Steps/UserProfileList.vue` | 8 | 118 | ⬜ |
 | `Security/Users/Steps/CredentialsSelector.vue` | 8 | 112 | ⬜ |
-| `Security/Users/Steps/Basic.vue` | 7 | 91 | ⬜ |
+| `Security/Users/Steps/Basic.vue` | 7 | 91 | ✅ reprise |
 | `Security/Profiles/Page.vue` | 6 | 76 | ✅ reprise |
 | `Security/Users/UserItem.vue` | 6 | 204 | ✅ reprise |
 | `Security/Users/DeleteModal.vue` | 4 | 57 | ✅ reprise |
 | `Security/Roles/DeleteModal.vue` | 4 | 57 | ✅ reprise |
 | `Security/Profiles/DeleteModal.vue` | 4 | 57 | ✅ reprise |
-| `Security/Users/Steps/CustomData.vue` | 3 | 80 | ⬜ |
+| `Security/Users/Steps/CustomData.vue` | 3 | 80 | ✅ reprise |
 | `Security/Profiles/Update.vue` | 2 | 120 | ✅ reprise |
 | `Security/Profiles/Create.vue` | 1 | 71 | ✅ reprise |
 | `Security/Common/Notice.vue` | 1 | 26 | ✅ reprise |
@@ -1005,6 +1006,26 @@ Gabarit à copier :
   attributs qui peuvent servir d'ancrage — `id`, `name`, `aria-*` —, pas
   seulement les `data-cy` et les classes. Un `grep` de l'`id` dans
   `test/e2e/` coûte dix secondes ; ce test-là en a coûté six minutes.
+
+#### G-018 — `flex flex-col` sur un bloc de texte coupe chaque mot balisé en ligne
+
+- **Contexte** : phase 2, reprise des deux `CreateOrUpdate` de Security. Les
+  `<b-col>` deviennent des `<div>`, et j'ai repris par réflexe le
+  `tw:flex tw:flex-col` qui servait à l'autre colonne.
+- **Symptôme** : le pense-bête (« Your role consists of a `controllers`
+  object… ») s'affiche en escalier — chaque `<code>` seul sur sa ligne, chaque
+  morceau de phrase sur la sienne. Aucune spec ne le voit : le texte est bien
+  là, c'est sa mise en forme qui est cassée.
+- **Cause** : un conteneur `display: flex` transforme **chaque enfant**, nœud de
+  texte compris, en élément de flex. `flex-direction: column` les empile donc un
+  par ligne, et le texte cesse de couler autour de ses `<code>`. `b-col` était
+  un simple bloc, il n'avait pas ce comportement.
+- **Solution** : ne pas mettre de `flex` sur un conteneur dont le contenu est de
+  la prose. Le `flex` va sur la *rangée* qui porte les deux colonnes, pas sur
+  les colonnes elles-mêmes.
+- **À retenir** : `d-flex flex-column` de Bootstrap avait le même effet — mais
+  l'ancien code ne le posait pas là. Traduire une classe pour la traduire est le
+  bon moyen d'en introduire une qui n'existait pas.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

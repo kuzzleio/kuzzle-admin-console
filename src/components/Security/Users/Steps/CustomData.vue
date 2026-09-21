@@ -4,22 +4,22 @@
       Here, you can define the custom content of your users. The fields you define here will appear
       in the <code>content</code> field of your user object, along with <code>profileIds</code> and
       <code>_kuzzle_info</code>.
-      <!-- Json view -->
-      <b-row class="mt-3">
-        <b-col cols="8">
+      <div class="tw:mt-3 tw:flex tw:flex-col tw:gap-6 tw:lg:flex-row">
+        <!-- Json view -->
+        <div class="tw:lg:w-8/12">
           <h3>Custom content</h3>
           <json-editor
             ref="jsoneditor"
-            data-cy="UserCustomContent-jsonEditor"
             class="document-json"
             :content="value"
+            data-cy="UserCustomContent-jsonEditor"
             :height="300"
             @change="jsonChanged"
           />
-        </b-col>
+        </div>
 
         <!-- Mapping -->
-        <b-col>
+        <div class="tw:lg:w-4/12">
           <h3>Mapping</h3>
           <pre
             v-json-formatter="{
@@ -27,8 +27,8 @@
               open: true,
             }"
           />
-        </b-col>
-      </b-row>
+        </div>
+      </div>
     </form>
   </div>
 </template>
