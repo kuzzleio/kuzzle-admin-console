@@ -1,56 +1,110 @@
 <template>
-  <b-card class="Notification" data-cy="Notification" no-body :class="headerClass">
-    <b-card-header data-cy="Notification-header" @click="collapsed = !collapsed">
-      <i :class="{ 'fa-caret-right': !collapsed, 'fa-caret-down': collapsed }" class="fa" />
-      <i class="ml-3 fa" :class="`fa-${icon}`" /><span class="code"> {{ text }}</span>
-      <span class="text-secondary"> - {{ time }}</span>
-    </b-card-header>
-    <b-collapse v-model="collapsed" class="p-3 overflow-auto">
+  <Card
+    class="Notification tw:gap-0 tw:overflow-hidden tw:rounded-none tw:border-b-0 tw:py-0 tw:shadow-none tw:first:rounded-t-md tw:last:rounded-b-md tw:last:border-b"
+    data-cy="Notification"
+  >
+    <button
+      :aria-expanded="expanded ? 'true' : 'false'"
+      :class="headerClasses"
+      data-cy="Notification-header"
+      type="button"
+      @click="expanded = !expanded"
+    >
+      <i aria-hidden="true" :class="['fa', expanded ? 'fa-caret-down' : 'fa-caret-right']" />
+      <i aria-hidden="true" class="fa" :class="`fa-${icon}`" />
+      <span class="code">{{ text }}</span>
+      <span class="tw:text-muted-foreground">— {{ time }}</span>
+    </button>
+    <div v-if="expanded" class="tw:overflow-auto tw:p-3">
       <p v-json-formatter="{ content: notification, open: true }" />
-    </b-collapse>
-  </b-card>
+    </div>
+  </Card>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import moment from 'moment';
 
+import { Card } from '@/components/ui/card';
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { truncateName } from '@/utils';
 
-export default {
+interface RealtimeNotification {
+  action?: string;
+  result?: { _id?: string };
+  timestamp?: number;
+  type?: string;
+}
+
+/*
+ * Une notification du flux temps réel, repliable.
+ *
+ * Les quatre familles (publication, document, souscription, suppression) se
+ * distinguent par la couleur de leur en-tête, prise dans les tokens
+ * `notification-*` — la teinte n'est pas une décoration, c'est ce qui rend un
+ * flux qui défile lisible d'un coup d'œil.
+ *
+ * Les classes sont écrites en clair et non composées : Tailwind lit les
+ * sources en texte, une classe fabriquée par concaténation n'existerait pas
+ * dans la feuille produite.
+ */
+const HEADER_BACKGROUNDS: Record<string, string> = {
+  document: 'tw:bg-notification-document',
+  delete: 'tw:bg-notification-delete',
+  publish: 'tw:bg-notification-publish',
+  subscribe: 'tw:bg-notification-subscribe',
+};
+
+export default defineComponent({
   name: 'Notification',
   directives: {
     JsonFormatter,
   },
-  props: ['notification'],
+  components: {
+    Card,
+  },
+  props: {
+    notification: {
+      required: true,
+      type: Object as PropType<RealtimeNotification>,
+    },
+  },
   data() {
     return {
-      collapsed: false,
+      expanded: false,
     };
   },
   computed: {
-    headerClass() {
+    family(): string {
       switch (this.notification.action) {
         case 'publish':
-          return 'Notification--publish';
+          return 'publish';
         case 'create':
         case 'createOrReplace':
         case 'replace':
-          return 'Notification--document';
+          return 'document';
         case 'subscribe':
         case 'unsubscribe':
-          return 'Notification--subscribe';
+          return 'subscribe';
         case 'delete':
-          return 'Notification--delete';
+          return 'delete';
       }
       return '';
     },
-    notificationId() {
-      return this.notification.type === 'document' && this.notification.result._id
+    headerClasses(): string[] {
+      return [
+        'tw:flex tw:w-full tw:cursor-pointer tw:items-center tw:gap-2',
+        'tw:border-0 tw:px-3 tw:py-2 tw:text-left',
+        'tw:font-sans tw:text-sm tw:text-card-foreground',
+        HEADER_BACKGROUNDS[this.family] ?? 'tw:bg-muted',
+      ];
+    },
+    notificationId(): string {
+      return this.notification.type === 'document' && this.notification.result?._id
         ? truncateName(this.notification.result._id)
         : '';
     },
-    icon() {
+    icon(): string {
       switch (this.notification.action) {
         case 'publish':
           return 'paper-plane';
@@ -62,10 +116,10 @@ export default {
       }
       return 'file';
     },
-    time() {
+    time(): string {
       return moment(this.notification.timestamp).format('H:mm:ss');
     },
-    text() {
+    text(): string {
       switch (this.notification.action) {
         case 'publish':
           return 'Volatile notification';
@@ -105,43 +159,5 @@ export default {
       return 'New notification';
     },
   },
-};
+});
 </script>
-
-<style lang="scss" scoped>
-$types: (
-  'publish': #e3eff4,
-  'document': #cae6d3,
-  'subscribe': #e1c8e8,
-  'delete': #e6c6c4,
-);
-
-@each $name, $value in $types {
-  .Notification {
-    border-radius: 0;
-    border-width: 0 1px 0 1px;
-    & .card-header {
-      border-radius: 0;
-    }
-
-    &:first-child {
-      border-radius: 0.25rem 0.25rem 0 0;
-      border-width: 1px 1px 0 1px;
-    }
-    &:last-child {
-      border-radius: 0 0 0.25rem 0.25rem;
-      border-width: 0 1px 1px 1px;
-    }
-    &:only-child {
-      border-radius: 0.25rem 0.25rem 0.25rem 0.25rem;
-      border-width: 1px 1px 1px 1px;
-    }
-  }
-
-  .Notification--#{$name} {
-    .card-header {
-      background-color: $value;
-    }
-  }
-}
-</style>

@@ -33,6 +33,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0009](0009-contrat-des-primitives-ui.md) | Contrat des primitives UI écrites à la main en Vue 2 | Acceptée |
 | [0010](0010-primitive-dialog-en-vue-2.md) | Écrire `Dialog` à la main, et abandonner l'API impérative des modales | Acceptée |
 | [0011](0011-table-sans-data-table.md) | `Table` est du balisage, et le tri/filtre reste dans les pages | Acceptée |
+| [0012](0012-primitive-dropdown-menu-en-vue-2.md) | `DropdownMenu` écrite à la main, déplacée dans `<body>`, et l'élément courant devient un bouton radio | Acceptée |
 
 ## Gabarit
 

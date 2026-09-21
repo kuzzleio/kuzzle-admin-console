@@ -1,61 +1,50 @@
 <template>
   <span>
-    <b-dropdown
-      :id="`collection-${collectionName}`"
-      data-cy="CollectionDropdownAction"
-      no-caret
-      toggle-class="collectionDropdown"
-      variant="light"
-    >
-      <template #button-content>
-        <i class="fas fa-ellipsis-v" />
-      </template>
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        :as="Button"
+        :aria-label="`Actions on collection ${collectionName}`"
+        data-cy="CollectionDropdownAction"
+        size="icon"
+        variant="outline"
+      >
+        <i aria-hidden="true" class="fas fa-ellipsis-v" />
+      </DropdownMenuTrigger>
 
-      <b-dropdown-group header="Actions">
-        <b-dropdown-item
-          :disabled="!canEditCollection(indexName, collectionName)"
-          :title="
-            !canEditCollection(indexName, collectionName)
-              ? 'Your rights do not allow you to edit this collection'
-              : ''
-          "
-          :to="
-            canEditCollection(indexName, collectionName)
-              ? {
-                  name: 'EditCollection',
-                  params: {
-                    collectionName: collectionName,
-                    indexName: indexName,
-                  },
-                }
-              : ''
-          "
-        >
-          Edit collection
-        </b-dropdown-item>
-        <b-dropdown-item
-          v-if="backendMajorVersion !== 1"
-          data-cy="CollectionDropdown-delete"
-          @click="onDeleteCollectionClicked"
-        >
-          Delete collection
-        </b-dropdown-item>
+      <DropdownMenuContent align="end">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-        <b-dropdown-item
-          class="text-secondary"
-          data-cy="CollectionDropdown-clear"
-          :disabled="!canTruncateCollection(indexName, collectionName)"
-          :title="
-            !canTruncateCollection(indexName, collectionName)
-              ? 'Your rights do not allow you to truncate this collection'
-              : ''
-          "
-          @click.prevent="openModal"
-        >
-          Clear documents
-        </b-dropdown-item>
-      </b-dropdown-group>
-    </b-dropdown>
+          <DropdownMenuItem
+            :as="canEdit ? 'router-link' : 'button'"
+            data-cy="CollectionDropdown-edit"
+            :disabled="!canEdit"
+            :title="canEdit ? '' : 'Your rights do not allow you to edit this collection'"
+            :to="canEdit ? editRoute : undefined"
+          >
+            Edit collection
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            v-if="backendMajorVersion !== 1"
+            data-cy="CollectionDropdown-delete"
+            variant="destructive"
+            @select="$emit('delete-collection-clicked')"
+          >
+            Delete collection
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            data-cy="CollectionDropdown-clear"
+            :disabled="!canTruncate"
+            :title="canTruncate ? '' : 'Your rights do not allow you to truncate this collection'"
+            @select="clearOpen = true"
+          >
+            Clear documents
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
 
     <modal-clear
       :open.sync="clearOpen"
@@ -66,26 +55,43 @@
   </span>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
+import type { RawLocation } from 'vue-router';
 
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import ModalClear from './ModalClear.vue';
 
-export default {
+export default defineComponent({
   name: 'CollectionDropdownAction',
   components: {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
     ModalClear,
   },
   props: {
     collectionName: {
-      type: String,
       required: true,
+      type: String,
     },
     indexName: {
-      type: String,
       required: true,
+      type: String,
     },
   },
   setup() {
@@ -93,44 +99,29 @@ export default {
       kuzzleStore: useKuzzleStore(),
     };
   },
-  data: function () {
+  data() {
     return {
+      Button: Object.freeze(Button),
       clearOpen: false,
-      deleteConfirmation: '',
     };
   },
   computed: {
     ...mapState(useAuthStore, ['canEditCollection', 'canTruncateCollection']),
-    backendMajorVersion() {
+    backendMajorVersion(): number | undefined {
       return this.kuzzleStore.currentEnvironment?.backendMajorVersion;
     },
-  },
-  methods: {
-    onDeleteCollectionClicked() {
-      this.$emit('delete-collection-clicked');
+    canEdit(): boolean {
+      return this.canEditCollection(this.indexName, this.collectionName);
     },
-    resetDeletePrompt() {
-      this.collectionToDelete = '';
-      this.deleteConfirmation = '';
+    canTruncate(): boolean {
+      return this.canTruncateCollection(this.indexName, this.collectionName);
     },
-    openModal() {
-      if (this.canTruncateCollection(this.indexName, this.collectionName)) {
-        this.clearOpen = true;
-      }
+    editRoute(): RawLocation {
+      return {
+        name: 'EditCollection',
+        params: { collectionName: this.collectionName, indexName: this.indexName },
+      };
     },
   },
-};
+});
 </script>
-
-<style lang="scss" scoped>
-@use '@/assets/styles/variables.scss';
-
-::v-deep .collectionDropdown {
-  background-color: variables.$light-grey-color;
-  border: none;
-}
-
-::v-deep .show .collectionDropdown i {
-  transform: rotate(90deg);
-}
-</style>

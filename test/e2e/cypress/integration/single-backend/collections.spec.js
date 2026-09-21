@@ -333,4 +333,73 @@ describe('Collection management', function() {
       'There is no collection matching your filter'
     )
   })
+
+  // Ce que `b-dropdown` faisait et qu'aucune spec n'exerçait : la fermeture au
+  // clic extérieur, la touche Échap, la navigation aux flèches, et l'état de
+  // l'élément courant. Réécrit en Vue 2 à la main (ADR-0012), donc couvert ici
+  // avant de l'être par la confiance (ADR-0011, point 4).
+  describe('View dropdown', function() {
+    beforeEach(() => {
+      cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+      cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.contains(collectionName)
+    })
+
+    it('Should close on a click outside the menu', function() {
+      cy.get('[data-cy="CollectionDropdownView"]').click()
+      cy.get('[data-cy="CollectionDropdown-list"]').should('be.visible')
+
+      cy.get('body').click('bottomLeft')
+
+      cy.get('[data-cy="CollectionDropdown-list"]').should('not.exist')
+    })
+
+    it('Should close on Escape and give the focus back to the trigger', function() {
+      cy.get('[data-cy="CollectionDropdownView"]').click()
+      cy.get('[data-cy="CollectionDropdown-list"]').should('be.visible')
+
+      cy.get('body').type('{esc}')
+
+      cy.get('[data-cy="CollectionDropdown-list"]').should('not.exist')
+      cy.focused().should('have.attr', 'data-cy', 'CollectionDropdownView')
+    })
+
+    it('Should open on the down arrow and focus the first item', function() {
+      cy.get('[data-cy="CollectionDropdownView"]')
+        .focus()
+        .type('{downarrow}')
+
+      cy.focused().should('have.attr', 'data-cy', 'CollectionDropdown-list')
+
+      cy.focused().type('{downarrow}')
+      cy.focused().should('have.attr', 'data-cy', 'CollectionDropdown-column')
+    })
+
+    it('Should announce the current view among the others', function() {
+      cy.get('[data-cy="CollectionDropdownView"]').click()
+
+      cy.get('[data-cy="CollectionDropdown-list"]').should(
+        'have.attr',
+        'aria-checked',
+        'true'
+      )
+      cy.get('[data-cy="CollectionDropdown-column"]').should(
+        'have.attr',
+        'aria-checked',
+        'false'
+      )
+    })
+
+    // Un élément désactivé posait une classe et laissait passer le clic ; le
+    // seul garde-fou était que l'action derrière ne faisait rien.
+    it('Should not act on a disabled item', function() {
+      cy.get('[data-cy="CollectionDropdownView"]').click()
+      cy.get('[data-cy="CollectionDropdown-map"]').click({ force: true })
+
+      // Le menu reste ouvert et la vue n'a pas changé : le clic n'a rien
+      // sélectionné, il n'a pas seulement échoué à naviguer.
+      cy.get('[data-cy="CollectionDropdown-map"]').should('be.visible')
+      cy.location('hash').should('not.contain', 'listViewType=map')
+    })
+  })
 })

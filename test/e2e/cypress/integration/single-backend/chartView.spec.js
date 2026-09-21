@@ -136,9 +136,12 @@ describe('Chart view', function() {
     cy.visit(`/#/data/${indexName}/${textOnlyCollection}`)
 
     cy.get('[data-cy="CollectionDropdownView"]').click()
+    // `aria-disabled` et non la classe `disabled` : celle-ci venait de
+    // bootstrap-vue, qui la posait sans rien annoncer (G-024).
     cy.get('[data-cy="CollectionDropdown-TimeSeries"]').should(
-      'have.class',
-      'disabled'
+      'have.attr',
+      'aria-disabled',
+      'true'
     )
   })
 })
