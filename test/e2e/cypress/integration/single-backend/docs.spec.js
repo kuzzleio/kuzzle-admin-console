@@ -719,8 +719,8 @@ describe('Realtime', () => {
         lastName: 'Bombi'
       }
     )
-    cy.get(
-      `[data-cy=ColumnItem-${documentId}-acColumnTableActions] .badge`
+    cy.notificationBadge(
+      `[data-cy=ColumnItem-${documentId}-acColumnTableActions]`
     ).should('contain', 'updated')
 
     cy.request(
@@ -730,16 +730,16 @@ describe('Realtime', () => {
         job: 'CSS selector'
       }
     )
-    cy.get(
-      `[data-cy=ColumnItem-${documentId}-acColumnTableActions] .badge`
+    cy.notificationBadge(
+      `[data-cy=ColumnItem-${documentId}-acColumnTableActions]`
     ).should('contain', 'replaced')
 
     cy.request(
       'DELETE',
       `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}?refresh=wait_for`
     )
-    cy.get(
-      `[data-cy=ColumnItem-${documentId}-acColumnTableActions] .badge`
+    cy.notificationBadge(
+      `[data-cy=ColumnItem-${documentId}-acColumnTableActions]`
     ).should('contain', 'deleted')
   })
   it('[auto-update ON] Automatically applies realtime-notifications (Column view)', function() {

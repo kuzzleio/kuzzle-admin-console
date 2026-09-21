@@ -39,6 +39,11 @@ export const buttonVariants = cva(
   [
     'tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:shrink-0',
     'tw:whitespace-nowrap tw:align-middle tw:appearance-none tw:cursor-pointer',
+    // `bg-transparent` dans la base, pas seulement dans les variantes qui n'ont
+    // pas de fond : sans preflight, un `<button>` garde le fond gris par défaut
+    // du navigateur, et `ghost` comme `link` s'affichaient en gris (G-021). Les
+    // variantes qui posent un fond gagnent, `tailwind-merge` les départage.
+    'tw:bg-transparent',
     'tw:border tw:border-transparent tw:rounded-md',
     'tw:font-sans tw:text-sm tw:font-medium tw:leading-none',
     'tw:transition-colors tw:outline-none',

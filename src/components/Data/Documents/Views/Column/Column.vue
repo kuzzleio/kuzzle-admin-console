@@ -1,52 +1,46 @@
 <template>
   <div class="Column" data-cy="DocumentList-Column">
-    <div class="d-flex flex-row align-items-center">
-      <div class="flex-grow-1 d-flex align-items-stretch">
-        <div class="d-inline-block mr-2 w-full max-w-24rem">
+    <div class="tw:flex tw:flex-row tw:items-center tw:gap-2">
+      <div class="tw:flex tw:flex-1 tw:items-stretch tw:gap-2">
+        <div class="tw:inline-block tw:w-full tw:max-w-96">
           <multiselect
             v-model="selectedFieldsComputed"
-            :options="dropdownFields.map((field) => field.text)"
-            :taggable="true"
-            tag-placeholder="Add custom field"
-            placeholder="Select fields"
-            :multiple="true"
-            :close-on-select="false"
             :allow-empty="true"
+            :close-on-select="false"
+            :multiple="true"
+            :options="dropdownFields.map((field) => field.text)"
+            placeholder="Select fields"
+            tag-placeholder="Add custom field"
+            :taggable="true"
             @tag="addCustomField"
           />
         </div>
-        <b-button
-          variant="outline-dark"
-          class="mr-2 align-self-center"
-          @click="$emit('toggle-all')"
-        >
-          <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`" />
+        <Button class="tw:self-center" variant="outline" @click="$emit('toggle-all')">
+          <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`" />
           Toggle all
-        </b-button>
-        <b-button variant="outline-secondary" class="mr-2 align-self-center" @click="resetColumns">
-          Reset
-        </b-button>
+        </Button>
+        <Button class="tw:self-center" variant="outline" @click="resetColumns"> Reset </Button>
 
-        <b-button
-          variant="outline-danger"
-          class="mr-2 align-self-center"
+        <Button
+          class="tw:self-center"
           :disabled="!bulkDeleteEnabled"
+          variant="destructive"
           @click="$emit('bulk-delete')"
         >
-          <i class="fa fa-minus-circle left" />
+          <i class="fa fa-minus-circle" />
           Delete
-        </b-button>
+        </Button>
 
-        <b-button
-          variant="outline-secondary"
-          class="mr-2 align-self-center"
+        <Button
+          class="tw:self-center"
           data-cy="Column-btnExportCSV"
           title="Export columns to CSV"
+          variant="outline"
           @click.prevent="displayModalExportCSV"
         >
-          <i class="fas fa-file-export left" />
+          <i class="fas fa-file-export" />
           CSV
-        </b-button>
+        </Button>
       </div>
 
       <PerPageSelector
@@ -56,29 +50,28 @@
       />
       <new-documents-badge :has-new-documents="hasNewDocuments" @refresh="$emit('refresh')" />
     </div>
-    <b-row class="mt-2 mb-2" no-gutters>
-      <b-col cols="3">
-        <b-table-simple responsive bordered data-cy="ColumnView-table-id">
-          <b-thead>
-            <b-tr>
-              <b-th
+    <div class="tw:my-2 tw:flex">
+      <div class="tw:w-3/12">
+        <Table class="tw:border tw:border-border" data-cy="ColumnView-table-id">
+          <TableHeader>
+            <TableRow>
+              <TableHead
                 v-for="field of tableDefaultHeaders"
                 :id="`header-col-${field}`"
                 :key="`header-col-${field.key}`"
               >
                 {{ field.label }}
-              </b-th>
-            </b-tr>
-          </b-thead>
-          <b-tbody>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             <highlightable-row
               v-for="item of formattedItems"
               :key="`item-row-${item._id}`"
               :auto-sync="autoSync"
               :notification="notifications[item._id]"
             >
-              <!-- <b-tr v-for="item of formattedItems" :key="`item-row-${item._id}`"> -->
-              <b-td
+              <TableCell
                 v-for="field of tableDefaultHeaders"
                 :id="`col-${item._id}-${field.key}`"
                 :key="`item-col-${field.key}`"
@@ -87,84 +80,78 @@
                 :data-cy="`ColumnItem-${item._id}-${field.key}`"
               >
                 <template v-if="field.key === 'acColumnTableActions'">
-                  <div class="inlineDisplay">
-                    <span class="inlineDisplay-item">
-                      <b-form-checkbox
-                        :checked="isChecked(item._id)"
-                        :data-cy="`ColumnView-table-select-btn--${item._id}`"
-                        @change="toggleSelectDocument(item._id)"
-                      />
-                    </span>
-                    <span class="inlineDisplay-item">
-                      <b-button
-                        title="Edit document"
-                        variant="link"
-                        class="px-0 mx-1"
-                        :data-cy="`ColumnView-table-edit-btn--${item._id}`"
-                        :disabled="!canEdit"
-                        @click="editDocument(item._id)"
-                      >
-                        <i class="fa fa-pen" />
-                      </b-button>
-                    </span>
-                    <span class="inlineDisplay-item">
-                      <b-button
-                        class="px-0 mx-1"
-                        title="Delete document"
-                        variant="link"
-                        :data-cy="`ColumnView-table-delete-btn--${item._id}`"
-                        :disabled="!canDelete"
-                        @click="deleteDocument(item._id)"
-                      >
-                        <i class="fa fa-trash" />
-                      </b-button>
-                    </span>
-                    <b-badge
+                  <div class="tw:flex tw:items-center tw:gap-1">
+                    <Checkbox
+                      :checked="isChecked(item._id)"
+                      :data-cy="`ColumnView-table-select-btn--${item._id}`"
+                      @change="toggleSelectDocument(item._id)"
+                    />
+                    <Button
+                      :data-cy="`ColumnView-table-edit-btn--${item._id}`"
+                      :disabled="!canEdit"
+                      size="icon"
+                      title="Edit document"
+                      variant="ghost"
+                      @click="editDocument(item._id)"
+                    >
+                      <i class="fa fa-pen" />
+                    </Button>
+                    <Button
+                      :data-cy="`ColumnView-table-delete-btn--${item._id}`"
+                      :disabled="!canDelete"
+                      size="icon"
+                      title="Delete document"
+                      variant="ghost"
+                      @click="deleteDocument(item._id)"
+                    >
+                      <i class="fa fa-trash" />
+                    </Button>
+                    <Badge
                       v-if="
                         getItemBadge(item) && !autoSync && getItemBadge(item).label !== 'created'
                       "
+                      class="tw:mx-2"
                       :variant="getItemBadge(item).variant"
-                      class="mx-2"
                       >{{ getItemBadge(item).label }}
-                    </b-badge>
+                    </Badge>
                   </div>
                 </template>
                 <template v-else-if="field.key === 'acColumnTableId'">
                   {{ item._id }}
                 </template>
-              </b-td>
+              </TableCell>
             </highlightable-row>
-          </b-tbody>
-        </b-table-simple>
-      </b-col>
-      <b-col cols="9">
-        <b-table-simple responsive bordered data-cy="ColumnView-table-data">
-          <b-thead>
+          </TableBody>
+        </Table>
+      </div>
+      <div class="tw:w-9/12">
+        <Table class="tw:border tw:border-border" data-cy="ColumnView-table-data">
+          <TableHeader>
             <draggable
               v-model="selectedFields"
-              tag="tr"
-              handle=".handle"
-              filter=".ignore"
               draggable=".draggableItem"
+              filter=".ignore"
+              handle=".handle"
+              tag="tr"
             >
               <HeaderTableView
                 v-for="field of selectedFields"
                 :key="`header-col-${field}`"
-                :field="field"
                 :display-drag-icon="displayDragIcon"
+                :field="field"
                 @mouseenter="displayDragIcon = true"
                 @mouseleave="displayDragIcon = false"
               />
             </draggable>
-          </b-thead>
-          <b-tbody>
+          </TableHeader>
+          <TableBody>
             <highlightable-row
               v-for="item of formattedItems"
               :key="`item-row-${item._id}`"
               :auto-sync="autoSync"
               :notification="notifications[item._id]"
             >
-              <table-cell
+              <ColumnCell
                 v-for="field of selectedFields"
                 :key="`item-col-${field}`"
                 :auto-sync="autoSync"
@@ -174,31 +161,37 @@
                 :row-id="item._id"
               />
             </highlightable-row>
-          </b-tbody>
-        </b-table-simple>
-      </b-col>
-    </b-row>
+          </TableBody>
+        </Table>
+      </div>
+    </div>
 
-    <b-modal
-      id="export-csv-modal"
-      size="lg"
-      @shown="fetchSingleUseToken"
-      @hide="clearSingleUseToken"
-    >
-      <p>Click the following link to download your CSV export</p>
+    <Dialog :open.sync="exportCsvOpen">
+      <DialogContent class="tw:max-w-2xl" labelled-by="export-csv-title">
+        <DialogHeader>
+          <DialogTitle id="export-csv-title">CSV export</DialogTitle>
+        </DialogHeader>
 
-      <a
-        v-if="singleUseToken"
-        class="left p-2 rounded bg-info text-light downloadCSVLink"
-        :href="exportUrl"
-        target="_blank"
-        @click="clearSingleUseToken"
-      >
-        <i class="fas fa-file-export" />
-        Download
-      </a>
-      <p v-else>Preparing download..</p>
-    </b-modal>
+        <DialogDescription>Click the following link to download your CSV export</DialogDescription>
+
+        <a
+          v-if="singleUseToken"
+          class="downloadCSVLink tw:inline-flex tw:items-center tw:gap-2 tw:self-start tw:rounded-md tw:bg-secondary tw:px-3 tw:py-2 tw:text-secondary-foreground"
+          :href="exportUrl"
+          rel="noopener noreferrer"
+          target="_blank"
+          @click="clearSingleUseToken"
+        >
+          <i class="fas fa-file-export" />
+          Download
+        </a>
+        <p v-else class="tw:m-0 tw:text-sm tw:text-muted-foreground">Preparing download..</p>
+
+        <DialogFooter>
+          <Button variant="outline" @click="exportCsvOpen = false">Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -209,6 +202,25 @@ import { mapState } from 'pinia';
 import Multiselect from 'vue-multiselect';
 import draggable from 'vuedraggable';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { flattenObjectMapping } from '@/services/collectionHelper';
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
@@ -219,8 +231,15 @@ import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import NewDocumentsBadge from '@/components/Data/Documents/Common/NewDocumentsBadge.vue';
 import HeaderTableView from './HeaderTableView.vue';
 import HighlightableRow from './HighlightableRow.vue';
-import TableCell from './TableCell.vue';
+import ColumnCell from './TableCell.vue';
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css';
+
+// `getBadgeVariant` rend encore des noms bootstrap : `DocumentListItem.vue`,
+// qui l'appelle aussi, est toujours sur `b-badge`. La table part avec lui.
+const BADGE_VARIANTS = {
+  danger: 'destructive',
+  warning: 'warning',
+};
 
 export default {
   name: 'Column',
@@ -228,13 +247,28 @@ export default {
     JsonFormatter,
   },
   components: {
+    Badge,
+    Button,
+    Checkbox,
+    ColumnCell,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
     draggable,
     HeaderTableView,
-    PerPageSelector,
-    TableCell,
     HighlightableRow,
-    NewDocumentsBadge,
     Multiselect,
+    NewDocumentsBadge,
+    PerPageSelector,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
   },
   props: {
     searchQuery: Object,
@@ -271,6 +305,7 @@ export default {
         },
       ],
       displayDragIcon: false,
+      exportCsvOpen: false,
       tabResizing: null,
       startOffset: null,
       singleUseToken: null,
@@ -351,6 +386,15 @@ export default {
     },
   },
   watch: {
+    // Remplace `@shown` et `@hide` de `b-modal` : le jeton à usage unique est
+    // demandé à l'ouverture et jeté à la fermeture, quelle qu'en soit la cause.
+    exportCsvOpen(open) {
+      if (open) {
+        this.fetchSingleUseToken();
+      } else {
+        this.singleUseToken = null;
+      }
+    },
     $route: {
       immediate: false,
       handler() {
@@ -379,13 +423,10 @@ export default {
     },
     clearSingleUseToken() {
       this.singleUseToken = null;
-      this.hideModalExportCSV();
+      this.exportCsvOpen = false;
     },
     displayModalExportCSV() {
-      this.$bvModal.show('export-csv-modal');
-    },
-    hideModalExportCSV() {
-      this.$bvModal.hide('export-csv-modal');
+      this.exportCsvOpen = true;
     },
     getItemBadge(item) {
       const n = this.notifications[item._id];
@@ -394,7 +435,7 @@ export default {
       }
       return {
         label: getBadgeText(n.action),
-        variant: getBadgeVariant(n.action),
+        variant: BADGE_VARIANTS[getBadgeVariant(n.action)] ?? 'secondary',
       };
     },
     resetColumns() {

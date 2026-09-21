@@ -1,0 +1,22 @@
+<template>
+  <tbody :class="classes" data-slot="table-body" v-bind="$attrs" v-on="$listeners">
+    <slot />
+  </tbody>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import { classMerge } from '../class-merge';
+
+export default defineComponent({
+  name: 'TableBody',
+  mixins: [classMerge],
+  inheritAttrs: false,
+  computed: {
+    classes(): string {
+      return this.mergeClasses('tw:[&_tr:last-child]:border-0');
+    },
+  },
+});
+</script>

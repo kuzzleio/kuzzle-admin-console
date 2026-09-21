@@ -1,5 +1,5 @@
 <template>
-  <b-td :id="`col-${rowId}-${fieldName}`" class="ColumnViewTableCell cell realtime-highlight">
+  <TableCell :id="`col-${rowId}-${fieldName}`" class="ColumnViewTableCell cell realtime-highlight">
     <template v-if="data === null">
       <code>null</code>
     </template>
@@ -7,28 +7,34 @@
       <code>undefined</code>
     </template>
     <template v-else-if="Array.isArray(data)">
-      <b-badge title="Unable to display array values in table cells, use the List view instead"
-        >array</b-badge
+      <Badge title="Unable to display array values in table cells, use the List view instead"
+        >array</Badge
       >
     </template>
     <template v-else-if="isObject(data)">
-      <b-badge title="Unable to display object values in table cells, use the List view instead"
-        >object</b-badge
+      <Badge title="Unable to display object values in table cells, use the List view instead"
+        >object</Badge
       >
     </template>
     <template v-else>
       {{ formattedData }}
     </template>
-  </b-td>
+  </TableCell>
 </template>
 
 <script>
 import isObject from 'lodash/isObject';
 
+import { Badge } from '@/components/ui/badge';
+import { TableCell } from '@/components/ui/table';
 import { dateFromTimestamp } from '@/utils';
 
 export default {
   name: 'ColumnViewTableCell',
+  components: {
+    Badge,
+    TableCell,
+  },
   props: {
     autoSync: Boolean,
     data: {
