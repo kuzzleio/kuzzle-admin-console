@@ -417,17 +417,17 @@ gros et le plus risqué.
 | `Data/Collections/CreateOrUpdate.vue` | 12 | 309 | ⬜ |
 | `Data/Documents/DocumentListItem.vue` | 11 | 218 | ⬜ |
 | `Data/Documents/Views/TimeSeries.vue` | 8 | 351 | ⬜ |
-| `Data/Indexes/CreateIndexModal.vue` | 8 | 163 | ✅ reprise (PRNUM) |
+| `Data/Indexes/CreateIndexModal.vue` | 8 | 163 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Documents/ListActions.vue` | 7 | 68 | ⬜ |
 | `Data/Collections/DropdownView.vue` | 7 | 110 | ⬜ |
-| `Data/Indexes/BulkDeleteIndexesModal.vue` | 6 | 98 | ✅ reprise (PRNUM) |
-| `Data/Indexes/DeleteIndexModal.vue` | 6 | 87 | ✅ reprise (PRNUM) |
-| `Data/Collections/DeleteCollectionModal.vue` | 6 | 112 | ✅ reprise (PRNUM) |
-| `Data/Collections/BulkDeleteCollectionsModal.vue` | 6 | 108 | ✅ reprise (PRNUM) |
-| `Data/Collections/ModalClear.vue` | 5 | 95 | ✅ reprise (PRNUM) |
+| `Data/Indexes/BulkDeleteIndexesModal.vue` | 6 | 98 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
+| `Data/Indexes/DeleteIndexModal.vue` | 6 | 87 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
+| `Data/Collections/DeleteCollectionModal.vue` | 6 | 112 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
+| `Data/Collections/BulkDeleteCollectionsModal.vue` | 6 | 108 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
+| `Data/Collections/ModalClear.vue` | 5 | 95 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Documents/FormInputs/JsonFormInput.vue` | 5 | 49 | ⬜ |
 | `Data/Collections/DropdownAction.vue` | 5 | 135 | ⬜ |
-| `Data/Documents/DeleteModal.vue` | 4 | 52 | ✅ reprise (PRNUM) |
+| `Data/Documents/DeleteModal.vue` | 4 | 52 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Data/Documents/Views/List.vue` | 4 | 126 | ⬜ |
 | `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
