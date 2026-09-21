@@ -1,20 +1,32 @@
 <template>
-  <b-tr class="HighlightableRow realtime-highlight">
+  <TableRow class="HighlightableRow realtime-highlight">
     <slot />
-  </b-tr>
+  </TableRow>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+
+import { TableRow } from '@/components/ui/table';
 import { getBadgeText } from '@/services/documentNotifications';
 
-export default {
+export default defineComponent({
   name: 'HighlightableRow',
+  components: {
+    TableRow,
+  },
   props: {
-    notification: Object,
-    autoSync: Boolean,
+    autoSync: {
+      default: false,
+      type: Boolean,
+    },
+    notification: {
+      default: null,
+      type: Object as PropType<{ action: string } | null>,
+    },
   },
   watch: {
-    notification(n) {
+    notification(n: { action: string } | null) {
       if (!this.autoSync || !n) {
         return;
       }
@@ -24,7 +36,5 @@ export default {
       }
     },
   },
-};
+});
 </script>
-
-<style></style>

@@ -270,6 +270,19 @@ Cypress.Commands.add('goOnline', () => {
  *
  * @param {string} parentSelector sélecteur du groupe de formulaire parent
  */
+/**
+ * Badge rendu dans un conteneur donné.
+ *
+ * Même motif que `invalidFeedback` : `.badge` est une classe Bootstrap, donc un
+ * sélecteur fragile. Le temps que `b-badge` et la primitive `Badge`
+ * cohabitent, les deux sont acceptés.
+ *
+ * @param {string} parentSelector conteneur qui porte le badge
+ */
+Cypress.Commands.add('notificationBadge', (parentSelector) => {
+  return cy.get(`${parentSelector} .badge, ${parentSelector} [data-slot="badge"]`);
+});
+
 Cypress.Commands.add('invalidFeedback', (parentSelector) => {
   return cy.get(
     `${parentSelector} .invalid-feedback, ${parentSelector} [data-slot="form-message"]`

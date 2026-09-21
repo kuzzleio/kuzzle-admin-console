@@ -1,5 +1,5 @@
 <template>
-  <component :is="as" :class="classes" v-bind="$attrs" v-on="$listeners">
+  <component :is="as" :class="classes" data-slot="badge" v-bind="$attrs" v-on="$listeners">
     <slot />
   </component>
 </template>
@@ -16,6 +16,10 @@ import { classMerge } from '../class-merge';
  * Remplace `<b-badge>`, dont la console utilise surtout les variantes
  * `primary`, `secondary`, `danger` et `light`. `light` n'existe pas en amont :
  * le rendu correspondant se fait avec `variant="secondary"`.
+ *
+ * `warning` est en plus de l'amont, sur le token `accent`, comme sur `Alert` et
+ * `Button` : les notifications temps réel distinguent « mis à jour » de
+ * « supprimé », et les deux ne peuvent pas être rouges.
  *
  * Le preflight n'étant pas chargé (ADR-0008), la bordure et le rayon sont
  * posés explicitement.
@@ -38,6 +42,7 @@ export const badgeVariants = cva(
         destructive: 'tw:bg-destructive tw:text-destructive-foreground',
         outline: 'tw:border-border tw:text-foreground',
         secondary: 'tw:bg-muted tw:text-muted-foreground',
+        warning: 'tw:bg-accent tw:text-accent-foreground',
       },
     },
   },

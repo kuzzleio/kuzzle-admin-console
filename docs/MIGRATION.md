@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 43 / 140 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 47 / 140 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -49,6 +49,15 @@ actifs, dont **61 fragiles (7,9 %)**. Tous ont été repris. Il en reste **0**.
 généré par `bootstrap-vue` et sur quoi nous ne pouvons pas poser d'attribut est
 **isolé dans une commande Cypress** (`test/e2e/cypress/support/commands.js`).
 En phase 2, il n'y aura que ce bloc à reprendre, pas les 17 specs.
+
+> **Un sélecteur a échappé à l'audit** : `.badge`, trois fois dans `docs.spec.js`
+> (2026-09-21, reprise de `Views/Column/`). Il était compté comme classe
+> applicative alors que c'est une classe Bootstrap. Traité selon le même
+> principe — commande `cy.notificationBadge()`, qui accepte `.badge` et
+> `[data-slot="badge"]` le temps de la cohabitation. L'audit portait sur les
+> classes qu'il savait reconnaître ; celle-ci ressemblait trop à une des nôtres.
+> S'il en reste, elles se déclareront de la même façon : à la reprise, pas
+> avant.
 
 #### État du filet de sécurité au 2026-09-18
 
@@ -266,6 +275,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `FormItem`, `FormDescription`, `FormMessage` (sans `FormField` ni `FormControl`) | ✅ |
 | `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) | ✅ |
 | `Switch` (ajoutée en reprenant la bascule « Form view » des documents) | ✅ |
+| `Table` — du balisage, pas de `DataTable` ([ADR-0011](adr/0011-table-sans-data-table.md)) | ✅ |
 | Primitives interactives restantes (dropdown, combobox) | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
@@ -283,7 +293,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**43 composants repris sur 140**, 230 balises `<b-*>` sur 813.
+**47 composants repris sur 140**, 257 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -409,7 +419,7 @@ gros et le plus risqué.
 |---|---:|---:|---|
 | `Data/Collections/Watch.vue` | 38 | 496 | ⬜ |
 | `Data/Documents/Views/Map.vue` | 24 | 429 | ⬜ |
-| `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ⬜ |
+| `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Collections/CollectionList.vue` | 19 | 426 | ⬜ |
 | `Data/Indexes/Page.vue` | 18 | 352 | ⬜ |
 | `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
@@ -432,16 +442,16 @@ gros et le plus risqué.
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Data/Documents/Views/List.vue` | 4 | 126 | ⬜ |
 | `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
-| `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ⬜ |
+| `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Indexes/DropdownActions.vue` | 3 | 75 | ⬜ |
 | `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Update.vue` | 3 | 173 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Realtime/Notification.vue` | 3 | 147 | ⬜ |
 | `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ⬜ |
 | `Data/Collections/Create.vue` | 1 | 72 | ⬜ |
-| `Data/Documents/Views/Column/HeaderTableView.vue` | 1 | 56 | ⬜ |
+| `Data/Documents/Views/Column/HeaderTableView.vue` | 1 | 56 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Documents/EmptyState.vue` | 1 | 39 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
-| `Data/Documents/Views/Column/HighlightableRow.vue` | 1 | 30 | ⬜ |
+| `Data/Documents/Views/Column/HighlightableRow.vue` | 1 | 30 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Documents/Common/NewDocumentsBadge.vue` | 1 | 27 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Layout.vue` | 1 | 253 | ⬜ |
 | `Data/Documents/Create.vue` | 1 | 138 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
@@ -1102,6 +1112,31 @@ Gabarit à copier :
   `Image`, `Text`, `Switch`. Et le seul indice est le DOM : regarder ce qui a
   été rendu avant de suspecter la logique.
 
+#### G-021 — Sans preflight, un `<button>` sans fond déclaré n'est pas transparent
+
+- **Contexte** : phase 2, reprise de `Views/Column/`. Les boutons d'action d'une
+  ligne (crayon, corbeille) sont en `variant="ghost"`, qui ne pose pas de fond.
+- **Symptôme** : ils s'affichent sur un rectangle **gris clair**, comme s'ils
+  étaient désactivés. Aucune spec ne le voit — elles cliquent le bouton, elles
+  ne regardent pas sa couleur.
+- **Cause** : le preflight de Tailwind n'est pas chargé (ADR-0008), et le reboot
+  de Bootstrap ne remet pas non plus le fond des `<button>` à `transparent` —
+  seule la classe `.btn` le fait, et nous ne l'utilisons plus. Le fond
+  `buttonface` du navigateur reste donc visible partout où la variante n'en pose
+  pas : `ghost` et `link`.
+- **Solution** : `tw:bg-transparent` passe dans les classes **de base** de
+  `Button`, pas dans les variantes concernées. Les variantes qui posent un fond
+  gagnent, `tailwind-merge` les départage — et une variante future sans fond
+  n'aura pas à y repenser.
+- **Portée** : le défaut était en production depuis les reprises de Security.
+  `RoleItem`, `UserItem` et `ProfileItem` affichaient les mêmes boutons gris
+  depuis trois PR. Corrigé du même coup.
+- **À retenir** : c'est le troisième effet du preflight absent après la bordure
+  et le rayon. La règle pratique : une primitive ne peut **rien** supposer des
+  styles par défaut, y compris « un bouton est transparent ». Et ce genre de
+  défaut ne se voit qu'en regardant l'écran — les specs cliquent, elles ne
+  regardent pas.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -1148,3 +1183,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-19 | Cohabitation Tailwind / Bootstrap : pas de preflight, couche `legacy`, préfixe `tw:` | [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md) |
 | 2026-09-19 | Contrat des primitives UI en Vue 2 : API shadcn-vue, deux écarts nommés | [ADR-0009](adr/0009-contrat-des-primitives-ui.md) |
 | 2026-09-19 | `Dialog` écrite à la main, et abandon de l'API impérative des modales | [ADR-0010](adr/0010-primitive-dialog-en-vue-2.md) |
+| 2026-09-21 | `Table` est du balisage : pas de `DataTable`, tri et filtre dans les pages | [ADR-0011](adr/0011-table-sans-data-table.md) |
