@@ -1,18 +1,16 @@
 <template>
-  <b-container class="DocumentUpdate d-flex flex-column h-100">
+  <div
+    class="DocumentUpdate tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+  >
     <template v-if="hasRights">
       <headline> Edit document </headline>
 
-      <b-alert variant="danger" :show="showAlert">
+      <Alert v-if="showAlert" class="tw:mb-4" variant="destructive">
         <b>Warning!</b> This document has been edited while you were editing it. If you save now,
         you will overwrite someone else's modifications.
-      </b-alert>
-      <div v-if="loading" class="text-center">
-        <b-spinner
-          style="width: 3rem; height: 3rem; margin-top: 3em"
-          label="Large Spinner"
-          variant="primary"
-        />
+      </Alert>
+      <div v-if="loading" class="tw:mt-12 tw:flex tw:justify-center">
+        <Spinner label="Loading the document" size="lg" />
       </div>
       <create-or-update
         v-else
@@ -29,7 +27,7 @@
     <template v-else>
       <page-not-allowed />
     </template>
-  </b-container>
+  </div>
 </template>
 
 <script>
@@ -37,6 +35,8 @@ import get from 'lodash/get';
 import omit from 'lodash/omit';
 import { mapState } from 'pinia';
 
+import { Alert } from '@/components/ui/alert';
+import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 
 import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';
@@ -46,9 +46,11 @@ import CreateOrUpdate from './Common/CreateOrUpdate.vue';
 export default {
   name: 'DocumentUpdate',
   components: {
+    Alert,
     Headline,
     CreateOrUpdate,
     PageNotAllowed,
+    Spinner,
   },
   props: {
     id: { type: String, required: true },

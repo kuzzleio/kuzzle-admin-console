@@ -1,39 +1,60 @@
 <template>
-  <b-card bg-variant="light" class="EmptyState text-center" data-cy="DocumentsEmptyState">
-    <i
-      class="text-secondary fas fa-6x mb-3"
-      :class="{
-        'fa-ellipsis-h': !hasNewDocuments,
-        'fa-file-alt': hasNewDocuments,
-      }"
-    />
-    <h2 class="text-secondary font-weight-bold">
-      <span v-if="hasNewDocuments"> There are new documents in the collection</span>
-      <span v-else>No documents matching your filters</span>
-    </h2>
-    <p v-if="canCreateDocument(index, collection) && !hasNewDocuments" class="text-secondary">
-      You can try changing your filters or create a new document by hitting the "Create New
-      Document" button on top of the page.
-    </p>
-    <p v-if="hasNewDocuments" class="text-secondary">
-      You can refresh the collection by hitting the "Refresh" button on top of the page
-    </p>
-  </b-card>
+  <Card class="EmptyState" data-cy="DocumentsEmptyState">
+    <CardContent class="tw:flex tw:flex-col tw:items-center tw:gap-3 tw:text-center">
+      <i
+        aria-hidden="true"
+        class="fas fa-6x tw:text-muted-foreground"
+        :class="{
+          'fa-ellipsis-h': !hasNewDocuments,
+          'fa-file-alt': hasNewDocuments,
+        }"
+      />
+      <CardTitle class="tw:text-2xl tw:text-muted-foreground">
+        <span v-if="hasNewDocuments">There are new documents in the collection</span>
+        <span v-else>No documents matching your filters</span>
+      </CardTitle>
+      <CardDescription v-if="hasNewDocuments">
+        You can refresh the collection by hitting the "Refresh" button on top of the page
+      </CardDescription>
+      <CardDescription v-else-if="canCreateDocument(index, collection)">
+        You can try changing your filters or create a new document by hitting the "Create New
+        Document" button on top of the page.
+      </CardDescription>
+    </CardContent>
+  </Card>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
+import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { useAuthStore } from '@/stores';
 
-export default {
+export default defineComponent({
+  name: 'DocumentsEmptyState',
+  components: {
+    Card,
+    CardContent,
+    CardDescription,
+    CardTitle,
+  },
   props: {
-    index: String,
-    collection: String,
-    hasNewDocuments: Boolean,
+    collection: {
+      default: '',
+      type: String,
+    },
+    hasNewDocuments: {
+      default: false,
+      type: Boolean,
+    },
+    index: {
+      default: '',
+      type: String,
+    },
   },
   computed: {
     ...mapState(useAuthStore, ['canCreateDocument']),
   },
-};
+});
 </script>

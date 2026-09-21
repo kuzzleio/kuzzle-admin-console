@@ -1,67 +1,65 @@
 <template>
-  <div class="DocumentCreateOrUpdate">
-    <b-card class="h-100">
-      <b-card-body class="h-100 m-0 p-0">
-        <b-row>
-          <b-col lg="7" md="10" class="d-flex flex-column">
-            <b-form-group
-              label="Document ID"
-              label-cols="3"
-              :description="!id ? 'Leave blank to let Kuzzle auto-generate the ID' : ''"
-            >
-              <b-input v-model="idValue" :disabled="!!id" data-cy="DocumentCreate-input--id" />
-            </b-form-group>
-          </b-col>
-          <b-col lg="4" md="2" class="d-flex flex-column mt-2">
-            <b-form-checkbox v-model="formViewEnabled" data-cy="formView-switch" switch>
-              Form view
-            </b-form-checkbox>
-          </b-col>
-        </b-row>
+  <div class="DocumentCreateOrUpdate tw:grow">
+    <Card class="tw:h-full">
+      <CardContent class="tw:flex tw:h-full tw:flex-col tw:gap-4">
+        <div class="tw:flex tw:flex-col tw:gap-4 tw:lg:flex-row tw:lg:items-end">
+          <FormItem class="tw:lg:w-7/12">
+            <Label for="document-id">Document ID</Label>
+            <Input
+              id="document-id"
+              v-model="idValue"
+              data-cy="DocumentCreate-input--id"
+              :disabled="!!id"
+            />
+            <FormDescription v-if="!id">
+              Leave blank to let Kuzzle auto-generate the ID
+            </FormDescription>
+          </FormItem>
+          <UiSwitch v-model="formViewEnabled" data-cy="formView-switch">Form view</UiSwitch>
+        </div>
 
         <!-- Form view-->
-        <b-row v-if="formViewEnabled" class="full-height-row">
-          <b-col lg="12" md="12" class="d-flex flex-column">
-            <b-alert
-              data-cy="form-view-warning"
-              variant="warning"
-              :show="formSchema.unavailable.length > 0"
-            >
-              The following fields are not supported in the form view:
-              <span class="font-weight-bold"> {{ formSchema.unavailable.join(', ') }}</span
-              >. Please use the JSON view if you want to update these values.
-              <i
-                id="supported-types-tooltip"
-                class="fas fa-question-circle"
-                :title="`The form view only supports these types: ${supportedTypes.join(', ')}.`"
-              />
-            </b-alert>
-            <!--
-              TODO - WARNING: We're passing a prop here, while the form generator
-              mutates the value of the model. We should instead pass a local state
-              to avoid the anti-pattern of mutating props.
-            -->
-            <vue-form-generator
-              :schema="formSchema"
-              :model="document"
-              @model-updated="onFormChange"
+        <div v-if="formViewEnabled" class="tw:flex tw:min-h-0 tw:flex-1 tw:flex-col">
+          <Alert
+            v-if="formSchema.unavailable.length > 0"
+            class="tw:mb-4"
+            data-cy="form-view-warning"
+            variant="warning"
+          >
+            The following fields are not supported in the form view:
+            <span class="tw:font-semibold">{{ formSchema.unavailable.join(', ') }}</span
+            >. Please use the JSON view if you want to update these values.
+            <i
+              id="supported-types-tooltip"
+              class="fas fa-question-circle"
+              :title="`The form view only supports these types: ${supportedTypes.join(', ')}.`"
             />
-          </b-col>
-        </b-row>
+          </Alert>
+          <!--
+            TODO - WARNING: We're passing a prop here, while the form generator
+            mutates the value of the model. We should instead pass a local state
+            to avoid the anti-pattern of mutating props.
+          -->
+          <vue-form-generator
+            :schema="formSchema"
+            :model="document"
+            @model-updated="onFormChange"
+          />
+        </div>
         <!-- Json view -->
-        <b-row v-else class="full-height-row">
-          <b-col lg="7" md="12" class="d-flex flex-column">
+        <div v-else class="tw:flex tw:min-h-0 tw:flex-1 tw:flex-col tw:gap-4 tw:lg:flex-row">
+          <div class="tw:flex tw:min-h-0 tw:flex-col tw:lg:w-7/12">
             <json-editor
               id="document"
               ref="jsoneditor"
-              class="DocumentCreateOrUpdate-jsonEditor"
+              class="tw:grow"
               :content="rawDocument"
               @change="onJsonChange"
             />
-          </b-col>
+          </div>
 
           <!-- Mapping -->
-          <b-col lg="5" md="12" class="d-flex flex-column">
+          <div class="tw:flex tw:min-h-0 tw:flex-col tw:lg:w-5/12">
             <h3>Mapping</h3>
 
             <pre
@@ -69,54 +67,54 @@
                 content: mapping,
                 open: true,
               }"
-              class="DocumentCreateOrUpdate-mapping"
+              class="tw:mb-0 tw:min-h-0 tw:flex-1 tw:overflow-auto"
             />
-          </b-col>
-        </b-row>
-      </b-card-body>
-      <template #footer>
-        <div class="text-right">
-          <b-button @click="$emit('cancel')">Cancel</b-button>
-          <b-button
-            v-if="!id"
-            data-cy="DocumentCreate-btn"
-            variant="primary"
-            class="ml-2"
-            :disabled="submitting || !isDocumentValid"
-            @click="submit()"
-          >
-            <i class="fa fa-plus-circle left" />
-            Create
-          </b-button>
-          <b-button
-            v-if="!!id"
-            variant="primary"
-            class="ml-2"
-            data-cy="DocumentUpdate-btn"
-            :disabled="submitting || !isDocumentValid"
-            @click="submit()"
-          >
-            <i class="fa fa-pencil-alt left" />
-            Update
-          </b-button>
-          <b-button
-            v-if="!!id"
-            variant="warning"
-            class="ml-2"
-            data-cy="DocumentReplace-btn"
-            :disabled="submitting || !isDocumentValid"
-            @click="submit(true)"
-          >
-            <i class="fa fa-fire-alt left" />
-            Replace
-          </b-button>
+          </div>
         </div>
-      </template>
-    </b-card>
+      </CardContent>
+      <CardFooter class="tw:justify-end tw:gap-2">
+        <Button variant="outline" @click="$emit('cancel')">Cancel</Button>
+        <Button
+          v-if="!id"
+          data-cy="DocumentCreate-btn"
+          :disabled="submitting || !isDocumentValid"
+          @click="submit()"
+        >
+          <i class="fa fa-plus-circle" />
+          Create
+        </Button>
+        <Button
+          v-if="!!id"
+          data-cy="DocumentUpdate-btn"
+          :disabled="submitting || !isDocumentValid"
+          @click="submit()"
+        >
+          <i class="fa fa-pencil-alt" />
+          Update
+        </Button>
+        <Button
+          v-if="!!id"
+          data-cy="DocumentReplace-btn"
+          :disabled="submitting || !isDocumentValid"
+          variant="warning"
+          @click="submit(true)"
+        >
+          <i class="fa fa-fire-alt" />
+          Replace
+        </Button>
+      </CardFooter>
+    </Card>
   </div>
 </template>
 
 <script>
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { FormDescription, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch as UiSwitch } from '@/components/ui/switch';
 import Focus from '@/directives/focus.directive';
 import JsonFormatter from '@/directives/json-formatter.directive';
 import { formSchemaService, typesCorrespondance } from '@/services/formSchema';
@@ -126,7 +124,17 @@ import JsonEditor from '@/components/Common/JsonEditor.vue';
 export default {
   name: 'DocumentCreateOrUpdate',
   components: {
+    Alert,
+    Button,
+    Card,
+    CardContent,
+    CardFooter,
+    FormDescription,
+    FormItem,
+    Input,
     JsonEditor,
+    Label,
+    UiSwitch,
   },
   directives: {
     Focus,
@@ -224,24 +232,3 @@ export default {
   },
 };
 </script>
-
-<style rel="stylesheet/scss" lang="scss">
-.DocumentCreateOrUpdate {
-  flex-grow: 1;
-
-  &-jsonEditor {
-    flex-grow: 1;
-  }
-  &-mapping {
-    flex: 1 1 1px;
-    margin-bottom: 0;
-    overflow: auto;
-  }
-}
-</style>
-
-<style lang="scss">
-.full-height-row {
-  height: 90%;
-}
-</style>

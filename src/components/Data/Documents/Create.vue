@@ -1,6 +1,8 @@
 <template>
-  <b-container class="DocumentCreate d-flex flex-column h-100">
-    <template v-if="hasRights" class="wrapper">
+  <div
+    class="DocumentCreate tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+  >
+    <template v-if="hasRights">
       <headline> Create a new document </headline>
 
       <create-or-update
@@ -17,7 +19,7 @@
     <template v-else>
       <page-not-allowed />
     </template>
-  </b-container>
+  </div>
 </template>
 
 <script>

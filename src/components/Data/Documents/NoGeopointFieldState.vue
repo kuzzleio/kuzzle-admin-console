@@ -1,12 +1,25 @@
 <template>
-  <b-card class="EmptyState text-center" bg-variant="light">
-    <i class="text-secondary fas fa-file-alt fa-6x mb-3" />
-    <h3 class="text-secondary font-weight-bold">
-      This collection does not contain geo_point field
-    </h3>
-  </b-card>
+  <Card class="EmptyState">
+    <CardContent class="tw:flex tw:flex-col tw:items-center tw:gap-3 tw:text-center">
+      <i aria-hidden="true" class="fas fa-file-alt fa-6x tw:text-muted-foreground" />
+      <CardTitle class="tw:text-xl tw:text-muted-foreground">
+        This collection does not contain geo_point field
+      </CardTitle>
+    </CardContent>
+  </Card>
 </template>
 
-<script>
-export default {};
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
+
+export default defineComponent({
+  name: 'NoGeopointFieldState',
+  components: {
+    Card,
+    CardContent,
+    CardTitle,
+  },
+});
 </script>

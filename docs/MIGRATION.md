@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 35 / 140 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 43 / 140 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -265,6 +265,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `Checkbox` (ajoutée en reprenant les trois lignes de liste de Security) | ✅ |
 | `FormItem`, `FormDescription`, `FormMessage` (sans `FormField` ni `FormControl`) | ✅ |
 | `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) | ✅ |
+| `Switch` (ajoutée en reprenant la bascule « Form view » des documents) | ✅ |
 | Primitives interactives restantes (dropdown, combobox) | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
@@ -282,7 +283,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**35 composants repris sur 140**, 197 balises `<b-*>` sur 813.
+**43 composants repris sur 140**, 230 balises `<b-*>` sur 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -411,7 +412,7 @@ gros et le plus risqué.
 | `Data/Documents/Views/Column/Column.vue` | 22 | 506 | ⬜ |
 | `Data/Collections/CollectionList.vue` | 19 | 426 | ⬜ |
 | `Data/Indexes/Page.vue` | 18 | 352 | ⬜ |
-| `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ⬜ |
+| `Data/Documents/Common/CreateOrUpdate.vue` | 18 | 247 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Page.vue` | 13 | 955 | ⬜ |
 | `Data/Documents/FormInputs/DateTimeFormInput.vue` | 13 | 85 | ⬜ |
 | `Data/Collections/CreateOrUpdate.vue` | 12 | 309 | ⬜ |
@@ -425,7 +426,7 @@ gros et le plus risqué.
 | `Data/Collections/DeleteCollectionModal.vue` | 6 | 112 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Collections/BulkDeleteCollectionsModal.vue` | 6 | 108 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Collections/ModalClear.vue` | 5 | 95 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
-| `Data/Documents/FormInputs/JsonFormInput.vue` | 5 | 49 | ⬜ |
+| `Data/Documents/FormInputs/JsonFormInput.vue` | 5 | 49 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Collections/DropdownAction.vue` | 5 | 135 | ⬜ |
 | `Data/Documents/DeleteModal.vue` | 4 | 52 | ✅ reprise ([#1047](https://github.com/kuzzleio/kuzzle-admin-console/pull/1047)) |
 | `Data/Data404.vue` | 4 | 30 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
@@ -433,18 +434,18 @@ gros et le plus risqué.
 | `Data/Leftnav/Treeview.vue` | 3 | 97 | ⬜ |
 | `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ⬜ |
 | `Data/Indexes/DropdownActions.vue` | 3 | 75 | ⬜ |
-| `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ⬜ |
-| `Data/Documents/Update.vue` | 3 | 173 | ⬜ |
+| `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
+| `Data/Documents/Update.vue` | 3 | 173 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Realtime/Notification.vue` | 3 | 147 | ⬜ |
 | `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ⬜ |
 | `Data/Collections/Create.vue` | 1 | 72 | ⬜ |
 | `Data/Documents/Views/Column/HeaderTableView.vue` | 1 | 56 | ⬜ |
-| `Data/Documents/EmptyState.vue` | 1 | 39 | ⬜ |
+| `Data/Documents/EmptyState.vue` | 1 | 39 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Documents/Views/Column/HighlightableRow.vue` | 1 | 30 | ⬜ |
-| `Data/Documents/Common/NewDocumentsBadge.vue` | 1 | 27 | ⬜ |
+| `Data/Documents/Common/NewDocumentsBadge.vue` | 1 | 27 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Layout.vue` | 1 | 253 | ⬜ |
-| `Data/Documents/Create.vue` | 1 | 138 | ⬜ |
-| `Data/Documents/NoGeopointFieldState.vue` | 1 | 12 | ⬜ |
+| `Data/Documents/Create.vue` | 1 | 138 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
+| `Data/Documents/NoGeopointFieldState.vue` | 1 | 12 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Collections/Update.vue` | 1 | 104 | ⬜ |
 | `Data/Documents/RealtimeOnlyEmptyState.vue` | 0 | 45 | ⬜ |
 | `Data/Documents/Views/TimeSeriesItem.vue` | 0 | 151 | ⬜ |
@@ -1068,6 +1069,38 @@ Gabarit à copier :
   d'appel qui la croise.
 - **À retenir** : un composant qui se déplace dans `<body>` sort du raisonnement
   habituel sur les styles **et** sur l'empilement. Les deux se sont mordus ici.
+
+#### G-020 — Vue 2 refuse de résoudre un composant nommé `Switch`
+
+- **Contexte** : phase 2, primitive `Switch` ajoutée pour la bascule
+  « Form view » des documents. Nommée `Switch` comme chez l'amont, importée et
+  enregistrée normalement.
+- **Symptôme** : rien. Pas d'avertissement, pas d'erreur, pas de composant — le
+  DOM contient littéralement `<Switch data-cy="formView-switch">Form view</Switch>`,
+  une balise inconnue que le navigateur affiche comme un `<span>` vide. Quatre
+  tests de `formView.spec.js` échouent sur `[data-cy=FormField-age]` introuvable,
+  c'est-à-dire trois écrans plus loin que la cause.
+- **Cause** : dans `createElement`, un tag réservé gagne *avant* qu'on regarde
+  les composants enregistrés, et Vue ne signale rien puisque de son point de vue
+  le tag existe. Or les deux tables de tags réservés ne se comparent pas de la
+  même façon (`platforms/web/util/element.ts`) :
+
+  ```js
+  const isHTMLTag = makeMap('…,input,label,table,dialog,…')        // sensible à la casse
+  const isSVG     = makeMap('…,image,line,switch,symbol,text,…', true) // insensible
+  ```
+
+  `<Input>` et `<Label>` se résolvent donc très bien — `input` ≠ `Input`. Mais
+  `isSVG` est construite avec `expectsLowerCase`, et `Switch`.toLowerCase() est
+  dans la liste. **Seuls les noms de la liste SVG sont piégés.**
+- **Solution** : l'export garde le nom de l'amont (`Switch`), les templates
+  l'enregistrent sous `UiSwitch`. En phase 3 le tag redevient `<Switch>` : Vue 3
+  résout les composants en respectant la casse, le problème disparaît avec Vue 2.
+- **À retenir** : l'asymétrie entre les deux tables est le vrai piège, parce
+  qu'elle rend l'échec imprévisible — quinze primitives passent, la seizième
+  non. Les noms shadcn-vue encore à écrire qui tombent dans la liste SVG :
+  `Image`, `Text`, `Switch`. Et le seul indice est le DOM : regarder ce qui a
+  été rendu avant de suspecter la logique.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
