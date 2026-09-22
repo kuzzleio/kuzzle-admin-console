@@ -16,9 +16,6 @@
 </template>
 
 <script>
-// https://vue-generators.gitbook.io/vue-generators/fields/custom_fields
-import { abstractField } from 'vue-form-generator';
-
 import { Card, CardContent } from '@/components/ui/card';
 import JsonFormatter from '@/directives/json-formatter.directive';
 
@@ -33,14 +30,23 @@ export default {
     CardContent,
     JsonEditor,
   },
-  mixins: [abstractField],
+  props: {
+    schema: { type: Object, required: true },
+    // Le type dépend du mapping — objet, tableau, ou la chaîne d'un
+    // `geo_point`. L'éditeur JSON les rend tous.
+    value: { default: null },
+  },
   methods: {
+    /*
+     * La valeur ne remonte que si le JSON est valide : l'éditeur émet à chaque
+     * frappe, et une accolade encore ouverte n'est pas une valeur à écrire
+     * dans le document. `value` descend de `DocumentForm` (ADR-0025).
+     */
     onChange(jsonString) {
       try {
-        this.value = JSON.parse(jsonString);
+        this.$emit('input', JSON.parse(jsonString));
       } catch (err) {
-        // do nothing...
-        // if the JSON is invalid, no need to trigger form change event
+        // JSON invalide : rien à remonter.
       }
     },
   },

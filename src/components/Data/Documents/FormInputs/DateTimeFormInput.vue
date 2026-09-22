@@ -28,9 +28,7 @@
 </template>
 
 <script>
-// https://vue-generators.gitbook.io/vue-generators/fields/custom_fields
 import moment from 'moment';
-import { abstractField } from 'vue-form-generator';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -45,8 +43,10 @@ const TIME_PICKER_FORMAT = 'HH:mm:ss';
  * `b-form-datepicker` et `b-form-timepicker` auraient demandé d'écrire à la
  * main pour ce seul site d'appel.
  *
- * `value` vient du mixin `abstractField` de vue-form-generator : y écrire
- * remonte la valeur au modèle du formulaire.
+ * Le champ ne détient pas sa valeur : `value` descend de `DocumentForm` et
+ * `input` la remonte (ADR-0025). `date` et `time` sont les deux moitiés de la
+ * saisie en cours, pas un état du document — c'est leur composition qui fait
+ * la valeur.
  */
 export default {
   components: {
@@ -55,7 +55,10 @@ export default {
     Input,
     Label,
   },
-  mixins: [abstractField],
+  props: {
+    schema: { type: Object, required: true },
+    value: { type: [String, Number], default: null },
+  },
   data() {
     return {
       date: null,
@@ -89,7 +92,7 @@ export default {
       this.emitValue();
     },
     emitValue() {
-      this.value = moment(`${this.date} ${this.time}`).format('x');
+      this.$emit('input', moment(`${this.date} ${this.time}`).format('x'));
     },
   },
 };

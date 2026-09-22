@@ -82,9 +82,10 @@ class FormSchemaService {
           label: mappingFieldName,
           model: mappingFieldName,
           mapping: mappingFieldValues,
-          // Ancrage de test stable : les ids rendus par vue-form-generator
-          // dépendent du nom du champ de mapping et disparaîtront avec la
-          // réimplémentation de VFG (cf. docs/MIGRATION.md § 3.1).
+          // Ancrage de test stable, posé quand `vue-form-generator` rendait
+          // le formulaire et slugifiait ses `id` à sa façon. `DocumentForm`
+          // lit le même `attributes.input` (ADR-0025) : les specs n'ont pas
+          // bougé, et cet ancrage n'est nommé qu'ici.
           attributes: {
             input: { 'data-cy': `FormField-${mappingFieldName}` },
           },

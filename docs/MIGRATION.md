@@ -17,7 +17,7 @@
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
-| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ **Débloquée** — la condition d'ADR-0002 est remplie |
+| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ **Débloquée, et plus rien devant** — la condition d'ADR-0002 est remplie, et la dernière dépendance incompatible est sortie ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md)) |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
@@ -42,7 +42,7 @@ actifs, dont **61 fragiles (7,9 %)**. Tous ont été repris. Il en reste **0**.
 |---|---:|---|
 | Classe applicative (`.IndexesPage`, `.DocumentListView-item`, `.CollectionCreate`…) | 39 | `data-cy` posé sur la racine du composant, sélecteur réécrit |
 | Classe Bootstrap (`.invalid-feedback` ×12, `.dropdown-toggle`) | 14 | commande `cy.invalidFeedback()` ; `:toggle-attrs` sur le `b-dropdown` |
-| `id` généré par `vue-form-generator` | 5 | `attributes.input` dans `formSchema.ts` → `data-cy="FormField-<champ>"` |
+| `id` généré par `vue-form-generator` | 5 | `attributes.input` dans `formSchema.ts` → `data-cy="FormField-<champ>"`. L'ancrage a survécu au retrait de la bibliothèque : `DocumentForm` lit le même champ du schéma ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md)) |
 | Interne `bootstrap-vue` | 3 | `data-cy` déjà présent via `title-link-attributes` ; commande `cy.removeFormTag()` |
 
 **Principe retenu** : ce qui nous appartient reçoit un `data-cy`. Ce qui est
@@ -298,7 +298,7 @@ c'était vrai pour un seul :
 | Réglage | Sort avec Bootstrap ? |
 |---|---|
 | Pas de preflight | **Non — l'inverse.** Le retrait du *reboot* de Bootstrap *oblige* à charger le preflight dans le même changement, sinon la console retombe sur les styles par défaut du navigateur ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
-| Couche `legacy` | **Non**, mais dégraissée ([ADR-0024](adr/0024-degraisser-la-couche-legacy.md)) : 781 lignes de SCSS ramenées à 122, le reste est nommé. Elle ne partira qu'avec `vfg.css`, donc avec `vue-form-generator` |
+| Couche `legacy` | **Non**, mais dégraissée ([ADR-0024](adr/0024-degraisser-la-couche-legacy.md)) : 781 lignes de SCSS ramenées à 122, le reste est nommé. `vfg.css` en est sorti avec `vue-form-generator` ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md)) ; restent les cinq feuilles nommées et FontAwesome |
 | Préfixe `tw:` | **Non, et pas mécaniquement.** Retiré dans une PR à soi ([ADR-0023](adr/0023-retrait-du-prefixe-tw.md)) : le renommage a fait se rencontrer `tw:flex-grow` et le `.flex-grow` du legacy, collision qu'aucune ligne du diff ne montre (G-036) |
 
 ---
@@ -792,7 +792,7 @@ compatibilité **avant** d'engager la montée.
 |---|---|---|---|---|
 | ~~`bootstrap-vue` 2.23.1~~ | aucune version Vue 3, **incompatible `@vue/compat`** | **Retiré** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) | 2 | ✅ |
 | ~~`bootstrap` 4.6.2~~ | supprimé avec le précédent | **Retiré** — le preflight de Tailwind prend le relais du *reboot* | 2 | ✅ |
-| `vue-form-generator` 2.3.4 | **abandonné**, aucun successeur | à réimplémenter — cœur de l'édition de documents | 2 | ⬜ |
+| ~~`vue-form-generator` 2.3.4~~ | **abandonné**, aucun successeur | **Retiré** — `DocumentForm.vue`, ~110 lignes ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md)) | 2 | ✅ |
 | ~~`vue-multipane` 0.9.5~~ | **abandonné** | **Retiré** — splitter écrit à la main ([ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md)) | 2 | ✅ |
 | `vuejs-logger` 1.5.5 | Vue 2 uniquement | remplacer par un wrapper maison | 3 | ⬜ |
 
@@ -1972,6 +1972,33 @@ Gabarit à copier :
   vivant : les commits de balayage touchent les fichiers morts comme les autres.
 - **Ref** : ADR-0016
 
+#### G-038 — Une feuille CSS importée depuis du JavaScript n'entre dans aucune couche
+
+- **Contexte** : phase 2, retrait de `vue-form-generator`
+  ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md)). `main.ts`
+  contenait `import 'vue-form-generator/dist/vfg.css'`.
+- **Symptôme** : aucun, et c'est le problème. [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)
+  puis [ADR-0024](adr/0024-degraisser-la-couche-legacy.md) affirmaient toutes
+  deux que `vfg.css` était rangé dans la couche `legacy` ; les commentaires en
+  tête de `style.scss` et de `tailwind.css` le répétaient. C'était faux.
+- **Cause** : `@layer` ne se pose que dans du CSS — par un bloc `@layer legacy {}`
+  ou par `@import … layer(legacy)`. Un `import` **JavaScript** d'un fichier
+  `.css` est résolu par le bundler et émis tel quel, hors de toute couche. Dans
+  le CSS produit, `.vue-form-generator *` était à l'octet 87, avant le premier
+  `@layer` du fichier (octet 19 560). Or **une règle sans couche bat toutes les
+  règles en couche**, quelle que soit leur spécificité : la feuille censée
+  perdre face aux utilitaires Tailwind gagnait contre elles.
+- **Solution** : ici, le retrait de la bibliothèque a rendu la question sans
+  objet. Pour une feuille tierce qu'on veut réellement ranger, c'est
+  `@import '…' layer(legacy);` dans `tailwind.css` — là où `@tailwindcss/vite`
+  résout l'import — comme pour FontAwesome. Ne pas la passer par `style.scss` :
+  Sass hisse l'`@import` d'un `.css` hors du bloc `@layer` (G-013).
+- **À retenir** : la couche d'une feuille se vérifie dans le **bundle produit**,
+  pas dans la ligne qui l'importe. `@layer legacy, theme, base, …` n'annonce que
+  l'ordre des couches ; il ne range rien, et il ne signale pas ce qui est resté
+  dehors.
+- **Ref** : [ADR-0025](adr/0025-reimplementer-vue-form-generator.md)
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -2032,3 +2059,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-22 | Bootstrap sort et le preflight entre, dans le même geste | [ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md) |
 | 2026-09-22 | Retrait du préfixe `tw:`, et vérification par comparaison du CSS produit | [ADR-0023](adr/0023-retrait-du-prefixe-tw.md) |
 | 2026-09-22 | Vider la couche `legacy` de ce qui ne style plus rien, et nommer ce qui reste | [ADR-0024](adr/0024-degraisser-la-couche-legacy.md) |
+| 2026-09-22 | Réimplémenter `vue-form-generator` en un composant de la console | [ADR-0025](adr/0025-reimplementer-vue-form-generator.md) |

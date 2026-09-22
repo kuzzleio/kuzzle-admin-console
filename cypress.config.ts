@@ -10,8 +10,8 @@ export default defineConfig({
   defaultCommandTimeout: 60000,
   pageLoadTimeout: 60000,
   // Une poignée de tests sont instables quand la suite s'enchaîne : les saisies
-  // clavier simulées dans les composants tiers (Ace, vue-form-generator)
-  // utilisent des délais fixes et peuvent perdre une frappe sous charge.
+  // clavier simulées dans l'éditeur Ace utilisent des délais fixes et peuvent
+  // perdre une frappe sous charge.
   // Cf. docs/MIGRATION.md § 5.1, G-001.
   //
   // Le retry retire ce bruit du signal CI sans masquer l'instabilité : Cypress

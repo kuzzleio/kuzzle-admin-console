@@ -1,18 +1,14 @@
 import Vue from 'vue';
 import { createPinia, PiniaVuePlugin } from 'pinia';
-import VueFormGenerator from 'vue-form-generator';
 import VueRouter from 'vue-router';
 
 import './plugins/logger';
 import './plugins/toast';
 import 'leaflet/dist/leaflet.css';
-import 'vue-form-generator/dist/vfg.css';
 
 import createRoutes from './routes/index';
 import { useKuzzleStore } from './stores';
 
-import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue';
-import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue';
 import App from './App.vue';
 
 Reflect.defineProperty(window, 'kuzzle', {
@@ -27,10 +23,6 @@ const pinia = createPinia();
 
 Vue.use(VueRouter);
 const router = createRoutes(Vue.prototype.$log);
-
-Vue.component('FieldJsonFormInput', JsonFormInput);
-Vue.component('FieldDateTimeFormInput', DateTimeFormInput);
-Vue.use(VueFormGenerator);
 
 // Vue.config.errorHandler = (err, vm, info) => {
 //   // TODO : use vue-logger instead of console.error,
