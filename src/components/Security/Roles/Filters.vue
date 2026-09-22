@@ -1,55 +1,88 @@
 <template>
-  <b-card no-body data-cy="RolesFilters" class="RolesFilters">
-    <template #header>
-      <b-row>
-        <b-col cols="8">
-          <div class="RolesFilters-searchBar">
-            <i class="RolesFilters-searchIcon fa fa-search" />
-            <b-form-tags
-              v-model="controllers"
-              data-cy="RoleFilters-searchBar"
-              placeholder="Search by controller..."
-            />
-          </div>
-        </b-col>
-        <b-col v-if="availableControllers.length !== 0" cols="2">
-          <b-dropdown id="controllers-dropdown" text="Controllers" :disabled="disableDropdown">
-            <b-dropdown-item
-              v-for="controller of availableControllers"
-              :key="`dropdownControllers-${controller}`"
-              :disabled="controllers.includes(controller)"
-              @click="addControllerTag(controller)"
-            >
-              {{ controller }}
-            </b-dropdown-item>
-          </b-dropdown>
-          <b-tooltip v-if="disableDropdown" target="controllers-dropdown" triggers="hover">
-            Unable to retrieve controller list
-          </b-tooltip>
-        </b-col>
-        <b-col class="text-right">
-          <b-button
-            class="mr-2"
-            data-cy="RolesFilters-resetBtn"
-            variant="outline-primary"
-            @click="resetSearch"
+  <Card class="RolesFilters" data-cy="RolesFilters">
+    <CardContent class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+      <div class="RolesFilters-searchBar tw:flex tw:min-w-0 tw:flex-1 tw:items-center tw:gap-2">
+        <i
+          class="RolesFilters-searchIcon fa fa-search tw:text-muted-foreground"
+          aria-hidden="true"
+        />
+        <TagsInput v-model="controllers" class="tw:min-w-0 tw:flex-1">
+          <TagsInputItem v-for="controller of controllers" :key="controller" :value="controller">
+            <TagsInputItemText>{{ controller }}</TagsInputItemText>
+            <TagsInputItemDelete :value="controller" />
+          </TagsInputItem>
+          <TagsInputInput
+            aria-label="Search by controller"
+            data-cy="RoleFilters-searchBar"
+            placeholder="Search by controller..."
+          />
+        </TagsInput>
+      </div>
+
+      <DropdownMenu v-if="availableControllers.length !== 0">
+        <DropdownMenuTrigger
+          id="controllers-dropdown"
+          :as="Button"
+          :disabled="disableDropdown"
+          :title="disableDropdown ? 'Unable to retrieve controller list' : ''"
+          variant="outline"
+        >
+          Controllers
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            v-for="controller of availableControllers"
+            :key="`dropdownControllers-${controller}`"
+            :disabled="controllers.includes(controller)"
+            @select="addControllerTag(controller)"
           >
-            Reset
-          </b-button>
-        </b-col>
-      </b-row>
-    </template>
-  </b-card>
+            {{ controller }}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Button data-cy="RolesFilters-resetBtn" variant="outline" @click="resetSearch">Reset</Button>
+    </CardContent>
+  </Card>
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'pinia';
 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  TagsInput,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputItemDelete,
+  TagsInputItemText,
+} from '@/components/ui/tags-input';
 import { useKuzzleStore } from '@/stores';
 
 export default {
   name: 'RolesFilters',
-  components: {},
+  components: {
+    Button,
+    Card,
+    CardContent,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    TagsInput,
+    TagsInputInput,
+    TagsInputItem,
+    TagsInputItemDelete,
+    TagsInputItemText,
+  },
   props: {
     currentFilter: Object,
   },
@@ -58,6 +91,8 @@ export default {
   },
   data() {
     return {
+      /* `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom. */
+      Button: markRaw(Button),
       controllers: [],
       availableControllers: [],
       disableDropdown: false,
@@ -100,16 +135,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.RolesFilters-searchBar {
-  border: none;
-  height: auto;
-  display: flex;
-  align-items: center;
-
-  .RolesFilters-searchIcon {
-    margin-right: 10px;
-  }
-}
-</style>
