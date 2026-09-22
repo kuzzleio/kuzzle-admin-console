@@ -1,9 +1,9 @@
 <template>
-  <div class="UserItem tw:px-3" data-cy="UserItem">
-    <div class="tw:flex tw:flex-row tw:items-center tw:gap-2 tw:py-1">
+  <div class="UserItem px-3" data-cy="UserItem">
+    <div class="flex flex-row items-center gap-2 py-1">
       <i
         aria-hidden="true"
-        class="fa tw:cursor-pointer tw:px-1"
+        class="fa cursor-pointer px-1"
         :class="`fa-caret-${expanded ? 'down' : 'right'}`"
         :data-cy="`UserItem-${document.id}--toggle`"
         @click="toggleCollapse"
@@ -11,40 +11,40 @@
       <Checkbox
         :id="checkboxId"
         v-model="checked"
-        class="tw:me-2"
+        class="me-2"
         :data-cy="`UserListItem-checkbox--${document.id}`"
         @change="notifyCheckboxClick"
       />
 
-      <div class="tw:grow">
-        <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
-          <a class="code tw:cursor-pointer" @click="toggleCollapse">{{ document.id }}</a>
+      <div class="grow">
+        <div class="flex flex-wrap items-center gap-2">
+          <a class="code cursor-pointer" @click="toggleCollapse">{{ document.id }}</a>
           <span
             v-if="localStrategyUsername"
             class="code"
             :data-cy="`local-strategy-username-${localStrategyUsername}`"
           >
-            <i class="fas fa-user tw:text-secondary" title="Username (local strategy)" />
+            <i class="fas fa-user text-secondary" title="Username (local strategy)" />
             {{ localStrategyUsername }}
           </span>
           <span
             v-if="document.additionalAttribute && document.additionalAttribute.value"
-            class="tw:cursor-pointer tw:text-sm tw:italic tw:text-muted-foreground"
+            class="cursor-pointer text-sm italic text-muted-foreground"
             @click="toggleCollapse"
             >({{ document.additionalAttribute.name }}:
             {{ document.additionalAttribute.value }})</span
           >
         </div>
-        <div class="tw:flex tw:flex-row tw:flex-wrap tw:gap-1 tw:py-1">
+        <div class="flex flex-row flex-wrap gap-1 py-1">
           <Badge v-for="profile in profileList" :key="profile">
-            <router-link class="truncate tw:text-primary-foreground" :to="profileRoute(profile)">{{
+            <router-link class="truncate text-primary-foreground" :to="profileRoute(profile)">{{
               profile
             }}</router-link>
           </Badge>
         </div>
       </div>
 
-      <div class="tw:flex tw:flex-nowrap tw:items-center">
+      <div class="flex flex-nowrap items-center">
         <Button
           class="UserListItem-update"
           :data-cy="`UserListItem-update--${document.id}`"
@@ -70,7 +70,7 @@
       </div>
     </div>
 
-    <div v-show="expanded" :id="`collapse-${document.id}`" class="DocumentListItem-content tw:ms-3">
+    <div v-show="expanded" :id="`collapse-${document.id}`" class="DocumentListItem-content ms-3">
       <pre v-json-formatter="{ content: document, open: true }" />
     </div>
   </div>

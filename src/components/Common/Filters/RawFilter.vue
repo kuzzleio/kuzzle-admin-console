@@ -8,10 +8,10 @@
       :content="rawFilter"
       @change="onFilterChange"
     />
-    <Alert v-if="!isFilterValid && showError" class="tw:mt-2" variant="destructive">
+    <Alert v-if="!isFilterValid && showError" class="mt-2" variant="destructive">
       Your JSON filter contains errors.
     </Alert>
-    <div v-if="actionButtonsVisible" class="tw:mt-3 tw:flex tw:justify-end tw:gap-2">
+    <div v-if="actionButtonsVisible" class="mt-3 flex justify-end gap-2">
       <Button data-cy="RawFilter-resetBtn" variant="outline" @click="reset">Reset</Button>
       <Button data-cy="RawFilter-submitBtn" :disabled="!isFilterValid" @click.prevent="submit">
         {{ submitButtonLabel }}

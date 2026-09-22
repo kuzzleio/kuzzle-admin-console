@@ -1,15 +1,15 @@
 <template>
   <div class="TimeSeriesView" data-cy="TimeSeriesView-container">
-    <div v-if="isChartViewAvailable" class="tw:grid tw:grid-cols-12 tw:gap-4">
-      <Card class="tw:col-span-3 tw:py-4">
-        <CardContent class="tw:flex tw:flex-col tw:gap-4 tw:px-4">
+    <div v-if="isChartViewAvailable" class="grid grid-cols-12 gap-4">
+      <Card class="col-span-3 py-4">
+        <CardContent class="flex flex-col gap-4 px-4">
           <PerPageSelector
             :current-page-size="currentPageSize"
             :total-documents="totalDocuments"
             @change-page-size="$emit('change-page-size', $event)"
           />
-          <div class="tw:flex tw:flex-col tw:gap-2">
-            <span id="timeseriesView-dateLabel" class="tw:text-sm">Date</span>
+          <div class="flex flex-col gap-2">
+            <span id="timeseriesView-dateLabel" class="text-sm">Date</span>
             <Select :model-value="customDateField || ''" @update:modelValue="addDateField">
               <SelectTrigger
                 aria-labelledby="timeseriesView-dateLabel"
@@ -25,10 +25,10 @@
             </Select>
           </div>
           <form
-            class="TimeSeriesValueSelector tw:flex tw:flex-col tw:gap-2"
+            class="TimeSeriesValueSelector flex flex-col gap-2"
             data-cy="TimeSeriesValueSelector"
           >
-            <span class="tw:text-sm">Values</span>
+            <span class="text-sm">Values</span>
             <time-series-item
               v-for="(number, key) of customNumberFields"
               :key="key"
@@ -54,11 +54,11 @@
           </form>
         </CardContent>
       </Card>
-      <div class="tw:col-span-9 tw:h-full">
+      <div class="col-span-9 h-full">
         <VueApexCharts
           v-show="customNumberFields.length"
           ref="Chart"
-          class="tw:h-full tw:w-full"
+          class="h-full w-full"
           data-cy="timeSeries-chart"
           type="line"
           :series="series"
@@ -66,11 +66,11 @@
         />
         <Card
           v-if="!customNumberFields.length"
-          class="EmptyState tw:h-full tw:items-center tw:justify-center tw:bg-muted tw:text-center"
+          class="EmptyState h-full items-center justify-center bg-muted text-center"
         >
           <CardContent>
-            <i aria-hidden="true" class="fas fa-file-alt fa-6x tw:mb-3 tw:text-muted-foreground" />
-            <h2 class="tw:m-0 tw:text-xl tw:font-bold tw:text-muted-foreground">
+            <i aria-hidden="true" class="fas fa-file-alt fa-6x mb-3 text-muted-foreground" />
+            <h2 class="m-0 text-xl font-bold text-muted-foreground">
               You must select at least one field
             </h2>
           </CardContent>
@@ -79,12 +79,12 @@
     </div>
     <Card
       v-else-if="!customNumberFields.length"
-      class="EmptyState tw:h-full tw:items-center tw:justify-center tw:bg-muted tw:text-center"
+      class="EmptyState h-full items-center justify-center bg-muted text-center"
     >
       <CardContent>
-        <i aria-hidden="true" class="fas fa-file-alt fa-6x tw:mb-3 tw:text-muted-foreground" />
-        <h2 class="tw:m-0 tw:text-xl tw:font-bold tw:text-muted-foreground">No data to display</h2>
-        <p class="tw:mt-2 tw:mb-0 tw:text-sm tw:text-muted-foreground">
+        <i aria-hidden="true" class="fas fa-file-alt fa-6x mb-3 text-muted-foreground" />
+        <h2 class="m-0 text-xl font-bold text-muted-foreground">No data to display</h2>
+        <p class="mt-2 mb-0 text-sm text-muted-foreground">
           You can only use chart view on collection that has mapping with fields of date and numeric
           fields...
         </p>

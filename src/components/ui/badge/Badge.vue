@@ -26,11 +26,11 @@ import { classMerge } from '../class-merge';
  */
 export const badgeVariants = cva(
   [
-    'tw:inline-flex tw:items-center tw:gap-1.5 tw:shrink-0',
-    'tw:border tw:border-transparent tw:rounded-md',
-    'tw:px-2 tw:py-0.5',
-    'tw:font-sans tw:text-xs tw:font-medium tw:leading-normal tw:whitespace-nowrap',
-    'tw:transition-colors',
+    'inline-flex items-center gap-1.5 shrink-0',
+    'border border-transparent rounded-md',
+    'px-2 py-0.5',
+    'font-sans text-xs font-medium leading-normal whitespace-nowrap',
+    'transition-colors',
   ].join(' '),
   {
     defaultVariants: {
@@ -38,11 +38,11 @@ export const badgeVariants = cva(
     },
     variants: {
       variant: {
-        default: 'tw:bg-primary tw:text-primary-foreground',
-        destructive: 'tw:bg-destructive tw:text-destructive-foreground',
-        outline: 'tw:border-border tw:text-foreground',
-        secondary: 'tw:bg-muted tw:text-muted-foreground',
-        warning: 'tw:bg-accent tw:text-accent-foreground',
+        default: 'bg-primary text-primary-foreground',
+        destructive: 'bg-destructive text-destructive-foreground',
+        outline: 'border-border text-foreground',
+        secondary: 'bg-muted text-muted-foreground',
+        warning: 'bg-accent text-accent-foreground',
       },
     },
   },

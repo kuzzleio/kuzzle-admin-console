@@ -1,22 +1,22 @@
 <template>
-  <div class="LoginPage tw:flex tw:min-h-screen tw:items-center tw:justify-center tw:p-4">
-    <Card class="tw:w-full tw:max-w-2xl">
+  <div class="LoginPage flex min-h-screen items-center justify-center p-4">
+    <Card class="w-full max-w-2xl">
       <CardContent>
-        <div class="tw:text-center">
+        <div class="text-center">
           <img
             src="../assets/logo.svg"
             alt="Welcome to the Kuzzle Admin Console"
-            class="tw:mb-8 tw:inline-block tw:h-auto tw:max-w-full"
+            class="mb-8 inline-block h-auto max-w-full"
           />
         </div>
         <Alert
           v-if="displayNoAdminWarning"
-          class="tw:mb-4 tw:text-center"
+          class="mb-4 text-center"
           data-cy="noAdminWarning"
           variant="warning"
         >
           <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended
-          <a class="tw:font-semibold tw:underline" data-cy="NoAdminWarning-link" href="#/signup">
+          <a class="font-semibold underline" data-cy="NoAdminWarning-link" href="#/signup">
             that you create one.</a
           >
         </Alert>
@@ -27,8 +27,8 @@
           formulaire. Le mot reste, en texte, et le menu porte son propre nom
           accessible.
         -->
-        <div class="tw:mb-4 tw:flex tw:flex-wrap tw:items-center tw:gap-3">
-          <span class="tw:text-sm tw:text-muted-foreground">Connected to</span>
+        <div class="mb-4 flex flex-wrap items-center gap-3">
+          <span class="text-sm text-muted-foreground">Connected to</span>
           <environment-switch
             @environment::create="editEnvironment"
             @environment::delete="deleteEnvironment"

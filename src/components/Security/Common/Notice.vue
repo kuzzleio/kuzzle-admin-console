@@ -1,8 +1,8 @@
 <template>
-  <Alert class="tw:mb-4">
+  <Alert class="mb-4">
     For more information about security policies please visit
     <a
-      class="tw:text-secondary tw:underline tw:underline-offset-4"
+      class="text-secondary underline underline-offset-4"
       href="https://docs.kuzzle.io/core/2/guides/main-concepts/permissions/"
       rel="noopener noreferrer"
       target="_blank"

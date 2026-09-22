@@ -16,7 +16,7 @@
     @keydown.up.prevent="onArrow"
   >
     <slot />
-    <i aria-hidden="true" class="fa fa-chevron-down tw:ml-2 tw:text-xs tw:opacity-50" />
+    <i aria-hidden="true" class="fa fa-chevron-down ml-2 text-xs opacity-50" />
   </component>
 </template>
 
@@ -53,14 +53,14 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:flex tw:h-9 tw:w-full tw:items-center tw:justify-between tw:gap-2',
-        'tw:appearance-none tw:cursor-pointer',
-        'tw:rounded-md tw:border tw:border-input tw:bg-background',
-        'tw:px-3 tw:py-2',
-        'tw:font-sans tw:text-sm tw:leading-none tw:text-foreground',
-        'tw:transition-colors tw:outline-none',
-        'tw:focus-visible:ring-2 tw:focus-visible:ring-ring tw:focus-visible:ring-offset-2 tw:focus-visible:ring-offset-background',
-        'tw:disabled:cursor-not-allowed tw:disabled:opacity-50',
+        'flex h-9 w-full items-center justify-between gap-2',
+        'appearance-none cursor-pointer',
+        'rounded-md border border-input bg-background',
+        'px-3 py-2',
+        'font-sans text-sm leading-none text-foreground',
+        'transition-colors outline-none',
+        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        'disabled:cursor-not-allowed disabled:opacity-50',
       );
     },
     disabled(): boolean {

@@ -1,26 +1,26 @@
 <template>
-  <div class="tw:h-screen tw:overflow-auto">
-    <div class="tw:flex tw:min-h-full tw:justify-center tw:px-4 tw:py-6">
-      <Card class="tw:my-auto tw:w-full tw:max-w-3xl">
-        <CardHeader class="tw:gap-4">
+  <div class="h-screen overflow-auto">
+    <div class="flex min-h-full justify-center px-4 py-6">
+      <Card class="my-auto w-full max-w-3xl">
+        <CardHeader class="gap-4">
           <img
             alt="Welcome to the Kuzzle Admin Console"
-            class="tw:h-15 tw:w-auto tw:self-start"
+            class="h-15 w-auto self-start"
             height="60"
             src="../../../assets/logo.svg"
           />
-          <CardTitle class="tw:text-3xl">Select Kuzzle</CardTitle>
-          <CardDescription class="tw:text-base">
+          <CardTitle class="text-3xl">Select Kuzzle</CardTitle>
+          <CardDescription class="text-base">
             Please select a Kuzzle instance to connect to.
           </CardDescription>
         </CardHeader>
 
         <CardContent>
-          <hr class="tw:border-border" />
+          <hr class="border-border" />
         </CardContent>
 
-        <CardFooter class="tw:flex-wrap tw:justify-end tw:gap-4">
-          <span class="tw:text-sm tw:text-muted-foreground">Connect to</span>
+        <CardFooter class="flex-wrap justify-end gap-4">
+          <span class="text-sm text-muted-foreground">Connect to</span>
           <environment-selector
             @environment::create="$emit('environment::create', $event)"
             @environment::delete="$emit('environment::delete', $event)"

@@ -1,8 +1,8 @@
 <template>
   <Card class="EmptyState">
-    <CardContent class="tw:flex tw:flex-col tw:items-center tw:gap-3 tw:text-center">
-      <i aria-hidden="true" class="fas fa-file-alt fa-6x tw:text-muted-foreground" />
-      <CardTitle class="tw:text-xl tw:text-muted-foreground">
+    <CardContent class="flex flex-col items-center gap-3 text-center">
+      <i aria-hidden="true" class="fas fa-file-alt fa-6x text-muted-foreground" />
+      <CardTitle class="text-xl text-muted-foreground">
         This collection does not contain geo_point field
       </CardTitle>
     </CardContent>

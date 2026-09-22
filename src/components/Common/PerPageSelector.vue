@@ -1,12 +1,8 @@
 <template>
-  <div class="tw:flex tw:items-center tw:gap-2 tw:text-sm tw:text-foreground">
+  <div class="flex items-center gap-2 text-sm text-foreground">
     <span>Show</span>
     <Select :model-value="pageSize" @update:modelValue="$emit('change-page-size', $event)">
-      <SelectTrigger
-        aria-label="Items per page"
-        class="tw:w-auto tw:min-w-20"
-        data-cy="perPageSelector"
-      >
+      <SelectTrigger aria-label="Items per page" class="w-auto min-w-20" data-cy="perPageSelector">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

@@ -1,34 +1,32 @@
 <template>
-  <div class="Signup tw:h-screen tw:overflow-y-auto">
-    <div class="Signup-flexContainer tw:mx-auto tw:flex tw:max-w-4xl tw:justify-center tw:p-4">
-      <Card class="tw:my-3 tw:w-full">
-        <CardContent class="tw:flex tw:flex-col tw:gap-4">
+  <div class="Signup h-screen overflow-y-auto">
+    <div class="Signup-flexContainer mx-auto flex max-w-4xl justify-center p-4">
+      <Card class="my-3 w-full">
+        <CardContent class="flex flex-col gap-4">
           <!--
             `b-jumbotron` n'était qu'un bloc gris à gros titre. Il disparaît
             avec Bootstrap : l'en-tête est du balisage ordinaire, et le
             séparateur un `<hr>` aux tokens.
           -->
-          <header class="tw:rounded-md tw:bg-muted tw:p-8">
+          <header class="rounded-md bg-muted p-8">
             <img
               src="../assets/logo.svg"
               alt="Welcome to the Kuzzle Admin Console"
               height="60"
-              class="tw:h-15 tw:w-auto"
+              class="h-15 w-auto"
             />
-            <h2 class="tw:mt-4 tw:text-2xl tw:font-bold tw:text-foreground">
-              Create an Admin Account
-            </h2>
+            <h2 class="mt-4 text-2xl font-bold text-foreground">Create an Admin Account</h2>
 
-            <p class="tw:mt-4 tw:text-foreground">
+            <p class="mt-4 text-foreground">
               Your Kuzzle instance does not seem to have an administrator user. To continue using an
               insecure installation and skip the Admin Account creation, click the "Login as
               Anonymous" button below.
             </p>
 
-            <hr class="tw:my-6 tw:border-border" />
+            <hr class="my-6 border-border" />
 
-            <div class="tw:flex tw:flex-wrap tw:items-center tw:justify-end tw:gap-3">
-              <span class="tw:text-sm tw:text-muted-foreground">Connected to</span>
+            <div class="flex flex-wrap items-center justify-end gap-3">
+              <span class="text-sm text-muted-foreground">Connected to</span>
               <environment-switch
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
@@ -87,7 +85,7 @@
           </Alert>
 
           <FormItem>
-            <div class="tw:flex tw:items-center tw:gap-2">
+            <div class="flex items-center gap-2">
               <Checkbox id="reset" v-model="reset" />
               <Label for="reset">Remove anonymous user credentials.</Label>
             </div>
@@ -97,7 +95,7 @@
           </FormItem>
         </CardContent>
 
-        <CardFooter class="tw:flex tw:flex-wrap tw:justify-end tw:gap-2">
+        <CardFooter class="flex flex-wrap justify-end gap-2">
           <!--
             Ce bouton portait `data-cy="LoginAsAnonymous-Btn"`, le même que son
             voisin : deux éléments pour un sélecteur, et `cy.get()` aurait

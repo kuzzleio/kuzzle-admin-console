@@ -1,12 +1,9 @@
 <template>
   <Card class="RolesFilters" data-cy="RolesFilters">
-    <CardContent class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
-      <div class="RolesFilters-searchBar tw:flex tw:min-w-0 tw:flex-1 tw:items-center tw:gap-2">
-        <i
-          class="RolesFilters-searchIcon fa fa-search tw:text-muted-foreground"
-          aria-hidden="true"
-        />
-        <TagsInput v-model="controllers" class="tw:min-w-0 tw:flex-1">
+    <CardContent class="flex flex-wrap items-center gap-2">
+      <div class="RolesFilters-searchBar flex min-w-0 flex-1 items-center gap-2">
+        <i class="RolesFilters-searchIcon fa fa-search text-muted-foreground" aria-hidden="true" />
+        <TagsInput v-model="controllers" class="min-w-0 flex-1">
           <TagsInputItem v-for="controller of controllers" :key="controller" :value="controller">
             <TagsInputItemText>{{ controller }}</TagsInputItemText>
             <TagsInputItemDelete :value="controller" />

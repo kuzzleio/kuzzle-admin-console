@@ -1,15 +1,13 @@
 <template>
-  <div
-    class="DocumentUpdate tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
-  >
+  <div class="DocumentUpdate mx-auto flex h-full w-full max-w-6xl flex-col px-4">
     <template v-if="hasRights">
       <headline> Edit document </headline>
 
-      <Alert v-if="showAlert" class="tw:mb-4" variant="destructive">
+      <Alert v-if="showAlert" class="mb-4" variant="destructive">
         <b>Warning!</b> This document has been edited while you were editing it. If you save now,
         you will overwrite someone else's modifications.
       </Alert>
-      <div v-if="loading" class="tw:mt-12 tw:flex tw:justify-center">
+      <div v-if="loading" class="mt-12 flex justify-center">
         <Spinner label="Loading the document" size="lg" />
       </div>
       <create-or-update

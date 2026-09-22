@@ -1,9 +1,9 @@
 <template>
-  <div class="tw:px-3" data-cy="RoleItem">
-    <div class="tw:flex tw:items-center tw:gap-2 tw:py-1">
+  <div class="px-3" data-cy="RoleItem">
+    <div class="flex items-center gap-2 py-1">
       <i
         aria-hidden="true"
-        class="fa tw:cursor-pointer tw:px-1"
+        class="fa cursor-pointer px-1"
         :class="`fa-caret-${expanded ? 'down' : 'right'}`"
         :data-cy="`RoleItem-${document._id}--toggle`"
         @click="toggleCollapse"
@@ -13,9 +13,9 @@
         :data-cy="`RoleItem-checkbox--${document._id}`"
         @change="notifyCheckboxClick"
       />
-      <a class="code tw:cursor-pointer" @click="toggleCollapse">{{ document._id }}</a>
+      <a class="code cursor-pointer" @click="toggleCollapse">{{ document._id }}</a>
 
-      <div class="tw:ms-auto tw:flex tw:items-center">
+      <div class="ms-auto flex items-center">
         <Button
           class="RoleItem-update"
           :data-cy="`RoleItem-update--${document._id}`"
@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div v-show="expanded" class="RoleItem-content tw:ms-3 tw:mt-3">
+    <div v-show="expanded" class="RoleItem-content ms-3 mt-3">
       <pre v-json-formatter="{ content: document, open: true }" />
     </div>
   </div>

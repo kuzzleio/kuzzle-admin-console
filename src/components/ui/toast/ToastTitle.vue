@@ -14,7 +14,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:font-semibold');
+      return this.mergeClasses('font-semibold');
     },
   },
 });

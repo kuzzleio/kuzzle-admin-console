@@ -1,7 +1,7 @@
 <template>
   <Badge
-    class="tw:ms-2 tw:min-h-4 tw:min-w-4 tw:justify-center tw:rounded-full"
-    :class="{ 'tw:cursor-pointer': hasNewDocuments }"
+    class="ms-2 min-h-4 min-w-4 justify-center rounded-full"
+    :class="{ 'cursor-pointer': hasNewDocuments }"
     data-cy="NewDocumentsBadge"
     :title="
       hasNewDocuments

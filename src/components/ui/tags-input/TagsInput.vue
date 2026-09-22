@@ -51,10 +51,10 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:flex tw:flex-wrap tw:items-center tw:gap-2',
-        'tw:rounded-md tw:border tw:border-input tw:bg-background tw:px-3 tw:py-2',
-        'tw:focus-within:ring-2 tw:focus-within:ring-ring tw:focus-within:ring-offset-2 tw:focus-within:ring-offset-background',
-        this.disabled ? 'tw:cursor-not-allowed tw:opacity-50' : '',
+        'flex flex-wrap items-center gap-2',
+        'rounded-md border border-input bg-background px-3 py-2',
+        'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
+        this.disabled ? 'cursor-not-allowed opacity-50' : '',
       );
     },
   },

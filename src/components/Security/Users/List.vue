@@ -3,7 +3,7 @@
     <slot v-if="isCollectionEmpty && !loading" name="emptySet" />
     <template v-else>
       <filters
-        class="tw:mb-3"
+        class="mb-3"
         :available-operands="searchFilterOperands"
         :current-filter="currentFilter"
         :mapping-attributes="mappingAttributes"
@@ -13,7 +13,7 @@
         @reset="onFiltersUpdated"
       />
 
-      <div v-if="loading" class="tw:flex tw:justify-center tw:py-8">
+      <div v-if="loading" class="flex justify-center py-8">
         <Spinner size="lg" />
       </div>
 
@@ -22,10 +22,7 @@
           <CardContent>
             <NoSearchResult v-show="!documents.length" />
 
-            <div
-              v-if="documents.length"
-              class="tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2"
-            >
+            <div v-if="documents.length" class="mb-3 flex flex-wrap items-center gap-2">
               <Button data-cy="UserList-toggleAllBtn" variant="outline" @click="toggleAll">
                 <i
                   :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`"
@@ -45,7 +42,7 @@
               </Button>
 
               <PerPageSelector
-                class="tw:ml-auto"
+                class="ml-auto"
                 :current-page-size="paginationSize"
                 :total-documents="totalDocuments"
                 @change-page-size="changePaginationSize($event)"
@@ -54,13 +51,13 @@
 
             <ul
               v-show="documents.length"
-              class="UserList-list tw:flex tw:list-none tw:flex-col tw:gap-2 tw:pl-0"
+              class="UserList-list flex list-none flex-col gap-2 pl-0"
               data-cy="UserList-items"
             >
               <li
                 v-for="document in documents"
                 :key="document.id"
-                class="tw:rounded-md tw:border tw:border-border tw:p-2"
+                class="rounded-md border border-border p-2"
                 data-cy="UserList-item"
               >
                 <UserItem
@@ -79,7 +76,7 @@
 
         <ListPagination
           v-show="totalDocuments > paginationSize"
-          class="tw:mt-4"
+          class="mt-4"
           data-cy="UserManagement-pagination"
           :items-per-page="paginationSize"
           :page.sync="currentPage"

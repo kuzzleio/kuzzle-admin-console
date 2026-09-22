@@ -1,6 +1,6 @@
 <template>
   <form id="loginForm" method="post" @submit.prevent="login()">
-    <div class="loginForm-inputs tw:flex tw:flex-col tw:gap-4">
+    <div class="loginForm-inputs flex flex-col gap-4">
       <FormItem>
         <Label for="username">Login</Label>
         <Input
@@ -34,12 +34,12 @@
       rend pas. Le bouton est écrit ici, et il appelle `dismissError()`, qui
       existait déjà sans être branché à rien.
     -->
-    <div v-if="error" class="LoginForm-error tw:mt-4">
-      <Alert class="tw:flex tw:items-start tw:gap-3" variant="destructive">
-        <span class="tw:flex-1">Login failed: {{ error }}</span>
+    <div v-if="error" class="LoginForm-error mt-4">
+      <Alert class="flex items-start gap-3" variant="destructive">
+        <span class="flex-1">Login failed: {{ error }}</span>
         <button
           aria-label="Dismiss"
-          class="tw:cursor-pointer tw:leading-none"
+          class="cursor-pointer leading-none"
           type="button"
           @click="dismissError"
         >
@@ -48,9 +48,7 @@
       </Alert>
     </div>
 
-    <div
-      class="LoginForm-buttons tw:mt-4 tw:flex tw:flex-wrap tw:items-center tw:justify-end tw:gap-2"
-    >
+    <div class="LoginForm-buttons mt-4 flex flex-wrap items-center justify-end gap-2">
       <Button data-cy="LoginAsAnonymous-Btn" variant="link" @click="loginAsAnonymous"
         >Login as Anonymous</Button
       >

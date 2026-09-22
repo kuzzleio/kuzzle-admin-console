@@ -16,13 +16,13 @@ import { cva } from 'class-variance-authority';
  */
 export const itemClasses = cva(
   [
-    'tw:relative tw:flex tw:w-full tw:items-center tw:gap-2',
-    'tw:cursor-pointer tw:appearance-none tw:text-left',
-    'tw:border tw:border-transparent tw:bg-transparent tw:rounded-sm',
-    'tw:px-2 tw:py-1.5',
-    'tw:font-sans tw:text-sm tw:leading-normal',
-    'tw:outline-none tw:transition-colors',
-    'tw:focus-visible:bg-muted tw:hover:bg-muted',
+    'relative flex w-full items-center gap-2',
+    'cursor-pointer appearance-none text-left',
+    'border border-transparent bg-transparent rounded-sm',
+    'px-2 py-1.5',
+    'font-sans text-sm leading-normal',
+    'outline-none transition-colors',
+    'focus-visible:bg-muted hover:bg-muted',
   ].join(' '),
   {
     defaultVariants: {
@@ -33,15 +33,15 @@ export const itemClasses = cva(
     variants: {
       disabled: {
         false: '',
-        true: 'tw:pointer-events-none tw:cursor-default tw:opacity-50',
+        true: 'pointer-events-none cursor-default opacity-50',
       },
       inset: {
         false: '',
-        true: 'tw:pl-8',
+        true: 'pl-8',
       },
       variant: {
-        default: 'tw:text-popover-foreground',
-        destructive: 'tw:text-destructive tw:hover:bg-destructive/10',
+        default: 'text-popover-foreground',
+        destructive: 'text-destructive hover:bg-destructive/10',
       },
     },
   },

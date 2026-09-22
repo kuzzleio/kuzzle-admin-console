@@ -35,8 +35,8 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:truncate',
-        this.hasValue ? 'tw:text-foreground' : 'tw:text-muted-foreground',
+        'truncate',
+        this.hasValue ? 'text-foreground' : 'text-muted-foreground',
       );
     },
     hasValue(): boolean {

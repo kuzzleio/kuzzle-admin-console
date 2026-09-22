@@ -31,7 +31,7 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:inline-flex tw:h-9 tw:min-w-9 tw:items-center tw:justify-center tw:text-sm tw:text-muted-foreground',
+        'inline-flex h-9 min-w-9 items-center justify-center text-sm text-muted-foreground',
       );
     },
   },

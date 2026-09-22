@@ -1,23 +1,23 @@
 <template>
   <div
-    class="EditUserMapping tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+    class="EditUserMapping mx-auto flex h-full w-full max-w-6xl flex-col px-4"
     data-cy="EditUserMapping"
   >
-    <div class="tw:flex tw:flex-wrap tw:items-start tw:justify-between tw:gap-4">
+    <div class="flex flex-wrap items-start justify-between gap-4">
       <headline>Edit User Custom Data Mapping</headline>
-      <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-3">
+      <div class="flex flex-wrap items-center gap-3">
         <!--
           Le libellé est visible : un `<input type="file">` natif ignore
           `placeholder`, et « Import mapping » était la seule indication que
           `b-form-file` affichait.
         -->
-        <div class="tw:flex tw:items-center tw:gap-2">
+        <div class="flex items-center gap-2">
           <Label for="user-mapping-import">Import mapping</Label>
           <Input
             id="user-mapping-import"
             ref="file-input"
             accept=".json"
-            class="tw:w-auto"
+            class="w-auto"
             type="file"
             @change="loadMappingValue($event)"
           />
@@ -39,29 +39,29 @@
       </div>
     </div>
 
-    <Alert class="tw:my-3">
+    <Alert class="my-3">
       Here, you will be able to define the fields to be included in Users' custom data payload.
     </Alert>
 
     <template v-if="!loading">
-      <Card class="tw:grow">
-        <CardContent class="tw:flex tw:h-full tw:flex-col tw:gap-6 tw:lg:flex-row">
-          <div class="tw:lg:w-8/12">
+      <Card class="grow">
+        <CardContent class="flex h-full flex-col gap-6 lg:flex-row">
+          <div class="lg:w-8/12">
             <json-editor
               id="user-custom-data-mapping-editor"
               ref="jsoneditor"
               :content="mappingValue"
               data-cy="EditUserMapping-JSONEditor"
-              myclass="tw:h-full"
+              myclass="h-full"
               tabindex="4"
               @change="onMappingChange"
             />
           </div>
-          <div class="tw:text-secondary tw:lg:w-4/12">
+          <div class="text-secondary lg:w-4/12">
             Mapping is the process of defining how a document, and the fields it contains, are
             stored and indexed.
             <a
-              class="tw:underline tw:underline-offset-4"
+              class="underline underline-offset-4"
               href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
               rel="noopener noreferrer"
               target="_blank"
@@ -78,7 +78,7 @@
           </div>
         </CardContent>
 
-        <CardFooter class="tw:justify-end tw:gap-2">
+        <CardFooter class="justify-end gap-2">
           <Button variant="outline" @click="onCancel">Cancel</Button>
           <Button
             data-cy="EditUserMapping-submitBtn"

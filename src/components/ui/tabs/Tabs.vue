@@ -68,8 +68,8 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:flex tw:gap-2',
-        this.orientation === 'vertical' ? 'tw:flex-row' : 'tw:flex-col',
+        'flex gap-2',
+        this.orientation === 'vertical' ? 'flex-row' : 'flex-col',
       );
     },
     value(): TabsValue | null {

@@ -1,13 +1,13 @@
 <template>
   <Card>
-    <CardContent class="tw:flex tw:items-start tw:gap-6">
-      <i class="fa fa-6x fa-lock tw:text-muted-foreground" aria-hidden="true" />
+    <CardContent class="flex items-start gap-6">
+      <i class="fa fa-6x fa-lock text-muted-foreground" aria-hidden="true" />
       <div>
-        <CardTitle class="tw:mb-2 tw:text-xl"> You are not allowed to access this list </CardTitle>
-        <CardDescription class="tw:italic">
+        <CardTitle class="mb-2 text-xl"> You are not allowed to access this list </CardTitle>
+        <CardDescription class="italic">
           Learn more about security &amp; permissions on the
           <a
-            class="tw:text-secondary tw:underline tw:underline-offset-4"
+            class="text-secondary underline underline-offset-4"
             href="https://docs.kuzzle.io/core/2/guides/main-concepts/permissions/"
             rel="noopener noreferrer"
             target="_blank"

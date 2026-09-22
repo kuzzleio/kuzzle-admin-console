@@ -29,10 +29,10 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:appearance-none tw:border-0 tw:bg-transparent tw:p-0',
-        'tw:cursor-pointer tw:leading-none tw:opacity-60',
-        'tw:outline-none tw:hover:opacity-100',
-        'tw:focus-visible:ring-2 tw:focus-visible:ring-ring',
+        'appearance-none border-0 bg-transparent p-0',
+        'cursor-pointer leading-none opacity-60',
+        'outline-none hover:opacity-100',
+        'focus-visible:ring-2 focus-visible:ring-ring',
       );
     },
   },

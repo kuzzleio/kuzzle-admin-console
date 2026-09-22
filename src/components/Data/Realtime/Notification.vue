@@ -1,6 +1,6 @@
 <template>
   <Card
-    class="Notification tw:gap-0 tw:overflow-hidden tw:rounded-none tw:border-b-0 tw:py-0 tw:shadow-none tw:first:rounded-t-md tw:last:rounded-b-md tw:last:border-b"
+    class="Notification gap-0 overflow-hidden rounded-none border-b-0 py-0 shadow-none first:rounded-t-md last:rounded-b-md last:border-b"
     data-cy="Notification"
   >
     <button
@@ -13,9 +13,9 @@
       <i aria-hidden="true" :class="['fa', expanded ? 'fa-caret-down' : 'fa-caret-right']" />
       <i aria-hidden="true" class="fa" :class="`fa-${icon}`" />
       <span class="code">{{ text }}</span>
-      <span class="tw:text-muted-foreground">— {{ time }}</span>
+      <span class="text-muted-foreground">— {{ time }}</span>
     </button>
-    <div v-if="expanded" class="tw:overflow-auto tw:p-3">
+    <div v-if="expanded" class="overflow-auto p-3">
       <p v-json-formatter="{ content: notification, open: true }" />
     </div>
   </Card>
@@ -49,10 +49,10 @@ interface RealtimeNotification {
  * dans la feuille produite.
  */
 const HEADER_BACKGROUNDS: Record<string, string> = {
-  document: 'tw:bg-notification-document',
-  delete: 'tw:bg-notification-delete',
-  publish: 'tw:bg-notification-publish',
-  subscribe: 'tw:bg-notification-subscribe',
+  document: 'bg-notification-document',
+  delete: 'bg-notification-delete',
+  publish: 'bg-notification-publish',
+  subscribe: 'bg-notification-subscribe',
 };
 
 export default defineComponent({
@@ -93,10 +93,10 @@ export default defineComponent({
     },
     headerClasses(): string[] {
       return [
-        'tw:flex tw:w-full tw:cursor-pointer tw:items-center tw:gap-2',
-        'tw:border-0 tw:px-3 tw:py-2 tw:text-left',
-        'tw:font-sans tw:text-sm tw:text-card-foreground',
-        HEADER_BACKGROUNDS[this.family] ?? 'tw:bg-muted',
+        'flex w-full cursor-pointer items-center gap-2',
+        'border-0 px-3 py-2 text-left',
+        'font-sans text-sm text-card-foreground',
+        HEADER_BACKGROUNDS[this.family] ?? 'bg-muted',
       ];
     },
     notificationId(): string {

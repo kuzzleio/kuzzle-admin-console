@@ -1,16 +1,16 @@
 <template>
   <nav
-    :class="`MainMenu EnvColor--${currentEnvironmentColor} tw:flex tw:min-h-[var(--navbar-height)] tw:flex-wrap tw:items-center tw:gap-x-2 tw:px-2`"
+    :class="`MainMenu EnvColor--${currentEnvironmentColor} flex min-h-[var(--navbar-height)] flex-wrap items-center gap-x-2 px-2`"
     aria-label="Main"
   >
-    <a class="logo tw:shrink-0" href="#">
+    <a class="logo shrink-0" href="#">
       <!--
         `v-b-tooltip.hover` doublait l'attribut `title` que le navigateur
         affiche déjà. La directive part avec bootstrap-vue, le titre reste.
       -->
       <img
         alt="Kuzzle.io"
-        class="tw:h-12 tw:px-12 tw:py-1"
+        class="h-12 px-12 py-1"
         src="~../../assets/logo-white.svg"
         :title="`Admin Console v${adminConsoleVersion} (${adminConsoleCommitHash})`"
       />
@@ -25,7 +25,7 @@
       aria-controls="nav-collapse"
       :aria-expanded="expanded ? 'true' : 'false'"
       aria-label="Toggle navigation"
-      class="tw:ml-auto tw:text-white tw:sm:hidden"
+      class="ml-auto text-white sm:hidden"
       size="icon"
       variant="ghost"
       @click="expanded = !expanded"
@@ -35,18 +35,16 @@
 
     <div
       id="nav-collapse"
-      class="tw:w-full tw:flex-col tw:items-stretch tw:gap-2 tw:py-2 tw:sm:flex tw:sm:w-auto tw:sm:flex-1 tw:sm:flex-row tw:sm:items-center tw:sm:py-0"
-      :class="expanded ? 'tw:flex' : 'tw:hidden'"
+      class="w-full flex-col items-stretch gap-2 py-2 sm:flex sm:w-auto sm:flex-1 sm:flex-row sm:items-center sm:py-0"
+      :class="expanded ? 'flex' : 'hidden'"
     >
-      <ul
-        class="tw:flex tw:list-none tw:flex-col tw:gap-1 tw:pl-0 tw:sm:flex-row tw:sm:items-center"
-      >
+      <ul class="flex list-none flex-col gap-1 pl-0 sm:flex-row sm:items-center">
         <li v-for="section of sections" :key="section.route">
           <router-link
             :aria-current="isCurrent(section) ? 'page' : undefined"
             :class="[
-              'tw:block tw:px-3 tw:py-2 tw:text-white',
-              isCurrent(section) ? 'tw:opacity-100' : 'tw:opacity-50 tw:hover:opacity-75',
+              'block px-3 py-2 text-white',
+              isCurrent(section) ? 'opacity-100' : 'opacity-50 hover:opacity-75',
             ]"
             :to="{ name: section.route }"
             >{{ section.label }}</router-link
@@ -57,7 +55,7 @@
           <DropdownMenu>
             <DropdownMenuTrigger
               :as="Button"
-              class="tw:text-white tw:opacity-50 tw:hover:opacity-75"
+              class="text-white opacity-50 hover:opacity-75"
               variant="ghost"
             >
               Feedback
@@ -71,7 +69,7 @@
                 rel="noopener"
                 target="_blank"
               >
-                <i :class="feedback.icon" class="tw:mr-2 tw:w-4" aria-hidden="true" />
+                <i :class="feedback.icon" class="mr-2 w-4" aria-hidden="true" />
                 {{ feedback.text }}
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -79,15 +77,13 @@
         </li>
       </ul>
 
-      <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-2 tw:sm:ml-auto">
-        <b
-          class="MainMenu-username tw:max-w-[250px] tw:truncate tw:text-white"
-          :title="currentUserName"
-          >{{ currentUserName }}</b
-        >
-        <span class="tw:text-white">on</span>
+      <div class="flex flex-wrap items-center gap-2 sm:ml-auto">
+        <b class="MainMenu-username max-w-[250px] truncate text-white" :title="currentUserName">{{
+          currentUserName
+        }}</b>
+        <span class="text-white">on</span>
         <environment-switch
-          class="MainMenu-envSwitch tw:max-w-[250px]"
+          class="MainMenu-envSwitch max-w-[250px]"
           :blend-color="true"
           :block="false"
           @environment::importEnv="importEnv"
@@ -95,7 +91,7 @@
           @environment::delete="deleteEnvironment"
         />
         <Button
-          class="tw:text-white"
+          class="text-white"
           data-cy="MainMenu-logoutBtn"
           size="icon"
           title="Logout"

@@ -1,14 +1,14 @@
 <template>
-  <div class="NoSearchResult tw:flex tw:flex-col tw:items-center tw:gap-3 tw:py-8 tw:text-center">
-    <i class="fa fa-5x fa-search tw:text-secondary" aria-hidden="true" />
-    <h3 class="tw:max-w-xl tw:font-bold tw:text-secondary">
+  <div class="NoSearchResult flex flex-col items-center gap-3 py-8 text-center">
+    <i class="fa fa-5x fa-search text-secondary" aria-hidden="true" />
+    <h3 class="max-w-xl font-bold text-secondary">
       There is no result matching your query. Please try with another filter.
     </h3>
-    <p class="tw:text-sm tw:text-secondary">
+    <p class="text-sm text-secondary">
       <em>
         Learn more about filtering syntax on
         <a
-          class="tw:underline"
+          class="underline"
           href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/basic-queries/"
           target="_blank"
           rel="noopener"

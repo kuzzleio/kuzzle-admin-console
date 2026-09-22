@@ -1,6 +1,6 @@
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="tw:max-w-2xl" labelled-by="create-index-title">
+    <DialogContent class="max-w-2xl" labelled-by="create-index-title">
       <DialogHeader>
         <DialogTitle id="create-index-title">Index creation</DialogTitle>
       </DialogHeader>
@@ -26,7 +26,7 @@
         </FormItem>
         <Alert
           v-if="error"
-          class="tw:mt-4 tw:overflow-auto"
+          class="mt-4 overflow-auto"
           data-cy="CreateIndexModal-alert"
           variant="destructive"
           >{{ error }}</Alert
@@ -34,7 +34,7 @@
       </form>
 
       <DialogFooter>
-        <Spinner v-if="modalBusy" class="tw:me-auto" label="Creating the index" />
+        <Spinner v-if="modalBusy" class="me-auto" label="Creating the index" />
         <Button variant="outline" :disabled="modalBusy" @click="close"> Cancel </Button>
         <Button data-cy="CreateIndexModal-createBtn" :disabled="modalBusy" @click="tryCreateIndex">
           OK

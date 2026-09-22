@@ -1,18 +1,15 @@
 <template>
   <div class="QuickFilter">
-    <div v-if="!complexFilterActive" class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+    <div v-if="!complexFilterActive" class="flex flex-wrap items-center gap-2">
       <div
-        class="QuickFilter-searchBar tw:flex tw:min-w-0 tw:flex-1 tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
+        class="QuickFilter-searchBar flex min-w-0 flex-1 items-stretch overflow-hidden rounded-md border border-input"
       >
-        <span
-          class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:text-muted-foreground"
-          aria-hidden="true"
-        >
+        <span class="flex items-center bg-muted px-3 text-muted-foreground" aria-hidden="true">
           <i class="fa fa-search" />
         </span>
         <Input
           v-focus
-          class="tw:rounded-none tw:border-0"
+          class="rounded-none border-0"
           data-cy="QuickFilter-input"
           :model-value="value"
           :placeholder="placeholder"
@@ -55,9 +52,9 @@
 
     <div
       v-else
-      class="QuickFilter-warning tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-2 tw:px-4"
+      class="QuickFilter-warning mb-3 flex flex-wrap items-center justify-between gap-2 px-4"
     >
-      <div class="QuickFilter-warning-message tw:flex tw:items-center tw:gap-2">
+      <div class="QuickFilter-warning-message flex items-center gap-2">
         <Button
           data-cy="QuickFilter-displayActiveFilters"
           variant="outline"

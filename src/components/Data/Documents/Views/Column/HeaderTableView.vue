@@ -6,11 +6,11 @@
     @mouseenter="$emit('mouseenter')"
     @mouseleave="$emit('mouseleave')"
   >
-    <div class="tw:flex tw:items-center tw:gap-2">
+    <div class="flex items-center gap-2">
       <i
         aria-hidden="true"
         class="handle fas fa-arrows-alt"
-        :class="{ 'tw:invisible': !displayDragIcon }"
+        :class="{ invisible: !displayDragIcon }"
       />
       <span>{{ field }}</span>
     </div>

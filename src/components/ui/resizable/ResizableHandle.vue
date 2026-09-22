@@ -48,20 +48,20 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:appearance-none tw:border-0 tw:p-0',
-        'tw:relative tw:flex tw:shrink-0 tw:items-center tw:justify-center',
-        'tw:bg-border tw:transition-colors tw:hover:bg-muted-foreground',
-        'tw:outline-none tw:focus-visible:ring-2 tw:focus-visible:ring-ring',
+        'appearance-none border-0 p-0',
+        'relative flex shrink-0 items-center justify-center',
+        'bg-border transition-colors hover:bg-muted-foreground',
+        'outline-none focus-visible:ring-2 focus-visible:ring-ring',
         this.resizable.direction === 'vertical'
-          ? 'tw:h-1.5 tw:w-full tw:cursor-row-resize'
-          : 'tw:h-full tw:w-1.5 tw:cursor-col-resize',
-        this.resizable.dragging ? 'tw:bg-muted-foreground' : '',
+          ? 'h-1.5 w-full cursor-row-resize'
+          : 'h-full w-1.5 cursor-col-resize',
+        this.resizable.dragging ? 'bg-muted-foreground' : '',
       );
     },
     gripClasses(): string {
       return this.resizable.direction === 'vertical'
-        ? 'tw:h-0.5 tw:w-8 tw:rounded-full tw:bg-background/70'
-        : 'tw:h-8 tw:w-0.5 tw:rounded-full tw:bg-background/70';
+        ? 'h-0.5 w-8 rounded-full bg-background/70'
+        : 'h-8 w-0.5 rounded-full bg-background/70';
     },
   },
 });

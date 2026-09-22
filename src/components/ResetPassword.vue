@@ -1,18 +1,18 @@
 <template>
-  <div class="ResetPassword tw:flex tw:min-h-screen tw:items-center tw:justify-center tw:p-4">
-    <Card class="tw:w-full tw:max-w-2xl">
+  <div class="ResetPassword flex min-h-screen items-center justify-center p-4">
+    <Card class="w-full max-w-2xl">
       <CardContent>
-        <div class="tw:text-center">
+        <div class="text-center">
           <img
             src="../assets/logo.svg"
             alt="Welcome to the Kuzzle Admin Console"
-            class="tw:mb-8 tw:inline-block tw:h-auto tw:max-w-full"
+            class="mb-8 inline-block h-auto max-w-full"
           />
         </div>
 
         <Alert
           v-if="showIntro"
-          class="tw:mb-4 tw:text-center"
+          class="mb-4 text-center"
           data-cy="resetPasswordAlert"
           variant="warning"
         >

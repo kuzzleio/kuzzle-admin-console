@@ -54,8 +54,8 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:flex tw:h-full tw:w-full',
-        this.direction === 'vertical' ? 'tw:flex-col' : 'tw:flex-row',
+        'flex h-full w-full',
+        this.direction === 'vertical' ? 'flex-col' : 'flex-row',
       );
     },
   },

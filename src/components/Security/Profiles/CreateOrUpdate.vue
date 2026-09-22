@@ -1,8 +1,8 @@
 <template>
   <Card class="ProfileCreateOrUpdate">
-    <CardContent class="tw:flex tw:h-full tw:flex-col tw:gap-6 tw:lg:flex-row">
+    <CardContent class="flex h-full flex-col gap-6 lg:flex-row">
       <!-- Json view -->
-      <div class="tw:flex tw:flex-col tw:gap-4 tw:lg:w-7/12">
+      <div class="flex flex-col gap-4 lg:w-7/12">
         <FormItem v-if="!id" data-cy="ProfileCreateOrUpdate-id">
           <Label for="profile-id">Profile ID</Label>
           <Input
@@ -28,12 +28,12 @@
       </div>
 
       <!-- Mapping -->
-      <div class="tw:lg:w-5/12">
-        <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Cheatsheet</h3>
+      <div class="lg:w-5/12">
+        <h3 class="text-lg font-semibold text-foreground">Cheatsheet</h3>
         <div class="ProfileCreateOrUpdate-cheatsheet">
           Your profile is a set of <code>policies</code>, each of which will contain a set of roles,
           like the example below:
-          <pre class="tw:my-3 tw:ms-3">
+          <pre class="my-3 ms-3">
 {
   "policies": [{
       "roleId": "roleId"
@@ -42,7 +42,7 @@
           </pre>
           You can also restrict your policy to a set of indexes and collections, so that your roles
           will be valid to a specific subset of your data, like the example below:
-          <pre class="tw:my-3 tw:ms-3">
+          <pre class="my-3 ms-3">
 {
   "policies": [{
       "roleId": "roleId"
@@ -60,7 +60,7 @@
       </div>
     </CardContent>
 
-    <CardFooter class="tw:justify-end tw:gap-2">
+    <CardFooter class="justify-end gap-2">
       <Button variant="outline" @click="$emit('cancel')">Cancel</Button>
       <Button
         v-if="!id"

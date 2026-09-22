@@ -1,7 +1,7 @@
 <template>
   <div class="Main">
-    <div class="tw:flex tw:h-screen tw:items-center tw:justify-center tw:px-4">
-      <Card class="tw:w-full tw:max-w-md">
+    <div class="flex h-screen items-center justify-center px-4">
+      <Card class="w-full max-w-md">
         <CardHeader>
           <CardTitle>404 not found</CardTitle>
           <CardDescription>There is nothing here...</CardDescription>

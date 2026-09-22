@@ -44,10 +44,8 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:pointer-events-none tw:fixed tw:z-1045 tw:flex tw:max-h-screen tw:w-full tw:max-w-sm tw:flex-col tw:gap-2 tw:p-4',
-        this.position === 'top-center'
-          ? 'tw:left-1/2 tw:top-0 tw:-translate-x-1/2'
-          : 'tw:bottom-0 tw:right-0',
+        'pointer-events-none fixed z-1045 flex max-h-screen w-full max-w-sm flex-col gap-2 p-4',
+        this.position === 'top-center' ? 'left-1/2 top-0 -translate-x-1/2' : 'bottom-0 right-0',
       );
     },
   },

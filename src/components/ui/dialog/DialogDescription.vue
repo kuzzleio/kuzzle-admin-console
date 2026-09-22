@@ -9,7 +9,7 @@ import { defineComponent } from 'vue';
 
 import { classMerge } from '../class-merge';
 
-/* Description de modale. `tw:m-0` : sans preflight, la marge du navigateur sur
+/* Description de modale. `m-0` : sans preflight, la marge du navigateur sur
  * `<p>` subsiste (ADR-0008). */
 export default defineComponent({
   name: 'DialogDescription',
@@ -17,9 +17,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses(
-        'tw:m-0 tw:font-sans tw:text-sm tw:leading-normal tw:text-muted-foreground',
-      );
+      return this.mergeClasses('m-0 font-sans text-sm leading-normal text-muted-foreground');
     },
   },
 });

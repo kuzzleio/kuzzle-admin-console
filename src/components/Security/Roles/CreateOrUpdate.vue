@@ -1,6 +1,6 @@
 <template>
   <div
-    class="CreateOrUpdateRole tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+    class="CreateOrUpdateRole mx-auto flex h-full w-full max-w-6xl flex-col px-4"
     data-cy="CreateOrUpdateRole"
   >
     <Headline v-if="id">
@@ -8,14 +8,14 @@
     </Headline>
     <Headline v-else> Create a new role </Headline>
     <Notice />
-    <Alert v-if="displayWarningAlert" class="tw:mb-4" variant="warning">
+    <Alert v-if="displayWarningAlert" class="mb-4" variant="warning">
       Warning, you are editing a role that applies to yourself!
     </Alert>
     <template v-if="loading" />
     <template v-else>
-      <Card class="tw:h-full">
-        <CardContent class="tw:flex tw:h-full tw:flex-col tw:gap-6 tw:lg:flex-row">
-          <div class="tw:flex tw:flex-col tw:gap-4 tw:lg:w-7/12">
+      <Card class="h-full">
+        <CardContent class="flex h-full flex-col gap-6 lg:flex-row">
+          <div class="flex flex-col gap-4 lg:w-7/12">
             <FormItem v-if="!id" data-cy="RoleCreateOrUpdate-id">
               <Label for="role-id">Role ID</Label>
               <Input
@@ -39,14 +39,14 @@
             />
           </div>
 
-          <div class="CreateOrUpdateRole-cheatsheet tw:lg:w-5/12">
-            <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Cheatsheet</h3>
+          <div class="CreateOrUpdateRole-cheatsheet lg:w-5/12">
+            <h3 class="text-lg font-semibold text-foreground">Cheatsheet</h3>
             Your role consists of a <code>controllers</code> object, in which each key represents a
             controller in your Kuzzle. Each contoller key contains an <code>actions</code> object,
             in which each key represents a valid action within that controller. Whitelist your
             actions by setting their value to <code>true</code> to allow them in the role, like the
             example below:
-            <pre class="tw:my-3 tw:ms-3">
+            <pre class="my-3 ms-3">
 {
   "controllers": {
     "document": {
@@ -61,7 +61,7 @@
           </div>
         </CardContent>
 
-        <CardFooter class="tw:justify-end tw:gap-2">
+        <CardFooter class="justify-end gap-2">
           <Button variant="outline" @click="cancel">Cancel</Button>
           <Button
             v-if="!id"

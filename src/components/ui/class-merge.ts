@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
  *
  * En Vue 2, la classe écrite sur un composant n'arrive pas dans `$attrs` : elle
  * est lue sur le vnode. La passer à `cn` est ce qui permet à l'appelant de
- * surcharger une variante (`<Badge class="tw:bg-accent">`) — sans elle, c'est
+ * surcharger une variante (`<Badge class="bg-accent">`) — sans elle, c'est
  * l'ordre dans la feuille de styles qui tranche, pas le site d'appel.
  *
  * Vue recopie de son côté cette même classe sur l'élément racine : elle

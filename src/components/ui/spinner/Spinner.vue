@@ -21,9 +21,9 @@ import { classMerge } from '../class-merge';
  */
 export const spinnerVariants = cva(
   [
-    'tw:inline-block tw:shrink-0 tw:align-middle',
-    'tw:rounded-full tw:border-current tw:border-r-transparent',
-    'tw:animate-spin tw:motion-reduce:animate-none',
+    'inline-block shrink-0 align-middle',
+    'rounded-full border-current border-r-transparent',
+    'animate-spin motion-reduce:animate-none',
   ].join(' '),
   {
     defaultVariants: {
@@ -31,9 +31,9 @@ export const spinnerVariants = cva(
     },
     variants: {
       size: {
-        default: 'tw:size-6 tw:border-2',
-        lg: 'tw:size-10 tw:border-4',
-        sm: 'tw:size-4 tw:border-2',
+        default: 'size-6 border-2',
+        lg: 'size-10 border-4',
+        sm: 'size-4 border-2',
       },
     },
   },

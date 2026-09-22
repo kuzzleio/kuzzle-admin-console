@@ -1,11 +1,11 @@
 <template>
-  <div class="Watch tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12">
-    <div class="tw:flex tw:flex-wrap tw:items-start tw:justify-between tw:gap-4">
+  <div class="Watch mx-auto w-full max-w-6xl px-4 pb-12">
+    <div class="flex flex-wrap items-start justify-between gap-4">
       <headline>
         <span class="code" :title="collectionName">{{ truncateName(collectionName, 20) }}</span>
       </headline>
 
-      <div class="tw:flex tw:items-center tw:gap-2">
+      <div class="flex items-center gap-2">
         <collection-dropdown-view
           active-view="realtime"
           :index="indexName"
@@ -36,10 +36,10 @@
     </div>
 
     <Card v-if="!canSubscribe(indexName, collectionName)">
-      <CardContent class="tw:flex tw:flex-wrap tw:items-center tw:gap-6">
-        <i class="fa fa-6x fa-lock tw:text-muted-foreground" aria-hidden="true" />
-        <div class="tw:flex-1">
-          <h2 class="tw:text-xl tw:font-semibold tw:text-foreground">
+      <CardContent class="flex flex-wrap items-center gap-6">
+        <i class="fa fa-6x fa-lock text-muted-foreground" aria-hidden="true" />
+        <div class="flex-1">
+          <h2 class="text-xl font-semibold text-foreground">
             You are not allowed to watch realtime messages on collection
             <strong>{{ collectionName }}</strong> of index <strong>{{ indexName }}</strong>
           </h2>
@@ -57,12 +57,10 @@
       </CardContent>
     </Card>
 
-    <div v-else class="tw:flex tw:flex-col tw:gap-3">
+    <div v-else class="flex flex-col gap-3">
       <Card>
-        <CardHeader
-          class="tw:flex tw:flex-row tw:flex-wrap tw:items-center tw:justify-between tw:gap-2"
-        >
-          <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+        <CardHeader class="flex flex-row flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <Button
               data-cy="Watch-toggleFiltersBtn"
               variant="outline"
@@ -87,7 +85,7 @@
             </Badge>
           </div>
 
-          <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <Button
               data-cy="Watch-subscribeBtn"
               :disabled="!isFilterValid"
@@ -114,15 +112,15 @@
       </Card>
 
       <Card>
-        <CardContent class="tw:flex tw:flex-col tw:gap-3">
-          <div v-if="!notifications.length" class="tw:flex tw:flex-wrap tw:items-center tw:gap-6">
+        <CardContent class="flex flex-col gap-3">
+          <div v-if="!notifications.length" class="flex flex-wrap items-center gap-6">
             <i
               aria-hidden="true"
-              class="fa fa-5x tw:text-muted-foreground"
+              class="fa fa-5x text-muted-foreground"
               :class="subscribed ? 'fa-hourglass-half' : 'fa-paper-plane'"
             />
-            <div v-if="subscribed" class="tw:flex-1">
-              <h2 class="tw:text-xl tw:font-semibold tw:text-foreground">
+            <div v-if="subscribed" class="flex-1">
+              <h2 class="text-xl font-semibold text-foreground">
                 Waiting for notifications matching your filters ...
               </h2>
               <p>
@@ -132,8 +130,8 @@
                 >
               </p>
             </div>
-            <div v-else class="tw:flex-1">
-              <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">
+            <div v-else class="flex-1">
+              <h3 class="text-lg font-semibold text-foreground">
                 You did not subscribe yet to the collection
                 <strong>{{ collectionName }}</strong>
               </h3>
@@ -143,7 +141,7 @@
                   <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Koncorde</a></em
                 >
               </p>
-              <Button class="tw:mt-3" @click="toggleSubscription">
+              <Button class="mt-3" @click="toggleSubscription">
                 <i aria-hidden="true" class="fa fa-play" />
                 Subscribe
               </Button>
@@ -155,8 +153,8 @@
           </Alert>
 
           <template v-if="notifications.length">
-            <div class="tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-2">
-              <span class="tw:text-sm tw:text-muted-foreground">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-sm text-muted-foreground">
                 Received {{ notifications.length }} notifications
               </span>
               <Button
@@ -170,27 +168,27 @@
               </Button>
             </div>
 
-            <div class="tw:grid tw:gap-4 tw:lg:grid-cols-3">
-              <div class="tw:lg:col-span-2">
+            <div class="grid gap-4 lg:grid-cols-3">
+              <div class="lg:col-span-2">
                 <notification
                   v-for="(notification, i) in notifications"
                   :key="i"
                   :notification="notification"
                 />
               </div>
-              <Card data-cy="Watch-latestNotification" class="tw:h-fit tw:gap-0 tw:py-0">
-                <CardHeader class="tw:border-b tw:border-border tw:px-3 tw:py-2">
-                  <CardTitle class="tw:text-sm">
+              <Card data-cy="Watch-latestNotification" class="h-fit gap-0 py-0">
+                <CardHeader class="border-b border-border px-3 py-2">
+                  <CardTitle class="text-sm">
                     Latest notification ({{ lastNotificationTime }})
                   </CardTitle>
                 </CardHeader>
-                <CardContent class="tw:overflow-auto tw:px-3 tw:py-3">
+                <CardContent class="overflow-auto px-3 py-3">
                   <Badge title="controller : action" variant="secondary">
                     {{ lastNotification.controller }} : {{ lastNotification.action }}
                   </Badge>
                   <p
                     v-json-formatter="{ content: lastNotification.result, open: true }"
-                    class="tw:mt-3"
+                    class="mt-3"
                   />
                 </CardContent>
               </Card>

@@ -1,15 +1,15 @@
 <template>
-  <div class="CollectionCreateOrUpdate tw:flex tw:h-full tw:flex-col">
+  <div class="CollectionCreateOrUpdate flex h-full flex-col">
     <headline>
-      <span class="code tw:text-secondary">
+      <span class="code text-secondary">
         {{ index }}
         <i class="fa fa-angle-right" />
       </span>
       {{ headline }}
     </headline>
 
-    <Card class="tw:min-h-0 tw:grow">
-      <CardContent class="tw:flex tw:min-h-0 tw:grow tw:flex-col tw:gap-4">
+    <Card class="min-h-0 grow">
+      <CardContent class="flex min-h-0 grow flex-col gap-4">
         <FormItem id="collection-name" data-cy="CollectionCreateOrUpdate-name">
           <Label for="collection-name-input">Collection name</Label>
           <Input
@@ -33,7 +33,7 @@
               son soulignement.
             -->
             <a
-              class="tw:text-inherit tw:underline tw:underline-offset-4"
+              class="text-inherit underline underline-offset-4"
               href="https://docs.kuzzle.io/core/2/api/controllers/collection/create/"
               target="_blank"
               >Read more about how to choose a valid name</a
@@ -45,18 +45,18 @@
           </FormDescription>
         </FormItem>
 
-        <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-3">
+        <div class="flex flex-wrap items-center gap-3">
           <!--
             Le libellé est visible : un `<input type="file">` natif ignore
             `placeholder`, qui était la seule indication que `b-form-file`
             affichait.
           -->
-          <div class="tw:flex tw:items-center tw:gap-2">
+          <div class="flex items-center gap-2">
             <Label for="collection-mapping-import">Import mappings</Label>
             <Input
               id="collection-mapping-import"
               accept=".json"
-              class="tw:w-auto"
+              class="w-auto"
               type="file"
               @change="loadMappingValue($event)"
             />
@@ -80,12 +80,12 @@
           </Button>
         </div>
 
-        <div class="tw:flex tw:min-h-0 tw:grow tw:flex-col tw:gap-4 tw:lg:flex-row">
-          <div class="tw:flex tw:min-h-0 tw:flex-col tw:lg:w-8/12">
+        <div class="flex min-h-0 grow flex-col gap-4 lg:flex-row">
+          <div class="flex min-h-0 flex-col lg:w-8/12">
             <json-editor
               id="collection"
               ref="jsoneditor"
-              class="tw:grow"
+              class="grow"
               :content="rawMapping"
               tabindex="4"
               @change="onMappingChanged"
@@ -96,7 +96,7 @@
             Pas de `flex flex-col` sur ce bloc : il mêle du texte et des
             éléments en ligne, que la colonne casserait ligne à ligne (G-018).
           -->
-          <div class="tw:min-h-0 tw:overflow-auto tw:text-secondary tw:lg:w-4/12">
+          <div class="min-h-0 overflow-auto text-secondary lg:w-4/12">
             You can (optionally) use this editor to define the mappings for this collection.
             <br />
             The mappings of a collection is the definition of how each document in the collection
@@ -120,7 +120,7 @@
         </div>
       </CardContent>
 
-      <CardFooter class="tw:justify-end tw:gap-2">
+      <CardFooter class="justify-end gap-2">
         <Button
           as="router-link"
           :to="{ name: 'Collections', params: { indexName: index } }"

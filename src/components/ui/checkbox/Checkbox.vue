@@ -34,11 +34,11 @@ import { classMerge } from '../class-merge';
  * posés explicitement plutôt que supposés.
  */
 export const checkboxClasses = [
-  'tw:size-4 tw:shrink-0 tw:cursor-pointer tw:align-middle',
-  'tw:accent-primary',
-  'tw:outline-none',
-  'tw:focus-visible:ring-2 tw:focus-visible:ring-ring tw:focus-visible:ring-offset-2 tw:focus-visible:ring-offset-background',
-  'tw:disabled:cursor-not-allowed tw:disabled:opacity-50',
+  'size-4 shrink-0 cursor-pointer align-middle',
+  'accent-primary',
+  'outline-none',
+  'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+  'disabled:cursor-not-allowed disabled:opacity-50',
 ].join(' ');
 
 export default defineComponent({

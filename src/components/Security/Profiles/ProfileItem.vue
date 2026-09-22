@@ -1,9 +1,9 @@
 <template>
-  <div class="tw:px-3" data-cy="ProfileItem">
-    <div class="tw:flex tw:items-center tw:gap-2 tw:py-1">
+  <div class="px-3" data-cy="ProfileItem">
+    <div class="flex items-center gap-2 py-1">
       <i
         aria-hidden="true"
-        class="fa tw:cursor-pointer tw:px-1"
+        class="fa cursor-pointer px-1"
         :class="`fa-caret-${expanded ? 'down' : 'right'}`"
         :data-cy="`ProfileItem-${document._id}--toggle`"
         @click="toggleCollapse"
@@ -14,15 +14,15 @@
         :data-cy="`ProfileListItem-checkbox--${document._id}`"
         @change="notifyCheckboxClick"
       />
-      <a class="code tw:cursor-pointer" @click="toggleCollapse">{{ document._id }}</a>
+      <a class="code cursor-pointer" @click="toggleCollapse">{{ document._id }}</a>
       <span
         v-if="document.additionalAttribute && document.additionalAttribute.value"
-        class="tw:text-sm tw:italic tw:text-muted-foreground"
+        class="text-sm italic text-muted-foreground"
       >
         ({{ document.additionalAttribute.name }}: {{ document.additionalAttribute.value }})
       </span>
 
-      <div class="tw:ms-auto tw:flex tw:items-center">
+      <div class="ms-auto flex items-center">
         <Button
           class="ProfileListItem-update"
           :data-cy="`ProfileListItem-update--${document._id}`"
@@ -54,7 +54,7 @@
       v-show="expanded"
       :id="`collapse-${document._id}`"
       :data-cy="`ProfileListItem-collapse--${document._id}`"
-      class="ProfileItem-content tw:ms-3 tw:mt-3 tw:max-h-75 tw:overflow-y-auto"
+      class="ProfileItem-content ms-3 mt-3 max-h-75 overflow-y-auto"
     >
       <pre v-json-formatter="{ content: document, open: true }" />
     </div>

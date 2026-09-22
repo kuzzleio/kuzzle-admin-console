@@ -1,8 +1,8 @@
 <template>
   <div class="Column" data-cy="DocumentList-Column">
-    <div class="tw:flex tw:flex-row tw:items-center tw:gap-2">
-      <div class="tw:flex tw:flex-1 tw:items-stretch tw:gap-2">
-        <div class="tw:inline-block tw:w-full tw:max-w-96">
+    <div class="flex flex-row items-center gap-2">
+      <div class="flex flex-1 items-stretch gap-2">
+        <div class="inline-block w-full max-w-96">
           <multiselect
             v-model="selectedFieldsComputed"
             :allow-empty="true"
@@ -15,14 +15,14 @@
             @tag="addCustomField"
           />
         </div>
-        <Button class="tw:self-center" variant="outline" @click="$emit('toggle-all')">
+        <Button class="self-center" variant="outline" @click="$emit('toggle-all')">
           <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`" />
           Toggle all
         </Button>
-        <Button class="tw:self-center" variant="outline" @click="resetColumns"> Reset </Button>
+        <Button class="self-center" variant="outline" @click="resetColumns"> Reset </Button>
 
         <Button
-          class="tw:self-center"
+          class="self-center"
           :disabled="!bulkDeleteEnabled"
           variant="destructive"
           @click="$emit('bulk-delete')"
@@ -32,7 +32,7 @@
         </Button>
 
         <Button
-          class="tw:self-center"
+          class="self-center"
           data-cy="Column-btnExportCSV"
           title="Export columns to CSV"
           variant="outline"
@@ -50,9 +50,9 @@
       />
       <new-documents-badge :has-new-documents="hasNewDocuments" @refresh="$emit('refresh')" />
     </div>
-    <div class="tw:my-2 tw:flex">
-      <div class="tw:w-3/12">
-        <Table class="tw:border tw:border-border" data-cy="ColumnView-table-id">
+    <div class="my-2 flex">
+      <div class="w-3/12">
+        <Table class="border border-border" data-cy="ColumnView-table-id">
           <TableHeader>
             <TableRow>
               <TableHead
@@ -80,7 +80,7 @@
                 :data-cy="`ColumnItem-${item._id}-${field.key}`"
               >
                 <template v-if="field.key === 'acColumnTableActions'">
-                  <div class="tw:flex tw:items-center tw:gap-1">
+                  <div class="flex items-center gap-1">
                     <Checkbox
                       :checked="isChecked(item._id)"
                       :data-cy="`ColumnView-table-select-btn--${item._id}`"
@@ -110,7 +110,7 @@
                       v-if="
                         getItemBadge(item) && !autoSync && getItemBadge(item).label !== 'created'
                       "
-                      class="tw:mx-2"
+                      class="mx-2"
                       :variant="getItemBadge(item).variant"
                       >{{ getItemBadge(item).label }}
                     </Badge>
@@ -124,8 +124,8 @@
           </TableBody>
         </Table>
       </div>
-      <div class="tw:w-9/12">
-        <Table class="tw:border tw:border-border" data-cy="ColumnView-table-data">
+      <div class="w-9/12">
+        <Table class="border border-border" data-cy="ColumnView-table-data">
           <TableHeader>
             <draggable
               v-model="selectedFields"
@@ -167,7 +167,7 @@
     </div>
 
     <Dialog :open.sync="exportCsvOpen">
-      <DialogContent class="tw:max-w-2xl" labelled-by="export-csv-title">
+      <DialogContent class="max-w-2xl" labelled-by="export-csv-title">
         <DialogHeader>
           <DialogTitle id="export-csv-title">CSV export</DialogTitle>
         </DialogHeader>
@@ -176,7 +176,7 @@
 
         <a
           v-if="singleUseToken"
-          class="downloadCSVLink tw:inline-flex tw:items-center tw:gap-2 tw:self-start tw:rounded-md tw:bg-secondary tw:px-3 tw:py-2 tw:text-secondary-foreground"
+          class="downloadCSVLink inline-flex items-center gap-2 self-start rounded-md bg-secondary px-3 py-2 text-secondary-foreground"
           :href="exportUrl"
           rel="noopener noreferrer"
           target="_blank"
@@ -185,7 +185,7 @@
           <i class="fas fa-file-export" />
           Download
         </a>
-        <p v-else class="tw:m-0 tw:text-sm tw:text-muted-foreground">Preparing download..</p>
+        <p v-else class="m-0 text-sm text-muted-foreground">Preparing download..</p>
 
         <DialogFooter>
           <Button variant="outline" @click="exportCsvOpen = false">Close</Button>

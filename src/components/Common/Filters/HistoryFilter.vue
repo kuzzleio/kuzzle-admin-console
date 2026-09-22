@@ -16,8 +16,8 @@
       />
     </template>
     <template v-else>
-      <h4 class="tw:text-center tw:text-secondary">You haven't performed any search yet.</h4>
-      <p class="tw:text-center tw:text-secondary">You'll find all your searches in this history.</p>
+      <h4 class="text-center text-secondary">You haven't performed any search yet.</h4>
+      <p class="text-center text-secondary">You'll find all your searches in this history.</p>
     </template>
   </ul>
 </template>

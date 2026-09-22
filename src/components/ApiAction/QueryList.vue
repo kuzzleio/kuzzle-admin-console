@@ -1,11 +1,11 @@
 <template>
-  <Card class="backgroundCard tw:h-full">
-    <CardContent class="tw:flex tw:h-full tw:min-h-0 tw:flex-col">
-      <div v-if="!paginatedQueries.length" class="tw:flex tw:h-full tw:items-center">
-        <Card class="tw:w-full">
+  <Card class="backgroundCard h-full">
+    <CardContent class="flex h-full min-h-0 flex-col">
+      <div v-if="!paginatedQueries.length" class="flex h-full items-center">
+        <Card class="w-full">
           <CardContent>
             <CardTitle>No API actions saved.</CardTitle>
-            <p class="tw:mt-2 tw:text-sm tw:text-muted-foreground">
+            <p class="mt-2 text-sm text-muted-foreground">
               Your saved API Actions will appear in this list.
             </p>
           </CardContent>
@@ -15,14 +15,14 @@
       <ul
         v-else
         ref="leftNav-container"
-        class="leftNav-container tw:flex tw:list-none tw:flex-col tw:overflow-auto tw:pl-0"
+        class="leftNav-container flex list-none flex-col overflow-auto pl-0"
       >
         <li
           v-for="query of paginatedQueries"
           :key="`saved-query-${query.idx}`"
           :ref="`saved-query-${query.idx}`"
-          class="tw:flex tw:items-center tw:gap-2 tw:border-b tw:border-border tw:px-3"
-          :class="query.idx === currentQueryIndex ? 'tw:bg-muted tw:font-semibold' : ''"
+          class="flex items-center gap-2 border-b border-border px-3"
+          :class="query.idx === currentQueryIndex ? 'bg-muted font-semibold' : ''"
           :data-cy="`api-actions-saved-query-${query.name}`"
         >
           <!--
@@ -33,7 +33,7 @@
           <button
             :id="`query-list-${query.idx}`"
             :aria-current="query.idx === currentQueryIndex ? 'true' : undefined"
-            class="leftTab tw:flex-1 tw:cursor-pointer tw:appearance-none tw:truncate tw:border-0 tw:bg-transparent tw:py-3 tw:text-left tw:font-sans tw:text-sm tw:text-foreground"
+            class="leftTab flex-1 cursor-pointer appearance-none truncate border-0 bg-transparent py-3 text-left font-sans text-sm text-foreground"
             type="button"
             @click="loadSavedQuery(query.idx)"
           >

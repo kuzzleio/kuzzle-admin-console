@@ -1,7 +1,7 @@
 <template>
-  <Card class="tw:w-full">
-    <CardContent class="tw:flex tw:flex-col tw:gap-4 tw:sm:flex-row">
-      <div class="tw:flex tw:flex-col tw:gap-2 tw:sm:w-1/2">
+  <Card class="w-full">
+    <CardContent class="flex flex-col gap-4 sm:flex-row">
+      <div class="flex flex-col gap-2 sm:w-1/2">
         <Label :for="`${schema.model}-date`">Date</Label>
         <Input
           :id="`${schema.model}-date`"
@@ -12,7 +12,7 @@
         />
       </div>
 
-      <div class="tw:flex tw:flex-col tw:gap-2 tw:sm:w-1/2">
+      <div class="flex flex-col gap-2 sm:w-1/2">
         <Label :for="`${schema.model}-time`">Time</Label>
         <Input
           :id="`${schema.model}-time`"

@@ -19,23 +19,20 @@ import { classMerge } from '../class-merge';
  * L'amont propose `default` et `destructive`. `success` et `warning` sont
  * ajoutés ici parce que la console s'en sert (confirmation d'import, alerte
  * « vous éditez votre propre profil »), et qu'il vaut mieux une variante nommée
- * qu'un `class="tw:bg-green-…"` posé à la main au site d'appel.
+ * qu'un `class="bg-green-…"` posé à la main au site d'appel.
  */
 export const alertVariants = cva(
-  [
-    'tw:relative tw:w-full tw:rounded-md tw:border tw:px-4 tw:py-3',
-    'tw:font-sans tw:text-sm tw:leading-normal',
-  ].join(' '),
+  ['relative w-full rounded-md border px-4 py-3', 'font-sans text-sm leading-normal'].join(' '),
   {
     defaultVariants: {
       variant: 'default',
     },
     variants: {
       variant: {
-        default: 'tw:border-border tw:bg-card tw:text-card-foreground',
-        destructive: 'tw:border-destructive/40 tw:bg-destructive/10 tw:text-destructive',
-        success: 'tw:border-secondary/40 tw:bg-secondary/10 tw:text-foreground',
-        warning: 'tw:border-accent tw:bg-accent/20 tw:text-foreground',
+        default: 'border-border bg-card text-card-foreground',
+        destructive: 'border-destructive/40 bg-destructive/10 text-destructive',
+        success: 'border-secondary/40 bg-secondary/10 text-foreground',
+        warning: 'border-accent bg-accent/20 text-foreground',
       },
     },
   },

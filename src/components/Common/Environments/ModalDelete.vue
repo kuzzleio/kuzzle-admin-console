@@ -7,8 +7,8 @@
         </DialogTitle>
       </DialogHeader>
 
-      <div class="tw:flex tw:flex-col tw:gap-1.5">
-        <label class="tw:text-sm tw:font-medium" for="env-to-delete-name">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium" for="env-to-delete-name">
           Confirm environment name
         </label>
         <Input
@@ -17,7 +17,7 @@
           data-cy="EnvironmentDeleteModal-envName"
           @keydown.enter="confirmDeleteEnvironment"
         />
-        <p id="env-delete-hint" class="tw:m-0 tw:text-sm tw:text-muted-foreground">
+        <p id="env-delete-hint" class="m-0 text-sm text-muted-foreground">
           This operation is not undoable.
         </p>
       </div>

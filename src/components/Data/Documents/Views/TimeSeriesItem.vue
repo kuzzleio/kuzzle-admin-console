@@ -1,6 +1,6 @@
 <template>
-  <div class="tw:mb-2 tw:mr-1 tw:flex tw:items-center tw:gap-2">
-    <div class="tw:relative tw:flex-1">
+  <div class="mb-2 mr-1 flex items-center gap-2">
+    <div class="relative flex-1">
       <!--
         Le bouton n'a pas de contenu : c'est la pastille de couleur elle-même.
         Sans libellé, il n'existe pas pour un lecteur d'écran — d'où
@@ -9,7 +9,7 @@
       <button
         :aria-expanded="showColorPicker ? 'true' : 'false'"
         aria-label="Choose the color of this value"
-        class="tw:h-5 tw:w-full tw:cursor-pointer tw:appearance-none tw:rounded-md tw:border tw:border-border"
+        class="h-5 w-full cursor-pointer appearance-none rounded-md border border-border"
         data-cy="TimeSeriesItem-colorPickerBtn"
         :style="{ 'background-color': newColor }"
         type="button"
@@ -18,12 +18,12 @@
       <color-picker
         v-show="showColorPicker"
         v-model="newColor"
-        class="tw:absolute tw:z-50"
+        class="absolute z-50"
         data-cy="TimeSeriesItem-colorPicker"
         @input="updateColor"
       />
     </div>
-    <div class="tw:flex-1">
+    <div class="flex-1">
       <autocomplete
         v-if="!isUpdatable"
         placeholder="Add a value"
@@ -34,17 +34,17 @@
       />
       <Input v-else disabled :model-value="value" />
     </div>
-    <div class="tw:flex tw:w-8 tw:items-center tw:justify-center">
+    <div class="flex w-8 items-center justify-center">
       <Button
         v-if="isUpdatable"
         aria-label="Remove this value from the chart"
-        class="tw:size-8"
+        class="size-8"
         data-cy="TimeSeriesItem-removeBtn"
         size="icon"
         variant="ghost"
         @click.prevent="$emit('timeseriesitem::remove', index)"
       >
-        <i aria-hidden="true" class="far fa-times-circle tw:text-muted-foreground" />
+        <i aria-hidden="true" class="far fa-times-circle text-muted-foreground" />
       </Button>
     </div>
   </div>

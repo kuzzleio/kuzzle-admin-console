@@ -63,9 +63,9 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:relative tw:z-10 tw:my-8 tw:flex tw:w-full tw:max-w-lg tw:flex-col tw:gap-4',
-        'tw:rounded-lg tw:border tw:border-border tw:bg-card tw:text-card-foreground',
-        'tw:p-6 tw:shadow-lg tw:outline-none',
+        'relative z-10 my-8 flex w-full max-w-lg flex-col gap-4',
+        'rounded-lg border border-border bg-card text-card-foreground',
+        'p-6 shadow-lg outline-none',
       );
     },
   },

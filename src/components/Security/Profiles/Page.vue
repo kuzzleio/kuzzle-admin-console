@@ -1,6 +1,6 @@
 <template>
-  <div class="ProfileManagement tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12">
-    <div class="tw:flex tw:flex-wrap tw:items-start tw:justify-between tw:gap-4">
+  <div class="ProfileManagement mx-auto w-full max-w-6xl px-4 pb-12">
+    <div class="flex flex-wrap items-start justify-between gap-4">
       <headline>Profiles</headline>
       <!--
         `as` bascule sur `button` quand l'action est interdite : un
@@ -27,10 +27,10 @@
     >
       <template #emptySet>
         <Card class="EmptyState">
-          <CardContent class="tw:flex tw:flex-col tw:items-center tw:text-center">
-            <i class="fas fa-user fa-6x tw:mb-4 tw:text-secondary" aria-hidden="true" />
-            <CardTitle class="tw:text-secondary">No profile is defined</CardTitle>
-            <CardDescription v-if="canCreateProfile" class="tw:mt-2 tw:text-secondary">
+          <CardContent class="flex flex-col items-center text-center">
+            <i class="fas fa-user fa-6x mb-4 text-secondary" aria-hidden="true" />
+            <CardTitle class="text-secondary">No profile is defined</CardTitle>
+            <CardDescription v-if="canCreateProfile" class="mt-2 text-secondary">
               You can create a new profile by hitting the button above
             </CardDescription>
           </CardContent>

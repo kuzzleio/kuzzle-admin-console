@@ -17,7 +17,7 @@
           >?
         </DialogDescription>
       </template>
-      <div v-else class="tw:flex tw:justify-center tw:py-2">
+      <div v-else class="flex justify-center py-2">
         <Spinner label="Deleting" />
       </div>
 

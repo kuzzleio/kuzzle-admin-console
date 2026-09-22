@@ -1,6 +1,6 @@
 <template>
   <div class="CreateEnvironment environment">
-    <form class="tw:flex tw:flex-col tw:gap-4">
+    <form class="flex flex-col gap-4">
       <FormItem id="env-name" data-cy="CreateEnvironment-name--group">
         <Label for="input-env-name">Connection name</Label>
         <Input
@@ -39,7 +39,7 @@
       </FormItem>
 
       <FormItem>
-        <div class="tw:flex tw:items-center tw:gap-2">
+        <div class="flex items-center gap-2">
           <Checkbox id="env-ssl" v-model="environment.ssl" name="env-use-ssl" />
           <Label for="env-ssl">Use SSL</Label>
         </div>
@@ -81,22 +81,22 @@
         <FormMessage v-if="versionFeedback">{{ versionFeedback }}</FormMessage>
       </FormItem>
 
-      <div class="tw:flex tw:flex-col tw:gap-3 tw:sm:flex-row">
-        <div class="tw:sm:w-1/3">
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <div class="sm:w-1/3">
           <div>Pick a color</div>
-          <small class="tw:text-secondary"
+          <small class="text-secondary"
             >It will be applied to the header navbar so you can distinguish this connection from
             other ones.</small
           >
         </div>
-        <div class="tw:flex-1">
-          <div class="tw:grid tw:grid-cols-2 tw:gap-2 tw:md:grid-cols-4">
+        <div class="flex-1">
+          <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
             <button
               v-for="(color, index) in colors"
               :key="color"
               :aria-label="`Pick the color ${color}`"
               :aria-pressed="String(environment.color === color)"
-              class="tw:min-h-10 tw:cursor-pointer tw:rounded-md tw:text-center tw:text-sm tw:uppercase tw:leading-10 tw:text-white"
+              class="min-h-10 cursor-pointer rounded-md text-center text-sm uppercase leading-10 text-white"
               :class="`CreateEnvironment-box EnvColor--${color}`"
               :data-cy="`EnvColor--${color}`"
               type="button"
@@ -105,7 +105,7 @@
               <span v-if="environment.color === color">Selected</span>
             </button>
           </div>
-          <FormMessage v-if="colorState === false" class="tw:mt-2">
+          <FormMessage v-if="colorState === false" class="mt-2">
             You must select a color for this connection
           </FormMessage>
         </div>

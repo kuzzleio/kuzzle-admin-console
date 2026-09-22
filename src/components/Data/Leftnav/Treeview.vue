@@ -1,6 +1,6 @@
 <template>
-  <aside class="Treeview tw:flex tw:h-full tw:flex-col">
-    <div v-if="!canSearchIndex" class="Treeview-notAuth tw:px-3 tw:text-center">
+  <aside class="Treeview flex h-full flex-col">
+    <div v-if="!canSearchIndex" class="Treeview-notAuth px-3 text-center">
       <Alert>
         <i aria-hidden="true" class="fa fa-lock fa-2x" />
         <br />
@@ -8,7 +8,7 @@
       </Alert>
     </div>
     <template v-else>
-      <div class="tw:border-b tw:border-border tw:p-3">
+      <div class="border-b border-border p-3">
         <Input
           v-model="filter"
           data-cy="Treeview-filter"
@@ -16,9 +16,9 @@
           type="search"
         />
       </div>
-      <div class="tw:min-h-0 tw:flex-1 tw:overflow-y-auto tw:p-3">
-        <router-link class="tw:text-secondary" data-cy="Treeview-item" :to="{ name: 'Data' }">
-          <i class="fas fa-list tw:mr-1" aria-hidden="true" />
+      <div class="min-h-0 flex-1 overflow-y-auto p-3">
+        <router-link class="text-secondary" data-cy="Treeview-item" :to="{ name: 'Data' }">
+          <i class="fas fa-list mr-1" aria-hidden="true" />
           All indexes <Spinner v-if="isLoading" size="sm" />
         </router-link>
         <index-branch

@@ -1,6 +1,6 @@
 <template>
-  <div class="tw:flex tw:min-h-full tw:flex-col tw:items-center tw:justify-center tw:text-center">
-    <Spinner class="tw:text-primary" data-cy="main-spinner" label="Loading" size="lg" />
+  <div class="flex min-h-full flex-col items-center justify-center text-center">
+    <Spinner class="text-primary" data-cy="main-spinner" label="Loading" size="lg" />
   </div>
 </template>
 

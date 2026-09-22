@@ -3,15 +3,15 @@
     <Toast
       v-for="toast of toasterStore.toasts"
       :key="toast.id"
-      class="tw:flex-row tw:items-start tw:gap-3"
+      class="flex-row items-start gap-3"
       :data-cy="`Toast--${toast.variant}`"
       :variant="toast.variant"
     >
-      <div class="tw:min-w-0 tw:flex-1">
+      <div class="min-w-0 flex-1">
         <ToastTitle>{{ toast.title }}</ToastTitle>
         <ToastDescription v-if="toast.message">{{ toast.message }}</ToastDescription>
 
-        <div v-if="toast.actions.length" class="tw:mt-2 tw:flex tw:flex-wrap tw:gap-2">
+        <div v-if="toast.actions.length" class="mt-2 flex flex-wrap gap-2">
           <Button
             v-for="action of toast.actions"
             :key="action.label"

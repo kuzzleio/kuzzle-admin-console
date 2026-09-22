@@ -1,13 +1,13 @@
 <template>
   <div
     v-if="open"
-    class="tw:fixed tw:inset-0 tw:z-1030 tw:flex tw:items-start tw:justify-center tw:overflow-y-auto tw:p-4 tw:sm:p-6"
+    class="fixed inset-0 z-1030 flex items-start justify-center overflow-y-auto p-4 sm:p-6"
   >
     <!-- Fond assombri. `aria-hidden` : il double la touche Échap et le bouton
          de fermeture, il n'ajoute rien pour un lecteur d'écran. -->
     <div
       aria-hidden="true"
-      class="tw:fixed tw:inset-0 tw:bg-foreground/50"
+      class="fixed inset-0 bg-foreground/50"
       @click="requestClose('overlay')"
     />
     <slot />

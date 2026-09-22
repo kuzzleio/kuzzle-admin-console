@@ -1,15 +1,15 @@
 <template>
-  <Card class="tw:w-full">
-    <CardContent class="tw:flex tw:flex-col tw:gap-4 tw:lg:flex-row">
+  <Card class="w-full">
+    <CardContent class="flex flex-col gap-4 lg:flex-row">
       <json-editor
         :id="schema.label"
-        class="tw:h-full tw:lg:w-8/12"
+        class="h-full lg:w-8/12"
         :content="JSON.stringify(value, null, 2) || '{}'"
         @change="onChange"
       />
       <pre
         v-json-formatter="{ content: schema.mapping, open: true }"
-        class="tw:mb-0 tw:overflow-auto tw:lg:w-4/12"
+        class="mb-0 overflow-auto lg:w-4/12"
       />
     </CardContent>
   </Card>
