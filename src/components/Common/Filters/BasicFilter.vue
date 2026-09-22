@@ -7,198 +7,229 @@
           :key="`orBlock-${groupIndex}`"
           class="BasicFilter-orBlock"
         >
-          <b-card body-bg-variant="light">
-            <template v-if="groupIndex === filters.basic.length - 1" #footer>
-              <b-button
-                :disabled="isInvalidBlock(orBlock)"
-                variant="outline-secondary"
-                @click="addOrCondition"
+          <Card class="tw:bg-muted">
+            <CardContent class="tw:flex tw:flex-col tw:gap-2">
+              <div
+                v-for="(andBlock, filterIndex) in orBlock"
+                :key="`andBlock-${filterIndex}`"
+                class="tw:flex tw:flex-wrap tw:items-center tw:gap-2"
               >
-                <i class="fa fa-plus left mr-2" />OR
-              </b-button>
-            </template>
-            <b-row
-              v-for="(andBlock, filterIndex) in orBlock"
-              :key="`andBlock-${filterIndex}`"
-              align-v="center"
-              align-h="center"
-              class="mt-1"
-              no-gutters
-            >
-              <b-col xl="11">
-                <b-row align-v="center" align-h="center" no-gutters>
-                  <b-col cols="11" class="mt-1">
-                    <b-row align-v="center" align-h="center">
-                      <b-col class="text-center mb-1 px-0" xl="1">
-                        <span v-if="filterIndex !== 0" class="text-secondary font-weight-bold">
-                          AND
-                        </span>
-                      </b-col>
-                      <b-col xl="4" class="mb-1">
-                        <b-row align-v="center" align-h="center">
-                          <template v-if="filterIndex === 0">
-                            <b-col cols="1" class="ml-3">
-                              <i
-                                v-b-popover.hover.top="
-                                  'For an attribute to be in the list, it must be contained in the mapping.'
-                                "
-                                class="fas fa-question-circle fa-lg"
-                              />
-                            </b-col>
-                          </template>
-                          <b-col>
-                            <b-form-select
-                              placeholder="Attribute"
-                              :data-cy="`BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`"
-                              :value="filters.basic[groupIndex][filterIndex].attribute || ''"
-                              :options="selectAttributesValues"
-                              @change="
-                                (attribute) => selectAttribute(attribute, groupIndex, filterIndex)
-                              "
-                            >
-                              <template #first>
-                                <b-form-select-option :value="''" disabled
-                                  >Attribute</b-form-select-option
-                                >
-                              </template>
-                            </b-form-select>
-                          </b-col>
-                        </b-row>
-                      </b-col>
-                      <b-col xl="3" class="mb-1">
-                        <b-form-select
-                          v-model="andBlock.operator"
-                          :data-cy="`BasicFilter-operator`"
-                          :options="availableOperandsFormatted"
-                        />
-                      </b-col>
-                      <b-col
-                        v-if="andBlock.operator !== 'exists' && andBlock.operator !== 'not_exists'"
-                        xl="4"
-                        class="mb-1"
-                      >
-                        <template v-if="andBlock.operator !== 'range'">
-                          <b-form-input
-                            v-model="andBlock.value"
-                            class="BasicFilter--value validate"
-                            placeholder="Value"
-                            type="text"
-                            :data-cy="`BasicFilter-valueInput--${groupIndex}.${filterIndex}`"
-                          />
-                        </template>
-                        <template v-else>
-                          <b-form-input
-                            v-model="andBlock.gt_value"
-                            placeholder="Value 1"
-                            type="text"
-                            :data-cy="`BasicFilter-operator-Range-Value1`"
-                            class="BasicFilter--gtValue validate mb-1"
-                          />
-                          <b-form-input
-                            v-model="andBlock.lt_value"
-                            placeholder="Value 2"
-                            type="text"
-                            :data-cy="`BasicFilter-operator-Range-Value2`"
-                            class="BasicFilter--ltValue validate mt-1"
-                          />
-                        </template>
-                      </b-col>
-                    </b-row>
-                  </b-col>
-                  <b-col sm="1" class="text-center">
-                    <b-button
-                      v-if="filterIndex > 0 || groupIndex > 0"
-                      @click="removeAndCondition(groupIndex, filterIndex)"
-                    >
-                      <i class="fa fa-times pointer" />
-                    </b-button>
-                  </b-col>
-                </b-row>
-              </b-col>
-              <b-col xl="1">
-                <b-row align-v="center" align-h="center">
-                  <b-button
-                    v-if="filterIndex === orBlock.length - 1"
-                    :disabled="isInvalidStatement(filterIndex, orBlock)"
-                    variant="outline-secondary"
-                    @click="addAndCondition(groupIndex)"
-                  >
-                    <i class="fa fa-plus left mr-1" />AND
-                  </b-button>
-                </b-row>
-              </b-col>
-            </b-row>
-          </b-card>
+                <span
+                  class="tw:w-10 tw:shrink-0 tw:text-center tw:font-bold tw:text-secondary"
+                  :class="filterIndex === 0 ? 'tw:invisible' : ''"
+                  >AND</span
+                >
 
-          <b-row v-if="groupIndex < filters.basic.length - 1" class="m-0">
-            <b-col class="pr-0 mr-0" md="5"><hr /></b-col>
-            <b-col md="2" class="pr-0 mr-0 pl-0 ml-0 mt-2 text-center text-secondary">
-              <b>OR</b>
-            </b-col>
-            <b-col class="pl-0 ml-0" md="5"><hr /></b-col>
-          </b-row>
+                <!--
+                  `v-b-popover.hover.top` posait une bulle bootstrap-vue sur
+                  une icône ; l'attribut `title` dit la même chose, et le
+                  navigateur l'affiche sans directive.
+                -->
+                <i
+                  v-if="filterIndex === 0"
+                  class="fas fa-question-circle fa-lg tw:shrink-0 tw:text-muted-foreground"
+                  title="For an attribute to be in the list, it must be contained in the mapping."
+                />
+                <span v-else class="tw:w-5 tw:shrink-0" />
+
+                <Select
+                  class="tw:min-w-40 tw:flex-1"
+                  :model-value="filters.basic[groupIndex][filterIndex].attribute || ''"
+                  @update:modelValue="
+                    (attribute) => selectAttribute(attribute, groupIndex, filterIndex)
+                  "
+                >
+                  <SelectTrigger
+                    aria-label="Attribute"
+                    :data-cy="`BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`"
+                  >
+                    <SelectValue placeholder="Attribute" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      v-for="attribute of selectAttributesValues"
+                      :key="attribute.value"
+                      :value="attribute.value"
+                      >{{ attribute.text }}</SelectItem
+                    >
+                  </SelectContent>
+                </Select>
+
+                <Select v-model="andBlock.operator" class="tw:min-w-40 tw:flex-1">
+                  <SelectTrigger aria-label="Operator" data-cy="BasicFilter-operator">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      v-for="operand of availableOperandsFormatted"
+                      :key="operand.value"
+                      :value="operand.value"
+                      >{{ operand.text }}</SelectItem
+                    >
+                  </SelectContent>
+                </Select>
+
+                <div
+                  v-if="andBlock.operator !== 'exists' && andBlock.operator !== 'not_exists'"
+                  class="tw:flex tw:min-w-40 tw:flex-1 tw:flex-col tw:gap-1"
+                >
+                  <template v-if="andBlock.operator !== 'range'">
+                    <Input
+                      v-model="andBlock.value"
+                      class="BasicFilter--value"
+                      :data-cy="`BasicFilter-valueInput--${groupIndex}.${filterIndex}`"
+                      placeholder="Value"
+                      type="text"
+                    />
+                  </template>
+                  <template v-else>
+                    <Input
+                      v-model="andBlock.gt_value"
+                      class="BasicFilter--gtValue"
+                      data-cy="BasicFilter-operator-Range-Value1"
+                      placeholder="Value 1"
+                      type="text"
+                    />
+                    <Input
+                      v-model="andBlock.lt_value"
+                      class="BasicFilter--ltValue"
+                      data-cy="BasicFilter-operator-Range-Value2"
+                      placeholder="Value 2"
+                      type="text"
+                    />
+                  </template>
+                </div>
+
+                <Button
+                  v-if="filterIndex > 0 || groupIndex > 0"
+                  aria-label="Remove this condition"
+                  size="icon"
+                  variant="ghost"
+                  @click="removeAndCondition(groupIndex, filterIndex)"
+                >
+                  <i class="fa fa-times" aria-hidden="true" />
+                </Button>
+
+                <Button
+                  v-if="filterIndex === orBlock.length - 1"
+                  :disabled="isInvalidStatement(filterIndex, orBlock)"
+                  variant="outline"
+                  @click="addAndCondition(groupIndex)"
+                >
+                  <i class="fa fa-plus" aria-hidden="true" />AND
+                </Button>
+              </div>
+            </CardContent>
+
+            <CardFooter v-if="groupIndex === filters.basic.length - 1">
+              <Button :disabled="isInvalidBlock(orBlock)" variant="outline" @click="addOrCondition">
+                <i class="fa fa-plus" aria-hidden="true" />OR
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <div
+            v-if="groupIndex < filters.basic.length - 1"
+            class="tw:my-2 tw:flex tw:items-center tw:gap-3 tw:text-secondary"
+          >
+            <hr class="tw:flex-1 tw:border-border" />
+            <b>OR</b>
+            <hr class="tw:flex-1 tw:border-border" />
+          </div>
         </div>
       </div>
     </div>
 
-    <b-row align-h="center" align-v="center">
-      <b-col md="4">
-        <b-input-group v-if="sortingEnabled" prepend="Sort">
-          <b-form-select
-            data-cy="BasicFilter-sortAttributeSelect"
-            placeholder="Attribute"
-            :value="filters.sorting.attribute || ''"
-            :options="sortAttributesValues"
-            @change="(attribute) => setSortAttr(attribute)"
+    <div class="tw:mt-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+      <template v-if="sortingEnabled">
+        <div
+          class="tw:flex tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
+        >
+          <span
+            id="basic-filter-sort-label"
+            class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:font-sans tw:text-sm tw:text-muted-foreground"
+            >Sort</span
           >
-            <template #first>
-              <b-form-select-option :value="''" disabled>Attribute</b-form-select-option>
-            </template></b-form-select
+          <Select
+            :model-value="filters.sorting.attribute || ''"
+            @update:modelValue="(attribute) => setSortAttr(attribute)"
           >
-        </b-input-group>
-      </b-col>
-      <b-col md="2" class="px-0"
-        ><b-select
-          v-if="sortingEnabled"
-          v-model="filters.sorting.order"
-          data-cy="BasicFilter-sortOrderSelect"
-          :options="[
-            { value: 'asc', text: 'Ascending' },
-            { value: 'desc', text: 'Descending' },
-          ]"
-      /></b-col>
-      <b-col v-if="actionButtonsVisible" class="text-right">
-        <b-button
-          class="BasicFilter-generateRawBtn mt-2 mb-2 mr-2"
+            <SelectTrigger
+              aria-labelledby="basic-filter-sort-label"
+              class="tw:rounded-none tw:border-0"
+              data-cy="BasicFilter-sortAttributeSelect"
+            >
+              <SelectValue placeholder="Attribute" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                v-for="attribute of sortAttributesValues"
+                :key="attribute.value"
+                :value="attribute.value"
+                >{{ attribute.text }}</SelectItem
+              >
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Select v-model="filters.sorting.order">
+          <SelectTrigger aria-label="Sort order" data-cy="BasicFilter-sortOrderSelect">
+            <!--
+              Le libellé est passé dans le slot : `SelectValue` ne les connaît
+              qu'une fois la liste ouverte, et ici la valeur (`asc`) et le
+              libellé (`Ascending`) diffèrent.
+            -->
+            <SelectValue>{{ sortOrderLabel }}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="asc">Ascending</SelectItem>
+            <SelectItem value="desc">Descending</SelectItem>
+          </SelectContent>
+        </Select>
+      </template>
+
+      <div v-if="actionButtonsVisible" class="tw:ml-auto tw:flex tw:flex-wrap tw:gap-2">
+        <Button
+          class="BasicFilter-generateRawBtn"
           data-cy="BasicFilter-generateRawBtn"
+          variant="outline"
           @click.prevent="generateRawFilter"
         >
-          <i class="fas fa-scroll" />&nbsp; Generate Raw JSON
-        </b-button>
-        <b-button
-          class="BasicFilter-resetBtn mr-2"
+          <i class="fas fa-scroll" aria-hidden="true" />&nbsp;Generate Raw JSON
+        </Button>
+        <Button
+          class="BasicFilter-resetBtn"
           data-cy="BasicFilter-resetBtn"
-          variant="outline-secondary"
+          variant="outline"
           @click="resetSearch"
         >
           Reset
-        </b-button>
-        <b-button
+        </Button>
+        <Button
+          class="BasicFilter-submitBtn"
           data-cy="BasicFilter-submitBtn"
-          class="BasicFilter-submitBtn mt-2 mb-2"
-          variant="primary"
           @click.prevent="submitSearch"
         >
           {{ submitButtonLabel }}
-        </b-button>
-      </b-col>
-    </b-row>
+        </Button>
+      </div>
+    </div>
   </form>
 </template>
 
 <script>
 import { mapState } from 'pinia';
 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useKuzzleStore } from '@/stores';
 
 const emptyBasicFilter = { attribute: null, operator: 'contains', value: null };
@@ -206,6 +237,18 @@ const emptySorting = { attribute: null, order: 'asc' };
 
 export default {
   name: 'BasicFilter',
+  components: {
+    Button,
+    Card,
+    CardContent,
+    CardFooter,
+    Input,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  },
   props: {
     basicFilter: Array,
     sorting: Object,
@@ -260,6 +303,9 @@ export default {
           text: a,
           value: a,
         }));
+    },
+    sortOrderLabel() {
+      return this.filters.sorting.order === 'desc' ? 'Descending' : 'Ascending';
     },
     availableOperandsFormatted() {
       return Object.keys(this.availableOperands).map((e) => ({
@@ -405,65 +451,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-a.btn {
-  i.left {
-    margin-right: 8px;
-  }
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-left: 10px;
-}
-
-p {
-  margin-bottom: 10px;
-  margin-top: 10px;
-  i {
-    font-size: 1.1em;
-    margin-right: 10px;
-  }
-}
-
-.BasicFilter {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.BasicFilter-predicates {
-  flex-grow: 1;
-  overflow-y: auto;
-}
-
-.BasicFilter-orBtn {
-  margin-bottom: 10px;
-}
-
-.BasicFilter-removeBtn {
-  margin-top: 25px;
-  color: grey;
-  cursor: pointer;
-}
-
-.BasicFilter-orBlock {
-}
-
-.BasicFilter-andBlock {
-  margin-bottom: 0;
-  border-left: 1px dotted rgba(0, 0, 0, 0.26);
-  padding-bottom: 5px;
-}
-
-.BasicFilter-sortBlock {
-  margin-top: 15px;
-  margin-bottom: 0;
-
-  .block-content {
-    margin-left: 5px;
-    margin-bottom: 5px;
-  }
-}
-</style>

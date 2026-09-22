@@ -1,68 +1,85 @@
 <template>
-  <div class="UsersManagement">
-    <b-container class="UserList--container">
-      <b-row>
-        <b-col cols="8">
-          <headline>Users</headline>
-        </b-col>
-        <b-col class="text-right mt-3">
-          <b-button
-            class="mr-2"
-            data-cy="UsersManagement-createBtn"
-            variant="primary"
-            :disabled="!canCreateUser"
-            :to="{ name: 'SecurityUsersCreate' }"
-            >Create User</b-button
-          >
-          <b-dropdown
-            id="users-dropdown"
+  <div class="UsersManagement tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12">
+    <div class="tw:flex tw:flex-wrap tw:items-start tw:justify-between tw:gap-4">
+      <headline>Users</headline>
+      <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+        <!--
+          `as` bascule sur `button` quand l'action est interdite : un
+          `router-link` ignore `disabled` et resterait cliquable (G-016).
+        -->
+        <Button
+          :as="canCreateUser ? 'router-link' : 'button'"
+          data-cy="UsersManagement-createBtn"
+          :disabled="!canCreateUser"
+          :to="canCreateUser ? { name: 'SecurityUsersCreate' } : undefined"
+          >Create User</Button
+        >
+
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            :as="Button"
+            aria-label="Actions on users"
             data-cy="UsersDropdown"
-            no-caret
-            toggle-class="usersDropdown"
-            variant="light"
+            size="icon"
+            variant="outline"
           >
-            <template #button-content>
-              <i class="fas fa-ellipsis-v" />
-            </template>
-            <b-dropdown-item
+            <i class="fas fa-ellipsis-v" aria-hidden="true" />
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              as="router-link"
               data-cy="UsersDropdown-editMapping"
               :to="{ name: 'SecurityUsersEditCustomMapping' }"
             >
               Edit user content mapping
-            </b-dropdown-item>
-          </b-dropdown>
-        </b-col>
-      </b-row>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
 
-      <!-- Not allowed -->
-      <list-not-allowed v-if="!canSearchUser" />
+    <!-- Not allowed -->
+    <list-not-allowed v-if="!canSearchUser" />
 
-      <list
-        v-if="canSearchUser"
-        item-name="UserItem"
-        collection="users"
-        index="%kuzzle"
-        route-create="SecurityUsersCreate"
-        route-update="SecurityUsersUpdate"
-        :mapping-attributes="mappingAttributes"
-      >
-        <b-card slot="emptySet" class="EmptyState text-center">
-          <i class="text-secondary fas fa-user fa-6x mb-3" />
-          <h2 class="text-secondary font-weight-bold">No user is defined</h2>
-          <p v-if="canCreateUser" class="text-secondary">
-            You can create a new user by hitting the button above
-          </p>
-        </b-card>
-      </list>
-    </b-container>
+    <list
+      v-if="canSearchUser"
+      item-name="UserItem"
+      collection="users"
+      index="%kuzzle"
+      route-create="SecurityUsersCreate"
+      route-update="SecurityUsersUpdate"
+      :mapping-attributes="mappingAttributes"
+    >
+      <template #emptySet>
+        <Card class="EmptyState">
+          <CardContent class="tw:flex tw:flex-col tw:items-center tw:text-center">
+            <i class="fas fa-user fa-6x tw:mb-4 tw:text-secondary" aria-hidden="true" />
+            <CardTitle class="tw:text-secondary">No user is defined</CardTitle>
+            <CardDescription v-if="canCreateUser" class="tw:mt-2 tw:text-secondary">
+              You can create a new user by hitting the button above
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </template>
+    </list>
   </div>
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'pinia';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
@@ -71,12 +88,29 @@ import List from './List.vue';
 export default {
   name: 'UsersManagement',
   components: {
-    ListNotAllowed,
-    List,
+    Button,
+    Card,
+    CardContent,
+    CardDescription,
+    CardTitle,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
     Headline,
+    List,
+    ListNotAllowed,
   },
   data() {
     return {
+      /*
+       * `DropdownMenuTrigger` prend le composant lui-même en prop `as`, pas
+       * son nom : c'est l'API de l'amont, et `Button` doit donc être une
+       * valeur lisible depuis le template. `markRaw` et non `Object.freeze` :
+       * Vue met en cache le constructeur sur les options du composant, et un
+       * objet gelé le lui interdit (G-032).
+       */
+      Button: markRaw(Button),
       userMapping: {},
     };
   },
@@ -99,22 +133,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@use '@/assets/styles/variables.scss';
-
-.UserManagement {
-  margin-bottom: 3em;
-}
-::v-deep .usersDropdown {
-  background-color: variables.$light-grey-color;
-  border: none;
-}
-.UserList--container {
-  transition: max-width 0.6s;
-}
-
-::v-deep .show .usersDropdown i {
-  transform: rotate(90deg);
-}
-</style>

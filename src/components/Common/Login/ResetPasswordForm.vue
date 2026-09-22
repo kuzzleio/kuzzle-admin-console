@@ -1,64 +1,57 @@
 <template>
   <form id="resetPasswordForm" method="post" @submit.prevent="resetPassword()">
-    <div class="resetPasswordForm-inputs">
-      <b-form-group
-        data-cy="ResetPassword-password--group"
-        label="New password"
-        label-for="password"
-        label-cols-sm="4"
-        label-cols-md="3"
-        :invalid-feedback="passwordFeedback"
-      >
-        <b-form-input
+    <div class="resetPasswordForm-inputs tw:flex tw:flex-col tw:gap-4">
+      <FormItem data-cy="ResetPassword-password--group">
+        <Label for="password">New password</Label>
+        <Input
           id="password"
           v-model="v$.password.$model"
-          autofocus
-          class="validate"
+          v-focus
+          :aria-invalid="passwordFeedback ? 'true' : undefined"
           data-cy="ResetPassword-password"
           name="password"
           pattern=".*[^ ].*"
           required
           tabindex="1"
           type="password"
-          :state="validateState('password')"
         />
-      </b-form-group>
+        <FormMessage v-if="passwordFeedback">{{ passwordFeedback }}</FormMessage>
+      </FormItem>
 
-      <b-form-group
-        data-cy="ResetPassword-password2--group"
-        description="Re-type the password for confirmation"
-        label="Confirm password"
-        label-cols-sm="4"
-        label-cols-lg="3"
-        label-for="password2"
-        :invalid-feedback="password2Feedback"
-      >
-        <b-input
+      <FormItem data-cy="ResetPassword-password2--group">
+        <Label for="password2">Confirm password</Label>
+        <Input
           id="password2"
           v-model="v$.password2.$model"
-          class="validate"
+          :aria-invalid="password2Feedback ? 'true' : undefined"
           data-cy="ResetPassword-password2"
           name="password2"
+          :pattern="password2Pattern"
           required
           tabindex="2"
           type="password"
-          :pattern="password2Pattern"
-          :state="validateState('password2')"
         />
-      </b-form-group>
+        <FormDescription>Re-type the password for confirmation</FormDescription>
+        <FormMessage v-if="password2Feedback">{{ password2Feedback }}</FormMessage>
+      </FormItem>
 
       <div v-if="error" class="ResetPasswordForm-error">
-        <b-alert variant="danger" show dismissible> Error: {{ error }} </b-alert>
+        <Alert class="tw:flex tw:items-start tw:gap-3" variant="destructive">
+          <span class="tw:flex-1">Error: {{ error }}</span>
+          <button
+            aria-label="Dismiss"
+            class="tw:cursor-pointer tw:leading-none"
+            type="button"
+            @click="error = ''"
+          >
+            <i class="fa fa-times" aria-hidden="true" />
+          </button>
+        </Alert>
       </div>
 
-      <div class="ResetPasswordForm-buttons float-right mt-3">
-        <b-button
-          variant="primary"
-          data-cy="ResetPassword-submitBtn"
-          type="submit"
-          name="action"
-          tabindex="3"
-          >Send</b-button
+      <div class="ResetPasswordForm-buttons tw:flex tw:justify-end">
+        <Button data-cy="ResetPassword-submitBtn" name="action" tabindex="3" type="submit"
+          >Send</Button
         >
       </div>
     </div>
@@ -69,10 +62,28 @@
 import { useVuelidate } from '@vuelidate/core';
 import { sameAs, required, helpers } from '@vuelidate/validators';
 
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Focus from '@/directives/focus.directive';
 import { useAuthStore } from '@/stores';
 
 export default {
   name: 'ResetPasswordForm',
+  components: {
+    Alert,
+    Button,
+    FormDescription,
+    FormItem,
+    FormMessage,
+    Input,
+    Label,
+  },
+  directives: {
+    Focus,
+  },
   props: {
     resetToken: String,
   },
@@ -121,11 +132,6 @@ export default {
     },
   },
   methods: {
-    validateState(fieldName) {
-      const { $dirty, $error } = this.v$[fieldName];
-      const state = $dirty ? !$error : null;
-      return state;
-    },
     async resetPassword() {
       this.error = '';
 

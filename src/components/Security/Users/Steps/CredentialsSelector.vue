@@ -1,49 +1,78 @@
 <template>
-  <b-row class="Credentials">
-    <b-col cols="2">
-      <strong>Credentials</strong>
-    </b-col>
-    <b-col>
-      <b-card no-body class="Credentials-selector">
-        <b-tabs card vertical>
-          <template #tabs-start>
-            <span class="text-secondary text-small mb-2 px-3">Auth strategies</span>
-          </template>
+  <div class="Credentials tw:flex tw:flex-wrap tw:gap-4">
+    <strong class="tw:w-full tw:sm:w-40">Credentials</strong>
 
-          <!-- Render this if no tabs -->
-          <template #empty>
-            <div class="text-center text-muted">
-              No strategies found<br />
-              It looks like no authentication strategies are installed on your Kuzzle instance.
-            </div>
-          </template>
-          <b-tab v-for="(strategy, index) in strategies" :key="index" :title="strategy">
-            <div
-              v-for="fieldName in credentialsMapping[strategy]"
-              :key="`update-user-credential-${fieldName}`"
-            >
-              <b-form-group label-cols="2" :label="getFieldHelp(fieldName)" :label-for="fieldName">
-                <b-form-input
-                  :id="fieldName"
-                  :data-cy="`CredentialsSelector-${strategy}-${fieldName}`"
-                  :name="fieldName"
-                  :value="getValue(strategy, fieldName)"
-                  :type="fieldType(fieldName)"
-                  @input="onFieldChange(strategy, fieldName, $event)"
-                />
-              </b-form-group>
-            </div>
-          </b-tab>
-        </b-tabs>
-      </b-card>
-    </b-col>
-  </b-row>
+    <Card class="Credentials-selector tw:min-w-0 tw:flex-1">
+      <CardContent>
+        <!--
+          `b-tabs` avait un slot `#empty`. La primitive n'en a pas : une barre
+          d'onglets vide n'est pas un cas particulier du composant, c'est un
+          cas particulier de l'écran.
+        -->
+        <div v-if="strategies.length === 0" class="tw:text-center tw:text-muted-foreground">
+          No strategies found<br />
+          It looks like no authentication strategies are installed on your Kuzzle instance.
+        </div>
+
+        <Tabs v-else orientation="vertical">
+          <div class="tw:flex tw:flex-col tw:gap-2">
+            <span class="tw:px-3 tw:text-sm tw:text-secondary">Auth strategies</span>
+            <TabsList>
+              <TabsTrigger
+                v-for="strategy in strategies"
+                :key="strategy"
+                :data-cy="`CredentialsSelector-tab--${strategy}`"
+                :value="strategy"
+              >
+                {{ strategy }}
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent
+            v-for="strategy in strategies"
+            :key="strategy"
+            class="tw:flex tw:flex-col tw:gap-4 tw:px-3"
+            :value="strategy"
+          >
+            <FormItem v-for="fieldName in credentialsMapping[strategy]" :key="fieldName">
+              <Label :for="`${strategy}-${fieldName}`">{{ getFieldHelp(fieldName) }}</Label>
+              <Input
+                :id="`${strategy}-${fieldName}`"
+                :data-cy="`CredentialsSelector-${strategy}-${fieldName}`"
+                :model-value="getValue(strategy, fieldName) || ''"
+                :name="fieldName"
+                :type="fieldType(fieldName)"
+                @update:modelValue="onFieldChange(strategy, fieldName, $event)"
+              />
+            </FormItem>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  </div>
 </template>
 
 <script>
+import { Card, CardContent } from '@/components/ui/card';
+import { FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 export default {
   name: 'CredentialsSelector',
-  components: {},
+  components: {
+    Card,
+    CardContent,
+    FormItem,
+    Input,
+    Label,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  },
   props: {
     strategies: {
       type: Array,
@@ -95,18 +124,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.Credentials-selector {
-  .card-header {
-    border-right: 1px solid #dee2e6;
-  }
-  .nav-tabs .nav-link.active {
-    border-color: #dee2e6 #fff #dee2e6 #dee2e6;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 0.25rem 0 0 0.25rem;
-    margin-right: -1.33rem;
-  }
-}
-</style>

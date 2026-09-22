@@ -65,6 +65,12 @@
      visuelle, et elle doit vivre au même endroit que les autres valeurs pour
      qu'un composant n'ait pas à la coder en dur. */
   --sidebar-width: 252px;
+
+  /* Hauteur de la barre de navigation principale. Même statut que
+     `--sidebar-width` : `Home.vue` réservait 66 px à son menu et `MainMenu`
+     les atteignait par la taille de son logo. Les deux lisent désormais la
+     même valeur. */
+  --navbar-height: 66px;
 }
 
 .dark {

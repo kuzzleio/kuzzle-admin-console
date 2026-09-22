@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 68 / 134 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 91 / 107 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -276,7 +276,10 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) | ✅ |
 | `Switch` (ajoutée en reprenant la bascule « Form view » des documents) | ✅ |
 | `Table` — du balisage, pas de `DataTable` ([ADR-0011](adr/0011-table-sans-data-table.md)) | ✅ |
-| Primitives interactives restantes (dropdown, combobox) | ⬜ |
+| `DropdownMenu` — panneau dans `<body>` ([ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md)) | ✅ |
+| `Pagination` ([ADR-0013](adr/0013-primitive-pagination-en-vue-2.md)) et `Select` ([ADR-0014](adr/0014-primitive-select-en-vue-2.md)) | ✅ |
+| `Tabs` — pilotée par valeur, panneau caché démonté ([ADR-0017](adr/0017-primitive-tabs-en-vue-2.md)) | ✅ |
+| Dernière primitive interactive : `Combobox` (pour `vue-multiselect`) | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
 plomberie est posée, l'apparence n'est pas décidée. La refonte visuelle se fera
@@ -293,14 +296,19 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**68 composants repris sur 134**, **432 balises `<b-*>` retirées sur 813**.
+**91 composants repris sur 107**, **725 balises `<b-*>` retirées sur 813**.
 
-> Ces deux compteurs disaient `49 / 140` et `289` jusqu'ici, alors que le
-> tableau ci-dessus annonçait `59 / 138` : la ligne n'avait pas été reprise
-> depuis le lot `DropdownMenu`, et la phrase ne disait pas si les balises
-> étaient celles qui restent ou celles qui sont parties. Les deux sont
-> recalculées ici — `grep -rho "<b-[a-z-]*" src --include="*.vue" | wc -l`,
-> à retrancher de 813 — et le libellé dit lequel des deux sens il porte.
+> Le dénominateur passe de 134 à 107 : 27 composants non atteignables ont été
+> supprimés ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)). Ce
+> n'est pas de l'avancement, c'est du travail qui n'avait pas lieu d'être
+> compté.
+>
+> La formule de comptage des balises change aussi. `grep -rho "<b-[a-z-]*" src
+> --include="*.vue" | wc -l` retourne `378`, mais **19 de ces occurrences sont
+> des mentions en commentaire** dans les primitives (« Remplace
+> `<b-pagination>` ») : elles ne sont pas du balisage. Le compte réel est
+> `grep -rhn '<b-[a-z-]*' src --include='*.vue' | grep -vE '^[0-9]+:\s*(\*|//|/\*)'
+> | grep -o '<b-[a-z-]*' | wc -l` = **88 restantes**, à retrancher de 813.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -324,9 +332,13 @@ passent sans jamais les rendre. Pour les voir, il a fallu les monter sur une
 route temporaire, non commitée — c'est le prix à payer pour ne pas livrer un
 composant qu'on n'a jamais vu.
 
-**Ce qui reste bloqué dans Common** : `Autocomplete.vue` et `MSelect.vue`
-dépendent de `vue-multiselect`. `PerPageSelector.vue` l'était aussi ; il ne
-l'est plus ([ADR-0014](adr/0014-primitive-select-en-vue-2.md)).
+**Plus rien n'est bloqué dans Common par `vue-multiselect`.** Ce paragraphe
+disait que `Autocomplete.vue` et `MSelect.vue` en dépendaient : c'était faux
+pour le premier — `Autocomplete.vue` n'importe rien du tout, il est écrit à la
+main — et sans objet pour le second, supprimé avec le code mort (ADR-0016).
+`PerPageSelector.vue` a été débloqué par
+[ADR-0014](adr/0014-primitive-select-en-vue-2.md). Le seul client restant de
+`vue-multiselect` est `Data/Documents/Views/Column/Column.vue`, déjà repris.
 
 **Les tableaux de Data sont débloqués** ([ADR-0011](adr/0011-table-sans-data-table.md)).
 Le sujet n'en était pas un mais deux : `Views/Column/` n'utilisait que du
@@ -442,8 +454,8 @@ plutôt que de classes :
   de `variant="light"` d'un côté, bouton clair de l'autre, pour deux menus qui
   font la même chose au même endroit. Les deux passent par la même variante.
 
-**Six composants ont été supprimés plutôt que repris**, d'où le dénominateur
-à 134 :
+**Six composants avaient été supprimés plutôt que repris**, un par un, chacun
+découvert au moment où on allait le migrer :
 
 | Composant | Pourquoi |
 |---|---|
@@ -455,9 +467,188 @@ plutôt que de classes :
 | `Materialize/Dropdown.vue` | orphelin une fois le précédent parti |
 
 Le recensement initial comptait des fichiers, pas des composants atteignables.
-Six sur 140 en huit lots, et les deux derniers étaient encore écrits pour
-Materialize — un framework sorti du projet avant Bootstrap. Le réflexe est
-acquis : on vérifie qu'un composant est atteint **avant** de le reprendre.
+Le réflexe était acquis — on vérifie qu'un composant est atteint **avant** de le
+reprendre — mais il se pratiquait au `grep`, un fichier à la fois.
+
+**Les trois listes de Security passent sans primitive nouvelle**, comme le
+formulaire de collection avant elles. `Card`, `Button`, `Spinner`, `Checkbox`,
+`ListPagination` et `PerPageSelector` couvraient `<b-card>`, `<b-list-group>`,
+`<b-pagination>` et le reste ; les `<b-row>` / `<b-col>` deviennent des
+utilitaires. `Security/Layout.vue` et `Users/Page.vue` suivent dans le même lot
+parce qu'ils encadrent ces listes.
+
+Quatre points tranchés plutôt que transposés :
+
+- **Les trois copies de l'état « aucun résultat » deviennent une**,
+  `Security/Common/NoSearchResult.vue`. Elles étaient identiques au mot près —
+  sauf le lien : Profiles pointait vers la documentation de **Kuzzle 1**, les
+  deux autres vers le *cookbook* v2. C'est ce qu'une copie finit par faire.
+- **`<b-list-group>` devient un vrai `<ul>`**, pas une pile de `<div>`. Une
+  liste d'éléments est une liste ; le lecteur d'écran l'annonce et en donne le
+  nombre.
+- **La barre latérale de Security devient un `<nav>`** avec `aria-current` sur
+  la section ouverte. `<b-nav vertical>` ne rendait qu'un `<ul>` en colonne :
+  ni rôle de navigation, ni indication de la page courante autrement que par la
+  graisse et l'opacité.
+- **L'ombre portée de la barre latérale disparaît.** C'était une valeur de
+  design en dur (`0 0 5px rgba(112,112,112,1)`) ; la barre passe au `bg-muted`
+  des tokens, comme celle de Data.
+
+Deux pièges y ont été rencontrés, tous deux invisibles pour les specs et
+visibles à l'œil dès la première capture : G-030 (les puces d'un `<ul>` sans
+preflight) et **G-031**, le plus coûteux — une primitive réutilisée d'une
+branche `v-if` à l'autre garde les classes de la branche précédente.
+
+**Les quatre écrans d'authentification** — connexion, inscription,
+réinitialisation de mot de passe, et les deux formulaires qu'ils montent —
+passent eux aussi **sans primitive nouvelle**. Trois points valent d'être notés :
+
+- **`b-alert dismissible` posait sa propre croix ; `Alert` n'en rend pas.**
+  Le bouton de fermeture est écrit au site d'appel, et il appelle
+  `dismissError()`, une méthode qui existait déjà **sans être branchée à rien**.
+- **`b-jumbotron` disparaît sans remplaçant** : c'était un bloc gris à gros
+  titre, soit du balisage ordinaire et trois utilitaires.
+- **Deux boutons de `Signup.vue` portaient le même `data-cy`**
+  (`LoginAsAnonymous-Btn`) : « Go to Login Page » et « Login as Anonymous ».
+  Un `cy.get()` visant cet écran aurait échoué sur « found 2 elements ». Les
+  deux appels de `login.spec.js` visent celui de l'écran de connexion ; le
+  premier bouton devient `Signup-goToLoginBtn`.
+
+L'alerte « pas d'administrateur » passe de `variant="info"` à `warning` : la
+primitive n'a pas d'`info`, et le message commence par « Warning! ».
+
+**La barre de navigation, le sélecteur de connexion et la page d'erreur de
+connexion** ferment l'ossature de l'application. `b-navbar` + `b-navbar-toggle`
++ `b-collapse` deviennent un `<nav>`, un bouton qui annonce `aria-expanded` et
+un repli en `hidden`/`flex` sous le point de rupture `sm`.
+
+- **Une connexion n'est plus un lien contenant des boutons.**
+  `b-dropdown-item` empilait le nom, l'icône d'édition et celle de suppression
+  dans un même `<a>` — des zones cliquables imbriquées dans un lien. L'élément
+  de menu ne porte plus que le nom ; éditer et supprimer sont deux boutons à
+  côté, avec un `aria-label` chacun.
+- **`v-b-tooltip.hover` disparaît sans remplaçant** : la directive doublait
+  l'attribut `title` que le navigateur affiche déjà.
+- **`--navbar-height` rejoint les tokens.** `Home.vue` réservait 66 px à son
+  menu et `MainMenu` les atteignait par la taille de son logo : deux valeurs
+  qui devaient coïncider sans que rien ne le dise. Même traitement que
+  `--sidebar-width`.
+- **Un `<style>` non `scoped` posait `max-height: 98vh` sur *tous* les
+  `.dropdown-menu` de la console**, depuis `EnvironmentsSwitch.vue`. La
+  primitive porte désormais sa propre hauteur maximale ; les `b-dropdown`
+  restants perdent une règle qui ne leur était pas destinée.
+
+`Home.vue` n'est repris qu'à moitié : la modale de session expirée passe à
+`Dialog`, le `<b-toast>` reste. Les toasts sont le prochain sujet structurant
+— `$bvToast` est appelé depuis une trentaine de fichiers, et trois écrans
+montent un `<b-toast>` déclaratif. C'est une ADR à écrire, pas une
+transposition.
+
+Le lot a coûté deux pièges. **G-032** : `Object.freeze` sur un composant passé
+en prop `as` casse son rendu — le motif venait de Data et dormait depuis quatre
+lots, dans cinq fichiers déjà sur `4-dev`. **G-033** : trois assertions
+d'`environments.spec.js` lisaient la liste des connexions **sans ouvrir le
+menu**, ce que `b-dropdown` permettait puisqu'il rendait ses éléments en
+permanence. Le scénario est repris, pas le sélecteur.
+
+**Les formulaires restants de Security et de Common** demandent la dernière
+primitive à panneau : `Tabs` ([ADR-0017](adr/0017-primitive-tabs-en-vue-2.md)).
+Elle est la moins chère des quatre écrites à la main, parce qu'elle ne flotte
+pas — tout est dans le document. Deux choses qu'elle change :
+
+- **un onglet est désigné par une valeur, pas par un rang.**
+  `Users/CreateOrUpdate.vue` passait à `b-tabs` une prop `:object-tab-active`
+  qui n'existe pas et écoutait un `@tab-changed` qu'il n'émet pas : son
+  pilotage d'onglet ne faisait rien, et personne ne l'avait vu parce que
+  l'onglet par défaut est le bon ;
+- **le panneau caché est démonté** (`v-if`). Les champs de l'onglet « Custom »
+  n'existent plus pendant qu'on remplit « Basic ».
+
+Deux corrections de fond sont sorties de ce lot, toutes deux invisibles en
+lecture :
+
+- **Un panneau flottant ouvert dans une modale passait derrière elle.**
+  `CreateEnvironment` vit à deux endroits — une page et la modale de connexion.
+  La clause de `z-index` d'ADR-0012 et d'ADR-0014 est amendée par
+  [ADR-0018](adr/0018-panneaux-flottants-au-dessus-des-modales.md) : 1035 au
+  lieu de 1020, au-dessus de `Dialog` et sous la bande modale de Bootstrap.
+- **`SelectValue` n'affichait que la valeur brute tant que la liste n'avait pas
+  été ouverte** (`2` au lieu de `v2.x`), les `SelectItem` s'enregistrant à leur
+  montage. Le cas était prévu par la primitive : le libellé passe par son slot.
+  C'est le premier champ de la console dont la valeur et le libellé diffèrent.
+
+**Le panneau de filtres** est le plus gros morceau restant de `Common/` et le
+plus regardé de la console : `search.spec.js` le pilote sur 22 tests, et
+`users`, `roles` et `profiles` s'en servent aussi. Les six fichiers passent
+d'un coup, sans primitive nouvelle — `Tabs` venait d'arriver.
+
+Quatre choses y ont changé de nature :
+
+- **Le bouton « Quick Search » ne faisait rien.** Il appelait `submitSearch`,
+  une méthode qui n'existe nulle part. Personne ne s'en est aperçu parce que
+  `submitOnType` vaut `true` par défaut et que la saisie déclenche déjà la
+  recherche. Il appelle désormais le même chemin que la touche Entrée.
+- **`b-form-input debounce="600"` n'a pas d'équivalent dans `Input`**, et c'est
+  voulu : un champ ne décide pas du rythme auquel son hôte veut être prévenu.
+  L'attente vit dans `QuickFilter`, nommée, où l'on sait qu'elle sert à ne pas
+  lancer une recherche par frappe. `Entrée` la court-circuite.
+- **Les deux modales de renommage passaient par `$bvModal.show()`**, l'API
+  impérative qu'ADR-0010 abandonne. Elles ont un état local, et **toute**
+  fermeture qui n'est pas « OK » restaure le nom — `b-modal` ne le faisait ni
+  sur `Échap` ni au clic extérieur.
+- **`b-nav card-header tabs` faisait passer une liste de liens pour des
+  onglets.** Ce sont de vrais onglets, et `Tabs` les annonce comme tels.
+
+Les deux `b-collapse` deviennent une grille `0fr` → `1fr`, comme l'arborescence
+de Data, et les chevrons cliquables deviennent des boutons qui portent
+`aria-expanded`.
+
+Côté specs, dix-huit `cy.select()` passent à `cy.selectOption()`, une assertion
+`have.value` devient `contain` (le déclencheur est un bouton, pas un `<select>`),
+et **trois assertions lisaient des `<option>` d'une liste fermée** — G-033 pour
+la troisième fois. Elles ouvrent la liste et lisent les `[role="option"]`.
+
+#### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
+
+Le `grep` répond à la mauvaise question : il dit « ce nom est écrit quelque
+part », pas « ce fichier est dans le bundle ». La fermeture transitive depuis
+`main.ts` et `App.vue`, elle, y répond — et elle a trouvé **27 composants et 3
+modules** que rien n'atteint, soit **3 328 lignes**. Le calcul est désormais un
+script, `npm run check:unreachable`, bloquant dans l'action composite `lint`
+([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)).
+
+| Famille | Composants supprimés |
+|---|---|
+| `Security/` (11) | `Common/List.vue`, `Common/JsonWithMapping.vue`, `Common/Filters/{BasicFilter,QuickFilter,RawFilter}.vue`, `Roles/CrudlDocument.vue`, `Roles/Filters/BasicFilter.vue`, `Profiles/CrudlDocument.vue`, `Profiles/RoleChips.vue`, `Users/Steps/{Mapping,StepsContent}.vue` |
+| `Common/` (6) | `CommonList.vue`, `CrudlDocument.vue`, `MSelect.vue`, `Stepper.vue`, `MappingForm/{Form,FormLine}.vue` |
+| `Materialize/` (5) | `Modal.vue`, `Pagination.vue`, `Tab.vue`, `Tabs.vue`, `Toaster.vue` |
+| `Error/` (4) | `Layout.vue`, `Connecting.vue`, `KuzzleDisconnected.vue`, `KuzzleDisconnectedPage.vue` |
+| `Data/` (1) | `Documents/NoResultsEmptyState.vue` |
+
+Et 3 modules hors composants : `routes/children/errors.ts` (jamais importé par
+`routes/index.ts` — c'est ce qui rendait les quatre fichiers `Error/` morts),
+`filters/highlight.filter.ts` et `services/userCookies.ts`.
+
+Trois constats valent d'être retenus :
+
+- **`Security/Common/List.vue` importait `./CrudlDocument.vue`, supprimé en
+  juin 2017.** Un import cassé depuis neuf ans, que le build n'a jamais
+  signalé — Vite ne résout que ce qu'on lui demande. Le fichier avait pourtant
+  été passé à Pinia en octobre 2024 et relinté en septembre 2024.
+- **La page « Kuzzle disconnected » existe, et n'a pas d'URL.** Le chemin vivant
+  est `ConnectionAwareContainer` → `Common/Offline.vue` +
+  `Error/KuzzleErrorPage.vue`. Deux réponses au même besoin, dont une seule
+  s'affiche.
+- **Les cinq derniers fichiers `Materialize/` partent**, sauf `Headline.vue`.
+  Le framework qui précédait Bootstrap n'a plus qu'un composant dans la console.
+- **`Documents/NoResultsEmptyState.vue` a été repris pour rien** au lot #1048 :
+  `git grep NoResultsEmptyState` sur le commit précédent ne retourne que le
+  fichier lui-même. C'est le coût réel du contrôle manquant, payé une fois —
+  un composant lu, réécrit, relu en revue, et jamais affiché.
+
+Effets de bord : `velocity-animate` n'avait plus de site d'appel une fois
+`Stepper.vue` parti (§ 3.3), et `vue-multiselect` n'est plus utilisé que par
+`Views/Column/Column.vue` (§ 3.1).
 
 ## 2. Toolchain (phase 0)
 
@@ -501,7 +692,7 @@ compatibilité **avant** d'engager la montée.
 | `vue2-leaflet` 2.7.1 | `@vue-leaflet/vue-leaflet` | 3 | ⬜ |
 | `vuedraggable` 2.24.3 | `vuedraggable@next` ou `vue-draggable-plus` | 3 | ⬜ |
 | `vue-apexcharts` 1.6.2 | `vue3-apexcharts` | 3 | ⬜ |
-| `vue-multiselect` 2.1.7 | 3.x — ou supprimé au profit d'un Combobox shadcn-vue | 2/3 | ⬜ |
+| `vue-multiselect` 2.1.7 | 3.x — ou supprimé au profit d'un Combobox shadcn-vue | 2/3 | 🟡 un seul site d'appel restant (`Views/Column/Column.vue`) |
 | `vue-color` 2.8.1 | 3.x — ou supprimé (usage marginal) | 2/3 | ⬜ |
 | `@vue/test-utils` 1.3.6 | 2.x | 3 | ⬜ |
 
@@ -512,7 +703,7 @@ compatibilité **avant** d'engager la montée.
 | ~~`kuzzle-sdk` v6 **et** v7~~ | **Conservé** — c'est le support des backends Kuzzle v1, pas de la dette. Voir [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) | ➖ |
 | `bluebird` | les Promises natives suffisent depuis Node 4 | ⬜ |
 | `moment` | en maintenance depuis 2020 → `date-fns` ou `Temporal` | ⬜ |
-| `velocity-animate` | remplaçable par des transitions CSS/Tailwind | ⬜ |
+| ~~`velocity-animate`~~ | **Retiré** — son seul client était `Common/Stepper.vue`, code mort (ADR-0016) | ✅ |
 | `@fortawesome/fontawesome-free` | à réévaluer avec le nouveau design system | ⬜ |
 | `json-formatter-js` | utilisé via une directive ; à réévaluer | ⬜ |
 
@@ -523,6 +714,12 @@ compatibilité **avant** d'engager la montée.
 140 composants, ~25 000 LOC, **813 balises `<b-*>`**, dont 135 fichiers en
 Options API. Trié par volume de `<b-*>` : c'est le proxy le plus fiable de
 l'effort de migration.
+
+> **Les en-têtes de section ci-dessous sont le recensement initial du
+> 2026-09-18** ; ils ne bougent pas, c'est la colonne « Statut » qui dit où on
+> en est. 33 composants portent `➖ supprimé` : 6 découverts un par un, 27 par
+> le contrôle d'atteignabilité ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)).
+> Le périmètre réel de la phase 2 est donc de **107 composants**.
 
 Ordre de traitement retenu en phase 2 : **Common → Security → ApiAction → Data**.
 Common d'abord parce que ses composants sont partagés et que les migrer valide
@@ -560,7 +757,7 @@ gros et le plus risqué.
 | `Data/Leftnav/Treeview.vue` | 3 | 97 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
 | `Data/Documents/Views/Column/TableCell.vue` | 3 | 79 | ✅ reprise ([#1049](https://github.com/kuzzleio/kuzzle-admin-console/pull/1049)) |
 | `Data/Indexes/DropdownActions.vue` | 3 | 75 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
-| `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
+| `Data/Documents/NoResultsEmptyState.vue` | 3 | 20 | ➖ supprimé — repris pour rien en [#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048), il n'était déjà atteint par personne ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 | `Data/Documents/Update.vue` | 3 | 173 | ✅ reprise ([#1048](https://github.com/kuzzleio/kuzzle-admin-console/pull/1048)) |
 | `Data/Realtime/Notification.vue` | 3 | 147 | ✅ reprise ([#1051](https://github.com/kuzzleio/kuzzle-admin-console/pull/1051)) |
 | `Data/Leftnav/IndexBranch.vue` | 2 | 273 | ✅ reprise ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
@@ -583,22 +780,22 @@ gros et le plus risqué.
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Security/Users/List.vue` | 17 | 395 | ⬜ |
-| `Security/Profiles/List.vue` | 17 | 335 | ⬜ |
-| `Security/Roles/List.vue` | 16 | 306 | ⬜ |
-| `Security/Layout.vue` | 13 | 98 | ⬜ |
+| `Security/Users/List.vue` | 17 | 395 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
+| `Security/Profiles/List.vue` | 17 | 335 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
+| `Security/Roles/List.vue` | 16 | 306 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
+| `Security/Layout.vue` | 13 | 98 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
 | `Security/Roles/CreateOrUpdate.vue` | 13 | 275 | ✅ reprise |
 | `Security/Users/EditCustomMapping.vue` | 13 | 176 | ✅ reprise |
 | `Security/Profiles/CreateOrUpdate.vue` | 11 | 216 | ✅ reprise |
 | `Security/Profiles/Filters.vue` | 10 | 155 | ⬜ |
 | `Security/Roles/Filters.vue` | 10 | 115 | ⬜ |
-| `Security/Users/CreateOrUpdate.vue` | 9 | 356 | ⬜ |
+| `Security/Users/CreateOrUpdate.vue` | 9 | 356 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
 | `Security/Profiles/ProfileItem.vue` | 9 | 186 | ✅ reprise |
 | `Security/Roles/RoleItem.vue` | 9 | 109 | ✅ reprise |
 | `Security/Roles/Page.vue` | 8 | 167 | ✅ reprise |
-| `Security/Users/Page.vue` | 8 | 120 | ⬜ |
-| `Security/Users/Steps/UserProfileList.vue` | 8 | 118 | ⬜ |
-| `Security/Users/Steps/CredentialsSelector.vue` | 8 | 112 | ⬜ |
+| `Security/Users/Page.vue` | 8 | 120 | ✅ reprise ([#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)) |
+| `Security/Users/Steps/UserProfileList.vue` | 8 | 118 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
+| `Security/Users/Steps/CredentialsSelector.vue` | 8 | 112 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
 | `Security/Users/Steps/Basic.vue` | 7 | 91 | ✅ reprise |
 | `Security/Profiles/Page.vue` | 6 | 76 | ✅ reprise |
 | `Security/Users/UserItem.vue` | 6 | 204 | ✅ reprise |
@@ -609,37 +806,37 @@ gros et le plus risqué.
 | `Security/Profiles/Update.vue` | 2 | 120 | ✅ reprise |
 | `Security/Profiles/Create.vue` | 1 | 71 | ✅ reprise |
 | `Security/Common/Notice.vue` | 1 | 26 | ✅ reprise |
-| `Security/Common/JsonWithMapping.vue` | 0 | 97 | ⬜ |
-| `Security/Users/Steps/Mapping.vue` | 0 | 87 | ⬜ |
-| `Security/Profiles/RoleChips.vue` | 0 | 83 | ⬜ |
-| `Security/Common/Filters/RawFilter.vue` | 0 | 70 | ⬜ |
-| `Security/Profiles/CrudlDocument.vue` | 0 | 257 | ⬜ |
-| `Security/Roles/CrudlDocument.vue` | 0 | 244 | ⬜ |
-| `Security/Common/List.vue` | 0 | 208 | ⬜ |
-| `Security/Common/Filters/BasicFilter.vue` | 0 | 192 | ⬜ |
-| `Security/Users/Steps/StepsContent.vue` | 0 | 168 | ⬜ |
-| `Security/Roles/Filters/BasicFilter.vue` | 0 | 121 | ⬜ |
-| `Security/Common/Filters/QuickFilter.vue` | 0 | 112 | ⬜ |
+| `Security/Common/JsonWithMapping.vue` | 0 | 97 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Users/Steps/Mapping.vue` | 0 | 87 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Profiles/RoleChips.vue` | 0 | 83 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Common/Filters/RawFilter.vue` | 0 | 70 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Profiles/CrudlDocument.vue` | 0 | 257 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Roles/CrudlDocument.vue` | 0 | 244 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Common/List.vue` | 0 | 208 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Common/Filters/BasicFilter.vue` | 0 | 192 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Users/Steps/StepsContent.vue` | 0 | 168 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Roles/Filters/BasicFilter.vue` | 0 | 121 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Security/Common/Filters/QuickFilter.vue` | 0 | 112 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 
 ### Common — 33 composants, 184 balises `<b-*>`
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Common/Filters/BasicFilter.vue` | 40 | 469 | ⬜ |
-| `Common/Environments/CreateEnvironment.vue` | 17 | 380 | ⬜ |
-| `Common/Filters/QuickFilter.vue` | 14 | 215 | ⬜ |
-| `Common/MainMenu.vue` | 14 | 200 | ⬜ |
-| `Common/Filters/FilterHistoryItem.vue` | 12 | 134 | ⬜ |
-| `Common/Filters/FavoriteFilterItem.vue` | 11 | 111 | ⬜ |
-| `Common/Login/Form.vue` | 9 | 208 | ⬜ |
+| `Common/Filters/BasicFilter.vue` | 40 | 469 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
+| `Common/Environments/CreateEnvironment.vue` | 17 | 380 | ✅ reprise ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)) |
+| `Common/Filters/QuickFilter.vue` | 14 | 215 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
+| `Common/MainMenu.vue` | 14 | 200 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) |
+| `Common/Filters/FilterHistoryItem.vue` | 12 | 134 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
+| `Common/Filters/FavoriteFilterItem.vue` | 11 | 111 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
+| `Common/Login/Form.vue` | 9 | 208 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `Common/Offline.vue` | 8 | 88 | ✅ reprise |
 | `Common/Environments/ModalImport.vue` | 7 | 159 | ✅ reprise |
 | `Common/Environments/SelectEnvironmentPage.vue` | 6 | 59 | ✅ reprise |
-| `Common/Filters/Filters.vue` | 6 | 349 | ⬜ |
-| `Common/Environments/EnvironmentsSwitch.vue` | 6 | 159 | ⬜ |
-| `Common/Login/ResetPasswordForm.vue` | 6 | 145 | ⬜ |
+| `Common/Filters/Filters.vue` | 6 | 349 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
+| `Common/Environments/EnvironmentsSwitch.vue` | 6 | 159 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) |
+| `Common/Login/ResetPasswordForm.vue` | 6 | 145 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `Common/Environments/CreateEnvironmentPage.vue` | 6 | 104 | ✅ reprise |
-| `Common/Filters/RawFilter.vue` | 5 | 147 | ⬜ |
+| `Common/Filters/RawFilter.vue` | 5 | 147 | ✅ reprise ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)) |
 | `Common/Environments/ModalDelete.vue` | 5 | 118 | ✅ reprise |
 | `Common/ListNotAllowed.vue` | 4 | 22 | ✅ reprise |
 | `Common/Environments/ModalCreateOrUpdate.vue` | 3 | 49 | ✅ reprise |
@@ -649,27 +846,27 @@ gros et le plus risqué.
 | `Common/Autocomplete.vue` | 1 | 166 | ⬜ |
 | `Common/Filters/HistoryFilter.vue` | 0 | 80 | ⬜ |
 | `Common/Filters/FavoriteFilters.vue` | 0 | 65 | ⬜ |
-| `Common/MSelect.vue` | 0 | 60 | ⬜ |
+| `Common/MSelect.vue` | 0 | 60 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 | `Common/HighlightedSpan.vue` | 0 | 36 | ⬜ |
-| `Common/CrudlDocument.vue` | 0 | 254 | ⬜ |
-| `Common/CommonList.vue` | 0 | 228 | ⬜ |
+| `Common/CrudlDocument.vue` | 0 | 254 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Common/CommonList.vue` | 0 | 228 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 | `Common/Breadcrumb.vue` | 0 | 161 | ⬜ |
-| `Common/MappingForm/Form.vue` | 0 | 129 | ⬜ |
-| `Common/MappingForm/FormLine.vue` | 0 | 121 | ⬜ |
-| `Common/Stepper.vue` | 0 | 112 | ⬜ |
+| `Common/MappingForm/Form.vue` | 0 | 129 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Common/MappingForm/FormLine.vue` | 0 | 121 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Common/Stepper.vue` | 0 | 112 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 | `Common/JsonEditor.vue` | 0 | 106 | ⬜ |
 
 ### Racine — 8 composants, 56 balises `<b-*>`
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Signup.vue` | 19 | 245 | ⬜ |
+| `Signup.vue` | 19 | 245 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `ApiAction.vue` | 12 | 432 | ⬜ |
 | `404.vue` | 6 | 35 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
-| `Login.vue` | 6 | 110 | ⬜ |
-| `ResetPassword.vue` | 5 | 75 | ⬜ |
+| `Login.vue` | 6 | 110 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
+| `ResetPassword.vue` | 5 | 75 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `TelemetryBanner.vue` | 4 | 60 | ⬜ |
-| `Home.vue` | 3 | 173 | ⬜ |
+| `Home.vue` | 3 | 173 | 🟡 modale et mise en page reprises ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) ; le `<b-toast>` attend la décision sur les toasts |
 | `ConnectionAwareContainer.vue` | 1 | 226 | ⬜ |
 
 ### ApiAction — 4 composants, 49 balises `<b-*>`
@@ -685,23 +882,23 @@ gros et le plus risqué.
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Error/KuzzleErrorPage.vue` | 6 | 82 | ⬜ |
-| `Error/Layout.vue` | 3 | 20 | ⬜ |
-| `Error/KuzzleDisconnectedPage.vue` | 0 | 94 | ⬜ |
-| `Error/KuzzleDisconnected.vue` | 0 | 70 | ⬜ |
-| `Error/Connecting.vue` | 0 | 69 | ⬜ |
+| `Error/KuzzleErrorPage.vue` | 6 | 82 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) |
+| `Error/Layout.vue` | 3 | 20 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Error/KuzzleDisconnectedPage.vue` | 0 | 94 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Error/KuzzleDisconnected.vue` | 0 | 70 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Error/Connecting.vue` | 0 | 69 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 
 ### Materialize — 7 composants, 0 balises `<b-*>`
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `Materialize/Tabs.vue` | 0 | 87 | ⬜ |
+| `Materialize/Tabs.vue` | 0 | 87 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 | `Materialize/Dropdown.vue` | 0 | 69 | ➖ supprimé — orphelin avec `DocumentBoxItem.vue` ([#1056](https://github.com/kuzzleio/kuzzle-admin-console/pull/1056)) |
-| `Materialize/Tab.vue` | 0 | 53 | ⬜ |
+| `Materialize/Tab.vue` | 0 | 53 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 | `Materialize/Headline.vue` | 0 | 36 | ⬜ |
-| `Materialize/Toaster.vue` | 0 | 22 | ⬜ |
-| `Materialize/Modal.vue` | 0 | 156 | ⬜ |
-| `Materialize/Pagination.vue` | 0 | 147 | ⬜ |
+| `Materialize/Toaster.vue` | 0 | 22 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Materialize/Modal.vue` | 0 | 156 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
+| `Materialize/Pagination.vue` | 0 | 147 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
 
 ### Autres — 1 composants, 0 balises `<b-*>`
 
@@ -1427,6 +1624,163 @@ Gabarit à copier :
   même question à leur reprise : `BasicFilter` seul est piloté par 20 appels de
   `cy.select()`, tous dans `search.spec.js`.
 
+#### G-034 — Un panneau flottant ouvert dans une modale passe derrière elle
+
+- **Contexte** : phase 2, reprise de `CreateEnvironment.vue`. Son champ
+  « Kuzzle version » devient un `Select` ; le composant est monté à deux
+  endroits, une page et la modale de connexion d'`App.vue`.
+- **Symptôme** : cinq tests d'`environments.spec.js` échouent sur
+  `cy.click() failed because this element: <span
+  data-slot="select-item-text">v2.x</span> is being covered by another element:
+  <div class="tw:sm:w-1/3">`. Le message ne parle ni de `z-index` ni de modale,
+  et l'élément « couvrant » est un bloc du formulaire lui-même. Le test qui
+  ouvre le **même composant sur sa page** passe.
+- **Cause** : le panneau est à `z-index: 1020`, `Dialog` à 1030. ADR-0012 avait
+  posé cette valeur sur l'idée qu'« un menu ouvert derrière une modale ne doit
+  pas passer devant » — mais le cas courant est le menu ouvert **depuis** une
+  modale, et il était alors invisible et non cliquable.
+- **Solution** : 1035, au-dessus de `Dialog` et sous la bande modale de
+  Bootstrap ([ADR-0018](adr/0018-panneaux-flottants-au-dessus-des-modales.md)).
+- **À retenir** : quand Cypress dit « couvert par un autre élément », l'élément
+  nommé est celui du dessus à ce point de l'écran, pas la cause. Ici il
+  appartenait à la modale — c'est ça, l'indice.
+- **Ref** : [#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)
+
+#### G-033 — Un menu `bootstrap-vue` garde ses éléments dans le DOM même fermé
+
+- **Contexte** : phase 2, reprise d'`EnvironmentsSwitch.vue` avec la primitive
+  `DropdownMenu`.
+- **Symptôme** : deux tests d'`environments.spec.js` échouent sur
+  `Expected to find element: [data-cy="EnvironmentSwitch-env_local"], but never
+  found it` — après avoir créé la connexion, donc au moment précis où elle
+  devrait apparaître. Les douze autres tests du fichier passent, y compris ceux
+  qui lisent la même liste.
+- **Cause** : `b-dropdown` rend son menu en permanence et se contente de le
+  masquer ; la primitive (ADR-0012) ne monte son panneau **que lorsqu'il est
+  ouvert**, et dans `<body>`. Les deux tests en échec lisaient la liste des
+  connexions **sans ouvrir le menu** — ce que les douze autres faisaient.
+- **Solution** : les trois assertions concernées ouvrent le menu d'abord, et
+  passent de « existe » à `should('be.visible')`. L'intention du test ne change
+  pas : la nouvelle connexion apparaît bien dans le sélecteur.
+- **À retenir** : un test qui lit le contenu d'un menu fermé teste le DOM de
+  `bootstrap-vue`, pas l'application. Même famille que G-024 et G-026, mais ce
+  n'est pas un sélecteur qu'il faut reprendre ici : c'est le scénario.
+- **Rencontré trois fois de plus** : au lot suivant sur une liste déroulante, et
+  deux fois dans `search.spec.js`, qui lisait les `<option>` de la liste des
+  attributs de tri **sans l'ouvrir** pour vérifier qu'un champ `text` n'y figure
+  pas. Les assertions ouvrent maintenant la liste et lisent les
+  `[role="option"]` ([#1064](https://github.com/kuzzleio/kuzzle-admin-console/pull/1064)).
+- **Le détail du deuxième cas** :
+  `cy.contains('v2.x')` trouvait une `<option>` que `b-form-select` rendait même
+  fermée — sur un environnement **malformé**, c'est-à-dire justement dépourvu de
+  version. L'assertion ne disait rien ; elle porte désormais sur l'état réel du
+  champ, le placeholder « Select version »
+  ([#1063](https://github.com/kuzzleio/kuzzle-admin-console/pull/1063)).
+- **Ref** : [#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)
+
+#### G-032 — `Object.freeze` sur un composant passé en prop `as` casse son rendu
+
+- **Contexte** : phase 2, reprise de `MainMenu.vue` et `EnvironmentsSwitch.vue`.
+  `DropdownMenuTrigger` prend le composant lui-même en prop `as` (ADR-0012), il
+  faut donc l'exposer au template. Le motif retenu depuis
+  `Collections/DropdownAction.vue` était `Button: Object.freeze(Button)` dans
+  `data()`, pour éviter de rendre l'objet réactif.
+- **Symptôme** : l'écran de connexion s'arrête net après « Connected to » —
+  ni sélecteur de connexion, ni formulaire. Aucune erreur visible à l'écran,
+  aucune spec en échec **avant** celle qui visait justement ces écrans. En
+  console : `[Vue warn]: Error in render: "TypeError: Cannot add property
+  _Ctor, object is not extensible"`, répété pour six composants.
+- **Cause** : Vue 2 met en cache le constructeur d'un composant **sur son objet
+  d'options**, dans `_Ctor`, la première fois qu'il le résout. Un objet gelé
+  refuse cette écriture, le rendu lève, et Vue abandonne **tout le sous-arbre**
+  sans rien afficher. Le gel est global : figer `Button` dans un composant le
+  fige pour toute l'application.
+- **Pourquoi ça ne s'était jamais vu** : le motif marchait par ordre de rendu.
+  Dans Data, un `<Button>` ordinaire était rendu **avant** que le composant
+  gelant ne s'initialise, si bien que `_Ctor` était déjà posé. Sur l'écran de
+  connexion, `EnvironmentSwitch` gèle avant tout rendu de `Button` — et
+  l'application tombe.
+- **Solution** : `markRaw()`, que Vue 2.7 fournit. Il pose `__v_skip` et
+  n'empêche aucune écriture. Les **huit** sites du motif sont repris, dont les
+  cinq déjà sur `4-dev` : le bug y dormait.
+- **À retenir** : ne jamais geler un objet que Vue doit instancier — composant,
+  options, `defineComponent`. Pour sortir une valeur de la réactivité,
+  `markRaw` ; `Object.freeze` n'est pas un substitut. Et un rendu qui s'arrête
+  au milieu d'un écran, sans erreur affichée, se diagnostique dans la console
+  du navigateur, pas dans le diff.
+- **Ref** : [#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)
+
+#### G-030 — Sans preflight, un `<ul>` garde ses puces et son retrait
+
+- **Contexte** : phase 2, reprise des trois listes de Security. `<b-list-group>`
+  remplacé par un `<ul>` porteur d'utilitaires Tailwind.
+- **Symptôme** : chaque ligne de la liste s'affiche précédée d'une puce noire,
+  et la liste entière est décalée de 40 px vers la droite. Aucune spec ne le
+  voit : les `data-cy` sont au bon endroit, le contenu est le bon.
+- **Cause** : ADR-0008 désactive le preflight de Tailwind pour ne pas casser
+  Bootstrap. Or c'est le preflight qui remet `list-style: none` et
+  `padding: 0` sur `ul`. Sans lui, la feuille de style par défaut du navigateur
+  s'applique — `list-style: disc` et `padding-inline-start: 40px`. Même famille
+  que G-021 (`<button>` sans fond déclaré) : ce que le preflight normalisait,
+  il faut le demander.
+- **Solution** : `tw:list-none tw:pl-0` sur chaque `<ul>` rendu par nos soins.
+- **À retenir** : la liste des éléments que le preflight normalise est la liste
+  des surprises à venir. Les prochaines vraisemblables : `ol`, `blockquote`,
+  `fieldset`, `table` — à vérifier au premier usage, pas après.
+- **Ref** : [#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)
+
+#### G-031 — Une primitive réutilisée d'une branche `v-if` à l'autre garde les classes de la précédente
+
+- **Contexte** : phase 2, `Security/Roles/List.vue`. Le composant rend
+  `<slot name="emptySet">` tant que la liste est vide, et sa propre `<Card>`
+  dès que les documents arrivent.
+- **Symptôme** : la liste s'affiche centrée et large de 400 px au milieu d'une
+  carte qui en fait 1 070. Mesuré dans le navigateur, le `CardContent` porte
+  `tw:flex tw:flex-col tw:items-center tw:text-center` — trois classes que ce
+  fichier **n'écrit nulle part**. Elles viennent de l'état vide, défini dans
+  `Roles/Page.vue`, qui n'est plus rendu.
+- **Cause** : les deux branches occupent la même position dans la liste
+  d'enfants, et rendent toutes deux une `Card`. Sans `key`, Vue réutilise
+  l'instance plutôt que de la recréer, et la `class` statique de la branche
+  précédente reste attachée. Le premier rendu passe toujours par l'état vide —
+  `totalDocuments` vaut 0 avant la réponse du backend — donc **le cas se
+  produit systématiquement**, jamais au premier coup d'œil sur le code.
+- **Solution** : une `key` distincte sur la branche liste (`<Card key="list">`).
+  Vérifié en mesurant `getComputedStyle` avant et après : `text-align` repasse
+  de `center` à `left`, et l'élément de liste de 257 px à 1 018 px.
+- **À retenir** : deux branches d'un `v-if` qui rendent **la même primitive**
+  doivent porter des `key` distinctes. Le symptôme n'est pas une erreur, c'est
+  une mise en page qui a l'air « presque bien » — et aucune spec ne le verra,
+  puisque le DOM et les `data-cy` sont corrects. C'est le cas d'école du point 4
+  de la procédure de reprise : le rendu se regarde.
+- **Ref** : [#1060](https://github.com/kuzzleio/kuzzle-admin-console/pull/1060)
+
+#### G-029 — `grep` dit qu'un composant est utilisé, alors que rien ne l'atteint
+
+- **Contexte** : phase 2, avant le lot Security. Vérification de routine avant
+  de reprendre `Security/Roles/List.vue` et ses voisins.
+- **Symptôme** : `grep -rn "CrudlDocument" src` retourne six lignes, dont deux
+  `import CrudlDocument from './CrudlDocument.vue'`. Le composant a l'air
+  vivant. Il ne l'est pas : ces deux imports sont écrits dans deux **autres**
+  répertoires et résolvent vers deux autres fichiers, eux-mêmes importés par
+  personne.
+- **Cause** : `grep` répond à « ce nom est écrit quelque part », pas à « ce
+  fichier est dans le bundle ». Trois pièges se cumulent : l'import relatif qui
+  résout ailleurs que là où on croit, l'importeur qui est lui-même mort, et le
+  fichier de routes que `routes/index.ts` n'importe pas (c'est le cas des
+  quatre composants `Error/`). Le build ne dit rien non plus : Vite ne résout
+  que ce qu'on lui demande, si bien que `Security/Common/List.vue` a pu importer
+  un fichier supprimé en **juin 2017** sans que rien n'échoue en neuf ans.
+- **Solution** : `npm run check:unreachable`, la fermeture transitive depuis
+  `main.ts` et `App.vue`. 27 composants et 3 modules supprimés, contrôle rendu
+  bloquant dans l'action composite `lint`
+  ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)).
+- **À retenir** : avant de reprendre un composant, la question n'est pas « qui
+  le nomme ? » mais « quel chemin d'imports y mène depuis `main.ts` ? ». Un
+  composant qui a été relinté et migré à Pinia récemment n'est pas pour autant
+  vivant : les commits de balayage touchent les fichiers morts comme les autres.
+- **Ref** : ADR-0016
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -1478,3 +1832,6 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-21 | `Pagination` à la main en huit pièces, composition partagée dans `Common/` | [ADR-0013](adr/0013-primitive-pagination-en-vue-2.md) |
 | 2026-09-21 | `Select` à la main en neuf pièces, panneau flottant extrait en mixin partagé | [ADR-0014](adr/0014-primitive-select-en-vue-2.md) |
 | 2026-09-21 | Pas de primitive `Calendar` : types natifs `date` et `time` pour le seul champ date | [ADR-0015](adr/0015-pas-de-primitive-calendar.md) |
+| 2026-09-21 | Supprimer le code non atteignable, et rendre le contrôle bloquant dans la CI | [ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md) |
+| 2026-09-21 | `Tabs` à la main, pilotée par valeur, panneau caché démonté | [ADR-0017](adr/0017-primitive-tabs-en-vue-2.md) |
+| 2026-09-21 | Les panneaux flottants passent au-dessus de `Dialog` (1035) | [ADR-0018](adr/0018-panneaux-flottants-au-dessus-des-modales.md) |

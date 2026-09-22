@@ -39,8 +39,9 @@ import { selectContext } from './context';
  * Le panneau ne piège pas le focus, pour la même raison que le menu : il n'est
  * pas modal, et `Tab` le ferme en rendant la main au reste de la page.
  *
- * `z-index` à 1020, comme le menu : sous `Dialog` (1030) et sous la bande
- * modale de Bootstrap.
+ * `z-index` à 1035, comme le menu : **au-dessus** de `Dialog` (1030) et sous
+ * la bande modale de Bootstrap (`.modal-backdrop` 1040). Il valait 1020
+ * jusqu'à ce qu'un `Select` soit monté dans une modale — voir ADR-0018.
  */
 const ITEM_SELECTOR = '[role="option"]';
 
@@ -51,7 +52,7 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:z-1020 tw:min-w-32 tw:max-h-96 tw:overflow-y-auto tw:rounded-md',
+        'tw:z-1035 tw:min-w-32 tw:max-h-96 tw:overflow-y-auto tw:rounded-md',
         'tw:border tw:border-border tw:bg-popover tw:text-popover-foreground',
         'tw:p-1 tw:shadow-md tw:outline-none',
       );

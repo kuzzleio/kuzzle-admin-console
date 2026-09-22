@@ -1,5 +1,5 @@
 name: Lint
-description: Run ESLint
+description: Run ESLint and the unreachable-modules check
 runs:
   using: "composite"
   steps:
@@ -7,4 +7,7 @@ runs:
       shell: bash
 
     - run: npm run test:lint
+      shell: bash
+
+    - run: npm run check:unreachable
       shell: bash

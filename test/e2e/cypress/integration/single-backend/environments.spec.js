@@ -25,11 +25,16 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+    cy.selectOption(
+      '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
     )
     cy.get('[data-cy="Environment-SubmitButton"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
+    // La primitive `DropdownMenu` ne rend son panneau que lorsqu'il est
+    // ouvert, là où `b-dropdown` gardait ses éléments dans le DOM en
+    // permanence : la liste des connexions se lit menu ouvert.
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`).should('be.visible')
   })
 
   it('Should not be able to create an environment with the same name of an existing one', () => {
@@ -58,7 +63,8 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+    cy.selectOption(
+      '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
     )
     cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
@@ -163,7 +169,8 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+    cy.selectOption(
+      '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
     )
     cy.get('[data-cy="EnvColor--green"]')
@@ -226,7 +233,8 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('unreachable-host', {
       force: true
     })
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+    cy.selectOption(
+      '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
     )
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').click()
@@ -277,9 +285,13 @@ describe('Environments', function() {
     cy.get('[data-cy="EnvironmentSwitch-env_malformedEnv"]').click()
 
     cy.contains('Update Connection')
-    cy.get('[data-cy="CreateEnvironment-backendVersion"]').should($select => {
-      expect($select.attr('class')).to.contain('is-invalid')
-    })
+    // `is-invalid` était une classe Bootstrap posée par `b-form-select` ;
+    // la primitive `Select` déclare l'état par `aria-invalid` (G-024).
+    cy.get('[data-cy="CreateEnvironment-backendVersion"]').should(
+      'have.attr',
+      'aria-invalid',
+      'true'
+    )
   })
 
   it('Should display a toast when the backend goes down and hide it when the backend goes up again', { browser: '!firefox' }, () => {
@@ -302,7 +314,8 @@ describe('Environments', function() {
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()
     cy.get(`[data-cy="EnvironmentSwitch-env_valid-edit"]`).click()
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+    cy.selectOption(
+      '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
     )
     cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
@@ -329,9 +342,17 @@ describe('Environments', function() {
     sessionStorage.setItem('currentEnv', envName)
     cy.visit('/')
     cy.contains('Edit a Connection')
-    cy.contains('v2.x')
+    // `cy.contains('v2.x')` trouvait une <option> que `b-form-select` rendait
+    // même fermée : l'environnement est malformé, il n'a justement pas de
+    // version. L'assertion porte maintenant sur l'état réel du champ — aucune
+    // version choisie, donc le placeholder (G-033).
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').should(
+      'contain',
+      'Select version'
+    )
     cy.url().should('contain', `/#/edit-connection/${envName}`)
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+    cy.selectOption(
+      '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
     )
     cy.get('[data-cy=Environment-SubmitButton]').click()
@@ -347,7 +368,8 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+    cy.selectOption(
+      '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
     )
     cy.get('[data-cy="EnvColor--green"]')
@@ -441,14 +463,15 @@ describe('Import and export environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+    cy.selectOption(
+      '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
     )
     cy.get('[data-cy="Environment-SubmitButton"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
 
     cy.url().should('contain', 'login')
     cy.get(`[data-cy="EnvironmentSwitch"]`).click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`).should('be.visible')
     cy.get(`[data-cy="EnvironmentSwitch-newConnectionBtn"]`).click()
 
     cy.get('[data-cy="CreateEnvironment-name"]').type(secondEnvName, {
@@ -457,11 +480,13 @@ describe('Import and export environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+    cy.selectOption(
+      '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
     )
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(secondEnvName)}"]`)
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(secondEnvName)}"]`).should('be.visible')
 
     // test filename
     cy.get('[data-cy="export-environments"]').should(

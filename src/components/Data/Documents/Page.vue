@@ -235,6 +235,7 @@
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import debounce from 'lodash/debounce';
 import defaults from 'lodash/defaults';
 import get from 'lodash/get';
@@ -329,9 +330,11 @@ export default {
   data() {
     return {
       ES_RESULT_WINDOW_LIMIT,
-      // Le composant passé à `as` n'a pas à être réactif : il est rangé hors
-      // de `data()` réactive par `Object.freeze` faute de `markRaw` en Vue 2.
-      Button: Object.freeze(Button),
+      // Le composant passé à `as` n'a pas à être réactif. `markRaw` — que
+      // Vue 2.7 fournit — et non `Object.freeze` : Vue met en cache le
+      // constructeur sur les options du composant, et un objet gelé le lui
+      // interdit (G-032).
+      Button: markRaw(Button),
       searchQuery: null,
       subscribeRoomId: null,
       isFetching: false,

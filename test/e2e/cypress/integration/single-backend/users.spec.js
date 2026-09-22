@@ -68,7 +68,7 @@ describe('Users', function() {
     cy.contains(kuids[1])
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
-    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('name')
+    cy.selectOption('[data-cy="BasicFilter-attributeSelect--0.0"]', 'name')
     cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(kuids[1])
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.contains(kuids[1])
@@ -313,7 +313,7 @@ describe('Users', function() {
 
     cy.location('hash').should('eq', '#/security/users/create')
 
-    cy.get('[data-cy=UserProfileList-select]').select('default')
+    cy.selectOption('[data-cy=UserProfileList-select]', 'default')
     cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should(
       'not.be',
       'visible'
@@ -367,7 +367,7 @@ describe('Users', function() {
 
     cy.visit(`/#/security/users/create`)
     cy.get('[data-cy=UserBasic-kuid]').type(kuid)
-    cy.get('[data-cy="UserProfileList-select"]').select('admin')
+    cy.selectOption('[data-cy=UserProfileList-select]', 'admin')
 
     cy.get('[data-cy=CredentialsSelector-local-username]').type(
       `{selectall}${credentials.username}`
@@ -418,7 +418,7 @@ describe('Users', function() {
 
     cy.visit(`/#/security/users/create`)
 
-    cy.get('[data-cy="UserProfileList-select"]').select('admin')
+    cy.selectOption('[data-cy=UserProfileList-select]', 'admin')
     cy.get('[data-cy=CredentialsSelector-local-username]').type(
       `{selectall}${credentials.username}`
     )
@@ -468,7 +468,7 @@ describe('Users', function() {
     })
 
     cy.get('[data-cy=UserProfileList-default--delete]').click()
-    cy.get('[data-cy="UserProfileList-select"]').select('admin')
+    cy.selectOption('[data-cy=UserProfileList-select]', 'admin')
 
     cy.get('[data-cy=CredentialsSelector-local-username]').type(
       `{selectall}${newCredentials.username}`
@@ -648,7 +648,7 @@ describe('Users', function() {
     cy.visit(`/#/security/users/create`)
 
     cy.get('[data-cy=UserBasic-kuid]').type('without-credentials')
-    cy.get('[data-cy="UserProfileList-select"]').select('admin')
+    cy.selectOption('[data-cy=UserProfileList-select]', 'admin')
     cy.get('[data-cy=CredentialsSelector-local-username]').clear()
     cy.get('[data-cy=CredentialsSelector-local-password]').clear()
     cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })

@@ -1,124 +1,116 @@
 <template>
   <div class="CreateEnvironment environment">
-    <b-form>
-      <b-form-group
-        id="env-name"
-        data-cy="CreateEnvironment-name--group"
-        description="A friendly name for the connection"
-        label="Connection name"
-        label-cols-sm="4"
-        label-cols-lg="3"
-        label-for="input-env-name"
-        :invalid-feedback="nameFeedback"
-      >
-        <b-form-input
+    <form class="tw:flex tw:flex-col tw:gap-4">
+      <FormItem id="env-name" data-cy="CreateEnvironment-name--group">
+        <Label for="input-env-name">Connection name</Label>
+        <Input
           id="input-env-name"
           v-model="v$.environment.name.$model"
+          :aria-invalid="nameFeedback ? 'true' : undefined"
           data-cy="CreateEnvironment-name"
-          :state="validateState('name')"
         />
-      </b-form-group>
+        <FormDescription>A friendly name for the connection</FormDescription>
+        <FormMessage v-if="nameFeedback">{{ nameFeedback }}</FormMessage>
+      </FormItem>
 
-      <b-form-group
-        id="env-host"
-        data-cy="CreateEnvironment-host--group"
-        description="The host where your Kuzzle is running"
-        label="Hostname"
-        label-cols-sm="4"
-        label-cols-lg="3"
-        label-for="input-env-host"
-        :invalid-feedback="hostFeedback"
-      >
-        <b-form-input
+      <FormItem id="env-host" data-cy="CreateEnvironment-host--group">
+        <Label for="input-env-host">Hostname</Label>
+        <Input
           id="input-env-host"
           v-model="v$.environment.host.$model"
+          :aria-invalid="hostFeedback ? 'true' : undefined"
           data-cy="CreateEnvironment-host"
-          :state="validateState('host')"
         />
-      </b-form-group>
+        <FormDescription>The host where your Kuzzle is running</FormDescription>
+        <FormMessage v-if="hostFeedback">{{ hostFeedback }}</FormMessage>
+      </FormItem>
 
-      <b-form-group
-        id="env-port"
-        data-cy="CreateEnvironment-port--group"
-        label="Port"
-        description="The port where your Kuzzle is listening for connections"
-        label-cols-sm="4"
-        label-cols-lg="3"
-        label-for="input-env-port"
-        :invalid-feedback="portFeedback"
-      >
-        <b-form-input
+      <FormItem id="env-port" data-cy="CreateEnvironment-port--group">
+        <Label for="input-env-port">Port</Label>
+        <Input
           id="input-env-port"
           v-model="v$.environment.port.$model"
+          :aria-invalid="portFeedback ? 'true' : undefined"
           data-cy="CreateEnvironment-port"
           type="number"
-          :state="validateState('port')"
         />
-      </b-form-group>
+        <FormDescription>The port where your Kuzzle is listening for connections</FormDescription>
+        <FormMessage v-if="portFeedback">{{ portFeedback }}</FormMessage>
+      </FormItem>
 
-      <b-form-group
-        label="Use SSL"
-        label-for="env-ssl"
-        label-cols-sm="4"
-        label-cols-lg="3"
-        :description="sslFeedback"
-      >
-        <b-form-checkbox
-          id="env-ssl"
-          v-model="environment.ssl"
-          name="env-use-ssl"
-          :value="true"
-          :unchecked-value="false"
-        />
-        <b-form-invalid-feedback id="env-ssl-feedback">
-          <i class="fa fa-exclamation-triangle" aria-hidden="true" />
-        </b-form-invalid-feedback>
-      </b-form-group>
+      <FormItem>
+        <div class="tw:flex tw:items-center tw:gap-2">
+          <Checkbox id="env-ssl" v-model="environment.ssl" name="env-use-ssl" />
+          <Label for="env-ssl">Use SSL</Label>
+        </div>
+        <!--
+          `b-form-invalid-feedback` ne rendait qu'une icône d'alerte, sans
+          texte et sans condition d'affichage : elle n'a jamais rien dit.
+          L'avertissement, lui, est le `description` — il reste.
+        -->
+        <FormDescription v-if="sslFeedback">{{ sslFeedback }}</FormDescription>
+      </FormItem>
 
-      <b-form-group
-        data-cy="CreateEnvironment-backendVersion--group"
-        label="Kuzzle version"
-        label-cols-sm="4"
-        label-cols-lg="3"
-        :invalid-feedback="versionFeedback"
-      >
-        <b-form-select
-          v-model="v$.environment.backendMajorVersion.$model"
-          data-cy="CreateEnvironment-backendVersion"
-          :state="validateState('backendMajorVersion')"
-          :options="majorVersions"
-        />
-      </b-form-group>
+      <FormItem data-cy="CreateEnvironment-backendVersion--group">
+        <Label id="env-version-label">Kuzzle version</Label>
+        <Select
+          :model-value="v$.environment.backendMajorVersion.$model"
+          @update:modelValue="v$.environment.backendMajorVersion.$model = $event"
+        >
+          <SelectTrigger
+            aria-labelledby="env-version-label"
+            :aria-invalid="versionFeedback ? 'true' : undefined"
+            data-cy="CreateEnvironment-backendVersion"
+          >
+            <!--
+              Le libellé est passé dans le slot : `SelectValue` ne connaît les
+              libellés qu'une fois la liste ouverte, puisque les `SelectItem`
+              s'enregistrent à leur montage. Ici la valeur (`2`) et le libellé
+              (`v2.x`) diffèrent, et le champ affichait « 2 » tant que la liste
+              n'avait pas été déployée une première fois. Le cas est prévu par
+              la documentation de la primitive (ADR-0014).
+            -->
+            <SelectValue placeholder="Select version">{{ versionLabel }}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="version of majorVersions" :key="version.value" :value="version.value"
+              >{{ version.text }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <FormMessage v-if="versionFeedback">{{ versionFeedback }}</FormMessage>
+      </FormItem>
 
-      <b-row>
-        <b-col sm="4" lg="3">
+      <div class="tw:flex tw:flex-col tw:gap-3 tw:sm:flex-row">
+        <div class="tw:sm:w-1/3">
           <div>Pick a color</div>
-          <small class="text-secondary"
+          <small class="tw:text-secondary"
             >It will be applied to the header navbar so you can distinguish this connection from
             other ones.</small
           >
-        </b-col>
-        <b-col>
-          <b-row>
-            <b-col v-for="(color, index) in colors" :key="color" sm="6" md="3">
-              <div
-                :class="`CreateEnvironment-box EnvColor--${color}`"
-                :data-cy="`EnvColor--${color}`"
-                @click="selectColor(index)"
-              >
-                <span v-if="environment.color === color">Selected</span>
-              </div>
-            </b-col>
-            <span
-              v-if="colorState === false"
-              class="CreateEnvironment-box-feedback text-danger ml-2"
+        </div>
+        <div class="tw:flex-1">
+          <div class="tw:grid tw:grid-cols-2 tw:gap-2 tw:md:grid-cols-4">
+            <button
+              v-for="(color, index) in colors"
+              :key="color"
+              :aria-label="`Pick the color ${color}`"
+              :aria-pressed="String(environment.color === color)"
+              class="tw:min-h-10 tw:cursor-pointer tw:rounded-md tw:text-center tw:text-sm tw:uppercase tw:leading-10 tw:text-white"
+              :class="`CreateEnvironment-box EnvColor--${color}`"
+              :data-cy="`EnvColor--${color}`"
+              type="button"
+              @click="selectColor(index)"
             >
-              <small>You must select a color for this connection</small></span
-            >
-          </b-row>
-        </b-col>
-      </b-row>
-    </b-form>
+              <span v-if="environment.color === color">Selected</span>
+            </button>
+          </div>
+          <FormMessage v-if="colorState === false" class="tw:mt-2">
+            You must select a color for this connection
+          </FormMessage>
+        </div>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -126,6 +118,17 @@
 import { useVuelidate } from '@vuelidate/core';
 import { numeric, required, helpers } from '@vuelidate/validators';
 
+import { Checkbox } from '@/components/ui/checkbox';
+import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useKuzzleStore } from '@/stores';
 import { DEFAULT_COLOR, ENV_COLORS, NO_ADMIN_WARNING_HOSTS } from '@/utils';
 import { isValidHostname, notIncludeScheme } from '@/validators';
@@ -150,7 +153,19 @@ function nameIsUnique(value) {
 
 export default {
   name: 'CreateEnvironment',
-  components: {},
+  components: {
+    Checkbox,
+    FormDescription,
+    FormItem,
+    FormMessage,
+    Input,
+    Label,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  },
   // Forme objet plutôt que tableau : c'est ce qui permet à `vue-tsc` de
   // vérifier les sites d'appel depuis un composant repris en TypeScript.
   props: {
@@ -168,7 +183,6 @@ export default {
   data() {
     return {
       majorVersions: [
-        { value: null, text: 'Select version' },
         { value: 1, text: 'v1.x' },
         {
           value: 2,
@@ -263,6 +277,13 @@ export default {
 
       return '';
     },
+    versionLabel() {
+      const version = this.majorVersions.find(
+        (entry) => entry.value === this.environment.backendMajorVersion,
+      );
+
+      return version ? version.text : '';
+    },
     versionFeedback() {
       if (this.v$.environment.backendMajorVersion.$errors.length > 0) {
         return this.v$.environment.backendMajorVersion.$errors[0].$message;
@@ -298,11 +319,6 @@ export default {
     }
   },
   methods: {
-    validateState(fieldName) {
-      const { $dirty, $error } = this.v$.environment[fieldName];
-      const state = $dirty ? !$error : null;
-      return state;
-    },
     showValidationErrors() {
       this.v$.environment.$touch();
       Object.keys(this.v$.environment).forEach((field) => {
@@ -372,16 +388,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.CreateEnvironment-box {
-  margin-bottom: 10px;
-  color: #fff;
-  border-radius: 5px;
-  line-height: 40px;
-  min-height: 40px;
-  text-align: center;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-</style>
