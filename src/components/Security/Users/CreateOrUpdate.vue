@@ -1,5 +1,5 @@
 <template>
-  <div class="UserUpdate tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12">
+  <div class="UserUpdate mx-auto w-full max-w-6xl px-4 pb-12">
     <div class="UserUpdate--container">
       <headline v-if="!!id">
         Edit user - <span class="code">{{ $route.params.id }}</span>
@@ -10,14 +10,14 @@
 
       <Card>
         <CardContent>
-          <MainSpinner v-if="loading" class="tw:my-8" />
+          <MainSpinner v-if="loading" class="my-8" />
 
           <Tabs v-else v-model="activeTab">
             <TabsList>
               <TabsTrigger data-cy="UserUpdate-basicTab" value="basic">
                 <i
                   v-if="v$.$validationGroups.basic.$errors.length > 0"
-                  class="fas fa-exclamation-circle tw:text-destructive"
+                  class="fas fa-exclamation-circle text-destructive"
                   data-cy="UserUpdate-basicTab--dangerIcon"
                 />
                 Basic
@@ -25,14 +25,14 @@
               <TabsTrigger data-cy="UserUpdate-customTab" value="custom">
                 <i
                   v-if="v$.customContentValue.$errors.length > 0"
-                  class="fas fa-exclamation-circle tw:text-destructive"
+                  class="fas fa-exclamation-circle text-destructive"
                   data-cy="UserUpdate-customTab--dangerIcon"
                 />
                 Custom
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent class="tw:pt-4" value="basic">
+            <TabsContent class="pt-4" value="basic">
               <basic
                 :edit-kuid="!id"
                 :added-profiles="addedProfiles"
@@ -43,7 +43,7 @@
                 @profile-remove="onProfileRemoved"
               />
               <credentials-selector
-                class="tw:mt-4"
+                class="mt-4"
                 :credentials="credentials"
                 :strategies="strategies"
                 :credentials-mapping="credentialsMapping"
@@ -51,7 +51,7 @@
               />
             </TabsContent>
 
-            <TabsContent class="tw:pt-4" value="custom">
+            <TabsContent class="pt-4" value="custom">
               <custom-data
                 :mapping="customContentMapping"
                 :value="customContent"
@@ -61,7 +61,7 @@
           </Tabs>
         </CardContent>
 
-        <CardFooter class="tw:justify-end tw:gap-2">
+        <CardFooter class="justify-end gap-2">
           <Button tabindex="6" variant="outline" @click.prevent="cancel">Cancel</Button>
           <Button
             data-cy="UserUpdate-submit"

@@ -1,5 +1,5 @@
 <template>
-  <div class="IndexBranch tw:mt-2 tw:overflow-hidden tw:whitespace-nowrap">
+  <div class="IndexBranch mt-2 overflow-hidden whitespace-nowrap">
     <!--
       Le chevron était un `<i>` cliquable : invisible au clavier, et muet pour
       un lecteur d'écran. C'est un bouton, et il annonce l'état de la branche.
@@ -7,7 +7,7 @@
     <Button
       :aria-expanded="open ? 'true' : 'false'"
       :aria-label="`Collections of index ${index.name}`"
-      class="tw:size-5 tw:align-middle"
+      class="size-5 align-middle"
       :data-cy="`IndexBranch-toggle--${index.name}`"
       size="icon"
       variant="ghost"
@@ -15,18 +15,18 @@
     >
       <i
         aria-hidden="true"
-        class="fa fa-caret-right tw:text-muted-foreground tw:transition-transform tw:duration-200"
-        :class="{ 'tw:rotate-90': open }"
+        class="fa fa-caret-right text-muted-foreground transition-transform duration-200"
+        :class="{ 'rotate-90': open }"
       />
     </Button>
     <router-link
-      class="tw:mx-1 tw:truncate tw:px-1 tw:text-foreground"
+      class="mx-1 truncate px-1 text-foreground"
       :data-cy="`Treeview-item-index-link--${index.name}`"
-      :class="{ 'tw:font-bold': isIndexActive(index.name) }"
+      :class="{ 'font-bold': isIndexActive(index.name) }"
       :title="index.name"
       :to="{ name: 'Collections', params: { indexName: index.name } }"
     >
-      <i class="fa fa-database tw:mr-1 tw:text-muted-foreground" aria-hidden="true" />
+      <i class="fa fa-database mr-1 text-muted-foreground" aria-hidden="true" />
       <HighlightedSpan :value="index.name" :filter="filter" />
 
       <template v-if="index.collectionsCount !== undefined"
@@ -43,29 +43,29 @@
     -->
     <div
       v-if="collectionsFetched"
-      class="tw:grid tw:pl-6 tw:transition-[grid-template-rows] tw:duration-500 tw:ease-out"
-      :class="open ? 'tw:grid-rows-[1fr]' : 'tw:grid-rows-[0fr]'"
+      class="grid pl-6 transition-[grid-template-rows] duration-500 ease-out"
+      :class="open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
     >
-      <div class="tw:overflow-hidden">
+      <div class="overflow-hidden">
         <template v-if="orderedFilteredCollections.length">
           <div
             v-for="collection in orderedFilteredCollections"
             :key="`${collection.name}-${collection.type}`"
-            class="tw:mx-1 tw:mt-2 tw:truncate tw:px-1 tw:text-foreground"
+            class="mx-1 mt-2 truncate px-1 text-foreground"
             :class="{
-              'tw:font-bold': isCollectionActive(index.name, collection.name),
+              'font-bold': isCollectionActive(index.name, collection.name),
             }"
             :data-cy="`Treeview-item--${collection.name}`"
             :title="collection.name"
           >
             <template v-if="collection.isRealtime()">
               <i
-                class="fa fa-bolt tw:mr-2 tw:ml-1 tw:text-muted-foreground"
+                class="fa fa-bolt mr-2 ml-1 text-muted-foreground"
                 aria-hidden="true"
                 title="Volatile collection"
               />
               <router-link
-                class="tw:text-foreground"
+                class="text-foreground"
                 :to="{
                   name: 'WatchCollection',
                   params: {
@@ -79,12 +79,12 @@
             </template>
             <template v-else>
               <i
-                class="fa fa-th-list tw:mr-1 tw:text-muted-foreground"
+                class="fa fa-th-list mr-1 text-muted-foreground"
                 aria-hidden="true"
                 title="Persisted collection"
               />
               <router-link
-                class="tw:text-foreground"
+                class="text-foreground"
                 :to="{
                   name: 'DocumentList',
                   params: {
@@ -98,10 +98,10 @@
             </template>
           </div>
         </template>
-        <template v-else><span class="tw:text-muted-foreground">no collections</span></template>
+        <template v-else><span class="text-muted-foreground">no collections</span></template>
         <Button
           v-if="showMoreCollectionsDisplay"
-          class="tw:mx-1 tw:h-auto tw:px-1"
+          class="mx-1 h-auto px-1"
           size="sm"
           variant="link"
           @click="toggleShowMoreCollections"

@@ -1,8 +1,6 @@
 <template>
-  <div
-    class="CollectionUpdate tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
-  >
-    <div v-if="hasRights" class="tw:flex tw:h-full tw:flex-col">
+  <div class="CollectionUpdate mx-auto flex h-full w-full max-w-6xl flex-col px-4">
+    <div v-if="hasRights" class="flex h-full flex-col">
       <create-or-update
         v-if="index && collection"
         headline="Update collection"

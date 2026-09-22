@@ -1,7 +1,7 @@
 <template>
   <ResizablePanelGroup class="DataLayout" @resize="saveNewPaneSize">
     <ResizablePanel
-      class="DataLayout-sidebarWrapper tw:z-1 tw:h-full tw:min-w-[var(--sidebar-width)] tw:overflow-auto tw:bg-muted"
+      class="DataLayout-sidebarWrapper z-1 h-full min-w-[var(--sidebar-width)] overflow-auto bg-muted"
       :style="paneSize ? { width: paneSize } : undefined"
       data-cy="DataLayout-sidebarWrapper"
     >
@@ -11,17 +11,17 @@
       />
     </ResizablePanel>
     <ResizableHandle data-cy="sidebarResizer" label="Resize the index tree" />
-    <ResizablePanel class="DataLayout-contentWrapper tw:h-full tw:grow tw:overflow-auto tw:p-6">
+    <ResizablePanel class="DataLayout-contentWrapper h-full grow overflow-auto p-6">
       <!--
         `b-overlay` avec `opacity="0"` ne servait qu'à centrer une roue de
         chargement : son voile était transparent, et le contenu qu'il
         recouvrait n'était de toute façon pas rendu (`v-if="!loading"`).
       -->
-      <div v-if="loading" class="tw:flex tw:h-full tw:items-center tw:justify-center">
+      <div v-if="loading" class="flex h-full items-center justify-center">
         <Spinner size="lg" />
       </div>
       <template v-else>
-        <data-not-found v-if="dataNotFound" class="tw:mt-3" />
+        <data-not-found v-if="dataNotFound" class="mt-3" />
         <router-view
           @start-init="viewIsInitializing = true"
           @end-init="viewIsInitializing = false"

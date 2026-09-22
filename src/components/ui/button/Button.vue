@@ -24,31 +24,27 @@ import { classMerge } from '../class-merge';
  * `secondary` ne dirait rien ; `Alert` porte déjà la même variante pour la même
  * raison.
  *
- * Deux écarts, tous deux dus à Vue 2 et à la cohabitation avec Bootstrap :
+ * Un écart subsiste, dû à Vue 2 : pas de `asChild`, il repose sur `Primitive`
+ * de `reka-ui`, qui demande Vue 3. La prop `as` couvre le besoin courant
+ * (`as="a"`, `as="router-link"`).
  *
- * - pas de `asChild` : il repose sur `Primitive` de `reka-ui`, qui demande
- *   Vue 3. La prop `as` couvre le besoin courant (`as="a"`,
- *   `as="router-link"`) ;
- * - les classes portent le préfixe `tw:` (ADR-0008).
- *
- * Comme le preflight de Tailwind n'est pas chargé, le composant ne peut rien
- * supposer des styles par défaut du navigateur ni du reboot de Bootstrap : la
- * bordure, le fond, le rayon et le curseur sont posés explicitement.
+ * La bordure, le fond, le rayon et le curseur restent posés explicitement :
+ * le preflight ne les donne pas, il ne fait que normaliser.
  */
 export const buttonVariants = cva(
   [
-    'tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:shrink-0',
-    'tw:whitespace-nowrap tw:align-middle tw:appearance-none tw:cursor-pointer',
+    'inline-flex items-center justify-center gap-2 shrink-0',
+    'whitespace-nowrap align-middle appearance-none cursor-pointer',
     // `bg-transparent` dans la base, pas seulement dans les variantes qui n'ont
     // pas de fond : sans preflight, un `<button>` garde le fond gris par défaut
     // du navigateur, et `ghost` comme `link` s'affichaient en gris (G-021). Les
     // variantes qui posent un fond gagnent, `tailwind-merge` les départage.
-    'tw:bg-transparent',
-    'tw:border tw:border-transparent tw:rounded-md',
-    'tw:font-sans tw:text-sm tw:font-medium tw:leading-none',
-    'tw:transition-colors tw:outline-none',
-    'tw:focus-visible:ring-2 tw:focus-visible:ring-ring tw:focus-visible:ring-offset-2 tw:focus-visible:ring-offset-background',
-    'tw:disabled:pointer-events-none tw:disabled:opacity-50',
+    'bg-transparent',
+    'border border-transparent rounded-md',
+    'font-sans text-sm font-medium leading-none',
+    'transition-colors outline-none',
+    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'disabled:pointer-events-none disabled:opacity-50',
   ].join(' '),
   {
     defaultVariants: {
@@ -57,19 +53,19 @@ export const buttonVariants = cva(
     },
     variants: {
       size: {
-        default: 'tw:h-9 tw:px-4 tw:py-2',
-        icon: 'tw:h-9 tw:w-9 tw:p-0',
-        lg: 'tw:h-10 tw:px-6',
-        sm: 'tw:h-8 tw:px-3 tw:text-xs',
+        default: 'h-9 px-4 py-2',
+        icon: 'h-9 w-9 p-0',
+        lg: 'h-10 px-6',
+        sm: 'h-8 px-3 text-xs',
       },
       variant: {
-        default: 'tw:bg-primary tw:text-primary-foreground tw:hover:bg-primary/90',
-        destructive: 'tw:bg-destructive tw:text-destructive-foreground tw:hover:bg-destructive/90',
-        ghost: 'tw:text-foreground tw:hover:bg-muted tw:hover:text-foreground',
-        link: 'tw:text-secondary tw:underline-offset-4 tw:hover:underline',
-        outline: 'tw:border-input tw:bg-background tw:text-foreground tw:hover:bg-muted',
-        secondary: 'tw:bg-secondary tw:text-secondary-foreground tw:hover:bg-secondary/80',
-        warning: 'tw:bg-accent tw:text-accent-foreground tw:hover:bg-accent/90',
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+        ghost: 'text-foreground hover:bg-muted hover:text-foreground',
+        link: 'text-secondary underline-offset-4 hover:underline',
+        outline: 'border-input bg-background text-foreground hover:bg-muted',
+        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        warning: 'bg-accent text-accent-foreground hover:bg-accent/90',
       },
     },
   },

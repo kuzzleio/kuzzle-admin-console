@@ -14,7 +14,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:truncate');
+      return this.mergeClasses('truncate');
     },
   },
 });

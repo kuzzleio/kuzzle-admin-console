@@ -11,10 +11,10 @@
       (ADR-0017), et le bandeau reste un bandeau.
     -->
     <Tabs v-model="complexFiltersSelectedTab">
-      <div class="tw:relative tw:border-b tw:border-border tw:px-4 tw:pt-3">
+      <div class="relative border-b border-border px-4 pt-3">
         <quick-filter
           v-if="!advancedFiltersVisible"
-          class="tw:grow"
+          class="grow"
           submit-button-label="Quick Search"
           :action-buttons-visible="actionButtonsVisible"
           :advanced-filters-visible="advancedFiltersVisible"
@@ -31,7 +31,7 @@
         />
 
         <template v-if="advancedFiltersVisible">
-          <TabsList class="tw:border-b-0 tw:pr-24">
+          <TabsList class="border-b-0 pr-24">
             <TabsTrigger data-cy="Filters-basicTab" value="basic">
               <i class="fas fa-filter" aria-hidden="true" />&nbsp;Advanced
             </TabsTrigger>
@@ -50,10 +50,10 @@
             Les deux icônes du bandeau étaient des `<i>` cliquables : ni
             atteignables au clavier, ni annoncées.
           -->
-          <div class="tw:absolute tw:right-4 tw:top-3 tw:flex tw:items-center tw:gap-2">
+          <div class="absolute right-4 top-3 flex items-center gap-2">
             <Button
               :aria-label="isFullscreen ? 'Leave fullscreen' : 'Toggle fullscreen'"
-              class="tw:text-muted-foreground"
+              class="text-muted-foreground"
               data-cy="Filters-fullscreen"
               size="icon"
               :title="isFullscreen ? 'Leave fullscreen' : 'Toggle fullscreen'"
@@ -68,7 +68,7 @@
             </Button>
             <Button
               aria-label="Close the filters"
-              class="tw:text-muted-foreground"
+              class="text-muted-foreground"
               data-cy="Filters-close"
               size="icon"
               title="Close the filters"
@@ -82,7 +82,7 @@
       </div>
 
       <template v-if="advancedFiltersVisible">
-        <TabsContent class="tw:p-4" value="raw">
+        <TabsContent class="p-4" value="raw">
           <raw-filter
             :action-buttons-visible="actionButtonsVisible"
             :current-filter="currentFilter"
@@ -92,7 +92,7 @@
           />
         </TabsContent>
 
-        <TabsContent class="tw:p-4" value="basic">
+        <TabsContent class="p-4" value="basic">
           <basic-filter
             :action-buttons-visible="actionButtonsVisible"
             :available-operands="availableOperands"
@@ -106,11 +106,11 @@
           />
         </TabsContent>
 
-        <TabsContent class="tw:p-4" value="history">
+        <TabsContent class="p-4" value="history">
           <history-filter :index="index" :collection="collection" @submit="onSubmitFromHistory" />
         </TabsContent>
 
-        <TabsContent class="tw:p-4" value="favorite">
+        <TabsContent class="p-4" value="favorite">
           <favorite-filters
             :index="index"
             :collection="collection"

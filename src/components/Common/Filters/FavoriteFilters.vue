@@ -13,8 +13,8 @@
       />
     </template>
     <template v-else>
-      <h4 class="tw:text-center tw:text-secondary">You don't have any favorite filters.</h4>
-      <p class="tw:text-center tw:text-secondary">
+      <h4 class="text-center text-secondary">You don't have any favorite filters.</h4>
+      <p class="text-center text-secondary">
         You can add more by browsing the history of your filters.
       </p>
     </template>

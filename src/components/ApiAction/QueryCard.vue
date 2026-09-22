@@ -1,23 +1,23 @@
 <template>
-  <div class="tw:flex tw:h-full tw:flex-col tw:gap-3">
-    <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+  <div class="flex h-full flex-col gap-3">
+    <div class="flex flex-wrap items-center gap-2">
       <!--
         `b-tooltip` disait « The query is invalid. » sur trois cibles à la
         fois ; l'attribut `title` le dit sur les champs eux-mêmes, et le
         navigateur l'affiche sans directive.
       -->
       <div
-        class="tw:flex tw:min-w-60 tw:flex-1 tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
+        class="flex min-w-60 flex-1 items-stretch overflow-hidden rounded-md border border-input"
       >
         <label
-          class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:font-sans tw:text-sm tw:text-muted-foreground"
+          class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"
           :for="`controller-input-${tabIdx}`"
           >Controller</label
         >
         <Input
           :id="`controller-input-${tabIdx}`"
           v-model="editedQuery.controller"
-          class="tw:rounded-none tw:border-0"
+          class="rounded-none border-0"
           :data-cy="`api-actions-controller-input-${tabIdx}`"
           :disabled="!isQueryValid(jsonQuery)"
           list="controllersList"
@@ -26,7 +26,7 @@
         />
         <Button
           aria-label="Clear the controller"
-          class="tw:rounded-none"
+          class="rounded-none"
           size="icon"
           variant="ghost"
           @click="editedQuery.controller = ''"
@@ -41,17 +41,17 @@
       </datalist>
 
       <div
-        class="tw:flex tw:min-w-60 tw:flex-1 tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
+        class="flex min-w-60 flex-1 items-stretch overflow-hidden rounded-md border border-input"
       >
         <label
-          class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:font-sans tw:text-sm tw:text-muted-foreground"
+          class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"
           :for="`action-input-${tabIdx}`"
           >Action</label
         >
         <Input
           :id="`action-input-${tabIdx}`"
           v-model="editedQuery.action"
-          class="tw:rounded-none tw:border-0"
+          class="rounded-none border-0"
           :data-cy="`api-actions-action-input-${tabIdx}`"
           :disabled="!isQueryValid(jsonQuery)"
           list="actionsList"
@@ -60,7 +60,7 @@
         />
         <Button
           aria-label="Clear the action"
-          class="tw:rounded-none"
+          class="rounded-none"
           size="icon"
           variant="ghost"
           @click="editedQuery.action = ''"
@@ -86,10 +86,10 @@
         >
           <i class="fas fa-question-circle fa-lg" aria-hidden="true" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" class="tw:max-w-sm tw:p-3 tw:text-sm">
+        <DropdownMenuContent align="start" class="max-w-sm p-3 text-sm">
           Here, you'll be able to perform custom
           <a
-            class="tw:underline"
+            class="underline"
             href="https://docs.kuzzle.io/sdk/js/7/core-classes/kuzzle/query/"
             rel="noopener"
             target="_blank"
@@ -97,7 +97,7 @@
           /></a>
           to Kuzzle following the
           <a
-            class="tw:underline"
+            class="underline"
             href="https://docs.kuzzle.io/core/2/api/payloads/request/"
             rel="noopener"
             target="_blank"
@@ -106,7 +106,7 @@
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div class="tw:ml-auto tw:flex tw:gap-2">
+      <div class="ml-auto flex gap-2">
         <Button
           :data-cy="`api-actions-run-button-${tabIdx}`"
           :disabled="!isQueryValid(jsonQuery)"
@@ -129,18 +129,18 @@
       </div>
     </div>
 
-    <ResizablePanelGroup class="QueryLayout tw:min-h-0 tw:flex-1" @resize="onPaneResize">
+    <ResizablePanelGroup class="QueryLayout min-h-0 flex-1" @resize="onPaneResize">
       <ResizablePanel
-        class="QueryLayout-sidebarWrapper tw:h-full tw:overflow-auto"
+        class="QueryLayout-sidebarWrapper h-full overflow-auto"
         :style="paneWidth ? { width: paneWidth } : { width: '50%' }"
         data-cy="QueryLayout-sidebarWrapper"
       >
-        <Card class="tw:h-full">
-          <CardContent class="tw:flex tw:h-full tw:min-h-0 tw:flex-col">
+        <Card class="h-full">
+          <CardContent class="flex h-full min-h-0 flex-col">
             <json-editor
               :id="`queryEditorWrapper-${tabIdx}`"
               :ref="`queryEditorWrapper-${tabIdx}`"
-              class="tw:min-h-0 tw:flex-1"
+              class="min-h-0 flex-1"
               :content="jsonQuery"
               :data-cy="`api-actions-query-JSONEditor-${tabIdx}`"
               @change="queryBodyChange"
@@ -151,7 +151,7 @@
 
       <ResizableHandle data-cy="sidebarResizer" label="Resize the query editor" />
 
-      <ResizablePanel class="QueryLayout-contentWrapper tw:h-full tw:flex-1 tw:overflow-auto">
+      <ResizablePanel class="QueryLayout-contentWrapper h-full flex-1 overflow-auto">
         <ResponseCard :tab-idx="tabIdx" :response="response" />
       </ResizablePanel>
     </ResizablePanelGroup>

@@ -1,6 +1,6 @@
 <template>
   <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="tw:max-w-2xl" labelled-by="delete-collection-title">
+    <DialogContent class="max-w-2xl" labelled-by="delete-collection-title">
       <DialogHeader>
         <DialogTitle id="delete-collection-title">
           <template v-if="collection">
@@ -23,7 +23,7 @@
           />
           <FormDescription>This operation is NOT reversible</FormDescription>
         </FormItem>
-        <Alert v-if="error" class="tw:mt-4" variant="destructive">{{ error }}</Alert>
+        <Alert v-if="error" class="mt-4" variant="destructive">{{ error }}</Alert>
       </form>
 
       <DialogFooter>

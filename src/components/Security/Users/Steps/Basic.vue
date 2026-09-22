@@ -1,5 +1,5 @@
 <template>
-  <form class="wrapper tw:flex tw:flex-col tw:gap-4">
+  <form class="wrapper flex flex-col gap-4">
     <FormItem data-cy="UserBasic-kuid">
       <Label for="custom-kuid"><strong>KUID</strong></Label>
       <Input

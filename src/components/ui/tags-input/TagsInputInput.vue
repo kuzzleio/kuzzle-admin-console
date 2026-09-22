@@ -47,10 +47,10 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:min-w-32 tw:flex-1 tw:appearance-none tw:border-0 tw:bg-transparent',
-        'tw:font-sans tw:text-sm tw:text-foreground tw:outline-none',
-        'tw:placeholder:text-muted-foreground',
-        'tw:disabled:cursor-not-allowed',
+        'min-w-32 flex-1 appearance-none border-0 bg-transparent',
+        'font-sans text-sm text-foreground outline-none',
+        'placeholder:text-muted-foreground',
+        'disabled:cursor-not-allowed',
       );
     },
   },

@@ -16,7 +16,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:flex tw:items-center tw:gap-2 tw:px-6');
+      return this.mergeClasses('flex items-center gap-2 px-6');
     },
   },
 });

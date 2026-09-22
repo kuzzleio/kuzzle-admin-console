@@ -1,10 +1,10 @@
 <template>
-  <div class="IndexesPage tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12" data-cy="IndexesPage">
-    <div class="tw:flex tw:flex-wrap tw:items-start tw:justify-between tw:gap-4">
+  <div class="IndexesPage mx-auto w-full max-w-6xl px-4 pb-12" data-cy="IndexesPage">
+    <div class="flex flex-wrap items-start justify-between gap-4">
       <headline>Indexes</headline>
       <Button
         v-if="canCreateIndex"
-        class="tw:mt-3"
+        class="mt-3"
         data-cy="IndexesPage-createBtn"
         @click.prevent="openCreateModal"
       >
@@ -15,8 +15,8 @@
 
     <list-not-allowed v-if="!canSearchIndex" />
     <template v-else>
-      <div class="tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2">
-        <span class="tw:flex-1 tw:text-sm tw:text-secondary">
+      <div class="mb-3 flex flex-wrap items-center gap-2">
+        <span class="flex-1 text-sm text-secondary">
           {{ indexes.length }}
           {{ indexes.length === 1 ? 'index' : 'indexes' }}
         </span>
@@ -36,11 +36,9 @@
           Delete
         </Button>
 
-        <div
-          class="tw:flex tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
-        >
+        <div class="flex items-stretch overflow-hidden rounded-md border border-input">
           <label
-            class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:font-sans tw:text-sm tw:text-muted-foreground"
+            class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"
             for="indexes-filter"
             >Filter</label
           >
@@ -48,7 +46,7 @@
             id="indexes-filter"
             v-model="filter"
             v-focus
-            class="tw:rounded-none tw:border-0"
+            class="rounded-none border-0"
             data-cy="IndexesPage-filter"
             :disabled="indexes.length === 0"
             @keyup.enter="navigateToIndex"
@@ -56,14 +54,14 @@
         </div>
       </div>
 
-      <Table class="tw:border tw:border-border">
+      <Table class="border border-border">
         <TableHeader>
           <TableRow>
-            <TableHead class="tw:w-8" />
-            <TableHead class="tw:w-10" />
+            <TableHead class="w-8" />
+            <TableHead class="w-10" />
             <TableHead :aria-sort="ariaSort('name')">
               <Button
-                class="tw:px-1 tw:text-muted-foreground"
+                class="px-1 text-muted-foreground"
                 data-cy="IndexesPage-sort--name"
                 size="sm"
                 variant="ghost"
@@ -73,9 +71,9 @@
                 <i :class="sortIcon('name')" />
               </Button>
             </TableHead>
-            <TableHead :aria-sort="ariaSort('collections')" class="tw:w-40 tw:text-center">
+            <TableHead :aria-sort="ariaSort('collections')" class="w-40 text-center">
               <Button
-                class="tw:px-1 tw:text-muted-foreground"
+                class="px-1 text-muted-foreground"
                 data-cy="IndexesPage-sort--collections"
                 size="sm"
                 variant="ghost"
@@ -85,19 +83,19 @@
                 <i :class="sortIcon('collections')" />
               </Button>
             </TableHead>
-            <TableHead class="tw:w-56" />
+            <TableHead class="w-56" />
           </TableRow>
         </TableHeader>
 
         <TableBody>
           <TableRow v-if="rows.length === 0">
-            <TableCell class="tw:py-6 tw:text-center" colspan="5">
+            <TableCell class="py-6 text-center" colspan="5">
               <template v-if="filtering">
-                <h4 class="tw:text-secondary">There is no index matching your filter.</h4>
+                <h4 class="text-secondary">There is no index matching your filter.</h4>
               </template>
               <template v-else>
-                <h4 class="tw:text-secondary">There is no index.</h4>
-                <p v-if="canCreateIndex" class="tw:text-secondary">
+                <h4 class="text-secondary">There is no index.</h4>
+                <p v-if="canCreateIndex" class="text-secondary">
                   You can create one by hitting the button above.
                 </p>
               </template>
@@ -112,12 +110,12 @@
                 @change="onCheckboxClick(index)"
               />
             </TableCell>
-            <TableCell class="tw:text-secondary">
+            <TableCell class="text-secondary">
               <i class="fa fa-2x fa-database" />
             </TableCell>
             <TableCell class="code">
               <router-link
-                class="tw:font-medium tw:text-foreground tw:hover:underline"
+                class="font-medium text-foreground hover:underline"
                 :data-cy="`IndexesPage-name--${index.name}`"
                 :title="index.name"
                 :to="{
@@ -128,10 +126,10 @@
                 {{ index.name }}
               </router-link>
             </TableCell>
-            <TableCell class="tw:text-center">
+            <TableCell class="text-center">
               {{ index.collectionsCount || '--' }}
             </TableCell>
-            <TableCell class="tw:text-right">
+            <TableCell class="text-right">
               <Button
                 as="router-link"
                 :data-cy="`IndexesPage-browse--${index.name}`"
@@ -278,7 +276,7 @@ export default {
       const sort = this.ariaSort(key);
 
       if (sort === 'none') {
-        return 'fa fa-sort tw:opacity-50';
+        return 'fa fa-sort opacity-50';
       }
 
       return sort === 'ascending' ? 'fa fa-sort-up' : 'fa fa-sort-down';

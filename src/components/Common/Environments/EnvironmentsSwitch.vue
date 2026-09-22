@@ -11,18 +11,18 @@
     <DropdownMenuTrigger
       :as="Button"
       :class="[
-        'tw:max-w-full tw:justify-between tw:gap-2',
-        block ? 'tw:w-full' : '',
-        blendColor ? 'tw:border-transparent tw:bg-white/40 tw:text-white tw:hover:bg-white/60' : '',
+        'max-w-full justify-between gap-2',
+        block ? 'w-full' : '',
+        blendColor ? 'border-transparent bg-white/40 text-white hover:bg-white/60' : '',
       ]"
       data-cy="EnvironmentSwitch"
       variant="outline"
     >
-      <span class="tw:truncate">
+      <span class="truncate">
         <template v-if="currentEnvironment">
           <i
             v-if="!isValidEnvironment(currentEnvironment)"
-            class="fas fa-exclamation-triangle tw:text-destructive"
+            class="fas fa-exclamation-triangle text-destructive"
             aria-hidden="true"
           />
           {{ currentEnvironment.name }}
@@ -32,7 +32,7 @@
       <i class="fas fa-caret-down" aria-hidden="true" />
     </DropdownMenuTrigger>
 
-    <DropdownMenuContent :align="right ? 'end' : 'start'" class="tw:max-h-[98vh] tw:overflow-auto">
+    <DropdownMenuContent :align="right ? 'end' : 'start'" class="max-h-[98vh] overflow-auto">
       <!--
         Une connexion, c'est une action (s'y rendre) et deux actions annexes
         (éditer, supprimer). `b-dropdown-item` les empilait dans le même `<a>`,
@@ -42,25 +42,23 @@
       <div
         v-for="(env, index) in sortObject(environments)"
         :key="env.name"
-        class="EnvironmentSwitch-env tw:flex tw:items-center tw:gap-1 tw:pr-2"
+        class="EnvironmentSwitch-env flex items-center gap-1 pr-2"
       >
         <DropdownMenuItem
-          class="tw:min-w-0 tw:flex-1"
+          class="min-w-0 flex-1"
           :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
           @select="isValidEnvironment(env) ? switchEnv(index) : $emit('environment::create', index)"
         >
-          <span class="EnvironmentSwitch-env-name tw:block tw:min-w-0 tw:max-w-[250px]">
-            <span class="tw:block tw:truncate">
+          <span class="EnvironmentSwitch-env-name block min-w-0 max-w-[250px]">
+            <span class="block truncate">
               {{ env.name }}
               <i
                 v-if="!isValidEnvironment(env)"
-                class="fas fa-exclamation-triangle tw:text-destructive"
+                class="fas fa-exclamation-triangle text-destructive"
                 aria-hidden="true"
               />
             </span>
-            <span class="tw:block tw:truncate tw:text-xs tw:text-muted-foreground">{{
-              env.host
-            }}</span>
+            <span class="block truncate text-xs text-muted-foreground">{{ env.host }}</span>
           </span>
         </DropdownMenuItem>
 
@@ -75,7 +73,7 @@
         </Button>
         <Button
           :aria-label="`Delete connection ${env.name}`"
-          class="tw:text-destructive"
+          class="text-destructive"
           :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-delete`"
           size="icon"
           variant="ghost"

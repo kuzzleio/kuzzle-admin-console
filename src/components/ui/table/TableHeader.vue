@@ -15,7 +15,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:border-b tw:border-border');
+      return this.mergeClasses('border-b border-border');
     },
   },
 });

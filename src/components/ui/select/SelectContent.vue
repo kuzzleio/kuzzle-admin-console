@@ -52,9 +52,9 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:z-1035 tw:min-w-32 tw:max-h-96 tw:overflow-y-auto tw:rounded-md',
-        'tw:border tw:border-border tw:bg-popover tw:text-popover-foreground',
-        'tw:p-1 tw:shadow-md tw:outline-none',
+        'z-1035 min-w-32 max-h-96 overflow-y-auto rounded-md',
+        'border border-border bg-popover text-popover-foreground',
+        'p-1 shadow-md outline-none',
       );
     },
     isOpen(): boolean {

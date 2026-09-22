@@ -5,22 +5,18 @@
         <DialogTitle id="save-query-title">Choose a name for this query</DialogTitle>
       </DialogHeader>
 
-      <form ref="form" class="tw:flex tw:flex-col tw:gap-1.5" @submit.stop.prevent="handleOk">
+      <form ref="form" class="flex flex-col gap-1.5" @submit.stop.prevent="handleOk">
         <Label for="name-input">Name</Label>
         <Input
           id="name-input"
           v-model="name"
           :aria-describedby="nameState === false ? 'name-feedback' : undefined"
           :aria-invalid="nameState === false ? 'true' : undefined"
-          :class="nameState === false ? 'tw:border-destructive' : ''"
+          :class="nameState === false ? 'border-destructive' : ''"
           data-cy="api-actions-modal-name-input"
           required
         />
-        <p
-          v-if="nameState === false"
-          id="name-feedback"
-          class="tw:m-0 tw:text-sm tw:text-destructive"
-        >
+        <p v-if="nameState === false" id="name-feedback" class="m-0 text-sm text-destructive">
           {{ feedback }}
         </p>
       </form>

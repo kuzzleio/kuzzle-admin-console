@@ -1,17 +1,15 @@
 <template>
-  <div class="tw:flex tw:h-full tw:flex-col tw:justify-center">
+  <div class="flex h-full flex-col justify-center">
     <Card>
-      <CardContent class="tw:flex tw:items-start tw:gap-6">
-        <i class="fa fa-6x fa-lock tw:text-muted-foreground" aria-hidden="true" />
+      <CardContent class="flex items-start gap-6">
+        <i class="fa fa-6x fa-lock text-muted-foreground" aria-hidden="true" />
         <div>
-          <CardTitle class="tw:mb-2 tw:text-xl"> Sorry </CardTitle>
-          <CardDescription class="tw:mb-2">
-            You are not allowed to access this page
-          </CardDescription>
-          <CardDescription class="tw:italic">
+          <CardTitle class="mb-2 text-xl"> Sorry </CardTitle>
+          <CardDescription class="mb-2"> You are not allowed to access this page </CardDescription>
+          <CardDescription class="italic">
             Learn more about security &amp; permissions on
             <a
-              class="tw:text-secondary tw:underline tw:underline-offset-4"
+              class="text-secondary underline underline-offset-4"
               href="https://docs.kuzzle.io/core/2/guides/main-concepts/permissions/#user-permissions"
               rel="noopener noreferrer"
               target="_blank"

@@ -1,15 +1,15 @@
 <template>
   <Card class="EmptyState" data-cy="DocumentsEmptyState">
-    <CardContent class="tw:flex tw:flex-col tw:items-center tw:gap-3 tw:text-center">
+    <CardContent class="flex flex-col items-center gap-3 text-center">
       <i
         aria-hidden="true"
-        class="fas fa-6x tw:text-muted-foreground"
+        class="fas fa-6x text-muted-foreground"
         :class="{
           'fa-ellipsis-h': !hasNewDocuments,
           'fa-file-alt': hasNewDocuments,
         }"
       />
-      <CardTitle class="tw:text-2xl tw:text-muted-foreground">
+      <CardTitle class="text-2xl text-muted-foreground">
         <span v-if="hasNewDocuments">There are new documents in the collection</span>
         <span v-else>No documents matching your filters</span>
       </CardTitle>

@@ -26,7 +26,7 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:flex tw:flex-col tw:gap-6 tw:rounded-lg tw:border tw:border-border tw:bg-card tw:text-card-foreground tw:py-6 tw:shadow-sm',
+        'flex flex-col gap-6 rounded-lg border border-border bg-card text-card-foreground py-6 shadow-sm',
       );
     },
   },

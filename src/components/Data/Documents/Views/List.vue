@@ -1,7 +1,7 @@
 <template>
   <div class="DocumentsListView" data-cy="DocumentsListView">
-    <div class="tw:mb-3 tw:flex tw:flex-row tw:items-center tw:gap-2">
-      <div class="tw:flex tw:flex-grow tw:items-center tw:gap-2">
+    <div class="mb-3 flex flex-row items-center gap-2">
+      <div class="flex grow items-center gap-2">
         <Button
           data-cy="DocumentsListView-toggleAllBtn"
           variant="outline"
@@ -21,7 +21,7 @@
           Delete
         </Button>
       </div>
-      <Spinner v-if="isFetching" class="tw:text-secondary" label="Loading documents" size="sm" />
+      <Spinner v-if="isFetching" class="text-secondary" label="Loading documents" size="sm" />
       <PerPageSelector
         :current-page-size="currentPageSize"
         :total-documents="totalDocuments"
@@ -29,7 +29,7 @@
       />
       <new-documents-badge :has-new-documents="hasNewDocuments" @refresh="$emit('refresh')" />
     </div>
-    <ul class="tw:m-0 tw:flex tw:w-full tw:list-none tw:flex-col tw:gap-1 tw:p-0">
+    <ul class="m-0 flex w-full list-none flex-col gap-1 p-0">
       <document-list-item
         v-for="document in documents"
         :key="document._id"

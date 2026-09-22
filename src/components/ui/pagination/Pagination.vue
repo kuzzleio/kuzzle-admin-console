@@ -75,7 +75,7 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:flex tw:w-full tw:justify-center');
+      return this.mergeClasses('flex w-full justify-center');
     },
     pageCount(): number {
       return Math.max(1, Math.ceil(this.total / this.itemsPerPage));

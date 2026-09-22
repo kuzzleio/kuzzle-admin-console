@@ -1,23 +1,23 @@
 <template>
-  <div class="KuzzleErrorPage tw:flex tw:min-h-screen tw:items-center tw:justify-center tw:p-4">
-    <Card class="tw:w-full tw:max-w-4xl">
+  <div class="KuzzleErrorPage flex min-h-screen items-center justify-center p-4">
+    <Card class="w-full max-w-4xl">
       <CardContent>
-        <header class="tw:rounded-md tw:bg-muted tw:p-8">
+        <header class="rounded-md bg-muted p-8">
           <img
             alt="Welcome to the Kuzzle Admin Console"
-            class="tw:mb-4 tw:h-15 tw:w-auto"
+            class="mb-4 h-15 w-auto"
             height="60"
             src="../../assets/logo.svg"
           />
-          <h2 class="tw:text-2xl tw:font-bold tw:text-foreground">
+          <h2 class="text-2xl font-bold text-foreground">
             Something went wrong while connecting to Kuzzle
           </h2>
 
-          <hr class="tw:my-6 tw:border-border" />
+          <hr class="my-6 border-border" />
 
-          <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-3">
-            <span class="code tw:min-w-0 tw:flex-1 tw:break-words">{{ kuzzleError }}</span>
-            <span class="tw:text-sm tw:text-muted-foreground">Connecting to</span>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="code min-w-0 flex-1 break-words">{{ kuzzleError }}</span>
+            <span class="text-sm text-muted-foreground">Connecting to</span>
             <environment-switch
               :block="false"
               @environment::create="editEnvironment"

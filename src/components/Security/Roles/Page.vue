@@ -1,8 +1,8 @@
 <template>
-  <div class="RolesManagement tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12">
-    <div class="tw:flex tw:flex-wrap tw:items-start tw:justify-between tw:gap-4">
+  <div class="RolesManagement mx-auto w-full max-w-6xl px-4 pb-12">
+    <div class="flex flex-wrap items-start justify-between gap-4">
       <headline>Roles</headline>
-      <div class="tw:flex tw:flex-wrap tw:gap-2">
+      <div class="flex flex-wrap gap-2">
         <Button
           data-cy="RolesManagement-revokeAnonymous"
           :disabled="!displayRevokeAnonymous"
@@ -38,10 +38,10 @@
     >
       <template #emptySet>
         <Card class="EmptyState">
-          <CardContent class="tw:flex tw:flex-col tw:items-center tw:text-center">
-            <i class="fas fa-unlock-alt fa-6x tw:mb-4 tw:text-secondary" aria-hidden="true" />
-            <CardTitle class="tw:text-secondary">No role is defined</CardTitle>
-            <CardDescription v-if="canCreateRole" class="tw:mt-2 tw:text-secondary">
+          <CardContent class="flex flex-col items-center text-center">
+            <i class="fas fa-unlock-alt fa-6x mb-4 text-secondary" aria-hidden="true" />
+            <CardTitle class="text-secondary">No role is defined</CardTitle>
+            <CardDescription v-if="canCreateRole" class="mt-2 text-secondary">
               You can create a new role by hitting the button above
             </CardDescription>
           </CardContent>

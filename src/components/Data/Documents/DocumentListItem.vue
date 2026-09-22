@@ -1,15 +1,15 @@
 <template>
   <li
-    class="DocumentListView-item realtime-highlight tw:rounded-md tw:border tw:border-border tw:bg-card tw:px-3 tw:py-2"
+    class="DocumentListView-item realtime-highlight rounded-md border border-border bg-card px-3 py-2"
     :data-cy="`DocumentListItem--${document._id}`"
   >
-    <div class="tw:flex tw:items-start tw:justify-between tw:gap-2">
-      <div class="tw:flex tw:min-w-0 tw:flex-1 tw:items-center tw:gap-2">
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex min-w-0 flex-1 items-center gap-2">
         <button
           :aria-controls="contentId"
           :aria-expanded="String(expanded)"
           :aria-label="expanded ? 'Collapse document' : 'Expand document'"
-          class="tw:inline-flex tw:size-6 tw:shrink-0 tw:cursor-pointer tw:items-center tw:justify-center tw:rounded-md tw:border-none tw:bg-transparent tw:text-foreground tw:hover:bg-muted tw:focus-visible:ring-2 tw:focus-visible:ring-ring"
+          class="inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
           data-cy="DocumentListItem-toggleCollapse"
           type="button"
           @click="toggleCollapse"
@@ -23,7 +23,7 @@
           @update:modelValue="notifyCheckboxClick"
         />
         <a
-          class="code pointer tw:min-w-0 tw:truncate"
+          class="code pointer min-w-0 truncate"
           data-cy="DocumentListItem-title"
           @click="toggleCollapse"
           >{{ document._id }}</a
@@ -34,7 +34,7 @@
           >{{ notifBadgeText }}</Badge
         >
       </div>
-      <div class="tw:flex tw:shrink-0 tw:items-center tw:gap-1">
+      <div class="flex shrink-0 items-center gap-1">
         <Button
           class="DocumentListItem-update"
           :data-cy="`DocumentListItem-update--${document._id}`"
@@ -59,8 +59,8 @@
         </Button>
       </div>
     </div>
-    <div v-show="expanded" :id="contentId" class="DocumentListItem-content tw:mt-2 tw:pl-8">
-      <pre v-json-formatter="{ content: formattedDocument, open: true }" class="tw:text-base" />
+    <div v-show="expanded" :id="contentId" class="DocumentListItem-content mt-2 pl-8">
+      <pre v-json-formatter="{ content: formattedDocument, open: true }" class="text-base" />
     </div>
   </li>
 </template>

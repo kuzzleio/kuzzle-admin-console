@@ -1,8 +1,8 @@
 <template>
   <div class="ViewMap" data-cy="mapView">
-    <div class="tw:mb-3 tw:flex tw:flex-row tw:items-center tw:gap-6">
-      <div class="tw:flex tw:flex-grow tw:flex-row tw:items-center tw:gap-6">
-        <div v-if="mappingGeopoints.length" class="tw:flex tw:items-center tw:gap-2 tw:text-sm">
+    <div class="mb-3 flex flex-row items-center gap-6">
+      <div class="flex grow flex-row items-center gap-6">
+        <div v-if="mappingGeopoints.length" class="flex items-center gap-2 text-sm">
           <span id="mapView-geopointLabel">GeoPoint field</span>
           <Select
             :model-value="selectedGeopoint || ''"
@@ -10,7 +10,7 @@
           >
             <SelectTrigger
               aria-labelledby="mapView-geopointLabel"
-              class="tw:w-auto tw:min-w-40"
+              class="w-auto min-w-40"
               data-cy="mapView-geopointSelector"
             >
               <SelectValue placeholder="None" />
@@ -22,7 +22,7 @@
             </SelectContent>
           </Select>
         </div>
-        <div v-if="mappingGeoshapes.length" class="tw:flex tw:items-center tw:gap-2 tw:text-sm">
+        <div v-if="mappingGeoshapes.length" class="flex items-center gap-2 text-sm">
           <span id="mapView-geoshapeLabel">GeoShape field</span>
           <Select
             :model-value="selectedGeoshape || ''"
@@ -30,7 +30,7 @@
           >
             <SelectTrigger
               aria-labelledby="mapView-geoshapeLabel"
-              class="tw:w-auto tw:min-w-40"
+              class="w-auto min-w-40"
               data-cy="mapView-geoshapeSelector"
             >
               <SelectValue placeholder="None" />
@@ -49,8 +49,8 @@
         @change-page-size="$emit('change-page-size', $event)"
       />
     </div>
-    <div class="tw:grid tw:grid-cols-12 tw:gap-4">
-      <div class="tw:col-span-8 tw:h-150">
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-8 h-150">
         <l-map ref="map" data-cy="mapView-map">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
@@ -95,19 +95,17 @@
           </div>
         </l-map>
       </div>
-      <div class="tw:col-span-4">
+      <div class="col-span-4">
         <Card
           v-if="currentDocument"
-          class="tw:h-150 tw:gap-3 tw:py-4"
+          class="h-150 gap-3 py-4"
           data-cy="mapView-current-document-card"
         >
-          <CardHeader
-            class="tw:flex-row tw:items-center tw:justify-between tw:gap-2 tw:px-4 tw:pb-2"
-          >
-            <span class="tw:truncate tw:font-medium" data-cy="mapView-current-document-id">
+          <CardHeader class="flex-row items-center justify-between gap-2 px-4 pb-2">
+            <span class="truncate font-medium" data-cy="mapView-current-document-id">
               {{ currentDocument._id }}
             </span>
-            <div class="tw:flex tw:shrink-0 tw:items-center tw:gap-1">
+            <div class="flex shrink-0 items-center gap-1">
               <Button
                 class="DocumentMapItem-update"
                 :data-cy="`DocumentMapItem-update--${currentDocument._id}`"
@@ -137,28 +135,26 @@
               </Button>
             </div>
           </CardHeader>
-          <CardContent class="tw:min-h-0 tw:flex-grow tw:px-4">
+          <CardContent class="min-h-0 grow px-4">
             <pre
               v-json-formatter="{
                 content: currentDocument,
                 open: true,
               }"
-              class="json-formatter tw:m-0 tw:h-full tw:overflow-auto"
+              class="json-formatter m-0 h-full overflow-auto"
             />
           </CardContent>
         </Card>
         <Card
           v-else
-          class="tw:h-150 tw:items-center tw:justify-center tw:bg-muted"
+          class="h-150 items-center justify-center bg-muted"
           data-cy="mapView-no-document-card"
         >
-          <CardContent class="tw:flex tw:items-center tw:gap-4">
-            <i aria-hidden="true" class="fa fa-3x fa-search tw:text-muted-foreground" />
+          <CardContent class="flex items-center gap-4">
+            <i aria-hidden="true" class="fa fa-3x fa-search text-muted-foreground" />
             <div>
-              <h3 class="tw:m-0 tw:text-lg tw:font-bold tw:text-muted-foreground">
-                No document selected.
-              </h3>
-              <p class="tw:m-0 tw:text-sm tw:text-muted-foreground">
+              <h3 class="m-0 text-lg font-bold text-muted-foreground">No document selected.</h3>
+              <p class="m-0 text-sm text-muted-foreground">
                 <em>You can view a document content by clicking on a marker</em>
               </p>
             </div>

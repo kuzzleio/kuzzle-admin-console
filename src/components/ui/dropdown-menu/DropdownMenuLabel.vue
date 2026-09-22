@@ -25,9 +25,7 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
-      return this.mergeClasses(
-        'tw:px-2 tw:py-1.5 tw:font-sans tw:text-xs tw:font-semibold tw:text-muted-foreground',
-      );
+      return this.mergeClasses('px-2 py-1.5 font-sans text-xs font-semibold text-muted-foreground');
     },
     labelId(): string | undefined {
       return (this as unknown as { dropdownMenuGroup: { labelId: string } | null })

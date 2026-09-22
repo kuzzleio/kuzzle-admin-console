@@ -1,6 +1,6 @@
 <template>
   <form id="resetPasswordForm" method="post" @submit.prevent="resetPassword()">
-    <div class="resetPasswordForm-inputs tw:flex tw:flex-col tw:gap-4">
+    <div class="resetPasswordForm-inputs flex flex-col gap-4">
       <FormItem data-cy="ResetPassword-password--group">
         <Label for="password">New password</Label>
         <Input
@@ -36,11 +36,11 @@
       </FormItem>
 
       <div v-if="error" class="ResetPasswordForm-error">
-        <Alert class="tw:flex tw:items-start tw:gap-3" variant="destructive">
-          <span class="tw:flex-1">Error: {{ error }}</span>
+        <Alert class="flex items-start gap-3" variant="destructive">
+          <span class="flex-1">Error: {{ error }}</span>
           <button
             aria-label="Dismiss"
-            class="tw:cursor-pointer tw:leading-none"
+            class="cursor-pointer leading-none"
             type="button"
             @click="error = ''"
           >
@@ -49,7 +49,7 @@
         </Alert>
       </div>
 
-      <div class="ResetPasswordForm-buttons tw:flex tw:justify-end">
+      <div class="ResetPasswordForm-buttons flex justify-end">
         <Button data-cy="ResetPassword-submitBtn" name="action" tabindex="3" type="submit"
           >Send</Button
         >

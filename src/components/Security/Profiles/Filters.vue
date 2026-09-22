@@ -1,7 +1,7 @@
 <template>
   <Card data-cy="ProfileFilters">
-    <CardContent class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
-      <span class="tw:text-sm tw:text-foreground">Search by role</span>
+    <CardContent class="flex flex-wrap items-center gap-2">
+      <span class="text-sm text-foreground">Search by role</span>
 
       <!--
         `b-dropdown-text` enveloppait une case à cocher et son libellé dans un
@@ -13,7 +13,7 @@
         <DropdownMenuTrigger :as="Button" variant="outline">
           Select roles to be contained in the profiles
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" class="tw:max-h-96 tw:overflow-y-auto">
+        <DropdownMenuContent align="start" class="max-h-96 overflow-y-auto">
           <DropdownMenuCheckboxItem
             v-for="role of roleList"
             :key="`dropdown-${role}`"
@@ -25,10 +25,7 @@
           >
             {{ role }}
           </DropdownMenuCheckboxItem>
-          <p
-            v-if="roleList.length === 0"
-            class="tw:px-3 tw:py-2 tw:text-sm tw:text-muted-foreground"
-          >
+          <p v-if="roleList.length === 0" class="px-3 py-2 text-sm text-muted-foreground">
             No roles found.
           </p>
         </DropdownMenuContent>
@@ -38,7 +35,7 @@
         Filters are being applied
       </Badge>
 
-      <Button class="tw:ml-auto" data-cy="ProfileFilters-resetBtn" variant="outline" @click="reset">
+      <Button class="ml-auto" data-cy="ProfileFilters-resetBtn" variant="outline" @click="reset">
         Reset
       </Button>
     </CardContent>

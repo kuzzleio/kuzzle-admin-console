@@ -13,7 +13,7 @@
     @keydown.enter.prevent="onSelectKey"
     @keydown.space.prevent="onSelectKey"
   >
-    <span aria-hidden="true" class="tw:absolute tw:left-2 tw:flex tw:w-4 tw:justify-center">
+    <span aria-hidden="true" class="absolute left-2 flex w-4 justify-center">
       <i v-if="checked" class="fa fa-check" />
     </span>
     <slot />

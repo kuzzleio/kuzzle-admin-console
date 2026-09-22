@@ -7,16 +7,16 @@
           :key="`orBlock-${groupIndex}`"
           class="BasicFilter-orBlock"
         >
-          <Card class="tw:bg-muted">
-            <CardContent class="tw:flex tw:flex-col tw:gap-2">
+          <Card class="bg-muted">
+            <CardContent class="flex flex-col gap-2">
               <div
                 v-for="(andBlock, filterIndex) in orBlock"
                 :key="`andBlock-${filterIndex}`"
-                class="tw:flex tw:flex-wrap tw:items-center tw:gap-2"
+                class="flex flex-wrap items-center gap-2"
               >
                 <span
-                  class="tw:w-10 tw:shrink-0 tw:text-center tw:font-bold tw:text-secondary"
-                  :class="filterIndex === 0 ? 'tw:invisible' : ''"
+                  class="w-10 shrink-0 text-center font-bold text-secondary"
+                  :class="filterIndex === 0 ? 'invisible' : ''"
                   >AND</span
                 >
 
@@ -27,13 +27,13 @@
                 -->
                 <i
                   v-if="filterIndex === 0"
-                  class="fas fa-question-circle fa-lg tw:shrink-0 tw:text-muted-foreground"
+                  class="fas fa-question-circle fa-lg shrink-0 text-muted-foreground"
                   title="For an attribute to be in the list, it must be contained in the mapping."
                 />
-                <span v-else class="tw:w-5 tw:shrink-0" />
+                <span v-else class="w-5 shrink-0" />
 
                 <Select
-                  class="tw:min-w-40 tw:flex-1"
+                  class="min-w-40 flex-1"
                   :model-value="filters.basic[groupIndex][filterIndex].attribute || ''"
                   @update:modelValue="
                     (attribute) => selectAttribute(attribute, groupIndex, filterIndex)
@@ -55,7 +55,7 @@
                   </SelectContent>
                 </Select>
 
-                <Select v-model="andBlock.operator" class="tw:min-w-40 tw:flex-1">
+                <Select v-model="andBlock.operator" class="min-w-40 flex-1">
                   <SelectTrigger aria-label="Operator" data-cy="BasicFilter-operator">
                     <SelectValue />
                   </SelectTrigger>
@@ -71,7 +71,7 @@
 
                 <div
                   v-if="andBlock.operator !== 'exists' && andBlock.operator !== 'not_exists'"
-                  class="tw:flex tw:min-w-40 tw:flex-1 tw:flex-col tw:gap-1"
+                  class="flex min-w-40 flex-1 flex-col gap-1"
                 >
                   <template v-if="andBlock.operator !== 'range'">
                     <Input
@@ -130,24 +130,22 @@
 
           <div
             v-if="groupIndex < filters.basic.length - 1"
-            class="tw:my-2 tw:flex tw:items-center tw:gap-3 tw:text-secondary"
+            class="my-2 flex items-center gap-3 text-secondary"
           >
-            <hr class="tw:flex-1 tw:border-border" />
+            <hr class="flex-1 border-border" />
             <b>OR</b>
-            <hr class="tw:flex-1 tw:border-border" />
+            <hr class="flex-1 border-border" />
           </div>
         </div>
       </div>
     </div>
 
-    <div class="tw:mt-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+    <div class="mt-3 flex flex-wrap items-center gap-2">
       <template v-if="sortingEnabled">
-        <div
-          class="tw:flex tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
-        >
+        <div class="flex items-stretch overflow-hidden rounded-md border border-input">
           <span
             id="basic-filter-sort-label"
-            class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:font-sans tw:text-sm tw:text-muted-foreground"
+            class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"
             >Sort</span
           >
           <Select
@@ -156,7 +154,7 @@
           >
             <SelectTrigger
               aria-labelledby="basic-filter-sort-label"
-              class="tw:rounded-none tw:border-0"
+              class="rounded-none border-0"
               data-cy="BasicFilter-sortAttributeSelect"
             >
               <SelectValue placeholder="Attribute" />
@@ -188,7 +186,7 @@
         </Select>
       </template>
 
-      <div v-if="actionButtonsVisible" class="tw:ml-auto tw:flex tw:flex-wrap tw:gap-2">
+      <div v-if="actionButtonsVisible" class="ml-auto flex flex-wrap gap-2">
         <Button
           class="BasicFilter-generateRawBtn"
           data-cy="BasicFilter-generateRawBtn"

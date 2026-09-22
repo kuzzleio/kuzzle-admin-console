@@ -29,9 +29,9 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:inline-flex tw:max-w-full tw:items-center tw:gap-1 tw:rounded-md',
-        'tw:bg-secondary tw:px-2 tw:py-0.5',
-        'tw:font-sans tw:text-sm tw:text-secondary-foreground',
+        'inline-flex max-w-full items-center gap-1 rounded-md',
+        'bg-secondary px-2 py-0.5',
+        'font-sans text-sm text-secondary-foreground',
       );
     },
   },

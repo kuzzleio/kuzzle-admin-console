@@ -17,15 +17,14 @@
  * qu'on ait à surenchérir en `!important` ou en sélecteurs plus spécifiques.
  * La couche s'en ira quand ces feuilles s'en iront, pas avant.
  *
- * Le préfixe `tw:` reste lui aussi : le retirer est une réécriture mécanique
- * de plusieurs milliers de classes, qui n'a rien à faire dans le même diff que
- * le retrait d'un framework (ADR-0022).
+ * Le préfixe `tw:`, lui, est parti (ADR-0023) : il n'avait de sens que face
+ * aux classes de Bootstrap, qui n'existent plus.
  */
 @layer legacy, theme, base, components, utilities;
 
-@import 'tailwindcss/theme.css' layer(theme) prefix(tw);
+@import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/preflight.css' layer(base);
-@import 'tailwindcss/utilities.css' layer(utilities) prefix(tw);
+@import 'tailwindcss/utilities.css' layer(utilities);
 
 @import './tokens.css';
 

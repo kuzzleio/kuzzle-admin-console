@@ -9,7 +9,7 @@ import { defineComponent } from 'vue';
 
 import { classMerge } from '../class-merge';
 
-/* Description de Card. `tw:m-0` est nécessaire : sans preflight, la marge du
+/* Description de Card. `m-0` est nécessaire : sans preflight, la marge du
  * navigateur sur `<p>` subsiste (ADR-0008). */
 export default defineComponent({
   name: 'CardDescription',
@@ -17,9 +17,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses(
-        'tw:font-sans tw:text-sm tw:leading-normal tw:text-muted-foreground tw:m-0',
-      );
+      return this.mergeClasses('font-sans text-sm leading-normal text-muted-foreground m-0');
     },
   },
 });

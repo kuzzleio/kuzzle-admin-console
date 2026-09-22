@@ -2,16 +2,16 @@
   <div>
     <div
       v-if="index"
-      class="CollectionList tw:mx-auto tw:w-full tw:max-w-6xl tw:px-4 tw:pb-12"
+      class="CollectionList mx-auto w-full max-w-6xl px-4 pb-12"
       data-cy="CollectionList"
     >
       <headline>
-        <div class="tw:flex tw:flex-row">
-          <span class="tw:flex-1 tw:truncate">
-            <i class="fa fa-database tw:text-secondary" /> &nbsp;
+        <div class="flex flex-row">
+          <span class="flex-1 truncate">
+            <i class="fa fa-database text-secondary" /> &nbsp;
             <span class="code">{{ indexName }}</span>
           </span>
-          <span class="tw:flex tw:items-center tw:gap-2">
+          <span class="flex items-center gap-2">
             <Button
               :as="canCreateCollection(indexName) && index ? 'router-link' : 'button'"
               data-cy="CollectionList-create"
@@ -39,8 +39,8 @@
 
       <list-not-allowed v-if="!canSearchCollection(indexName)" />
       <div v-else-if="collections" class="CollectionList-content">
-        <div class="tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2">
-          <span class="tw:flex-1 tw:text-sm tw:text-secondary">
+        <div class="mb-3 flex flex-wrap items-center gap-2">
+          <span class="flex-1 text-sm text-secondary">
             {{ collections.length }}
             {{ collections.length === 1 ? 'collection' : 'collections' }}
           </span>
@@ -61,11 +61,9 @@
             Delete
           </Button>
 
-          <div
-            class="tw:flex tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
-          >
+          <div class="flex items-stretch overflow-hidden rounded-md border border-input">
             <label
-              class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:font-sans tw:text-sm tw:text-muted-foreground"
+              class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"
               for="collections-filter"
               >Filter</label
             >
@@ -73,7 +71,7 @@
               id="collections-filter"
               v-model="filter"
               v-focus
-              class="tw:rounded-none tw:border-0"
+              class="rounded-none border-0"
               data-cy="CollectionList-filter"
               :disabled="collections.length === 0"
               @keyup.enter="navigateToCollection"
@@ -81,14 +79,14 @@
           </div>
         </div>
 
-        <Table class="tw:border tw:border-border" data-cy="CollectionList-table">
+        <Table class="border border-border" data-cy="CollectionList-table">
           <TableHeader>
             <TableRow>
-              <TableHead class="tw:w-8" />
-              <TableHead class="tw:w-10" />
+              <TableHead class="w-8" />
+              <TableHead class="w-10" />
               <TableHead :aria-sort="ariaSort('name')">
                 <Button
-                  class="tw:px-1 tw:text-muted-foreground"
+                  class="px-1 text-muted-foreground"
                   data-cy="CollectionList-sort--name"
                   size="sm"
                   variant="ghost"
@@ -98,19 +96,19 @@
                   <i :class="sortIcon('name')" />
                 </Button>
               </TableHead>
-              <TableHead class="tw:w-56" />
+              <TableHead class="w-56" />
             </TableRow>
           </TableHeader>
 
           <TableBody>
             <TableRow v-if="rows.length === 0">
-              <TableCell class="tw:py-6 tw:text-center" colspan="4">
+              <TableCell class="py-6 text-center" colspan="4">
                 <template v-if="filtering">
-                  <h4 class="tw:text-secondary">There is no collection matching your filter.</h4>
+                  <h4 class="text-secondary">There is no collection matching your filter.</h4>
                 </template>
                 <template v-else>
-                  <h4 class="tw:text-secondary">This index has no collections.</h4>
-                  <p v-if="canCreateCollection(index.name)" class="tw:text-secondary">
+                  <h4 class="text-secondary">This index has no collections.</h4>
+                  <p v-if="canCreateCollection(index.name)" class="text-secondary">
                     You can create the collection by hitting the button above.
                   </p>
                 </template>
@@ -125,7 +123,7 @@
                   @change="onCheckboxClick(collection)"
                 />
               </TableCell>
-              <TableCell class="tw:text-secondary">
+              <TableCell class="text-secondary">
                 <i
                   class="fa fa-2x"
                   :class="{
@@ -137,14 +135,14 @@
               </TableCell>
               <TableCell class="code">
                 <router-link
-                  class="tw:font-medium tw:text-foreground tw:hover:underline"
+                  class="font-medium text-foreground hover:underline"
                   :data-cy="`CollectionList-name--${collection.name}`"
                   :title="collection.name"
                   :to="collectionRoute(collection)"
                   >{{ truncateName(collection.name) }}</router-link
                 >
               </TableCell>
-              <TableCell class="tw:text-right">
+              <TableCell class="text-right">
                 <Button
                   as="router-link"
                   size="icon"
@@ -324,7 +322,7 @@ export default {
       const sort = this.ariaSort(key);
 
       if (sort === 'none') {
-        return 'fa fa-sort tw:opacity-50';
+        return 'fa fa-sort opacity-50';
       }
 
       return sort === 'ascending' ? 'fa fa-sort-up' : 'fa fa-sort-down';

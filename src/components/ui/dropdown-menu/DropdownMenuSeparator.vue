@@ -14,7 +14,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:-mx-1 tw:my-1 tw:h-px tw:bg-border');
+      return this.mergeClasses('-mx-1 my-1 h-px bg-border');
     },
   },
 });

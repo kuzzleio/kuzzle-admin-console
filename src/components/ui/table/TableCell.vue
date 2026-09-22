@@ -15,7 +15,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:px-3 tw:py-2 tw:align-middle');
+      return this.mergeClasses('px-3 py-2 align-middle');
     },
   },
 });

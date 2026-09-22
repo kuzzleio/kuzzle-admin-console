@@ -1,14 +1,14 @@
 <template>
-  <div class="tw:flex tw:h-full tw:items-center tw:justify-center tw:px-4 tw:py-10">
-    <Card class="tw:w-full tw:max-w-lg tw:bg-muted">
-      <CardContent class="tw:flex tw:flex-col tw:items-center tw:text-center">
-        <i class="fas fa-question fa-6x tw:mb-6 tw:text-muted-foreground" />
-        <CardTitle class="tw:mb-2 tw:text-2xl">404 not found</CardTitle>
+  <div class="flex h-full items-center justify-center px-4 py-10">
+    <Card class="w-full max-w-lg bg-muted">
+      <CardContent class="flex flex-col items-center text-center">
+        <i class="fas fa-question fa-6x mb-6 text-muted-foreground" />
+        <CardTitle class="mb-2 text-2xl">404 not found</CardTitle>
         <CardDescription>
           The index or collection that you requested doesn't exist.
         </CardDescription>
       </CardContent>
-      <CardFooter class="tw:justify-center">
+      <CardFooter class="justify-center">
         <Button as="router-link" :to="{ name: 'Data' }" class="404BackToHome-link">
           Go back to the main page
         </Button>

@@ -56,7 +56,7 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:min-w-0 tw:flex-1 tw:outline-none');
+      return this.mergeClasses('min-w-0 flex-1 outline-none');
     },
     isActive(): boolean {
       return this.tabs.value === this.value;

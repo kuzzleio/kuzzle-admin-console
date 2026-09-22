@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-22 · **Phase courante** : 2 — Dé-bootstrapisation
+**Dernière mise à jour** : 2026-09-22 · **Phase courante** : 2 — nettoyage post-Bootstrap
 
 ---
 
@@ -299,7 +299,7 @@ c'était vrai pour un seul :
 |---|---|
 | Pas de preflight | **Non — l'inverse.** Le retrait du *reboot* de Bootstrap *oblige* à charger le preflight dans le même changement, sinon la console retombe sur les styles par défaut du navigateur ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
 | Couche `legacy` | **Non.** Elle contient encore nos feuilles SCSS, FontAwesome et `vfg.css` |
-| Préfixe `tw:` | **Non.** Le retirer est une réécriture mécanique de plusieurs milliers de classes : une PR à soi, dont le diff doit se lire comme un renommage |
+| Préfixe `tw:` | **Non, et pas mécaniquement.** Retiré dans une PR à soi ([ADR-0023](adr/0023-retrait-du-prefixe-tw.md)) : le renommage a fait se rencontrer `tw:flex-grow` et le `.flex-grow` du legacy, collision qu'aucune ligne du diff ne montre (G-036) |
 
 ---
 
@@ -1739,6 +1739,33 @@ Gabarit à copier :
   même question à leur reprise : `BasicFilter` seul est piloté par 20 appels de
   `cy.select()`, tous dans `search.spec.js`.
 
+#### G-036 — Retirer un préfixe de classes fait apparaître une collision qu'aucun diff ne montre
+
+- **Contexte** : phase 2, retrait du préfixe `tw:` ([ADR-0023](adr/0023-retrait-du-prefixe-tw.md)).
+  Réécriture de 2 608 occurrences sur 169 fichiers, diff parfaitement
+  symétrique : 903 lignes en +, 903 en −.
+- **Symptôme** : aucun. Lint vert, types inchangés, diff illisible autrement
+  que comme un renommage. Trois éléments (`Views/List.vue`, `Views/Map.vue` ×2)
+  changent pourtant de comportement en flexbox.
+- **Cause** : `tw:flex-grow` ne pouvait entrer en conflit avec rien. Renommée
+  `flex-grow`, elle rencontre `.flex-grow { flex: 1 1 1px }`, héritage
+  Bootstrap resté dans `_override.scss`. La couche `utilities` gagne — mais
+  uniquement sur `flex-grow`, la propriété que la règle Tailwind mentionne.
+  `flex-basis` reste celui du raccourci legacy : la base passe de `auto` à
+  `1px`. **Le conflit n'est écrit dans aucun des 169 fichiers modifiés** — il
+  naît de la rencontre entre un fichier modifié et un fichier qui ne l'est pas.
+- **Solution** : utiliser `grow`, le nom canonique en Tailwind v4, qui n'a pas
+  d'homonyme dans le legacy. `flex-grow` ne marchait que par alias, et c'est
+  l'alias qui a créé la collision.
+- **À retenir** : un renommage qui *supprime* un préfixe ne se vérifie pas en
+  relisant le diff. Il se vérifie en comparant le CSS produit avant et après,
+  préfixe normalisé : **un renommage réussi ne fait apparaître aucun sélecteur
+  nouveau**. Les 19 qui sont apparus ici ont aussi montré que le scanner de
+  Tailwind v4 prend `data-slot="table-container"` ou `variant="outline"` pour
+  des candidats — inerte, mais une règle présente dans la feuille ne prouve
+  plus que quelqu'un la porte.
+- **Ref** : [ADR-0023](adr/0023-retrait-du-prefixe-tw.md)
+
 #### G-035 — Le contrôle d'atteignabilité voit les modules, pas les exports
 
 - **Contexte** : phase 2, reprise des notifications (ADR-0020).
@@ -1975,3 +2002,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-22 | Notifications : un store, une zone unique, une API impérative assumée | [ADR-0020](adr/0020-systeme-de-toasts.md) |
 | 2026-09-22 | Splitter maison, et onglets montés en permanence dans ApiAction | [ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md) |
 | 2026-09-22 | Bootstrap sort et le preflight entre, dans le même geste | [ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md) |
+| 2026-09-22 | Retrait du préfixe `tw:`, et vérification par comparaison du CSS produit | [ADR-0023](adr/0023-retrait-du-prefixe-tw.md) |

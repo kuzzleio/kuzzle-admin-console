@@ -29,10 +29,10 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     wrapperClasses(): string {
-      return 'tw:relative tw:w-full tw:overflow-x-auto';
+      return 'relative w-full overflow-x-auto';
     },
     classes(): string {
-      return this.mergeClasses('tw:w-full tw:caption-bottom tw:font-sans tw:text-sm');
+      return this.mergeClasses('w-full caption-bottom font-sans text-sm');
     },
   },
 });

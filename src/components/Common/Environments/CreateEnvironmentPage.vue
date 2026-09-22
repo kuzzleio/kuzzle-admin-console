@@ -1,18 +1,18 @@
 <template>
-  <div class="tw:h-screen tw:overflow-auto">
-    <form class="tw:flex tw:min-h-full tw:justify-center tw:px-4 tw:py-6" @submit.prevent="submit">
-      <Card class="tw:my-auto tw:w-full tw:max-w-3xl">
-        <CardHeader class="tw:gap-4">
+  <div class="h-screen overflow-auto">
+    <form class="flex min-h-full justify-center px-4 py-6" @submit.prevent="submit">
+      <Card class="my-auto w-full max-w-3xl">
+        <CardHeader class="gap-4">
           <img
             alt="Welcome to the Kuzzle Admin Console"
-            class="tw:h-15 tw:w-auto tw:self-start"
+            class="h-15 w-auto self-start"
             height="60"
             src="../../../assets/logo.svg"
           />
-          <CardTitle class="tw:text-3xl">
+          <CardTitle class="text-3xl">
             {{ $attrs.id ? 'Edit a Connection' : 'Create a Connection' }}
           </CardTitle>
-          <CardDescription class="tw:text-base">
+          <CardDescription class="text-base">
             Please provide the details below to connect to your Kuzzle instance.
           </CardDescription>
         </CardHeader>
@@ -25,7 +25,7 @@
           />
         </CardContent>
 
-        <CardFooter class="tw:flex-wrap tw:justify-end tw:gap-3">
+        <CardFooter class="flex-wrap justify-end gap-3">
           <Button
             v-if="hasEnvironment"
             variant="outline"

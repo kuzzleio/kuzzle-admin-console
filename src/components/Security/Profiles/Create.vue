@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="CreateProfile tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
-  >
+  <div class="CreateProfile mx-auto flex h-full w-full max-w-6xl flex-col px-4">
     <Headline> Create a new profile </Headline>
     <Notice />
     <create-or-update @cancel="onCancel" @submit="onSubmit" />

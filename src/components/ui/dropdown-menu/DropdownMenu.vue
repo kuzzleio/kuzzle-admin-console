@@ -59,7 +59,7 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:inline-block');
+      return this.mergeClasses('inline-block');
     },
     isOpen(): boolean {
       return this.open === undefined ? this.uncontrolledOpen : this.open;

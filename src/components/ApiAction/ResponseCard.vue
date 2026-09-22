@@ -1,18 +1,18 @@
 <template>
-  <Card class="tw:h-full">
+  <Card class="h-full">
     <CardHeader>
       <CardTitle>Response</CardTitle>
     </CardHeader>
-    <CardContent class="tw:flex tw:min-h-0 tw:flex-1 tw:flex-col tw:gap-2">
+    <CardContent class="flex min-h-0 flex-1 flex-col gap-2">
       <Alert :variant="statusBarVariant">
         <p :data-cy="`api-actions-response-status-${tabIdx}`">Status: {{ currentStatus }}</p>
-        <p v-if="currentErrorMessage" class="tw:mt-1">{{ currentErrorMessage }}</p>
+        <p v-if="currentErrorMessage" class="mt-1">{{ currentErrorMessage }}</p>
       </Alert>
 
       <json-editor
         :id="`responseEditorWrapper-${tabIdx}`"
         :ref="`responseEditorWrapper-${tabIdx}`"
-        class="responseJsonEditor tw:min-h-0 tw:flex-1"
+        class="responseJsonEditor min-h-0 flex-1"
         content="{}"
         :data-cy="`api-actions-response-JSONEditor-${tabIdx}`"
         readonly

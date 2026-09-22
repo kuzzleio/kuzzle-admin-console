@@ -61,16 +61,16 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:inline-flex tw:cursor-pointer tw:items-center tw:gap-2',
-        'tw:appearance-none tw:border-0 tw:bg-transparent',
-        'tw:px-3 tw:py-2',
-        'tw:font-sans tw:text-sm tw:font-medium',
-        'tw:transition-colors tw:outline-none',
-        'tw:focus-visible:ring-2 tw:focus-visible:ring-ring tw:focus-visible:ring-offset-2 tw:focus-visible:ring-offset-background',
-        'tw:disabled:cursor-not-allowed tw:disabled:opacity-50',
+        'inline-flex cursor-pointer items-center gap-2',
+        'appearance-none border-0 bg-transparent',
+        'px-3 py-2',
+        'font-sans text-sm font-medium',
+        'transition-colors outline-none',
+        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        'disabled:cursor-not-allowed disabled:opacity-50',
         this.isActive
-          ? 'tw:text-foreground tw:aria-selected:font-semibold'
-          : 'tw:text-muted-foreground tw:hover:text-foreground',
+          ? 'text-foreground aria-selected:font-semibold'
+          : 'text-muted-foreground hover:text-foreground',
         this.activeMarker,
       );
     },
@@ -81,8 +81,8 @@ export default defineComponent({
       }
 
       return this.tabs.orientation === 'vertical'
-        ? 'tw:-mr-2 tw:border-r-2 tw:border-primary'
-        : 'tw:-mb-px tw:border-b-2 tw:border-primary';
+        ? '-mr-2 border-r-2 border-primary'
+        : '-mb-px border-b-2 border-primary';
     },
     isActive(): boolean {
       return this.tabs.value === this.value;

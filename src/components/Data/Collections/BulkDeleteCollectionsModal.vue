@@ -1,6 +1,6 @@
 <template>
   <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="tw:max-w-2xl" labelled-by="bulk-delete-collections-title">
+    <DialogContent class="max-w-2xl" labelled-by="bulk-delete-collections-title">
       <DialogHeader>
         <DialogTitle id="bulk-delete-collections-title">
           Are you sure you want to delete all the selected collections?
@@ -21,7 +21,7 @@
           />
           <FormDescription>This operation is NOT reversible</FormDescription>
         </FormItem>
-        <Alert v-if="error" class="tw:mt-4" variant="destructive">{{ error }}</Alert>
+        <Alert v-if="error" class="mt-4" variant="destructive">{{ error }}</Alert>
       </form>
 
       <DialogFooter>

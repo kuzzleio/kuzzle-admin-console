@@ -5,13 +5,13 @@
         <DialogTitle id="env-import-title">Import Connection</DialogTitle>
       </DialogHeader>
 
-      <div class="tw:flex tw:flex-col tw:gap-1.5">
+      <div class="flex flex-col gap-1.5">
         <Label for="env-import-file">Upload a file</Label>
         <input
           id="env-import-file"
           ref="file-input"
           accept=".json"
-          class="tw:block tw:w-full tw:cursor-pointer tw:rounded-md tw:border tw:border-input tw:bg-background tw:p-2 tw:font-sans tw:text-sm tw:text-foreground tw:outline-none tw:focus-visible:ring-2 tw:focus-visible:ring-ring tw:focus-visible:ring-offset-2 tw:focus-visible:ring-offset-background"
+          class="block w-full cursor-pointer rounded-md border border-input bg-background p-2 font-sans text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           data-cy="EnvironmentImport-fileInput"
           type="file"
           @change="onFileChange"

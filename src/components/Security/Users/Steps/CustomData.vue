@@ -4,10 +4,10 @@
       Here, you can define the custom content of your users. The fields you define here will appear
       in the <code>content</code> field of your user object, along with <code>profileIds</code> and
       <code>_kuzzle_info</code>.
-      <div class="tw:mt-3 tw:flex tw:flex-col tw:gap-6 tw:lg:flex-row">
+      <div class="mt-3 flex flex-col gap-6 lg:flex-row">
         <!-- Json view -->
-        <div class="tw:lg:w-8/12">
-          <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Custom content</h3>
+        <div class="lg:w-8/12">
+          <h3 class="text-lg font-semibold text-foreground">Custom content</h3>
           <json-editor
             ref="jsoneditor"
             class="document-json"
@@ -19,8 +19,8 @@
         </div>
 
         <!-- Mapping -->
-        <div class="tw:lg:w-4/12">
-          <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Mapping</h3>
+        <div class="lg:w-4/12">
+          <h3 class="text-lg font-semibold text-foreground">Mapping</h3>
           <pre
             v-json-formatter="{
               content: mapping,

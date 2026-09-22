@@ -1,22 +1,22 @@
 <template>
-  <div class="Credentials tw:flex tw:flex-wrap tw:gap-4">
-    <strong class="tw:w-full tw:sm:w-40">Credentials</strong>
+  <div class="Credentials flex flex-wrap gap-4">
+    <strong class="w-full sm:w-40">Credentials</strong>
 
-    <Card class="Credentials-selector tw:min-w-0 tw:flex-1">
+    <Card class="Credentials-selector min-w-0 flex-1">
       <CardContent>
         <!--
           `b-tabs` avait un slot `#empty`. La primitive n'en a pas : une barre
           d'onglets vide n'est pas un cas particulier du composant, c'est un
           cas particulier de l'écran.
         -->
-        <div v-if="strategies.length === 0" class="tw:text-center tw:text-muted-foreground">
+        <div v-if="strategies.length === 0" class="text-center text-muted-foreground">
           No strategies found<br />
           It looks like no authentication strategies are installed on your Kuzzle instance.
         </div>
 
         <Tabs v-else orientation="vertical">
-          <div class="tw:flex tw:flex-col tw:gap-2">
-            <span class="tw:px-3 tw:text-sm tw:text-secondary">Auth strategies</span>
+          <div class="flex flex-col gap-2">
+            <span class="px-3 text-sm text-secondary">Auth strategies</span>
             <TabsList>
               <TabsTrigger
                 v-for="strategy in strategies"
@@ -32,7 +32,7 @@
           <TabsContent
             v-for="strategy in strategies"
             :key="strategy"
-            class="tw:flex tw:flex-col tw:gap-4 tw:px-3"
+            class="flex flex-col gap-4 px-3"
             :value="strategy"
           >
             <FormItem v-for="fieldName in credentialsMapping[strategy]" :key="fieldName">

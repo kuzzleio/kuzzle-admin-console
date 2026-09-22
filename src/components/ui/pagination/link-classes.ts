@@ -10,14 +10,14 @@ import { cva } from 'class-variance-authority';
  */
 export const paginationLinkClasses = cva(
   [
-    'tw:inline-flex tw:items-center tw:justify-center tw:shrink-0',
-    'tw:h-9 tw:min-w-9 tw:px-3',
-    'tw:appearance-none tw:cursor-pointer',
-    'tw:border tw:border-transparent tw:rounded-md',
-    'tw:font-sans tw:text-sm tw:font-medium tw:leading-none',
-    'tw:transition-colors tw:outline-none',
-    'tw:focus-visible:ring-2 tw:focus-visible:ring-ring tw:focus-visible:ring-offset-2 tw:focus-visible:ring-offset-background',
-    'tw:disabled:pointer-events-none tw:disabled:opacity-50',
+    'inline-flex items-center justify-center shrink-0',
+    'h-9 min-w-9 px-3',
+    'appearance-none cursor-pointer',
+    'border border-transparent rounded-md',
+    'font-sans text-sm font-medium leading-none',
+    'transition-colors outline-none',
+    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'disabled:pointer-events-none disabled:opacity-50',
   ].join(' '),
   {
     defaultVariants: {
@@ -25,8 +25,8 @@ export const paginationLinkClasses = cva(
     },
     variants: {
       active: {
-        false: 'tw:bg-transparent tw:text-foreground tw:hover:bg-muted',
-        true: 'tw:border-input tw:bg-background tw:text-foreground tw:hover:bg-muted',
+        false: 'bg-transparent text-foreground hover:bg-muted',
+        true: 'border-input bg-background text-foreground hover:bg-muted',
       },
     },
   },

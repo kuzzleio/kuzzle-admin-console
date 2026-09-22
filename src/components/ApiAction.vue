@@ -1,7 +1,7 @@
 <template>
   <ResizablePanelGroup class="ApiActionLayout" @resize="saveNewPaneSize">
     <ResizablePanel
-      class="DataLayout-sidebarWrapper tw:h-full tw:overflow-auto"
+      class="DataLayout-sidebarWrapper h-full overflow-auto"
       :style="paneSize ? { width: paneSize } : { width: 'var(--sidebar-width)' }"
       data-cy="DataLayout-sidebarWrapper"
     >
@@ -15,16 +15,16 @@
 
     <ResizableHandle data-cy="sidebarResizer" label="Resize the saved queries list" />
 
-    <ResizablePanel class="DataLayout-contentWrapper tw:h-full tw:flex-1 tw:overflow-auto tw:p-4">
-      <Card v-if="!loading" class="tw:h-full">
-        <Tabs v-model="currentTab" class="tw:h-full tw:min-h-0">
+    <ResizablePanel class="DataLayout-contentWrapper h-full flex-1 overflow-auto p-4">
+      <Card v-if="!loading" class="h-full">
+        <Tabs v-model="currentTab" class="h-full min-h-0">
           <!--
             `b-tabs` avait un slot `#tabs-end` pour le bouton « + ». La
             primitive n'en a pas : la barre et le bouton sont composés ici,
             là où l'on sait ce que ce bouton fait (ADR-0017).
           -->
-          <div class="tw:flex tw:items-center tw:border-b tw:border-border tw:px-2">
-            <TabsList class="tw:min-w-0 tw:flex-1 tw:overflow-x-auto tw:border-b-0">
+          <div class="flex items-center border-b border-border px-2">
+            <TabsList class="min-w-0 flex-1 overflow-x-auto border-b-0">
               <TabsTrigger
                 v-for="(tabContent, tabIdx) of tabs"
                 :key="`query-${tabIdx}-${tabContent.name}`"
@@ -32,14 +32,14 @@
                 :title="tabContent.name"
                 :value="String(tabIdx)"
               >
-                <span class="tw:max-w-40 tw:truncate">{{ formatTabName(tabContent) }}</span>
+                <span class="max-w-40 truncate">{{ formatTabName(tabContent) }}</span>
                 <!--
                   Fermer un onglet était une icône dans le titre : un `<i>`
                   cliquable posé dans un lien. C'est un bouton à côté.
                 -->
                 <span
                   :aria-label="`Close the tab ${tabContent.name}`"
-                  class="tw:cursor-pointer tw:opacity-60 tw:hover:opacity-100"
+                  class="cursor-pointer opacity-60 hover:opacity-100"
                   role="button"
                   tabindex="0"
                   @click.stop="closeTab(tabIdx)"
@@ -52,7 +52,7 @@
 
             <Button
               aria-label="Add a tab"
-              class="tw:shrink-0"
+              class="shrink-0"
               data-cy="api-actions-tab-plus"
               size="icon"
               variant="ghost"
@@ -71,7 +71,7 @@
           <TabsContent
             v-for="(tabContent, tabIdx) of tabs"
             :key="`query-content-${tabIdx}-${tabContent.name}`"
-            class="tw:min-h-0 tw:p-3"
+            class="min-h-0 p-3"
             force-mount
             :value="String(tabIdx)"
           >

@@ -1,6 +1,6 @@
 <template>
-  <div class="Home tw:m-0 tw:flex tw:h-full tw:flex-col">
-    <div class="Home-menuWrapper tw:shrink-0">
+  <div class="Home m-0 flex h-full flex-col">
+    <div class="Home-menuWrapper shrink-0">
       <main-menu
         @environment::create="$emit('environment::create', $event)"
         @environment::delete="$emit('environment::delete', $event)"
@@ -8,7 +8,7 @@
       />
     </div>
 
-    <div class="Home-routeWrapper tw:grow tw:overflow-hidden" data-cy="App-loggedIn">
+    <div class="Home-routeWrapper grow overflow-hidden" data-cy="App-loggedIn">
       <main-spinner v-if="authInitializing" />
       <router-view v-else />
     </div>

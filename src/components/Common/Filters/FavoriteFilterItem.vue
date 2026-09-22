@@ -1,6 +1,6 @@
 <template>
-  <li class="tw:border-b tw:border-border tw:p-1 tw:last:border-b-0">
-    <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-1">
+  <li class="border-b border-border p-1 last:border-b-0">
+    <div class="flex flex-wrap items-center gap-1">
       <!--
         Le chevron était un `<i>` cliquable, ni atteignable au clavier ni
         annoncé : c'est un bouton, et il porte `aria-expanded`.
@@ -15,13 +15,13 @@
         <i :class="`fa fa-caret-${expanded ? 'down' : 'right'}`" aria-hidden="true" />
       </Button>
 
-      <a class="code tw:cursor-pointer" @click="toggleCollapse">{{ favorite.name }}</a>
+      <a class="code cursor-pointer" @click="toggleCollapse">{{ favorite.name }}</a>
 
       <Button size="icon" title="Edit Filter" variant="ghost" @click="openModal">
         <i class="fa fa-pencil-alt" aria-hidden="true" />
       </Button>
 
-      <span class="tw:ml-auto tw:flex tw:items-center">
+      <span class="ml-auto flex items-center">
         <Button size="icon" title="Use Filter" variant="ghost" @click="useFilter">
           <i class="fa fa-search" aria-hidden="true" />
         </Button>
@@ -42,12 +42,9 @@
       c'est-à-dire la hauteur réelle du contenu, sans nombre magique — même
       traitement que l'arborescence de Data.
     -->
-    <div
-      class="tw:grid tw:transition-all"
-      :class="expanded ? 'tw:grid-rows-[1fr]' : 'tw:grid-rows-[0fr]'"
-    >
-      <div class="tw:overflow-hidden">
-        <pre class="tw:ml-3 tw:whitespace-pre-wrap">{{ getFilter() }}</pre>
+    <div class="grid transition-all" :class="expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'">
+      <div class="overflow-hidden">
+        <pre class="ml-3 whitespace-pre-wrap">{{ getFilter() }}</pre>
       </div>
     </div>
 

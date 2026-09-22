@@ -1,12 +1,10 @@
 <template>
-  <div
-    class="UpdateProfile tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
-  >
+  <div class="UpdateProfile mx-auto flex h-full w-full max-w-6xl flex-col px-4">
     <Headline>
       Edit profile - <span class="bold">{{ id }}</span>
     </Headline>
     <Notice />
-    <Alert v-if="displayWarningAlert" class="tw:mb-4" variant="warning">
+    <Alert v-if="displayWarningAlert" class="mb-4" variant="warning">
       Warning, you are editing a profile that applies to yourself!
     </Alert>
     <create-or-update

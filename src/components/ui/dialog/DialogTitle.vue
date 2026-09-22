@@ -17,9 +17,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses(
-        'tw:font-sans tw:text-lg tw:font-semibold tw:leading-none tw:text-card-foreground',
-      );
+      return this.mergeClasses('font-sans text-lg font-semibold leading-none text-card-foreground');
     },
   },
 });

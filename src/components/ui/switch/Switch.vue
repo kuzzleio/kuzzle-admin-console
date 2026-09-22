@@ -2,7 +2,7 @@
   <label :class="wrapperClasses">
     <input
       :checked="modelValue"
-      class="tw:peer tw:sr-only"
+      class="peer sr-only"
       role="switch"
       type="checkbox"
       v-bind="$attrs"
@@ -12,7 +12,7 @@
     <span aria-hidden="true" :class="trackClasses">
       <span :class="thumbClasses" />
     </span>
-    <span v-if="$slots.default" class="tw:font-sans tw:text-sm tw:text-foreground"><slot /></span>
+    <span v-if="$slots.default" class="font-sans text-sm text-foreground"><slot /></span>
   </label>
 </template>
 
@@ -60,26 +60,26 @@ export default defineComponent({
   },
   computed: {
     wrapperClasses(): string {
-      return this.mergeClasses('tw:inline-flex tw:cursor-pointer tw:items-center tw:gap-2');
+      return this.mergeClasses('inline-flex cursor-pointer items-center gap-2');
     },
     trackClasses(): string {
       return [
-        'tw:inline-flex tw:h-5 tw:w-9 tw:shrink-0 tw:items-center tw:rounded-full',
-        'tw:border tw:border-transparent tw:bg-input tw:p-0.5',
-        'tw:transition-colors',
-        'tw:peer-checked:bg-primary',
+        'inline-flex h-5 w-9 shrink-0 items-center rounded-full',
+        'border border-transparent bg-input p-0.5',
+        'transition-colors',
+        'peer-checked:bg-primary',
         // La pastille est un **enfant** de la piste, pas un frère de l'input :
         // `peer-checked:` seul ne l'atteindrait pas (le sélecteur généré est un
         // combinateur de frères). `*:` vise l'enfant direct depuis la piste.
-        'tw:peer-checked:*:translate-x-4',
-        'tw:peer-focus-visible:ring-2 tw:peer-focus-visible:ring-ring tw:peer-focus-visible:ring-offset-2 tw:peer-focus-visible:ring-offset-background',
-        'tw:peer-disabled:cursor-not-allowed tw:peer-disabled:opacity-50',
+        'peer-checked:*:translate-x-4',
+        'peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background',
+        'peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
       ].join(' ');
     },
     thumbClasses(): string {
       return [
-        'tw:pointer-events-none tw:block tw:size-4 tw:rounded-full tw:bg-background tw:shadow-sm',
-        'tw:transition-transform',
+        'pointer-events-none block size-4 rounded-full bg-background shadow-sm',
+        'transition-transform',
       ].join(' ');
     },
   },

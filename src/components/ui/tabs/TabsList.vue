@@ -24,10 +24,10 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:flex tw:gap-1',
+        'flex gap-1',
         this.tabs.orientation === 'vertical'
-          ? 'tw:shrink-0 tw:flex-col tw:border-r tw:border-border tw:pr-2'
-          : 'tw:flex-row tw:border-b tw:border-border',
+          ? 'shrink-0 flex-col border-r border-border pr-2'
+          : 'flex-row border-b border-border',
       );
     },
   },

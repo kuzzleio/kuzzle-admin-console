@@ -22,7 +22,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:min-h-0 tw:min-w-0');
+      return this.mergeClasses('min-h-0 min-w-0');
     },
   },
 });

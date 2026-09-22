@@ -20,14 +20,14 @@
     -->
     <ul
       v-show="isOpen"
-      class="Autocomplete-results tw:m-0 tw:h-30 tw:list-none tw:overflow-auto tw:rounded-md tw:border tw:border-border tw:p-0"
+      class="Autocomplete-results m-0 h-30 list-none overflow-auto rounded-md border border-border p-0"
       data-cy="Autocomplete-results"
     >
       <li
         v-for="(result, i) in results"
         :key="result"
-        class="Autocomplete-result tw:cursor-pointer tw:px-1 tw:py-1 tw:text-left tw:hover:bg-accent tw:hover:text-accent-foreground"
-        :class="i === selectionCursor ? 'is-active tw:bg-accent tw:text-accent-foreground' : ''"
+        class="Autocomplete-result cursor-pointer px-1 py-1 text-left hover:bg-accent hover:text-accent-foreground"
+        :class="i === selectionCursor ? 'is-active bg-accent text-accent-foreground' : ''"
         :data-cy="`autocomplete-item--${result}`"
         @click="setResult(result)"
       >

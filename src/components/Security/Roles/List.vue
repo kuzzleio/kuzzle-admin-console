@@ -3,23 +3,20 @@
     <slot v-if="!currentFilter.basic && totalDocuments === 0" name="emptySet" />
     <template v-else>
       <filters
-        class="tw:mb-3"
+        class="mb-3"
         :current-filter="currentFilter.basic"
         @filters-updated="onFiltersUpdated"
         @reset="onFiltersUpdated"
       />
       <Card key="list">
         <CardContent>
-          <div v-if="loading" class="tw:flex tw:justify-center tw:py-8">
+          <div v-if="loading" class="flex justify-center py-8">
             <Spinner size="lg" />
           </div>
 
           <NoSearchResult v-show="!documents.length" />
 
-          <div
-            v-if="documents.length"
-            class="tw:mb-3 tw:flex tw:flex-wrap tw:items-center tw:gap-2"
-          >
+          <div v-if="documents.length" class="mb-3 flex flex-wrap items-center gap-2">
             <!--
               `data-cy="UserList-bulkDeleteBtn"` sur la liste des rôles : le
               `data-cy` a été copié depuis `Users/List.vue` à l'origine, et
@@ -27,7 +24,7 @@
               pas une reprise d'UI — hors de ce lot.
             -->
             <Button
-              class="tw:flex-none"
+              class="flex-none"
               data-cy="UserList-bulkDeleteBtn"
               :disabled="!displayBulkDelete"
               variant="destructive"
@@ -38,18 +35,18 @@
             </Button>
 
             <PerPageSelector
-              class="tw:ml-auto"
+              class="ml-auto"
               :current-page-size="paginationSize"
               :total-documents="totalDocuments"
               @change-page-size="changePaginationSize($event)"
             />
           </div>
 
-          <ul class="RoleList-list tw:flex tw:list-none tw:flex-col tw:gap-2 tw:pl-0">
+          <ul class="RoleList-list flex list-none flex-col gap-2 pl-0">
             <li
               v-for="document in documents"
               :key="document.id"
-              class="tw:rounded-md tw:border tw:border-border tw:p-2"
+              class="rounded-md border border-border p-2"
               data-cy="RoleList-list"
             >
               <RoleItem
@@ -66,7 +63,7 @@
 
       <ListPagination
         v-show="totalDocuments > paginationSize"
-        class="tw:mt-4"
+        class="mt-4"
         data-cy="RolesManagement-pagination"
         :items-per-page="paginationSize"
         :page.sync="currentPage"

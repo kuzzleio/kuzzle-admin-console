@@ -1,6 +1,6 @@
 <template>
-  <div class="UserProfileList tw:flex tw:flex-wrap tw:items-center tw:gap-4">
-    <div class="tw:min-w-0 tw:flex-1">
+  <div class="UserProfileList flex flex-wrap items-center gap-4">
+    <div class="min-w-0 flex-1">
       <div v-if="profileList.length">
         <Select :model-value="selectedProfiled" @update:modelValue="onProfileSelected">
           <SelectTrigger aria-label="Add a profile" data-cy="UserProfileList-select">
@@ -14,7 +14,7 @@
             -->
             <p
               v-if="availableProfiles.length === 0"
-              class="tw:px-3 tw:py-2 tw:text-sm tw:text-muted-foreground"
+              class="px-3 py-2 text-sm text-muted-foreground"
             >
               The user has all the profiles (are you sure?)
             </p>
@@ -26,14 +26,14 @@
       </div>
       <div v-else>
         No profiles found (you should
-        <router-link class="tw:text-primary tw:underline" :to="{ name: 'SecurityProfilesCreate' }">
+        <router-link class="text-primary underline" :to="{ name: 'SecurityProfilesCreate' }">
           create one
         </router-link>
         before creating a user)
       </div>
     </div>
 
-    <div class="UserProfileList-badges tw:flex tw:flex-1 tw:flex-wrap tw:items-center tw:gap-2">
+    <div class="UserProfileList-badges flex flex-1 flex-wrap items-center gap-2">
       <template v-if="addedProfiles.length">
         <!--
           La corbeille était une icône cliquable posée dans un badge : ni
@@ -43,13 +43,13 @@
         <Badge
           v-for="(profile, index) in addedProfiles"
           :key="index"
-          class="tw:gap-1 tw:py-1"
+          class="gap-1 py-1"
           :data-cy="`UserProfileList-badge--${profile}`"
         >
           {{ profile }}
           <button
             :aria-label="`Remove the profile ${profile}`"
-            class="UserProfileList-delete tw:cursor-pointer"
+            class="UserProfileList-delete cursor-pointer"
             :data-cy="`UserProfileList-${profile}--delete`"
             type="button"
             @click="removeProfile(profile)"
@@ -59,7 +59,7 @@
         </Badge>
       </template>
       <template v-else>
-        <span class="tw:text-secondary">No profiles selected</span>
+        <span class="text-secondary">No profiles selected</span>
       </template>
     </div>
   </div>

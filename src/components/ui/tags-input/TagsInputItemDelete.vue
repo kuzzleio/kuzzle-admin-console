@@ -40,11 +40,11 @@ export default defineComponent({
       return this.mergeClasses(
         // Sans preflight (ADR-0008), un `<button>` garde la bordure et le fond
         // du navigateur : les deux sont retirés explicitement (G-021).
-        'tw:appearance-none tw:border-0 tw:bg-transparent tw:p-0',
-        'tw:cursor-pointer tw:text-xs tw:leading-none tw:opacity-60',
-        'tw:outline-none tw:hover:opacity-100',
-        'tw:focus-visible:ring-2 tw:focus-visible:ring-ring',
-        'tw:disabled:cursor-not-allowed',
+        'appearance-none border-0 bg-transparent p-0',
+        'cursor-pointer text-xs leading-none opacity-60',
+        'outline-none hover:opacity-100',
+        'focus-visible:ring-2 focus-visible:ring-ring',
+        'disabled:cursor-not-allowed',
       );
     },
   },

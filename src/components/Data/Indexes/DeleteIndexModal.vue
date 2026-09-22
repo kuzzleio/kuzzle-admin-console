@@ -1,6 +1,6 @@
 <template>
   <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="tw:max-w-2xl" labelled-by="delete-index-title">
+    <DialogContent class="max-w-2xl" labelled-by="delete-index-title">
       <DialogHeader>
         <DialogTitle id="delete-index-title">
           Index <strong>{{ truncateName(index ? index.name : '') }}</strong> deletion
@@ -19,7 +19,7 @@
           />
           <FormDescription>This operation is NOT reversible</FormDescription>
         </FormItem>
-        <Alert v-if="error" class="tw:mt-4" variant="destructive">{{ error }}</Alert>
+        <Alert v-if="error" class="mt-4" variant="destructive">{{ error }}</Alert>
       </form>
 
       <DialogFooter>

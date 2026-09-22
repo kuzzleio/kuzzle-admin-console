@@ -1,7 +1,7 @@
 <template>
-  <div class="SecurityLayout tw:flex tw:h-full tw:flex-row tw:flex-nowrap">
+  <div class="SecurityLayout flex h-full flex-row flex-nowrap">
     <div
-      class="SecurityLayout-sidebarWrapper tw:z-1 tw:h-full tw:min-w-[var(--sidebar-width)] tw:overflow-auto tw:bg-muted tw:pt-4"
+      class="SecurityLayout-sidebarWrapper z-1 h-full min-w-[var(--sidebar-width)] overflow-auto bg-muted pt-4"
       data-cy="SecurityLayout-sidebarWrapper"
     >
       <!--
@@ -9,27 +9,23 @@
         navigation, lui, n'était porté par rien : c'est le `<nav>` qui le dit.
       -->
       <nav aria-label="Security sections">
-        <ul class="tw:flex tw:list-none tw:flex-col tw:pl-0">
+        <ul class="flex list-none flex-col pl-0">
           <li v-for="section of visibleSections" :key="section.route">
             <router-link
-              class="tw:flex tw:items-center tw:gap-2 tw:px-4 tw:py-2 tw:text-foreground tw:hover:bg-accent tw:hover:text-accent-foreground"
-              :class="
-                isCurrent(section)
-                  ? 'tw:font-semibold tw:opacity-100'
-                  : 'tw:font-light tw:opacity-60'
-              "
+              class="flex items-center gap-2 px-4 py-2 text-foreground hover:bg-accent hover:text-accent-foreground"
+              :class="isCurrent(section) ? 'font-semibold opacity-100' : 'font-light opacity-60'"
               :aria-current="isCurrent(section) ? 'page' : undefined"
               :data-cy="`SecurityLayout-${section.segment}`"
               :to="{ name: section.route }"
             >
-              <i class="fa fa-lg tw:w-6 tw:text-center" :class="section.icon" aria-hidden="true" />
+              <i class="fa fa-lg w-6 text-center" :class="section.icon" aria-hidden="true" />
               {{ section.label }}
             </router-link>
           </li>
         </ul>
       </nav>
     </div>
-    <div class="SecurityLayout-contentWrapper tw:h-full tw:grow tw:overflow-auto tw:p-6">
+    <div class="SecurityLayout-contentWrapper h-full grow overflow-auto p-6">
       <router-view />
     </div>
   </div>

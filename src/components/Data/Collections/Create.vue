@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="index"
-    class="CollectionCreate tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
+    class="CollectionCreate mx-auto flex h-full w-full max-w-6xl flex-col px-4"
     data-cy="CollectionCreate"
   >
     <create-or-update

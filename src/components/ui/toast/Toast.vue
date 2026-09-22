@@ -36,9 +36,9 @@ import { classMerge } from '../class-merge';
  */
 export const toastVariants = cva(
   [
-    'tw:pointer-events-auto tw:flex tw:w-full tw:flex-col tw:gap-1',
-    'tw:rounded-md tw:border tw:p-4 tw:shadow-md',
-    'tw:font-sans tw:text-sm',
+    'pointer-events-auto flex w-full flex-col gap-1',
+    'rounded-md border p-4 shadow-md',
+    'font-sans text-sm',
   ].join(' '),
   {
     defaultVariants: {
@@ -46,10 +46,10 @@ export const toastVariants = cva(
     },
     variants: {
       variant: {
-        danger: 'tw:border-destructive/40 tw:bg-destructive/10 tw:text-destructive',
-        info: 'tw:border-border tw:bg-card tw:text-card-foreground',
-        success: 'tw:border-secondary/40 tw:bg-secondary/10 tw:text-foreground',
-        warning: 'tw:border-accent tw:bg-accent/20 tw:text-foreground',
+        danger: 'border-destructive/40 bg-destructive/10 text-destructive',
+        info: 'border-border bg-card text-card-foreground',
+        success: 'border-secondary/40 bg-secondary/10 text-foreground',
+        warning: 'border-accent bg-accent/20 text-foreground',
       },
     },
   },

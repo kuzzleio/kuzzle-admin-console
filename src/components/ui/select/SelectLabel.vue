@@ -18,7 +18,7 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'tw:px-2 tw:py-1.5 tw:pl-8 tw:font-sans tw:text-xs tw:font-medium tw:text-muted-foreground',
+        'px-2 py-1.5 pl-8 font-sans text-xs font-medium text-muted-foreground',
       );
     },
   },

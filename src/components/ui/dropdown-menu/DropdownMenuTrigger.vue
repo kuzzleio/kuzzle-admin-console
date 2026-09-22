@@ -45,7 +45,7 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:cursor-pointer');
+      return this.mergeClasses('cursor-pointer');
     },
     isOpen(): boolean {
       return this.menu.isOpen;

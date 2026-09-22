@@ -1,9 +1,9 @@
 <template>
-  <div class="DocumentCreateOrUpdate tw:grow">
-    <Card class="tw:h-full">
-      <CardContent class="tw:flex tw:h-full tw:flex-col tw:gap-4">
-        <div class="tw:flex tw:flex-col tw:gap-4 tw:lg:flex-row tw:lg:items-end">
-          <FormItem class="tw:lg:w-7/12">
+  <div class="DocumentCreateOrUpdate grow">
+    <Card class="h-full">
+      <CardContent class="flex h-full flex-col gap-4">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end">
+          <FormItem class="lg:w-7/12">
             <Label for="document-id">Document ID</Label>
             <Input
               id="document-id"
@@ -19,15 +19,15 @@
         </div>
 
         <!-- Form view-->
-        <div v-if="formViewEnabled" class="tw:flex tw:min-h-0 tw:flex-1 tw:flex-col">
+        <div v-if="formViewEnabled" class="flex min-h-0 flex-1 flex-col">
           <Alert
             v-if="formSchema.unavailable.length > 0"
-            class="tw:mb-4"
+            class="mb-4"
             data-cy="form-view-warning"
             variant="warning"
           >
             The following fields are not supported in the form view:
-            <span class="tw:font-semibold">{{ formSchema.unavailable.join(', ') }}</span
+            <span class="font-semibold">{{ formSchema.unavailable.join(', ') }}</span
             >. Please use the JSON view if you want to update these values.
             <i
               id="supported-types-tooltip"
@@ -47,32 +47,32 @@
           />
         </div>
         <!-- Json view -->
-        <div v-else class="tw:flex tw:min-h-0 tw:flex-1 tw:flex-col tw:gap-4 tw:lg:flex-row">
-          <div class="tw:flex tw:min-h-0 tw:flex-col tw:lg:w-7/12">
+        <div v-else class="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
+          <div class="flex min-h-0 flex-col lg:w-7/12">
             <json-editor
               id="document"
               ref="jsoneditor"
-              class="tw:grow"
+              class="grow"
               :content="rawDocument"
               @change="onJsonChange"
             />
           </div>
 
           <!-- Mapping -->
-          <div class="tw:flex tw:min-h-0 tw:flex-col tw:lg:w-5/12">
-            <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Mapping</h3>
+          <div class="flex min-h-0 flex-col lg:w-5/12">
+            <h3 class="text-lg font-semibold text-foreground">Mapping</h3>
 
             <pre
               v-json-formatter="{
                 content: mapping,
                 open: true,
               }"
-              class="tw:mb-0 tw:min-h-0 tw:flex-1 tw:overflow-auto"
+              class="mb-0 min-h-0 flex-1 overflow-auto"
             />
           </div>
         </div>
       </CardContent>
-      <CardFooter class="tw:justify-end tw:gap-2">
+      <CardFooter class="justify-end gap-2">
         <Button variant="outline" @click="$emit('cancel')">Cancel</Button>
         <Button
           v-if="!id"

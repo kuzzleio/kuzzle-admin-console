@@ -14,7 +14,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('tw:opacity-90');
+      return this.mergeClasses('opacity-90');
     },
   },
 });

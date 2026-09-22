@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="DocumentCreate tw:mx-auto tw:flex tw:h-full tw:w-full tw:max-w-6xl tw:flex-col tw:px-4"
-  >
+  <div class="DocumentCreate mx-auto flex h-full w-full max-w-6xl flex-col px-4">
     <template v-if="hasRights">
       <headline> Create a new document </headline>
 

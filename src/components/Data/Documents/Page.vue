@@ -1,15 +1,15 @@
 <template>
-  <div class="DocumentList tw:mb-20">
+  <div class="DocumentList mb-20">
     <div
-      class="tw:mx-auto tw:w-full tw:px-4 tw:transition-[max-width] tw:duration-500"
-      :class="listViewType === LIST_VIEW_LIST ? 'tw:max-w-6xl' : 'tw:max-w-full'"
+      class="mx-auto w-full px-4 transition-[max-width] duration-500"
+      :class="listViewType === LIST_VIEW_LIST ? 'max-w-6xl' : 'max-w-full'"
     >
-      <div class="tw:flex tw:flex-wrap tw:items-start tw:justify-between tw:gap-4">
+      <div class="flex flex-wrap items-start justify-between gap-4">
         <headline>
           <span class="code" :title="collectionName">{{ truncateName(collectionName, 20) }}</span>
         </headline>
 
-        <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <Button
             :as="cannotCreateDocument ? 'button' : 'router-link'"
             data-cy="CreateDocument-btn"
@@ -26,9 +26,9 @@
           <!-- Bouton scindé : la partie gauche rafraîchit, la flèche ouvre les
                options. Les deux moitiés sont collées par les rayons plutôt que
                par un composant dédié — c'est le seul de la console. -->
-          <div class="tw:inline-flex" data-cy="Refresh-dropdown">
+          <div class="inline-flex" data-cy="Refresh-dropdown">
             <Button
-              class="tw:rounded-r-none"
+              class="rounded-r-none"
               :title="
                 autoSync
                   ? 'Documents are updated in real-time'
@@ -49,7 +49,7 @@
               <DropdownMenuTrigger
                 :as="Button"
                 aria-label="Refresh options"
-                class="tw:rounded-l-none tw:border-l-0"
+                class="rounded-l-none border-l-0"
                 data-cy="Refresh-dropdown--toggle"
                 size="icon"
                 variant="outline"
@@ -93,7 +93,7 @@
       />
       <template v-else>
         <filters
-          class="tw:mb-3"
+          class="mb-3"
           :available-operands="searchFilterOperands"
           :collection="collectionName"
           :current-filter="currentFilter"
@@ -104,7 +104,7 @@
           @submit="onFilterSubmit"
         />
         <template v-if="documents.length === 0">
-          <div v-if="isFetching" class="tw:mt-10 tw:text-center">
+          <div v-if="isFetching" class="mt-10 text-center">
             <Spinner label="Loading documents" />
           </div>
           <template v-else>
@@ -199,7 +199,7 @@
 
             <ListPagination
               v-show="totalDocuments > paginationSize && displayPagination"
-              class="tw:mt-4"
+              class="mt-4"
               data-cy="DocumentList-pagination"
               :items-per-page="paginationSize"
               :page.sync="currentPage"
@@ -208,7 +208,7 @@
 
             <p
               v-if="totalDocuments > ES_RESULT_WINDOW_LIMIT"
-              class="tw:mt-2 tw:text-center tw:text-sm tw:text-muted-foreground"
+              class="mt-2 text-center text-sm text-muted-foreground"
               data-cy="DocumentList-exceedESLimitMsg"
             >
               Due to limitations imposed by Elasticsearch, you won't be able to browse documents
