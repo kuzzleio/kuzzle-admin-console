@@ -23,8 +23,6 @@
     "ace-builds": "1.39.1",
     "apexcharts": "3.53.0",
     "bluebird": "3.7.2",
-    "bootstrap": "4.6.2",
-    "bootstrap-vue": "2.23.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "json-formatter-js": "2.5.23",

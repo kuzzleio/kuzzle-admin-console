@@ -7,7 +7,7 @@
       <div class="tw:mt-3 tw:flex tw:flex-col tw:gap-6 tw:lg:flex-row">
         <!-- Json view -->
         <div class="tw:lg:w-8/12">
-          <h3>Custom content</h3>
+          <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Custom content</h3>
           <json-editor
             ref="jsoneditor"
             class="document-json"
@@ -20,7 +20,7 @@
 
         <!-- Mapping -->
         <div class="tw:lg:w-4/12">
-          <h3>Mapping</h3>
+          <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Mapping</h3>
           <pre
             v-json-formatter="{
               content: mapping,

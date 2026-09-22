@@ -39,7 +39,7 @@
       <CardContent class="tw:flex tw:flex-wrap tw:items-center tw:gap-6">
         <i class="fa fa-6x fa-lock tw:text-muted-foreground" aria-hidden="true" />
         <div class="tw:flex-1">
-          <h2>
+          <h2 class="tw:text-xl tw:font-semibold tw:text-foreground">
             You are not allowed to watch realtime messages on collection
             <strong>{{ collectionName }}</strong> of index <strong>{{ indexName }}</strong>
           </h2>
@@ -122,7 +122,9 @@
               :class="subscribed ? 'fa-hourglass-half' : 'fa-paper-plane'"
             />
             <div v-if="subscribed" class="tw:flex-1">
-              <h2>Waiting for notifications matching your filters ...</h2>
+              <h2 class="tw:text-xl tw:font-semibold tw:text-foreground">
+                Waiting for notifications matching your filters ...
+              </h2>
               <p>
                 <em
                   >Learn more about real-time filtering syntax on
@@ -131,7 +133,7 @@
               </p>
             </div>
             <div v-else class="tw:flex-1">
-              <h3>
+              <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">
                 You did not subscribe yet to the collection
                 <strong>{{ collectionName }}</strong>
               </h3>

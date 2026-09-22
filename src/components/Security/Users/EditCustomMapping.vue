@@ -52,7 +52,7 @@
               ref="jsoneditor"
               :content="mappingValue"
               data-cy="EditUserMapping-JSONEditor"
-              myclass="h-100"
+              myclass="tw:h-full"
               tabindex="4"
               @change="onMappingChange"
             />

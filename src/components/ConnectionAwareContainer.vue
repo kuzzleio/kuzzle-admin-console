@@ -1,5 +1,5 @@
 <template>
-  <div class="ConnectionAwareContainer h-100">
+  <div class="ConnectionAwareContainer tw:h-full">
     <template v-if="connecting">
       <div v-if="!showOfflineSpinner" data-cy="AntiGlitchOverlay" class="AntiGlitchOverlay" />
       <offline-spinner

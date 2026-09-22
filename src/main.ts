@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
 import { createPinia, PiniaVuePlugin } from 'pinia';
 import VueFormGenerator from 'vue-form-generator';
 import VueRouter from 'vue-router';
@@ -22,9 +21,6 @@ Reflect.defineProperty(window, 'kuzzle', {
     return kuzzleStore.$kuzzle;
   },
 });
-
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
 
 Vue.use(PiniaVuePlugin);
 const pinia = createPinia();

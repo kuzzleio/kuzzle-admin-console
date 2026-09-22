@@ -29,7 +29,7 @@
 
       <!-- Mapping -->
       <div class="tw:lg:w-5/12">
-        <h3>Cheatsheet</h3>
+        <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Cheatsheet</h3>
         <div class="ProfileCreateOrUpdate-cheatsheet">
           Your profile is a set of <code>policies</code>, each of which will contain a set of roles,
           like the example below:

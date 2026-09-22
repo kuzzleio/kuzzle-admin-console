@@ -16,8 +16,8 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 100 / 107 — **0 balise `<b-*>`**, reste le retrait des paquets |
-| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
+| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ **Débloquée** — la condition d'ADR-0002 est remplie |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
@@ -289,11 +289,17 @@ plomberie est posée, l'apparence n'est pas décidée. La refonte visuelle se fe
 en changeant ces valeurs, à un seul endroit — c'est précisément ce qu'on achète.
 Le jeu sombre est défini mais branché sur rien.
 
-Trois réglages temporaires rendent la cohabitation tenable pendant la phase 2,
-tous mesurés plutôt que supposés (cf. [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) :
-**pas de preflight**, **legacy rangé dans une couche CSS**, et **utilitaires
-préfixées `tw:`**. Les trois se retirent mécaniquement avec Bootstrap, en fin de
-phase 2.
+Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
+(cf. [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) : **pas de
+preflight**, **legacy rangé dans une couche CSS**, et **utilitaires préfixées
+`tw:`**. ADR-0008 annonçait qu'ils « se retirent mécaniquement avec Bootstrap » ;
+c'était vrai pour un seul :
+
+| Réglage | Sort avec Bootstrap ? |
+|---|---|
+| Pas de preflight | **Non — l'inverse.** Le retrait du *reboot* de Bootstrap *oblige* à charger le preflight dans le même changement, sinon la console retombe sur les styles par défaut du navigateur ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
+| Couche `legacy` | **Non.** Elle contient encore nos feuilles SCSS, FontAwesome et `vfg.css` |
+| Préfixe `tw:` | **Non.** Le retirer est une réécriture mécanique de plusieurs milliers de classes : une PR à soi, dont le diff doit se lire comme un renommage |
 
 ---
 
@@ -696,6 +702,27 @@ justifiée au site d'appel. Remonter le texte brut aurait changé le contrat ent
 `QueryCard` et `ApiAction`, donc le format des requêtes sauvegardées : c'est une
 décision produit, pas un correctif de migration.
 
+#### Bootstrap est sorti — ✅ ADR-0022
+
+`grep -rn "<b-" src` ne retourne plus que des commentaires, `$bvToast` et
+`$bvModal` n'ont plus un seul appel : les deux paquets sont retirés de
+`package.json`, de `main.ts`, de `style.scss` et du découpage de bundle.
+**Le bundle perd 1 042 ko** (244 ko gzip) et une feuille CSS entière.
+
+Le geste n'est pas celui qui était prévu. Retirer `bootstrap.scss` retire aussi
+son *reboot* — la police de base, les liens sans soulignement, les tailles de
+titres. La première capture d'écran a montré une console **en Times New Roman,
+tous liens soulignés**. Le preflight de Tailwind est donc chargé dans le même
+changement : ce n'est pas deux étapes, c'est une.
+
+Sa contrepartie connue est arrivée avec : `h1`–`h6` reviennent à la taille du
+texte courant. Les primitives portaient déjà la leur (`CardTitle`,
+`DialogTitle`) ; les neuf titres bruts restants ont reçu la leur. C'est le bon
+prix : une taille de titre est une décision de design, pas un défaut de
+navigateur.
+
+**La phase 3 est débloquée** — c'était la condition posée par ADR-0002.
+
 #### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
 
 Le `grep` répond à la mauvaise question : il dit « ce nom est écrit quelque
@@ -763,8 +790,8 @@ compatibilité **avant** d'engager la montée.
 
 | Paquet | Problème | Traitement | Phase | Statut |
 |---|---|---|---|---|
-| `bootstrap-vue` 2.23.1 | aucune version Vue 3, **incompatible `@vue/compat`** | supprimé, remplacé par Tailwind + primitives locales | 2 | 🟡 **0 balise `<b-*>` et 0 appel `$bvToast`/`$bvModal`** ; reste le retrait du paquet et des trois réglages de cohabitation ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) |
-| `bootstrap` 4.6.2 | supprimé avec le précédent | Tailwind | 2 | 🟡 idem — `vue-form-generator` importe encore `vfg.css`, à vérifier avant le retrait |
+| ~~`bootstrap-vue` 2.23.1~~ | aucune version Vue 3, **incompatible `@vue/compat`** | **Retiré** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) | 2 | ✅ |
+| ~~`bootstrap` 4.6.2~~ | supprimé avec le précédent | **Retiré** — le preflight de Tailwind prend le relais du *reboot* | 2 | ✅ |
 | `vue-form-generator` 2.3.4 | **abandonné**, aucun successeur | à réimplémenter — cœur de l'édition de documents | 2 | ⬜ |
 | ~~`vue-multipane` 0.9.5~~ | **abandonné** | **Retiré** — splitter écrit à la main ([ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md)) | 2 | ✅ |
 | `vuejs-logger` 1.5.5 | Vue 2 uniquement | remplacer par un wrapper maison | 3 | ⬜ |
@@ -1947,3 +1974,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-22 | `TagsInput` à la main, malgré un site d'appel unique | [ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md) |
 | 2026-09-22 | Notifications : un store, une zone unique, une API impérative assumée | [ADR-0020](adr/0020-systeme-de-toasts.md) |
 | 2026-09-22 | Splitter maison, et onglets montés en permanence dans ApiAction | [ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md) |
+| 2026-09-22 | Bootstrap sort et le preflight entre, dans le même geste | [ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md) |

@@ -7,11 +7,6 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 
 const manualChunks = (id: string) => {
-  // Bootstrap
-  if (id.includes('bootstrap')) {
-    return 'bootstrap';
-  }
-
   // Ace
   if (id.includes('ace')) {
     return 'ace-builds';

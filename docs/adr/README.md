@@ -43,6 +43,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0019](0019-primitive-tags-input-en-vue-2.md) | `TagsInput` écrite à la main pour le seul champ à étiquettes | Acceptée |
 | [0020](0020-systeme-de-toasts.md) | Notifications : un store, une zone unique, et une API impérative assumée | Acceptée |
 | [0021](0021-reprise-apiaction-splitter-et-onglets.md) | Splitter écrit à la main, et onglets montés en permanence dans ApiAction | Acceptée |
+| [0022](0022-retrait-de-bootstrap-et-preflight.md) | Bootstrap sort et le preflight entre, dans le même geste | Acceptée, retire deux des trois réglages de [0008](0008-cohabitation-tailwind-bootstrap.md) |
 
 ## Gabarit
 

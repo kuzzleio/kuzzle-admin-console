@@ -60,7 +60,7 @@
 
           <!-- Mapping -->
           <div class="tw:flex tw:min-h-0 tw:flex-col tw:lg:w-5/12">
-            <h3>Mapping</h3>
+            <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Mapping</h3>
 
             <pre
               v-json-formatter="{
