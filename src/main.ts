@@ -1,6 +1,5 @@
-import Vue from 'vue';
-import { createPinia, PiniaVuePlugin } from 'pinia';
-import VueRouter from 'vue-router';
+import { configureCompat, createApp } from 'vue';
+import { createPinia } from 'pinia';
 
 import { logger } from './plugins/logger';
 import './plugins/toast';
@@ -11,6 +10,17 @@ import { useKuzzleStore } from './stores';
 
 import App from './App.vue';
 
+/*
+ * Drapeaux de compatibilité (ADR-0027).
+ *
+ * `MODE: 2` est posé dans `vite.config.ts` : l'application démarre en
+ * comportement Vue 2, et chaque drapeau s'éteint ici quand le code
+ * correspondant a été repris. Ce qui est encore absent de cette liste est donc
+ * **la dette restante de la phase 3**, et la liste est faite pour grossir
+ * jusqu'à ce que `MODE: 3` puisse la remplacer.
+ */
+configureCompat({});
+
 Reflect.defineProperty(window, 'kuzzle', {
   get() {
     const kuzzleStore = useKuzzleStore();
@@ -18,31 +28,9 @@ Reflect.defineProperty(window, 'kuzzle', {
   },
 });
 
-Vue.use(PiniaVuePlugin);
-const pinia = createPinia();
+const app = createApp(App);
 
-Vue.use(VueRouter);
-const router = createRoutes(logger);
+app.use(createPinia());
+app.use(createRoutes(logger));
 
-// Vue.config.errorHandler = (err, vm, info) => {
-//   // TODO : use vue-logger instead of console.error,
-//   // idk why but here vm.$log is undefined
-//   console.error(`Error: ${err.toString()}\nInfo: ${info}`)
-
-//   vm.$bvToast.toast('The complete error has been printed to the console.', {
-//     title: 'Ooops! Something went wrong.',
-//     variant: 'warning',
-//     toaster: 'b-toaster-bottom-right',
-//     appendToast: true,
-//     dismissible: true,
-//     noAutoHide: true
-//   })
-// }
-
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  pinia,
-  router,
-  render: (h) => h(App),
-});
+app.mount('#app');

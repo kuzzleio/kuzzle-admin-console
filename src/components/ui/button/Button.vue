@@ -1,5 +1,15 @@
 <template>
-  <component :is="as" :class="classes" v-bind="$attrs" v-on="$listeners">
+  <!--
+    Le cas par défaut est écrit en dur plutôt que passé par `<component :is>`.
+    Vue 3 résout la chaîne d'un `:is` **comme un composant avant de la traiter
+    comme une balise**, et `resolveAsset` compare le nom demandé au nom du
+    composant courant : `capitalize(camelize('button'))` vaut `Button`, donc
+    `<component :is="'button'">` se rendait lui-même, à l'infini (G-039).
+  -->
+  <button v-if="as === 'button'" :class="classes" v-bind="$attrs" v-on="$listeners">
+    <slot />
+  </button>
+  <component :is="as" v-else :class="classes" v-bind="$attrs" v-on="$listeners">
     <slot />
   </component>
 </template>

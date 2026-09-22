@@ -12,10 +12,17 @@ const SIDE_OFFSET = 4;
  * tableaux dans un `overflow-x-auto` (ADR-0011), et un panneau en
  * `position: absolute` sous une cellule y serait tronqué.
  *
- * Le panneau est donc déplacé dans `<body>` à l'ouverture, placé en
+ * Le panneau est donc rendu dans `<body>` par `<Teleport>`, placé en
  * `position: fixed` d'après le rectangle de l'ancre, replacé au défilement et
  * au redimensionnement, et basculé au-dessus de l'ancre quand le bas manque de
  * place.
+ *
+ * **Le `<Teleport>` remplace un `document.body.appendChild()` écrit à la main**
+ * (ADR-0027). En Vue 2, sortir un nœud de l'arbre rendu et le raccrocher
+ * ailleurs marchait parce que le patch visait l'élément lui-même. Vue 3
+ * mémorise le conteneur dans lequel il a inséré : le panneau déplacé restait
+ * visible, mais son contenu — les options d'une liste, les entrées d'un menu —
+ * était inséré dans l'ancien parent, et ne s'affichait plus (G-040).
  *
  * Le mixin ne rend rien et ne connaît ni les rôles ARIA ni le clavier : ce qui
  * distingue un menu d'une liste déroulante reste dans chaque famille. Il ne
@@ -57,9 +64,6 @@ export const floatingPanel = defineComponent({
     attachPanel(panel: HTMLElement, anchor: HTMLElement | null): void {
       this.panelEl = panel;
       this.anchorEl = anchor;
-      if (panel.parentNode !== document.body) {
-        document.body.appendChild(panel);
-      }
       this.placePanel();
       // En capture : un défilement dans un conteneur interne ne remonte pas
       // jusqu'à `window` autrement, et le panneau resterait sur place pendant
@@ -70,11 +74,8 @@ export const floatingPanel = defineComponent({
     detachPanel(): void {
       window.removeEventListener('scroll', this.placePanel, true);
       window.removeEventListener('resize', this.placePanel);
-      // Le nœud a été sorti de l'arbre que Vue gère visuellement : sans ce
-      // retrait, il resterait orphelin dans `<body>` après destruction.
-      if (this.panelEl?.parentNode === document.body) {
-        document.body.removeChild(this.panelEl);
-      }
+      // Le retrait du nœud est celui de `<Teleport>` : plus rien à défaire ici
+      // que les écouteurs posés ci-dessus.
       this.panelEl = null;
       this.anchorEl = null;
     },

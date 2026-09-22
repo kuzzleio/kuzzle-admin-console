@@ -1,5 +1,5 @@
 import KeplerCompanion from 'kepler-companion';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 
 import PageNotFound from '../components/404.vue';
 import ApiAction from '../components/ApiAction.vue';
@@ -55,7 +55,15 @@ export default function createRoutes(log: Logger) {
     }
   };
 
-  const router = new VueRouter({
+  /*
+   * `createWebHashHistory` reprend le mode par défaut de `vue-router` 3, que
+   * la console n'avait jamais eu à nommer : toutes ses URL sont en `/#/…`, y
+   * compris dans les 17 specs et dans les liens que les utilisateurs ont mis
+   * en favori. Changer d'historique ici serait un changement d'URL déguisé en
+   * migration.
+   */
+  const router = createRouter({
+    history: createWebHashHistory(),
     routes: [
       {
         path: '/create-connection',
@@ -152,7 +160,9 @@ export default function createRoutes(log: Logger) {
         ],
       },
       {
-        path: '*',
+        // `vue-router` 4 n'a plus de joker `'*'` : une route attrape-tout est
+        // un paramètre de chemin nommé, répété.
+        path: '/:pathMatch(.*)*',
         name: '404',
         beforeEnter: environmentsGuard,
         component: PageNotFound,

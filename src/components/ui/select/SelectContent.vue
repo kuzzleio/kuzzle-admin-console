@@ -1,18 +1,20 @@
 <template>
-  <div
-    v-if="isOpen"
-    ref="content"
-    :class="classes"
-    data-slot="select-content"
-    role="listbox"
-    :style="panelStyle"
-    tabindex="-1"
-    v-bind="$attrs"
-    @keydown="onKeydown"
-    v-on="$listeners"
-  >
-    <slot />
-  </div>
+  <Teleport to="body">
+    <div
+      v-if="isOpen"
+      ref="content"
+      :class="classes"
+      data-slot="select-content"
+      role="listbox"
+      :style="panelStyle"
+      tabindex="-1"
+      v-bind="$attrs"
+      @keydown="onKeydown"
+      v-on="$listeners"
+    >
+      <slot />
+    </div>
+  </Teleport>
 </template>
 
 <script lang="ts">

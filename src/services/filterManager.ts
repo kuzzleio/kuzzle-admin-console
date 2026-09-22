@@ -102,7 +102,13 @@ export const saveToRouter = (filter, router) => {
     formattedFilter.sorting = JSON.stringify(filter.sorting);
   }
 
-  const otherQueryParams = _.omit(router.currentRoute.query, Object.keys(emptyFilter));
+  /*
+   * `router.currentRoute` est une `Ref` depuis `vue-router` 4 : la route est
+   * dans `.value`. Sans le déréférencement, `query` valait `undefined`, les
+   * paramètres d'URL étrangers au filtre étaient perdus à chaque recherche, et
+   * `listViewType` disparaissait de l'URL (ADR-0027).
+   */
+  const otherQueryParams = _.omit(router.currentRoute.value.query, Object.keys(emptyFilter));
   const mergedQuery = _.merge(formattedFilter, otherQueryParams);
 
   router.push({ query: mergedQuery }).catch(() => {});
