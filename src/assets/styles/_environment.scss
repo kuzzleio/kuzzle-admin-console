@@ -1,55 +1,11 @@
-.environment {
-  .error {
-    strong {
-      display: block;
-    }
-  }
-  .input-field {
-    label {
-      width: 100%;
-      left: 0;
-    }
-  }
-  button {
-    &.btn-flat {
-      &:focus {
-        background-color: #eee;
-      }
-    }
-  }
-  .row {
-    margin-bottom: 5px;
-  }
-  .last-row {
-    margin-bottom: 5px;
-  }
-  .color-picker {
-    p {
-      color: #9e9e9e;
-    }
-    .color {
-      display: block;
-      text-align: center;
-      cursor: pointer;
-      height: 60px;
-
-      &:hover {
-        box-shadow: 5px 10px 5px 0 rgba(0, 0, 0, 0.16),
-          0 2px 10px 0 rgba(0, 0, 0, 0.12);
-      }
-      .selected {
-        margin-top: 15px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        font-size: 1.2em;
-        font-weight: normal;
-        color: #fff;
-        display: inline-block;
-      }
-    }
-  }
-}
-
+// Palette des couleurs de connexion (`EnvColor--*`).
+//
+// Les classes sont construites à l'exécution — `EnvColor--${color}` dans
+// `MainMenu` et `CreateEnvironment` — donc invisibles à un grep sur les
+// attributs `class` (G-037).
+//
+// Ces valeurs sont du design en dur : elles rejoindront les tokens quand la
+// charte des connexions sera reprise.
 $colors: (
   'darkblue': #002835,
   'lightblue': #0277bd,

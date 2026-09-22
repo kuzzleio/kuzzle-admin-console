@@ -1,20 +1,21 @@
-// Feuilles SCSS historiques de la console.
+// Ce qui reste des feuilles SCSS historiques de la console.
 //
-// Bootstrap 4 et bootstrap-vue en sont sortis (ADR-0022) ; la couche `legacy`
-// reste, parce qu'elle contient encore nos propres feuilles et `vfg.css`, et
-// qu'elles perdent toujours face aux utilitaires Tailwind sans surenchère de
-// spécificité (cf. `tailwind.css` et ADR-0008). L'ordre des couches est
-// déclaré dans `tailwind.css`, importé avant ce fichier.
+// Quatre feuilles sont parties avec ADR-0024 — `variables`, `animations`,
+// `pages`, `utility` — parce qu'elles ne stylaient plus rien. Les cinq qui
+// restent le font pour une raison nommée en tête de chacune : une police
+// applicative, deux règles de document, la surbrillance temps réel posée par
+// `classList.add()`, la palette des connexions, et le rappel de
+// `json-formatter-js`.
+//
+// La couche `legacy` survit à ce ménage : `vfg.css` y est toujours, et n'en
+// sortira qu'avec `vue-form-generator`. Ce qui est ici perd face aux
+// utilitaires Tailwind sans surenchère de spécificité (ADR-0008) ; l'ordre des
+// couches est déclaré dans `tailwind.css`, importé avant ce fichier.
 @layer legacy {
-  // App
-  @import 'styles/variables';
   @import 'styles/fonts';
   @import 'styles/layout';
-  @import 'styles/animations';
   @import 'styles/realtime';
-  @import 'styles/pages';
   @import 'styles/environment';
-  @import 'styles/utility';
   @import 'styles/override';
 }
 

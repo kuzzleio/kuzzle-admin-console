@@ -1,23 +1,6 @@
-// `$theme-colors` surchargeait la palette de Bootstrap, et
-// `.navbar .navbar-nav .nav-link` habillait le `b-navbar` du menu principal :
-// les deux sont partis avec lui (ADR-0022).
-.light-shadow {
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.125);
-}
-
+// Seul rappel qui reste ici : `json-formatter-js` rend ses nœuds lui-même, on
+// ne peut pas poser d'utilitaire dessus. La directive `v-json-formatter` est
+// vivante (UserItem, RoleItem, CustomData).
 .json-formatter-row .json-formatter-toggler:after {
   font-size: 14px;
-}
-
-.vertical-align {
-  display: flex;
-  align-items: center;
-}
-
-.flex-grow {
-  flex: 1 1 1px;
-}
-
-.text-small {
-  font-size: 0.75em
 }

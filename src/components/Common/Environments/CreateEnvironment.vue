@@ -1,5 +1,5 @@
 <template>
-  <div class="CreateEnvironment environment">
+  <div class="CreateEnvironment">
     <form class="flex flex-col gap-4">
       <FormItem id="env-name" data-cy="CreateEnvironment-name--group">
         <Label for="input-env-name">Connection name</Label>

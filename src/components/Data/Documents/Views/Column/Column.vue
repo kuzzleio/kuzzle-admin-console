@@ -482,41 +482,10 @@ export default {
 </script>
 
 <style lang="scss">
-.inlineDisplay {
-  display: table;
-
-  &-item {
-    display: table-cell;
-  }
-}
-
-.dropdownScroll {
-  max-height: 250px;
-  overflow-y: scroll;
-}
-
-.columnClass {
-  min-width: 100px;
-  overflow: hidden;
-}
-
-.valueDisplayer {
-  white-space: nowrap;
-  display: inline-block;
-}
-
-.dropdown-text {
-  display: block;
-  width: 100%;
-  clear: both;
-  font-weight: 400;
-  color: #212529;
-  text-align: inherit;
-  white-space: nowrap;
-  background-color: transparent;
-  border: 0;
-}
-
+/* Bloc global, pas `scoped` : `.multiselect__*` vise des nœuds rendus par
+ * `vue-multiselect`, sur lesquels on ne peut pas poser d'utilitaire. Six règles
+ * mortes en sont parties (`.inlineDisplay`, `.dropdownScroll`, `.columnClass`,
+ * `.valueDisplayer`, `.dropdown-text`, `.max-w-24rem`). */
 .cell {
   height: 65px;
   vertical-align: middle !important;
@@ -532,9 +501,5 @@ export default {
 
 .multiselect__option--selected.multiselect__option--highlight {
   background: #e64472 !important;
-}
-
-.max-w-24rem {
-  max-width: 24rem;
 }
 </style>

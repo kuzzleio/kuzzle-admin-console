@@ -1,29 +1,9 @@
-$notif-volatile-clr: #60ab61;
-$notif-created-updated-clr: #5e99cc;
-$notif-deleted-clr: #c75856;
-$notif-pending-clr: #dcac59;
-$notif-user-clr: #917fc3;
-
-.message-volatile {
-  color: $notif-volatile-clr;
-}
-
-.message-created-updated-doc {
-  color: $notif-created-updated-clr;
-}
-
-.message-deleted-doc {
-  color: $notif-deleted-clr;
-}
-
-.message-pending {
-  color: $notif-pending-clr;
-}
-
-.message-user {
-  color: $notif-user-clr;
-}
-
+// Surbrillance des documents touchés par une notification temps réel.
+//
+// Les états (`updated`, `replaced`, `changed`, `deleted`, `created`) sont posés
+// par `classList.add()` depuis `DocumentListItem`, `HighlightableRow` et
+// `TableCell` — jamais dans un attribut `class`. Un audit d'usage qui lit les
+// templates ne les voit pas (G-037).
 .realtime-highlight {
   transition: background-color 1.2s ease;
 

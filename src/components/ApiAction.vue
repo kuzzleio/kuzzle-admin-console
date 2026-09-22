@@ -389,72 +389,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@use '@/assets/styles/variables.scss';
-
-::v-deep .tabsHeight {
-  height: calc(100% - 100px) !important;
-}
-
-::v-deep .card-title {
-  margin-bottom: 0px;
-}
-::v-deep .titleItem {
-  min-width: 200px;
-  border: 1px solid #d5d5d5 !important;
-}
-::v-deep .tab-pane {
-  height: 100%;
-}
-::v-deep .tabs {
-  height: 100%;
-}
+/* Les règles de `vue-multipane` (`.Custom-resizer-vertical`, les variantes
+ * `-vertical` du layout) et de `b-tabs` (`.tab-pane`, `.tabs`, `.tabsHeight`,
+ * `.card-title`, `.titleItem`) sont parties avec leurs bibliothèques
+ * (ADR-0017, ADR-0021) : plus aucun élément ne portait ces classes. */
 .backgroundCard {
-  background-color: variables.$light-grey-color;
-}
-
-.DataLayout-vertical {
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-}
-
-.DataLayout-sidebarWrapper-vertical {
-  min-width: variables.$sidebar-width;
-  width: variables.$sidebar-width;
-  height: 100%;
-  z-index: 1;
-}
-
-.DataLayout-contentWrapper-vertical {
-  flex-grow: 1;
-  height: 100%;
-  overflow: auto;
-  padding: variables.$content-gutter;
-}
-
-.Custom-resizer-vertical > .multipane-resizer {
-  margin: 0;
-  left: 0;
-  position: relative;
-  padding: 3px;
-  border: 1px solid #ccc;
-  box-shadow: 2px 0px 5px -2px rgba(112, 112, 112, 1);
-  &:before {
-    display: block;
-    content: '';
-    width: 1px;
-    height: 50px;
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    border-left: 1px solid #aaa;
-  }
-  &:hover {
-    &:before {
-      border-color: #777;
-      background-color: #f5f5f5;
-    }
-  }
+  background-color: var(--muted);
 }
 </style>
