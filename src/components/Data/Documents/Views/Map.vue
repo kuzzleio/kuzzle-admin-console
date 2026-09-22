@@ -60,36 +60,41 @@
             :icon="getIcon(document)"
             @click="onItemClicked(document, document.coordinates, 'point')"
           />
+          <!--
+            La classe de sélection passe par `class-name`, l'option Leaflet, et
+            non par `:class`. Un composant de couche ne rend aucun élément dans
+            le DOM — le tracé est un `<path>` SVG créé par Leaflet — donc un
+            `:class` n'a nulle part où atterrir (G-043). `class-name` n'étant
+            posée qu'à la création du tracé, la clé porte l'état de sélection :
+            en changer recrée la couche, ce qui est le seul moyen d'en changer.
+          -->
           <l-circle
             v-for="shape of circleShapes"
             :ref="`circle-${shape._id}`"
-            :key="shape._id"
+            :key="`${shape._id}-${getShapeCyClasse(shape)}`"
             :lat-lng="shape.content.coordinates"
             :radius="getRadiusInMeter(shape.content.radius)"
             :color="getShapeColor(shape._id)"
-            :class-name="`data-cy-shape data-cy-shape-${shape._id}`"
-            :class="getShapeCyClasse(shape)"
+            :class-name="shapeClassName(shape)"
             @click="onItemClicked(shape, shape.content.coordinates, 'circle', shape.content.radius)"
           />
           <l-polygon
             v-for="shape of polygonShapes"
             :ref="`polygon-${shape._id}`"
-            :key="shape._id"
+            :key="`${shape._id}-${getShapeCyClasse(shape)}`"
             :lat-lngs="shape.content.coordinates"
             :color="getShapeColor(shape._id)"
-            :class="getShapeCyClasse(shape)"
-            :class-name="`data-cy-shape data-cy-shape-${shape._id}`"
+            :class-name="shapeClassName(shape)"
             @click="onItemClicked(shape, shape.content.coordinates, 'array')"
           />
           <div v-for="shape of multiPolygonShapes" :key="shape._id">
             <l-polygon
               v-for="(polygon, index) in shape.content.coordinates"
               :ref="`polygon-${shape._id}-${index}`"
-              :key="`${shape._id}-${index}`"
+              :key="`${shape._id}-${index}-${getShapeCyClasse(shape)}`"
               :lat-lngs="polygon"
               :color="getShapeColor(shape._id)"
-              :class="getShapeCyClasse(shape)"
-              :class-name="`data-cy-shape data-cy-shape-${shape._id}`"
+              :class-name="shapeClassName(shape)"
               @click="onItemClicked(shape, polygon, 'array')"
             />
           </div>
@@ -367,6 +372,9 @@ export default {
       if (L.latLngBounds(this.coordinates).isValid()) {
         this.map.fitBounds(this.coordinates, { maxZoom: 12 });
       }
+    },
+    shapeClassName(shape) {
+      return `data-cy-shape data-cy-shape-${shape._id} ${this.getShapeCyClasse(shape)}`.trim();
     },
     getShapeCyClasse(shape) {
       return this.currentDocument && this.currentDocument._id === shape._id

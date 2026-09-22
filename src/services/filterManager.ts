@@ -89,7 +89,41 @@ export const save = (filter, router, index, collection) => {
   saveToLocalStorage(strippedFilter, index, collection);
 };
 
-export const saveToRouter = (filter, router) => {
+/*
+ * Les écritures de la query, sérialisées.
+ *
+ * `vue-router` 4 applique une navigation de façon **asynchrone** : `$route`
+ * reste l'ancienne route tant que la précédente n'est pas confirmée. Or la
+ * console écrit l'URL depuis deux endroits qui reconstruisent chacun la query
+ * entière — le filtre ici, le type de vue dans `Documents/Page.vue`. En
+ * `vue-router` 3 la première écriture était appliquée avant que la seconde ne
+ * lise `$route` ; en v4, les deux lisent la même query périmée et la seconde
+ * écrase la première (G-042).
+ *
+ * Chaque écriture attend donc la précédente, et reçoit la query telle qu'elle
+ * est **au moment où elle s'applique** — pas telle qu'elle était quand on l'a
+ * demandée. C'est ce que `build` reçoit en argument.
+ */
+let pendingRouteWrite: Promise<unknown> = Promise.resolve();
+
+export const pushQuery = async (router, build) => {
+  pendingRouteWrite = pendingRouteWrite
+    .then(async () => {
+      const current = router.currentRoute.value.query;
+      const next = build(current);
+
+      if (_.isEqual(current, next)) {
+        return undefined;
+      }
+
+      return router.push({ query: next });
+    })
+    .catch(() => undefined);
+
+  return await pendingRouteWrite;
+};
+
+export const saveToRouter = async (filter, router) => {
   const emptyFilter = new Filter();
   const formattedFilter = Object.assign({}, filter);
   if (filter.basic) {
@@ -103,15 +137,14 @@ export const saveToRouter = (filter, router) => {
   }
 
   /*
-   * `router.currentRoute` est une `Ref` depuis `vue-router` 4 : la route est
-   * dans `.value`. Sans le déréférencement, `query` valait `undefined`, les
-   * paramètres d'URL étrangers au filtre étaient perdus à chaque recherche, et
-   * `listViewType` disparaissait de l'URL (ADR-0027).
+   * La query est reconstruite au moment de l'écriture : les clés du filtre
+   * sont remplacées — un filtre réinitialisé doit pouvoir les *retirer* de
+   * l'URL — et tout le reste est conservé.
    */
-  const otherQueryParams = _.omit(router.currentRoute.value.query, Object.keys(emptyFilter));
-  const mergedQuery = _.merge(formattedFilter, otherQueryParams);
-
-  router.push({ query: mergedQuery }).catch(() => {});
+  return await pushQuery(router, (query) => ({
+    ..._.omit(query, Object.keys(emptyFilter)),
+    ...formattedFilter,
+  }));
 };
 
 export const saveToLocalStorage = (filter, index, collection) => {

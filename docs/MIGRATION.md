@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-22 · **Phase courante** : 2 — nettoyage post-Bootstrap
+**Dernière mise à jour** : 2026-09-22 · **Phase courante** : 3 — Vue 3 sous `@vue/compat`
 
 ---
 
@@ -17,7 +17,7 @@
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
-| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ **Débloquée, et plus rien devant** — la condition d'ADR-0002 est remplie, et le § 3.1 est soldé ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md), [ADR-0026](adr/0026-wrapper-de-log-maison.md)) |
+| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 **La console tourne sur Vue 3** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) — 17/17 specs. Reste à éteindre les drapeaux de compat |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
@@ -804,16 +804,16 @@ lui-même (§ 3.2).
 
 | Paquet | Cible | Phase | Statut |
 |---|---|---|---|
-| `vue` 2.7.16 | 3.5.x (via `@vue/compat`) | 3 | ⬜ |
-| `vue-router` 3.6.5 | 4.x puis 5.x | 3 | ⬜ |
-| `pinia` 2.2.4 + `PiniaVuePlugin` | 4.x, sans plugin Vue 2 | 3 | ⬜ |
-| `@vitejs/plugin-vue2` | `@vitejs/plugin-vue` | 3 | ⬜ |
-| `vue2-leaflet` 2.7.1 | `@vue-leaflet/vue-leaflet` | 3 | ⬜ |
+| ~~`vue` 2.7.16~~ | **3.5.43 + `@vue/compat`** | 3 | ✅ |
+| ~~`vue-router` 3.6.5~~ | **4.6.4**, `createWebHashHistory` | 3 | ✅ |
+| ~~`pinia` 2.2.4 + `PiniaVuePlugin`~~ | **3.0.4**, sans plugin. La 4.x exige TypeScript ≥ 5.6 (on est en 5.4) | 3 | ✅ |
+| ~~`@vitejs/plugin-vue2`~~ | **`@vitejs/plugin-vue` 6.0.9** | 3 | ✅ |
+| ~~`vue2-leaflet` 2.7.1~~ | **`@vue-leaflet/vue-leaflet` 0.10.1** | 3 | ✅ |
 | `vuedraggable` 2.24.3 | `vuedraggable@next` ou `vue-draggable-plus` | 3 | ⬜ |
 | `vue-apexcharts` 1.6.2 | `vue3-apexcharts` | 3 | ⬜ |
 | `vue-multiselect` 2.1.7 | 3.x — ou supprimé au profit d'un Combobox shadcn-vue | 2/3 | 🟡 un seul site d'appel restant (`Views/Column/Column.vue`) |
 | `vue-color` 2.8.1 | 3.x — ou supprimé (usage marginal) | 2/3 | ⬜ |
-| `@vue/test-utils` 1.3.6 | 2.x | 3 | ⬜ |
+| ~~`@vue/test-utils` 1.3.6~~ | **Supprimé** — zéro usage, et il épinglait `vue@2.x` | 3 | ✅ |
 
 ### 3.3 Dette à évacuer au passage
 
@@ -2003,11 +2003,186 @@ Gabarit à copier :
   dehors.
 - **Ref** : [ADR-0025](adr/0025-reimplementer-vue-form-generator.md)
 
+#### G-039 — Vue 3 résout la chaîne d'un `:is` comme un composant **avant** de la traiter comme une balise
+
+- **Contexte** : phase 3, bascule sous `@vue/compat` ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)).
+- **Symptôme** : l'application monte, puis `RangeError: Maximum call stack size
+  exceeded`, **sans une seule frame applicative dans la pile** — que des frames
+  internes de Vue, `mountComponent → patch → mountComponent`. La page reste
+  blanche.
+- **Cause** : `Button.vue` s'appelle `Button` et rendait
+  `<component :is="as">` avec `as` valant `'button'`. `resolveDynamicComponent`
+  passe par `resolveAsset`, qui compare le nom demandé au nom du composant
+  courant (`runtime-core`, `selfName === capitalize(camelize(name))`) :
+  `capitalize(camelize('button'))` vaut `Button`. Le bouton se résolvait
+  lui-même, à l'infini. En Vue 2, la même ligne donnait la balise native.
+- **Solution** : le cas natif est écrit en dur, `<button v-if="as === 'button'">`,
+  et `<component :is>` ne sert plus qu'aux valeurs non natives.
+- **À retenir** : c'est une classe de pièges, pas un cas isolé. Toute primitive
+  dont le `name` est la forme capitalisée d'une balise qu'elle rend
+  **dynamiquement** tombe dedans — `Input`, `Label`, `Select`, `Table`, `Form`
+  sont toutes des primitives de la console. Seule `Button` était concernée,
+  parce que c'est la seule dont le `name` coïncidait avec le défaut de son `as`.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)
+
+#### G-040 — Vue 3 mémorise le conteneur d'insertion : déplacer un nœud rendu lui coupe ses enfants
+
+- **Contexte** : phase 3, panneaux flottants de `Select` et `DropdownMenu`
+  (ADR-0012, ADR-0014).
+- **Symptôme** : les panneaux s'ouvrent et sont visibles, mais **vides** : ni
+  options de liste, ni entrées de menu. Quatre specs échouent sur
+  `[role="option"]` ou `RoleSelect--anonymous` introuvables.
+- **Cause** : le mixin `floatingPanel` sortait le panneau de l'arbre rendu par
+  `document.body.appendChild()`, pour qu'il échappe au `overflow-x-auto` de
+  `Table` (ADR-0011). En Vue 2, le patch visait l'élément lui-même et le
+  déplacement passait inaperçu. Vue 3 mémorise le conteneur dans lequel il a
+  inséré : les enfants du panneau continuaient d'être insérés dans **l'ancien
+  parent**.
+- **Solution** : `<Teleport to="body">`, dont le déplacement manuel était
+  l'émulation. Le mixin ne fait plus que placer.
+- **À retenir** : tout code qui déplace à la main un nœud rendu par Vue est à
+  reprendre en phase 3, pas seulement celui-là. Le symptôme ne ressemble pas à
+  la cause : un conteneur visible mais vide.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)
+
+#### G-041 — `RENDER_FUNCTION` casse les bibliothèques écrites **pour Vue 3**, et celles écrites pour Vue 2 en dépendent
+
+- **Contexte** : phase 3, reprise de la vue carte.
+- **Symptôme** : la carte se rend en nœud commentaire vide,
+  `mapView-map` introuvable. Dans la console :
+  `TypeError: Cannot read properties of undefined (reading 'style')`, levé
+  depuis le `render()` de `@vue-leaflet/vue-leaflet`.
+- **Cause** : le drapeau `RENDER_FUNCTION` du mode 2 réécrit la signature de
+  tout `render()` en celle de Vue 2, où le premier argument est
+  `createElement`. `@vue-leaflet` — adopté *parce qu'il est natif Vue 3* —
+  expose un `render(ctx)` et recevait donc `h` à la place du contexte.
+- **Solution tentée puis écartée** : l'éteindre globalement. Ça casse
+  l'inverse — `vuedraggable` et `vue-multiselect` sont des bibliothèques Vue 2
+  et **en dépendent** : la vue Colonne tombait, et `docs` passait de 2 à 8
+  échecs.
+- **Solution** : `compatConfig = { MODE: 3 }` posé sur les composants de
+  `@vue-leaflet`, à leur point d'import, avec la raison écrite à côté.
+- **À retenir** : **`MODE: 2` est un réglage par composant, pas par
+  application.** Une base qui héberge des bibliothèques des deux mondes n'a
+  aucune valeur globale correcte. Et un mode de compatibilité peut abîmer le
+  code moderne autant qu'il protège l'ancien.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)
+
+#### G-042 — Deux écritures d'URL qui reconstruisent la query entière s'écrasent, parce que la navigation est asynchrone
+
+- **Contexte** : phase 3, `vue-router` 4.
+- **Symptôme** : le filtre de recherche disparaît de l'URL au retour sur une
+  collection ; `listViewType=column` n'y apparaît jamais. Trois specs `search`.
+- **Cause** : la console écrit la query depuis deux endroits qui la
+  reconstruisent chacun en entier — `filterManager.saveToRouter` et
+  `Documents/Page.vue → setListViewTypeInRoute`. En `vue-router` 3, la première
+  écriture était appliquée avant que la seconde ne lise `$route`. En v4 la
+  navigation est **asynchrone** : les deux lisent la même query périmée, et la
+  seconde écrase la première.
+- **Cause seconde, trouvée au passage** : `router.currentRoute` est une `Ref`
+  en v4. `filterManager` lisait `.query` directement dessus, donc `undefined`.
+- **Solution** : `filterManager.pushQuery(router, build)` sérialise les
+  écritures ; `build` reçoit la query telle qu'elle est **au moment où
+  l'écriture s'applique**, pas telle qu'elle était quand on l'a demandée.
+- **À retenir** : sous `vue-router` 4, `$route` est une photo, pas une vérité
+  courante. Toute écriture d'URL qui part de `$route` doit être sérialisée avec
+  les autres, ou n'écrire que sa propre clé.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)
+
+#### G-043 — Un `:class` sur un composant de couche Leaflet n'atterrit nulle part
+
+- **Contexte** : phase 3, `vue2-leaflet` → `@vue-leaflet/vue-leaflet`.
+- **Symptôme** : `.data-cy-shape` compte bien ses 4 formes, mais
+  `.data-cy-shape-selected` n'existe jamais.
+- **Cause** : `l-circle` et `l-polygon` ne rendent **aucun élément DOM** — le
+  tracé est un `<path>` SVG créé par Leaflet. Un `:class` n'a donc nulle part
+  où atterrir. Seule l'option Leaflet `class-name` atteint le tracé, ce qui
+  explique que l'un des deux sélecteurs marchait et pas l'autre.
+- **Solution** : la classe de sélection passe par `class-name`. Comme Leaflet
+  ne l'applique **qu'à la création du tracé**, la clé de boucle porte l'état de
+  sélection : en changer recrée la couche, seul moyen d'en changer la classe.
+- **À retenir** : sur un composant qui pilote un objet d'une bibliothèque
+  tierce plutôt qu'un élément, les attributs Vue ne veulent rien dire. Ce sont
+  les options de la bibliothèque qui comptent, et leur mutabilité est la
+  sienne, pas celle de Vue.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)
+
+#### G-044 — `app.mount()` **remplit** le conteneur, `new Vue({ el })` le **remplaçait**
+
+- **Contexte** : phase 3, `src/main.ts`.
+- **Symptôme** : une seule spec échoue — une icône de danger « rognée par un
+  parent en `overflow` ». La cause est beaucoup plus large : **toute la console
+  tournait dans 400 px de haut**, dans une fenêtre de 800.
+- **Cause** : `index.html` monte sur
+  `<div class="app-loading h-100" id="app">`, qui porte l'écran de chargement.
+  `new Vue({ el: '#app' })` **substituait** cet élément par le rendu de
+  l'application : le div et sa classe disparaissaient. `app.mount('#app')` vide
+  le conteneur et rend dedans, **en le gardant**. Or `h-100` est un héritage de
+  Bootstrap, parti avec [ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md) :
+  il n'existe plus que comme utilitaire Tailwind v4, qui le lit
+  `height: 25rem`.
+- **Solution** : `h-full` sur le conteneur de montage.
+- **À retenir** : deux choses, et la seconde est la plus vicieuse. Ce qui était
+  écrit sur le nœud de montage devient actif en Vue 3 — classes, attributs,
+  `id`. Et **une classe d'un framework retiré peut être réinterprétée par celui
+  qui l'a remplacé** : `h-100` ne voulait plus dire `height: 100%` depuis
+  ADR-0022, mais plus rien ne la lisait, donc personne ne l'a vu.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)
+
+#### G-045 — Écrire dans une prop : avertissement en Vue 2, **exception** en Vue 3
+
+- **Contexte** : phase 3, `Security/Users/CreateOrUpdate.vue`.
+- **Symptôme** : l'édition d'un utilisateur n'affiche aucun de ses profils, et
+  un toast « Something went wrong while loading the user » apparaît. En
+  console : `TypeError: 'set' on proxy: trap returned falsish for property 'id'`.
+- **Cause** : `this.id = _id`, avec `id` déclarée en prop. La valeur écrite
+  était **la même** que celle déjà présente — le `_id` renvoyé par le backend
+  vaut le paramètre de route. Vue 2 laissait passer avec un avertissement ;
+  Vue 3 fait des props un proxy en lecture seule, et l'affectation lève, ce qui
+  interrompait le chargement avant les profils.
+- **Solution** : l'affectation est retirée.
+- **À retenir** : un avertissement de Vue 2 qu'on a appris à ignorer est un
+  échec de Vue 3. Le détecteur est court à écrire — croiser les props déclarées
+  de chaque composant avec les `this.<prop> =` du fichier — et il a confirmé
+  que c'était **le seul** cas de la console.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)
+
+#### G-046 — Le `$delete` de `@vue/compat` n'est pas celui de Vue 2
+
+- **Contexte** : phase 3, suppression d'un document en temps réel.
+- **Symptôme** : `Cannot read properties of undefined (reading '_id')`, levé
+  pendant un rendu — pas dans le gestionnaire de notification, qui reçoit
+  pourtant une notification bien formée.
+- **Cause** : `this.$delete(this.documents, docIdx)`. Le `$delete` de
+  `@vue/compat` est `(target, key) => { delete target[key] }` — un `delete`
+  brut. Celui de Vue 2 traitait les tableaux à part, avec un
+  `splice(index, 1)`. Sur un tableau, `delete` laisse un **trou** : `undefined`
+  à l'index, que le `v-for` rendait ensuite.
+- **Solution** : `splice`. Au passage, le `Vue.delete` du store des connexions
+  — un objet, donc correct — passe au `delete` natif, que Vue 3 suit ; c'était
+  le dernier `import Vue` d'un store.
+- **À retenir** : **le mode de compatibilité n'est pas toujours fidèle.** On
+  l'active en supposant que l'API Vue 2 se comporte comme avant ; ici elle
+  porte le même nom, fait autre chose, silencieusement, et seulement sur les
+  tableaux. Les `$set` / `$delete` restants sont à relire un par un, pas à
+  supposer équivalents.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
 codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplacer en
 5.1 une fois rencontrés, ou à supprimer s'ils ne se présentent jamais.
+
+> **Bilan après la bascule** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) :
+> de cette liste, **aucun** n'a fait tomber une spec. Les huit problèmes
+> rencontrés sont en 5.1, sous G-039 à G-046, et **pas un seul n'était
+> anticipé ici**. Ce qui figure ci-dessous est ce que la documentation de Vue
+> met en avant ; ce qui casse pour de vrai est ce que le code fait de
+> particulier — un `appendChild` manuel, une classe morte sur le nœud de
+> montage, un `name` de composant qui coïncide avec une balise. La liste
+> d'anticipation n'a pas été inutile, elle a été **hors sujet**, et ça vaut
+> d'être noté avant la phase 4.
 
 - **`v-model` sur composant** : `value`/`input` devient `modelValue`/
   `update:modelValue`. Touche toute la couche formulaires.
@@ -2065,3 +2240,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-22 | Vider la couche `legacy` de ce qui ne style plus rien, et nommer ce qui reste | [ADR-0024](adr/0024-degraisser-la-couche-legacy.md) |
 | 2026-09-22 | Réimplémenter `vue-form-generator` en un composant de la console | [ADR-0025](adr/0025-reimplementer-vue-form-generator.md) |
 | 2026-09-22 | Remplacer `vuejs-logger` par un wrapper de 40 lignes | [ADR-0026](adr/0026-wrapper-de-log-maison.md) |
+| 2026-09-22 | Basculer sur Vue 3 sous `@vue/compat`, en un seul lot | [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md) |
