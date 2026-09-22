@@ -123,12 +123,10 @@ export default defineComponent({
         this.close();
       } catch (err) {
         this.$log.error(err);
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: 'Ooops! Something went wrong while clearing the collection.',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        this.$toast.danger(
+          'Ooops! Something went wrong while clearing the collection.',
+          'The complete error has been printed to the console.',
+        );
       }
     },
   },

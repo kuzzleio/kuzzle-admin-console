@@ -719,12 +719,10 @@ export default {
         this.resetCandidatesForDeletion();
       } catch (e) {
         this.$log.error(e);
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: 'Ooops! Something went wrong while deleting the document(s).',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        this.$toast.danger(
+          'Ooops! Something went wrong while deleting the document(s).',
+          'The complete error has been printed to the console.',
+        );
       }
       this.deleteModalIsLoading = false;
     },
@@ -773,11 +771,10 @@ export default {
         await this.fetchDocuments();
       } catch (err) {
         this.$log.error(err);
-        this.$bvToast.toast('The complete error has been printed to console.', {
-          title: 'Ooops! Something went wrong.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong.',
+          'The complete error has been printed to console.',
+        );
         this.$emit('end-init');
       }
     },
@@ -863,26 +860,15 @@ export default {
       } catch (e) {
         this.$log.error(e);
         if (e.message.includes('failed to create query')) {
-          this.$bvToast.toast(
+          this.$toast.warning(
+            'Ooops! Something went wrong while fetching the documents.',
             'Your query is ill-formed. The complete error has been dumped to the console.',
-            {
-              title: 'Ooops! Something went wrong while fetching the documents.',
-              variant: 'warning',
-              toaster: 'b-toaster-bottom-right',
-              appendTouast: true,
-              dismissible: true,
-              noAutoHide: true,
-            },
           );
         } else {
-          this.$bvToast.toast(e.message, {
-            title: 'Ooops! Something went wrong while fetching the documents.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true,
-          });
+          this.$toast.warning(
+            'Ooops! Something went wrong while fetching the documents.',
+            e.message,
+          );
         }
       }
       this.isFetching = false;

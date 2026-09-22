@@ -285,16 +285,9 @@ export default {
       reader.onload = async (e) => {
         this.rawMapping = e.target.result;
         this.$refs.jsoneditor.setContent(this.rawMapping);
-        this.$bvToast.toast(
+        this.$toast.success(
+          'Import successfully',
           'The file has been written in the json editor. You can still edit it before saving if necessary.',
-          {
-            title: 'Import successfully',
-            variant: 'success',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true,
-          },
         );
       };
       reader.readAsText(file);
@@ -319,12 +312,10 @@ export default {
       }
 
       if (!this.isMappingValid) {
-        this.$bvToast.toast('The JSON specification of the mapping contains syntax errors', {
-          title: 'You cannot proceed',
-          variant: 'info',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        this.$toast.info(
+          'You cannot proceed',
+          'The JSON specification of the mapping contains syntax errors',
+        );
       }
 
       this.$emit('submit', {

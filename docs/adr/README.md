@@ -41,6 +41,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0017](0017-primitive-tabs-en-vue-2.md) | `Tabs` écrite à la main, pilotée par valeur et non par rang | Acceptée |
 | [0018](0018-panneaux-flottants-au-dessus-des-modales.md) | Les panneaux flottants passent au-dessus de `Dialog` | Acceptée, amende la clause `z-index` de [0012](0012-primitive-dropdown-menu-en-vue-2.md) et [0014](0014-primitive-select-en-vue-2.md) |
 | [0019](0019-primitive-tags-input-en-vue-2.md) | `TagsInput` écrite à la main pour le seul champ à étiquettes | Acceptée |
+| [0020](0020-systeme-de-toasts.md) | Notifications : un store, une zone unique, et une API impérative assumée | Acceptée |
 
 ## Gabarit
 

@@ -26,17 +26,19 @@
         @environment::importEnv="$emit('environment::importEnv')"
       />
     </template>
-    <b-toast
-      id="offline-toast"
-      title="Offline"
-      no-auto-hide
-      no-close-button
-      variant="warning"
-      toaster="b-toaster-top-center"
-      append="true"
-    >
-      It looks like your Kuzzle instance is currently unreachable
-    </b-toast>
+    <!--
+      Le toast hors-ligne garde son `id` : deux commandes Cypress s'y
+      accrochent, et c'est aussi ce qui le distingue des notifications
+      empilées — il n'y en a qu'un, et il dit l'état de la connexion.
+    -->
+    <ToastViewport v-if="offlineVisible" label="Connection status" position="top-center">
+      <Toast id="offline-toast" variant="warning">
+        <ToastTitle>Offline</ToastTitle>
+        <ToastDescription>
+          It looks like your Kuzzle instance is currently unreachable
+        </ToastDescription>
+      </Toast>
+    </ToastViewport>
   </div>
 </template>
 
@@ -44,6 +46,7 @@
 import { mapState } from 'pinia';
 
 import { antiGlitchOverlayTimeout } from '../utils';
+import { Toast, ToastDescription, ToastTitle, ToastViewport } from '@/components/ui/toast';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import OfflineSpinner from './Common/Offline.vue';
@@ -52,8 +55,12 @@ import ErrorPage from './Error/KuzzleErrorPage.vue';
 export default {
   name: 'ConnectionAwareContainer',
   components: {
-    OfflineSpinner,
     ErrorPage,
+    OfflineSpinner,
+    Toast,
+    ToastDescription,
+    ToastTitle,
+    ToastViewport,
   },
   setup() {
     return {
@@ -63,6 +70,7 @@ export default {
   },
   data() {
     return {
+      offlineVisible: false,
       showOfflineSpinner: false,
     };
   },
@@ -174,11 +182,7 @@ export default {
       this.$kuzzle.removeAllListeners('disconnected');
     },
     checkConnection() {
-      if (this.online === false && this.connecting === false) {
-        this.$bvToast.show('offline-toast');
-      } else {
-        this.$bvToast.hide('offline-toast');
-      }
+      this.offlineVisible = this.online === false && this.connecting === false;
     },
     updatePageTitle() {
       document.title = this.currentEnvironment

@@ -118,14 +118,10 @@ export default {
         await this.storageIndexStore.fetchIndexList();
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: 'Ooops! Something went wrong while fetching the indexes list.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while fetching the indexes list.',
+          'The complete error has been printed to the console.',
+        );
       }
     },
     async fetchCollectionList() {
@@ -140,14 +136,10 @@ export default {
         await this.storageIndexStore.fetchCollectionList(index);
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: 'Ooops! Something went wrong while fetching the collection list.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while fetching the collection list.',
+          'The complete error has been printed to the console.',
+        );
       }
     },
     async fetchCollectionMapping() {
@@ -169,14 +161,10 @@ export default {
         await this.storageIndexStore.fetchCollectionMapping({ index, collection });
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: 'Ooops! Something went wrong while fetching the collection mapping.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while fetching the collection mapping.',
+          'The complete error has been printed to the console.',
+        );
       }
     },
     handleDataNotFound() {

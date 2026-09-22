@@ -5,6 +5,7 @@ import VueFormGenerator from 'vue-form-generator';
 import VueRouter from 'vue-router';
 
 import './plugins/logger';
+import './plugins/toast';
 import 'leaflet/dist/leaflet.css';
 import 'vue-form-generator/dist/vfg.css';
 

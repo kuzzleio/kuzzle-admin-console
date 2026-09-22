@@ -221,12 +221,10 @@ export default {
         );
         this.submitting = false;
       } else {
-        this.$bvToast.toast('The JSON specification of the document contains errors', {
-          title: 'You cannot proceed',
-          variant: 'info',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        this.$toast.info(
+          'You cannot proceed',
+          'The JSON specification of the document contains errors',
+        );
       }
     },
   },

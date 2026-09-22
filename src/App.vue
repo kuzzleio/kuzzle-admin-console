@@ -16,6 +16,11 @@
     <modal-delete :environment-id="environmentId" :open.sync="deleteOpen" />
     <modal-import :open.sync="importOpen" />
     <telemetry-banner />
+    <!--
+      La zone de notifications est montée une fois, ici : `bootstrap-vue` la
+      fabriquait à la volée au premier `$bvToast.toast()` (ADR-0020).
+    -->
+    <Toaster />
   </div>
 </template>
 
@@ -25,6 +30,7 @@ import '@/assets/style.scss';
 import ModalCreateOrUpdate from '@/components/Common/Environments/ModalCreateOrUpdate.vue';
 import ModalDelete from '@/components/Common/Environments/ModalDelete.vue';
 import ModalImport from '@/components/Common/Environments/ModalImport.vue';
+import Toaster from '@/components/Common/Toaster.vue';
 import TelemetryBanner from '@/components/TelemetryBanner.vue';
 
 export default {
@@ -34,6 +40,7 @@ export default {
     ModalDelete,
     ModalImport,
     TelemetryBanner,
+    Toaster,
   },
   data() {
     return {

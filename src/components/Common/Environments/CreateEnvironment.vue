@@ -371,14 +371,10 @@ export default {
         }
       } catch (error) {
         this.$log.error(error.message);
-        this.$bvToast.toast(error.message, {
-          title: 'Ooops! Something went wrong while creating the new environment.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while creating the new environment.',
+          error.message,
+        );
       }
       this.submitting = false;
     },

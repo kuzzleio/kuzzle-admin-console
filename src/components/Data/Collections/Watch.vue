@@ -412,14 +412,10 @@ export default {
         this.room = null;
         this.subscribed = false;
         this.$log.error(err);
-        this.$bvToast.toast(err.message, {
-          title: 'Ooops! Something went wrong while subscribing to the collection.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while subscribing to the collection.',
+          err.message,
+        );
       }
     },
     async unsubscribe(room) {

@@ -247,14 +247,10 @@ export default {
         }
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while updating the filters',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while updating the filters',
+          'The complete error has been printed to console',
+        );
       }
     },
     async fetchDocuments() {
@@ -303,14 +299,10 @@ export default {
       } catch (error) {
         this.$log.error(error);
         this.$log.debug(error.stack);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while fetching users.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while fetching users.',
+          'The complete error has been printed to console',
+        );
       }
       this.loading = false;
     },
@@ -346,12 +338,10 @@ export default {
       } catch (e) {
         this.$log.error(e);
         this.deleteModalIsLoading = false;
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: 'Ooops! Something went wrong while deleting the document(s).',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        this.$toast.danger(
+          'Ooops! Something went wrong while deleting the document(s).',
+          'The complete error has been printed to the console.',
+        );
       }
       this.loading = false;
     },

@@ -163,16 +163,9 @@ export default {
       reader.onload = async (e) => {
         this.mappingValue = e.target.result;
         this.$refs.jsoneditor.setContent(this.mappingValue);
-        this.$bvToast.toast(
+        this.$toast.success(
+          'Import successfully',
           'The file has been written in the json editor. You can still edit it before saving if necessary.',
-          {
-            title: 'Import successfully',
-            variant: 'success',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true,
-          },
         );
       };
       reader.readAsText(file);
@@ -189,14 +182,10 @@ export default {
         this.$router.push({ name: 'SecurityUsersList' });
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while updating the mapping',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while updating the mapping',
+          'The complete error has been printed to console',
+        );
       }
     },
   },

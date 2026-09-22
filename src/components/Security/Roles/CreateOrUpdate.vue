@@ -194,14 +194,10 @@ export default {
       this.documentValue = JSON.stringify(role, null, 2);
     } catch (e) {
       this.$log.error(e);
-      this.$bvToast.toast('The complete error has been printed to console', {
-        title: 'Ooops! Something went wrong while fetching the role',
-        variant: 'warning',
-        toaster: 'b-toaster-bottom-right',
-        appendToast: true,
-        dismissible: true,
-        noAutoHide: true,
-      });
+      this.$toast.warning(
+        'Ooops! Something went wrong while fetching the role',
+        'The complete error has been printed to console',
+      );
     }
     this.loading = false;
   },
@@ -238,14 +234,10 @@ export default {
         this.$router.push({ name: 'SecurityRolesList' });
       } catch (e) {
         this.$log.error(e);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while submitting the role',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while submitting the role',
+          'The complete error has been printed to console',
+        );
         this.submitting = false;
       }
     },

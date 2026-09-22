@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 93 / 107 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 96 / 107 |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -297,7 +297,7 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**93 composants repris sur 107**, **745 balises `<b-*>` retirées sur 813**.
+**96 composants repris sur 107**, **755 balises `<b-*>` retirées sur 813**.
 
 > Le dénominateur passe de 134 à 107 : 27 composants non atteignables ont été
 > supprimés ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)). Ce
@@ -309,7 +309,7 @@ phase 2.
 > des mentions en commentaire** dans les primitives (« Remplace
 > `<b-pagination>` ») : elles ne sont pas du balisage. Le compte réel est
 > `grep -rhn '<b-[a-z-]*' src --include='*.vue' | grep -vE '^[0-9]+:\s*(\*|//|/\*)'
-> | grep -o '<b-[a-z-]*' | wc -l` = **68 restantes**, à retrancher de 813.
+> | grep -o '<b-[a-z-]*' | wc -l` = **58 restantes**, à retrancher de 813 — **toutes dans `ApiAction/`**.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -626,6 +626,39 @@ enveloppait une case à cocher et son libellé dans un élément qui n'était ni
 bouton ni un élément de menu. `DropdownMenuCheckboxItem` existait depuis
 ADR-0012 et annonce `aria-checked`.
 
+**Les notifications** étaient le dernier sujet structurant avant `ApiAction` :
+`$bvToast` était appelée **48 fois dans 28 fichiers**, et quatre `<b-toast>`
+déclaratifs vivaient dans trois écrans.
+[ADR-0020](adr/0020-systeme-de-toasts.md) pose un store, une zone unique montée
+dans `App.vue`, et **conserve une API impérative** — `this.$toast.danger(titre,
+message)`. C'est la seule dérogation à ADR-0010, et elle est assumée : un toast
+est déclenché par un événement, pas rendu par un état.
+
+Trois choses que la lecture des 48 appels a apprises :
+
+- **`discarded-toast` (« Request Discarded ») n'était affiché par personne.**
+  Supprimé — c'est le quatrième composant dans ce cas depuis le début de la
+  phase.
+- **`no-admin-warning` ne s'affiche pas non plus**, et **pas à cause de la
+  reprise** : mesuré dans le DOM avant et après, sur le même scénario, il est
+  absent des deux côtés. Son état dépend d'`adminAlreadyExists` ; c'est un sujet
+  produit, pas un sujet de migration.
+- **La règle de persistance était répétée à chaque site d'appel** — trois
+  options (`noAutoHide`, `dismissible`, `appendToast`) recopiées 35 fois. Elle
+  vit maintenant dans le store : une erreur reste, le reste disparaît au bout de
+  cinq secondes. Neuf toasts `danger` s'effaçaient tout seuls ; ils restent
+  désormais, ce qui est le sens utile.
+
+`useToasterStore` existait déjà — une coquille héritée de Materialize
+(`text`, `duration`, `cssClass`, `cb`) dont les seuls clients étaient les
+fichiers morts d'ADR-0016. **Le contrôle d'atteignabilité ne l'avait pas vue** :
+il regarde les modules, pas les exports (§ 5.1, G-035).
+
+Un défaut de conception a été rattrapé par la capture d'écran : les deux
+bandeaux persistants rendaient chacun leur zone fixe, au même coin que celle des
+notifications. Ils sont devenus des toasts du store, avec leurs boutons portés
+par une liste d'`actions`.
+
 #### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
 
 Le `grep` répond à la mauvaise question : il dit « ce nom est écrit quelque
@@ -883,9 +916,9 @@ gros et le plus risqué.
 | `404.vue` | 6 | 35 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Login.vue` | 6 | 110 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `ResetPassword.vue` | 5 | 75 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
-| `TelemetryBanner.vue` | 4 | 60 | ⬜ |
-| `Home.vue` | 3 | 173 | 🟡 modale et mise en page reprises ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062)) ; le `<b-toast>` attend la décision sur les toasts |
-| `ConnectionAwareContainer.vue` | 1 | 226 | ⬜ |
+| `TelemetryBanner.vue` | 4 | 60 | ✅ reprise ([#1066](https://github.com/kuzzleio/kuzzle-admin-console/pull/1066)) |
+| `Home.vue` | 3 | 173 | ✅ reprise ([#1062](https://github.com/kuzzleio/kuzzle-admin-console/pull/1062) et [#1066](https://github.com/kuzzleio/kuzzle-admin-console/pull/1066)) |
+| `ConnectionAwareContainer.vue` | 1 | 226 | ✅ reprise ([#1066](https://github.com/kuzzleio/kuzzle-admin-console/pull/1066)) |
 
 ### ApiAction — 4 composants, 49 balises `<b-*>`
 
@@ -1642,6 +1675,27 @@ Gabarit à copier :
   même question à leur reprise : `BasicFilter` seul est piloté par 20 appels de
   `cy.select()`, tous dans `search.spec.js`.
 
+#### G-035 — Le contrôle d'atteignabilité voit les modules, pas les exports
+
+- **Contexte** : phase 2, reprise des notifications (ADR-0020).
+- **Symptôme** : `useToasterStore` existait, avec un état `toast: {}` et un type
+  hérité de Materialize. Personne ne l'appelait — ses seuls clients étaient les
+  fichiers morts supprimés par ADR-0016 — mais `npm run check:unreachable` ne
+  signalait rien.
+- **Cause** : le contrôle calcule la fermeture transitive des **modules**.
+  `stores/index.ts` fait `export * from './toaster'`, et il est atteint : le
+  module l'est donc aussi, quand bien même **aucun de ses exports** n'est
+  utilisé. Un baril d'exports (`index.ts` qui ré-exporte tout) rend n'importe
+  quel module de son dossier atteignable pour toujours.
+- **Solution** : aucune pour l'instant, et c'est une limite à connaître plutôt
+  qu'un bug. La détecter demanderait d'analyser les identifiants importés, pas
+  seulement les chemins — c'est-à-dire un vrai analyseur, là où cinquante lignes
+  suffisent aujourd'hui (ADR-0016, point 4).
+- **À retenir** : `check:unreachable` répond à « ce fichier est-il dans le
+  bundle ? », pas à « ce code sert-il à quelque chose ? ». Derrière un baril,
+  la deuxième question se pose encore à la main.
+- **Ref** : [#1066](https://github.com/kuzzleio/kuzzle-admin-console/pull/1066)
+
 #### G-034 — Un panneau flottant ouvert dans une modale passe derrière elle
 
 - **Contexte** : phase 2, reprise de `CreateEnvironment.vue`. Son champ
@@ -1854,3 +1908,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-21 | `Tabs` à la main, pilotée par valeur, panneau caché démonté | [ADR-0017](adr/0017-primitive-tabs-en-vue-2.md) |
 | 2026-09-21 | Les panneaux flottants passent au-dessus de `Dialog` (1035) | [ADR-0018](adr/0018-panneaux-flottants-au-dessus-des-modales.md) |
 | 2026-09-22 | `TagsInput` à la main, malgré un site d'appel unique | [ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md) |
+| 2026-09-22 | Notifications : un store, une zone unique, une API impérative assumée | [ADR-0020](adr/0020-systeme-de-toasts.md) |

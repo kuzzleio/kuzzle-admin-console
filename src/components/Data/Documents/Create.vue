@@ -98,14 +98,10 @@ export default {
         });
       } catch (err) {
         this.$log.error(err);
-        this.$bvToast.toast(err.message, {
-          title: 'Ooops! Something went wrong while persisting the document.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while persisting the document.',
+          err.message,
+        );
       }
     },
     onCancel() {
@@ -125,14 +121,10 @@ export default {
         });
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: 'Ooops! Something went wrong while counting documents in collections.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while counting documents in collections.',
+          'The complete error has been printed to the console.',
+        );
       }
     },
   },

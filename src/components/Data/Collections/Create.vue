@@ -61,14 +61,10 @@ export default {
         });
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast(error.message, {
-          title: 'Ooops! Something went wrong while creating the collection.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while creating the collection.',
+          error.message,
+        );
       }
     },
   },

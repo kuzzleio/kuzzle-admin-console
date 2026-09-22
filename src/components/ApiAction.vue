@@ -142,31 +142,17 @@ export default {
     if (this.canGetPublicApi) {
       await this.getKuzzlePublicApi();
     } else {
-      this.$bvToast.toast(
+      this.$toast.warning(
+        'Unable to fetch the API action list.',
         'This view remains functional but you will not be able to select controllers and actions in the selectors.',
-        {
-          title: 'Unable to fetch the API action list.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        },
       );
     }
     if (this.currentEnvironment.backendMajorVersion > 1 && this.canGetOpenApi) {
       await this.getKuzzleOpenApi();
     } else {
-      this.$bvToast.toast(
+      this.$toast.warning(
+        'Unable to fetch the API action list.',
         'This view remains functional but you will not be able to select controllers and actions in the selectors.',
-        {
-          title: 'Unable to fetch the API action list.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        },
       );
     }
     this.loadStoredQueriesFromLocalStorage();
@@ -326,16 +312,9 @@ export default {
         this.openapi = { ...openApiApp.paths, ...openApiKuzzle.paths };
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast(
+        this.$toast.warning(
+          'Unable to fetch the API action list.',
           'This view remains functional but you will not be able to select controllers and actions in the selectors.',
-          {
-            title: 'Unable to fetch the API action list.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true,
-          },
         );
       }
     },
@@ -348,16 +327,9 @@ export default {
         this.api = publicApi.result;
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast(
+        this.$toast.warning(
+          'Unable to fetch the API action list.',
           'This view remains functional but you will not be able to select controllers and actions in the selectors.',
-          {
-            title: 'Unable to fetch the API action list.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true,
-          },
         );
       }
     },

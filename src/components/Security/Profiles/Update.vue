@@ -67,29 +67,18 @@ export default {
       this.loading = false;
     } catch (e) {
       this.$log.error(e);
-      this.$bvToast.toast('The complete error has been printed to console', {
-        title: 'Ooops! Something went wrong while loading the profile',
-        variant: 'warning',
-        toaster: 'b-toaster-bottom-right',
-        appendToast: true,
-        dismissible: true,
-        noAutoHide: true,
-      });
+      this.$toast.warning(
+        'Ooops! Something went wrong while loading the profile',
+        'The complete error has been printed to console',
+      );
     }
   },
   methods: {
     async onSubmit({ profile }) {
       if (!profile || !profile.policies) {
-        this.$bvToast.toast(
+        this.$toast.warning(
+          'The profile is invalid',
           'Please, ensure you submit an object with at least a <code>policies</code> attribute inside',
-          {
-            title: 'The profile is invalid',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true,
-          },
         );
         return;
       }
@@ -101,14 +90,10 @@ export default {
         this.$router.push({ name: 'SecurityProfilesList' });
       } catch (e) {
         this.$log.error(e);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while updating the profile',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while updating the profile',
+          'The complete error has been printed to console',
+        );
         this.submitted = false;
       }
     },

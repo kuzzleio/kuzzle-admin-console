@@ -30,16 +30,9 @@ export default {
   methods: {
     async onSubmit({ profile, id }) {
       if (!profile || !profile.policies) {
-        this.$bvToast.toast(
+        this.$toast.warning(
+          'The profile is invalid',
           'Please, ensure you submit an object with at least a <code>policies</code> attribute inside',
-          {
-            title: 'The profile is invalid',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true,
-          },
         );
         return;
       }
@@ -48,14 +41,7 @@ export default {
         this.$router.push({ name: 'SecurityProfilesList' });
       } catch (e) {
         this.$log.error(e);
-        this.$bvToast.toast(e.message, {
-          title: 'Ooops! Something went wrong while creating the profile',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning('Ooops! Something went wrong while creating the profile', e.message);
       }
     },
     onCancel() {
