@@ -13,11 +13,12 @@ import ResetPassword from '../components/ResetPassword.vue';
 import SecurityLayout from '../components/Security/Layout.vue';
 import Signup from '../components/Signup.vue';
 import telemetryCookies from '../services/telemetryCookies';
+import type { Logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
 import DataSubRoutes from './children/data';
 import SecuritySubRoutes from './children/security';
 
-export default function createRoutes(log) {
+export default function createRoutes(log: Logger) {
   const environmentsGuard = async (_from, _to, next) => {
     const kuzzleStore = useKuzzleStore();
     log.debug('Router:EnvironmentsGuard');

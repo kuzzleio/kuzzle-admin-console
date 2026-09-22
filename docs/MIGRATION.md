@@ -17,7 +17,7 @@
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
-| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ **Débloquée, et plus rien devant** — la condition d'ADR-0002 est remplie, et la dernière dépendance incompatible est sortie ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md)) |
+| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ **Débloquée, et plus rien devant** — la condition d'ADR-0002 est remplie, et le § 3.1 est soldé ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md), [ADR-0026](adr/0026-wrapper-de-log-maison.md)) |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
@@ -794,7 +794,11 @@ compatibilité **avant** d'engager la montée.
 | ~~`bootstrap` 4.6.2~~ | supprimé avec le précédent | **Retiré** — le preflight de Tailwind prend le relais du *reboot* | 2 | ✅ |
 | ~~`vue-form-generator` 2.3.4~~ | **abandonné**, aucun successeur | **Retiré** — `DocumentForm.vue`, ~110 lignes ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md)) | 2 | ✅ |
 | ~~`vue-multipane` 0.9.5~~ | **abandonné** | **Retiré** — splitter écrit à la main ([ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md)) | 2 | ✅ |
-| `vuejs-logger` 1.5.5 | Vue 2 uniquement | remplacer par un wrapper maison | 3 | ⬜ |
+| ~~`vuejs-logger` 1.5.5~~ | Vue 2 uniquement | **Retiré** — wrapper maison, ~40 lignes ([ADR-0026](adr/0026-wrapper-de-log-maison.md)) | 2 | ✅ |
+
+**Toutes les lignes sont barrées.** Plus aucune dépendance de la console n'est
+sans chemin de migration vers Vue 3 : ce qui reste à faire est le passage de Vue
+lui-même (§ 3.2).
 
 ### 3.2 Migration directe disponible
 
@@ -2060,3 +2064,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-22 | Retrait du préfixe `tw:`, et vérification par comparaison du CSS produit | [ADR-0023](adr/0023-retrait-du-prefixe-tw.md) |
 | 2026-09-22 | Vider la couche `legacy` de ce qui ne style plus rien, et nommer ce qui reste | [ADR-0024](adr/0024-degraisser-la-couche-legacy.md) |
 | 2026-09-22 | Réimplémenter `vue-form-generator` en un composant de la console | [ADR-0025](adr/0025-reimplementer-vue-form-generator.md) |
+| 2026-09-22 | Remplacer `vuejs-logger` par un wrapper de 40 lignes | [ADR-0026](adr/0026-wrapper-de-log-maison.md) |

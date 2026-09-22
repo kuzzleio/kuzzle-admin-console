@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { createPinia, PiniaVuePlugin } from 'pinia';
 import VueRouter from 'vue-router';
 
-import './plugins/logger';
+import { logger } from './plugins/logger';
 import './plugins/toast';
 import 'leaflet/dist/leaflet.css';
 
@@ -22,7 +22,7 @@ Vue.use(PiniaVuePlugin);
 const pinia = createPinia();
 
 Vue.use(VueRouter);
-const router = createRoutes(Vue.prototype.$log);
+const router = createRoutes(logger);
 
 // Vue.config.errorHandler = (err, vm, info) => {
 //   // TODO : use vue-logger instead of console.error,

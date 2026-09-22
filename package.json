@@ -40,8 +40,7 @@
     "vue-multiselect": "2.1.7",
     "vue-router": "3.6.5",
     "vue2-leaflet": "2.7.1",
-    "vuedraggable": "2.24.3",
-    "vuejs-logger": "1.5.5"
+    "vuedraggable": "2.24.3"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

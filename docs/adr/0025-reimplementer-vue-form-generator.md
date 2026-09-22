@@ -69,7 +69,8 @@ bibliothèque.
 
 - **La phase 3 n'est plus bloquée.** Plus aucune dépendance incompatible avec
   `@vue/compat` : le tableau § 3.1 ne contient plus que `vuejs-logger`, qui a un
-  chemin de migration (un wrapper maison).
+  chemin de migration (un wrapper maison, écrit dans la foulée par
+  [ADR-0026](0026-wrapper-de-log-maison.md)).
 - **−174 ko de JavaScript** (947 → 773 ko, −53,8 ko gzip) et **−5,6 ko de CSS**
   (122,5 → 116,9 ko, −2,5 ko gzip) sur le chunk `vue`. La bibliothèque
   embarquait ses 20 types de champ et `fecha` pour les trois contrôles utilisés.
