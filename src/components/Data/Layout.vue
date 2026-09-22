@@ -1,21 +1,17 @@
 <template>
-  <Multipane
-    class="DataLayout Custom-resizer tw:flex tw:h-full tw:flex-row tw:flex-nowrap"
-    layout="vertical"
-    @paneResizeStop="saveNewPaneSize($event)"
-  >
-    <div
+  <ResizablePanelGroup class="DataLayout" @resize="saveNewPaneSize">
+    <ResizablePanel
       class="DataLayout-sidebarWrapper tw:z-1 tw:h-full tw:min-w-[var(--sidebar-width)] tw:overflow-auto tw:bg-muted"
-      :style="{ width: paneSize }"
+      :style="paneSize ? { width: paneSize } : undefined"
       data-cy="DataLayout-sidebarWrapper"
     >
       <treeview
         :index-name="$route.params.indexName"
         :collection-name="$route.params.collectionName"
       />
-    </div>
-    <MultipaneResizer data-cy="sidebarResizer" />
-    <div class="DataLayout-contentWrapper tw:h-full tw:grow tw:overflow-auto tw:p-6">
+    </ResizablePanel>
+    <ResizableHandle data-cy="sidebarResizer" label="Resize the index tree" />
+    <ResizablePanel class="DataLayout-contentWrapper tw:h-full tw:grow tw:overflow-auto tw:p-6">
       <!--
         `b-overlay` avec `opacity="0"` ne servait qu'à centrer une roue de
         chargement : son voile était transparent, et le contenu qu'il
@@ -31,13 +27,13 @@
           @end-init="viewIsInitializing = false"
         />
       </template>
-    </div>
-  </Multipane>
+    </ResizablePanel>
+  </ResizablePanelGroup>
 </template>
 <script>
 import { mapState } from 'pinia';
-import { Multipane, MultipaneResizer } from 'vue-multipane';
 
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
 import { setPersistedItem, getPersistedItem } from './itemsStorage';
@@ -49,8 +45,9 @@ export default {
   name: 'DataLayout',
   components: {
     DataNotFound,
-    Multipane,
-    MultipaneResizer,
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
     Spinner,
     Treeview,
   },
@@ -106,12 +103,18 @@ export default {
   },
   async mounted() {
     await this.lazyLoadingSequence();
-    this.paneSize = `${getPersistedItem('paneSize')}px`;
+    const persisted = getPersistedItem('paneSize');
+    this.paneSize = persisted ? `${persisted}px` : '';
   },
   methods: {
-    saveNewPaneSize(size) {
-      setPersistedItem('paneSize', size.scrollWidth);
-      this.paneSize = `${getPersistedItem('paneSize')}px`;
+    /*
+     * `vue-multipane` émettait le nœud DOM redimensionné et écrivait sa
+     * largeur lui-même ; la primitive émet la taille et laisse le site d'appel
+     * décider — ici : la persister (ADR-0021).
+     */
+    saveNewPaneSize(width) {
+      setPersistedItem('paneSize', width);
+      this.paneSize = `${width}px`;
     },
     async fetchIndexList() {
       try {
@@ -195,36 +198,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-/*
- * Ce qui reste ici appartient à `vue-multipane` : la poignée est un nœud que
- * la bibliothèque rend elle-même, sous sa propre classe, et sur laquelle nous
- * ne pouvons pas poser d'utilitaire. Ce bloc s'en va avec elle (§ 3.1) ; ses
- * couleurs passent en attendant par les tokens.
- */
-.Custom-resizer > .multipane-resizer {
-  margin: 0;
-  left: 0;
-  position: relative;
-  padding: 3px;
-  border: 1px solid var(--border);
-  box-shadow: 2px 0 5px -2px rgb(0 0 0 / 30%);
-  &:before {
-    display: block;
-    content: '';
-    width: 1px;
-    height: 50px;
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    border-left: 1px solid var(--muted-foreground);
-  }
-  &:hover {
-    &:before {
-      border-color: var(--foreground);
-      background-color: var(--muted);
-    }
-  }
-}
-</style>

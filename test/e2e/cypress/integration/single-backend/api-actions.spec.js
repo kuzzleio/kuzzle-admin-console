@@ -122,11 +122,11 @@ describe('API Actions - tabs and save', function() {
   it('Should be able to open a new tab', () => {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
-    cy.get('ul[role="tablist"] li')
-    .should('have.length', 1)
+    // `ul[role="tablist"] li` décrivait le DOM de `b-tabs` ; la primitive rend
+    // des `<button role="tab">` (G-024).
+    cy.get('[role="tab"]').should('have.length', 1)
     cy.get('[data-cy="api-actions-tab-plus"]').click()
-    cy.get('ul[role="tablist"] li')
-    .should('have.length', 2)
+    cy.get('[role="tab"]').should('have.length', 2)
   })
 
   it('Should persist query by tabs', () => {

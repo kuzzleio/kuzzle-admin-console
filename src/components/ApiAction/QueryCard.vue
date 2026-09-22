@@ -1,139 +1,175 @@
 <template>
-  <b-card-body class="px-0 py-0 h-100">
-    <b-card-text :class="`mb-0 h-100`">
-      <b-container fluid class="px-0 h-100">
-        <b-row class="my-3 px-0" align-h="between">
-          <b-col cols="8">
-            <b-row>
-              <b-col>
-                <b-input-group id="query-input-controller" prepend="Controller" append="">
-                  <b-tooltip
-                    v-if="!isQueryValid(jsonQuery)"
-                    target="query-input-controller"
-                    placement="bottom"
-                  >
-                    The query is invalid.
-                  </b-tooltip>
-                  <b-form-input
-                    v-model="editedQuery.controller"
-                    :data-cy="`api-actions-controller-input-${tabIdx}`"
-                    :disabled="!isQueryValid(jsonQuery)"
-                    placeholder="Select or type your controller"
-                    list="controllersList"
-                  />
-                  <b-input-group-append is-text @click="editedQuery.controller = ''">
-                    <i class="fas fa-times" />
-                  </b-input-group-append>
-                </b-input-group>
-                <datalist id="controllersList">
-                  <option v-for="controller of controllers" :key="`${tabIdx}-${controller}`">
-                    {{ controller }}
-                  </option>
-                </datalist>
-              </b-col>
-              <b-col>
-                <b-input-group id="query-input-action" prepend="Action">
-                  <b-tooltip
-                    v-if="!isQueryValid(jsonQuery)"
-                    target="query-input-action"
-                    placement="bottom"
-                  >
-                    The query is invalid.
-                  </b-tooltip>
-                  <b-form-input
-                    v-model="editedQuery.action"
-                    :data-cy="`api-actions-action-input-${tabIdx}`"
-                    list="actionsList"
-                    placeholder="Select or type your action"
-                    :disabled="!isQueryValid(jsonQuery)"
-                  />
-                  <b-input-group-append is-text @click="editedQuery.action = ''">
-                    <i class="fas fa-times" />
-                  </b-input-group-append>
-                </b-input-group>
-                <datalist id="actionsList">
-                  <option v-for="action of actions" :key="`${tabIdx}-${action}`">
-                    {{ action }}
-                  </option>
-                </datalist>
-              </b-col>
-              <b-button id="popover-target-1" variant="link">
-                <i color="primary" class="fas fa-question-circle fa-lg" />
-              </b-button>
-              <b-popover target="popover-target-1" triggers="hover" placement="top">
-                Here, you'll be able to perform custom
-                <a href="https://docs.kuzzle.io/sdk/js/7/core-classes/kuzzle/query/" target="_blank"
-                  >query
-                  <i class="fa fa-external-link-alt" />
-                </a>
-                to Kuzzle following the
-                <a href="https://docs.kuzzle.io/core/2/api/payloads/request/" target="_blank"
-                  >API Documentation
-                  <i class="fa fa-external-link-alt" />
-                </a>
-                .
-              </b-popover>
-            </b-row>
-          </b-col>
-          <b-col id="query-button-actions" class="text-right" cols="4">
-            <b-tooltip
-              v-if="!isQueryValid(jsonQuery)"
-              target="query-button-actions"
-              placement="bottom"
-            >
-              The query is invalid.
-            </b-tooltip>
+  <div class="tw:flex tw:h-full tw:flex-col tw:gap-3">
+    <div class="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+      <!--
+        `b-tooltip` disait « The query is invalid. » sur trois cibles à la
+        fois ; l'attribut `title` le dit sur les champs eux-mêmes, et le
+        navigateur l'affiche sans directive.
+      -->
+      <div
+        class="tw:flex tw:min-w-60 tw:flex-1 tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
+      >
+        <label
+          class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:font-sans tw:text-sm tw:text-muted-foreground"
+          :for="`controller-input-${tabIdx}`"
+          >Controller</label
+        >
+        <Input
+          :id="`controller-input-${tabIdx}`"
+          v-model="editedQuery.controller"
+          class="tw:rounded-none tw:border-0"
+          :data-cy="`api-actions-controller-input-${tabIdx}`"
+          :disabled="!isQueryValid(jsonQuery)"
+          list="controllersList"
+          placeholder="Select or type your controller"
+          :title="isQueryValid(jsonQuery) ? '' : 'The query is invalid.'"
+        />
+        <Button
+          aria-label="Clear the controller"
+          class="tw:rounded-none"
+          size="icon"
+          variant="ghost"
+          @click="editedQuery.controller = ''"
+        >
+          <i class="fas fa-times" aria-hidden="true" />
+        </Button>
+      </div>
+      <datalist id="controllersList">
+        <option v-for="controller of controllers" :key="`${tabIdx}-${controller}`">
+          {{ controller }}
+        </option>
+      </datalist>
 
-            <b-button
-              :disabled="!isQueryValid(jsonQuery)"
-              variant="success"
-              :data-cy="`api-actions-run-button-${tabIdx}`"
-              class="mr-3 pointer"
-              @click="performQuery"
-            >
-              <i class="fas fa-rocket mr-2" />
-              RUN
-            </b-button>
-            <b-button
-              :disabled="!isQueryValid(jsonQuery)"
-              :data-cy="`api-actions-save-button-${tabIdx}`"
-              variant="outline-primary"
-              class="pointer"
-              @click="saveQuery"
-            >
-              <i class="fas fa-save mr-2" />
-              SAVE
-            </b-button>
-          </b-col>
-        </b-row>
-        <b-row align-v="stretch" class="multipaneRow px-3">
-          <Multipane class="QueryLayout-vertical Query-Custom-resizer-vertical" layout="vertical">
-            <div class="QueryLayout-sidebarWrapper-vertical" data-cy="QueryLayout-sidebarWrapper">
-              <b-card no-body class="h-100">
-                <json-editor
-                  :id="`queryEditorWrapper-${tabIdx}`"
-                  :ref="`queryEditorWrapper-${tabIdx}`"
-                  class="m-2 h-100"
-                  :data-cy="`api-actions-query-JSONEditor-${tabIdx}`"
-                  :content="jsonQuery"
-                  @change="queryBodyChange"
-                />
-              </b-card>
-            </div>
-            <MultipaneResizer data-cy="sidebarResizer" />
-            <div class="QueryLayout-contentWrapper-vertical">
-              <ResponseCard :tab-idx="tabIdx" :response="response" />
-            </div>
-          </Multipane>
-        </b-row>
-      </b-container>
-    </b-card-text>
-  </b-card-body>
+      <div
+        class="tw:flex tw:min-w-60 tw:flex-1 tw:items-stretch tw:overflow-hidden tw:rounded-md tw:border tw:border-input"
+      >
+        <label
+          class="tw:flex tw:items-center tw:bg-muted tw:px-3 tw:font-sans tw:text-sm tw:text-muted-foreground"
+          :for="`action-input-${tabIdx}`"
+          >Action</label
+        >
+        <Input
+          :id="`action-input-${tabIdx}`"
+          v-model="editedQuery.action"
+          class="tw:rounded-none tw:border-0"
+          :data-cy="`api-actions-action-input-${tabIdx}`"
+          :disabled="!isQueryValid(jsonQuery)"
+          list="actionsList"
+          placeholder="Select or type your action"
+          :title="isQueryValid(jsonQuery) ? '' : 'The query is invalid.'"
+        />
+        <Button
+          aria-label="Clear the action"
+          class="tw:rounded-none"
+          size="icon"
+          variant="ghost"
+          @click="editedQuery.action = ''"
+        >
+          <i class="fas fa-times" aria-hidden="true" />
+        </Button>
+      </div>
+      <datalist id="actionsList">
+        <option v-for="action of actions" :key="`${tabIdx}-${action}`">{{ action }}</option>
+      </datalist>
+
+      <!--
+        `b-popover` rendait un panneau flottant pour deux liens. Le même
+        contenu tient dans un `DropdownMenu`, qui est déjà là et sait se
+        placer (ADR-0012).
+      -->
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          :as="Button"
+          aria-label="About custom queries"
+          size="icon"
+          variant="ghost"
+        >
+          <i class="fas fa-question-circle fa-lg" aria-hidden="true" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" class="tw:max-w-sm tw:p-3 tw:text-sm">
+          Here, you'll be able to perform custom
+          <a
+            class="tw:underline"
+            href="https://docs.kuzzle.io/sdk/js/7/core-classes/kuzzle/query/"
+            rel="noopener"
+            target="_blank"
+            >query <i class="fa fa-external-link-alt" aria-hidden="true"
+          /></a>
+          to Kuzzle following the
+          <a
+            class="tw:underline"
+            href="https://docs.kuzzle.io/core/2/api/payloads/request/"
+            rel="noopener"
+            target="_blank"
+            >API Documentation <i class="fa fa-external-link-alt" aria-hidden="true" /></a
+          >.
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <div class="tw:ml-auto tw:flex tw:gap-2">
+        <Button
+          :data-cy="`api-actions-run-button-${tabIdx}`"
+          :disabled="!isQueryValid(jsonQuery)"
+          :title="isQueryValid(jsonQuery) ? '' : 'The query is invalid.'"
+          @click="performQuery"
+        >
+          <i class="fas fa-rocket" aria-hidden="true" />
+          RUN
+        </Button>
+        <Button
+          :data-cy="`api-actions-save-button-${tabIdx}`"
+          :disabled="!isQueryValid(jsonQuery)"
+          :title="isQueryValid(jsonQuery) ? '' : 'The query is invalid.'"
+          variant="outline"
+          @click="saveQuery"
+        >
+          <i class="fas fa-save" aria-hidden="true" />
+          SAVE
+        </Button>
+      </div>
+    </div>
+
+    <ResizablePanelGroup class="QueryLayout tw:min-h-0 tw:flex-1" @resize="onPaneResize">
+      <ResizablePanel
+        class="QueryLayout-sidebarWrapper tw:h-full tw:overflow-auto"
+        :style="paneWidth ? { width: paneWidth } : { width: '50%' }"
+        data-cy="QueryLayout-sidebarWrapper"
+      >
+        <Card class="tw:h-full">
+          <CardContent class="tw:flex tw:h-full tw:min-h-0 tw:flex-col">
+            <json-editor
+              :id="`queryEditorWrapper-${tabIdx}`"
+              :ref="`queryEditorWrapper-${tabIdx}`"
+              class="tw:min-h-0 tw:flex-1"
+              :content="jsonQuery"
+              :data-cy="`api-actions-query-JSONEditor-${tabIdx}`"
+              @change="queryBodyChange"
+            />
+          </CardContent>
+        </Card>
+      </ResizablePanel>
+
+      <ResizableHandle data-cy="sidebarResizer" label="Resize the query editor" />
+
+      <ResizablePanel class="QueryLayout-contentWrapper tw:h-full tw:flex-1 tw:overflow-auto">
+        <ResponseCard :tab-idx="tabIdx" :response="response" />
+      </ResizablePanel>
+    </ResizablePanelGroup>
+  </div>
 </template>
 
 <script>
 import _ from 'lodash';
-import { Multipane, MultipaneResizer } from 'vue-multipane';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 
 import ResponseCard from '@/components/ApiAction/ResponseCard.vue';
 import jsonEditor from '@/components/Common/JsonEditor.vue';
@@ -143,8 +179,16 @@ export default {
   components: {
     jsonEditor,
     ResponseCard,
-    Multipane,
-    MultipaneResizer,
+    Button,
+    Card,
+    CardContent,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+    Input,
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
   },
   props: {
     query: {},
@@ -157,6 +201,8 @@ export default {
     return {
       isFullScreen: false,
       jsonQuery: '{}',
+      /* Largeur de l'éditeur, en pixels : la moitié du groupe par défaut. */
+      paneWidth: '',
       editedQuery: {
         controller: null,
         action: null,
@@ -214,6 +260,9 @@ export default {
     this.jsonQuery = JSON.stringify(this.editedQuery, null, 2);
   },
   methods: {
+    onPaneResize(width) {
+      this.paneWidth = `${width}px`;
+    },
     toggleFullscreen() {
       this.isFullScreen = !this.isFullScreen;
     },

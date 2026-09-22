@@ -1,12 +1,12 @@
 <template>
   <div class="Autocomplete">
-    <b-form-input
+    <Input
       v-model="inputValue"
-      data-cy="Autocomplete-input"
-      type="text"
       :class="inputClass"
+      data-cy="Autocomplete-input"
       :placeholder="placeholder"
-      @input="onInput"
+      type="text"
+      @update:modelValue="onInput"
       @change="onChange"
       @focus="onInput"
       @keydown.down="onArrowDown"
@@ -14,13 +14,21 @@
       @keydown.enter.prevent="onEnter"
     />
 
-    <ul v-show="isOpen" class="Autocomplete-results" data-cy="Autocomplete-results">
+    <!--
+      Le `<style scoped>` posait les couleurs de la sélection en dur
+      (`$blue-color`) ; elles viennent des tokens, comme partout ailleurs.
+    -->
+    <ul
+      v-show="isOpen"
+      class="Autocomplete-results tw:m-0 tw:h-30 tw:list-none tw:overflow-auto tw:rounded-md tw:border tw:border-border tw:p-0"
+      data-cy="Autocomplete-results"
+    >
       <li
         v-for="(result, i) in results"
         :key="result"
+        class="Autocomplete-result tw:cursor-pointer tw:px-1 tw:py-1 tw:text-left tw:hover:bg-accent tw:hover:text-accent-foreground"
+        :class="i === selectionCursor ? 'is-active tw:bg-accent tw:text-accent-foreground' : ''"
         :data-cy="`autocomplete-item--${result}`"
-        class="Autocomplete-result"
-        :class="{ 'is-active': i === selectionCursor }"
         @click="setResult(result)"
       >
         {{ result }}
@@ -30,8 +38,13 @@
 </template>
 
 <script>
+import { Input } from '@/components/ui/input';
+
 export default {
   name: 'Autocomplete',
+  components: {
+    Input,
+  },
   props: {
     item: {
       type: String,
@@ -136,32 +149,3 @@ export default {
   },
 };
 </script>
-
-<style scoped lang="scss">
-@use '@/assets/styles/variables.scss';
-
-.Autocomplete-results {
-  padding: 0;
-  margin: 0;
-  border: 1px solid variables.$dropdown-border-color;
-  height: 120px;
-  overflow: auto;
-}
-
-.Autocomplete-result.is-active {
-  background-color: variables.$blue-color;
-  color: white;
-}
-
-.Autocomplete-result {
-  list-style: none;
-  text-align: left;
-  padding: 4px 2px;
-  cursor: pointer;
-}
-
-.Autocomplete-result:hover {
-  background-color: variables.$blue-color;
-  color: white;
-}
-</style>

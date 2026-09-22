@@ -1,85 +1,111 @@
 <template>
-  <Multipane class="DataLayout-vertical Custom-resizer-vertical" layout="vertical">
-    <div class="DataLayout-sidebarWrapper-vertical" data-cy="DataLayout-sidebarWrapper">
+  <ResizablePanelGroup class="ApiActionLayout" @resize="saveNewPaneSize">
+    <ResizablePanel
+      class="DataLayout-sidebarWrapper tw:h-full tw:overflow-auto"
+      :style="paneSize ? { width: paneSize } : { width: 'var(--sidebar-width)' }"
+      data-cy="DataLayout-sidebarWrapper"
+    >
       <QueryList
         :saved-queries="savedQueries"
         :current-query-name="currentQueryName"
         @deleteSavedQuery="deleteSavedQuery"
         @loadSavedQuery="loadSavedQuery"
       />
-    </div>
-    <MultipaneResizer data-cy="sidebarResizer" />
-    <div class="DataLayout-contentWrapper-vertical">
-      <b-container fluid class="h-100">
-        <b-row align-v="stretch" class="h-100">
-          <b-col v-if="loading" cols="12" />
-          <b-col v-else cols="12">
-            <b-card no-body class="px-0 h-100">
-              <b-tabs card content-class="px-0 mt-3 tabsHeight">
-                <b-tab
-                  v-for="(tabContent, tabIdx) of tabs"
-                  :key="`query-${tabIdx}-${tabContent.name}`"
-                  :active="currentTabIdx === tabIdx"
-                  class="px-2 py-0"
-                  title-link-class="px-3 py-0 titleItem"
-                  @click.prevent=""
+    </ResizablePanel>
+
+    <ResizableHandle data-cy="sidebarResizer" label="Resize the saved queries list" />
+
+    <ResizablePanel class="DataLayout-contentWrapper tw:h-full tw:flex-1 tw:overflow-auto tw:p-4">
+      <Card v-if="!loading" class="tw:h-full">
+        <Tabs v-model="currentTab" class="tw:h-full tw:min-h-0">
+          <!--
+            `b-tabs` avait un slot `#tabs-end` pour le bouton « + ». La
+            primitive n'en a pas : la barre et le bouton sont composés ici,
+            là où l'on sait ce que ce bouton fait (ADR-0017).
+          -->
+          <div class="tw:flex tw:items-center tw:border-b tw:border-border tw:px-2">
+            <TabsList class="tw:min-w-0 tw:flex-1 tw:overflow-x-auto tw:border-b-0">
+              <TabsTrigger
+                v-for="(tabContent, tabIdx) of tabs"
+                :key="`query-${tabIdx}-${tabContent.name}`"
+                :data-cy="`api-actions-tab-${tabIdx}`"
+                :title="tabContent.name"
+                :value="String(tabIdx)"
+              >
+                <span class="tw:max-w-40 tw:truncate">{{ formatTabName(tabContent) }}</span>
+                <!--
+                  Fermer un onglet était une icône dans le titre : un `<i>`
+                  cliquable posé dans un lien. C'est un bouton à côté.
+                -->
+                <span
+                  :aria-label="`Close the tab ${tabContent.name}`"
+                  class="tw:cursor-pointer tw:opacity-60 tw:hover:opacity-100"
+                  role="button"
+                  tabindex="0"
+                  @click.stop="closeTab(tabIdx)"
+                  @keydown.enter.stop.prevent="closeTab(tabIdx)"
                 >
-                  <template #title>
-                    <b-row
-                      v-b-tooltip.hover
-                      align-v="center"
-                      class="tabTitle"
-                      :data-cy="`api-actions-tab-${tabIdx}`"
-                      :title="tabContent.name"
-                    >
-                      <b-col cols="9" class="text-left py-3 pointer" @click="setCurrentTab(tabIdx)">
-                        <span>
-                          {{ formatTabName(tabContent) }}
-                        </span>
-                      </b-col>
-                      <b-col cols="3" class="py-3">
-                        <i class="fas fa-times pointer" @click="closeTab(tabIdx)" />
-                      </b-col>
-                    </b-row>
-                  </template>
-                  <QueryCard
-                    class="px-0"
-                    :query="tabContent.query"
-                    :tab-idx="tabIdx"
-                    :api="api"
-                    :openapi="openapi"
-                    :response="tabContent.response"
-                    @saveQuery="saveQuery"
-                    @queryChanged="onQueryChanged"
-                    @performQuery="performQuery"
-                  />
-                </b-tab>
-                <template #tabs-end>
-                  <b-row align-v="center" class="px-3" @click.prevent="addNewTab">
-                    <b-col cols="12" class="text-center my-3 pointer">
-                      <b data-cy="api-actions-tab-plus">+</b>
-                    </b-col>
-                  </b-row>
-                </template>
-              </b-tabs>
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-container>
-    </div>
+                  <i class="fas fa-times" aria-hidden="true" />
+                </span>
+              </TabsTrigger>
+            </TabsList>
+
+            <Button
+              aria-label="Add a tab"
+              class="tw:shrink-0"
+              data-cy="api-actions-tab-plus"
+              size="icon"
+              variant="ghost"
+              @click="addNewTab"
+            >
+              <b>+</b>
+            </Button>
+          </div>
+
+          <!--
+            `force-mount` : chaque onglet porte un éditeur Ace dont la saisie
+            n'est remontée au parent que lorsqu'elle est un JSON valide. Un
+            panneau démonté perdrait la saisie en cours — ce que `b-tabs`, qui
+            gardait tout monté, ne faisait pas (ADR-0021).
+          -->
+          <TabsContent
+            v-for="(tabContent, tabIdx) of tabs"
+            :key="`query-content-${tabIdx}-${tabContent.name}`"
+            class="tw:min-h-0 tw:p-3"
+            force-mount
+            :value="String(tabIdx)"
+          >
+            <QueryCard
+              :api="api"
+              :openapi="openapi"
+              :query="tabContent.query"
+              :response="tabContent.response"
+              :tab-idx="tabIdx"
+              @saveQuery="saveQuery"
+              @queryChanged="onQueryChanged"
+              @performQuery="performQuery"
+            />
+          </TabsContent>
+        </Tabs>
+      </Card>
+    </ResizablePanel>
+
     <SaveQueryModal
       :is-query-name-valid="isQueryNameValid"
       :open.sync="saveQueryOpen"
       @storeNewQuery="storeNewQuery"
     />
-  </Multipane>
+  </ResizablePanelGroup>
 </template>
 
 <script>
 import _ from 'lodash';
 import { mapState } from 'pinia';
-import { Multipane, MultipaneResizer } from 'vue-multipane';
 
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 import { truncateName } from '@/utils';
 
@@ -89,8 +115,15 @@ import SaveQueryModal from '@/components/ApiAction/SaveQueryModal.vue';
 
 export default {
   components: {
-    Multipane,
-    MultipaneResizer,
+    Button,
+    Card,
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
     QueryCard,
     SaveQueryModal,
     QueryList,
@@ -100,6 +133,8 @@ export default {
       saveQueryOpen: false,
       tabs: [],
       currentTabIdx: 0,
+      /* Largeur de la liste des requêtes sauvegardées, en pixels. */
+      paneSize: '',
       showAlert: true,
       api: null,
       openapi: null,
@@ -109,6 +144,19 @@ export default {
     };
   },
   computed: {
+    /*
+     * `Tabs` désigne un onglet par une valeur, pas par un rang (ADR-0017).
+     * Le reste du composant raisonne en index : la conversion vit ici, à un
+     * seul endroit.
+     */
+    currentTab: {
+      get() {
+        return String(this.currentTabIdx);
+      },
+      set(value) {
+        this.setCurrentTab(Number(value));
+      },
+    },
     ...mapState(useKuzzleStore, ['$kuzzle', 'currentEnvironment']),
     ...mapState(useAuthStore, ['canGetPublicApi', 'canGetOpenApi']),
     emptyTab() {
@@ -175,6 +223,9 @@ export default {
         this.tabs[tabIdx].saved = _.isEqual(this.savedQueries[savedIdx].query, query);
       }
       this.tabs[tabIdx].query = JSON.parse(JSON.stringify(query));
+    },
+    saveNewPaneSize(width) {
+      this.paneSize = `${width}px`;
     },
     setCurrentTab(tabIdx) {
       this.currentTabIdx = tabIdx;

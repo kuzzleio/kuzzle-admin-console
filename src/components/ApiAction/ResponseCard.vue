@@ -1,40 +1,41 @@
 <template>
-  <b-card no-body class="h-100">
-    <b-card-header>
-      <b-card-title> Response </b-card-title>
-    </b-card-header>
-    <b-card-body class="p-0">
-      <b-row class="m-2" no-gutters>
-        <b-col cols="12">
-          <b-alert show :variant="statusBarVariant" class="mb-0">
-            <p class="mb-0" :data-cy="`api-actions-response-status-${tabIdx}`">
-              Status: {{ currentStatus }}
-            </p>
-            <b-card-text v-if="currentErrorMessage">
-              {{ currentErrorMessage }}
-            </b-card-text>
-          </b-alert>
-        </b-col>
-      </b-row>
+  <Card class="tw:h-full">
+    <CardHeader>
+      <CardTitle>Response</CardTitle>
+    </CardHeader>
+    <CardContent class="tw:flex tw:min-h-0 tw:flex-1 tw:flex-col tw:gap-2">
+      <Alert :variant="statusBarVariant">
+        <p :data-cy="`api-actions-response-status-${tabIdx}`">Status: {{ currentStatus }}</p>
+        <p v-if="currentErrorMessage" class="tw:mt-1">{{ currentErrorMessage }}</p>
+      </Alert>
+
       <json-editor
         :id="`responseEditorWrapper-${tabIdx}`"
         :ref="`responseEditorWrapper-${tabIdx}`"
+        class="responseJsonEditor tw:min-h-0 tw:flex-1"
+        content="{}"
         :data-cy="`api-actions-response-JSONEditor-${tabIdx}`"
         readonly
-        class="m-2 responseJsonEditor"
-        content="{}"
       />
-    </b-card-body>
-  </b-card>
+    </CardContent>
+  </Card>
 </template>
 
 <script>
 import _ from 'lodash';
 
+import { Alert } from '@/components/ui/alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import jsonEditor from '@/components/Common/JsonEditor.vue';
 
 export default {
   components: {
+    Alert,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
     jsonEditor,
   },
   props: {

@@ -1,53 +1,69 @@
 <template>
-  <b-row class="h-100 text-center mx-0" align-v="center" align-h="center">
-    <b-col cols="12" class="h-100 px-0">
-      <b-card class="h-100 backgroundCard" no-body>
-        <b-card-body class="d-flex flex-column text-center m-0 p-0 h-100">
-          <b-card-text class="px-1 py-3 h-100">
-            <b-row v-if="!paginatedQueries.length" align-v="center" class="h-100">
-              <b-col>
-                <b-card title="No API actions saved.">
-                  <b-card-text>
-                    <p>Your saved API Actions will appear in this list.</p>
-                  </b-card-text>
-                </b-card>
-              </b-col>
-            </b-row>
-            <template v-else>
-              <b-list-group ref="leftNav-container" class="leftNav-container">
-                <b-list-group-item
-                  v-for="query of paginatedQueries"
-                  :key="`saved-query-${query.idx}`"
-                  :ref="`saved-query-${query.idx}`"
-                  class="px-3 py-0"
-                  :active="query.idx === currentQueryIndex"
-                  :data-cy="`api-actions-saved-query-${query.name}`"
-                >
-                  <b-row align-v="center">
-                    <b-col
-                      :id="`query-list-${query.idx}`"
-                      cols="9"
-                      class="text-left py-3 pointer leftTab"
-                      @click="loadSavedQuery(query.idx)"
-                    >
-                      <span>{{ query.name }}</span>
-                    </b-col>
-                    <b-col cols="3" class="py-3">
-                      <i class="fas fa-trash pointer" @click="deleteSavedQuery(query)" />
-                    </b-col>
-                  </b-row>
-                </b-list-group-item>
-              </b-list-group>
-            </template>
-          </b-card-text>
-        </b-card-body>
-      </b-card>
-    </b-col>
-  </b-row>
+  <Card class="backgroundCard tw:h-full">
+    <CardContent class="tw:flex tw:h-full tw:min-h-0 tw:flex-col">
+      <div v-if="!paginatedQueries.length" class="tw:flex tw:h-full tw:items-center">
+        <Card class="tw:w-full">
+          <CardContent>
+            <CardTitle>No API actions saved.</CardTitle>
+            <p class="tw:mt-2 tw:text-sm tw:text-muted-foreground">
+              Your saved API Actions will appear in this list.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <ul
+        v-else
+        ref="leftNav-container"
+        class="leftNav-container tw:flex tw:list-none tw:flex-col tw:overflow-auto tw:pl-0"
+      >
+        <li
+          v-for="query of paginatedQueries"
+          :key="`saved-query-${query.idx}`"
+          :ref="`saved-query-${query.idx}`"
+          class="tw:flex tw:items-center tw:gap-2 tw:border-b tw:border-border tw:px-3"
+          :class="query.idx === currentQueryIndex ? 'tw:bg-muted tw:font-semibold' : ''"
+          :data-cy="`api-actions-saved-query-${query.name}`"
+        >
+          <!--
+            `b-list-group-item :active` ne posait qu'une classe : la requête
+            ouverte n'était annoncée nulle part. C'est un bouton, et il dit
+            laquelle est la courante.
+          -->
+          <button
+            :id="`query-list-${query.idx}`"
+            :aria-current="query.idx === currentQueryIndex ? 'true' : undefined"
+            class="leftTab tw:flex-1 tw:cursor-pointer tw:appearance-none tw:truncate tw:border-0 tw:bg-transparent tw:py-3 tw:text-left tw:font-sans tw:text-sm tw:text-foreground"
+            type="button"
+            @click="loadSavedQuery(query.idx)"
+          >
+            {{ query.name }}
+          </button>
+          <Button
+            :aria-label="`Delete the query ${query.name}`"
+            size="icon"
+            variant="ghost"
+            @click="deleteSavedQuery(query)"
+          >
+            <i class="fas fa-trash" aria-hidden="true" />
+          </Button>
+        </li>
+      </ul>
+    </CardContent>
+  </Card>
 </template>
 
 <script>
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
+
 export default {
+  components: {
+    Button,
+    Card,
+    CardContent,
+    CardTitle,
+  },
   props: {
     currentQueryName: {},
     savedQueries: {},

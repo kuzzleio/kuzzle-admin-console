@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
-| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours — 96 / 107 |
+| **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 100 / 107 — **0 balise `<b-*>`**, reste le retrait des paquets |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
@@ -280,6 +280,8 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `Pagination` ([ADR-0013](adr/0013-primitive-pagination-en-vue-2.md)) et `Select` ([ADR-0014](adr/0014-primitive-select-en-vue-2.md)) | ✅ |
 | `Tabs` — pilotée par valeur, panneau caché démonté ([ADR-0017](adr/0017-primitive-tabs-en-vue-2.md)) | ✅ |
 | `TagsInput` — pour le seul champ à étiquettes ([ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md)) | ✅ |
+| `Resizable` — splitter maison, poignée au clavier ([ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md)) | ✅ |
+| `Toast` — zone unique et store ([ADR-0020](adr/0020-systeme-de-toasts.md)) | ✅ |
 | Dernière primitive interactive : `Combobox` (pour `vue-multiselect`) | ⬜ |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
@@ -297,7 +299,13 @@ phase 2.
 
 ### 1.3 Dé-bootstrapisation — phase 2
 
-**96 composants repris sur 107**, **755 balises `<b-*>` retirées sur 813**.
+**100 composants repris sur 107**, **813 balises `<b-*>` retirées sur 813 — il
+n'en reste aucune.**
+
+Les sept composants encore ⬜ n'ont jamais porté de balise `bootstrap-vue` : ce
+sont des fichiers de logique ou de balisage ordinaire (`Breadcrumb`,
+`JsonEditor`, `HighlightedSpan`, `Materialize/Headline`, `App.vue`…). Ils seront
+repris avec la refonte visuelle, pas contre Bootstrap.
 
 > Le dénominateur passe de 134 à 107 : 27 composants non atteignables ont été
 > supprimés ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)). Ce
@@ -309,7 +317,9 @@ phase 2.
 > des mentions en commentaire** dans les primitives (« Remplace
 > `<b-pagination>` ») : elles ne sont pas du balisage. Le compte réel est
 > `grep -rhn '<b-[a-z-]*' src --include='*.vue' | grep -vE '^[0-9]+:\s*(\*|//|/\*)'
-> | grep -o '<b-[a-z-]*' | wc -l` = **58 restantes**, à retrancher de 813 — **toutes dans `ApiAction/`**.
+> | grep -o '<b-[a-z-]*' | wc -l` = **0 restante**. Les trois occurrences que
+> la commande brute retourne encore sont des mentions en commentaire, qui
+> expliquent ce que chaque reprise a remplacé.
 
 Les deux pages 404 ouvrent la phase parce qu'elles sont le plus petit périmètre
 possible : isolées, sans état, et couvertes par `404.spec.js`. Elles valident
@@ -659,6 +669,33 @@ bandeaux persistants rendaient chacun leur zone fixe, au même coin que celle de
 notifications. Ils sont devenus des toasts du store, avec leurs boutons portés
 par une liste d'`actions`.
 
+**`ApiAction` ferme la phase**, et il était le seul écran encore bloqué sur une
+décision : `vue-multipane`, abandonné, tenait le redimensionnement à trois
+endroits. [ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md) écrit le
+splitter à la main — `ResizablePanelGroup` / `ResizablePanel` /
+`ResizableHandle` — et **retire la dépendance**.
+
+Ce que `vue-multipane` faisait vraiment, une fois lu : écouter un `mousedown`,
+suivre la souris, et **écrire `width` sur le nœud DOM qui précède la poignée**.
+D'où deux choses que la primitive change :
+
+- **le groupe émet la taille, il n'écrit pas dans le DOM.** Un composant qui
+  modifie un nœud qu'il ne rend pas est un composant dont on ne peut pas prévoir
+  l'effet ;
+- **la poignée est un `<button role="separator">`**, déplaçable aux flèches.
+  Celle de `vue-multipane` était un `<div>` : le redimensionnement n'existait pas
+  au clavier. Au passage, le `<style scoped>` de 30 lignes qui l'habillait
+  disparaît — la poignée est notre nœud, elle prend des utilitaires.
+
+**La conséquence négative annoncée par ADR-0017 s'est produite**, et c'est la
+spec qui l'a vue : `b-tabs` gardait ses panneaux montés, la primitive les
+démonte, et l'éditeur d'ApiAction perdait une saisie **invalide** — `QueryCard`
+ne remonte au parent que les JSON valides. `TabsContent` reçoit donc
+`force-mount`, l'échappatoire de l'amont, utilisée à un seul endroit et
+justifiée au site d'appel. Remonter le texte brut aurait changé le contrat entre
+`QueryCard` et `ApiAction`, donc le format des requêtes sauvegardées : c'est une
+décision produit, pas un correctif de migration.
+
 #### Le code non atteignable, cherché une bonne fois — ✅ ADR-0016
 
 Le `grep` répond à la mauvaise question : il dit « ce nom est écrit quelque
@@ -726,10 +763,10 @@ compatibilité **avant** d'engager la montée.
 
 | Paquet | Problème | Traitement | Phase | Statut |
 |---|---|---|---|---|
-| `bootstrap-vue` 2.23.1 | aucune version Vue 3, **incompatible `@vue/compat`** | supprimé, remplacé par Tailwind + primitives locales | 2 | 🟡 Tailwind branché, cohabitation cadrée ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) |
-| `bootstrap` 4.6.2 | supprimé avec le précédent | Tailwind | 2 | 🟡 idem |
+| `bootstrap-vue` 2.23.1 | aucune version Vue 3, **incompatible `@vue/compat`** | supprimé, remplacé par Tailwind + primitives locales | 2 | 🟡 **0 balise `<b-*>` et 0 appel `$bvToast`/`$bvModal`** ; reste le retrait du paquet et des trois réglages de cohabitation ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) |
+| `bootstrap` 4.6.2 | supprimé avec le précédent | Tailwind | 2 | 🟡 idem — `vue-form-generator` importe encore `vfg.css`, à vérifier avant le retrait |
 | `vue-form-generator` 2.3.4 | **abandonné**, aucun successeur | à réimplémenter — cœur de l'édition de documents | 2 | ⬜ |
-| `vue-multipane` 0.9.5 | **abandonné** | splitter à réimplémenter — layout Data **et** ApiAction (3 fichiers) ; à décider avec ApiAction, dernier domaine | 2 | ⬜ |
+| ~~`vue-multipane` 0.9.5~~ | **abandonné** | **Retiré** — splitter écrit à la main ([ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md)) | 2 | ✅ |
 | `vuejs-logger` 1.5.5 | Vue 2 uniquement | remplacer par un wrapper maison | 3 | ⬜ |
 
 ### 3.2 Migration directe disponible
@@ -894,7 +931,7 @@ gros et le plus risqué.
 | `Common/MainSpinner.vue` | 2 | 16 | ✅ reprise |
 | `Common/PerPageSelector.vue` | 1 | 35 | ✅ reprise ([#1053](https://github.com/kuzzleio/kuzzle-admin-console/pull/1053)) |
 | `Common/PageNotAllowed.vue` | 1 | 30 | ✅ reprise |
-| `Common/Autocomplete.vue` | 1 | 166 | ⬜ |
+| `Common/Autocomplete.vue` | 1 | 166 | ✅ reprise ([#1068](https://github.com/kuzzleio/kuzzle-admin-console/pull/1068)) |
 | `Common/Filters/HistoryFilter.vue` | 0 | 80 | ⬜ |
 | `Common/Filters/FavoriteFilters.vue` | 0 | 65 | ⬜ |
 | `Common/MSelect.vue` | 0 | 60 | ➖ supprimé — non atteignable ([ADR-0016](adr/0016-supprimer-le-code-non-atteignable.md)) |
@@ -912,7 +949,7 @@ gros et le plus risqué.
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
 | `Signup.vue` | 19 | 245 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
-| `ApiAction.vue` | 12 | 432 | ⬜ |
+| `ApiAction.vue` | 12 | 432 | ✅ reprise ([#1068](https://github.com/kuzzleio/kuzzle-admin-console/pull/1068)) |
 | `404.vue` | 6 | 35 | ✅ reprise ([#1037](https://github.com/kuzzleio/kuzzle-admin-console/pull/1037)) |
 | `Login.vue` | 6 | 110 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
 | `ResetPassword.vue` | 5 | 75 | ✅ reprise ([#1061](https://github.com/kuzzleio/kuzzle-admin-console/pull/1061)) |
@@ -924,9 +961,9 @@ gros et le plus risqué.
 
 | Composant | `<b-*>` | LOC | Statut |
 |---|---:|---:|---|
-| `ApiAction/QueryCard.vue` | 24 | 349 | ⬜ |
-| `ApiAction/QueryList.vue` | 14 | 128 | ⬜ |
-| `ApiAction/ResponseCard.vue` | 8 | 85 | ⬜ |
+| `ApiAction/QueryCard.vue` | 24 | 349 | ✅ reprise ([#1068](https://github.com/kuzzleio/kuzzle-admin-console/pull/1068)) |
+| `ApiAction/QueryList.vue` | 14 | 128 | ✅ reprise ([#1068](https://github.com/kuzzleio/kuzzle-admin-console/pull/1068)) |
+| `ApiAction/ResponseCard.vue` | 8 | 85 | ✅ reprise ([#1068](https://github.com/kuzzleio/kuzzle-admin-console/pull/1068)) |
 | `ApiAction/SaveQueryModal.vue` | 3 | 70 | ✅ reprise |
 
 ### Error — 5 composants, 9 balises `<b-*>`
@@ -1909,3 +1946,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-21 | Les panneaux flottants passent au-dessus de `Dialog` (1035) | [ADR-0018](adr/0018-panneaux-flottants-au-dessus-des-modales.md) |
 | 2026-09-22 | `TagsInput` à la main, malgré un site d'appel unique | [ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md) |
 | 2026-09-22 | Notifications : un store, une zone unique, une API impérative assumée | [ADR-0020](adr/0020-systeme-de-toasts.md) |
+| 2026-09-22 | Splitter maison, et onglets montés en permanence dans ApiAction | [ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md) |
