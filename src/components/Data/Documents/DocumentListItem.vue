@@ -23,7 +23,7 @@
           @update:modelValue="notifyCheckboxClick"
         />
         <a
-          class="code pointer min-w-0 truncate"
+          class="code cursor-pointer min-w-0 truncate"
           data-cy="DocumentListItem-title"
           @click="toggleCollapse"
           >{{ document._id }}</a

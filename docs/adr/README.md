@@ -29,7 +29,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0005](0005-conserver-les-deux-sdk-kuzzle.md) | Conserver les deux SDK `kuzzle-sdk` v6 et v7 | Acceptée |
 | [0006](0006-attentes-sur-assertion-cypress.md) | Remplacer les attentes à durée fixe par des attentes sur assertion | Acceptée, clause E amendée par [0007](0007-lot-e-assertion-plutot-que-sommeil.md) |
 | [0007](0007-lot-e-assertion-plutot-que-sommeil.md) | Borner la patience plutôt que dormir, y compris pour le réseau simulé | Acceptée |
-| [0008](0008-cohabitation-tailwind-bootstrap.md) | Faire cohabiter Tailwind et Bootstrap 4 pendant la phase 2 | Acceptée, préfixe `tw:` retiré par [0023](0023-retrait-du-prefixe-tw.md) ; reste la couche `legacy` |
+| [0008](0008-cohabitation-tailwind-bootstrap.md) | Faire cohabiter Tailwind et Bootstrap 4 pendant la phase 2 | Acceptée, préfixe `tw:` retiré par [0023](0023-retrait-du-prefixe-tw.md), couche `legacy` dégraissée par [0024](0024-degraisser-la-couche-legacy.md) mais toujours là |
 | [0009](0009-contrat-des-primitives-ui.md) | Contrat des primitives UI écrites à la main en Vue 2 | Acceptée |
 | [0010](0010-primitive-dialog-en-vue-2.md) | Écrire `Dialog` à la main, et abandonner l'API impérative des modales | Acceptée |
 | [0011](0011-table-sans-data-table.md) | `Table` est du balisage, et le tri/filtre reste dans les pages | Acceptée |
@@ -45,6 +45,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0021](0021-reprise-apiaction-splitter-et-onglets.md) | Splitter écrit à la main, et onglets montés en permanence dans ApiAction | Acceptée |
 | [0022](0022-retrait-de-bootstrap-et-preflight.md) | Bootstrap sort et le preflight entre, dans le même geste | Acceptée, retire deux des trois réglages de [0008](0008-cohabitation-tailwind-bootstrap.md) |
 | [0023](0023-retrait-du-prefixe-tw.md) | Retirer le préfixe `tw:`, et ce que le renommage a réveillé | Acceptée |
+| [0024](0024-degraisser-la-couche-legacy.md) | Vider la couche `legacy` de ce qui ne style plus rien, et nommer ce qui reste | Acceptée |
 
 ## Gabarit
 

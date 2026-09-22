@@ -132,11 +132,6 @@ export default {
   overflow-y: hidden;
   overflow-x: hidden;
 }
-.list-item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
 .leftNav-container {
   overflow: auto;
   height: 100%;

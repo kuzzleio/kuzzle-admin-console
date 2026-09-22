@@ -298,7 +298,7 @@ c'était vrai pour un seul :
 | Réglage | Sort avec Bootstrap ? |
 |---|---|
 | Pas de preflight | **Non — l'inverse.** Le retrait du *reboot* de Bootstrap *oblige* à charger le preflight dans le même changement, sinon la console retombe sur les styles par défaut du navigateur ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
-| Couche `legacy` | **Non.** Elle contient encore nos feuilles SCSS, FontAwesome et `vfg.css` |
+| Couche `legacy` | **Non**, mais dégraissée ([ADR-0024](adr/0024-degraisser-la-couche-legacy.md)) : 781 lignes de SCSS ramenées à 122, le reste est nommé. Elle ne partira qu'avec `vfg.css`, donc avec `vue-form-generator` |
 | Préfixe `tw:` | **Non, et pas mécaniquement.** Retiré dans une PR à soi ([ADR-0023](adr/0023-retrait-du-prefixe-tw.md)) : le renommage a fait se rencontrer `tw:flex-grow` et le `.flex-grow` du legacy, collision qu'aucune ligne du diff ne montre (G-036) |
 
 ---
@@ -1739,6 +1739,34 @@ Gabarit à copier :
   même question à leur reprise : `BasicFilter` seul est piloté par 20 appels de
   `cy.select()`, tous dans `search.spec.js`.
 
+#### G-037 — Une classe absente des templates peut être bien vivante
+
+- **Contexte** : phase 2, dégraissage de la couche `legacy`
+  ([ADR-0024](adr/0024-degraisser-la-couche-legacy.md)). 781 lignes de SCSS à
+  trier, sans savoir laquelle style encore quelque chose.
+- **Symptôme** : un audit qui croise les classes définies avec les attributs
+  `class` des templates déclare mortes des règles parfaitement vivantes. Trois
+  l'ont été à tort : `EnvColor--*` (la couleur de toutes les connexions),
+  `.realtime-highlight.updated` et ses quatre sœurs (la surbrillance temps
+  réel), `json-formatter-row`.
+- **Cause** : trois façons de poser une classe qu'aucun grep sur `class=` ne
+  voit —
+  1. **construite à l'exécution** : `` :class="`EnvColor--${color}`" `` ;
+  2. **posée en JavaScript** : `this.$el.classList.add(getBadgeText(n.action))`
+     dans `DocumentListItem`, `HighlightableRow`, `TableCell` ;
+  3. **rendue par une bibliothèque** : `ace_*`, `multiselect__*`,
+     `json-formatter-row` — et ce sont justement les règles qu'on ne peut pas
+     remplacer par un utilitaire, donc celles qui restent le plus longtemps.
+- **Solution** : croiser les classes définies avec **toutes les chaînes du
+  code**, pas seulement les attributs `class` ; écarter à la main ce qui vient
+  d'une bibliothèque rendue au runtime ; puis exécuter les specs. Les trois
+  étapes, dans cet ordre — la première seule donne un faux positif par famille.
+- **À retenir** : symétrique de G-036. Là-bas, une règle présente dans la
+  feuille ne prouvait pas qu'on l'utilise ; ici, une classe absente du code ne
+  prouve pas qu'on ne l'utilise plus. **Le CSS mort ne se prouve pas par
+  lecture.**
+- **Ref** : [ADR-0024](adr/0024-degraisser-la-couche-legacy.md)
+
 #### G-036 — Retirer un préfixe de classes fait apparaître une collision qu'aucun diff ne montre
 
 - **Contexte** : phase 2, retrait du préfixe `tw:` ([ADR-0023](adr/0023-retrait-du-prefixe-tw.md)).
@@ -2003,3 +2031,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-22 | Splitter maison, et onglets montés en permanence dans ApiAction | [ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md) |
 | 2026-09-22 | Bootstrap sort et le preflight entre, dans le même geste | [ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md) |
 | 2026-09-22 | Retrait du préfixe `tw:`, et vérification par comparaison du CSS produit | [ADR-0023](adr/0023-retrait-du-prefixe-tw.md) |
+| 2026-09-22 | Vider la couche `legacy` de ce qui ne style plus rien, et nommer ce qui reste | [ADR-0024](adr/0024-degraisser-la-couche-legacy.md) |
