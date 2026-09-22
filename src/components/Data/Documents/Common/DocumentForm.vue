@@ -15,7 +15,7 @@
         v-if="isCustomField(field)"
         :schema="field"
         :value="model[field.model]"
-        @input="onFieldChange(field, $event)"
+        @input="handleFieldChange(field, $event)"
       />
 
       <Checkbox
@@ -23,7 +23,7 @@
         :id="`FormField-${field.model}`"
         v-bind="field.attributes.input"
         :model-value="Boolean(model[field.model])"
-        @update:modelValue="onFieldChange(field, $event)"
+        @update:modelValue="handleFieldChange(field, $event)"
       />
 
       <Textarea
@@ -31,7 +31,7 @@
         :id="`FormField-${field.model}`"
         v-bind="field.attributes.input"
         :model-value="toFieldValue(field)"
-        @update:modelValue="onFieldChange(field, $event)"
+        @update:modelValue="handleFieldChange(field, $event)"
       />
 
       <Input
@@ -40,7 +40,7 @@
         v-bind="field.attributes.input"
         :model-value="toFieldValue(field)"
         :type="field.inputType || 'text'"
-        @update:modelValue="onFieldChange(field, toModelValue(field, $event))"
+        @update:modelValue="handleFieldChange(field, toModelValue(field, $event))"
       />
     </FormItem>
   </div>
@@ -119,7 +119,7 @@ export default {
       const parsed = Number.parseFloat(raw);
       return Number.isNaN(parsed) ? raw : parsed;
     },
-    onFieldChange(field, value) {
+    handleFieldChange(field, value) {
       this.$emit('field-change', field.model, value);
     },
   },

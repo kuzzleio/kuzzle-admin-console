@@ -2168,6 +2168,94 @@ Gabarit à copier :
   supposer équivalents.
 - **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)
 
+#### G-047 — Une méthode nommée `on<Event>` est écrasée par l'écouteur que le parent passe sous le même nom
+
+- **Contexte** : phase 3, suppression en masse sur les pages Indexes et
+  Collections, et saisie du Quick Search.
+- **Symptôme** : on coche deux lignes, on supprime, **une seule** disparaît.
+  Trois specs rouges en CI (`indexes`, `collections`, `search`) alors que la
+  même base passait 17/17 en local.
+- **Mesure** : instrumentation de `onCheckboxClick`, les appels réels sont
+  `["testindex1", "testindex2", "testindex2"]`. Un seul événement `change` part
+  du DOM, mais le gestionnaire du parent tourne **deux fois** sur le second
+  clic : ajout puis retrait immédiat. Trois clics sur la *même* case donnent
+  bien trois appels — le doublon n'apparaît qu'au passage d'une ligne à l'autre.
+- **Cause** : le site d'appel écrit `@change="onCheckboxClick(index)"`, que Vue 3
+  transmet à l'enfant comme une prop de vnode littéralement nommée **`onChange`**.
+  Or `Checkbox` avait une **méthode** `onChange`. Le rendu compilé est :
+
+  ```js
+  mergeProps(_ctx.$attrs, { … }, toHandlers(_ctx.$listeners, true), {
+    onChange: _cache[0] || (_cache[0] = (...args) => _ctx.onChange && _ctx.onChange(...args))
+  })
+  ```
+
+  Dans ce wrapper mis en cache, `_ctx.onChange` résout vers **la prop du parent**
+  et non vers la méthode du composant. Résultat : le gestionnaire du parent est
+  branché deux fois — une fois par `$listeners`, une fois par le wrapper — et
+  l'`$emit('update:modelValue')` du composant n'est jamais exécuté.
+- **Solution** : aucune méthode ne porte un nom de la forme `on<Event>` quand un
+  parent peut passer `@<event>` au composant. Préfixe `handle`. Onze méthodes
+  dans huit fichiers étaient réellement en collision :
+
+  | Fichier | Avant | Après |
+  | --- | --- | --- |
+  | `ui/checkbox/Checkbox.vue` | `onChange` | `handleChange` |
+  | `ui/input/Input.vue` | `onInput` | `handleInput` |
+  | `ui/textarea/Textarea.vue` | `onInput` | `handleInput` |
+  | `Common/Filters/QuickFilter.vue` | `onInput` | `handleInput` |
+  | `Common/Filters/Filters.vue` | `onReset`, `onSubmit`, `onFiltersUpdated`, `onEnterPressed` | `handle…` |
+  | `Data/Indexes/DeleteIndexModal.vue` | `onCancel` | `handleCancel` |
+  | `Data/Collections/CreateOrUpdate.vue` | `onSubmit` | `handleSubmit` |
+  | `Data/Documents/Common/DocumentForm.vue` | `onFieldChange` | `handleFieldChange` |
+
+  La détection est versionnée : `npm run check:listener-collisions`
+  (`scripts/listener-name-collisions.ts`), code 1 et liste si une collision
+  réapparaît.
+- **À retenir** : ce n'est **pas** un problème de `$listeners` ni de
+  `v-bind="$attrs"` — les deux ont été innocentés par la mesure (`$attrs` ne
+  contient que `checked,data-cy`, et `$listeners.change` est bien une fonction
+  unique). C'est une **collision de noms** entre l'espace des méthodes et celui
+  des props d'écouteurs, que Vue 2 gardait séparés et que Vue 3 fusionne.
+
+  La collision n'est pas non plus réservée aux méthodes liées en ligne dans le
+  template. `Filters.onSubmit` n'est appelée que depuis d'autres méthodes, par
+  `this.onSubmit(…)` — et `this` passe par le même proxy que `_ctx`. C'est ce
+  qui a fait rater la spec `search` à la première passe de correction : la
+  détection ne regardait que les `@x="onFoo"`, ce qui couvrait `Checkbox` et
+  ratait `Filters`. Le symptôme y était pourtant différent — pas de double
+  appel, mais **aucun** effet : le gestionnaire du parent était appelé à la
+  place de la méthode, la frappe arrivait bien jusqu'à
+  `onQuickFilterSubmitted`, et l'URL ne bougeait pas.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md), [G-048](#g-048)
+
+#### G-048 — Le serveur de dev ne reproduit pas le bug : `cacheHandlers` n'existe qu'au build
+
+- **Contexte** : phase 3, validation de la bascule Vue 3.
+- **Symptôme** : 17/17 specs vertes en local, trois specs rouges en CI, **sur le
+  même commit** et le même backend.
+- **Cause** : [G-047](#g-047) passe par `_cache[0]`, produit par l'optimisation
+  `cacheHandlers` du compilateur. Elle est **désactivée sur le serveur de dev**
+  (HMR) et activée au `vite build`. Mesuré, deux fois sur chaque cible :
+
+  | cible | appels du gestionnaire |
+  | --- | --- |
+  | `vite` (dev) | 1 + 1 ✅ |
+  | `vite build` + `vite preview` | 1 + 2 ❌ |
+
+- **Solution** : **toute validation de migration se fait contre un build.**
+  `npm run build && npx vite preview --host 127.0.0.1 --port 8080`, puis
+  Cypress. Deux pièges de mise en place, tous deux vus ici : un `npm run dev`
+  oublié depuis la veille occupait le port avec un cache Vite d'avant la
+  bascule, et `vite preview` écoute sur `::1` alors que Cypress appelle
+  `127.0.0.1` — d'où `ECONNREFUSED` sur un serveur pourtant joignable au `curl`.
+- **À retenir** : le garde-fou du chantier, ce sont les 17 specs — mais une spec
+  verte ne vaut que si elle a couru sur l'artefact qu'on livre. Sous
+  `@vue/compat`, dev et production **ne compilent pas le même code**. Un
+  « 17/17 » obtenu sur `npm run dev` ne dit rien.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md), [G-047](#g-047)
+
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -2175,14 +2263,23 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 5.1 une fois rencontrés, ou à supprimer s'ils ne se présentent jamais.
 
 > **Bilan après la bascule** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) :
-> de cette liste, **aucun** n'a fait tomber une spec. Les huit problèmes
-> rencontrés sont en 5.1, sous G-039 à G-046, et **pas un seul n'était
+> de cette liste, **aucun** n'a fait tomber une spec. Les dix problèmes
+> rencontrés sont en 5.1, sous G-039 à G-048, et **pas un seul n'était
 > anticipé ici**. Ce qui figure ci-dessous est ce que la documentation de Vue
 > met en avant ; ce qui casse pour de vrai est ce que le code fait de
 > particulier — un `appendChild` manuel, une classe morte sur le nœud de
-> montage, un `name` de composant qui coïncide avec une balise. La liste
-> d'anticipation n'a pas été inutile, elle a été **hors sujet**, et ça vaut
-> d'être noté avant la phase 4.
+> montage, un `name` de composant qui coïncide avec une balise, une méthode
+> `onChange` qui coïncide avec l'écouteur du parent. La liste d'anticipation
+> n'a pas été inutile, elle a été **hors sujet**, et ça vaut d'être noté avant
+> la phase 4.
+>
+> Le cas de `$listeners` mérite d'être regardé de près, parce qu'il est le seul
+> qui *semble* avoir été anticipé. La ligne ci-dessous dit « fusionné dans
+> `$attrs` » ; c'est vrai en Vue 3 pur, et **faux sous `@vue/compat` en
+> `MODE: 2`**, où `$attrs` ne contient aucun écouteur — mesuré en G-047. Le vrai
+> problème était ailleurs (une collision de noms), et l'énoncé anticipé aurait
+> envoyé chercher au mauvais endroit. Une ligne d'anticipation juste sur le
+> papier peut coûter plus cher qu'une ligne absente.
 
 - **`v-model` sur composant** : `value`/`input` devient `modelValue`/
   `update:modelValue`. Touche toute la couche formulaires.
@@ -2241,3 +2338,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-22 | Réimplémenter `vue-form-generator` en un composant de la console | [ADR-0025](adr/0025-reimplementer-vue-form-generator.md) |
 | 2026-09-22 | Remplacer `vuejs-logger` par un wrapper de 40 lignes | [ADR-0026](adr/0026-wrapper-de-log-maison.md) |
 | 2026-09-22 | Basculer sur Vue 3 sous `@vue/compat`, en un seul lot | [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md) |
+| 2026-09-23 | Valider les specs de migration contre un build, jamais contre le serveur de dev | [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md) |

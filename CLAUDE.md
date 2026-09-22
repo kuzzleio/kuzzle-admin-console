@@ -45,6 +45,15 @@ seul filet de sécurité du chantier — il n'y a pas de tests unitaires. Toute 
 migration doit passer les specs du domaine touché. Ne jamais désactiver une spec
 pour faire passer une migration : c'est le signal que la migration est fausse.
 
+**Les specs se valident contre un build, pas contre `npm run dev`**
+([ADR-0028](docs/adr/0028-valider-les-specs-contre-un-build.md)) : sous
+`@vue/compat`, le serveur de dev et le build ne compilent pas le même code, et
+un « N/N specs » obtenu sur le serveur de dev ne dit rien.
+
+```sh
+npm run build && npx vite preview --host 127.0.0.1 --port 8080 --strictPort
+```
+
 ## Commandes
 
 ```sh

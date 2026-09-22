@@ -4,7 +4,7 @@
     :value="modelValue"
     v-bind="$attrs"
     v-on="$listeners"
-    @input="onInput"
+    @input="handleInput"
   />
 </template>
 
@@ -48,7 +48,7 @@ export default defineComponent({
     },
   },
   methods: {
-    onInput(event: Event): void {
+    handleInput(event: Event): void {
       this.$emit('update:modelValue', (event.target as HTMLTextAreaElement).value);
     },
   },

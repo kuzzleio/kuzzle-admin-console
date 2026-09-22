@@ -5,7 +5,7 @@
     type="checkbox"
     v-bind="$attrs"
     v-on="$listeners"
-    @change="onChange"
+    @change="handleChange"
   />
 </template>
 
@@ -25,6 +25,10 @@ import { classMerge } from '../class-merge';
  *   qui porte le `data-cy` : un input natif fait les deux sans qu'on ait à
  *   réimplémenter l'état indéterminé, le focus ni la touche Espace ;
  * - `v-model` passe par l'option `model` de Vue 2, comme `Input` (G-012).
+ *
+ * La méthode s'appelle `handleChange` et non `onChange` : un `@change` posé par
+ * le site d'appel arrive ici comme une prop nommée `onChange`, qui masquerait
+ * la méthode (G-047). `npm run check:listener-collisions` garde la règle.
  *
  * La valeur est un booléen. `b-form-checkbox` permettait `value` /
  * `unchecked-value` pour stocker autre chose — la console s'en servait pour
@@ -61,7 +65,7 @@ export default defineComponent({
     },
   },
   methods: {
-    onChange(event: Event): void {
+    handleChange(event: Event): void {
       this.$emit('update:modelValue', (event.target as HTMLInputElement).checked);
     },
   },

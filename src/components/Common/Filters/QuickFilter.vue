@@ -14,7 +14,7 @@
           :model-value="value"
           :placeholder="placeholder"
           type="search"
-          @update:modelValue="onInput"
+          @update:modelValue="handleInput"
           @keyup.enter="submitNow"
         />
       </div>
@@ -152,7 +152,7 @@ export default {
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters');
     },
-    onInput(term) {
+    handleInput(term) {
       this.emitTerm(term);
     },
   },

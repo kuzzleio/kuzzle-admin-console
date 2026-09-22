@@ -26,7 +26,7 @@
           :value="quickFilter"
           @display-advanced-filters="advancedFiltersVisible = !advancedFiltersVisible"
           @input="onQuickFilterUpdated"
-          @reset="onReset"
+          @reset="handleReset"
           @submit="onQuickFilterSubmitted"
         />
 
@@ -88,7 +88,7 @@
             :current-filter="currentFilter"
             :sorting-enabled="sortingEnabled"
             @filter-submitted="onRawFilterSubmitted"
-            @reset="onReset"
+            @reset="handleReset"
           />
         </TabsContent>
 
@@ -102,7 +102,7 @@
             :sorting-enabled="sortingEnabled"
             @filter-submitted="onBasicFilterSubmitted"
             @generate-raw-filter="onGenerateRawFilter"
-            @reset="onReset"
+            @reset="handleReset"
           />
         </TabsContent>
 
@@ -260,13 +260,13 @@ export default {
       this.refreshace = !this.refreshace;
     },
     onQuickFilterUpdated(term) {
-      this.onFiltersUpdated({
+      this.handleFiltersUpdated({
         ...this.currentFilter,
         quick: term,
       });
     },
     onQuickFilterSubmitted(term) {
-      this.onSubmit({
+      this.handleSubmit({
         ...this.currentFilter,
         active: ACTIVE_QUICK,
         quick: term,
@@ -277,12 +277,12 @@ export default {
       newFilter.basic = filter;
       newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE;
       newFilter.sorting = sorting;
-      this.onSubmit(newFilter);
+      this.handleSubmit(newFilter);
     },
 
     onRawFilterSubmitted(filter) {
       this.advancedFiltersVisible = false;
-      this.onSubmit(
+      this.handleSubmit(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
           raw: filter,
@@ -291,10 +291,10 @@ export default {
     },
     onSubmitFromHistory(filter) {
       this.advancedFiltersVisible = false;
-      this.onSubmit(Object.assign(this.currentFilter, filter), false);
+      this.handleSubmit(Object.assign(this.currentFilter, filter), false);
     },
     onGenerateRawFilter(filter) {
-      this.onFiltersUpdated(
+      this.handleFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
           raw: filter,
@@ -309,14 +309,14 @@ export default {
         }),
       );
     },
-    onReset() {
-      this.onSubmit(new Filter());
+    handleReset() {
+      this.handleSubmit(new Filter());
     },
-    onFiltersUpdated(newFilters) {
+    handleFiltersUpdated(newFilters) {
       this.$emit('filters-updated', newFilters);
     },
-    onSubmit(filter, saveToHistory = true) {
-      this.onFiltersUpdated(
+    handleSubmit(filter, saveToHistory = true) {
+      this.handleFiltersUpdated(
         Object.assign(filter, {
           from: 0,
         }),
@@ -324,7 +324,7 @@ export default {
       this.$emit('submit', saveToHistory);
       this.close();
     },
-    onEnterPressed() {
+    handleEnterPressed() {
       this.$emit('enter-pressed');
     },
     toggleFullscreen() {
