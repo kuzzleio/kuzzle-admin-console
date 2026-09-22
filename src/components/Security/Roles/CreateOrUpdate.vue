@@ -40,7 +40,7 @@
           </div>
 
           <div class="CreateOrUpdateRole-cheatsheet tw:lg:w-5/12">
-            <h3>Cheatsheet</h3>
+            <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Cheatsheet</h3>
             Your role consists of a <code>controllers</code> object, in which each key represents a
             controller in your Kuzzle. Each contoller key contains an <code>actions</code> object,
             in which each key represents a valid action within that controller. Whitelist your
@@ -194,14 +194,10 @@ export default {
       this.documentValue = JSON.stringify(role, null, 2);
     } catch (e) {
       this.$log.error(e);
-      this.$bvToast.toast('The complete error has been printed to console', {
-        title: 'Ooops! Something went wrong while fetching the role',
-        variant: 'warning',
-        toaster: 'b-toaster-bottom-right',
-        appendToast: true,
-        dismissible: true,
-        noAutoHide: true,
-      });
+      this.$toast.warning(
+        'Ooops! Something went wrong while fetching the role',
+        'The complete error has been printed to console',
+      );
     }
     this.loading = false;
   },
@@ -238,14 +234,10 @@ export default {
         this.$router.push({ name: 'SecurityRolesList' });
       } catch (e) {
         this.$log.error(e);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while submitting the role',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while submitting the role',
+          'The complete error has been printed to console',
+        );
         this.submitting = false;
       }
     },

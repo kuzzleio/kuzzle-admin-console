@@ -1,15 +1,6 @@
-$theme-colors: (
-  "primary": #002835,
-);
-
-.navbar .navbar-nav .nav-link {
-  color: white;
-
-  &.active {
-    font-weight: 600;
-  }
-}
-
+// `$theme-colors` surchargeait la palette de Bootstrap, et
+// `.navbar .navbar-nav .nav-link` habillait le `b-navbar` du menu principal :
+// les deux sont partis avec lui (ADR-0022).
 .light-shadow {
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.125);
 }

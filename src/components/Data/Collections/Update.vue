@@ -88,14 +88,10 @@ export default {
         });
       } catch (e) {
         this.$log.error(e);
-        this.$bvToast.toast(e.message, {
-          title: 'Ooops! Something went wrong while updating the collection.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while updating the collection.',
+          e.message,
+        );
       }
     },
     setError(payload) {

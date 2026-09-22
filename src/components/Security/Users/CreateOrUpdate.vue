@@ -237,14 +237,10 @@ export default {
       this.loading = false;
     } catch (e) {
       this.$log.error(e);
-      this.$bvToast.toast('The complete error has been printed to console', {
-        title: 'Ooops! Something went wrong while loading the user',
-        variant: 'warning',
-        toaster: 'b-toaster-bottom-right',
-        appendToast: true,
-        dismissible: true,
-        noAutoHide: true,
-      });
+      this.$toast.warning(
+        'Ooops! Something went wrong while loading the user',
+        'The complete error has been printed to console',
+      );
     }
   },
   methods: {
@@ -328,12 +324,7 @@ export default {
       } catch (err) {
         this.$log.error(err);
         this.submitting = false;
-        this.$bvToast.toast(err.message, {
-          title: 'Unable to create user',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        this.$toast.danger('Unable to create user', err.message);
       }
     },
     cancel() {

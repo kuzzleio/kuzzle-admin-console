@@ -26,7 +26,7 @@
       </div>
       <div v-else>
         No profiles found (you should
-        <router-link :to="{ name: 'SecurityProfilesCreate' }" class="text-light-blue">
+        <router-link class="tw:text-primary tw:underline" :to="{ name: 'SecurityProfilesCreate' }">
           create one
         </router-link>
         before creating a user)

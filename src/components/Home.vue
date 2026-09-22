@@ -12,30 +12,6 @@
       <main-spinner v-if="authInitializing" />
       <router-view v-else />
     </div>
-    <b-toast
-      id="no-admin-warning"
-      variant="info"
-      no-auto-hide
-      toaster="b-toaster-bottom-right"
-      title="Warning!"
-      data-cy="noAdminWarning"
-    >
-      <p>
-        Your Kuzzle has no administrator user. It is strongly recommended
-        <a href="#/signup" class="alert-link"> that you create one.</a>
-      </p>
-      <div class="text-center">
-        <b-button
-          id="noAdminGotIt"
-          title="Don't show this toast again for the current environment"
-          variant="primary"
-          size="sm"
-          @click="hideNoAdminWarning"
-        >
-          Ok, got it
-        </b-button>
-      </div>
-    </b-toast>
 
     <Dialog :open="tokenExpiredIsOpen" @update:open="tokenExpiredIsOpen = $event">
       <DialogContent data-cy="Modal-tokenExpired" labelled-by="token-expired-title">
@@ -128,6 +104,11 @@ export default {
     this.$kuzzle.removeListener('queryError');
   },
   methods: {
+    /*
+     * L'avertissement est un toast persistant avec une action, poussé dans la
+     * zone unique (ADR-0020). `b-toast` le gardait monté en permanence et
+     * l'affichait par son `id` ; ici il n'existe que s'il a lieu d'être.
+     */
     hideNoAdminWarning() {
       this.kuzzleStore.updateEnvironment({
         id: this.kuzzleStore.currentId,
@@ -137,7 +118,7 @@ export default {
         },
       });
 
-      this.$bvToast.hide('no-admin-warning');
+      /* Rien à masquer : l'action ferme le toast. */
     },
     onTokenExpired() {
       this.authStore.setSession(null);
@@ -150,7 +131,14 @@ export default {
       if (this.currentEnvironment.hideAdminWarning) {
         return;
       }
-      this.$bvToast.show('no-admin-warning');
+      this.$toast.show({
+        actions: [{ label: 'Ok, got it', handler: this.hideNoAdminWarning }],
+        autoHideAfter: null,
+        message:
+          'Your Kuzzle has no administrator user. It is strongly recommended that you create one.',
+        title: 'Warning!',
+        variant: 'warning',
+      });
     },
   },
 };

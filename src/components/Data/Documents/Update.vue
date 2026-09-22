@@ -132,14 +132,10 @@ export default {
         });
       } catch (err) {
         this.$log.error(err);
-        this.$bvToast.toast(err.message, {
-          title: 'Ooops! Something went wrong while persisting the document.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while persisting the document.',
+          err.message,
+        );
       }
     },
     onCancel() {
@@ -160,14 +156,7 @@ export default {
         this.loading = false;
       } catch (err) {
         this.$log.error(err);
-        this.$bvToast.toast(err.message, {
-          title: 'Ooops! Something went wrong while loading the document.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning('Ooops! Something went wrong while loading the document.', err.message);
       }
     },
   },

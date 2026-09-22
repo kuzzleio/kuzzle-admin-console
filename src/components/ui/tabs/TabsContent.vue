@@ -1,6 +1,7 @@
 <template>
   <div
-    v-if="isActive"
+    v-if="isActive || forceMount"
+    v-show="isActive"
     :id="`${tabs.baseId}-content-${value}`"
     :aria-labelledby="`${tabs.baseId}-trigger-${value}`"
     :class="classes"
@@ -27,6 +28,8 @@ import { tabsContext } from './context';
  * continuent de porter leurs `id` et de participer au formulaire. C'est ce qui
  * fait qu'un `id` en double passe inaperçu jusqu'au jour où une spec le vise.
  *
+ * `force-mount` renverse cette règle pour un site d'appel qui en a besoin.
+ *
  * `tabindex="0"` : le panneau est atteignable au clavier depuis son onglet,
  * sans quoi le contenu d'un panneau sans élément focalisable serait
  * inaccessible.
@@ -36,6 +39,16 @@ export default defineComponent({
   mixins: [classMerge, tabsContext],
   inheritAttrs: false,
   props: {
+    /*
+     * Monte le panneau même inactif, et le masque en CSS. C'est l'échappatoire
+     * de l'amont (`forceMount`), à n'utiliser que lorsqu'un panneau porte un
+     * état que son hôte ne sait pas restaurer — l'éditeur Ace d'ApiAction, par
+     * exemple, garde une saisie invalide que rien ne persiste (ADR-0021).
+     */
+    forceMount: {
+      default: false,
+      type: Boolean,
+    },
     value: {
       required: true,
       type: String,

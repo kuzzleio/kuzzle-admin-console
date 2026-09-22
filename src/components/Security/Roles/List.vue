@@ -184,12 +184,10 @@ export default {
         this.fetchRoles();
       } catch (e) {
         this.$log.error(e);
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: 'Ooops! Something went wrong while deleting the document(s).',
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        this.$toast.danger(
+          'Ooops! Something went wrong while deleting the document(s).',
+          'The complete error has been printed to the console.',
+        );
       }
     },
     deleteRole(id) {
@@ -238,14 +236,10 @@ export default {
         );
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while updating the search filters',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while updating the search filters',
+          'The complete error has been printed to console',
+        );
       }
     },
     fetchRoles() {
@@ -269,14 +263,10 @@ export default {
         })
         .catch((e) => {
           this.$log.error(e);
-          this.$bvToast.toast('The complete error has been printed to console', {
-            title: 'Ooops! Something went wrong while fetching the role list',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true,
-          });
+          this.$toast.warning(
+            'Ooops! Something went wrong while fetching the role list',
+            'The complete error has been printed to console',
+          );
         });
     },
     editDocument(route, id) {

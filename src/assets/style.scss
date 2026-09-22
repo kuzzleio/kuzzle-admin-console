@@ -1,9 +1,10 @@
-// Styles historiques — Bootstrap 4, bootstrap-vue et nos feuilles SCSS.
+// Feuilles SCSS historiques de la console.
 //
-// Rangés dans la couche `legacy` pour que les utilitaires Tailwind prennent le
-// dessus sans surenchère de spécificité pendant la reprise écran par écran
-// (cf. `tailwind.css` et ADR-0008). L'ordre des couches est déclaré dans
-// `tailwind.css`, importé avant ce fichier.
+// Bootstrap 4 et bootstrap-vue en sont sortis (ADR-0022) ; la couche `legacy`
+// reste, parce qu'elle contient encore nos propres feuilles et `vfg.css`, et
+// qu'elles perdent toujours face aux utilitaires Tailwind sans surenchère de
+// spécificité (cf. `tailwind.css` et ADR-0008). L'ordre des couches est
+// déclaré dans `tailwind.css`, importé avant ce fichier.
 @layer legacy {
   // App
   @import 'styles/variables';
@@ -15,10 +16,6 @@
   @import 'styles/environment';
   @import 'styles/utility';
   @import 'styles/override';
-
-  // Dependencies
-  @import 'bootstrap/scss/bootstrap.scss';
-  @import 'bootstrap-vue/src/index.scss';
 }
 
 // FontAwesome est importé depuis `tailwind.css`, pas d'ici : Sass hisse

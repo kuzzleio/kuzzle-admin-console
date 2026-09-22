@@ -209,14 +209,10 @@ export default {
         this.saveFilterToRoute(newFilters);
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while updating filters',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while updating filters',
+          'The complete error has been printed to console',
+        );
       }
     },
     async fetchProfiles() {
@@ -235,14 +231,10 @@ export default {
         this.totalDocuments = res.total;
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while fetching the profiles',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while fetching the profiles',
+          'The complete error has been printed to console',
+        );
       }
       this.loading = false;
     },
@@ -268,14 +260,10 @@ export default {
         this.fetchProfiles();
       } catch (error) {
         this.$log.error(error);
-        this.$bvToast.toast('The complete error has been printed to console', {
-          title: 'Ooops! Something went wrong while deleting the profiles',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true,
-        });
+        this.$toast.warning(
+          'Ooops! Something went wrong while deleting the profiles',
+          'The complete error has been printed to console',
+        );
       }
       this.deleteModalOpen = false;
       this.deleteModalIsLoading = false;

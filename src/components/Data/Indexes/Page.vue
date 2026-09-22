@@ -317,12 +317,7 @@ export default {
         await this.storageIndexStore.fetchIndexList();
       } catch (err) {
         this.$log.error(err);
-        this.$bvToast.toast('The complete error has been printed to the console.', {
-          title: err.message,
-          variant: 'danger',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        this.$toast.danger(err.message, 'The complete error has been printed to the console.');
       }
     },
     onToggleAllClicked() {

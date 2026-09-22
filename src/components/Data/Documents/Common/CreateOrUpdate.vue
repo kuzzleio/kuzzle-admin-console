@@ -60,7 +60,7 @@
 
           <!-- Mapping -->
           <div class="tw:flex tw:min-h-0 tw:flex-col tw:lg:w-5/12">
-            <h3>Mapping</h3>
+            <h3 class="tw:text-lg tw:font-semibold tw:text-foreground">Mapping</h3>
 
             <pre
               v-json-formatter="{
@@ -221,12 +221,10 @@ export default {
         );
         this.submitting = false;
       } else {
-        this.$bvToast.toast('The JSON specification of the document contains errors', {
-          title: 'You cannot proceed',
-          variant: 'info',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-        });
+        this.$toast.info(
+          'You cannot proceed',
+          'The JSON specification of the document contains errors',
+        );
       }
     },
   },
