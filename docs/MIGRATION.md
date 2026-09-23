@@ -2211,7 +2211,9 @@ Gabarit à copier :
 
   La détection est versionnée : `npm run check:listener-collisions`
   (`scripts/listener-name-collisions.ts`), code 1 et liste si une collision
-  réapparaît.
+  réapparaît. Elle est **bloquante en CI**, dans l'action composite `lint`, à
+  côté de `check:unreachable` — un garde-fou que la CI ne lance pas n'en est
+  pas un.
 - **À retenir** : ce n'est **pas** un problème de `$listeners` ni de
   `v-bind="$attrs"` — les deux ont été innocentés par la mesure (`$attrs` ne
   contient que `checked,data-cy`, et `$listeners.change` est bien une fonction
