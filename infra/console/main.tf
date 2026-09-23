@@ -15,6 +15,17 @@
 #
 # Le contrôle qui compte : `terraform plan` doit annoncer **0 à modifier**.
 
+# Attention au nom cherché : le certificat vivant a `kuzzle.io` pour nom
+# principal et `*.kuzzle.io` en SAN. Il existe aussi un certificat nommé
+# `*.kuzzle.io`, mais il est EXPIRÉ — chercher le wildcard paraît juste et ne
+# renvoie rien.
+data "aws_acm_certificate" "wildcard" {
+  provider    = aws.us_east_1
+  domain      = "kuzzle.io"
+  statuses    = ["ISSUED"]
+  most_recent = true
+}
+
 # --------------------------------------------------------------------------
 # Bucket
 # --------------------------------------------------------------------------
@@ -50,7 +61,7 @@ resource "aws_s3_bucket_policy" "site" {
         AWS = "*"
       }
       Action   = "s3:GetObject"
-      Resource = "arn:aws:s3:::console.kuzzle.io/*"
+      Resource = "${aws_s3_bucket.site.arn}/*"
     }]
   })
 }
@@ -139,8 +150,10 @@ resource "aws_cloudfront_distribution" "site" {
 
   viewer_certificate {
     # Le certificat `kuzzle.io`, qui porte `*.kuzzle.io` en SAN. Le même que
-    # servent console.kuzzle.io et console-v5.kuzzle.io.
-    acm_certificate_arn = "arn:aws:acm:us-east-1:481140374947:certificate/de8ca0cf-4e40-4df4-8c08-0e488a885aba"
+    # servent les trois environnements. Résolu par source de données plutôt
+    # qu'écrit en dur : l'ARN contient l'identifiant du compte, et ce dépôt est
+    # public.
+    acm_certificate_arn = data.aws_acm_certificate.wildcard.arn
     ssl_support_method  = "sni-only"
 
     # HÉRITÉ — politique TLS de 2019.

@@ -9,7 +9,6 @@ next-console.kuzzle.io continue de servir la v4 depuis `4-dev`.
 |---|---|
 | Domaine | `console-v5.kuzzle.io` |
 | Bucket S3 | `v5.console.kuzzle.io` (us-west-2) |
-| Compte AWS | `481140374947` |
 | État Terraform | `s3://kuzzle.terraform.states/console-v5.kuzzle.io.tfstate` (us-east-2) |
 
 Le nom du bucket suit la convention du compte : **bucket en notation pointée,
@@ -49,9 +48,9 @@ Huit ressources, calquées sur next-console.kuzzle.io relevé le 2026-09-23 :
 - un enregistrement A d'alias dans la zone `kuzzle.io`.
 
 Rien à faire côté certificat : `kuzzle.io` porte `*.kuzzle.io` en SAN et couvre
-déjà ce sous-domaine. Rien à faire côté IAM non plus : l'utilisateur `travis`,
-dont les clés sont dans les secrets GitHub du dépôt, a `Resource: "*"` sur S3 et
-`cloudfront:CreateInvalidation`.
+déjà ce sous-domaine. Rien à faire côté IAM non plus : le principal utilisé par
+la CI dispose déjà des droits nécessaires sur ce bucket et sur l'invalidation
+CloudFront.
 
 ### Pas de réécriture SPA, et c'est voulu
 
