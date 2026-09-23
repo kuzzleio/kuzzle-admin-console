@@ -37,7 +37,7 @@ environnement que l'équipe regarde.
 
 ## Le module décrit le réel, il ne le corrige pas
 
-Six réglages sont marqués **HÉRITÉ** dans `main.tf`. Ils sont conservés tels
+Cinq réglages sont encore marqués **HÉRITÉ** dans `main.tf` (un sixième, `forwarded_values`, est déjà comblé — voir plus bas). Ils sont conservés tels
 quels, et c'est délibéré : mettre sous IaC et changer le comportement sont deux
 gestes, et les mélanger rend le second invisible dans la revue.
 
@@ -46,17 +46,31 @@ gestes, et les mélanger rend le second invisible dans la revue.
 | `viewer_protocol_policy` | `allow-all` — joignable en HTTP en clair | `redirect-to-https` |
 | `allowed_methods` | `DELETE`, `PATCH`, `POST`, `PUT` sur un site statique | `GET`, `HEAD`, `OPTIONS` |
 | `minimum_protocol_version` | `TLSv1.2_2019` | `TLSv1.2_2021` |
-| `forwarded_values` | API dépréciée, d'avant les politiques de cache nommées | `aws_cloudfront_cache_policy` |
 | `origin_ssl_protocols` | inclut TLS 1.0 et 1.1 | `TLSv1.2` seul |
 | `origin_id` | préfixé `prod-` sur un environnement de staging | nommé d'après son rôle |
 
 Les trois premiers sont les écarts 3, 4 et 5 de
 [`../console-v5/README.md`](../console-v5/README.md), pris à l'envers.
 
-**Ordre recommandé pour les combler** : `forwarded_values` en premier, sur cet
-environnement, avant de toucher à production — c'est le seul de la liste dont la
-migration peut changer le comportement de cache observable. Les autres sont des
-resserrages sans effet sur ce qui est servi.
+### `forwarded_values` — comblé, et pourquoi en premier
+
+C'était le seul de la liste dont la migration puisse changer le comportement de
+cache observable, donc celui qui devait passer ici **avant** production.
+
+Le bloc `forwarded_values` est remplacé par une `aws_cloudfront_cache_policy`
+qui reprend les mêmes TTL (0 / 300 / 31536000) et la même clé de cache — aucune
+query string, aucun cookie, aucun en-tête.
+
+**La seule différence de comportement** est `enable_accept_encoding_gzip` et
+`…_brotli` : l'ancienne API ne mettait pas `Accept-Encoding` dans la clé de
+cache, la nouvelle l'y met sous forme normalisée. C'est la configuration
+recommandée avec `compress = true`, et l'effet observable se limite à quelques
+`Miss from cloudfront` le temps que le cache se reconstitue par encodage. Sur du
+contenu invalidé à chaque déploiement, c'est sans conséquence.
+
+**Ordre pour les cinq restants** : ce sont des resserrages sans effet sur ce qui
+est servi (`allowed_methods`, `origin_ssl_protocols`, TLS minimum) ou visibles
+mais souhaitables (`viewer_protocol_policy`). Ici d'abord, production ensuite.
 
 Deux réglages sont figés et n'ont pas à bouger : `origin_id` (le renommer force
 le remplacement du comportement de cache) et l'absence de `public_access_block`
