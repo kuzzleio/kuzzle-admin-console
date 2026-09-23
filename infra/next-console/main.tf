@@ -12,6 +12,17 @@
 #
 # Le contrôle qui compte : `terraform plan` doit annoncer **0 à modifier**.
 
+# Attention au nom cherché : le certificat vivant a `kuzzle.io` pour nom
+# principal et `*.kuzzle.io` en SAN. Il existe aussi un certificat nommé
+# `*.kuzzle.io`, mais il est EXPIRÉ — chercher le wildcard paraît juste et ne
+# renvoie rien.
+data "aws_acm_certificate" "wildcard" {
+  provider    = aws.us_east_1
+  domain      = "kuzzle.io"
+  statuses    = ["ISSUED"]
+  most_recent = true
+}
+
 # --------------------------------------------------------------------------
 # Bucket
 # --------------------------------------------------------------------------
@@ -47,7 +58,7 @@ resource "aws_s3_bucket_policy" "site" {
         AWS = "*"
       }
       Action   = "s3:GetObject"
-      Resource = "arn:aws:s3:::next.console.kuzzle.io/*"
+      Resource = "${aws_s3_bucket.site.arn}/*"
     }]
   })
 }
@@ -55,6 +66,44 @@ resource "aws_s3_bucket_policy" "site" {
 # --------------------------------------------------------------------------
 # CloudFront
 # --------------------------------------------------------------------------
+
+# Remplace le bloc `forwarded_values` du comportement par défaut.
+#
+# Les TTL et la clé de cache sont repris à l'identique : aucune query string,
+# aucun cookie, aucun en-tête, 0 / 300 / 31536000.
+#
+# **La seule différence de comportement** est `enable_accept_encoding_*` :
+# l'ancienne API ne mettait pas `Accept-Encoding` dans la clé de cache, la
+# nouvelle l'y met sous forme normalisée. C'est la configuration recommandée
+# quand `compress = true`, et l'effet observable se limite à quelques
+# `Miss from cloudfront` le temps que le cache se reconstitue par encodage. Sur
+# du contenu qui est de toute façon invalidé à chaque déploiement, c'est sans
+# conséquence — mais c'est la raison pour laquelle ce changement passe ici
+# avant production.
+resource "aws_cloudfront_cache_policy" "site" {
+  name        = "next-console-kuzzle-io-cache"
+  comment     = "Reprend les TTL et la cle de cache de l ancien forwarded_values"
+  min_ttl     = 0
+  default_ttl = 300
+  max_ttl     = 31536000
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_gzip   = true
+    enable_accept_encoding_brotli = true
+
+    cookies_config {
+      cookie_behavior = "none"
+    }
+
+    headers_config {
+      header_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "none"
+    }
+  }
+}
 
 resource "aws_cloudfront_distribution" "site" {
   aliases             = ["next-console.kuzzle.io"]
@@ -100,22 +149,11 @@ resource "aws_cloudfront_distribution" "site" {
     # mènent nulle part, mais les retirer est un changement, pas un import.
     allowed_methods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
 
-    min_ttl     = 0
-    default_ttl = 300
-    max_ttl     = 31536000
-
-    # HÉRITÉ — `forwarded_values` est l'API d'avant les politiques de cache
-    # nommées, dépréciée par le provider. console-v5 utilise une
-    # `aws_cloudfront_cache_policy` qui reproduit exactement ce comportement.
-    # Migrer celle-ci est un changement réel : à faire ici avant prod, et à
-    # vérifier sur un `plan`.
-    forwarded_values {
-      query_string = false
-
-      cookies {
-        forward = "none"
-      }
-    }
+    # Anciennement `forwarded_values`, l'API d'avant les politiques de cache
+    # nommées, dépréciée par le provider. La politique ci-dessous reprend les
+    # mêmes TTL et la même clé de cache — voir son commentaire pour la seule
+    # différence de comportement.
+    cache_policy_id = aws_cloudfront_cache_policy.site.id
   }
 
   # Pas de page d'erreur : on cache seulement les 404 cinq minutes. Le routeur
@@ -135,8 +173,10 @@ resource "aws_cloudfront_distribution" "site" {
 
   viewer_certificate {
     # Le certificat `kuzzle.io`, qui porte `*.kuzzle.io` en SAN. Le même que
-    # servent console.kuzzle.io et console-v5.kuzzle.io.
-    acm_certificate_arn = "arn:aws:acm:us-east-1:481140374947:certificate/de8ca0cf-4e40-4df4-8c08-0e488a885aba"
+    # servent les trois environnements. Résolu par source de données plutôt
+    # qu'écrit en dur : l'ARN contient l'identifiant du compte, et ce dépôt est
+    # public.
+    acm_certificate_arn = data.aws_acm_certificate.wildcard.arn
     ssl_support_method  = "sni-only"
 
     # HÉRITÉ — politique TLS de 2019.
