@@ -9,7 +9,6 @@
     role="tabpanel"
     tabindex="0"
     v-bind="$attrs"
-    v-on="$listeners"
   >
     <slot />
   </div>

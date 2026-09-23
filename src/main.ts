@@ -19,7 +19,20 @@ import App from './App.vue';
  * **la dette restante de la phase 3**, et la liste est faite pour grossir
  * jusqu'à ce que `MODE: 3` puisse la remplacer.
  */
-configureCompat({});
+configureCompat({
+  /*
+   * `vm.$listeners` n'existe plus en Vue 3 : les écouteurs posés par le parent
+   * arrivent dans `$attrs` sous la forme `onClick`, `onInput`… Les 62
+   * primitives de `ui/` écrivaient `v-bind="$attrs" v-on="$listeners"` ; le
+   * `v-bind` seul les porte désormais toutes les deux.
+   *
+   * Le drapeau ne fait pas que retirer `$listeners` : tant qu'il est allumé,
+   * `shouldSkipAttr` **exclut** les clés `onX` de `$attrs`. L'éteindre et
+   * retirer le `v-on` vont donc ensemble — l'un sans l'autre perd les
+   * écouteurs ou les pose deux fois.
+   */
+  INSTANCE_LISTENERS: false,
+});
 
 Reflect.defineProperty(window, 'kuzzle', {
   get() {

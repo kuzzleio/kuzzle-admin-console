@@ -1,12 +1,5 @@
 <template>
-  <p
-    :class="classes"
-    aria-live="assertive"
-    data-slot="form-message"
-    role="alert"
-    v-bind="$attrs"
-    v-on="$listeners"
-  >
+  <p :class="classes" aria-live="assertive" data-slot="form-message" role="alert" v-bind="$attrs">
     <slot />
   </p>
 </template>

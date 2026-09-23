@@ -9,7 +9,6 @@
     tabindex="-1"
     type="button"
     v-bind="$attrs"
-    v-on="$listeners"
     @click="onClick"
     @keydown.enter.prevent="onSelectKey"
     @keydown.space.prevent="onSelectKey"
@@ -64,6 +63,7 @@ export default defineComponent({
       type: [String, Number] as PropType<SelectOptionValue>,
     },
   },
+  emits: ['select'],
   computed: {
     classes(): string {
       return this.mergeClasses(itemClasses({ disabled: this.disabled }));

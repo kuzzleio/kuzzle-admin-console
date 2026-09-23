@@ -21,7 +21,7 @@
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
-| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 **La console tourne sur Vue 3** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) — 17/17 specs. Reste à éteindre les drapeaux de compat |
+| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 **La console tourne sur Vue 3** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) — 17/17 specs. `INSTANCE_LISTENERS` éteint ([ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md)) ; reste les autres drapeaux de compat |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
@@ -2255,12 +2255,65 @@ Gabarit à copier :
   oublié depuis la veille occupait le port avec un cache Vite d'avant la
   bascule, et `vite preview` écoute sur `::1` alors que Cypress appelle
   `127.0.0.1` — d'où `ECONNREFUSED` sur un serveur pourtant joignable au `curl`.
+
+  > Le premier piège a resservi le 2026-09-23, malgré cette fiche : `preview`
+  > meurt en silence quand `--strictPort` trouve le port pris, et le `curl` de
+  > contrôle répond quand même `200` — servi par le serveur de dev. **Contrôler
+  > que le port répond ne suffit pas**, il faut contrôler *qui* répond :
+  > `curl -s http://127.0.0.1:8080/ | grep -o 'src="/assets/[^"]*"'` ne renvoie
+  > quelque chose que sur un build.
 - **À retenir** : le garde-fou du chantier, ce sont les 17 specs — mais une spec
   verte ne vaut que si elle a couru sur l'artefact qu'on livre. Sous
   `@vue/compat`, dev et production **ne compilent pas le même code**. Un
   « 17/17 » obtenu sur `npm run dev` ne dit rien.
 - **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md), [G-047](#g-047)
 
+
+#### G-049 — En Vue 3 un écouteur du parent retombe sur la racine de l'enfant, et double l'événement natif du même nom
+
+- **Contexte** : phase 3, extinction du drapeau `INSTANCE_LISTENERS`.
+- **Symptôme** : 21 tests rouges sur 8 specs, dont aucun ne désigne la cause.
+  La plus lisible : Elasticsearch refuse le document avec
+  `failed to parse field [employeeOfTheMonthSince] of type [date] […] Preview of
+  field's value: '{code:Digit0,_vts:1790153413940,isTrusted:false}'`. La valeur
+  écrite dans le document est **un événement clavier du DOM**.
+- **Cause** : en Vue 2, les écouteurs du parent vivaient dans `$listeners` et
+  n'agissaient **que** là où l'enfant écrivait `v-on="$listeners"`. En Vue 3 ils
+  sont dans `$attrs`, donc ils retombent tout seuls sur l'**élément racine** de
+  tout composant sans `inheritAttrs: false`. `DateTimeFormInput` émet `input` et
+  sa racine est une `Card` : le `@input` de `DocumentForm` était à la fois
+  l'écouteur d'émission **et** un écouteur DOM natif sur la div de la carte, que
+  les `input` remontant des champs imbriqués déclenchaient.
+- **Solution** : déclarer l'événement dans `emits`, ce qui **retire la clé de
+  `$attrs`** ([ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md)).
+  Aucun des 140 composants n'en déclarait. 22 étaient exposés ; ils sont traités.
+  Contrôle bloquant : `npm run check:dom-emits`.
+- **À retenir** : le drapeau `INSTANCE_LISTENERS` **ne se limite pas à
+  `$listeners`**. Tant qu'il est allumé, `shouldSkipAttr` exclut les clés `onX`
+  de `$attrs` ; l'éteindre les y fait entrer. Retirer les `v-on="$listeners"`
+  sans éteindre le drapeau perd les écouteurs, l'éteindre sans les retirer les
+  pose deux fois : les deux gestes vont ensemble. Et le travail n'est pas dans
+  les 62 primitives, qui se corrigent mécaniquement, mais **chez les composants
+  intermédiaires que personne ne regardait**.
+- **Deux fois où `grep` ne suffit pas** — et deux fois où il a fallu une spec
+  rouge pour s'en apercevoir :
+  - `QuickFilter` émet par un **nom calculé**,
+    `this.$emit(this.submitOnType ? 'submit' : 'input', term)`. Invisible à
+    `grep "$emit('input'"`. C'est le site qui a laissé `search.spec.js` rouge
+    après la première correction ;
+  - `FilterHistoryItem` émet **sur son parent**, `this.$parent.$emit('submit')`.
+    J'avais supprimé le `@submit` de `<history-filter>` en le croyant mort ; il
+    ne l'était pas. Le contrôle remonte désormais cette relation.
+- **Trois écouteurs réellement morts** ont en revanche été supprimés : `@reset`
+  sur `<basic-filter>`, `@reset` sur `<filters>` dans `Roles/List` et
+  `Users/List`. Inoffensifs en Vue 2 ; écouteurs DOM natifs en Vue 3, sur des
+  racines qui contiennent formulaires et cases à cocher.
+- **Un angle mort assumé** : une bibliothèque tierce écrite pour Vue 2 ne peut
+  pas déclarer `emits`. `vue-color` est traité au site d'appel
+  (`TimeSeriesItem`), qui distingue l'objet couleur de l'`Event`. Ce chemin
+  **n'est couvert par aucune spec**.
+- **Ref** : [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md),
+  [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md), [G-047](#g-047)
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
@@ -2297,7 +2350,12 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 - **Filtres de template (`{{ x | y }}`)** : supprimés en Vue 3. Une seule
   occurrence détectée + `src/filters/highlight.filter.ts` à convertir en
   fonction ou composable.
-- **`$listeners`** : fusionné dans `$attrs`.
+- **`$listeners`** : fusionné dans `$attrs`. *Rencontré le 2026-09-23, et la
+  ligne était deux fois insuffisante* — voir [G-049](#g-049). Elle dit ce qui
+  arrive à `$listeners` ; ce qui casse, c'est ce qui arrive à **`$attrs`**, qui
+  retombe sur la racine des composants intermédiaires. Elle n'aurait pas non
+  plus fait chercher chez `DateTimeFormInput` ou `QuickFilter`, qui n'écrivent
+  `$listeners` nulle part.
 - **Réactivité** : `Vue.set` / `this.$set` disparaissent (Proxy). À surveiller
   sur les mutations de tableaux et d'objets dynamiques dans les stores.
 - **`new Vue()`** : `src/main.ts` passe à `createApp()`. Les `Vue.use()` et
@@ -2345,4 +2403,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-22 | Remplacer `vuejs-logger` par un wrapper de 40 lignes | [ADR-0026](adr/0026-wrapper-de-log-maison.md) |
 | 2026-09-22 | Basculer sur Vue 3 sous `@vue/compat`, en un seul lot | [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md) |
 | 2026-09-23 | Valider les specs de migration contre un build, jamais contre le serveur de dev | [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md) |
+| 2026-09-23 | Déclarer `emits` dès qu'un événement porte un nom d'événement du DOM | [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md) |
 | 2026-09-23 | Le chantier déménage sur `5-dev` et se déploie sur console-v5.kuzzle.io | [ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md) |

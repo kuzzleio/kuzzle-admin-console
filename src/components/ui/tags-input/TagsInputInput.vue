@@ -7,7 +7,6 @@
     type="text"
     :value="draft"
     v-bind="$attrs"
-    v-on="$listeners"
     @input="draft = $event.target.value"
     @keydown.enter.prevent="commit"
     @keydown.delete="onBackspace"

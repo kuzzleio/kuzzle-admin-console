@@ -57,6 +57,7 @@ export default {
       },
     },
   },
+  emits: ['input'],
   data() {
     return {
       viewType: 'form',

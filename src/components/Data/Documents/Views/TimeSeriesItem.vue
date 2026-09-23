@@ -126,7 +126,19 @@ export default {
     togglePicker() {
       this.showColorPicker = !this.showColorPicker;
     },
+    /*
+     * `vue-color` est écrit pour Vue 2 et ne déclare pas `emits` : ce `@input`
+     * est donc aussi posé en écouteur DOM natif sur sa racine, et reçoit les
+     * `input` qui remontent de ses propres champs hexadécimal et RVBA (G-049).
+     * Une bibliothèque tierce ne pouvant pas être corrigée, c'est le site
+     * d'appel qui distingue les deux : l'événement du composant porte un objet
+     * couleur, l'événement natif est un `Event`.
+     */
     updateColor(color) {
+      if (color instanceof Event) {
+        return;
+      }
+
       this.newColor = color.hex;
       if (this.isUpdatable) {
         this.$emit('update-color', { color: this.newColor, index: this.index });

@@ -10,7 +10,6 @@
     role="combobox"
     type="button"
     v-bind="$attrs"
-    v-on="$listeners"
     @click="onClick"
     @keydown.down.prevent="onArrow"
     @keydown.up.prevent="onArrow"

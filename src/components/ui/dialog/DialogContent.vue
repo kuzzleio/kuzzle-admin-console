@@ -9,7 +9,6 @@
     tabindex="-1"
     v-bind="$attrs"
     @keydown.tab="trapFocus"
-    v-on="$listeners"
   >
     <slot />
   </div>

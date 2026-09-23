@@ -8,7 +8,6 @@
     role="menuitemradio"
     tabindex="-1"
     v-bind="$attrs"
-    v-on="$listeners"
     @click="onClick"
     @keydown.enter.prevent="onSelectKey"
     @keydown.space.prevent="onSelectKey"
@@ -63,6 +62,7 @@ export default defineComponent({
       type: String,
     },
   },
+  emits: ['select'],
   computed: {
     group(): RadioGroupContext | null {
       return (this as unknown as { dropdownMenuRadioGroup: RadioGroupContext | null })

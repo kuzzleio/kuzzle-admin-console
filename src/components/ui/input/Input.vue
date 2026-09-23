@@ -1,5 +1,5 @@
 <template>
-  <input :class="classes" :value="modelValue" v-bind="$attrs" v-on="$listeners" @input="handleInput" />
+  <input :class="classes" :value="modelValue" v-bind="$attrs" @input="handleInput" />
 </template>
 
 <script lang="ts">
@@ -62,8 +62,9 @@ export default defineComponent({
     },
   },
   methods: {
-    // `v-on="$listeners"` et ce `@input` sont fusionnés par Vue 2, pas
-    // substitués : un `@input` posé par le site d'appel reste appelé.
+    // Le `@input` du site d'appel arrive dans `$attrs` sous la clé `onInput`
+    // et Vue fusionne les deux gestionnaires sur l'élément, il ne les
+    // substitue pas : celui du site d'appel reste appelé.
     handleInput(event: Event): void {
       this.$emit('update:modelValue', (event.target as HTMLInputElement).value);
     },

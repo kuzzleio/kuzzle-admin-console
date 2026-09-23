@@ -7,7 +7,6 @@
       :disabled="pagination.disabled || pagination.isFirst"
       type="button"
       v-bind="$attrs"
-      v-on="$listeners"
       @click="onClick"
     >
       <slot><i aria-hidden="true" class="fas fa-angle-double-left" /></slot>

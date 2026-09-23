@@ -1,5 +1,5 @@
 <template>
-  <ul :class="classes" data-slot="pagination-content" v-bind="$attrs" v-on="$listeners">
+  <ul :class="classes" data-slot="pagination-content" v-bind="$attrs">
     <slot :items="pagination.items" />
   </ul>
 </template>

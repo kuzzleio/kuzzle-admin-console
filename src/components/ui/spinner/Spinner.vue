@@ -1,5 +1,5 @@
 <template>
-  <span :class="classes" role="status" :aria-label="label" v-bind="$attrs" v-on="$listeners" />
+  <span :class="classes" role="status" :aria-label="label" v-bind="$attrs" />
 </template>
 
 <script lang="ts">

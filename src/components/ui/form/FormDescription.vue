@@ -1,5 +1,5 @@
 <template>
-  <p :class="classes" data-slot="form-description" v-bind="$attrs" v-on="$listeners">
+  <p :class="classes" data-slot="form-description" v-bind="$attrs">
     <slot />
   </p>
 </template>

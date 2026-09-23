@@ -8,7 +8,6 @@
       type="button"
       :value="String(value)"
       v-bind="$attrs"
-      v-on="$listeners"
       @click="onClick"
     >
       <slot>{{ value }}</slot>

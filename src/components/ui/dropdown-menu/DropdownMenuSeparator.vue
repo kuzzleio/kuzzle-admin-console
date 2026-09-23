@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes" role="separator" v-bind="$attrs" v-on="$listeners" />
+  <div :class="classes" role="separator" v-bind="$attrs" />
 </template>
 
 <script lang="ts">

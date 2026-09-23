@@ -102,7 +102,6 @@
             :sorting-enabled="sortingEnabled"
             @filter-submitted="onBasicFilterSubmitted"
             @generate-raw-filter="onGenerateRawFilter"
-            @reset="handleReset"
           />
         </TabsContent>
 
@@ -212,6 +211,7 @@ export default {
       default: true,
     },
   },
+  emits: ['enter-pressed', 'filters-updated', 'submit'],
   data() {
     return {
       advancedFiltersVisible: false,

@@ -15,6 +15,7 @@
     "test:types": "vue-tsc --noEmit -p tsconfig.test.json",
     "check:unreachable": "node scripts/unreachable-modules.ts",
     "check:listener-collisions": "node scripts/listener-name-collisions.ts",
+    "check:dom-emits": "node scripts/undeclared-dom-emits.ts",
     "cy:open": "cypress open"
   },
   "dependencies": {

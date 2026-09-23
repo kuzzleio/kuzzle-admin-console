@@ -1,12 +1,6 @@
 <template>
   <li data-slot="pagination-item">
-    <span
-      aria-hidden="true"
-      :class="classes"
-      data-slot="pagination-ellipsis"
-      v-bind="$attrs"
-      v-on="$listeners"
-    >
+    <span aria-hidden="true" :class="classes" data-slot="pagination-ellipsis" v-bind="$attrs">
       <slot>…</slot>
     </span>
   </li>

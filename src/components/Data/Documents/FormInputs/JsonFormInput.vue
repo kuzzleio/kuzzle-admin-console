@@ -36,6 +36,7 @@ export default {
     // `geo_point`. L'éditeur JSON les rend tous.
     value: { default: null },
   },
+  emits: ['input'],
   methods: {
     /*
      * La valeur ne remonte que si le JSON est valide : l'éditeur émet à chaque

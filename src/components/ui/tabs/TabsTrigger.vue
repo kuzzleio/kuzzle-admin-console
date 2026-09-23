@@ -10,7 +10,6 @@
     :tabindex="isActive ? 0 : -1"
     type="button"
     v-bind="$attrs"
-    v-on="$listeners"
     @click="onClick"
     @keydown.left.prevent="onPrevious"
     @keydown.up.prevent="onPrevious"

@@ -1,5 +1,5 @@
 name: Lint
-description: Run ESLint, the unreachable-modules check and the listener-name-collision check
+description: Run ESLint, the unreachable-modules check, the listener-name-collision check and the undeclared-DOM-emits check
 runs:
   using: "composite"
   steps:
@@ -13,4 +13,7 @@ runs:
       shell: bash
 
     - run: npm run check:listener-collisions
+      shell: bash
+
+    - run: npm run check:dom-emits
       shell: bash
