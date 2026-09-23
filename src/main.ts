@@ -48,6 +48,15 @@ configureCompat({
    * paquet `vue`.
    */
   GLOBAL_PROTOTYPE: false,
+
+  /*
+   * `this.$set` n'a plus d'objet : il existait parce que la réactivité de Vue 2
+   * reposait sur `Object.defineProperty`, qui ne pouvait pas voir une clé
+   * ajoutée après coup ni une case de tableau écrite par son indice. Vue 3
+   * observe par `Proxy` et voit les deux. Les 8 appels deviennent des
+   * affectations.
+   */
+  INSTANCE_SET: false,
 });
 
 Reflect.defineProperty(window, 'kuzzle', {

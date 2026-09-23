@@ -781,7 +781,7 @@ la phase 4 s'ouvre quand `MODE: 3` peut remplacer la liste.
 | `INSTANCE_LISTENERS` | retrait de `v-on="$listeners"`, `emits` déclaré | 62 + 22 composants | [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md), [G-049](#g-049) | ✅ |
 | `OPTIONS_BEFORE_DESTROY`, `OPTIONS_DESTROYED` | `beforeDestroy` → `beforeUnmount`, `destroyed` → `unmounted` | 21 fichiers | [G-050](#g-050) | ✅ |
 | `GLOBAL_PROTOTYPE` | `Vue.prototype.$x` → `app.config.globalProperties` | 2 sites + 2 shims | [G-051](#g-051) | ✅ |
-| `INSTANCE_SET` | `this.$set` → affectation directe | 8 sites | — | ⬜ |
+| `INSTANCE_SET` | `this.$set` → affectation directe | 8 sites | — | ✅ |
 | `COMPILER_V_BIND_SYNC` | `.sync` → `v-model:` | 24 occurrences | — | ⬜ |
 | `COMPONENT_V_MODEL` | retrait de l'option `model` de Vue 2 | 14 composants | [G-012](#g-012) | ⬜ |
 

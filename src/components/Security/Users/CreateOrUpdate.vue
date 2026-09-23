@@ -221,7 +221,7 @@ export default {
               delete strategyCredentials.kuid;
             }
 
-            this.$set(this.credentials, strategy, strategyCredentials);
+            this.credentials[strategy] = strategyCredentials;
           }),
         );
 

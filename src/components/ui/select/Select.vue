@@ -114,7 +114,7 @@ export default defineComponent({
       this.close({ focusTrigger: true });
     },
     registerLabel(value: SelectOptionValue, label: string): void {
-      this.$set(this.labels, String(value), label);
+      this.labels[String(value)] = label;
     },
     setTrigger(el: HTMLElement | null): void {
       this.triggerEl = el;

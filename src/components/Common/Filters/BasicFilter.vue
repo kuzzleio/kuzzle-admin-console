@@ -377,7 +377,7 @@ export default {
       }
     },
     setSortAttr(attribute) {
-      this.$set(this.filters.sorting, 'attribute', attribute);
+      this.filters.sorting.attribute = attribute;
     },
     selectAttribute(attribute, groupIndex, filterIndex) {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute;
@@ -435,7 +435,7 @@ export default {
       }
 
       if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1) {
-        this.$set(this.filters.basic[0], 0, { ...emptyBasicFilter });
+        this.filters.basic[0][0] = { ...emptyBasicFilter };
         return;
       }
 
