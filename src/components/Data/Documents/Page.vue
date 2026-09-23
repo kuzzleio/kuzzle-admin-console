@@ -396,7 +396,7 @@ export default {
       },
       set: function (value) {
         this.$log.debug(`Setting listViewType to ${value}`);
-        this.$set(this.collectionSettings, 'listViewType', value);
+        this.collectionSettings.listViewType = value;
       },
     },
     autoSync: {
@@ -407,7 +407,7 @@ export default {
         return this.collectionSettings.autoSync;
       },
       set: function (value) {
-        this.$set(this.collectionSettings, 'autoSync', value);
+        this.collectionSettings.autoSync = value;
       },
     },
     hasGeopoints() {
@@ -623,7 +623,7 @@ export default {
       }
       const docIdx = this.documentsIdxById[notification.result._id];
       if (['update', 'replace'].includes(notification.action)) {
-        this.$set(this.documents[docIdx], '_source', notification.result._source);
+        this.documents[docIdx]._source = notification.result._source;
       }
       if (notification.action === 'delete') {
         /*
@@ -646,7 +646,7 @@ export default {
       if (isUndefined(this.documentsIdxById[notification.result._id])) {
         return;
       }
-      this.$set(this.notificationsById, notification.result._id, notification);
+      this.notificationsById[notification.result._id] = notification;
     },
     addNewDocumentNotifications() {
       let notification = this.newDocumentNotifications.pop();
