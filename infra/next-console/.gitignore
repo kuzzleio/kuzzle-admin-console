@@ -1,0 +1,6 @@
+# Le verrou des providers (.terraform.lock.hcl) est VOLONTAIREMENT versionné :
+# c'est lui qui garantit que `terraform init` resélectionne les mêmes versions.
+.terraform/
+*.tfplan
+*.tfstate
+*.tfstate.*
