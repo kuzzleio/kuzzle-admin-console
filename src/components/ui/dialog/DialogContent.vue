@@ -75,7 +75,7 @@ export default defineComponent({
       (first ?? (this.$refs.content as HTMLElement))?.focus();
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.previouslyFocused?.focus?.();
   },
   methods: {

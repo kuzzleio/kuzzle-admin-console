@@ -339,7 +339,7 @@ export default {
       this.currentFilter = filterManager.loadFromRoute(this.$route);
     },
   },
-  async destroyed() {
+  async unmounted() {
     this.reset();
     if (this.room) {
       await this.$kuzzle.realtime.unsubscribe(this.room);

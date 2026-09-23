@@ -59,7 +59,7 @@ export default defineComponent({
       );
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.stopDrag();
   },
   methods: {

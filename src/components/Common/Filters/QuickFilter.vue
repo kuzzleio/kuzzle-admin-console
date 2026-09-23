@@ -140,7 +140,7 @@ export default {
       this.$emit(this.submitOnType ? 'submit' : 'input', term);
     }, SEARCH_DEBOUNCE_MS);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.emitTerm.cancel();
   },
   methods: {

@@ -74,7 +74,7 @@ export default defineComponent({
       },
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.teardown();
   },
   methods: {

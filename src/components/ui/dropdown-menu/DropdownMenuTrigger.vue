@@ -53,7 +53,7 @@ export default defineComponent({
   mounted() {
     this.menu.setTrigger(this.$el as HTMLElement);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.menu.setTrigger(null);
   },
   methods: {

@@ -545,7 +545,7 @@ export default {
       },
     },
   },
-  async beforeDestroy() {
+  async beforeUnmount() {
     await this.unsubscribeFromCurrentDocs();
   },
   created() {

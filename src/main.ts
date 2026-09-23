@@ -32,6 +32,15 @@ configureCompat({
    * écouteurs ou les pose deux fois.
    */
   INSTANCE_LISTENERS: false,
+
+  /*
+   * `beforeDestroy` et `destroyed` s'appellent `beforeUnmount` et `unmounted`
+   * en Vue 3. Le renommage est sans effet de bord : les deux paires désignent
+   * le même moment du cycle de vie, seul le nom change — Vue 3 parle de
+   * démontage là où Vue 2 parlait de destruction.
+   */
+  OPTIONS_BEFORE_DESTROY: false,
+  OPTIONS_DESTROYED: false,
 });
 
 Reflect.defineProperty(window, 'kuzzle', {

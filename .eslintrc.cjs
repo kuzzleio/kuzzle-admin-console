@@ -33,6 +33,11 @@ module.exports = {
     'vue/no-reserved-component-names': 'off',
     'vue/require-prop-types': 'off',
     'vue/no-lone-template': 'off',
+    // Chaque lot de phase 3 éteint un drapeau de compat ; la règle
+    // correspondante interdit de réintroduire l'usage Vue 2. Voir G-050 :
+    // un `async destroyed()` oublié devient du code mort silencieux dès que
+    // `OPTIONS_DESTROYED` est éteint, et aucune spec ne le voit.
+    'vue/no-deprecated-destroyed-lifecycle': 'error',
     'default-case-last': 'warn',
     'import/order': 'warn'
   },

@@ -68,7 +68,7 @@ export default {
       });
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.editor) {
       this.editor.removeAllListeners('change');
     }

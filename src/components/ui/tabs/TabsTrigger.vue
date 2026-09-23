@@ -90,7 +90,7 @@ export default defineComponent({
   mounted() {
     this.tabs.register(this.value);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.tabs.unregister(this.value);
   },
   updated() {

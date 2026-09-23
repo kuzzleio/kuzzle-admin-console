@@ -72,7 +72,7 @@ export default defineComponent({
   mounted() {
     this.select.setTrigger(this.$el as HTMLElement);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.select.setTrigger(null);
   },
   methods: {

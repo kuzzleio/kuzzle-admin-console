@@ -84,7 +84,7 @@ export default defineComponent({
   mounted() {
     document.addEventListener('keydown', this.onKeydown);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener('keydown', this.onKeydown);
     this.releaseBody();
   },

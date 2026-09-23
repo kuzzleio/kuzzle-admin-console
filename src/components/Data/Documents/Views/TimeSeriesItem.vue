@@ -114,7 +114,7 @@ export default {
 
     this.newColor = this.color;
   },
-  destroyed() {
+  unmounted() {
     document.removeEventListener('click', this.handleClickOutside);
   },
   methods: {

@@ -769,6 +769,28 @@ Effets de bord : `velocity-animate` n'avait plus de site d'appel une fois
 `Stepper.vue` parti (§ 3.3), et `vue-multiselect` n'est plus utilisé que par
 `Views/Column/Column.vue` (§ 3.1).
 
+### 1.4 Drapeaux de compat — phase 3
+
+`MODE: 2` est posé dans `vite.config.ts` : l'application démarre en
+comportement Vue 2, et chaque drapeau s'éteint dans son propre lot, dans
+`src/main.ts`. **Ce qui est encore allumé est la dette restante de la phase 3** ;
+la phase 4 s'ouvre quand `MODE: 3` peut remplacer la liste.
+
+| Drapeau | Geste | Volume | Ref | Statut |
+|---|---|---:|---|---|
+| `INSTANCE_LISTENERS` | retrait de `v-on="$listeners"`, `emits` déclaré | 62 + 22 composants | [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md), [G-049](#g-049) | ✅ |
+| `OPTIONS_BEFORE_DESTROY`, `OPTIONS_DESTROYED` | `beforeDestroy` → `beforeUnmount`, `destroyed` → `unmounted` | 19 fichiers | — | ✅ |
+| `GLOBAL_PROTOTYPE` | `Vue.prototype.$x` → `app.config.globalProperties` | 2 sites | — | ⬜ |
+| `INSTANCE_SET` | `this.$set` → affectation directe | 8 sites | — | ⬜ |
+| `COMPILER_V_BIND_SYNC` | `.sync` → `v-model:` | 24 occurrences | — | ⬜ |
+| `COMPONENT_V_MODEL` | retrait de l'option `model` de Vue 2 | 14 composants | [G-012](#g-012) | ⬜ |
+
+Les deux derniers vont ensemble : `.sync` et l'option `model` se croisent sur
+les mêmes composants. C'est le seul lot de la liste qui change autre chose que
+des noms.
+
+---
+
 ## 2. Toolchain (phase 0)
 
 Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026**.
@@ -2314,6 +2336,45 @@ Gabarit à copier :
   **n'est couvert par aucune spec**.
 - **Ref** : [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md),
   [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md), [G-047](#g-047)
+
+#### G-050 — Un drapeau de compat éteint rend muet le hook qu'on a oublié de renommer, et aucune spec ne le voit
+
+- **Contexte** : phase 3, renommage `beforeDestroy`/`destroyed` →
+  `beforeUnmount`/`unmounted` et extinction de `OPTIONS_BEFORE_DESTROY` /
+  `OPTIONS_DESTROYED`.
+- **Symptôme** : **aucun**. 17/17 specs vertes, 163 tests passants, contre un
+  build ([ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)). En quittant
+  l'écran Watch ou l'écran de mise à jour d'un document, la console laissait
+  simplement fuir sa souscription temps réel.
+- **Cause** : le renommage a traité 17 + 2 fichiers et en a raté deux —
+  `Data/Collections/Watch.vue` et `Data/Documents/Update.vue`, qui écrivent
+  `async destroyed()`. Le `grep` de recensement cherchait `destroyed() {` en
+  début de propriété et **le mot-clé `async` l'a fait passer à côté**. Les deux
+  hooks faisaient la même chose :
+  `await this.$kuzzle.realtime.unsubscribe(this.room)`.
+- **Ce qui rend le cas méchant** : tant que `OPTIONS_DESTROYED` est allumé, un
+  `destroyed` oublié continue de s'exécuter et le renommage incomplet ne coûte
+  rien. **L'éteindre transforme l'oubli en code mort silencieux** : Vue 3 ne
+  connaît pas cette option, ne la considère pas comme un hook, et n'émet aucun
+  avertissement — c'est une clé inconnue dans un objet d'options, rien de plus.
+  Le drapeau qui devait sécuriser le lot est ce qui a armé le bug.
+- **Pourquoi le filet n'a rien vu** : une souscription orpheline ne casse
+  aucune assertion. Les specs vérifient ce que l'écran affiche, pas ce qu'il
+  libère en partant. C'est la classe de régression que les 17 specs **ne
+  peuvent pas** attraper, et il faut le savoir avant d'annoncer un N/N.
+- **Solution** : renommer les deux hooks, et surtout **poser la règle plutôt que
+  de refaire le `grep`** : `vue/no-deprecated-destroyed-lifecycle` en `error`
+  dans `.eslintrc.cjs`. Elle trouve les deux cas en une commande, `async` ou
+  non, et interdit leur retour.
+- **À retenir, et c'est la leçon générale du lot** : *éteindre un drapeau de
+  compat et reprendre le code correspondant sont un seul geste, et il se ferme
+  par une règle ESLint, pas par un `grep`.* Chaque lot de la phase 3 retire un
+  usage Vue 2 sans rien qui empêche de le réintroduire ; `eslint-plugin-vue` a
+  une règle `no-deprecated-*` pour presque chacun. Le `grep` mesure un instant,
+  la règle tient dans le temps — et ici elle aurait trouvé ce que le `grep` a
+  manqué, le jour même.
+- **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md),
+  [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
