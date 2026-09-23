@@ -70,6 +70,44 @@ resource "aws_s3_bucket_policy" "site" {
 # CloudFront
 # --------------------------------------------------------------------------
 
+# Remplace le bloc `forwarded_values` du comportement par défaut.
+#
+# Les TTL et la clé de cache sont repris à l'identique : aucune query string,
+# aucun cookie, aucun en-tête, 0 / 300 / 31536000.
+#
+# **La seule différence de comportement** est `enable_accept_encoding_*` :
+# l'ancienne API ne mettait pas `Accept-Encoding` dans la clé de cache, la
+# nouvelle l'y met sous forme normalisée. C'est la configuration recommandée
+# quand `compress = true`, et l'effet observable se limite à quelques
+# `Miss from cloudfront` le temps que le cache se reconstitue par encodage. Sur
+# du contenu qui est de toute façon invalidé à chaque déploiement, c'est sans
+# conséquence. Ce changement a été appliqué et vérifié sur
+# next-console.kuzzle.io avant d'arriver ici.
+resource "aws_cloudfront_cache_policy" "site" {
+  name        = "console-kuzzle-io-cache"
+  comment     = "Reprend les TTL et la cle de cache de l ancien forwarded_values"
+  min_ttl     = 0
+  default_ttl = 300
+  max_ttl     = 31536000
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_gzip   = true
+    enable_accept_encoding_brotli = true
+
+    cookies_config {
+      cookie_behavior = "none"
+    }
+
+    headers_config {
+      header_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "none"
+    }
+  }
+}
+
 resource "aws_cloudfront_distribution" "site" {
   aliases             = ["console.kuzzle.io"]
   enabled             = true
@@ -94,9 +132,10 @@ resource "aws_cloudfront_distribution" "site" {
       origin_read_timeout      = 30
       origin_keepalive_timeout = 5
 
-      # HÉRITÉ — TLS 1.0 et 1.1 vers l'origine. Sans effet réel ici, l'origine
-      # étant jointe en `http-only`, mais à nettoyer le jour où on y touche.
-      origin_ssl_protocols = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+      # Sans effet observable : l'origine est jointe en `http-only`. Alignés
+      # sur les deux autres environnements pour qu'un futur passage en HTTPS
+      # vers l'origine ne réactive pas TLS 1.0 et 1.1 par inadvertance.
+      origin_ssl_protocols = ["TLSv1.2"]
     }
   }
 
@@ -105,32 +144,18 @@ resource "aws_cloudfront_distribution" "site" {
     compress         = true
     cached_methods   = ["GET", "HEAD"]
 
-    # HÉRITÉ — la production est joignable en HTTP en clair. console-v5 est en
-    # `redirect-to-https`. À combler **après** staging, jamais avant : c'est
-    # ici que la vérification coûte le plus cher.
-    viewer_protocol_policy = "allow-all"
+    # Le seul changement de ce lot visible d'un client : une requête HTTP
+    # reçoit un 301 vers HTTPS au lieu d'être servie en clair. Vérifié sur
+    # next-console avant d'arriver ici.
+    viewer_protocol_policy = "redirect-to-https"
 
-    # HÉRITÉ — méthodes d'écriture autorisées sur un site statique. Elles ne
-    # mènent nulle part, mais les retirer est un changement, pas un import.
-    allowed_methods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    # Un site statique ne répond qu'en lecture. Sur staging, un POST reçoit
+    # désormais 403 au lieu de tomber sans effet sur l'origine.
+    allowed_methods = ["GET", "HEAD", "OPTIONS"]
 
-    min_ttl     = 0
-    default_ttl = 300
-    max_ttl     = 31536000
-
-    # HÉRITÉ — `forwarded_values` est l'API d'avant les politiques de cache
-    # nommées, dépréciée par le provider. console-v5 utilise une
-    # `aws_cloudfront_cache_policy` qui reproduit exactement ce comportement.
-    # Migrer celle-ci est un changement réel, et c'est le seul de la liste qui
-    # puisse modifier le cache observable. À ne faire qu'une fois la même
-    # migration passée et vérifiée sur staging.
-    forwarded_values {
-      query_string = false
-
-      cookies {
-        forward = "none"
-      }
-    }
+    # Anciennement `forwarded_values`. Mêmes TTL, même clé de cache — voir le
+    # commentaire de la politique pour la seule différence de comportement.
+    cache_policy_id = aws_cloudfront_cache_policy.site.id
   }
 
   # Pas de page d'erreur : on cache seulement les 404 cinq minutes. Le routeur
@@ -156,8 +181,8 @@ resource "aws_cloudfront_distribution" "site" {
     acm_certificate_arn = data.aws_acm_certificate.wildcard.arn
     ssl_support_method  = "sni-only"
 
-    # HÉRITÉ — politique TLS de 2019.
-    minimum_protocol_version = "TLSv1.2_2019"
+    # Politique TLS de 2021 : mêmes versions acceptées, suites resserrées.
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
 
