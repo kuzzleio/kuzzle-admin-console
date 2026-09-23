@@ -1,4 +1,7 @@
-# next-console.kuzzle.io — l'environnement de staging de la v4.
+# console.kuzzle.io — la **production** de l'Admin Console.
+#
+# Alimentée par un push sur `master` (`.github/workflows/push_master.workflow.yml`,
+# job `deploy-production`).
 #
 # Cette infrastructure existe depuis des années et a été créée à la main. Ce
 # module ne la crée pas : il la met sous Terraform **telle qu'elle est**, par
@@ -17,7 +20,7 @@
 # --------------------------------------------------------------------------
 
 resource "aws_s3_bucket" "site" {
-  bucket = "next.console.kuzzle.io"
+  bucket = "console.kuzzle.io"
   region = "us-west-2"
 }
 
@@ -47,7 +50,7 @@ resource "aws_s3_bucket_policy" "site" {
         AWS = "*"
       }
       Action   = "s3:GetObject"
-      Resource = "arn:aws:s3:::next.console.kuzzle.io/*"
+      Resource = "arn:aws:s3:::console.kuzzle.io/*"
     }]
   })
 }
@@ -57,19 +60,19 @@ resource "aws_s3_bucket_policy" "site" {
 # --------------------------------------------------------------------------
 
 resource "aws_cloudfront_distribution" "site" {
-  aliases             = ["next-console.kuzzle.io"]
+  aliases             = ["console.kuzzle.io"]
   enabled             = true
   is_ipv6_enabled     = true
   http_version        = "http2"
   price_class         = "PriceClass_100"
   default_root_object = "index.html"
 
-  # HÉRITÉ — l'identifiant d'origine porte le préfixe `prod-`, sur un
-  # environnement de staging. Le renommer forcerait le remplacement du
-  # comportement de cache : on le laisse.
+  # L'identifiant d'origine est le seul `prod-` de la famille qui soit
+  # exact. Ne pas le renommer pour autant : cela forcerait le remplacement du
+  # comportement de cache.
   origin {
-    origin_id           = "prod-s3-next.console.kuzzle.io"
-    domain_name         = "next.console.kuzzle.io.s3-website-us-west-2.amazonaws.com"
+    origin_id           = "prod-s3-console.kuzzle.io"
+    domain_name         = "console.kuzzle.io.s3-website-us-west-2.amazonaws.com"
     connection_attempts = 3
     connection_timeout  = 5
 
@@ -87,13 +90,13 @@ resource "aws_cloudfront_distribution" "site" {
   }
 
   default_cache_behavior {
-    target_origin_id = "prod-s3-next.console.kuzzle.io"
+    target_origin_id = "prod-s3-console.kuzzle.io"
     compress         = true
     cached_methods   = ["GET", "HEAD"]
 
-    # HÉRITÉ — le site est joignable en HTTP en clair. console-v5 est en
-    # `redirect-to-https` ; c'est le premier écart que cet environnement
-    # mériterait de combler.
+    # HÉRITÉ — la production est joignable en HTTP en clair. console-v5 est en
+    # `redirect-to-https`. À combler **après** staging, jamais avant : c'est
+    # ici que la vérification coûte le plus cher.
     viewer_protocol_policy = "allow-all"
 
     # HÉRITÉ — méthodes d'écriture autorisées sur un site statique. Elles ne
@@ -107,8 +110,9 @@ resource "aws_cloudfront_distribution" "site" {
     # HÉRITÉ — `forwarded_values` est l'API d'avant les politiques de cache
     # nommées, dépréciée par le provider. console-v5 utilise une
     # `aws_cloudfront_cache_policy` qui reproduit exactement ce comportement.
-    # Migrer celle-ci est un changement réel : à faire ici avant prod, et à
-    # vérifier sur un `plan`.
+    # Migrer celle-ci est un changement réel, et c'est le seul de la liste qui
+    # puisse modifier le cache observable. À ne faire qu'une fois la même
+    # migration passée et vérifiée sur staging.
     forwarded_values {
       query_string = false
 
@@ -153,7 +157,7 @@ resource "aws_route53_record" "site" {
   # `multivalue_answer_routing_policy`, qui s'excluent mutuellement avec
   # `alias` et font échouer la validation. Limitation connue du générateur sur
   # les enregistrements d'alias : les quatre sont retirés à la main.
-  name    = "next-console.kuzzle.io"
+  name    = "console.kuzzle.io"
   type    = "A"
   zone_id = "ZS36LQZ8E109R"
 
