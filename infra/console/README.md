@@ -12,8 +12,10 @@
 
 ## Ce module n'a rien créé
 
-Comme [`../next-console/`](../next-console/README.md), il met sous Terraform une
-infrastructure créée à la main, par `import`, sans rien modifier.
+Comme [`../next-console/`](../next-console/README.md), il a mis sous Terraform
+une infrastructure créée à la main, par `import`, sans rien modifier —
+**5 imported, 0 added, 0 changed, 0 destroyed**, le 2026-09-23. Les blocs
+`import` ont été retirés ensuite : c'est l'état qui fait foi.
 
 ```sh
 export AWS_PROFILE=kuzzle
