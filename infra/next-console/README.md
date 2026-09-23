@@ -12,17 +12,22 @@ Environnement de **staging de la v4**, alimenté par un push sur `4-dev`
 
 ## Ce module n'a rien créé
 
-Cette infrastructure existait avant Terraform. Le module la met sous gestion par
-`import`, sans rien modifier. Les blocs `import` sont dans `imports.tf` ; ils
-peuvent être retirés une fois l'import passé, l'état faisant foi ensuite.
+Cette infrastructure existait avant Terraform. Le module l'a mise sous gestion
+par `import`, sans rien modifier — **5 imported, 0 added, 0 changed,
+0 destroyed**, le 2026-09-23. Les blocs `import` ont été retirés une fois
+l'opération passée : c'est l'état qui fait foi désormais.
 
 ```sh
 export AWS_PROFILE=kuzzle
 
 terraform init
-terraform plan    # doit annoncer : 5 to import, 0 to add, 0 to change, 0 to destroy
-terraform apply
+terraform plan    # doit annoncer : No changes
 ```
+
+Un `plan` qui propose autre chose que « No changes » signale une dérive : soit
+quelqu'un a modifié staging à la main, soit ce module a vieilli. Dans les deux
+cas on corrige la configuration pour qu'elle décrive le réel — on ne laisse pas
+l'`apply` aligner un environnement servi sur un fichier.
 
 **Le contrôle qui compte est `0 to change`.** Un `apply` d'import n'appelle
 aucune API de modification : il remplit l'état. Si le plan propose la moindre
@@ -56,6 +61,30 @@ resserrages sans effet sur ce qui est servi.
 Deux réglages sont figés et n'ont pas à bouger : `origin_id` (le renommer force
 le remplacement du comportement de cache) et l'absence de `public_access_block`
 sur le bucket (en poser un, même permissif, serait un changement réel).
+
+### Le bucket est public deux fois
+
+L'import l'a mis au jour : en plus de la politique de bucket, le bucket porte
+une **ACL héritée** `AllUsers: READ`.
+
+```
+grant { type = "Group", uri = ".../global/AllUsers", permissions = ["READ"] }
+```
+
+Les deux mécanismes accordent la même chose, la lecture publique des objets, et
+l'un suffirait. Terraform ne gère pas cette ACL ici — elle est portée par
+l'attribut `grant` de `aws_s3_bucket`, que ce module ne déclare pas, et le plan
+reste vide. C'est donc de la configuration invisible : elle ne se voit ni dans
+`main.tf`, ni dans un `plan`.
+
+**À traiter avec le resserrage des réglages hérités, pas avant**, et dans cet
+ordre : d'abord vérifier que la politique seule suffit (elle le fait), puis
+retirer l'ACL, puis seulement envisager `BucketOwnerEnforced` — qui la
+retirerait de force. console-v5 n'a pas ce doublon : il est en
+`BucketOwnerEnforced` dès l'origine, sans ACL.
+
+Le chiffrement au repos est actif (`AES256`) et le versionnement désactivé : ni
+l'un ni l'autre ne demande d'action.
 
 ## Une limitation du générateur, à connaître
 
