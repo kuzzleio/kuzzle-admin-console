@@ -1,11 +1,5 @@
 <template>
-  <textarea
-    :class="classes"
-    :value="modelValue"
-    v-bind="$attrs"
-    v-on="$listeners"
-    @input="handleInput"
-  />
+  <textarea :class="classes" :value="modelValue" v-bind="$attrs" @input="handleInput" />
 </template>
 
 <script lang="ts">

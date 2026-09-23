@@ -9,7 +9,6 @@
     tabindex="-1"
     v-bind="$attrs"
     @keydown.tab="trapFocus"
-    v-on="$listeners"
   >
     <slot />
   </div>
@@ -76,7 +75,7 @@ export default defineComponent({
       (first ?? (this.$refs.content as HTMLElement))?.focus();
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.previouslyFocused?.focus?.();
   },
   methods: {

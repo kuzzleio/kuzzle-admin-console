@@ -6,7 +6,6 @@
     data-slot="toast"
     role="alert"
     v-bind="$attrs"
-    v-on="$listeners"
   >
     <slot />
   </div>

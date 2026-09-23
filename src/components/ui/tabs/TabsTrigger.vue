@@ -10,7 +10,6 @@
     :tabindex="isActive ? 0 : -1"
     type="button"
     v-bind="$attrs"
-    v-on="$listeners"
     @click="onClick"
     @keydown.left.prevent="onPrevious"
     @keydown.up.prevent="onPrevious"
@@ -91,7 +90,7 @@ export default defineComponent({
   mounted() {
     this.tabs.register(this.value);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.tabs.unregister(this.value);
   },
   updated() {

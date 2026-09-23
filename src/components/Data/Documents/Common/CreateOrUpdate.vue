@@ -140,6 +140,7 @@ export default {
     document: { type: Object },
     mapping: Object,
   },
+  emits: ['cancel', 'document-change', 'submit'],
   data() {
     return {
       idValue: null,

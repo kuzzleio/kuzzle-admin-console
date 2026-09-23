@@ -1,5 +1,5 @@
 <template>
-  <div :aria-labelledby="labelId" :class="classes" role="group" v-bind="$attrs" v-on="$listeners">
+  <div :aria-labelledby="labelId" :class="classes" role="group" v-bind="$attrs">
     <slot />
   </div>
 </template>

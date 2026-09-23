@@ -1,5 +1,6 @@
 /*
- * `this.$toast` est posé sur le prototype par `plugins/toast.ts` (ADR-0020).
+ * `this.$toast` est installé sur `globalProperties` par `plugins/toast.ts`
+ * (ADR-0020).
  *
  * Même raison que pour `$log` : sans cette déclaration, tout composant repris
  * en TypeScript échoue sur `TS2339: Property '$toast' does not exist`, et la
@@ -12,8 +13,8 @@ import 'vue';
 
 import type { ToastApi } from '@/plugins/toast';
 
-declare module 'vue/types/vue' {
-  interface Vue {
+declare module 'vue' {
+  interface ComponentCustomProperties {
     $toast: ToastApi;
   }
 }

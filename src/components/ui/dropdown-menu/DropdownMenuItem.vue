@@ -7,7 +7,6 @@
     role="menuitem"
     tabindex="-1"
     v-bind="$attrs"
-    v-on="$listeners"
     @click="onClick"
     @keydown.enter.prevent="onSelectKey"
     @keydown.space.prevent="onSelectKey"
@@ -65,6 +64,7 @@ export default defineComponent({
       type: String as PropType<'default' | 'destructive'>,
     },
   },
+  emits: ['select'],
   computed: {
     classes(): string {
       return this.mergeClasses(

@@ -124,6 +124,7 @@ export default {
       default: '{}',
     },
   },
+  emits: ['cancel', 'submit'],
   setup() {
     return { v$: useVuelidate() };
   },

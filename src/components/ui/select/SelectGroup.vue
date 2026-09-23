@@ -1,5 +1,5 @@
 <template>
-  <div data-slot="select-group" role="group" v-bind="$attrs" v-on="$listeners">
+  <div data-slot="select-group" role="group" v-bind="$attrs">
     <slot />
   </div>
 </template>

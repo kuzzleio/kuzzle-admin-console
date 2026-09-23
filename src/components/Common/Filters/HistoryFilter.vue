@@ -36,6 +36,13 @@ export default {
     index: String,
     collection: String,
   },
+  /*
+   * `submit` n'est pas émis ici : `FilterHistoryItem` l'émet sur son parent
+   * (`this.$parent.$emit`). Il doit tout de même être déclaré, sans quoi le
+   * `@submit` du site d'appel retombe en écouteur DOM natif sur la racine
+   * (G-049).
+   */
+  emits: ['submit'],
   data() {
     return {
       filters: [],

@@ -10,7 +10,6 @@
       tabindex="-1"
       v-bind="$attrs"
       @keydown="onKeydown"
-      v-on="$listeners"
     >
       <slot />
     </div>
@@ -70,7 +69,7 @@ export default defineComponent({
       },
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.teardown();
   },
   methods: {

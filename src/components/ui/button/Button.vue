@@ -6,10 +6,10 @@
     composant courant : `capitalize(camelize('button'))` vaut `Button`, donc
     `<component :is="'button'">` se rendait lui-même, à l'infini (G-039).
   -->
-  <button v-if="as === 'button'" :class="classes" v-bind="$attrs" v-on="$listeners">
+  <button v-if="as === 'button'" :class="classes" v-bind="$attrs">
     <slot />
   </button>
-  <component :is="as" v-else :class="classes" v-bind="$attrs" v-on="$listeners">
+  <component :is="as" v-else :class="classes" v-bind="$attrs">
     <slot />
   </component>
 </template>

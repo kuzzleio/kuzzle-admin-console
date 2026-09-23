@@ -99,7 +99,7 @@ export default {
     });
     this.displayNoAdminWarning();
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.$kuzzle.removeListener('tokenExpired');
     this.$kuzzle.removeListener('queryError');
   },

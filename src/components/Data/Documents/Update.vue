@@ -96,7 +96,7 @@ export default {
       },
     );
   },
-  async destroyed() {
+  async unmounted() {
     if (this.room) {
       await this.$kuzzle.realtime.unsubscribe(this.room);
     }

@@ -5,7 +5,6 @@
     data-slot="toast-close"
     type="button"
     v-bind="$attrs"
-    v-on="$listeners"
   >
     <slot><i aria-hidden="true" class="fa fa-times" /></slot>
   </button>

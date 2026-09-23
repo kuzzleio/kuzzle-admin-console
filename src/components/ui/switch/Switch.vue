@@ -6,7 +6,6 @@
       role="switch"
       type="checkbox"
       v-bind="$attrs"
-      v-on="$listeners"
       @change="onChange"
     />
     <span aria-hidden="true" :class="trackClasses">

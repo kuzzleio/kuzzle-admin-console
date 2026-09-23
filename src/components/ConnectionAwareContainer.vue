@@ -132,7 +132,7 @@ export default {
       },
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.removeListeners();
   },
   methods: {

@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes" role="group" v-bind="$attrs" v-on="$listeners">
+  <div :class="classes" role="group" v-bind="$attrs">
     <slot />
   </div>
 </template>

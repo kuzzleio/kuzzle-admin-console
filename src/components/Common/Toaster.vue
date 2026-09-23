@@ -108,7 +108,7 @@ export default defineComponent({
       this.toasterStore.dismiss(id);
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     for (const timer of this.timers.values()) {
       clearTimeout(timer);
     }

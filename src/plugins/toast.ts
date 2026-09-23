@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import type { App } from 'vue';
 
 import { useToasterStore, type PushToastOptions } from '@/stores';
 
@@ -14,6 +14,12 @@ import { useToasterStore, type PushToastOptions } from '@/stores';
  * Le plugin ne fait que déléguer au store, qui garde la liste. En phase 4, un
  * composant en Composition API appellera `useToasterStore()` directement et ce
  * fichier pourra partir.
+ *
+ * L'installation passe par `app.config.globalProperties` : `Vue.prototype` est
+ * un état global au paquet `vue`, partagé par toutes les applications du
+ * processus, là où `globalProperties` appartient à l'application créée par
+ * `createApp`. C'est ce qui permet à un test de monter deux applications sans
+ * qu'elles se marchent dessus.
  */
 export interface ToastApi {
   danger: (title: string, message?: string) => number;
@@ -31,4 +37,8 @@ export const toastApi: ToastApi = {
   warning: (title, message) => useToasterStore().push({ message, title, variant: 'warning' }),
 };
 
-Vue.prototype.$toast = toastApi;
+export default {
+  install(app: App): void {
+    app.config.globalProperties.$toast = toastApi;
+  },
+};

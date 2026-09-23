@@ -59,6 +59,7 @@ export default {
     schema: { type: Object, required: true },
     value: { type: [String, Number], default: null },
   },
+  emits: ['input'],
   data() {
     return {
       date: null,

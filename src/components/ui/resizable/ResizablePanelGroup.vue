@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes" data-slot="resizable-panel-group" v-bind="$attrs" v-on="$listeners">
+  <div :class="classes" data-slot="resizable-panel-group" v-bind="$attrs">
     <slot />
   </div>
 </template>
@@ -59,7 +59,7 @@ export default defineComponent({
       );
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.stopDrag();
   },
   methods: {

@@ -1,6 +1,6 @@
 <template>
   <div :class="wrapperClasses" data-slot="table-container">
-    <table :class="classes" data-slot="table" v-bind="$attrs" v-on="$listeners">
+    <table :class="classes" data-slot="table" v-bind="$attrs">
       <slot />
     </table>
   </div>

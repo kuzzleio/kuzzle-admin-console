@@ -7,7 +7,6 @@
     :class="classes"
     data-slot="dropdown-menu-trigger"
     v-bind="$attrs"
-    v-on="$listeners"
     @click="onClick"
     @keydown.down.prevent="openFrom('first')"
     @keydown.up.prevent="openFrom('last')"
@@ -54,7 +53,7 @@ export default defineComponent({
   mounted() {
     this.menu.setTrigger(this.$el as HTMLElement);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.menu.setTrigger(null);
   },
   methods: {

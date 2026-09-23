@@ -37,5 +37,6 @@ export default defineComponent({
       type: String,
     },
   },
+  emits: ['mouseenter', 'mouseleave'],
 });
 </script>

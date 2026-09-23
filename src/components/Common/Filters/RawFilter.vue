@@ -59,6 +59,7 @@ export default {
       },
     },
   },
+  emits: ['filter-submitted', 'reset'],
   setup() {
     return {
       kuzzleStore: useKuzzleStore(),

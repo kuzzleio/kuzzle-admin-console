@@ -80,6 +80,7 @@ export default {
       default: () => [],
     },
   },
+  emits: ['filters-updated', 'reset'],
   data() {
     return {
       /* `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom. */

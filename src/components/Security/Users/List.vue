@@ -10,7 +10,6 @@
         :index="index"
         :collection="collection"
         @filters-updated="onFiltersUpdated"
-        @reset="onFiltersUpdated"
       />
 
       <div v-if="loading" class="flex justify-center py-8">

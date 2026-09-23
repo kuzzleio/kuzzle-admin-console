@@ -1,5 +1,5 @@
 <template>
-  <tbody :class="classes" data-slot="table-body" v-bind="$attrs" v-on="$listeners">
+  <tbody :class="classes" data-slot="table-body" v-bind="$attrs">
     <slot />
   </tbody>
 </template>

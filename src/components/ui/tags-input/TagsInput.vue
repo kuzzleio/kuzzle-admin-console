@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes" data-slot="tags-input" v-bind="$attrs" v-on="$listeners">
+  <div :class="classes" data-slot="tags-input" v-bind="$attrs">
     <slot />
   </div>
 </template>

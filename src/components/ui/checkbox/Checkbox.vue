@@ -4,7 +4,6 @@
     :class="classes"
     type="checkbox"
     v-bind="$attrs"
-    v-on="$listeners"
     @change="handleChange"
   />
 </template>

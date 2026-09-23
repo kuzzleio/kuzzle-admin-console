@@ -23,6 +23,7 @@ export default {
     readonly: Boolean,
     height: { type: Number, default: 250 },
   },
+  emits: ['change'],
   setup() {
     ace.config.setModuleUrl(
       'ace/mode/json_worker',
@@ -67,7 +68,7 @@ export default {
       });
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.editor) {
       this.editor.removeAllListeners('change');
     }

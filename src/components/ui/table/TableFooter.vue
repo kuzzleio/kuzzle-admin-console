@@ -1,5 +1,5 @@
 <template>
-  <tfoot :class="classes" data-slot="table-footer" v-bind="$attrs" v-on="$listeners">
+  <tfoot :class="classes" data-slot="table-footer" v-bind="$attrs">
     <slot />
   </tfoot>
 </template>

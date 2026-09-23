@@ -129,12 +129,18 @@ export default {
       type: String,
     },
   },
+  /*
+   * `input` est émis par un nom calculé dans `emitTerm` — il doit être
+   * déclaré comme les autres, sans quoi il retombe en écouteur DOM natif
+   * sur la racine et reçoit les `input` du champ de recherche (G-049).
+   */
+  emits: ['display-advanced-filters', 'input', 'reset', 'submit'],
   created() {
     this.emitTerm = debounce((term) => {
       this.$emit(this.submitOnType ? 'submit' : 'input', term);
     }, SEARCH_DEBOUNCE_MS);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.emitTerm.cancel();
   },
   methods: {

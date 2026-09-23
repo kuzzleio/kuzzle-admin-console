@@ -8,7 +8,6 @@
     role="menuitemcheckbox"
     tabindex="-1"
     v-bind="$attrs"
-    v-on="$listeners"
     @click="onClick"
     @keydown.enter.prevent="onSelectKey"
     @keydown.space.prevent="onSelectKey"
@@ -64,6 +63,7 @@ export default defineComponent({
       type: Boolean,
     },
   },
+  emits: ['select', 'update:checked'],
   computed: {
     classes(): string {
       return this.mergeClasses(itemClasses({ disabled: this.disabled, inset: true }));

@@ -10,7 +10,6 @@
     role="combobox"
     type="button"
     v-bind="$attrs"
-    v-on="$listeners"
     @click="onClick"
     @keydown.down.prevent="onArrow"
     @keydown.up.prevent="onArrow"
@@ -73,7 +72,7 @@ export default defineComponent({
   mounted() {
     this.select.setTrigger(this.$el as HTMLElement);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.select.setTrigger(null);
   },
   methods: {

@@ -57,7 +57,7 @@ export const floatingPanel = defineComponent({
       };
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.detachPanel();
   },
   methods: {

@@ -1,5 +1,5 @@
 <template>
-  <component :is="as" :class="classes" data-slot="badge" v-bind="$attrs" v-on="$listeners">
+  <component :is="as" :class="classes" data-slot="badge" v-bind="$attrs">
     <slot />
   </component>
 </template>

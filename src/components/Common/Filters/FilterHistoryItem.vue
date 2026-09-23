@@ -111,6 +111,7 @@ export default {
     favorite: Array,
     id: Number,
   },
+  emits: ['change', 'filters-delete', 'submit', 'toggle-favorite'],
   data() {
     return {
       editOpen: false,
