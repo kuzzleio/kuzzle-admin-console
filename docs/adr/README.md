@@ -46,6 +46,9 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0022](0022-retrait-de-bootstrap-et-preflight.md) | Bootstrap sort et le preflight entre, dans le même geste | Acceptée, retire deux des trois réglages de [0008](0008-cohabitation-tailwind-bootstrap.md) |
 | [0023](0023-retrait-du-prefixe-tw.md) | Retirer le préfixe `tw:`, et ce que le renommage a réveillé | Acceptée |
 | [0024](0024-degraisser-la-couche-legacy.md) | Vider la couche `legacy` de ce qui ne style plus rien, et nommer ce qui reste | Acceptée |
+| [0025](0025-reimplementer-vue-form-generator.md) | Réimplémenter `vue-form-generator` en un composant de la console | Acceptée |
+| [0026](0026-wrapper-de-log-maison.md) | Remplacer `vuejs-logger` par un wrapper de 40 lignes | Acceptée |
+| [0027](0027-bascule-vue-3-sous-compat.md) | Basculer sur Vue 3 sous `@vue/compat`, en un seul lot | Acceptée, remplit la condition de [0002](0002-sortir-de-bootstrap-vue-avant-vue-3.md) |
 
 ## Gabarit
 

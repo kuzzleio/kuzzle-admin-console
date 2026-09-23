@@ -7,10 +7,10 @@
 // `classList.add()`, la palette des connexions, et le rappel de
 // `json-formatter-js`.
 //
-// La couche `legacy` survit à ce ménage : `vfg.css` y est toujours, et n'en
-// sortira qu'avec `vue-form-generator`. Ce qui est ici perd face aux
-// utilitaires Tailwind sans surenchère de spécificité (ADR-0008) ; l'ordre des
-// couches est déclaré dans `tailwind.css`, importé avant ce fichier.
+// La couche `legacy` tient encore ces cinq feuilles et FontAwesome — `vfg.css`
+// en est sorti avec `vue-form-generator` (ADR-0025). Ce qui est ici perd face
+// aux utilitaires Tailwind sans surenchère de spécificité (ADR-0008) ; l'ordre
+// des couches est déclaré dans `tailwind.css`, importé avant ce fichier.
 @layer legacy {
   @import 'styles/fonts';
   @import 'styles/layout';

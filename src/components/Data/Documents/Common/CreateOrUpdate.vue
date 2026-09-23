@@ -35,16 +35,7 @@
               :title="`The form view only supports these types: ${supportedTypes.join(', ')}.`"
             />
           </Alert>
-          <!--
-            TODO - WARNING: We're passing a prop here, while the form generator
-            mutates the value of the model. We should instead pass a local state
-            to avoid the anti-pattern of mutating props.
-          -->
-          <vue-form-generator
-            :schema="formSchema"
-            :model="document"
-            @model-updated="onFormChange"
-          />
+          <DocumentForm :model="documentState" :schema="formSchema" @field-change="onFieldChange" />
         </div>
         <!-- Json view -->
         <div v-else class="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
@@ -120,6 +111,7 @@ import JsonFormatter from '@/directives/json-formatter.directive';
 import { formSchemaService, typesCorrespondance } from '@/services/formSchema';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
+import DocumentForm from './DocumentForm.vue';
 
 export default {
   name: 'DocumentCreateOrUpdate',
@@ -129,6 +121,7 @@ export default {
     Card,
     CardContent,
     CardFooter,
+    DocumentForm,
     FormDescription,
     FormItem,
     Input,
@@ -157,7 +150,7 @@ export default {
   },
   computed: {
     formSchema() {
-      return formSchemaService.generate(this.mapping, this.document);
+      return formSchemaService.generate(this.mapping, this.documentState);
     },
     supportedTypes() {
       return Object.keys(typesCorrespondance);
@@ -203,8 +196,16 @@ export default {
         // Fail silently
       }
     },
-    onFormChange() {
-      this.rawDocument = JSON.stringify(this.document, null, 2);
+    /*
+     * Les deux vues lisent et écrivent `rawDocument` : c'est la seule source
+     * de vérité du composant. `vue-form-generator` écrivait, lui, directement
+     * dans l'objet reçu en prop, et la vue JSON ne se resynchronisait qu'en
+     * repassant par le parent.
+     */
+    onFieldChange(field, value) {
+      const document = { ...this.documentState, [field]: value };
+      this.rawDocument = JSON.stringify(document, null, 2);
+      this.$emit('document-change', document);
     },
     submit(replace = false) {
       if (this.submitting) {
@@ -213,12 +214,7 @@ export default {
 
       if (this.isDocumentValid) {
         this.submitting = true;
-        this.$emit(
-          'submit',
-          this.formViewEnabled ? { ...this.document } : { ...this.documentState },
-          this.idValue,
-          replace,
-        );
+        this.$emit('submit', { ...this.documentState }, this.idValue, replace);
         this.submitting = false;
       } else {
         this.$toast.info(

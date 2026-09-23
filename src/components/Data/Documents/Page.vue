@@ -626,7 +626,14 @@ export default {
         this.$set(this.documents[docIdx], '_source', notification.result._source);
       }
       if (notification.action === 'delete') {
-        setTimeout(() => this.$delete(this.documents, docIdx), 500);
+        /*
+         * `splice` et non `$delete` : le `$delete` de `@vue/compat` est un
+         * `delete target[key]` brut, là où celui de Vue 2 faisait un `splice`
+         * sur un tableau. Sur un tableau, `delete` laisse un **trou** —
+         * `undefined` à l'index — et le `v-for` rendait ensuite `doc._id` sur
+         * cet `undefined` (G-046).
+         */
+        setTimeout(() => this.documents.splice(docIdx, 1), 500);
 
         this.debouncedFetchDocuments();
       }
@@ -917,12 +924,14 @@ export default {
       this.listViewType = listViewType;
     },
     setListViewTypeInRoute(listViewType) {
-      if (this.$route.query.listViewType === listViewType) {
-        return;
-      }
-      this.$router.push({
-        query: defaults({ listViewType }, this.$route.query),
-      });
+      /*
+       * Passe par `pushQuery` pour ne pas écraser le filtre : les deux
+       * écritures reconstruisent la query entière, et `vue-router` 4 les
+       * applique de façon asynchrone (G-042).
+       */
+      filterManager.pushQuery(this.$router, (query) =>
+        query.listViewType === listViewType ? query : { ...query, listViewType },
+      );
     },
     // Collection Metadata management
     // =========================================================================

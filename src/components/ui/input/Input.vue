@@ -1,5 +1,5 @@
 <template>
-  <input :class="classes" :value="modelValue" v-bind="$attrs" v-on="$listeners" @input="onInput" />
+  <input :class="classes" :value="modelValue" v-bind="$attrs" v-on="$listeners" @input="handleInput" />
 </template>
 
 <script lang="ts">
@@ -18,6 +18,10 @@ import { classMerge } from '../class-merge';
  * Le preflight n'étant pas chargé (ADR-0008), un `<input>` garde les styles par
  * défaut du navigateur et le reboot de Bootstrap : `appearance-none`, la
  * bordure, le fond et la police sont posés explicitement.
+ *
+ * La méthode s'appelle `handleInput` et non `onInput` : un `@input` posé par le
+ * site d'appel — `DateTimeFormInput` le fait — arrive ici comme une prop nommée
+ * `onInput`, qui masquerait la méthode (G-047).
  */
 export const inputClasses = [
   'flex h-9 w-full min-w-0',
@@ -60,7 +64,7 @@ export default defineComponent({
   methods: {
     // `v-on="$listeners"` et ce `@input` sont fusionnés par Vue 2, pas
     // substitués : un `@input` posé par le site d'appel reste appelé.
-    onInput(event: Event): void {
+    handleInput(event: Event): void {
       this.$emit('update:modelValue', (event.target as HTMLInputElement).value);
     },
   },

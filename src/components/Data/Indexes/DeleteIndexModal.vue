@@ -23,7 +23,7 @@
       </form>
 
       <DialogFooter>
-        <Button variant="outline" @click="onCancel"> Cancel </Button>
+        <Button variant="outline" @click="handleCancel"> Cancel </Button>
         <Button
           data-cy="DeleteIndexModal-deleteBtn"
           :disabled="!isConfirmationValid"
@@ -108,7 +108,7 @@ export default defineComponent({
     setError(error: string): void {
       this.error = error;
     },
-    onCancel(): void {
+    handleCancel(): void {
       this.$emit('cancel');
     },
     performDelete(): void {

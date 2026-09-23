@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import type { Kuzzle } from 'kuzzle-sdk-v7';
 import { defineStore } from 'pinia';
 
@@ -104,7 +103,12 @@ export const useKuzzleStore = defineStore('kuzzle', {
         return;
       }
 
-      Vue.delete(this.environments, id);
+      /*
+       * `delete` natif : en Vue 3 la suppression d'une clé sur un objet
+       * réactif est suivie, et `Vue.delete` n'existe plus que par compat
+       * (ADR-0027). C'était le dernier import de `Vue` dans un store.
+       */
+      delete this.environments[id];
 
       if (this.currentId === id) {
         this.setCurrentEnvironment(undefined);

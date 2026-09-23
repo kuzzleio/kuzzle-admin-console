@@ -51,7 +51,7 @@
     </div>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-8 h-150">
-        <l-map ref="map" data-cy="mapView-map">
+        <l-map ref="map" data-cy="mapView-map" @ready="onMapReady">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
             v-for="document in geoDocuments"
@@ -60,36 +60,41 @@
             :icon="getIcon(document)"
             @click="onItemClicked(document, document.coordinates, 'point')"
           />
+          <!--
+            La classe de sélection passe par `class-name`, l'option Leaflet, et
+            non par `:class`. Un composant de couche ne rend aucun élément dans
+            le DOM — le tracé est un `<path>` SVG créé par Leaflet — donc un
+            `:class` n'a nulle part où atterrir (G-043). `class-name` n'étant
+            posée qu'à la création du tracé, la clé porte l'état de sélection :
+            en changer recrée la couche, ce qui est le seul moyen d'en changer.
+          -->
           <l-circle
             v-for="shape of circleShapes"
             :ref="`circle-${shape._id}`"
-            :key="shape._id"
+            :key="`${shape._id}-${getShapeCyClasse(shape)}`"
             :lat-lng="shape.content.coordinates"
             :radius="getRadiusInMeter(shape.content.radius)"
             :color="getShapeColor(shape._id)"
-            :class-name="`data-cy-shape data-cy-shape-${shape._id}`"
-            :class="getShapeCyClasse(shape)"
+            :class-name="shapeClassName(shape)"
             @click="onItemClicked(shape, shape.content.coordinates, 'circle', shape.content.radius)"
           />
           <l-polygon
             v-for="shape of polygonShapes"
             :ref="`polygon-${shape._id}`"
-            :key="shape._id"
+            :key="`${shape._id}-${getShapeCyClasse(shape)}`"
             :lat-lngs="shape.content.coordinates"
             :color="getShapeColor(shape._id)"
-            :class="getShapeCyClasse(shape)"
-            :class-name="`data-cy-shape data-cy-shape-${shape._id}`"
+            :class-name="shapeClassName(shape)"
             @click="onItemClicked(shape, shape.content.coordinates, 'array')"
           />
           <div v-for="shape of multiPolygonShapes" :key="shape._id">
             <l-polygon
               v-for="(polygon, index) in shape.content.coordinates"
               :ref="`polygon-${shape._id}-${index}`"
-              :key="`${shape._id}-${index}`"
+              :key="`${shape._id}-${index}-${getShapeCyClasse(shape)}`"
               :lat-lngs="polygon"
               :color="getShapeColor(shape._id)"
-              :class="getShapeCyClasse(shape)"
-              :class-name="`data-cy-shape data-cy-shape-${shape._id}`"
+              :class-name="shapeClassName(shape)"
               @click="onItemClicked(shape, polygon, 'array')"
             />
           </div>
@@ -166,10 +171,10 @@
 </template>
 
 <script>
+import { LCircle, LMap, LMarker, LPolygon, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import L from 'leaflet';
 import get from 'lodash/get';
 import { mapState } from 'pinia';
-import { LMap, LTileLayer, LMarker, LCircle, LPolygon } from 'vue2-leaflet';
 
 import '@/assets/leaflet.css';
 import { Button } from '@/components/ui/button';
@@ -185,6 +190,22 @@ import JsonFormatter from '@/directives/json-formatter.directive';
 import { useAuthStore } from '@/stores';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
+
+/*
+ * `@vue-leaflet/vue-leaflet` est écrit **pour Vue 3**, et c'est ce qui le met
+ * en défaut sous `@vue/compat` : le drapeau `RENDER_FUNCTION` du mode 2
+ * réécrit la signature de tout `render()` en celle de Vue 2, où le premier
+ * argument est `createElement`. Ces composants exposent un `render(ctx)` ;
+ * ils recevaient `h` à la place du contexte et levaient au premier accès, la
+ * carte se rendant en nœud vide (G-041).
+ *
+ * Le drapeau ne peut pas être éteint globalement : `vuedraggable` et
+ * `vue-multiselect`, eux, sont des bibliothèques Vue 2 et en dépendent pour la
+ * vue Colonne. Il se règle donc là où il se pose — par composant.
+ */
+for (const component of [LCircle, LMap, LMarker, LPolygon, LTileLayer]) {
+  component.compatConfig = { MODE: 3 };
+}
 
 export default {
   name: 'ViewMap',
@@ -338,15 +359,23 @@ export default {
       },
     },
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.map = this.$refs.map.mapObject;
+  methods: {
+    /*
+     * `@vue-leaflet/vue-leaflet` crée son objet Leaflet de façon asynchrone et
+     * le signale par `ready` — il n'existe pas au `mounted` du parent, ni au
+     * `$nextTick` qui suffisait à `vue2-leaflet`. C'est l'événement qui donne
+     * la carte, pas le cycle de vie (ADR-0027).
+     */
+    onMapReady(map) {
+      this.map = map;
+
       if (L.latLngBounds(this.coordinates).isValid()) {
         this.map.fitBounds(this.coordinates, { maxZoom: 12 });
       }
-    });
-  },
-  methods: {
+    },
+    shapeClassName(shape) {
+      return `data-cy-shape data-cy-shape-${shape._id} ${this.getShapeCyClasse(shape)}`.trim();
+    },
     getShapeCyClasse(shape) {
       return this.currentDocument && this.currentDocument._id === shape._id
         ? 'data-cy-shape-selected'

@@ -2,7 +2,7 @@ import childProcess from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import tailwindcss from '@tailwindcss/vite';
-import vue from '@vitejs/plugin-vue2';
+import vue from '@vitejs/plugin-vue';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 
@@ -54,13 +54,29 @@ export default defineConfig({
     '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
     '__COMMIT_HASH__': JSON.stringify(commitHash),
   },
-  plugins: [tailwindcss(), vue(), visualizer()],
+  /*
+   * `@vue/compat` est le build de migration de Vue 3 : il expose l'API de
+   * Vue 2 et avertit à chaque usage obsolète (ADR-0027). L'alias est ce qui le
+   * met en place — tout ce qui importe `vue`, y compris les bibliothèques
+   * tierces écrites pour Vue 2, reçoit le build de compatibilité.
+   *
+   * `MODE: 2` fait démarrer l'application en comportement Vue 2, drapeau par
+   * drapeau. Chacun s'éteint ensuite dans son propre lot ; la liste de ceux
+   * qui restent allumés est dans `src/main.ts`, à côté du code qui les
+   * désactive.
+   */
+  plugins: [
+    tailwindcss(),
+    vue({ template: { compilerOptions: { compatConfig: { MODE: 2 } } } }),
+    visualizer(),
+  ],
   preview: {
     port: 8080,
   },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      'vue': '@vue/compat',
     },
   },
   server: {

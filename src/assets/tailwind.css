@@ -12,10 +12,10 @@
  *
  * **Le legacy est rangé dans une couche.** Une règle d'une couche perd
  * toujours face à une règle d'une couche déclarée après elle, quelle que soit
- * sa spécificité. Nos feuilles SCSS historiques, FontAwesome et `vfg.css` sont
- * donc dans `legacy`, déclarée en premier : une utilitaire Tailwind gagne sans
- * qu'on ait à surenchérir en `!important` ou en sélecteurs plus spécifiques.
- * La couche s'en ira quand ces feuilles s'en iront, pas avant.
+ * sa spécificité. Nos feuilles SCSS historiques et FontAwesome sont donc dans
+ * `legacy`, déclarée en premier : une utilitaire Tailwind gagne sans qu'on ait
+ * à surenchérir en `!important` ou en sélecteurs plus spécifiques. La couche
+ * s'en ira quand ces feuilles s'en iront, pas avant.
  *
  * Le préfixe `tw:`, lui, est parti (ADR-0023) : il n'avait de sens que face
  * aux classes de Bootstrap, qui n'existent plus.

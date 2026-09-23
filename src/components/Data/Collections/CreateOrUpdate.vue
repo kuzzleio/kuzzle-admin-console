@@ -127,7 +127,7 @@
           variant="outline"
           >Cancel</Button
         >
-        <Button data-cy="CollectionCreateOrUpdate-submit" @click="onSubmit">
+        <Button data-cy="CollectionCreateOrUpdate-submit" @click="handleSubmit">
           {{ submitLabel }}
         </Button>
       </CardFooter>
@@ -305,7 +305,7 @@ export default {
         });
       }
     },
-    onSubmit() {
+    handleSubmit() {
       this.v$.$touch();
       if (this.v$.$errors.length > 0) {
         return;

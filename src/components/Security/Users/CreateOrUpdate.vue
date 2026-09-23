@@ -225,8 +225,14 @@ export default {
           }),
         );
 
-        const { _id, content } = await this.$kuzzle.security.getUser(this.kuid);
-        this.id = _id;
+        /*
+         * `this.id` était réaffecté ici avec le `_id` renvoyé par le backend —
+         * la même valeur que la prop, qui vient du paramètre de route. Vue 2
+         * tolérait l'écriture dans une prop avec un avertissement ; en Vue 3
+         * les props sont un proxy en lecture seule et l'affectation **lève**
+         * (G-045). Le chargement s'interrompait ici, donc sans profils.
+         */
+        const { content } = await this.$kuzzle.security.getUser(this.kuid);
         this.addedProfiles = content.profileIds;
         delete content.profileIds;
         delete content._kuzzle_info;
