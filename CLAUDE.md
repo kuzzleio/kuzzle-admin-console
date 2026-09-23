@@ -8,7 +8,13 @@ Kuzzle Admin Console : console web d'administration d'instances Kuzzle (données
 souscriptions temps réel, sécurité). Vue 2.7 + Vite + Pinia + bootstrap-vue 2,
 ~25 000 LOC, 140 composants, quasi intégralement en Options API.
 
-Branche de travail : `4-dev`. Branche principale : `master`.
+Branche de travail : `5-dev`. Branche principale : `master`.
+
+Le chantier de modernisation vit sur `5-dev` depuis le 2026-09-23
+([ADR-0030](docs/adr/0030-branche-5-dev-et-deploiement-console-v5.md)) : un push
+la déploie sur console-v5.kuzzle.io. `4-dev` est redevenue la branche de staging
+de la v4 et déploie next-console.kuzzle.io — ne rien y verser qui vienne du
+chantier.
 
 ## Chantier en cours : modernisation
 

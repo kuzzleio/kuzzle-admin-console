@@ -6,7 +6,11 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-22 · **Phase courante** : 3 — Vue 3 sous `@vue/compat`
+**Dernière mise à jour** : 2026-09-23 · **Phase courante** : 3 — Vue 3 sous `@vue/compat`
+>
+> **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
+> ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
+> revenue à son état pré-migration et redéploie next-console.kuzzle.io en v4.
 
 ---
 
@@ -2341,3 +2345,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-22 | Remplacer `vuejs-logger` par un wrapper de 40 lignes | [ADR-0026](adr/0026-wrapper-de-log-maison.md) |
 | 2026-09-22 | Basculer sur Vue 3 sous `@vue/compat`, en un seul lot | [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md) |
 | 2026-09-23 | Valider les specs de migration contre un build, jamais contre le serveur de dev | [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md) |
+| 2026-09-23 | Le chantier déménage sur `5-dev` et se déploie sur console-v5.kuzzle.io | [ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md) |

@@ -1,9 +1,9 @@
-name: Dev branches push checks
+name: 5-dev push checks
 
 on:
   push:
     branches:
-      - 4-dev
+      - 5-dev
 
 env:
   NODE_VERSION: '24'
@@ -168,10 +168,15 @@ jobs:
             echo "✅ All tests passed!"
           fi
 
-  deploy-staging:
-    name: Deploy Admin Console to staging - next-console.kuzzle.io
+  deploy-v5:
+    name: Deploy Admin Console v5 - console-v5.kuzzle.io
     needs: ['e2e-tests']
     runs-on: ubuntu-24.04
+    # Le bucket et la distribution CloudFront de console-v5.kuzzle.io n'existent
+    # pas encore. Tant que les deux variables de dépôt ne sont pas renseignées,
+    # ce job est ignoré : un push sur 5-dev reste vert, il ne déploie rien.
+    # Voir ADR-0030.
+    if: vars.CONSOLE_V5_S3_BUCKET != '' && vars.CONSOLE_V5_CLOUDFRONT_ID != ''
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -186,7 +191,7 @@ jobs:
         uses: ./.github/actions/deploy-to-s3
         with:
           REGION: us-west-2
-          S3_BUCKET: next.console.kuzzle.io
-          CLOUDFRONT_ID: E35G0B414M3IWU
+          S3_BUCKET: ${{ vars.CONSOLE_V5_S3_BUCKET }}
+          CLOUDFRONT_ID: ${{ vars.CONSOLE_V5_CLOUDFRONT_ID }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
