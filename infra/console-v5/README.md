@@ -86,6 +86,36 @@ par Terraform, et les toucher à la main depuis ce module serait pire que le mal
 importer est un chantier à part entière — utile, mais qui n'a pas à retarder
 l'ouverture de l'environnement de revue.
 
+## Si un `apply` est interrompu
+
+C'est arrivé à la création de cet environnement, et la sortie n'est pas
+évidente. Un `apply` tué en vol laisse trois choses derrière lui :
+
+1. **Un verrou périmé** — `console-v5.kuzzle.io.tfstate.tflock` dans le bucket
+   d'état. Il bloque toute opération suivante. Son ID se lit dans le message
+   d'erreur, ou dans le fichier lui-même :
+   ```sh
+   aws s3 cp s3://kuzzle.terraform.states/console-v5.kuzzle.io.tfstate.tflock -
+   terraform force-unlock <ID>
+   ```
+2. **Des ressources créées mais absentes de l'état.** CloudFront est la plus
+   probable : elle met plusieurs minutes à se déployer, c'est donc elle qu'un
+   `Ctrl-C` coupe. Vérifier avec `terraform state list` contre la réalité.
+3. **Rien du tout côté DNS**, l'enregistrement dépendant de la distribution.
+
+**Ne pas détruire pour recréer.** Supprimer une distribution CloudFront impose
+de la désactiver, d'attendre son déploiement, puis de la supprimer — une
+demi-heure. L'import est immédiat :
+
+```sh
+terraform import aws_cloudfront_distribution.site <ID>
+terraform plan   # doit annoncer 0 à modifier ; sinon la config diverge du réel
+terraform apply
+```
+
+Le `plan` après import est le contrôle qui compte : s'il propose des
+modifications, c'est que le module ne décrit pas ce qui existe.
+
 ## Un piège, pour la prochaine fois
 
 Le compte contient **deux** certificats pour ce domaine : un `*.kuzzle.io`
