@@ -35,46 +35,51 @@ modification, c'est que la configuration ne décrit pas le réel — et il faut
 corriger la configuration, jamais laisser l'`apply` « réparer » un
 environnement que l'équipe regarde.
 
-## Le module décrit le réel, il ne le corrige pas
+## Les réglages hérités sont comblés
 
-Cinq réglages sont encore marqués **HÉRITÉ** dans `main.tf` (un sixième, `forwarded_values`, est déjà comblé — voir plus bas). Ils sont conservés tels
-quels, et c'est délibéré : mettre sous IaC et changer le comportement sont deux
-gestes, et les mélanger rend le second invisible dans la revue.
+À l'import, six réglages dataient de la création manuelle de cet environnement.
+Ils ont été **conservés tels quels dans un premier temps**, puis comblés dans un
+second : mettre sous IaC et changer le comportement sont deux gestes, et les
+mélanger aurait rendu le second invisible en revue.
 
-| Réglage | État | Ce que fait console-v5 |
+| Réglage | Avant | Maintenant |
 |---|---|---|
-| `viewer_protocol_policy` | `allow-all` — joignable en HTTP en clair | `redirect-to-https` |
-| `allowed_methods` | `DELETE`, `PATCH`, `POST`, `PUT` sur un site statique | `GET`, `HEAD`, `OPTIONS` |
+| `forwarded_values` | API dépréciée | `aws_cloudfront_cache_policy` |
+| `viewer_protocol_policy` | `allow-all` — HTTP en clair | `redirect-to-https` |
+| `allowed_methods` | `DELETE`, `PATCH`, `POST`, `PUT` | `GET`, `HEAD`, `OPTIONS` |
 | `minimum_protocol_version` | `TLSv1.2_2019` | `TLSv1.2_2021` |
-| `origin_ssl_protocols` | inclut TLS 1.0 et 1.1 | `TLSv1.2` seul |
-| `origin_id` | préfixé `prod-` sur un environnement de staging | nommé d'après son rôle |
+| `origin_ssl_protocols` | inclut TLS 1.0 et 1.1 | `TLSv1.2` |
+| `origin_id` | préfixé `prod-` sur du staging | **inchangé, et volontairement** |
 
-Les trois premiers sont les écarts 3, 4 et 5 de
-[`../console-v5/README.md`](../console-v5/README.md), pris à l'envers.
+`origin_id` reste tel quel : le renommer forcerait le remplacement du
+comportement de cache pour un gain cosmétique. Il est faux, il est inoffensif,
+il reste.
 
-### `forwarded_values` — comblé, et pourquoi en premier
+### `forwarded_values` en premier, et seul
 
 C'était le seul de la liste dont la migration puisse changer le comportement de
-cache observable, donc celui qui devait passer ici **avant** production.
+cache observable. La politique de cache reprend les mêmes TTL
+(0 / 300 / 31536000) et la même clé — aucune query string, aucun cookie, aucun
+en-tête. Seule différence : `enable_accept_encoding_gzip` et `…_brotli` mettent
+`Accept-Encoding` dans la clé sous forme normalisée, là où l'ancienne API ne l'y
+mettait pas.
 
-Le bloc `forwarded_values` est remplacé par une `aws_cloudfront_cache_policy`
-qui reprend les mêmes TTL (0 / 300 / 31536000) et la même clé de cache — aucune
-query string, aucun cookie, aucun en-tête.
+**Le brotli n'est pourtant pas servi** : un client `Accept-Encoding: br` reçoit
+du non compressé, un navigateur reçoit du gzip. Ce n'est pas une régression —
+`forwarded_values` ne permettait pas de brotli du tout — mais l'optimisation
+attendue n'est pas là, et la cause reste à trouver. Le gzip, lui, est confirmé :
+6116 → 2739 octets, avec `vary: Accept-Encoding`.
 
-**La seule différence de comportement** est `enable_accept_encoding_gzip` et
-`…_brotli` : l'ancienne API ne mettait pas `Accept-Encoding` dans la clé de
-cache, la nouvelle l'y met sous forme normalisée. C'est la configuration
-recommandée avec `compress = true`, et l'effet observable se limite à quelques
-`Miss from cloudfront` le temps que le cache se reconstitue par encodage. Sur du
-contenu invalidé à chaque déploiement, c'est sans conséquence.
+### Les trois autres, groupés
 
-**Ordre pour les cinq restants** : ce sont des resserrages sans effet sur ce qui
-est servi (`allowed_methods`, `origin_ssl_protocols`, TLS minimum) ou visibles
-mais souhaitables (`viewer_protocol_policy`). Ici d'abord, production ensuite.
+`allowed_methods`, `origin_ssl_protocols` et `minimum_protocol_version` ne
+changent rien à ce qui est servi : les méthodes d'écriture tombaient déjà sans
+effet sur une origine S3, les protocoles TLS vers l'origine ne servent jamais
+puisqu'elle est jointe en `http-only`, et la politique 2021 accepte les mêmes
+versions de TLS avec un jeu de suites resserré.
 
-Deux réglages sont figés et n'ont pas à bouger : `origin_id` (le renommer force
-le remplacement du comportement de cache) et l'absence de `public_access_block`
-sur le bucket (en poser un, même permissif, serait un changement réel).
+`viewer_protocol_policy` est le seul visible d'un client : une requête HTTP
+reçoit un 301 vers HTTPS au lieu d'être servie en clair.
 
 ### Le bucket est public deux fois
 

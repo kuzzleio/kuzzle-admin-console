@@ -129,9 +129,11 @@ resource "aws_cloudfront_distribution" "site" {
       origin_read_timeout      = 30
       origin_keepalive_timeout = 5
 
-      # HÉRITÉ — TLS 1.0 et 1.1 vers l'origine. Sans effet réel ici, l'origine
-      # étant jointe en `http-only`, mais à nettoyer le jour où on y touche.
-      origin_ssl_protocols = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+      # Sans effet observable : l'origine est jointe en `http-only`, ces
+      # protocoles ne servent jamais. Alignés sur console-v5 pour qu'un futur
+      # passage en HTTPS vers l'origine ne réactive pas TLS 1.0 et 1.1 par
+      # inadvertance.
+      origin_ssl_protocols = ["TLSv1.2"]
     }
   }
 
@@ -140,14 +142,16 @@ resource "aws_cloudfront_distribution" "site" {
     compress         = true
     cached_methods   = ["GET", "HEAD"]
 
-    # HÉRITÉ — le site est joignable en HTTP en clair. console-v5 est en
-    # `redirect-to-https` ; c'est le premier écart que cet environnement
-    # mériterait de combler.
-    viewer_protocol_policy = "allow-all"
+    # Le seul des quatre changements de ce lot qui soit visible d'un client :
+    # une requête HTTP reçoit désormais un 301 vers HTTPS au lieu d'être servie
+    # en clair. La console transmet des identifiants de connexion à un backend,
+    # elle n'a rien à faire en clair.
+    viewer_protocol_policy = "redirect-to-https"
 
-    # HÉRITÉ — méthodes d'écriture autorisées sur un site statique. Elles ne
-    # mènent nulle part, mais les retirer est un changement, pas un import.
-    allowed_methods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    # Un site statique ne répond qu'en lecture. Les méthodes d'écriture
+    # tombaient déjà sur l'origine S3 sans rien produire ; CloudFront les
+    # refuse maintenant en amont.
+    allowed_methods = ["GET", "HEAD", "OPTIONS"]
 
     # Anciennement `forwarded_values`, l'API d'avant les politiques de cache
     # nommées, dépréciée par le provider. La politique ci-dessous reprend les
@@ -179,8 +183,9 @@ resource "aws_cloudfront_distribution" "site" {
     acm_certificate_arn = data.aws_acm_certificate.wildcard.arn
     ssl_support_method  = "sni-only"
 
-    # HÉRITÉ — politique TLS de 2019.
-    minimum_protocol_version = "TLSv1.2_2019"
+    # Politique TLS de 2021 : mêmes versions de TLS acceptées, jeu de suites
+    # cryptographiques resserré. Sans effet sur un navigateur à jour.
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
 
