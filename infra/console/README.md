@@ -44,16 +44,35 @@ Cette gémellité est ce qui rend la factorisation en module partagé réaliste 
 et c'est aussi pourquoi elle n'a pas été faite avant d'avoir les deux plans
 vides : on ne factorise pas sur une ressemblance supposée.
 
-## Ordre pour combler les réglages hérités
+## Les réglages hérités sont comblés
 
-**Staging d'abord, production ensuite, un réglage à la fois.** Les deux
-environnements étant jumeaux, un changement validé sur `next-console` se
-transpose ici sans surprise — c'est tout l'intérêt de les avoir importés tous
-les deux avant d'y toucher.
+Les six réglages datant de la création manuelle ont été conservés tels quels à
+l'import, puis comblés dans un second temps — **et après staging à chaque
+fois**. Mettre sous IaC et changer le comportement sont deux gestes ; sur
+production, les séparer n'est pas du confort.
 
-`forwarded_values` en premier sur staging : c'est le seul de la liste dont la
-migration vers une politique de cache nommée puisse modifier le comportement
-observable.
+| Réglage | Avant | Maintenant |
+|---|---|---|
+| `forwarded_values` | API dépréciée | `aws_cloudfront_cache_policy` |
+| `viewer_protocol_policy` | `allow-all` — HTTP en clair | `redirect-to-https` |
+| `allowed_methods` | `DELETE`, `PATCH`, `POST`, `PUT` | `GET`, `HEAD`, `OPTIONS` |
+| `minimum_protocol_version` | `TLSv1.2_2019` | `TLSv1.2_2021` |
+| `origin_ssl_protocols` | inclut TLS 1.0 et 1.1 | `TLSv1.2` |
+| `origin_id` | préfixé `prod-` | **inchangé** — ici il est exact |
+
+Chacun de ces changements a été appliqué et vérifié sur
+[`../next-console/`](../next-console/README.md) avant d'arriver ici. Les
+contrôles passés sur staging après application : HTTP → 301, HTTPS → 200,
+`POST /` → 403, gzip 6116 → 2739 octets.
+
+`origin_id` ne bouge pas : le renommer forcerait le remplacement du comportement
+de cache. Sur production c'est le seul `prod-` de la famille qui soit exact, il
+n'y a de toute façon rien à corriger.
+
+**Une réserve héritée de staging** : `enable_accept_encoding_brotli` est activé
+dans la politique de cache, mais le brotli n'est pas servi — un navigateur
+reçoit du gzip. Ce n'est pas une régression (`forwarded_values` ne permettait pas
+de brotli du tout) et la cause reste à trouver.
 
 ## Ce qui n'est plus vrai
 
