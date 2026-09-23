@@ -779,8 +779,8 @@ la phase 4 s'ouvre quand `MODE: 3` peut remplacer la liste.
 | Drapeau | Geste | Volume | Ref | Statut |
 |---|---|---:|---|---|
 | `INSTANCE_LISTENERS` | retrait de `v-on="$listeners"`, `emits` déclaré | 62 + 22 composants | [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md), [G-049](#g-049) | ✅ |
-| `OPTIONS_BEFORE_DESTROY`, `OPTIONS_DESTROYED` | `beforeDestroy` → `beforeUnmount`, `destroyed` → `unmounted` | 19 fichiers | — | ✅ |
-| `GLOBAL_PROTOTYPE` | `Vue.prototype.$x` → `app.config.globalProperties` | 2 sites | — | ⬜ |
+| `OPTIONS_BEFORE_DESTROY`, `OPTIONS_DESTROYED` | `beforeDestroy` → `beforeUnmount`, `destroyed` → `unmounted` | 21 fichiers | [G-050](#g-050) | ✅ |
+| `GLOBAL_PROTOTYPE` | `Vue.prototype.$x` → `app.config.globalProperties` | 2 sites + 2 shims | [G-051](#g-051) | ✅ |
 | `INSTANCE_SET` | `this.$set` → affectation directe | 8 sites | — | ⬜ |
 | `COMPILER_V_BIND_SYNC` | `.sync` → `v-model:` | 24 occurrences | — | ⬜ |
 | `COMPONENT_V_MODEL` | retrait de l'option `model` de Vue 2 | 14 composants | [G-012](#g-012) | ⬜ |
@@ -2375,6 +2375,26 @@ Gabarit à copier :
   manqué, le jour même.
 - **Ref** : [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md),
   [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)
+
+#### G-051 — Un fichier de shims qui augmente `vue/types/vue` ne décrit plus rien depuis la bascule
+
+- **Contexte** : phase 3, extinction du drapeau `GLOBAL_PROTOTYPE`.
+- **Symptôme** : `npm run test:types` reproche `Property '$toast' does not exist`
+  et `Property '$log' does not exist` sur les 34 fichiers qui les appellent,
+  alors que `src/shims-toast.d.ts` et `src/shims-logger.d.ts` sont bien là, bien
+  écrits, et n'ont pas bougé.
+- **Cause** : ils déclarent `declare module 'vue/types/vue' { interface Vue }`.
+  C'est l'espace de noms **de Vue 2**. En Vue 3 il n'existe plus, et une
+  augmentation d'un module qui n'existe pas ne provoque aucune erreur : elle ne
+  fait simplement rien. Le fichier reste valide, il cesse d'être branché.
+- **Solution** : `declare module 'vue' { interface ComponentCustomProperties }`.
+- **À retenir** : les erreurs de types apparues à la bascule ne sont pas toutes
+  du code à reprendre — certaines sont des **déclarations devenues muettes**.
+  Chercher d'abord ce qui augmentait `vue/types/*` : le symptôme se lit sur des
+  dizaines de fichiers d'appel, et la cause tient dans une ligne d'un fichier
+  que personne ne relit. C'est aussi pourquoi le compte d'erreurs est tombé de
+  54 à 42 sur un lot qui ne touche que deux plugins.
+- **Ref** : [ADR-0026](adr/0026-wrapper-de-log-maison.md), [ADR-0020](adr/0020-systeme-de-toasts.md)
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

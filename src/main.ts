@@ -1,8 +1,8 @@
 import { configureCompat, createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import { logger } from './plugins/logger';
-import './plugins/toast';
+import loggerPlugin, { logger } from './plugins/logger';
+import toastPlugin from './plugins/toast';
 import 'leaflet/dist/leaflet.css';
 
 import createRoutes from './routes/index';
@@ -41,6 +41,13 @@ configureCompat({
    */
   OPTIONS_BEFORE_DESTROY: false,
   OPTIONS_DESTROYED: false,
+
+  /*
+   * `Vue.prototype` n'existe plus : `$toast` et `$log` s'installent sur
+   * `app.config.globalProperties`, qui appartient à l'application et non au
+   * paquet `vue`.
+   */
+  GLOBAL_PROTOTYPE: false,
 });
 
 Reflect.defineProperty(window, 'kuzzle', {
@@ -53,6 +60,8 @@ Reflect.defineProperty(window, 'kuzzle', {
 const app = createApp(App);
 
 app.use(createPinia());
+app.use(loggerPlugin);
+app.use(toastPlugin);
 app.use(createRoutes(logger));
 
 app.mount('#app');

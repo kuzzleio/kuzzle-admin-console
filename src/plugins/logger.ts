@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import type { App } from 'vue';
 
 /**
  * `this.$log` — les traces de la console (ADR-0026).
@@ -66,4 +66,13 @@ export const logger: Logger = {
   warn: traceAt('warn'),
 };
 
-Vue.prototype.$log = logger;
+/*
+ * `globalProperties` remplace `Vue.prototype`, qui était un état global au
+ * paquet `vue` et non à l'application. `logger` reste exporté à part : le
+ * routeur le reçoit en argument, sans passer par l'instance.
+ */
+export default {
+  install(app: App): void {
+    app.config.globalProperties.$log = logger;
+  },
+};
