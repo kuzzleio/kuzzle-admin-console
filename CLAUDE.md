@@ -52,11 +52,20 @@ migration doit passer les specs du domaine touché. Ne jamais désactiver une sp
 pour faire passer une migration : c'est le signal que la migration est fausse.
 
 **Les specs se valident contre un build, pas contre `npm run dev`**
-([ADR-0028](docs/adr/0028-valider-les-specs-contre-un-build.md)) : sous
-`@vue/compat`, le serveur de dev et le build ne compilent pas le même code, et
-un « N/N specs » obtenu sur le serveur de dev ne dit rien.
+([ADR-0028](docs/adr/0028-valider-les-specs-contre-un-build.md)) : le
+serveur de dev et le build ne compilent pas le même code — l'optimisation
+`cacheHandlers` du compilateur n'existe qu'au build
+([G-048](docs/MIGRATION.md#g-048)) — et un « N/N specs » obtenu sur le serveur
+de dev ne dit rien.
+
+**Et contre une stack neuve** : un backend local qui a déjà servi fait échouer
+`login` et `roles` sur `_resetSecurity` (404), loin de toute cause dans le code
+([G-006](docs/MIGRATION.md#g-006)). Avant de conclure qu'un échec est
+« préexistant », le rejouer sur une stack recréée — un `git stash` ne suffit
+pas, il laisse le backend sale.
 
 ```sh
+docker compose down -v && docker compose up --wait
 npm run build && npx vite preview --host 127.0.0.1 --port 8080 --strictPort
 ```
 
