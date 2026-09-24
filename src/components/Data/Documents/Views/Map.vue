@@ -191,22 +191,6 @@ import { useAuthStore } from '@/stores';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 
-/*
- * `@vue-leaflet/vue-leaflet` est écrit **pour Vue 3**, et c'est ce qui le met
- * en défaut sous `@vue/compat` : le drapeau `RENDER_FUNCTION` du mode 2
- * réécrit la signature de tout `render()` en celle de Vue 2, où le premier
- * argument est `createElement`. Ces composants exposent un `render(ctx)` ;
- * ils recevaient `h` à la place du contexte et levaient au premier accès, la
- * carte se rendant en nœud vide (G-041).
- *
- * Le drapeau ne peut pas être éteint globalement : `vuedraggable` et
- * `vue-multiselect`, eux, sont des bibliothèques Vue 2 et en dépendent pour la
- * vue Colonne. Il se règle donc là où il se pose — par composant.
- */
-for (const component of [LCircle, LMap, LMarker, LPolygon, LTileLayer]) {
-  component.compatConfig = { MODE: 3 };
-}
-
 export default {
   name: 'ViewMap',
   components: {

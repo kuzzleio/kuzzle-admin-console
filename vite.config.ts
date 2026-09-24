@@ -67,7 +67,7 @@ export default defineConfig({
    */
   plugins: [
     tailwindcss(),
-    vue({ template: { compilerOptions: { compatConfig: { MODE: 2 } } } }),
+    vue({ template: { compilerOptions: { compatConfig: { MODE: 3 } } } }),
     visualizer(),
   ],
   preview: {

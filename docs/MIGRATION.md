@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-24 · **Phase courante** : 3 — Vue 3 sous `@vue/compat`
+**Dernière mise à jour** : 2026-09-24 · **Phase courante** : 4 — nettoyage : retrait de `compat`
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -21,8 +21,8 @@
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
-| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ✅ **Tous les drapeaux de compat sont éteints** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) — 17/17 specs. `MODE: 3` peut remplacer la liste |
-| **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
+| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ✅ **Close** : `MODE: 3` a remplacé la liste de drapeaux ([ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)) — 17/17 specs |
+| **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 En cours — ouverte le 2026-09-24. Verrou : les 4 paquets Vue 2 encore en `MODE: 2` (§ 3.2) |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
 [ADR-0002](adr/0002-sortir-de-bootstrap-vue-avant-vue-3.md).
@@ -801,11 +801,39 @@ passés à `v-model:open` ou `v-model:page`. Le vrai périmètre était ailleurs
 **trois bibliothèques tierces** que le drapeau atteint sans qu'on puisse les
 corriger ([G-053](#g-053)).
 
-**La liste est donc soldée : `MODE: 3` peut remplacer les drapeaux, et la
-phase 4 s'ouvre.** Deux régressions antérieures de la bascule, restées invisibles
-faute de couverture, ont été mises au jour en écrivant les tests de ce lot :
-[G-054](#g-054), corrigée, et [G-055](#g-055), qui n'a pas de correctif au site
-d'appel et conditionne le remplacement de `vue-color`.
+**La liste est donc soldée.** Deux régressions antérieures de la bascule,
+restées invisibles faute de couverture, ont été mises au jour en écrivant les
+tests de ce lot : [G-054](#g-054), corrigée, et [G-055](#g-055), qui n'a pas de
+correctif au site d'appel et conditionne le remplacement de `vue-color`.
+
+#### `MODE: 3` a remplacé la liste — la phase 3 est close
+
+Le 2026-09-24, `MODE: 3` est posé aux deux endroits qui décident du mode — le
+compilateur de template dans `vite.config.ts`, le runtime dans `src/main.ts` —
+et la liste ci-dessus disparaît de `configureCompat`
+([ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)).
+
+**La liste ne disait pas ce qu'on croyait.** Six drapeaux à `false` décrivaient
+ce dont le chantier s'était explicitement passé ; les quelque quarante autres
+restaient allumés par défaut, sans avoir jamais été regardés. `MODE: 3` inverse
+la charge de la preuve, et il a trouvé : un `<template>` nu dans `App.vue`,
+qu'aucun lot n'avait de raison de croiser, rendait **toute l'application
+invisible** ([G-056](#g-056)). C'est le seul de nos fichiers qui est tombé.
+
+Ce qui reste en `MODE: 2` n'est plus à nous : quatre bibliothèques écrites pour
+Vue 2 (§ 3.2). Elles y restent par une fonction `MODE` évaluée par composant,
+qui teste le marqueur `_compiled` de `vue-loader` — ce qui couvre les
+sous-composants internes de `vue-color`, qu'aucun site d'appel n'atteint. Les
+deux paquets dont le `render` est écrit à la main échappent au marqueur et sont
+épinglés à leur site d'appel ([G-057](#g-057)).
+
+**La phase 4 s'ouvre, et son verrou est nommé : ces quatre paquets.**
+
+Trois dettes sont tombées avec le passage, toutes sur des drapeaux qu'aucun lot
+n'avait nommés, et **aucune n'a laissé d'erreur** — une page blanche
+([G-056](#g-056)), un filtre qui n'agit pas ([G-058](#g-058)), un champ qui
+reste vide ([G-059](#g-059)). C'est l'argument qui compte contre l'idée qu'une
+liste soldée valait `MODE: 3`.
 
 ---
 
@@ -844,6 +872,12 @@ compatibilité **avant** d'engager la montée.
 sans chemin de migration vers Vue 3 : ce qui reste à faire est le passage de Vue
 lui-même (§ 3.2).
 
+> Les quatre paquets écrits pour Vue 2 qui subsistent en § 3.2 ne sont pas
+> bloquants au sens de cette section — ils ont tous un successeur. Ils sont le
+> **verrou du retrait de `@vue/compat`** : ce sont exactement les composants
+> laissés en `MODE: 2` par
+> [ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md).
+
 ### 3.2 Migration directe disponible
 
 | Paquet | Cible | Phase | Statut |
@@ -853,10 +887,10 @@ lui-même (§ 3.2).
 | ~~`pinia` 2.2.4 + `PiniaVuePlugin`~~ | **3.0.4**, sans plugin. La 4.x exige TypeScript ≥ 5.6 (on est en 5.4) | 3 | ✅ |
 | ~~`@vitejs/plugin-vue2`~~ | **`@vitejs/plugin-vue` 6.0.9** | 3 | ✅ |
 | ~~`vue2-leaflet` 2.7.1~~ | **`@vue-leaflet/vue-leaflet` 0.10.1** | 3 | ✅ |
-| `vuedraggable` 2.24.3 | `vuedraggable@next` ou `vue-draggable-plus` | 3 | ⬜ |
-| `vue-apexcharts` 1.6.2 | `vue3-apexcharts` | 3 | ⬜ |
-| `vue-multiselect` 2.1.7 | 3.x — ou supprimé au profit d'un Combobox shadcn-vue | 2/3 | 🟡 un seul site d'appel restant (`Views/Column/Column.vue`) |
-| `vue-color` 2.8.1 | 3.x — ou supprimé (usage marginal) | 2/3 | ⬜ |
+| `vuedraggable` 2.24.3 | `vuedraggable@next` ou `vue-draggable-plus` | 4 | ⬜ épinglé `MODE: 2` à son site d'appel ([G-057](#g-057)) |
+| `vue-apexcharts` 1.6.2 | `vue3-apexcharts` | 4 | ⬜ épinglé `MODE: 2` à son site d'appel ([G-057](#g-057)) |
+| `vue-multiselect` 2.1.7 | 3.x — ou supprimé au profit d'un Combobox shadcn-vue | 4 | 🟡 un seul site d'appel (`Views/Column/Column.vue`), laissé en `MODE: 2` par `_compiled` |
+| `vue-color` 2.8.1 | 3.x — ou supprimé (usage marginal) | 4 | ⛔ laissé en `MODE: 2` par `_compiled` ; sa saisie textuelle reste cassée ([G-055](#g-055)) |
 | ~~`@vue/test-utils` 1.3.6~~ | **Supprimé** — zéro usage, et il épinglait `vue@2.x` | 3 | ✅ |
 
 ### 3.3 Dette à évacuer au passage
@@ -2516,6 +2550,118 @@ Gabarit à copier :
   vraie liste des blocages de la phase 4.
 - **Ref** : [G-053](#g-053), [G-054](#g-054)
 
+#### G-056 — Un `<template>` nu devient un vrai élément du DOM en `MODE: 3`, et cache tout ce qu'il contient
+
+- **Contexte** : phase 3, passage de `MODE: 2` à `MODE: 3`
+  ([ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)).
+- **Symptôme** : l'application est **entièrement blanche**. Le build passe,
+  aucune erreur en console, le DOM est bien construit — et les 17 specs
+  tombent sur `cy.click() failed because this element is not visible […] its
+  parent <template> has CSS property: display: none`. C'est Cypress qui nomme
+  la cause, pas Vue.
+- **Cause** : `App.vue` enveloppait son `<router-view>` dans un `<template>`
+  **sans directive** — ni `v-if`, ni `v-for`, ni `v-slot`. En Vue 2, un
+  `<template>` est toujours un fragment, quoi qu'il porte. En Vue 3, un
+  `<template>` qui ne porte aucune directive structurante est un **élément
+  natif**, rendu tel quel dans le DOM — et le navigateur lui applique
+  `display: none`. Le drapeau `COMPILER_NATIVE_TEMPLATE`, allumé par défaut en
+  `MODE: 2`, rétablissait le comportement de Vue 2 ; il n'avait jamais été
+  nommé par un lot, donc jamais regardé.
+- **Solution** : supprimer l'enveloppe, qui ne servait à rien. Le recensement
+  est un `awk` d'une ligne — un `<template>` nu ailleurs qu'à la ligne 1 d'un
+  SFC : il n'y en avait qu'un.
+- **À retenir** : les drapeaux qu'aucun lot n'a nommés ne sont pas
+  « probablement sans objet », ils sont **non mesurés**. Une liste de drapeaux
+  soldée décrit ce dont on s'est passé, pas ce dont on dépend encore ; c'est
+  `MODE: 3` qui pose la question, et il faut s'attendre à ce qu'il trouve
+  quelque chose. Ici il n'a trouvé qu'un fichier, mais ce fichier rendait la
+  console inutilisable.
+- **Ref** : [G-057](#g-057)
+
+#### G-057 — Toutes les bibliothèques Vue 2 ne portent pas le marqueur `_compiled`
+
+- **Contexte** : même lot. Corollaire direct de [G-053](#g-053).
+- **Symptôme** : une fois `App.vue` corrigé, 15 tests sur 17 specs repassent —
+  et la vue Chart reste vide. `[data-cy="timeSeries-chart"]` n'apparaît jamais,
+  sans erreur ni avertissement.
+- **Cause** : le `MODE: 3` global laisse les bibliothèques Vue 2 en `MODE: 2`
+  par une fonction qui teste `_compiled`, le marqueur que `vue-loader` pose sur
+  ce qu'il compile. `vue-apexcharts` 1.6.2 est écrit pour Vue 2 mais son
+  `render(createElement)` est **écrit à la main** : il n'est jamais passé par
+  `vue-loader`, ne porte pas le marqueur, et bascule en mode 3 avec le reste.
+  `vuedraggable` 2.24.3 est dans le même cas.
+- **Solution** : épingler ces composants à leur site d'appel —
+  `VueApexCharts.compatConfig = { MODE: 2 }`. Le `compatConfig` posé sur
+  l'objet composant prime sur le mode global.
+- **À retenir** : « écrit pour Vue 2 » et « compilé par `vue-template-compiler` »
+  ne sont pas la même chose, et c'est la seconde propriété qu'un marqueur peut
+  détecter. Une heuristique sur `node_modules` doit être doublée d'un
+  **recensement nominatif** des paquets Vue 2 : ici quatre, dont deux que
+  l'heuristique ne voit pas. Le symptôme est, une fois de plus, un composant qui
+  ne rend rien plutôt qu'une erreur.
+- **Ref** : [G-053](#g-053), [G-056](#g-056)
+
+#### G-058 — Un watcher non `deep` ne voit plus la mutation d'un tableau
+
+- **Contexte** : phase 3, passage en `MODE: 3`, drapeau `WATCH_ARRAY`.
+- **Symptôme** : le filtre par rôle de la liste des profils s'affiche comme
+  actif — la pastille « Filters are being applied » apparaît — et **la liste
+  n'est pas filtrée**. Un seul test rouge (`profiles.spec.js`), aucune erreur.
+- **Cause** : `Filters.vue` mute `selectedRoles` sur place (`push` / `splice`)
+  et s'en remet à `watch: { selectedRoles() {…} }` pour émettre
+  `filters-updated`. En Vue 2, la réactivité par `Object.defineProperty`
+  instrumentait les méthodes de tableau et notifiait la dépendance du tableau
+  lui-même : un watcher non `deep` se déclenchait sur `push`. En Vue 3, le
+  `Proxy` distingue les deux, et un watcher non `deep` ne réagit qu'au
+  **changement de référence**.
+- **Solution** : `deep: true` sur le watcher. C'est la traduction exacte de ce
+  que Vue 2 faisait, et elle laisse le code du composant inchangé.
+- **Pourquoi la pastille, elle, s'affichait** : `hasFilter` est une
+  **computed**. Les computed lisent le tableau à travers le proxy et voient donc
+  la mutation. Dans le même composant, la computed a suivi et le watcher non.
+  C'est ce qui rend le symptôme trompeur : l'état a l'air à jour.
+- **Recensement** : 6 watchers de tableau sans `deep` dans `src`, dont **4**
+  portent sur un tableau muté sur place — `Profiles/Filters.selectedRoles`,
+  `Roles/Filters.controllers`, `Column.selectedFields`,
+  `TimeSeries.customNumberFields`. Les deux autres ne sont que réassignés et
+  n'ont rien à corriger. Une seule des quatre était couverte par une spec.
+- **À retenir** : chercher le `watch`, puis **chercher la mutation**. Le drapeau
+  ne casse pas les watchers de tableau, il casse ceux dont la valeur change sans
+  que la référence change — et c'est au site de mutation que ça se décide, pas
+  au site du watcher.
+
+#### G-059 — `this.$vnode` disparaît en `MODE: 3`, et la fusion de classes des primitives avec
+
+- **Contexte** : phase 3, passage en `MODE: 3`, drapeau `PRIVATE_APIS`.
+- **Symptôme** : `login.spec.js`, un test rouge — « Sorry, your session has
+  expired » n'apparaît jamais. Sur la capture, la modale de création d'index est
+  ouverte, **son champ vide**, avec « This field cannot be empty ». Rien ne
+  désigne les classes CSS.
+- **Cause** : le mixin `classMerge`, dont héritent les 60 primitives de `ui/`,
+  lisait la classe du site d'appel par `this.$vnode.data.staticClass`. `$vnode`
+  est une API privée de Vue 2 ; `PRIVATE_APIS` la maintenait en vie, et en
+  `MODE: 3` elle vaut `undefined`. La classe du site d'appel cesse d'être passée
+  à `cn`, donc d'être arbitrée par `tailwind-merge` : la variante et la
+  surcharge restent toutes les deux dans l'attribut, et c'est l'ordre de la
+  feuille de styles qui tranche.
+- **Solution** : lire `this.$attrs.class`. En Vue 3 la classe du site d'appel
+  est un attribut comme un autre — ce que Vue 2 justement ne faisait pas, et qui
+  était toute la raison d'aller la chercher sur le vnode.
+- **Comment il a été trouvé** : par **bisection des 42 drapeaux**, rallumés par
+  paquets par-dessus `MODE: 3` jusqu'à ce que la spec repasse — six exécutions.
+  Les quatre hypothèses formulées avant la bisection (piège de focus de
+  `DialogContent`, `CUSTOM_DIR`, `INSTANCE_ATTRS_CLASS_STYLE`, la suppression du
+  `<template>` de `App.vue`) étaient toutes fausses, et deux d'entre elles ont
+  coûté une sonde chacune pour être écartées.
+- **À retenir** : le symptôme était à quatre composants du coupable, et le
+  chemin qui les relie ne se devine pas. **Bisecter les drapeaux est plus rapide
+  que raisonner dessus** — chaque exécution coûte une minute et retire la
+  moitié de l'espace, là où une hypothèse coûte autant et ne retire qu'elle-même.
+  À noter aussi : `npm run test:types` signalait déjà `Property '$vnode' does
+  not exist` sur ce fichier, dans les 54 erreurs tolérées. La réponse était dans
+  la sortie d'un contrôle non bloquant.
+- **Ref** : [G-056](#g-056)
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -2606,3 +2752,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-23 | Valider les specs de migration contre un build, jamais contre le serveur de dev | [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md) |
 | 2026-09-23 | Déclarer `emits` dès qu'un événement porte un nom d'événement du DOM | [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md) |
 | 2026-09-23 | Le chantier déménage sur `5-dev` et se déploie sur console-v5.kuzzle.io | [ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md) |
+| 2026-09-24 | `MODE: 3` global, et les bibliothèques Vue 2 épinglées en `MODE: 2` | [ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md) |

@@ -239,6 +239,15 @@ import HighlightableRow from './HighlightableRow.vue';
 import ColumnCell from './TableCell.vue';
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css';
 
+/*
+ * `vuedraggable` 2.24.3 est écrit pour Vue 2 mais son `render(h)` est écrit à
+ * la main : il ne porte pas le marqueur `_compiled` sur lequel `main.ts`
+ * s'appuie pour laisser les bibliothèques Vue 2 en `MODE: 2`. Il le déclare
+ * donc ici, à son site d'appel — même geste que `Views/Map.vue`, en sens
+ * inverse.
+ */
+draggable.compatConfig = { MODE: 2 };
+
 export default {
   name: 'Column',
   directives: {
@@ -405,11 +414,15 @@ export default {
         this.initFields();
       },
     },
-    selectedFields(value) {
-      this.$emit(
-        'settings-updated',
-        defaultsDeep({ columnView: { fields: value } }, this.collectionSettings),
-      );
+    selectedFields: {
+      /* `initFields` et `addField` mutent le tableau sur place — voir G-058. */
+      deep: true,
+      handler(value) {
+        this.$emit(
+          'settings-updated',
+          defaultsDeep({ columnView: { fields: value } }, this.collectionSettings),
+        );
+      },
     },
   },
   mounted() {

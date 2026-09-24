@@ -6,10 +6,15 @@ import { cn } from '@/lib/utils';
 /**
  * Fusionne les classes d'une primitive avec celles posées par le site d'appel.
  *
- * En Vue 2, la classe écrite sur un composant n'arrive pas dans `$attrs` : elle
- * est lue sur le vnode. La passer à `cn` est ce qui permet à l'appelant de
- * surcharger une variante (`<Badge class="bg-accent">`) — sans elle, c'est
- * l'ordre dans la feuille de styles qui tranche, pas le site d'appel.
+ * La passer à `cn` est ce qui permet à l'appelant de surcharger une variante
+ * (`<Badge class="bg-accent">`) — sans elle, c'est l'ordre dans la feuille de
+ * styles qui tranche, pas le site d'appel.
+ *
+ * En Vue 2, cette classe n'arrivait pas dans `$attrs` : elle se lisait sur le
+ * vnode, par `this.$vnode.data.staticClass`. En Vue 3, `$vnode` n'existe plus —
+ * c'est une API privée, que seul le drapeau `PRIVATE_APIS` de `@vue/compat`
+ * maintenait en vie — et la classe du site d'appel est dans `$attrs` comme
+ * n'importe quel attribut (G-059).
  *
  * Vue recopie de son côté cette même classe sur l'élément racine : elle
  * apparaît donc deux fois dans l'attribut `class`. Sans effet — ce qui compte
@@ -21,7 +26,7 @@ import { cn } from '@/lib/utils';
 export const classMerge = defineComponent({
   methods: {
     mergeClasses(...base: ClassValue[]): string {
-      return cn(...base, this.$vnode?.data?.staticClass, this.$vnode?.data?.class as ClassValue);
+      return cn(...base, this.$attrs.class as ClassValue);
     },
   },
 });
