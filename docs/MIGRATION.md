@@ -22,7 +22,7 @@
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ✅ **Close** : `MODE: 3` a remplacé la liste de drapeaux ([ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)) — 17/17 specs |
-| **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 En cours — ouverte le 2026-09-24. Verrou : `vue-color`, dernier paquet Vue 2 en `MODE: 2` (§ 1.5) |
+| **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 En cours — ouverte le 2026-09-24. Plus aucun paquet en `MODE: 2` (§ 1.5) : reste le retrait de `@vue/compat` |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
 [ADR-0002](adr/0002-sortir-de-bootstrap-vue-avant-vue-3.md).
@@ -855,7 +855,7 @@ quatre paquets : ce sont exactement ceux que
 | ~~`vue-apexcharts` 1.6.2~~ | `Views/TimeSeries.vue` | `vue3-apexcharts` 1.7.0 ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | ~~épinglage manuel~~ | ✅ |
 | ~~`vuedraggable` 2.24.3~~ | `Views/Column/Column.vue` | `vue-draggable-plus` 0.6.1 ([ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md)) | ~~épinglage manuel~~ | ✅ |
 | ~~`vue-multiselect` 2.1.7~~ | `Views/Column/Column.vue` | `vue-multiselect` 3.5.0 ([ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md)) | ~~heuristique `_compiled`~~ | ✅ |
-| `vue-color` 2.8.1 | `Views/TimeSeriesItem.vue` | aucune 3.x — remplacement à décider, ADR à lui seul | heuristique `_compiled` | ⛔ [G-055](#g-055) |
+| ~~`vue-color` 2.8.1~~ | `Views/TimeSeriesItem.vue` | `<input type="color">` natif ([ADR-0035](adr/0035-selecteur-de-couleur-natif.md)) | ~~heuristique `_compiled`~~ | ✅ [G-055](#g-055) close |
 
 L'ordre est celui du coût croissant, un lot par paquet, chacun validé contre un
 build avant le suivant. `vue-color` ferme la marche : c'est le seul des quatre
@@ -864,12 +864,13 @@ successeur direct.
 
 **Plus aucun épinglage manuel** depuis [ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md) :
 les deux paquets qui échappaient à l'heuristique `_compiled` sont partis.
-Depuis [ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md), il ne
-reste que `vue-color`, vu par le marqueur, et `main.ts` le dit.
+Depuis [ADR-0035](adr/0035-selecteur-de-couleur-natif.md), **plus aucune
+dépendance ne porte le marqueur** : la fonction `MODE` rend `3` pour tout
+composant.
 
 Le dernier lot de la phase retire `@vue/compat`, la fonction `MODE` de
-`main.ts` et le `compatConfig` de `vite.config.ts` — il ne peut pas commencer
-avant que la ligne `vue-color` soit barrée, la seule qui reste.
+`main.ts` et le `compatConfig` de `vite.config.ts`. Les quatre lignes
+ci-dessus sont barrées : il peut commencer.
 
 ---
 
@@ -908,11 +909,9 @@ compatibilité **avant** d'engager la montée.
 sans chemin de migration vers Vue 3 : ce qui reste à faire est le passage de Vue
 lui-même (§ 3.2).
 
-> Le seul paquet écrit pour Vue 2 qui subsiste en § 3.2, `vue-color`, n'est pas
-> bloquant au sens de cette section — un remplacement existe, reste à le
-> choisir. Il est le **verrou du retrait de `@vue/compat`** : c'est le dernier
-> composant laissé en `MODE: 2` par
-> [ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md).
+> Plus aucun paquet écrit pour Vue 2 ne subsiste en § 3.2 : les quatre que
+> [ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)
+> laissait en `MODE: 2` sont partis (ADR-0032 à ADR-0035).
 
 ### 3.2 Migration directe disponible
 
@@ -926,7 +925,7 @@ lui-même (§ 3.2).
 | ~~`vuedraggable` 2.24.3~~ | **`vue-draggable-plus` 0.6.1** — `vuedraggable@4` existe sous le tag `next` mais est figée depuis 2021 ([ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md)) | 4 | ✅ `sortablejs` quitte l'arbre au passage |
 | ~~`vue-apexcharts` 1.6.2~~ | **`vue3-apexcharts` 1.7.0** — `apexcharts` reste en 3.53.0 ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | 4 | ✅ |
 | ~~`vue-multiselect` 2.1.7~~ | **3.5.0** — le Combobox shadcn-vue attendra la refonte ([ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md)) | 4 | ✅ |
-| `vue-color` 2.8.1 | 3.x — ou supprimé (usage marginal) | 4 | ⛔ laissé en `MODE: 2` par `_compiled` ; sa saisie textuelle reste cassée ([G-055](#g-055)) |
+| ~~`vue-color` 2.8.1~~ | **Supprimé** — `<input type="color">` natif ([ADR-0035](adr/0035-selecteur-de-couleur-natif.md)) | 4 | ✅ [G-055](#g-055) close |
 | ~~`@vue/test-utils` 1.3.6~~ | **Supprimé** — zéro usage, et il épinglait `vue@2.x` | 3 | ✅ |
 
 ### 3.3 Dette à évacuer au passage
@@ -2422,7 +2421,9 @@ Gabarit à copier :
 - **Un angle mort assumé** : une bibliothèque tierce écrite pour Vue 2 ne peut
   pas déclarer `emits`. `vue-color` est traité au site d'appel
   (`TimeSeriesItem`), qui distingue l'objet couleur de l'`Event`. Ce chemin
-  **n'est couvert par aucune spec**.
+  **n'est couvert par aucune spec**. *(Sans objet depuis
+  [ADR-0035](adr/0035-selecteur-de-couleur-natif.md) : `vue-color` est parti,
+  et le contournement avec lui.)*
 - **Ref** : [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md),
   [ADR-0027](adr/0027-bascule-vue-3-sous-compat.md), [G-047](#g-047)
 
@@ -2559,7 +2560,8 @@ Gabarit à copier :
 #### G-055 — `v-model` dans une fonction de rendu précompilée d'un paquet Vue 2 casse sous compat
 
 - **Contexte** : même campagne de couverture. **Antérieur au lot** lui aussi,
-  reproduit à l'identique sur `5-dev`. **Non corrigé à ce jour.**
+  reproduit à l'identique sur `5-dev`. **Close le 2026-09-24 par le retrait
+  de `vue-color`** ([ADR-0035](adr/0035-selecteur-de-couleur-natif.md)).
 - **Symptôme** : saisir dans le champ hexadécimal ou RVBA du sélecteur de
   couleur de la vue Chart lève
   `TypeError: el[assignKey] is not a function`, une exception applicative qui
@@ -2886,3 +2888,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-24 | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | [ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) |
 | 2026-09-24 | `vue-draggable-plus` remplace `vuedraggable`, et non `vuedraggable@next` | [ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md) |
 | 2026-09-24 | `vue-multiselect` passe en 3.x, le Combobox shadcn-vue attendra la refonte | [ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md) |
+| 2026-09-24 | `vue-color` cède la place à `<input type="color">` | [ADR-0035](adr/0035-selecteur-de-couleur-natif.md) |

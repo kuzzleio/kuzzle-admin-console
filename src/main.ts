@@ -26,9 +26,11 @@ import App from './App.vue';
  *
  * Il ne reste plus d'épinglage manuel : les deux paquets qui échappaient au
  * marqueur — leur `render(h)` était écrit à la main, pas compilé — ont été
- * remplacés par leur successeur Vue 3 (ADR-0032, ADR-0033), et `vue-multiselect`
- * est passé en 3.x (ADR-0034). Ce `configureCompat` ne sert plus qu'à
- * `vue-color`, que le marqueur voit.
+ * remplacés par leur successeur Vue 3 (ADR-0032, ADR-0033), `vue-multiselect`
+ * est passé en 3.x (ADR-0034) et `vue-color` a cédé la place au sélecteur
+ * natif (ADR-0035). **Plus aucune dépendance ne porte le marqueur** : la
+ * fonction rend `3` pour tout composant, et ce `configureCompat` ne tient plus
+ * qu'en attendant le lot qui retire `@vue/compat`.
  */
 configureCompat({
   MODE: (component) => (component && (component as { _compiled?: boolean })._compiled ? 2 : 3),

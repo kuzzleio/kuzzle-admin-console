@@ -1,26 +1,19 @@
 <template>
   <div class="mb-2 mr-1 flex items-center gap-2">
-    <div class="relative flex-1">
+    <div class="flex-1">
       <!--
-        Le bouton n'a pas de contenu : c'est la pastille de couleur elle-même.
-        Sans libellé, il n'existe pas pour un lecteur d'écran — d'où
-        `aria-label`, et `aria-expanded` pour l'état du sélecteur.
+        Le sélecteur natif du navigateur (ADR-0035). L'élément est aussi la
+        pastille : les pseudo-éléments `color-swatch` retirent le cadre et la
+        marge intérieure que chaque moteur lui ajoute.
       -->
-      <button
-        :aria-expanded="showColorPicker ? 'true' : 'false'"
+      <input
         aria-label="Choose the color of this value"
-        class="h-5 w-full cursor-pointer appearance-none rounded-md border border-border"
-        data-cy="TimeSeriesItem-colorPickerBtn"
-        :style="{ 'background-color': newColor }"
-        type="button"
-        @click.prevent="togglePicker"
-      />
-      <color-picker
-        v-show="showColorPicker"
-        :value="newColor"
-        class="absolute z-50"
+        class="block h-5 w-full cursor-pointer rounded-md border border-border bg-transparent p-0 [&::-moz-color-swatch]:rounded-md [&::-moz-color-swatch]:border-none [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-md [&::-webkit-color-swatch]:border-none"
         data-cy="TimeSeriesItem-colorPicker"
-        @input="updateColor"
+        type="color"
+        :value="newColor"
+        @change="commitColor"
+        @input="newColor = $event.target.value"
       />
     </div>
     <div class="flex-1">
@@ -50,8 +43,6 @@
   </div>
 </template>
 <script>
-import { Chrome as ColorPicker } from 'vue-color';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -72,7 +63,6 @@ export default {
   components: {
     Autocomplete,
     Button,
-    ColorPicker,
     Input,
   },
   props: {
@@ -105,41 +95,20 @@ export default {
   },
   data() {
     return {
-      showColorPicker: false,
       newColor: this.color,
     };
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside);
-
     this.newColor = this.color;
   },
-  unmounted() {
-    document.removeEventListener('click', this.handleClickOutside);
-  },
   methods: {
-    handleClickOutside(evt) {
-      if (!this.$el.contains(evt.target)) {
-        this.showColorPicker = false;
-      }
-    },
-    togglePicker() {
-      this.showColorPicker = !this.showColorPicker;
-    },
     /*
-     * `vue-color` est écrit pour Vue 2 et ne déclare pas `emits` : ce `@input`
-     * est donc aussi posé en écouteur DOM natif sur sa racine, et reçoit les
-     * `input` qui remontent de ses propres champs hexadécimal et RVBA (G-049).
-     * Une bibliothèque tierce ne pouvant pas être corrigée, c'est le site
-     * d'appel qui distingue les deux : l'événement du composant porte un objet
-     * couleur, l'événement natif est un `Event`.
+     * `input` suit le curseur pendant qu'on cherche la teinte et ne met à jour
+     * que la pastille ; `change` n'arrive qu'à la fermeture du sélecteur, et
+     * c'est lui seul qui redessine le graphique et écrit dans le localStorage.
      */
-    updateColor(color) {
-      if (color instanceof Event) {
-        return;
-      }
-
-      this.newColor = color.hex;
+    commitColor(evt) {
+      this.newColor = evt.target.value;
       if (this.isUpdatable) {
         this.$emit('update-color', { color: this.newColor, index: this.index });
       }
