@@ -72,7 +72,16 @@
           </b-col>
         </b-row>
         <b-row class="flex-grow">
-          <b-col cols="8">
+          <b-col cols="8" data-cy="CollectionCreateOrUpdate-jsonEditor">
+            <span
+              v-if="v$.rawMapping.$errors.length > 0"
+              role="alert"
+              aria-live="assertive"
+              data-cy="CollectionCreateOrUpdate-jsonEditor--dangerIcon"
+            >
+              <span class="sr-only">Invalid JSON</span>
+              <i class="fas fa-exclamation-circle text-danger" aria-hidden="true" />
+            </span>
             <json-editor
               id="collection"
               ref="jsoneditor"
@@ -104,8 +113,7 @@
     "name": { "type": "keyword" }
   }
 }
-              </pre
-                >
+              </pre>
               </div>
             </div>
           </b-col>

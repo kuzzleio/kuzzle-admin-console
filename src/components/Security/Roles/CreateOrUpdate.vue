@@ -35,6 +35,15 @@
             >
               <b-input :disabled="true" :value="id" />
             </b-form-group>
+            <span
+              v-if="v$.documentValue.$errors.length > 0"
+              role="alert"
+              aria-live="assertive"
+              data-cy="RoleCreateOrUpdate-jsonEditor--dangerIcon"
+            >
+              <span class="sr-only">Invalid JSON</span>
+              <i class="fas fa-exclamation-circle text-danger" aria-hidden="true" />
+            </span>
             <json-editor
               ref="jsoneditor"
               class="CreateOrUpdateRole-jsonEditor"
@@ -62,8 +71,7 @@
     }
   }
 }
-            </pre
-              >
+            </pre>
             </div>
           </b-col>
         </b-row>

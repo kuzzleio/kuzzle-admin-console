@@ -43,9 +43,13 @@ describe('Roles', () => {
   })
 
   it('Should render a visual feedback and prevent submitting when input is not valid', () => {
+    let createRequestCount = 0
     cy.waitOverlay()
     cy.visit('/#/security/roles/create')
     cy.contains('Create a new role')
+    cy.get(
+      '[data-cy="RoleCreateOrUpdate-jsonEditor--dangerIcon"]'
+    ).should('not.exist')
 
     cy.get('[data-cy="RoleCreateOrUpdate-createBtn"]').click()
     cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
@@ -88,12 +92,30 @@ describe('Roles', () => {
       .contains('{')
       .click({ force: true })
 
-    cy.get('textarea.ace_text-input')
+    cy.get(
+      '[data-cy="RoleCreateOrUpdate-jsonEditor"] textarea.ace_text-input'
+    )
       .clear({ force: true })
       .type(`SuM UNV4L1d jayZON Kood`)
 
+    cy.intercept('**/roles/valid*', () => {
+      createRequestCount += 1
+    })
     cy.get('[data-cy=RoleCreateOrUpdate-createBtn]').click()
+    cy.get(
+      '[data-cy="RoleCreateOrUpdate-jsonEditor--dangerIcon"]'
+    )
+      .should('be.visible')
+      .should('have.attr', 'role', 'alert')
+      .should('have.attr', 'aria-live', 'assertive')
+      .and('contain.text', 'Invalid JSON')
+    cy.get(
+      '[data-cy="RoleCreateOrUpdate-jsonEditor--dangerIcon"] i'
+    ).should('have.attr', 'aria-hidden', 'true')
     cy.wait(1000)
+    cy.then(() => {
+      expect(createRequestCount).to.equal(0)
+    })
     cy.location().should(location => {
       expect(location.hash).to.equal('#/security/roles/create')
     })
