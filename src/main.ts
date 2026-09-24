@@ -24,9 +24,10 @@ import App from './App.vue';
  * qu'on cherche à distinguer, et couvre les sous-composants internes des
  * bibliothèques sans qu'on ait à les nommer un par un.
  *
- * `vuedraggable` 2.24.3 échappe à ce marqueur — son `render(h)` est écrit à la
- * main, pas compilé — et porte donc son `compatConfig` sur son site d'appel,
- * dans `Views/Column/Column.vue`.
+ * Il ne reste plus d'épinglage manuel : les deux paquets qui échappaient au
+ * marqueur — leur `render(h)` était écrit à la main, pas compilé — ont été
+ * remplacés par leur successeur Vue 3 (ADR-0032, ADR-0033). Ce `configureCompat`
+ * ne sert plus qu'à `vue-multiselect` et `vue-color`, que le marqueur voit.
  */
 configureCompat({
   MODE: (component) => (component && (component as { _compiled?: boolean })._compiled ? 2 : 3),
