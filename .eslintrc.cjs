@@ -38,6 +38,12 @@ module.exports = {
     // un `async destroyed()` oublié devient du code mort silencieux dès que
     // `OPTIONS_DESTROYED` est éteint, et aucune spec ne le voit.
     'vue/no-deprecated-destroyed-lifecycle': 'error',
+    // Symétrique, pour `COMPILER_V_BIND_SYNC` : `vue/no-deprecated-v-bind-sync`
+    // interdit de réintroduire `:prop.sync`, et `vue/no-v-model-argument` —
+    // règle Vue 2 héritée de la config partagée — doit s'éteindre, puisque
+    // c'est exactement `v-model:prop` qu'elle proscrit.
+    'vue/no-deprecated-v-bind-sync': 'error',
+    'vue/no-v-model-argument': 'off',
     'default-case-last': 'warn',
     'import/order': 'warn'
   },

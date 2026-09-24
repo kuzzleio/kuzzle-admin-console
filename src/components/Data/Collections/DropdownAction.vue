@@ -47,7 +47,7 @@
     </DropdownMenu>
 
     <modal-clear
-      :open.sync="clearOpen"
+      v-model:open="clearOpen"
       :index="indexName"
       :collection="collectionName"
       @clear="$emit('clear')"

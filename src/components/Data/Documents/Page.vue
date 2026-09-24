@@ -199,10 +199,10 @@
 
             <ListPagination
               v-show="totalDocuments > paginationSize && displayPagination"
+              v-model:page="currentPage"
               class="mt-4"
               data-cy="DocumentList-pagination"
               :items-per-page="paginationSize"
-              :page.sync="currentPage"
               :total="totalDocuments"
             />
 
@@ -218,13 +218,13 @@
         </Card>
       </template>
       <DeleteCollectionModal
+        v-model:open="deleteCollectionOpen"
         :index="index"
         :collection="collection"
-        :open.sync="deleteCollectionOpen"
         @delete-successful="afterDeleteCollection"
       />
       <delete-modal
-        :open.sync="deleteModalIsOpen"
+        v-model:open="deleteModalIsOpen"
         :candidates-for-deletion="candidatesForDeletion"
         :is-loading="deleteModalIsLoading"
         @confirm="onDeleteConfirmed"

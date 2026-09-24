@@ -199,9 +199,9 @@
     </div>
 
     <DeleteCollectionModal
+      v-model:open="deleteCollectionOpen"
       :index="index"
       :collection="collection"
-      :open.sync="deleteCollectionOpen"
       @delete-successful="afterDeleteCollection"
     />
   </div>

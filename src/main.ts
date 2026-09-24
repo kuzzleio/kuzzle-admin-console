@@ -57,6 +57,14 @@ configureCompat({
    * affectations.
    */
   INSTANCE_SET: false,
+
+  /*
+   * `:prop.sync` s'écrit `v-model:prop`. Le contrat ne bouge pas — une prop et
+   * un `update:<prop>` — seule la syntaxe du site d'appel change, et elle
+   * devient celle de l'amont shadcn-vue que les primitives suivent déjà
+   * (ADR-0009).
+   */
+  COMPILER_V_BIND_SYNC: false,
 });
 
 Reflect.defineProperty(window, 'kuzzle', {

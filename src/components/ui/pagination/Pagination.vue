@@ -13,12 +13,15 @@ import type { PaginationContext, PaginationItemData } from './context';
 /*
  * Pagination — racine, API publique de shadcn-vue (ADR-0013).
  *
- * Remplace `<b-pagination>`. Deux écarts avec l'amont, tous deux dus à Vue 2 :
+ * Remplace `<b-pagination>`. Un écart avec l'amont :
  *
- * - `v-model:page` n'existe pas ; c'est `:page.sync`, ou `v-model` via
- *   l'option `model`, comme `Dialog` (G-012) ;
  * - pas de `PaginationRoot` de `reka-ui` : le calcul des emplacements est ici
  *   (ADR-0009).
+ *
+ * `v-model:page` s'écrit désormais comme en amont : `.sync` était la forme
+ * Vue 2 du même contrat — une prop et un `update:<prop>` — et la bascule ne
+ * change que la syntaxe du site d'appel. L'option `model`, qui permettait un
+ * `v-model` nu, part avec `COMPONENT_V_MODEL` (§ 1.4).
  *
  * La racine ne rend aucun bouton : elle calcule `items` et le donne à
  * `PaginationContent`. C'est ce qui rend le découpage amont utilisable tel

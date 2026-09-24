@@ -166,7 +166,7 @@
       </div>
     </div>
 
-    <Dialog :open.sync="exportCsvOpen">
+    <Dialog v-model:open="exportCsvOpen">
       <DialogContent class="max-w-2xl" labelled-by="export-csv-title">
         <DialogHeader>
           <DialogTitle id="export-csv-title">CSV export</DialogTitle>
