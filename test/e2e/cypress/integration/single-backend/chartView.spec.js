@@ -102,24 +102,27 @@ describe('Chart view', function() {
     cy.get('[data-cy="timeSeries-item--temperature"]').should('exist')
   })
 
-  it('should be able to open the color picker of a plotted value', function() {
+  it('should be able to change the color of a plotted value', function() {
     openChartView()
 
     cy.selectOption('[data-cy="timeseriesView-dateSelector"]', 'payloadDate')
 
     addValue('battery')
 
+    // Le sélecteur natif s'ouvre hors du DOM : Cypress ne peut pas le piloter.
+    // On pose la valeur comme le navigateur le ferait à sa fermeture, et on
+    // vérifie ce qui en sort — la couleur persistée de la série.
     cy.get('[data-cy="timeSeries-item--battery"]')
       .find('[data-cy="TimeSeriesItem-colorPicker"]')
-      .should('not.be.visible')
+      .invoke('val', '#ff0000')
+      .trigger('input')
+      .trigger('change')
 
-    cy.get('[data-cy="timeSeries-item--battery"]')
-      .find('[data-cy="TimeSeriesItem-colorPickerBtn"]')
-      .click()
-
-    cy.get('[data-cy="timeSeries-item--battery"]')
-      .find('[data-cy="TimeSeriesItem-colorPicker"]')
-      .should('be.visible')
+    cy.window().should((win) => {
+      const config = JSON.parse(win.localStorage.getItem('timeSeriesViewConfig'))
+      const numbers = config[indexName][collectionName].numbers
+      expect(numbers.find((n) => n.name === 'battery').color).to.equal('#ff0000')
+    })
   })
 
   it('should not offer the chart view on a collection without any integer field', function() {
