@@ -95,7 +95,7 @@
 
 <script>
 import _ from 'lodash';
-import VueApexCharts from 'vue-apexcharts';
+import VueApexCharts from 'vue3-apexcharts';
 
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -109,15 +109,6 @@ import { dateFromTimestamp } from '@/utils';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import TimeSeriesItem from './TimeSeriesItem.vue';
-
-/*
- * `vue-apexcharts` 1.6.2 est écrit pour Vue 2 et son `render(createElement)`
- * est écrit à la main : il ne porte pas le marqueur `_compiled` sur lequel
- * `main.ts` s'appuie pour laisser les bibliothèques Vue 2 en `MODE: 2`. Il le
- * déclare donc ici, à son site d'appel — même geste que `vuedraggable` dans
- * `Views/Column/Column.vue`.
- */
-VueApexCharts.compatConfig = { MODE: 2 };
 
 const ES_NUMBER_DATA_TYPE = [
   'short',

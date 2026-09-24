@@ -835,6 +835,29 @@ n'avait nommés, et **aucune n'a laissé d'erreur** — une page blanche
 reste vide ([G-059](#g-059)). C'est l'argument qui compte contre l'idée qu'une
 liste soldée valait `MODE: 3`.
 
+### 1.5 Bibliothèques Vue 2 — phase 4
+
+L'objet de la phase 4 est le **retrait de `@vue/compat`**, et son verrou tient en
+quatre paquets : ce sont exactement ceux que
+[ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md) laisse en
+`MODE: 2`. Tant qu'il en reste un, `configureCompat` reste dans `main.ts`.
+
+| Paquet | Site d'appel | Cible | Reste en `MODE: 2` par | Statut |
+|---|---|---|---|---|
+| ~~`vue-apexcharts` 1.6.2~~ | `Views/TimeSeries.vue` | `vue3-apexcharts` 1.7.0 ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | ~~épinglage manuel~~ | ✅ |
+| `vuedraggable` 2.24.3 | `Views/Column/Column.vue` | `vue-draggable-plus` — `vuedraggable@4` n'est pas publié | épinglage manuel ([G-057](#g-057)) | ⬜ |
+| `vue-multiselect` 2.1.7 | `Views/Column/Column.vue` | `vue-multiselect` 3.x, ou un Combobox shadcn-vue | heuristique `_compiled` | ⬜ |
+| `vue-color` 2.8.1 | `Views/TimeSeriesItem.vue` | aucune 3.x — remplacement à décider, ADR à lui seul | heuristique `_compiled` | ⛔ [G-055](#g-055) |
+
+L'ordre est celui du coût croissant, un lot par paquet, chacun validé contre un
+build avant le suivant. `vue-color` ferme la marche : c'est le seul des quatre
+qui porte une régression ouverte ([G-055](#g-055)), et le seul qui n'ait pas de
+successeur direct.
+
+Le dernier lot de la phase retire `@vue/compat`, la fonction `MODE` de
+`main.ts` et le `compatConfig` de `vite.config.ts` — il ne peut pas commencer
+avant que les trois lignes ci-dessus soient barrées.
+
 ---
 
 ## 2. Toolchain (phase 0)
@@ -888,7 +911,7 @@ lui-même (§ 3.2).
 | ~~`@vitejs/plugin-vue2`~~ | **`@vitejs/plugin-vue` 6.0.9** | 3 | ✅ |
 | ~~`vue2-leaflet` 2.7.1~~ | **`@vue-leaflet/vue-leaflet` 0.10.1** | 3 | ✅ |
 | `vuedraggable` 2.24.3 | `vuedraggable@next` ou `vue-draggable-plus` | 4 | ⬜ épinglé `MODE: 2` à son site d'appel ([G-057](#g-057)) |
-| `vue-apexcharts` 1.6.2 | `vue3-apexcharts` | 4 | ⬜ épinglé `MODE: 2` à son site d'appel ([G-057](#g-057)) |
+| ~~`vue-apexcharts` 1.6.2~~ | **`vue3-apexcharts` 1.7.0** — `apexcharts` reste en 3.53.0 ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | 4 | ✅ |
 | `vue-multiselect` 2.1.7 | 3.x — ou supprimé au profit d'un Combobox shadcn-vue | 4 | 🟡 un seul site d'appel (`Views/Column/Column.vue`), laissé en `MODE: 2` par `_compiled` |
 | `vue-color` 2.8.1 | 3.x — ou supprimé (usage marginal) | 4 | ⛔ laissé en `MODE: 2` par `_compiled` ; sa saisie textuelle reste cassée ([G-055](#g-055)) |
 | ~~`@vue/test-utils` 1.3.6~~ | **Supprimé** — zéro usage, et il épinglait `vue@2.x` | 3 | ✅ |
@@ -903,6 +926,7 @@ lui-même (§ 3.2).
 | ~~`velocity-animate`~~ | **Retiré** — son seul client était `Common/Stepper.vue`, code mort (ADR-0016) | ✅ |
 | `@fortawesome/fontawesome-free` | à réévaluer avec le nouveau design system | ⬜ |
 | `json-formatter-js` | utilisé via une directive ; à réévaluer | ⬜ |
+| `apexcharts` 3.53.0 | figé par `vue3-apexcharts` 1.7.0 ; la 5.x est la version courante ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | ⬜ |
 
 ---
 
@@ -2753,3 +2777,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-23 | Déclarer `emits` dès qu'un événement porte un nom d'événement du DOM | [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md) |
 | 2026-09-23 | Le chantier déménage sur `5-dev` et se déploie sur console-v5.kuzzle.io | [ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md) |
 | 2026-09-24 | `MODE: 3` global, et les bibliothèques Vue 2 épinglées en `MODE: 2` | [ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md) |
+| 2026-09-24 | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | [ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) |
