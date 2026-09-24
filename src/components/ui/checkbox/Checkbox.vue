@@ -48,10 +48,6 @@ export default defineComponent({
   name: 'Checkbox',
   mixins: [classMerge],
   inheritAttrs: false,
-  model: {
-    event: 'update:modelValue',
-    prop: 'modelValue',
-  },
   props: {
     modelValue: {
       default: false,

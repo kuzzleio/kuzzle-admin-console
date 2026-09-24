@@ -4,16 +4,20 @@
       <div class="flex flex-1 items-stretch gap-2">
         <div class="inline-block w-full max-w-96">
           <multiselect
-            v-model="selectedFieldsComputed"
+            :value="selectedFieldsComputed"
             :allow-empty="true"
+            data-cy="ColumnView-fieldSelector"
             :close-on-select="false"
             :multiple="true"
             :options="dropdownFields.map((field) => field.text)"
             placeholder="Select fields"
             tag-placeholder="Add custom field"
             :taggable="true"
+            @input="selectedFieldsComputed = $event"
             @tag="addCustomField"
-          />
+          >
+            <template #option="{ option }">{{ option }}</template>
+          </multiselect>
         </div>
         <Button class="self-center" variant="outline" @click="$emit('toggle-all')">
           <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`" />
@@ -128,11 +132,12 @@
         <Table class="border border-border" data-cy="ColumnView-table-data">
           <TableHeader>
             <draggable
-              v-model="selectedFields"
+              :value="selectedFields"
               draggable=".draggableItem"
               filter=".ignore"
               handle=".handle"
               tag="tr"
+              @input="selectedFields = $event"
             >
               <HeaderTableView
                 v-for="field of selectedFields"

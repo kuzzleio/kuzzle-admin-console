@@ -154,6 +154,24 @@ describe('Document List', function() {
     cy.get('[data-cy=DocumentsListView]').should('exist')
   })
 
+  it('Should add a column when a field is picked in the column selector', function() {
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
+
+    cy.get('[data-cy="CollectionDropdownView"]').click()
+    cy.get('[data-cy="CollectionDropdown-column"]').click()
+    cy.get('[data-cy="DocumentList-Column"]').should('exist')
+
+    cy.get('[data-cy="ColumnViewHead--job"]').should('not.exist')
+
+    // `vue-multiselect` est écrit pour Vue 2 : son `v-model` nu a été remplacé
+    // par `:value` / `@input` à l'extinction de `COMPONENT_V_MODEL` (G-053).
+    // Ce test est ce qui vérifie que la valeur fait bien l'aller-retour.
+    cy.selectColumnField('job')
+
+    cy.get('[data-cy="ColumnViewHead--job"]').should('exist')
+  })
+
   it('Should handle collections with more than 10k documents', () => {
     const documents = []
     for (let i = 200; i > 0; i--) {

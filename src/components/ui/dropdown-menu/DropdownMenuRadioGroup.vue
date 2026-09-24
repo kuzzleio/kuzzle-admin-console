@@ -28,10 +28,6 @@ export default defineComponent({
   provide(): { dropdownMenuRadioGroup: unknown } {
     return { dropdownMenuRadioGroup: this };
   },
-  model: {
-    event: 'update:modelValue',
-    prop: 'modelValue',
-  },
   props: {
     modelValue: {
       default: undefined,

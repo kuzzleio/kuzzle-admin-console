@@ -55,10 +55,6 @@ export default defineComponent({
       },
     };
   },
-  model: {
-    event: 'update:open',
-    prop: 'open',
-  },
   props: {
     // Une modale de confirmation destructrice ne doit pas se fermer sur un clic
     // à côté : le geste est trop facile à faire par accident.

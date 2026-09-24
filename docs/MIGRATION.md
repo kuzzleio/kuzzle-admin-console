@@ -21,7 +21,7 @@
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
-| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 **La console tourne sur Vue 3** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) — 17/17 specs. `INSTANCE_LISTENERS` éteint ([ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md)) ; il ne reste que `COMPONENT_V_MODEL` |
+| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ✅ **Tous les drapeaux de compat sont éteints** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) — 17/17 specs. `MODE: 3` peut remplacer la liste |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
@@ -783,7 +783,7 @@ la phase 4 s'ouvre quand `MODE: 3` peut remplacer la liste.
 | `GLOBAL_PROTOTYPE` | `Vue.prototype.$x` → `app.config.globalProperties` | 2 sites + 2 shims | [G-051](#g-051) | ✅ |
 | `INSTANCE_SET` | `this.$set` → affectation directe | 8 sites | — | ✅ |
 | `COMPILER_V_BIND_SYNC` | `.sync` → `v-model:` | 22 occurrences, 11 fichiers | [G-052](#g-052) | ✅ |
-| `COMPONENT_V_MODEL` | retrait de l'option `model` de Vue 2 | 14 composants | [G-012](#g-012) | ⬜ |
+| `COMPONENT_V_MODEL` | retrait de l'option `model` de Vue 2 | 13 composants | [G-012](#g-012), [G-053](#g-053) | ✅ |
 
 `COMPILER_V_BIND_SYNC` et `COMPONENT_V_MODEL` se croisent sur les mêmes
 composants — `Dialog`, `Pagination`, `DropdownMenu` portent les deux — mais ils
@@ -793,8 +793,19 @@ Vue 2) sont deux contrats distincts. Convertir les appels ne touche pas la
 déclaration, parce que `v-model:prop` compile vers exactement ce que `.sync`
 compilait : une prop et un `update:<prop>`.
 
-Reste donc `COMPONENT_V_MODEL` seul : retirer l'option `model` des 14
-composants, et rendre explicites les `v-model` nus qui en dépendaient.
+`COMPONENT_V_MODEL` s'est éteint ensuite : **13** composants portaient
+l'option, pas 14 — la 14ᵉ correspondance était une prop nommée `model` dans
+`DocumentForm.vue`, faux positif du recensement initial. Aucun `v-model` nu ne
+visait les cinq composants non conformes ; le lot précédent les avait tous
+passés à `v-model:open` ou `v-model:page`. Le vrai périmètre était ailleurs, sur
+**trois bibliothèques tierces** que le drapeau atteint sans qu'on puisse les
+corriger ([G-053](#g-053)).
+
+**La liste est donc soldée : `MODE: 3` peut remplacer les drapeaux, et la
+phase 4 s'ouvre.** Deux régressions antérieures de la bascule, restées invisibles
+faute de couverture, ont été mises au jour en écrivant les tests de ce lot :
+[G-054](#g-054), corrigée, et [G-055](#g-055), qui n'a pas de correctif au site
+d'appel et conditionne le remplacement de `vue-color`.
 
 ---
 
@@ -2431,6 +2442,79 @@ Gabarit à copier :
   un signal de code. Le passage global à `plugin:vue/vue3-*` appartient à la
   phase 4 : le faire ici rendrait tout le reste du code non conforme d'un coup.
 - **Ref** : [G-050](#g-050)
+
+#### G-053 — Un drapeau de compat éteint s'applique aussi aux bibliothèques tierces, qu'on ne peut pas corriger
+
+- **Contexte** : phase 3, extinction du drapeau `COMPONENT_V_MODEL`.
+- **Symptôme** : rien. Le build passe, les 17 specs passent, et trois
+  composants continuent de s'afficher — c'est précisément le problème.
+- **Cause** : `configureCompat` s'applique à **toute** l'application, y compris
+  au code de `node_modules`. Sur les 51 `v-model` nus de `src`, trois portent
+  sur des bibliothèques écrites pour Vue 2 — `vue-color` 2.8.1,
+  `vue-multiselect` 2.1.7, `vuedraggable` 2.24.3. Aucune ne déclare l'option
+  `model` : elles reposent sur le défaut de Vue 2, `value` + `input`. Le drapeau
+  éteint, leur `v-model` compile vers `modelValue` + `update:modelValue`,
+  qu'elles ne déclarent ni n'émettent. La valeur cesse de circuler, sans erreur.
+- **Solution** : écrire le contrat Vue 2 à la main sur le site d'appel —
+  `:value="x"` et `@input="x = $event"`. Le composant tiers ne peut pas être
+  corrigé ; c'est l'appelant qui porte l'adaptation, jusqu'à son remplacement.
+- **À retenir** : les lots précédents ne touchaient que du code à nous. Celui-ci
+  est le premier dont le périmètre déborde sur `node_modules`. **Avant
+  d'éteindre un drapeau, recenser les sites d'appel qui visent une bibliothèque
+  tierce** : ce sont les seuls que le lot ne peut pas corriger à la source, et
+  ils cassent en silence. Corollaire : un `grep` sur la syntaxe visée ne suffit
+  pas, il faut savoir sur *quel composant* chaque occurrence porte.
+- **Ref** : [G-050](#g-050), [G-054](#g-054), [G-055](#g-055)
+
+#### G-054 — Le contenu par défaut d'un `<slot>` de bibliothèque Vue 2 ne rend rien
+
+- **Contexte** : découvert en écrivant la couverture du lot `COMPONENT_V_MODEL`,
+  mais **antérieur à lui** — reproduit à l'identique sur `5-dev`.
+- **Symptôme** : dans la vue Column, le sélecteur de champs ouvre une liste de
+  onze lignes **blanches**. Les `<li>` sont bien là, les `<span
+  class="multiselect__option">` aussi, et ils sont vides. On ne peut pas choisir
+  ses colonnes : la fonctionnalité est inutilisable depuis la bascule Vue 3.
+- **Cause** : `vue-multiselect` rend le libellé via le contenu **par défaut**
+  de son `<slot name="option">`. Ce repli ne s'exécute pas sous `@vue/compat`
+  quand le composant vient d'une fonction de rendu précompilée pour Vue 2.
+- **Solution** : fournir le slot depuis le site d'appel, ce qui court-circuite
+  le repli cassé — `<template #option="{ option }">{{ option }}</template>`.
+- **À retenir** : le symptôme est **visuel et muet**. Aucune erreur, aucun
+  avertissement, aucune spec en échec — parce qu'aucune spec n'ouvrait ce
+  sélecteur. Trois specs touchaient la vue Column sans jamais interagir avec
+  lui. C'est le trou de couverture qui a caché le bug, pas sa subtilité.
+- **Ref** : [G-053](#g-053)
+
+#### G-055 — `v-model` dans une fonction de rendu précompilée d'un paquet Vue 2 casse sous compat
+
+- **Contexte** : même campagne de couverture. **Antérieur au lot** lui aussi,
+  reproduit à l'identique sur `5-dev`. **Non corrigé à ce jour.**
+- **Symptôme** : saisir dans le champ hexadécimal ou RVBA du sélecteur de
+  couleur de la vue Chart lève
+  `TypeError: el[assignKey] is not a function`, une exception applicative qui
+  fait échouer toute spec présente sur la page.
+- **Cause** : `vue-color` est publié **déjà compilé** par
+  `vue-template-compiler`. Son `v-model` sur des `<input>` natifs y est figé
+  sous la forme `model: { value, callback, expression }` dans les données de
+  vnode. `@vue/compat` traduit cette forme en directive `vModelText` de Vue 3,
+  mais la fonction `assign` que la directive attend sur l'élément n'est jamais
+  posée : son gestionnaire `input` appelle alors `el[assignKey]`, qui n'existe
+  pas.
+- **Ce qui a été écarté** : le drapeau `INSTANCE_SET`. `vue-color` appelle bien
+  `this.$set` dans ces mêmes rappels, mais le rallumer ne change rien — vérifié
+  par un build dédié. La piste était plausible et fausse.
+- **Solution** : aucune au site d'appel. Le code fautif est déjà compilé dans
+  `node_modules`, hors de portée du compilateur de template. `vue-color` 2.8.1
+  n'a pas de version Vue 3. **Le remplacer est une décision de phase 4, à
+  porter par une ADR.** En attendant, le reste du sélecteur — la zone de
+  saturation et la glissière de teinte, qui passent par des gestionnaires de
+  souris — n'est pas affecté ; seule la saisie textuelle l'est.
+- **À retenir** : une bibliothèque Vue 2 **précompilée** est un angle mort
+  irréductible de `@vue/compat`. Le mode de compatibilité réécrit ce qu'il
+  compile ; ce qui arrive déjà compilé ne lui passe pas entre les mains. Les
+  recenser tôt — `vue-color`, `vue-multiselect`, `vuedraggable` ici — donne la
+  vraie liste des blocages de la phase 4.
+- **Ref** : [G-053](#g-053), [G-054](#g-054)
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

@@ -17,7 +17,7 @@
       />
       <color-picker
         v-show="showColorPicker"
-        v-model="newColor"
+        :value="newColor"
         class="absolute z-50"
         data-cy="TimeSeriesItem-colorPicker"
         @input="updateColor"

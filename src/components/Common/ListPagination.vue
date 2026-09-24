@@ -65,10 +65,6 @@ export default defineComponent({
     PaginationPrevious,
   },
   inheritAttrs: false,
-  model: {
-    event: 'update:page',
-    prop: 'page',
-  },
   props: {
     itemsPerPage: {
       required: true,

@@ -354,3 +354,19 @@ Cypress.Commands.add('selectOption', (selector, label) => {
       .click();
   });
 });
+
+/**
+ * Sélectionne un champ dans le sélecteur de colonnes de la vue Column.
+ *
+ * Même motif que `notificationBadge` : `.multiselect__option` appartient à
+ * `vue-multiselect`, une bibliothèque tierce sur laquelle nous ne pouvons pas
+ * poser de `data-cy`. Le sélecteur fragile est isolé ici, pas dans les specs.
+ *
+ * Cette commande couvre l'aller-retour de valeur du composant — `:value` posé,
+ * `@input` reçu — que le retrait de l'option `model` de Vue 2 a rendu explicite
+ * sur le site d'appel (G-053). C'est le seul endroit qui le vérifie.
+ */
+Cypress.Commands.add('selectColumnField', (field) => {
+  cy.get('[data-cy="ColumnView-fieldSelector"]').click();
+  return cy.contains('.multiselect__option', field).click();
+});
