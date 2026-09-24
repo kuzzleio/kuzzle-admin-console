@@ -39,10 +39,10 @@
     "pinia": "3.0.4",
     "tailwind-merge": "^3.7.0",
     "vue": "3.5.43",
-    "vue-apexcharts": "1.6.2",
     "vue-color": "2.8.1",
     "vue-multiselect": "2.1.7",
     "vue-router": "4.6.4",
+    "vue3-apexcharts": "1.7.0",
     "vuedraggable": "2.24.3"
   },
   "devDependencies": {
