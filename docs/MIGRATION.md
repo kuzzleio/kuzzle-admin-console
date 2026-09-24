@@ -77,6 +77,14 @@ Suite complète vérifiée contre un backend Kuzzle réel : **17/17 specs,
 156 tests passants, 0 échec** (1 `pending` légitime, skip dynamique via
 `skipOnBackendVersion`).
 
+> **⚠️ Depuis le 2026-09-24, 7 tests échouent hors de tout lot de migration** :
+> `login.spec.js` (6) et `roles.spec.js` (1), tous sur un
+> `POST /admin/_resetSecurity` qui répond 404 alors que le même appel passe en
+> 200 au `curl`. **Vérifié par `git stash` : ils échouent à l'identique sur la
+> baseline**, sans aucun changement de migration. À traiter pour eux-mêmes ; en
+> attendant, un lot se valide sur les specs de son domaine, et ces deux-là ne
+> comptent pas comme régression.
+
 #### La CI était verte en n'exécutant qu'une fraction des tests — ✅ corrigé
 
 L'audit a mis au jour **deux `.only` commités dans le dépôt**. Un `.only`
