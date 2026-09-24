@@ -6,6 +6,7 @@
           <multiselect
             :value="selectedFieldsComputed"
             :allow-empty="true"
+            data-cy="ColumnView-fieldSelector"
             :close-on-select="false"
             :multiple="true"
             :options="dropdownFields.map((field) => field.text)"
@@ -14,7 +15,9 @@
             :taggable="true"
             @input="selectedFieldsComputed = $event"
             @tag="addCustomField"
-          />
+          >
+            <template #option="{ option }">{{ option }}</template>
+          </multiselect>
         </div>
         <Button class="self-center" variant="outline" @click="$emit('toggle-all')">
           <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`" />
