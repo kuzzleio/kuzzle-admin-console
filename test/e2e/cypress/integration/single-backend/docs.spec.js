@@ -164,12 +164,30 @@ describe('Document List', function() {
 
     cy.get('[data-cy="ColumnViewHead--job"]').should('not.exist')
 
-    // `vue-multiselect` est écrit pour Vue 2 : son `v-model` nu a été remplacé
-    // par `:value` / `@input` à l'extinction de `COMPONENT_V_MODEL` (G-053).
-    // Ce test est ce qui vérifie que la valeur fait bien l'aller-retour.
+    // Le sélecteur est lié par `v-model` à `vue-multiselect` 3.x
+    // (`modelValue` / `update:modelValue`). Ce test est ce qui vérifie que la
+    // valeur fait bien l'aller-retour.
     cy.selectColumnField('job')
 
     cy.get('[data-cy="ColumnViewHead--job"]').should('exist')
+  })
+
+  it('Should add a column when a custom field is typed in the column selector', function() {
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
+
+    cy.get('[data-cy="CollectionDropdownView"]').click()
+    cy.get('[data-cy="CollectionDropdown-column"]').click()
+    cy.get('[data-cy="DocumentList-Column"]').should('exist')
+
+    cy.get('[data-cy="ColumnViewHead--customField"]').should('not.exist')
+
+    // Un champ absent du mapping passe par l'événement `tag` de
+    // `vue-multiselect`, pas par `update:modelValue`.
+    cy.get('[data-cy="ColumnView-fieldSelector"]').click()
+    cy.get('[data-cy="ColumnView-fieldSelector"] input').type('customField{enter}')
+
+    cy.get('[data-cy="ColumnViewHead--customField"]').should('exist')
   })
 
   it('Should handle collections with more than 10k documents', () => {

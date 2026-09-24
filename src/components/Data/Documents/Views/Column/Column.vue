@@ -4,7 +4,7 @@
       <div class="flex flex-1 items-stretch gap-2">
         <div class="inline-block w-full max-w-96">
           <multiselect
-            :value="selectedFieldsComputed"
+            v-model="selectedFieldsComputed"
             :allow-empty="true"
             data-cy="ColumnView-fieldSelector"
             :close-on-select="false"
@@ -13,7 +13,6 @@
             placeholder="Select fields"
             tag-placeholder="Add custom field"
             :taggable="true"
-            @input="selectedFieldsComputed = $event"
             @tag="addCustomField"
           >
             <template #option="{ option }">{{ option }}</template>

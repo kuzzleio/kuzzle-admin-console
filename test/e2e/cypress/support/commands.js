@@ -362,9 +362,8 @@ Cypress.Commands.add('selectOption', (selector, label) => {
  * `vue-multiselect`, une bibliothèque tierce sur laquelle nous ne pouvons pas
  * poser de `data-cy`. Le sélecteur fragile est isolé ici, pas dans les specs.
  *
- * Cette commande couvre l'aller-retour de valeur du composant — `:value` posé,
- * `@input` reçu — que le retrait de l'option `model` de Vue 2 a rendu explicite
- * sur le site d'appel (G-053). C'est le seul endroit qui le vérifie.
+ * Cette commande couvre l'aller-retour de valeur du composant — `modelValue`
+ * posé, `update:modelValue` reçu. C'est le seul endroit qui le vérifie.
  */
 Cypress.Commands.add('selectColumnField', (field) => {
   cy.get('[data-cy="ColumnView-fieldSelector"]').click();
