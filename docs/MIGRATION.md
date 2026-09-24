@@ -77,13 +77,12 @@ Suite complète vérifiée contre un backend Kuzzle réel : **17/17 specs,
 156 tests passants, 0 échec** (1 `pending` légitime, skip dynamique via
 `skipOnBackendVersion`).
 
-> **⚠️ Depuis le 2026-09-24, 7 tests échouent hors de tout lot de migration** :
-> `login.spec.js` (6) et `roles.spec.js` (1), tous sur un
-> `POST /admin/_resetSecurity` qui répond 404 alors que le même appel passe en
-> 200 au `curl`. **Vérifié par `git stash` : ils échouent à l'identique sur la
-> baseline**, sans aucun changement de migration. À traiter pour eux-mêmes ; en
-> attendant, un lot se valide sur les specs de son domaine, et ces deux-là ne
-> comptent pas comme régression.
+> **Correction du 2026-09-24** : une note affirmait ici que 7 tests de
+> `login.spec.js` et `roles.spec.js` échouaient « hors de tout lot de
+> migration », sur un `_resetSecurity` en 404, vérifié par `git stash`. **C'était
+> [G-006](#g-006)** : le `git stash` rejouait le code sur le même backend sale.
+> Sur une stack recréée, `login` passe 7/7 et `roles` 9/9. Il n'y a pas
+> d'échec préexistant.
 
 #### La CI était verte en n'exécutant qu'une fraction des tests — ✅ corrigé
 
@@ -1343,6 +1342,12 @@ Gabarit à copier :
   cascade, ici un 404 qui cachait le 412 d'origine. **Deux** : rejouer sur
   `HEAD` avec `git stash`, puis sur une stack neuve. La suite n'est pas isolée
   du backend ; son état se manifeste loin de sa cause.
+- **Récidive, le 2026-09-24** : quatre lots de la phase 4 ont été validés
+  en tenant 5 échecs de `login` et `roles` pour « préexistants », sur la foi
+  d'une note qui l'affirmait après un `git stash`. C'était ce cas-ci, mot pour
+  mot. Le `git stash` vérifie le code, pas le backend : **seule une stack neuve
+  tranche**. La commande de validation de `CLAUDE.md` commence désormais par
+  la recréer.
 - **Ref** : rencontré pendant le lot E (ADR-0007).
 
 #### G-007 — `cy.aceReady()` ne s'applique pas aux éditeurs du formulaire document
