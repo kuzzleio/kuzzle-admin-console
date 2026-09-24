@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
+import { nextTick } from 'vue';
 import ace from 'ace-builds';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/mode-json';
@@ -48,7 +48,7 @@ export default {
     },
   },
   mounted() {
-    Vue.nextTick(() => {
+    nextTick(() => {
       /* eslint no-undef: 0 */
       this.editor = ace.edit(this.$refs[this.id], {
         mode: 'ace/mode/json',
@@ -81,7 +81,7 @@ export default {
       return this.editor;
     },
     setContent(value) {
-      Vue.nextTick(() => {
+      nextTick(() => {
         this.editor.getSession().setValue(value);
       });
     },

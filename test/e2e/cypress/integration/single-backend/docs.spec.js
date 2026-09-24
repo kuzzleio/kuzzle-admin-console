@@ -54,6 +54,21 @@ describe('Document List', function() {
     cy.get('[data-cy^=DocumentListItem--]').should('exist')
   })
 
+  // `v-json-formatter` : une directive dont le hook est mal nommé ne fait rien
+  // et ne dit rien (G-062). Rien d'autre ne regarde ce rendu dans la vue liste.
+  it('Should render the document content when a list item is expanded', function() {
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('[data-cy^=DocumentListItem--]')
+      .find('[data-cy=DocumentListItem-toggleCollapse]')
+      .click()
+
+    cy.get('[data-cy^=DocumentListItem--]')
+      .find('pre')
+      .should('be.visible')
+      .and('contain', 'Luca')
+  })
+
   it('Should select every document with Toggle all, then bulk delete them (List view)', function() {
     cy.request(
       'POST',
