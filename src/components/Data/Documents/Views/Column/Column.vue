@@ -4,7 +4,7 @@
       <div class="flex flex-1 items-stretch gap-2">
         <div class="inline-block w-full max-w-96">
           <multiselect
-            v-model="selectedFieldsComputed"
+            :value="selectedFieldsComputed"
             :allow-empty="true"
             :close-on-select="false"
             :multiple="true"
@@ -12,6 +12,7 @@
             placeholder="Select fields"
             tag-placeholder="Add custom field"
             :taggable="true"
+            @input="selectedFieldsComputed = $event"
             @tag="addCustomField"
           />
         </div>
@@ -128,11 +129,12 @@
         <Table class="border border-border" data-cy="ColumnView-table-data">
           <TableHeader>
             <draggable
-              v-model="selectedFields"
+              :value="selectedFields"
               draggable=".draggableItem"
               filter=".ignore"
               handle=".handle"
               tag="tr"
+              @input="selectedFields = $event"
             >
               <HeaderTableView
                 v-for="field of selectedFields"

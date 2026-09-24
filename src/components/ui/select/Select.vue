@@ -36,10 +36,6 @@ export default defineComponent({
   provide(): { selectRoot: unknown } {
     return { selectRoot: this };
   },
-  model: {
-    event: 'update:modelValue',
-    prop: 'modelValue',
-  },
   props: {
     disabled: {
       default: false,

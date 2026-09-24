@@ -26,10 +26,6 @@ export default defineComponent({
   name: 'Textarea',
   mixins: [classMerge],
   inheritAttrs: false,
-  model: {
-    event: 'update:modelValue',
-    prop: 'modelValue',
-  },
   props: {
     modelValue: {
       default: '',

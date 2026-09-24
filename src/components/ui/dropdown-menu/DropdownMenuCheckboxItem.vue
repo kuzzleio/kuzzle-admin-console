@@ -45,10 +45,6 @@ export default defineComponent({
   name: 'DropdownMenuCheckboxItem',
   mixins: [classMerge, dropdownMenuContext],
   inheritAttrs: false,
-  model: {
-    event: 'update:checked',
-    prop: 'checked',
-  },
   props: {
     as: {
       default: 'button',

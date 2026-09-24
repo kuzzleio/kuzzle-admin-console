@@ -35,10 +35,6 @@ export default defineComponent({
   name: 'Tabs',
   mixins: [classMerge],
   inheritAttrs: false,
-  model: {
-    event: 'update:modelValue',
-    prop: 'modelValue',
-  },
   provide(): { tabsRoot: TabsContext } {
     return { tabsRoot: this as unknown as TabsContext };
   },

@@ -37,10 +37,6 @@ export default defineComponent({
   provide(): { dropdownMenu: unknown } {
     return { dropdownMenu: this };
   },
-  model: {
-    event: 'update:open',
-    prop: 'open',
-  },
   props: {
     // `undefined` et non `false` : c'est ce qui distingue « l'appelant ne pilote
     // pas l'ouverture » de « l'appelant la veut fermée ».

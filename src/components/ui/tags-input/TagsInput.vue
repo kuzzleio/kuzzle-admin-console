@@ -31,10 +31,6 @@ export default defineComponent({
   name: 'TagsInput',
   mixins: [classMerge],
   inheritAttrs: false,
-  model: {
-    event: 'update:modelValue',
-    prop: 'modelValue',
-  },
   provide(): { tagsInputRoot: TagsInputContext } {
     return { tagsInputRoot: this as unknown as TagsInputContext };
   },

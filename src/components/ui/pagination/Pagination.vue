@@ -38,10 +38,6 @@ export default defineComponent({
       paginationRoot: this as unknown as PaginationContext,
     };
   },
-  model: {
-    event: 'update:page',
-    prop: 'page',
-  },
   props: {
     ariaLabel: {
       default: 'Pagination',

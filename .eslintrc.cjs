@@ -44,6 +44,10 @@ module.exports = {
     // c'est exactement `v-model:prop` qu'elle proscrit.
     'vue/no-deprecated-v-bind-sync': 'error',
     'vue/no-v-model-argument': 'off',
+    // Idem pour `COMPONENT_V_MODEL` : l'option `model` de Vue 2 ne doit pas
+    // revenir. La règle ne couvre pas les `v-model` nus posés sur un composant
+    // tiers Vue 2 — c'est un angle mort, documenté en G-053.
+    'vue/no-deprecated-model-definition': 'error',
     'default-case-last': 'warn',
     'import/order': 'warn'
   },

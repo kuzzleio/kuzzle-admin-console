@@ -65,6 +65,15 @@ configureCompat({
    * (ADR-0009).
    */
   COMPILER_V_BIND_SYNC: false,
+
+  /*
+   * L'option `model` de Vue 2 disparaît : un `v-model` nu signifie désormais
+   * `modelValue` + `update:modelValue`, ce que les primitives déclarent déjà
+   * (ADR-0009). Les trois composants tiers écrits pour Vue 2 — `vue-color`,
+   * `vue-multiselect`, `vuedraggable` — ne peuvent pas suivre : leur contrat
+   * `value` / `input` est écrit à la main sur leurs sites d'appel. Voir G-053.
+   */
+  COMPONENT_V_MODEL: false,
 });
 
 Reflect.defineProperty(window, 'kuzzle', {
