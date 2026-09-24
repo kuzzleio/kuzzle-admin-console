@@ -131,13 +131,12 @@
       <div class="w-9/12">
         <Table class="border border-border" data-cy="ColumnView-table-data">
           <TableHeader>
-            <draggable
-              :value="selectedFields"
+            <VueDraggable
+              v-model="selectedFields"
               draggable=".draggableItem"
               filter=".ignore"
               handle=".handle"
               tag="tr"
-              @input="selectedFields = $event"
             >
               <HeaderTableView
                 v-for="field of selectedFields"
@@ -147,7 +146,7 @@
                 @mouseenter="displayDragIcon = true"
                 @mouseleave="displayDragIcon = false"
               />
-            </draggable>
+            </VueDraggable>
           </TableHeader>
           <TableBody>
             <highlightable-row
@@ -204,8 +203,8 @@
 import defaultsDeep from 'lodash/defaultsDeep';
 import get from 'lodash/get';
 import { mapState } from 'pinia';
+import { VueDraggable } from 'vue-draggable-plus';
 import Multiselect from 'vue-multiselect';
-import draggable from 'vuedraggable';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -239,15 +238,6 @@ import HighlightableRow from './HighlightableRow.vue';
 import ColumnCell from './TableCell.vue';
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css';
 
-/*
- * `vuedraggable` 2.24.3 est écrit pour Vue 2 mais son `render(h)` est écrit à
- * la main : il ne porte pas le marqueur `_compiled` sur lequel `main.ts`
- * s'appuie pour laisser les bibliothèques Vue 2 en `MODE: 2`. Il le déclare
- * donc ici, à son site d'appel — même geste que `Views/Map.vue`, en sens
- * inverse.
- */
-draggable.compatConfig = { MODE: 2 };
-
 export default {
   name: 'Column',
   directives: {
@@ -264,7 +254,6 @@ export default {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    draggable,
     HeaderTableView,
     HighlightableRow,
     Multiselect,
@@ -276,6 +265,7 @@ export default {
     TableHead,
     TableHeader,
     TableRow,
+    VueDraggable,
   },
   props: {
     searchQuery: Object,

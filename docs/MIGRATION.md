@@ -77,6 +77,14 @@ Suite complète vérifiée contre un backend Kuzzle réel : **17/17 specs,
 156 tests passants, 0 échec** (1 `pending` légitime, skip dynamique via
 `skipOnBackendVersion`).
 
+> **⚠️ Depuis le 2026-09-24, 7 tests échouent hors de tout lot de migration** :
+> `login.spec.js` (6) et `roles.spec.js` (1), tous sur un
+> `POST /admin/_resetSecurity` qui répond 404 alors que le même appel passe en
+> 200 au `curl`. **Vérifié par `git stash` : ils échouent à l'identique sur la
+> baseline**, sans aucun changement de migration. À traiter pour eux-mêmes ; en
+> attendant, un lot se valide sur les specs de son domaine, et ces deux-là ne
+> comptent pas comme régression.
+
 #### La CI était verte en n'exécutant qu'une fraction des tests — ✅ corrigé
 
 L'audit a mis au jour **deux `.only` commités dans le dépôt**. Un `.only`
@@ -845,7 +853,7 @@ quatre paquets : ce sont exactement ceux que
 | Paquet | Site d'appel | Cible | Reste en `MODE: 2` par | Statut |
 |---|---|---|---|---|
 | ~~`vue-apexcharts` 1.6.2~~ | `Views/TimeSeries.vue` | `vue3-apexcharts` 1.7.0 ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | ~~épinglage manuel~~ | ✅ |
-| `vuedraggable` 2.24.3 | `Views/Column/Column.vue` | `vue-draggable-plus` — `vuedraggable@4` n'est pas publié | épinglage manuel ([G-057](#g-057)) | ⬜ |
+| ~~`vuedraggable` 2.24.3~~ | `Views/Column/Column.vue` | `vue-draggable-plus` 0.6.1 ([ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md)) | ~~épinglage manuel~~ | ✅ |
 | `vue-multiselect` 2.1.7 | `Views/Column/Column.vue` | `vue-multiselect` 3.x, ou un Combobox shadcn-vue | heuristique `_compiled` | ⬜ |
 | `vue-color` 2.8.1 | `Views/TimeSeriesItem.vue` | aucune 3.x — remplacement à décider, ADR à lui seul | heuristique `_compiled` | ⛔ [G-055](#g-055) |
 
@@ -853,6 +861,10 @@ L'ordre est celui du coût croissant, un lot par paquet, chacun validé contre u
 build avant le suivant. `vue-color` ferme la marche : c'est le seul des quatre
 qui porte une régression ouverte ([G-055](#g-055)), et le seul qui n'ait pas de
 successeur direct.
+
+**Plus aucun épinglage manuel** depuis [ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md) :
+les deux paquets qui échappaient à l'heuristique `_compiled` sont partis. Les
+deux qui restent sont vus par le marqueur, et `main.ts` le dit.
 
 Le dernier lot de la phase retire `@vue/compat`, la fonction `MODE` de
 `main.ts` et le `compatConfig` de `vite.config.ts` — il ne peut pas commencer
@@ -910,7 +922,7 @@ lui-même (§ 3.2).
 | ~~`pinia` 2.2.4 + `PiniaVuePlugin`~~ | **3.0.4**, sans plugin. La 4.x exige TypeScript ≥ 5.6 (on est en 5.4) | 3 | ✅ |
 | ~~`@vitejs/plugin-vue2`~~ | **`@vitejs/plugin-vue` 6.0.9** | 3 | ✅ |
 | ~~`vue2-leaflet` 2.7.1~~ | **`@vue-leaflet/vue-leaflet` 0.10.1** | 3 | ✅ |
-| `vuedraggable` 2.24.3 | `vuedraggable@next` ou `vue-draggable-plus` | 4 | ⬜ épinglé `MODE: 2` à son site d'appel ([G-057](#g-057)) |
+| ~~`vuedraggable` 2.24.3~~ | **`vue-draggable-plus` 0.6.1** — `vuedraggable@4` existe sous le tag `next` mais est figée depuis 2021 ([ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md)) | 4 | ✅ `sortablejs` quitte l'arbre au passage |
 | ~~`vue-apexcharts` 1.6.2~~ | **`vue3-apexcharts` 1.7.0** — `apexcharts` reste en 3.53.0 ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | 4 | ✅ |
 | `vue-multiselect` 2.1.7 | 3.x — ou supprimé au profit d'un Combobox shadcn-vue | 4 | 🟡 un seul site d'appel (`Views/Column/Column.vue`), laissé en `MODE: 2` par `_compiled` |
 | `vue-color` 2.8.1 | 3.x — ou supprimé (usage marginal) | 4 | ⛔ laissé en `MODE: 2` par `_compiled` ; sa saisie textuelle reste cassée ([G-055](#g-055)) |
@@ -2686,6 +2698,99 @@ Gabarit à copier :
   la sortie d'un contrôle non bloquant.
 - **Ref** : [G-056](#g-056)
 
+#### G-060 — Un disque plein fait rougir 15 specs sur 17, et aucune ne parle du code
+
+- **Contexte** : phase 4, validation du lot `vue-draggable-plus`.
+- **Symptôme** : la suite complète tombe à 11/17 spécs en échec, puis 15/17 à
+  l'exécution suivante — sans qu'aucun des deux runs ne désigne la même chose.
+  La plupart des specs échouent en une seconde, tout leur contenu `skipped`,
+  sur un `before each`. Le seul message utile est un
+  `cy.request()` sur `POST /admin/_resetSecurity` qui renvoie **500**.
+- **Cause** : le disque de la VM Docker était plein (`disk.avail 0b`).
+  Elasticsearch a franchi son *flood-stage watermark* et basculé **tous les
+  index en `index.blocks.read_only_allow_delete: true`** — sa protection contre
+  la corruption. Le cluster passe en `red`, Kuzzle ne peut plus écrire, et
+  `_resetSecurity` — que presque chaque spec appelle dans son `before` — renvoie
+  500. Les specs ne testent alors plus rien : elles meurent avant la première
+  assertion.
+- **Solution** : libérer de la place (`docker builder prune -f` a suffi, 3,41 Go),
+  puis **lever explicitement le blocage**, qu'Elasticsearch ne retire pas tout
+  seul quand la place revient :
+
+  ```sh
+  curl -X PUT "http://localhost:9200/_all/_settings" \
+    -H 'Content-Type: application/json' \
+    -d '{"index.blocks.read_only_allow_delete": null}'
+  curl -X POST "http://localhost:9200/_cluster/reroute?retry_failed=true"
+  ```
+
+- **À retenir** : **un échec massif et instable n'est pas un échec de
+  migration.** La signature à reconnaître tient en trois traits — beaucoup de
+  specs, des durées d'une seconde, et l'échec en `before`/`beforeEach` plutôt
+  qu'en assertion. Une régression de migration fait l'inverse : elle touche peu
+  de specs, au même endroit, de façon reproductible. Avant de chercher dans le
+  diff, vérifier le backend :
+
+  ```sh
+  curl -s localhost:9200/_cluster/health?pretty   # status: red ?
+  curl -s "localhost:9200/_cat/allocation?v"      # disk.avail: 0b ?
+  ```
+
+  Le `yellow` qui suit la réparation est normal sur un nœud unique : les
+  réplicas ne peuvent pas s'allouer. Ce qui compte est
+  `unassigned_primary_shards: 0`.
+- **La place revenue ne suffit pas** : Kuzzle garde de son côté un cache de la
+  liste des index, que la panne a laissé désynchronisé d'avec Elasticsearch. La
+  suite repart alors sur un `412` différent — `POST /testindex/_create` répond
+  « index already exists » **pendant que** `DELETE /testindex` répond « index
+  does not exist ». Les deux réponses se contredisent, et c'est la signature
+  exacte du cache périmé. Il faut supprimer les index orphelins côté ES, puis
+  redémarrer Kuzzle pour qu'il reconstruise son cache :
+
+  ```sh
+  curl -s "localhost:9200/_cat/indices?v" | grep _kuzzle_keep
+  curl -X DELETE "localhost:9200/&<index>._kuzzle_keep"
+  docker compose restart kuzzle
+  ```
+
+  `POST /admin/_resetDatabase` renvoie 200 sans rien régler : il s'en remet au
+  même cache.
+- **Ref** : [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)
+
+#### G-061 — Le drag de `sortablejs` ne se pilote pas depuis Cypress
+
+- **Contexte** : phase 4, lot `vue-draggable-plus` ([ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md)).
+- **Symptôme** : une spec qui simule le glissement d'une colonne de la vue
+  Column ne fait rien bouger. L'ordre des en-têtes est identique avant et après,
+  sans erreur ni avertissement.
+- **Ce qui a été essayé, et qui ne suffit pas** :
+  1. la séquence HTML5 native (`mousedown` sur le `.handle`, puis `dragstart` /
+     `dragover` / `drop` / `dragend` avec un `DataTransfer` partagé) ;
+  2. `forceFallback: true` sur le composant, pour que `sortablejs` renonce au
+     drag natif et pilote à la souris, puis `mousedown` / `mousemove` ×3 /
+     `mouseup` ;
+  3. la fermeture préalable du panneau du sélecteur de champs — il recouvre le
+     tableau, et le repli de `sortablejs` résout sa cible par
+     `elementFromPoint`. **C'était un vrai obstacle**, visible seulement sur la
+     capture d'échec, mais le lever n'a pas suffi non plus.
+- **Ce qui est établi** : une sonde a vérifié, dans le navigateur, que
+  `sortablejs` **est bien initialisé** sur la ligne d'en-têtes et que ses options
+  (`handle`, `draggable`, `forceFallback`) sont correctement transmises par
+  `vue-draggable-plus`. Le câblage du composant n'est pas en cause : c'est la
+  simulation d'événements qui n'atteint pas la bibliothèque.
+- **État** : **le réordonnancement des colonnes reste non couvert**, comme il
+  l'était déjà avant le lot — les deux occurrences de `ColumnViewHead--` dans
+  `docs.spec.js` vérifient qu'une colonne apparaît, jamais qu'on la déplace. Le
+  `forceFallback` a été retiré : un réglage de production posé pour un test qui
+  ne passe pas ne se justifie pas.
+- **À retenir** : **une sonde qui distingue « le produit est cassé » de « le test
+  ne sait pas piloter » vaut mieux qu'une tentative de plus.** Elle a coûté une
+  exécution de quatre secondes et a tranché ce que trois essais de simulation
+  n'avaient pas tranché. À reprendre avec `cypress-real-events`, qui émet de
+  vrais événements via le protocole Chrome DevTools — c'est la dépendance qui
+  manque, pas l'astuce.
+- **Ref** : [G-060](#g-060)
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -2778,3 +2883,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-23 | Le chantier déménage sur `5-dev` et se déploie sur console-v5.kuzzle.io | [ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md) |
 | 2026-09-24 | `MODE: 3` global, et les bibliothèques Vue 2 épinglées en `MODE: 2` | [ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md) |
 | 2026-09-24 | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | [ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) |
+| 2026-09-24 | `vue-draggable-plus` remplace `vuedraggable`, et non `vuedraggable@next` | [ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md) |
