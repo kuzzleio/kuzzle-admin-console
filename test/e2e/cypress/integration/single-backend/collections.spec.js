@@ -13,9 +13,13 @@ describe('Collection management', function() {
   })
 
   it('Should render a visual feedback and prevent submitting when input is not valid', () => {
+    let createRequestCount = 0
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/create`)
     cy.contains('Create a new collection')
+    cy.get(
+      '[data-cy="CollectionCreateOrUpdate-jsonEditor--dangerIcon"]'
+    ).should('not.exist')
 
     cy.get('[data-cy="CollectionCreateOrUpdate-name"] input').type(' ', {
       force: true
@@ -49,17 +53,37 @@ describe('Collection management', function() {
       }
     )
 
-    cy.get('[data-cy="JSONEditor"] .ace_line')
+    cy.get(
+      '[data-cy="CollectionCreateOrUpdate-jsonEditor"] [data-cy="JSONEditor"] .ace_line'
+    )
       .contains('{')
       .click({ force: true })
 
-    cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
+    cy.get(
+      '[data-cy="CollectionCreateOrUpdate-jsonEditor"] [data-cy="JSONEditor"] textarea.ace_text-input'
+    )
       .should('exist')
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(`SuM UNV4L1d jayZON Kood`)
 
+    cy.intercept('**/testindex/validcoll*', () => {
+      createRequestCount += 1
+    })
     cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click()
+    cy.get(
+      '[data-cy="CollectionCreateOrUpdate-jsonEditor--dangerIcon"]'
+    )
+      .should('be.visible')
+      .should('have.attr', 'role', 'alert')
+      .should('have.attr', 'aria-live', 'assertive')
+      .and('contain.text', 'Invalid JSON')
+    cy.get(
+      '[data-cy="CollectionCreateOrUpdate-jsonEditor--dangerIcon"] i'
+    ).should('have.attr', 'aria-hidden', 'true')
     cy.wait(1000)
+    cy.then(() => {
+      expect(createRequestCount).to.equal(0)
+    })
     cy.location().should(location => {
       expect(location.hash).to.equal(`#/data/${indexName}/create`)
     })

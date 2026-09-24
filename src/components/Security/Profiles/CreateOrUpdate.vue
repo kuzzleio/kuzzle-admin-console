@@ -28,6 +28,15 @@
           <b-input :disabled="true" :value="id" />
         </b-form-group>
 
+        <span
+          v-if="v$.profileValue.$errors.length > 0"
+          role="alert"
+          aria-live="assertive"
+          data-cy="ProfileCreateOrUpdate-jsonEditor--dangerIcon"
+        >
+          <span class="sr-only">Invalid JSON</span>
+          <i class="fas fa-exclamation-circle text-danger" aria-hidden="true" />
+        </span>
         <json-editor
           ref="jsoneditor"
           class="ProfileCreateOrUpdate-jsonEditor"
@@ -49,8 +58,7 @@
       "roleId": "roleId"
     }]
 }
-        </pre
-          >
+        </pre>
           You can also restrict your policy to a set of indexes and collections, so that your roles
           will be valid to a specific subset of your data, like the example below:
           <pre class="my-3 ml-3">
@@ -66,8 +74,7 @@
       }
     }]
 }
-        </pre
-          >
+        </pre>
         </div>
       </b-col>
     </b-row>
