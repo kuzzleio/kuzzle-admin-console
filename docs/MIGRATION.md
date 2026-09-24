@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-24 · **Phase courante** : 4 — nettoyage : retrait de `compat`
+**Dernière mise à jour** : 2026-09-24 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -22,7 +22,7 @@
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ✅ **Close** : `MODE: 3` a remplacé la liste de drapeaux ([ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)) — 17/17 specs |
-| **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 En cours — ouverte le 2026-09-24. Plus aucun paquet en `MODE: 2` (§ 1.5) : reste le retrait de `@vue/compat` |
+| **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 En cours — ouverte le 2026-09-24. **`@vue/compat` est retiré** ([ADR-0036](adr/0036-retrait-de-vue-compat.md)) : restent shadcn-vue et la Composition API |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
 [ADR-0002](adr/0002-sortir-de-bootstrap-vue-avant-vue-3.md).
@@ -868,9 +868,17 @@ Depuis [ADR-0035](adr/0035-selecteur-de-couleur-natif.md), **plus aucune
 dépendance ne porte le marqueur** : la fonction `MODE` rend `3` pour tout
 composant.
 
-Le dernier lot de la phase retire `@vue/compat`, la fonction `MODE` de
-`main.ts` et le `compatConfig` de `vite.config.ts`. Les quatre lignes
-ci-dessus sont barrées : il peut commencer.
+**`@vue/compat` est retiré** ([ADR-0036](adr/0036-retrait-de-vue-compat.md)) :
+l'alias et le `compatConfig` de `vite.config.ts`, `configureCompat` de
+`main.ts`, et le paquet. Le retrait a mis au jour deux usages Vue 2 que
+`MODE: 3` couvrait encore — l'export par défaut `Vue`, et les hooks Vue 2 des
+directives, que `CUSTOM_DIR` traduisait quel que soit le mode
+([G-062](#g-062)). La console tourne sur Vue 3 pur.
+
+- [x] Remplacer les quatre bibliothèques Vue 2 (ADR-0032 à ADR-0035)
+- [x] Retirer `@vue/compat` (ADR-0036)
+- [ ] Vrai shadcn-vue à la place des primitives écrites à la main
+- [ ] Composition API
 
 ---
 
@@ -917,7 +925,7 @@ lui-même (§ 3.2).
 
 | Paquet | Cible | Phase | Statut |
 |---|---|---|---|
-| ~~`vue` 2.7.16~~ | **3.5.43 + `@vue/compat`** | 3 | ✅ |
+| ~~`vue` 2.7.16~~ | **3.5.43**, sans `@vue/compat` depuis [ADR-0036](adr/0036-retrait-de-vue-compat.md) | 3–4 | ✅ |
 | ~~`vue-router` 3.6.5~~ | **4.6.4**, `createWebHashHistory` | 3 | ✅ |
 | ~~`pinia` 2.2.4 + `PiniaVuePlugin`~~ | **3.0.4**, sans plugin. La 4.x exige TypeScript ≥ 5.6 (on est en 5.4) | 3 | ✅ |
 | ~~`@vitejs/plugin-vue2`~~ | **`@vitejs/plugin-vue` 6.0.9** | 3 | ✅ |
@@ -2794,6 +2802,57 @@ Gabarit à copier :
   manque, pas l'astuce.
 - **Ref** : [G-060](#g-060)
 
+#### G-062 — `CUSTOM_DIR` survit à `MODE: 3` : les hooks Vue 2 d'une directive tournent encore sous compat
+
+- **Contexte** : phase 4, retrait de `@vue/compat`
+  ([ADR-0036](adr/0036-retrait-de-vue-compat.md)).
+- **Symptôme** : **aucun tant que la compat est là**. Sous `MODE: 3`, les
+  deux directives de la console — `v-focus` (`bind`) et `v-json-formatter`
+  (`bind`, `update`) — fonctionnaient. Retirer `@vue/compat` les rend muettes :
+  Vue 3 ne connaît pas ces noms, n'appelle rien et n'avertit pas. Le champ ne
+  prend plus le focus, le JSON d'un document déplié ne s'affiche plus.
+- **Cause** : `@vue/compat` traduit les hooks Vue 2 d'une directive dans
+  `mapCompatDirectiveHook`, qui appelle `softAssertCompatEnabled("CUSTOM_DIR")`
+  **sans lire sa valeur de retour** : le hook est rendu dans tous les cas.
+  C'est le seul des dix *soft asserts* du runtime à ignorer ce retour — les
+  neuf autres (`OPTIONS_DESTROYED`, `COMPONENT_FUNCTIONAL`, …) respectent
+  `MODE`. `MODE: 3` n'était donc pas tout à fait Vue 3 pur.
+- **Comment il a été trouvé** : pas par une spec. Le build a échoué sur
+  `import Vue from 'vue'` dans `JsonEditor.vue` (l'export par défaut n'existe
+  qu'en compat) ; le même motif dans `focus.directive.ts` a mené à ses hooks,
+  puis à la source de `mapCompatDirectiveHook`.
+- **Solution** : renommer (`bind` → `mounted` / `beforeMount`, `update` →
+  `updated`) et **typer les directives en `Directive`** : `vue-tsc` refuse
+  désormais un `bind` (*« 'bind' does not exist in type 'Directive' »*,
+  vérifié par sonde). `v-focus` avait déjà sa spec (« Should be able to
+  autofocus collection search ») ; `v-json-formatter` en gagne une dans
+  `docs.spec.js`. Remettre les anciens noms fait échouer les deux (mutation).
+  Autrement dit, le filet aurait vu `v-focus` : c'est la lecture du code qui
+  est arrivée la première, pas le seul signal disponible.
+- **À retenir** : une ligne verte sous `MODE: 3` ne prouve pas l'absence de
+  code Vue 2. Avant de retirer une couche de compatibilité, lire **comment**
+  elle éteint ses drapeaux, pas seulement **qu'elle** les éteint.
+- **Ref** : [G-050](#g-050), [ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)
+
+#### G-063 — `vue-demi` resté en mode Vue 2 dans un `node_modules` local ancien
+
+- **Contexte** : même lot.
+- **Symptôme** : une fois `@vue/compat` retiré, `npm run build` échoue dans
+  `@vuelidate/core/node_modules/vue-demi/lib/index.mjs` :
+  *« "default" is not exported by "node_modules/vue/dist/vue.runtime.esm-bundler.js" »*.
+- **Cause** : `vue-demi` choisit son mode (Vue 2 ou 3) **dans son
+  `postinstall`**, d'après la version de `vue` présente à l'installation. Le
+  `node_modules` local datait d'avant la phase 3 : les deux copies (sous
+  `@vuelidate/core` et `@vuelidate/validators`) étaient figées en
+  `isVue2 = true`, et ne tenaient que parce que `@vue/compat` fournit un export
+  par défaut. **La CI n'était pas touchée** : `npm ci` rejoue le `postinstall`
+  contre `vue` 3.
+- **Solution** : `npm ci`. Les deux copies passent en `isVue2 = false`, le
+  build passe.
+- **À retenir** : après un changement de version de `vue`, un
+  `node_modules` qui a survécu ment. Réinstaller à neuf avant de conclure
+  quoi que ce soit d'un échec de build.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -2889,3 +2948,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-24 | `vue-draggable-plus` remplace `vuedraggable`, et non `vuedraggable@next` | [ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md) |
 | 2026-09-24 | `vue-multiselect` passe en 3.x, le Combobox shadcn-vue attendra la refonte | [ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md) |
 | 2026-09-24 | `vue-color` cède la place à `<input type="color">` | [ADR-0035](adr/0035-selecteur-de-couleur-natif.md) |
+| 2026-09-24 | Retrait de `@vue/compat` : la console tourne sur Vue 3 pur | [ADR-0036](adr/0036-retrait-de-vue-compat.md) |
