@@ -91,8 +91,8 @@
     </ResizablePanel>
 
     <SaveQueryModal
+      v-model:open="saveQueryOpen"
       :is-query-name-valid="isQueryNameValid"
-      :open.sync="saveQueryOpen"
       @storeNewQuery="storeNewQuery"
     />
   </ResizablePanelGroup>

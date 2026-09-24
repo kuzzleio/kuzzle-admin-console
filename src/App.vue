@@ -9,12 +9,12 @@
     </template>
 
     <modal-create-or-update
+      v-model:open="createOrUpdateOpen"
       :environment-id="environmentId"
-      :open.sync="createOrUpdateOpen"
       @environment::importEnv="importEnvironment"
     />
-    <modal-delete :environment-id="environmentId" :open.sync="deleteOpen" />
-    <modal-import :open.sync="importOpen" />
+    <modal-delete v-model:open="deleteOpen" :environment-id="environmentId" />
+    <modal-import v-model:open="importOpen" />
     <telemetry-banner />
     <!--
       La zone de notifications est montée une fois, ici : `bootstrap-vue` la

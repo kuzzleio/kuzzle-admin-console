@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-23 · **Phase courante** : 3 — Vue 3 sous `@vue/compat`
+**Dernière mise à jour** : 2026-09-24 · **Phase courante** : 3 — Vue 3 sous `@vue/compat`
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -21,7 +21,7 @@
 | **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
-| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 **La console tourne sur Vue 3** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) — 17/17 specs. `INSTANCE_LISTENERS` éteint ([ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md)) ; reste les autres drapeaux de compat |
+| **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 **La console tourne sur Vue 3** ([ADR-0027](adr/0027-bascule-vue-3-sous-compat.md)) — 17/17 specs. `INSTANCE_LISTENERS` éteint ([ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md)) ; il ne reste que `COMPONENT_V_MODEL` |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ⬜ À faire |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
@@ -782,12 +782,19 @@ la phase 4 s'ouvre quand `MODE: 3` peut remplacer la liste.
 | `OPTIONS_BEFORE_DESTROY`, `OPTIONS_DESTROYED` | `beforeDestroy` → `beforeUnmount`, `destroyed` → `unmounted` | 21 fichiers | [G-050](#g-050) | ✅ |
 | `GLOBAL_PROTOTYPE` | `Vue.prototype.$x` → `app.config.globalProperties` | 2 sites + 2 shims | [G-051](#g-051) | ✅ |
 | `INSTANCE_SET` | `this.$set` → affectation directe | 8 sites | — | ✅ |
-| `COMPILER_V_BIND_SYNC` | `.sync` → `v-model:` | 24 occurrences | — | ⬜ |
+| `COMPILER_V_BIND_SYNC` | `.sync` → `v-model:` | 22 occurrences, 11 fichiers | [G-052](#g-052) | ✅ |
 | `COMPONENT_V_MODEL` | retrait de l'option `model` de Vue 2 | 14 composants | [G-012](#g-012) | ⬜ |
 
-Les deux derniers vont ensemble : `.sync` et l'option `model` se croisent sur
-les mêmes composants. C'est le seul lot de la liste qui change autre chose que
-des noms.
+`COMPILER_V_BIND_SYNC` et `COMPONENT_V_MODEL` se croisent sur les mêmes
+composants — `Dialog`, `Pagination`, `DropdownMenu` portent les deux — mais ils
+se sont éteints **séparément**, et c'est ce qui a rendu le lot tenable : le site
+d'appel (`:open.sync` → `v-model:open`) et la déclaration (l'option `model` de
+Vue 2) sont deux contrats distincts. Convertir les appels ne touche pas la
+déclaration, parce que `v-model:prop` compile vers exactement ce que `.sync`
+compilait : une prop et un `update:<prop>`.
+
+Reste donc `COMPONENT_V_MODEL` seul : retirer l'option `model` des 14
+composants, et rendre explicites les `v-model` nus qui en dépendaient.
 
 ---
 
@@ -2395,6 +2402,35 @@ Gabarit à copier :
   que personne ne relit. C'est aussi pourquoi le compte d'erreurs est tombé de
   54 à 42 sur un lot qui ne touche que deux plugins.
 - **Ref** : [ADR-0026](adr/0026-wrapper-de-log-maison.md), [ADR-0020](adr/0020-systeme-de-toasts.md)
+
+#### G-052 — La config ESLint partagée est restée en Vue 2, et refuse la syntaxe du lot
+
+- **Contexte** : phase 3, extinction du drapeau `COMPILER_V_BIND_SYNC`.
+- **Symptôme** : `npm run test:lint` passe de 0 à **22 erreurs**
+  `vue/no-v-model-argument` — « `'v-model'` directives require no argument » —
+  sur les 11 fichiers du lot, alors que le build est vert, `vue-tsc` ne signale
+  aucune régression et les specs passent. La règle proteste contre exactement ce
+  que le lot vient d'écrire : `v-model:open`, `v-model:page`.
+- **Cause** : `.eslintrc.cjs` étend `plugin:vue-kuzzle/default`, qui active le
+  jeu de règles **Vue 2** d'`eslint-plugin-vue`. `v-model` à argument n'existe
+  pas en Vue 2 : la règle est correcte pour la version qu'elle croit linter.
+  La bascule vers Vue 3 sous `compat` a changé le runtime et le compilateur,
+  **pas le linter** — qui est resté sur son jeu de règles d'origine, sans que
+  rien ne le signale tant qu'aucun lot n'écrivait de syntaxe Vue 3 pure.
+- **Solution** : `'vue/no-v-model-argument': 'off'`, et son symétrique
+  `'vue/no-deprecated-v-bind-sync': 'error'` pour interdire le retour de
+  `:prop.sync`. Même geste que pour `vue/no-deprecated-destroyed-lifecycle`
+  ([G-050](#g-050)) : chaque drapeau éteint échange la règle qui gardait
+  l'usage Vue 2 contre celle qui garde l'usage Vue 3.
+- **À retenir** : le linter est un **troisième** compilateur, à côté de Vite et
+  de `vue-tsc`, et c'est le seul des trois que la bascule n'a pas mis à jour.
+  Tant que les lots ne faisaient que renommer (`beforeDestroy`, `$set`,
+  `Vue.prototype`), il n'avait rien à redire. Le premier lot qui introduit une
+  **syntaxe de template** propre à Vue 3 le réveille — attendre la même chose
+  des lots à venir, et traiter l'erreur comme un signal de config, jamais comme
+  un signal de code. Le passage global à `plugin:vue/vue3-*` appartient à la
+  phase 4 : le faire ici rendrait tout le reste du code non conforme d'un coup.
+- **Ref** : [G-050](#g-050)
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

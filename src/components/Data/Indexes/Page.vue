@@ -168,17 +168,17 @@
       </Table>
     </template>
 
-    <CreateIndexModal :open.sync="createIndexOpen" @create-successful="onCreateModalSuccess" />
+    <CreateIndexModal v-model:open="createIndexOpen" @create-successful="onCreateModalSuccess" />
     <DeleteIndexModal
       ref="deleteIndexModal"
+      v-model:open="deleteIndexOpen"
       :index="indexToDelete"
-      :open.sync="deleteIndexOpen"
       @confirm-deletion="onConfirmDeleteModal"
       @cancel="onCancelDeleteModal"
     />
     <BulkDeleteIndexesModal
+      v-model:open="bulkDeleteIndexesOpen"
       :indexes="selectedIndexes"
-      :open.sync="bulkDeleteIndexesOpen"
       @delete-successful="onDeleteModalSuccess"
     />
   </div>

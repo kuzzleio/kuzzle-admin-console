@@ -191,22 +191,22 @@
       </div>
 
       <DeleteCollectionModal
+        v-model:open="deleteCollectionOpen"
         :index="index"
         :collection="collectionToDelete"
-        :open.sync="deleteCollectionOpen"
         @delete-successful="onDeleteModalSuccess"
       />
       <BulkDeleteCollectionsModal
+        v-model:open="bulkDeleteCollectionsOpen"
         :index="index"
         :collections="selectedCollections"
-        :open.sync="bulkDeleteCollectionsOpen"
         @delete-successful="onDeleteModalSuccess"
       />
     </div>
     <DeleteIndexModal
       ref="deleteIndexModal"
+      v-model:open="deleteIndexOpen"
       :index="index"
-      :open.sync="deleteIndexOpen"
       @confirm-deletion="onDeleteIndexConfirm"
       @cancel="onDeleteIndexCancel"
     />

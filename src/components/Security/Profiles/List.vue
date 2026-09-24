@@ -70,15 +70,15 @@
 
       <ListPagination
         v-show="totalDocuments > paginationSize"
+        v-model:page="currentPage"
         class="mt-4"
         data-cy="ProfileManagement-pagination"
         :items-per-page="paginationSize"
-        :page.sync="currentPage"
         :total="totalDocuments"
       />
     </template>
     <delete-modal
-      :open.sync="deleteModalOpen"
+      v-model:open="deleteModalOpen"
       :candidates-for-deletion="candidatesForDeletion"
       :is-loading="deleteModalIsLoading"
       @confirm="onDeleteConfirmed"
