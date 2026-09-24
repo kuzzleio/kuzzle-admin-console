@@ -97,6 +97,8 @@ export default {
   },
   watch: {
     controllers: {
+      /* `addController` mute le tableau sur place — voir G-058. */
+      deep: true,
       handler(value) {
         this.$emit('filters-updated', { controllers: value });
       },

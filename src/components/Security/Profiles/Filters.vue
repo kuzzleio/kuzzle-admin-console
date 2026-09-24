@@ -96,8 +96,16 @@ export default {
     },
   },
   watch: {
-    selectedRoles() {
-      this.$emit('filters-updated', this.selectedRoles);
+    selectedRoles: {
+      /*
+       * `toggleRole` mute le tableau sur place (`push` / `splice`). En Vue 2,
+       * un watcher non `deep` se déclenchait sur ces mutations ; en Vue 3 il ne
+       * voit que le changement de référence (G-058).
+       */
+      deep: true,
+      handler() {
+        this.$emit('filters-updated', this.selectedRoles);
+      },
     },
   },
   mounted() {

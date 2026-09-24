@@ -1,12 +1,10 @@
 <template>
   <div class="App">
-    <template>
-      <router-view
-        @environment::create="editEnvironment"
-        @environment::delete="deleteEnvironment"
-        @environment::importEnv="importEnvironment"
-      />
-    </template>
+    <router-view
+      @environment::create="editEnvironment"
+      @environment::delete="deleteEnvironment"
+      @environment::importEnv="importEnvironment"
+    />
 
     <modal-create-or-update
       v-model:open="createOrUpdateOpen"
