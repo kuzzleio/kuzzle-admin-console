@@ -2790,6 +2790,24 @@ Gabarit à copier :
 
   `POST /admin/_resetDatabase` renvoie 200 sans rien régler : il s'en remet au
   même cache.
+- **Variante avant le plein (2026-09-25)** : à 90 % de disque, sans flood-stage,
+  une stack **neuve** ne démarre pas. `docker compose up --wait` s'arrête sur
+  `container …-kuzzle-1 exited (1)`, avec `ExternalServiceError` puis
+  « Cannot start Kuzzle » dans les logs. Elasticsearch a passé son *high
+  watermark* : il crée les index `%kuzzle.*` mais n'en alloue aucun shard
+  (`unassigned_primary_shards: 8`), et Kuzzle abandonne au bout de 30 s.
+  Libérer de la place reste le vrai remède. À défaut, sur cette stack jetable,
+  lever le seuil puis relancer Kuzzle :
+
+  ```sh
+  curl -X PUT "http://localhost:9200/_cluster/settings" \
+    -H 'Content-Type: application/json' \
+    -d '{"persistent":{"cluster.routing.allocation.disk.threshold_enabled":false}}'
+  docker compose up --wait
+  ```
+
+  Le réglage vit dans le conteneur ES et disparaît au `down -v` suivant : il
+  faut le remettre après chaque recréation de la stack.
 - **Ref** : [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)
 
 #### G-061 — Le drag de `sortablejs` ne se pilote pas depuis Cypress
@@ -3089,6 +3107,35 @@ Gabarit à copier :
   l'échec nomme l'étape. Le job pendu a été relancé (`gh run rerun --failed`).
 - **À retenir** : sérialiser des runs rend chaque run capable de bloquer les
   suivants. Tout workflow sous `concurrency` a besoin de timeouts.
+
+#### G-074 — Un 17/17 obtenu contre le build d'une autre session
+
+- **Contexte** : correctif Keycloak (#1115), le 2026-09-25. Plusieurs sessions
+  d'agent travaillaient en parallèle sur la même machine.
+- **Symptôme** : une suite complète 17/17 verte sur `4-dev`, puis 9/17 rouges
+  en 2 h 48 sur `5-dev` avec le même correctif. En réalité, aucun des deux runs
+  n'avait testé le correctif.
+- **Cause** : le port 8080 était déjà pris par un `python -m http.server`
+  d'une autre session, qui servait son propre build v4. Avec `--strictPort`,
+  `vite preview` échoue sur `Port 8080 is already in use`. Lancé en arrière-plan,
+  cet échec passe inaperçu : un `curl` sur `:8080` répond 200, et Cypress
+  (`baseUrl: http://localhost:8080`) teste le build de l'autre session. Le
+  premier run était vert parce que ce build était `4-dev` sans le correctif.
+  Le second était rouge parce que les specs de `5-dev` tournaient contre la v4.
+  De son côté, le nom de conteneur fixe `kuzzle_elasticsearch` empêche deux
+  stacks de coexister : une session qui relance la sienne remplace le backend
+  de l'autre en plein run.
+- **Solution** : avant `cypress run`, vérifier que c'est bien **son** preview
+  qui écoute, pas seulement que le port répond :
+
+  ```sh
+  lsof -iTCP:8080 -sTCP:LISTEN -n -P   # le process doit être le vite de ce worktree
+  ```
+
+  Et une seule validation E2E à la fois sur la machine : le backend est partagé.
+- **À retenir** : un run vert ne prouve que ce qu'on a servi. Même principe
+  qu'[ADR-0028](adr/0028-valider-les-specs-contre-un-build.md) : il faut savoir
+  **quel** build les specs ont validé.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
