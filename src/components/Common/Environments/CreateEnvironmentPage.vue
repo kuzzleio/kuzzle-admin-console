@@ -92,7 +92,7 @@ export default defineComponent({
   methods: {
     async submit() {
       const id = await (
-        this.$refs.createEnvironmentComponent as unknown as {
+        this.$refs.createEnvironmentComponent as {
           submit: () => Promise<string | undefined>;
         }
       ).submit();

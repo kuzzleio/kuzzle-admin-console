@@ -66,7 +66,7 @@ export default defineComponent({
     },
     submit(): void {
       const submitted = (
-        this.$refs.createEnvironmentComponent as unknown as { submit: () => boolean }
+        this.$refs.createEnvironmentComponent as { submit: () => boolean }
       ).submit();
 
       this.$nextTick(() => {

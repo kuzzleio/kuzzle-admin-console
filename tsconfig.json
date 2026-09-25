@@ -3,22 +3,22 @@
     "target": "esnext",
     "module": "esnext",
     "strict": true,
+    "skipLibCheck": true,
     "jsx": "preserve",
     "allowJs": true,
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": false,
     "sourceMap": true,
-    "baseUrl": ".",
     "types": [
       "vite/client"
     ],
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     },
     "lib": [

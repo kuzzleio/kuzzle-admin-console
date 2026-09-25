@@ -18,7 +18,7 @@
 
 | Phase | Objet | Epic | Statut |
 |---|---|---|---|
-| **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
+| **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | ✅ **Close** : Cypress 16, Vite 8, ESLint 10, TypeScript 6 ([ADR-0038](adr/0038-cypress-16.md) à [0041](adr/0041-typescript-6.md)) |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ✅ **Close** : `MODE: 3` a remplacé la liste de drapeaux ([ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)) — 17/17 specs |
@@ -891,7 +891,7 @@ Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026*
 | `.nvmrc` / `engines` / CI / Dockerfile / compose | 3 valeurs différentes | alignés, `.nvmrc` fait foi | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
 | Job `Lint` de la CI | `continue-on-error: true`, ne scanne que `src` | bloquant, scanne aussi `test/` | ✅ [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020) |
 | Vite | ~~5.4.6~~ 8.3.1 | 8.x ([ADR-0039](adr/0039-vite-8.md)) | ✅ 17/17 specs |
-| TypeScript | 5.4.5 | ≥ 5.6, avec `moduleResolution: "bundler"` ([ADR-0039](adr/0039-vite-8.md)) | ⬜ |
+| TypeScript | ~~5.4.5~~ 6.0.3 | 6.x — la 7 casse `vue-tsc` ([ADR-0041](adr/0041-typescript-6.md)) | ✅ |
 | ESLint | ~~8.57, eslintrc~~ 10.11, flat config | flat config, ESLint 10 ([ADR-0040](adr/0040-eslint-10-flat-config.md)) | ✅ |
 | Cypress | ~~13.14.2~~ 16.1.0 | 16.x ([ADR-0038](adr/0038-cypress-16.md)) | ✅ 17/17 specs |
 
@@ -3004,6 +3004,25 @@ Gabarit à copier :
   npm ci`, jamais par le `npm install` qui l'a faite. Et contrôler
   `node_modules/<paquet>/package.json` avant de conclure d'une vérification.
 
+#### G-070 — TypeScript 7 casse `vue-tsc` au démarrage
+
+- **Contexte** : phase 0, montée de TypeScript 5.4.5
+  ([ADR-0041](adr/0041-typescript-6.md)).
+- **Symptôme** : avec `typescript@7.0.2`, `npx tsc -v` répond, mais
+  `vue-tsc` échoue immédiatement : *« Error [ERR_PACKAGE_PATH_NOT_EXPORTED]:
+  Package subpath './lib/tsc' is not defined by "exports" »*.
+- **Cause** : TypeScript 7 est le portage natif en Go. Le paquet `typescript`
+  ne livre plus que le binaire (`lib/` ne contient que `tsc.js`, un lanceur,
+  et `getExePath`), sans l'API JavaScript du compilateur. `vue-tsc` — comme
+  `typescript-eslint` — charge `typescript/lib/tsc` et s'en sert comme d'une
+  bibliothèque. `vue-tsc` 3.3.8 sait détecter l'alias `typescript` →
+  `@typescript/typescript6`, qui embarque la 6 en dépendance, mais c'est
+  alors la 6 qui vérifie les types.
+- **Solution** : TypeScript 6.0.3, la dernière ligne qui fournit l'API.
+- **À retenir** : « `vue-tsc` supporte TS 7 » veut dire qu'il cohabite avec,
+  pas qu'il s'en sert. Tant que l'outillage Vue passe par l'API JavaScript du
+  compilateur, la version qui vérifie les types est la 6.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3109,3 +3128,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-25 | Cypress 16, sans changer ce que font les specs | [ADR-0038](adr/0038-cypress-16.md) |
 | 2026-09-25 | Vite 8, et `moduleResolution` reste au lot TypeScript | [ADR-0039](adr/0039-vite-8.md) |
 | 2026-09-25 | ESLint 10 en flat config, avec le standard Kuzzle 2.0 complété | [ADR-0040](adr/0040-eslint-10-flat-config.md) |
+| 2026-09-25 | TypeScript 6, pas 7, et `moduleResolution: "bundler"` | [ADR-0041](adr/0041-typescript-6.md) |
