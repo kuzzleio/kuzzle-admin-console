@@ -329,7 +329,7 @@ export default {
     },
     async performQuery(tabIdx) {
       const query = JSON.parse(JSON.stringify(this.tabs[tabIdx].query));
-      let response = {};
+      let response;
 
       try {
         response = await this.$kuzzle.query(query);

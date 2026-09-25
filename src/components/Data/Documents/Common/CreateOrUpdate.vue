@@ -189,9 +189,8 @@ export default {
   methods: {
     onJsonChange(val) {
       this.rawDocument = val;
-      let parsed = {};
       try {
-        parsed = JSON.parse(val);
+        const parsed = JSON.parse(val);
         this.$emit('document-change', parsed);
       } catch (error) {
         // Fail silently

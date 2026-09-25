@@ -221,7 +221,7 @@ export default {
 
       try {
         const res = await this.wrapper.performSearchProfiles(
-          { roles: this.currentFilter } || {},
+          { roles: this.currentFilter },
           pagination,
         );
         this.documents = res.documents;
