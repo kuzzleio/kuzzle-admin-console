@@ -1,0 +1,54 @@
+/* Kuzzle IoT application — color system.
+   Values copied verbatim from the app's design-system source (do not round). */
+:root {
+  /* ---- Brand palette (charte Kuzzle) ---- */
+  --kz-blue: #002835;          /* Bleu Kuzzle — hero, tooltip, strong text */
+  --kz-fuchsia: #E64472;       /* Accent / CTA / active */
+  --kz-fuchsia-dark: #C93960;  /* CTA hover */
+  --kz-light-blue: #CBE9F6;    /* Bleu clair */
+  --kz-teal: #379FAB;          /* Teal — texture, group accent */
+  --kz-gray-text: #666666;
+  --kz-gray-bg: #E1E1E1;
+  --kz-white: #FFFFFF;
+
+  /* ---- Application tokens (as used in the product) ---- */
+  --body: #F6F7FB;             /* application background */
+  --primary: #E64472;          /* accent, CTA, links, active state */
+  --primary-dark: #C93960;     /* primary hover */
+  --secondary: #002835;        /* hero, tooltip, strong text */
+  --secondary-captain: #00536F;/* deep accent — icons, markers */
+  --secondary-light: #6C757D;  /* secondary text */
+  --tertiary: #DAEDF6;         /* tags, pills, soft fills */
+  --teal: #379FAB;
+  --grey: #43565B;             /* labels */
+  --grey-light: #F9FAFD;       /* table headers, row hover */
+  --grey-bright: #D0DDE1;      /* borders, hairlines */
+  --panel: #EEF1F5;            /* panel background */
+
+  /* pill fills */
+  --pill-model: #EEF2F5;       /* data-model pill (light) */
+
+  /* ---- Status / semantic ---- */
+  --status-success: #3DDC84;   /* online */
+  --status-warning: #C9821F;   /* alert / battery */
+  --status-command: #F97316;   /* command orange */
+  --status-danger: #DC3545;    /* error / delete */
+
+  /* ---- Semantic aliases ---- */
+  --surface-page: var(--body);
+  --surface-card: var(--kz-white);
+  --surface-panel: var(--panel);
+  --surface-hero: var(--secondary);
+
+  --text-strong: var(--secondary);
+  --text-label: var(--grey);
+  --text-muted: var(--secondary-light);
+  --text-on-hero: var(--kz-white);
+  --text-link: var(--primary);
+
+  --border-subtle: var(--grey-bright);
+  --border-focus: var(--secondary-captain);
+
+  --accent: var(--primary);
+  --accent-hover: var(--primary-dark);
+}

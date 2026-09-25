@@ -1,0 +1,37 @@
+/* Kuzzle IoT spacing, radii, elevation, motion — copied from the app. */
+:root {
+  /* spacing — base 4px */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* radii */
+  --radius-field: 4px;   /* inputs */
+  --radius-btn: 6px;     /* buttons */
+  --radius-card: 6px;    /* cards */
+  --radius-hero: 8px;    /* 0.5rem — hero, larger panels */
+  --radius-panel: 12px;  /* outer panels / containers */
+  --radius-pill: 20px;   /* pills, tags, chips */
+
+  /* elevation — cool-tinted, from the app */
+  --elev-card: 0 1px 3px rgba(0, 40, 53, 0.09);
+  --elev-hover: 0 12px 28px -12px rgba(0, 40, 53, 0.28);
+  --elev-menu: 0 18px 44px -12px rgba(10, 28, 41, 0.4);
+  --elev-modal: 0 30px 60px -20px rgba(10, 28, 41, 0.55);
+  --elev-tooltip: 0 24px 46px -18px rgba(0, 20, 28, 0.7);
+  /* signature card: fuchsia top filet + card shadow */
+  --elev-signature: inset 0 1px 0 0 var(--primary), 0 1px 3px rgba(0, 40, 53, 0.09);
+  --focus-ring: 0 0 0 3px rgba(0, 83, 111, 0.1);
+
+  /* motion */
+  --ease-standard: ease; /* @kind other */
+  --ease-nav: cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */
+  --dur-fast: 160ms; /* @kind other */
+  --dur-base: 200ms; /* @kind other */
+  --dur-nav: 700ms; /* @kind other */
+  --hover-delay: 350ms; /* @kind other */
+}

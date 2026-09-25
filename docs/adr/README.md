@@ -64,6 +64,8 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0040](0040-eslint-10-flat-config.md) | ESLint 10 en flat config, avec le standard Kuzzle 2.0 complété | Acceptée |
 | [0041](0041-typescript-6.md) | TypeScript 6, pas 7, et `moduleResolution: "bundler"` | Acceptée |
 | [0042](0042-test-types-bloquant-en-ci.md) | `test:types` à zéro, et bloquant en CI | Acceptée |
+| [0043](0043-da-kuzzle-pour-la-console.md) | La DA de la console est celle du design system produit Kuzzle | Acceptée |
+| [0044](0044-impeccable-versionne-sans-hooks.md) | Impeccable versionné dans le repo, sans ses hooks | Acceptée |
 
 ## Gabarit
 

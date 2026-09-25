@@ -93,3 +93,13 @@ npm ci && docker compose --profile dev up  # + le serveur de dev
   ([ADR-0003](docs/adr/0003-design-system-tailwind-shadcn-vue.md)).
 - Pas de valeur de design en dur (couleur, espacement, rayon) dans un composant :
   elles viennent des tokens.
+
+## Design
+
+La DA est celle du design system produit Kuzzle
+([ADR-0043](docs/adr/0043-da-kuzzle-pour-la-console.md)), transposée dans
+[`DESIGN.md`](DESIGN.md) ; le contexte produit est dans [`PRODUCT.md`](PRODUCT.md).
+Tout travail d'interface part de ces deux fichiers. Le skill `/impeccable`
+(`critique`, `audit`, `polish`…) est versionné dans `.claude/skills/`, sans ses
+hooks ([ADR-0044](docs/adr/0044-impeccable-versionne-sans-hooks.md)) : ne pas
+lancer `npx impeccable install`, qui les ajouterait.

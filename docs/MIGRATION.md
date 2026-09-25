@@ -296,8 +296,20 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | ~~Dernière primitive interactive : `Combobox` (pour `vue-multiselect`)~~ | ➖ `vue-multiselect` 3.5.0 est gardé : le `Combobox` attendra la refonte, qui dira s'il en faut un ([ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md)) |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
-plomberie est posée, l'apparence n'est pas décidée. La refonte visuelle se fera
-en changeant ces valeurs, à un seul endroit — c'est précisément ce qu'on achète.
+plomberie est posée. **L'apparence est décidée depuis le 2026-09-25** : c'est le
+design system produit Kuzzle ([ADR-0043](adr/0043-da-kuzzle-pour-la-console.md)),
+transposé dans [`DESIGN.md`](../DESIGN.md). Elle sera appliquée **après** la
+comparaison v4 / v5, en changeant ces valeurs à un seul endroit — c'est
+précisément ce qu'on achète.
+
+| Étape de la DA ([ADR-0043](adr/0043-da-kuzzle-pour-la-console.md)) | Statut |
+|---|---|
+| `DESIGN.md`, `PRODUCT.md`, copie des tokens du DS, skill Impeccable ([ADR-0044](adr/0044-impeccable-versionne-sans-hooks.md)) | ✅ |
+| 1. Comparaison v4 / v5 : inventaire fonctionnel écran par écran — 153 fonctions, 30 sans spec ([`comparaison-v4-v5/`](comparaison-v4-v5/inventaire.md)) | ✅ |
+| 1. Comparaison v4 / v5 : captures des mêmes écrans, même backend | ⬜ |
+| 1. Comparaison v4 / v5 : tri des écarts (voulu / régression / manquant) | ⬜ |
+| 2. Tokens + polices + 20 primitives à la DA Kuzzle | ⬜ |
+| 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
@@ -949,7 +961,7 @@ lui-même (§ 3.2).
 | `bluebird` | les Promises natives suffisent depuis Node 4 | ⬜ |
 | `moment` | en maintenance depuis 2020 → `date-fns` ou `Temporal` | ⬜ |
 | ~~`velocity-animate`~~ | **Retiré** — son seul client était `Common/Stepper.vue`, code mort (ADR-0016) | ✅ |
-| `@fortawesome/fontawesome-free` | à réévaluer avec le nouveau design system | ⬜ |
+| ~~`@fortawesome/fontawesome-free`~~ | **Conservé** — le design system Kuzzle en fait son système d'icônes ([ADR-0043](adr/0043-da-kuzzle-pour-la-console.md)) | ➖ |
 | `json-formatter-js` | utilisé via une directive ; à réévaluer | ⬜ |
 | `apexcharts` 3.53.0 | figé par `vue3-apexcharts` 1.7.0 ; la 5.x est la version courante ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | ⬜ |
 
@@ -3185,3 +3197,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-25 | ESLint 10 en flat config, avec le standard Kuzzle 2.0 complété | [ADR-0040](adr/0040-eslint-10-flat-config.md) |
 | 2026-09-25 | TypeScript 6, pas 7, et `moduleResolution: "bundler"` | [ADR-0041](adr/0041-typescript-6.md) |
 | 2026-09-25 | `test:types` à zéro, et bloquant en CI | [ADR-0042](adr/0042-test-types-bloquant-en-ci.md) |
+| 2026-09-25 | La DA de la console est celle du design system produit Kuzzle ; comparaison v4 / v5 d'abord | [ADR-0043](adr/0043-da-kuzzle-pour-la-console.md) |
+| 2026-09-25 | Impeccable versionné dans le repo, sans ses hooks | [ADR-0044](adr/0044-impeccable-versionne-sans-hooks.md) |
