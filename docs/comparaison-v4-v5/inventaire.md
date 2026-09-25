@@ -310,7 +310,7 @@ Route `/api-action` → `ApiAction.vue`, `ApiAction/*`.
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
 | API-01 | Onglets de requêtes, « + » pour en ouvrir un, requête retenue par onglet | C120 | api-actions | |
-| API-02 | Contrôleur et action : saisie libre et autocomplétion ; pas d'options sans droits | C121 | api-actions | |
+| API-02 | Contrôleur et action : saisie libre et autocomplétion (`<datalist>` natif, invisible sur une capture) ; pas d'options sans droits | — | api-actions | |
 | API-03 | Éditeur JSON de la requête, « The query is invalid » | C120 | api-actions | |
 | API-04 | « RUN » ; carte « Response » avec statut et JSON | C122 | api-actions | |
 | API-05 | « SAVE » : modale « Choose a name for this query » | C123 | api-actions | |
@@ -324,8 +324,8 @@ Route `/api-action` → `ApiAction.vue`, `ApiAction/*`.
 
 - **14 domaines, 153 fonctions**, dont **30 sans spec** (colonne *Spec* à
   `—`) : c'est là que l'étape 3 regardera en premier.
-- **79 états d'écran** à capturer sur chaque version (`C01` à `C123`, numérotés
-  par domaine avec des trous pour en ajouter) ; 28 fonctions n'ont pas de
+- **78 états d'écran** à capturer sur chaque version (`C01` à `C123`, numérotés
+  par domaine avec des trous pour en ajouter) ; 29 fonctions n'ont pas de
   capture et se vérifient par leur spec ou à la main.
 - **1 écart voulu déjà connu** (CHT-03, [ADR-0035](../adr/0035-selecteur-de-couleur-natif.md)).
   Les autres écarts voulus attendus : le système de toasts

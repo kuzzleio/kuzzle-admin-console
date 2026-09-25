@@ -3133,9 +3133,31 @@ Gabarit à copier :
   ```
 
   Et une seule validation E2E à la fois sur la machine : le backend est partagé.
+- **Vu de l'autre session** (captures v4 / v5, le même jour) : en plein run,
+  `cy.request()` échoue sur `_resetDatabase` (« failed without a response »),
+  ou les états réussissent jusqu'à un point puis tombent tous faute de
+  données — l'index de test et les utilisateurs ont disparu. Les specs de
+  l'autre session (`_resetDatabase`, `_resetSecurity`) vidaient le backend
+  commun, et un `docker compose down -v` dans l'autre worktree le détruisait.
+  Avant de lancer : `docker ps` et `ps aux | grep 'cypress run'`.
 - **À retenir** : un run vert ne prouve que ce qu'on a servi. Même principe
   qu'[ADR-0028](adr/0028-valider-les-specs-contre-un-build.md) : il faut savoir
   **quel** build les specs ont validé.
+
+#### G-075 — En Electron headless, une capture de viewport est rognée à 1280×720
+
+- **Contexte** : `cypress.captures.config.ts`, viewport 1440×900.
+- **Symptôme** : les PNG font 1280×720, ont des barres de défilement, et la
+  page est coupée à droite (ou décalée à gauche) — alors que
+  `capture: 'viewport'` devrait donner le viewport entier.
+- **Cause** : Electron headless ouvre sa fenêtre en 1280×720. Plus petite que
+  le viewport, elle ne peut pas le contenir, et la capture prend ce qui tient
+  dans la fenêtre.
+- **Solution** : agrandir la fenêtre au lancement, dans `setupNodeEvents` —
+  `launchOptions.preferences.width/height` pour Electron,
+  `--window-size` pour Chromium. Les specs ne sont pas touchées : elles ne
+  capturent rien.
+- **Ref** : étape 2 de la comparaison v4 / v5.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
