@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-24 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
+**Dernière mise à jour** : 2026-09-25 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -890,13 +890,16 @@ Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026*
 | Node | 20 (EOL) / 22 dans le Dockerfile | 24 LTS « Krypton » | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
 | `.nvmrc` / `engines` / CI / Dockerfile / compose | 3 valeurs différentes | alignés, `.nvmrc` fait foi | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
 | Job `Lint` de la CI | `continue-on-error: true`, ne scanne que `src` | bloquant, scanne aussi `test/` | ✅ [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020) |
-| Vite | 5.4.6 | dernière compatible `@vitejs/plugin-vue2` | ⬜ |
+| Vite | 5.4.6 | 8.x — plafond levé : `@vitejs/plugin-vue` 6.0.9 remplace `plugin-vue2` depuis la phase 3 | ⬜ |
 | TypeScript | 5.4.5 | à évaluer (TS 7 disponible) | ⬜ |
 | ESLint | eslintrc | flat config, ESLint 10 | ⬜ |
 | Cypress | 13.14.2 | 16.x | ⬜ |
 
-⚠️ `@vitejs/plugin-vue2` fixe le plafond de Vite jusqu'à la phase 3. Vérifier sa
-compatibilité **avant** d'engager la montée.
+Le plafond que `@vitejs/plugin-vue2` imposait à Vite est **levé depuis la
+phase 3** : la console compile avec `@vitejs/plugin-vue` 6.0.9, qui accepte
+Vite 5 à 8. Plus rien ne bloque les quatre montées ci-dessus. Ordre retenu :
+**Cypress d'abord** — c'est le filet de sécurité, il doit être validé avant de
+servir à valider le reste —, puis Vite, TypeScript et ESLint, un lot chacun.
 
 ---
 
@@ -2969,6 +2972,11 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-23 | Déclarer `emits` dès qu'un événement porte un nom d'événement du DOM | [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md) |
 | 2026-09-23 | Le chantier déménage sur `5-dev` et se déploie sur console-v5.kuzzle.io | [ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md) |
 | 2026-09-24 | `MODE: 3` global, et les bibliothèques Vue 2 épinglées en `MODE: 2` | [ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md) |
+| 2026-09-24 | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | [ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) |
+| 2026-09-24 | `vue-draggable-plus` remplace `vuedraggable` | [ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md) |
+| 2026-09-24 | `vue-multiselect` passe en 3.x, le Combobox shadcn-vue attendra la refonte | [ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md) |
+| 2026-09-24 | `vue-color` cède la place à `<input type="color">` | [ADR-0035](adr/0035-selecteur-de-couleur-natif.md) |
+| 2026-09-24 | Retrait de `@vue/compat` : la console tourne sur Vue 3 pur | [ADR-0036](adr/0036-retrait-de-vue-compat.md) |
 | 2026-09-24 | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | [ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) |
 | 2026-09-24 | `vue-draggable-plus` remplace `vuedraggable`, et non `vuedraggable@next` | [ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md) |
 | 2026-09-24 | `vue-multiselect` passe en 3.x, le Combobox shadcn-vue attendra la refonte | [ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md) |

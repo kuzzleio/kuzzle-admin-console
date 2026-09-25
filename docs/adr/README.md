@@ -48,7 +48,17 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0024](0024-degraisser-la-couche-legacy.md) | Vider la couche `legacy` de ce qui ne style plus rien, et nommer ce qui reste | Acceptée |
 | [0025](0025-reimplementer-vue-form-generator.md) | Réimplémenter `vue-form-generator` en un composant de la console | Acceptée |
 | [0026](0026-wrapper-de-log-maison.md) | Remplacer `vuejs-logger` par un wrapper de 40 lignes | Acceptée |
-| [0027](0027-bascule-vue-3-sous-compat.md) | Basculer sur Vue 3 sous `@vue/compat`, en un seul lot | Acceptée, remplit la condition de [0002](0002-sortir-de-bootstrap-vue-avant-vue-3.md) |
+| [0027](0027-bascule-vue-3-sous-compat.md) | Basculer sur Vue 3 sous `@vue/compat`, en un seul lot | Acceptée, remplit la condition de [0002](0002-sortir-de-bootstrap-vue-avant-vue-3.md), compat retirée par [0036](0036-retrait-de-vue-compat.md) |
+| [0028](0028-valider-les-specs-contre-un-build.md) | Valider les specs de migration contre un build, jamais contre le serveur de dev | Acceptée |
+| [0029](0029-declarer-emits-sur-les-evenements-du-dom.md) | Déclarer dans `emits` tout événement qui porte un nom d'événement du DOM | Acceptée |
+| [0030](0030-branche-5-dev-et-deploiement-console-v5.md) | Le chantier déménage sur `5-dev` et se déploie sur console-v5.kuzzle.io | Acceptée |
+| [0031](0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md) | `MODE: 3` global, et les bibliothèques Vue 2 épinglées en `MODE: 2` | Acceptée, les quatre bibliothèques remplacées par [0032](0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) à [0035](0035-selecteur-de-couleur-natif.md) |
+| [0032](0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | Acceptée |
+| [0033](0033-vue-draggable-plus-remplace-vuedraggable.md) | `vue-draggable-plus` remplace `vuedraggable`, et non `vuedraggable@next` | Acceptée |
+| [0034](0034-vue-multiselect-3-plutot-qu-un-combobox.md) | `vue-multiselect` passe en 3.x, le Combobox shadcn-vue attendra la refonte | Acceptée |
+| [0035](0035-selecteur-de-couleur-natif.md) | `vue-color` cède la place à `<input type="color">` | Acceptée |
+| [0036](0036-retrait-de-vue-compat.md) | Retrait de `@vue/compat` | Acceptée |
+| [0037](0037-serialiser-les-deploiements.md) | Sérialiser les runs de déploiement au niveau du workflow | Acceptée |
 
 ## Gabarit
 
