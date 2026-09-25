@@ -260,8 +260,7 @@ export default {
         size: this.paginationSize,
       };
 
-      let searchQuery = null;
-      searchQuery = filterManager.toSearchQuery(
+      let searchQuery = filterManager.toSearchQuery(
         this.currentFilter,
         this.mappingAttributes,
         this.wrapper,

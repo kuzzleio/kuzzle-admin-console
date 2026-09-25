@@ -1,6 +1,6 @@
 describe('Reset Password', () => {
   it('Should render visual feedback and prevent submitting when input is invalid', () => {
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
     cy.visit('/#/reset-password/anonymous')
 
     cy.get('[data-cy=ResetPassword-password]').type(' ', { force: true })

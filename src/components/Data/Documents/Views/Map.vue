@@ -377,7 +377,7 @@ export default {
       }
       const value = parseInt(radius);
       const unit = radius.replace(value.toString(), '');
-      let multiplicator = 1;
+      let multiplicator;
       switch (unit) {
         case 'km':
           multiplicator = 1000;

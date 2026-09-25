@@ -303,7 +303,8 @@ export default {
             case 'string':
               query.body[key] = '';
               break;
-            case 'number' || 'integer':
+            case 'number':
+            case 'integer':
               query.body[key] = 0;
               break;
             case 'boolean':

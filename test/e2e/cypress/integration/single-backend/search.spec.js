@@ -52,7 +52,7 @@ describe('Search', function() {
       }
     )
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
 
     localStorage.setItem(
       `search-filter-current:${indexName}/${collectionName}`,

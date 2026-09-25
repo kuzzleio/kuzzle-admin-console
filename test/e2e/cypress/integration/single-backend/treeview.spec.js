@@ -3,7 +3,7 @@ describe('Treeview', () => {
     // reset all the indexes
     cy.request('POST', 'http://localhost:7512/admin/_resetDatabase')
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
   function movePiece(name, x, y) {
     cy.get(name)

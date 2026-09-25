@@ -8,7 +8,7 @@ describe('Collection management', function() {
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
     cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
     cy.setCookie('telemetry', 'false')
   })
 

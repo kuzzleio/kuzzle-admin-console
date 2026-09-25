@@ -89,7 +89,7 @@ export const useKuzzleStore = defineStore('kuzzle', {
           [payload.id]: payload.environment,
         };
       } catch (error) {
-        throw new Error(`[${payload.id}] - ${(error as Error).message}`);
+        throw new Error(`[${payload.id}] - ${(error as Error).message}`, { cause: error });
       }
 
       localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(this.environments));
@@ -225,7 +225,7 @@ export const useKuzzleStore = defineStore('kuzzle', {
             [envId]: env,
           };
         } catch (error) {
-          throw new Error(`[${env.id}] - ${(error as Error).message}`);
+          throw new Error(`[${env.id}] - ${(error as Error).message}`, { cause: error });
         }
       });
 

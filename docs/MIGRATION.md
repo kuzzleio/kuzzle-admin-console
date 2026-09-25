@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-24 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
+**Dernière mise à jour** : 2026-09-25 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -18,7 +18,7 @@
 
 | Phase | Objet | Epic | Statut |
 |---|---|---|---|
-| **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress (en Vue 2) | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | 🟡 En cours |
+| **0** | Toolchain : Node 24 LTS, Vite, TS, ESLint, Cypress | [#1017](https://github.com/kuzzleio/kuzzle-admin-console/issues/1017) | ✅ **Close** : Cypress 16, Vite 8, ESLint 10, TypeScript 6 ([ADR-0038](adr/0038-cypress-16.md) à [0041](adr/0041-typescript-6.md)) |
 | **1** | Fondations design : Tailwind + tokens + primitives UI | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | 🟡 En cours |
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ✅ **Close** : `MODE: 3` a remplacé la liste de drapeaux ([ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)) — 17/17 specs |
@@ -890,13 +890,19 @@ Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026*
 | Node | 20 (EOL) / 22 dans le Dockerfile | 24 LTS « Krypton » | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
 | `.nvmrc` / `engines` / CI / Dockerfile / compose | 3 valeurs différentes | alignés, `.nvmrc` fait foi | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
 | Job `Lint` de la CI | `continue-on-error: true`, ne scanne que `src` | bloquant, scanne aussi `test/` | ✅ [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020) |
-| Vite | 5.4.6 | dernière compatible `@vitejs/plugin-vue2` | ⬜ |
-| TypeScript | 5.4.5 | à évaluer (TS 7 disponible) | ⬜ |
-| ESLint | eslintrc | flat config, ESLint 10 | ⬜ |
-| Cypress | 13.14.2 | 16.x | ⬜ |
+| `test:types` (`vue-tsc`) | hors CI, 12 erreurs | 0 erreur, bloquant dans le job `Lint` ([ADR-0042](adr/0042-test-types-bloquant-en-ci.md)) | ✅ |
+| Vite | ~~5.4.6~~ 8.3.1 | 8.x ([ADR-0039](adr/0039-vite-8.md)) | ✅ 17/17 specs |
+| TypeScript | ~~5.4.5~~ 6.0.3 | 6.x — la 7 casse `vue-tsc` ([ADR-0041](adr/0041-typescript-6.md)) | ✅ |
+| ESLint | ~~8.57, eslintrc~~ 10.11, flat config | flat config, ESLint 10 ([ADR-0040](adr/0040-eslint-10-flat-config.md)) | ✅ |
+| Cypress | ~~13.14.2~~ 16.1.0 | 16.x ([ADR-0038](adr/0038-cypress-16.md)) | ✅ 17/17 specs |
 
-⚠️ `@vitejs/plugin-vue2` fixe le plafond de Vite jusqu'à la phase 3. Vérifier sa
-compatibilité **avant** d'engager la montée.
+Le plafond que `@vitejs/plugin-vue2` imposait à Vite est **levé depuis la
+phase 3** : la console compile avec `@vitejs/plugin-vue` 6.0.9, qui accepte
+Vite 5 à 8. Plus rien ne bloque les quatre montées ci-dessus. Ordre retenu :
+**Cypress d'abord** — c'est le filet de sécurité, il doit être validé avant de
+servir à valider le reste —, puis Vite, **ESLint, puis TypeScript**, un lot
+chacun. ESLint passe avant TypeScript : `eslint-plugin-vue-kuzzle` 0.0.13
+bloquait TypeScript sous 5.5 ([G-069](#g-069)).
 
 ---
 
@@ -1164,7 +1170,8 @@ gros et le plus risqué.
   `expected 42 to equal 43`. Taux mesuré le 2026-09-18 : **1 échec sur 16** en
   exécution isolée, machine au repos. Même famille de symptôme sur `collections`
   (`Should be able to update a collection`, assertion sur le contenu de
-  l'éditeur Ace) observé une fois puis non reproduit.
+  l'éditeur Ace) observé une fois puis non reproduit. *Élucidé le
+  2026-09-25 : un `await` manquant dans l'application, voir [G-066](#g-066).*
 - **Cause** : trois sources distinctes, à ne pas confondre.
   1. **`cy.request()` n'est pas réessayée, et rien n'attend que l'application
      ait écrit.** Le test « update a document » clique
@@ -2858,6 +2865,219 @@ Gabarit à copier :
   `node_modules` qui a survécu ment. Réinstaller à neuf avant de conclure
   quoi que ce soit d'un échec de build.
 
+#### G-064 — Des fusions rapprochées déploient dans le désordre, et tous les runs sont verts
+
+- **Contexte** : fusion de la pile #1094 → #1095 → #1096 sur `5-dev`, le
+  2026-09-24, en une minute.
+- **Symptôme** : les trois runs *5-dev push checks* sont verts, mais
+  console-v5.kuzzle.io sert encore `@vue/compat`, que #1096 a retiré.
+- **Cause** : pas de bloc `concurrency` sur `push_5_dev.workflow.yml`. Les trois
+  runs tournent en parallèle et chacun déploie après ses E2E : **le dernier run
+  à finir gagne, pas le dernier commit**. Celui de #1095 a fini après celui de
+  #1096 et a écrasé son déploiement.
+- **Comment il a été trouvé** : pas par la CI. `__COMMIT_HASH__` est inliné
+  dans le bundle ; chercher le SHA court de la tête dans les
+  `/assets/*.js` servis ne le trouvait pas.
+- **Solution** : sur le moment, `gh run rerun` du run de tête. Durablement,
+  `concurrency` au niveau du **workflow**
+  ([ADR-0037](adr/0037-serialiser-les-deploiements.md)) sur `push_5_dev` et
+  `push_master` — au niveau du seul job de déploiement, la course subsiste.
+- **À retenir** : un run vert dit que *ce commit* est bon, pas que *ce commit*
+  est en ligne. Pour savoir ce qui est servi, lire le bundle.
+
+#### G-065 — Sous Cypress 16, `cypress-file-upload` joint un JSON encodé deux fois
+
+- **Contexte** : phase 0, montée de Cypress 13.14.2 → 16.1.0
+  ([ADR-0038](adr/0038-cypress-16.md)).
+- **Symptôme** : dans `environments.spec.js`, « Should be able to import
+  environments » échoue : l'alerte n'affiche pas *« Found 2 connections »*.
+  L'import d'un `.jpg` refusé, lui, passe toujours.
+- **Cause** : le fichier que `attachFile` place dans l'`<input>` a bien le
+  type `application/json`, mais son contenu commence par `"{\n  \"localhost\"` :
+  c'est **une chaîne JSON** contenant le fichier, pas le fichier. `JSON.parse`
+  rend une chaîne, la console n'y trouve aucune connexion. Relevé par une spec
+  sonde qui lit `input.files[0].text()`.
+- **Solution** : `selectFile('test/e2e/cypress/fixtures/environment.json',
+  { force: true })`, natif depuis Cypress 9.3 ; le type MIME est déduit de
+  l'extension. `cypress-file-upload` sort des dépendances.
+- **À retenir** : un plugin Cypress qui s'appuie sur `cy.fixture` peut changer
+  de comportement à chaque version majeure sans changer lui-même. Préférer la
+  commande native quand elle existe.
+
+#### G-066 — Mettre à jour une collection puis la rouvrir montre l'ancien mapping
+
+- **Contexte** : validation de la montée de Vite 8, suite complète contre un
+  build. Même test que celui qu'évoque [G-001](#g-001) : *« observé une fois
+  puis non reproduit »*.
+- **Symptôme** : `collections.spec.js`, « Should be able to update a
+  collection » : `expected '<div#collection…ace_editor>' to contain
+  '"firstName": {'`. L'éditeur rouvert affiche le mapping **d'avant**. Mesuré
+  2 échecs sur 8 exécutions sous Vite 8, 0 sur 6 sous Vite 5 : l'écart ne
+  tranche pas, le défaut est dans l'application.
+- **Cause** : `Update.vue` appelait `storageIndexStore.updateCollection()`
+  **sans `await`**, puis naviguait vers la liste. Le store ne remplace la
+  collection qu'après la réponse de Kuzzle ; la spec clique « modifier »
+  aussitôt, et `JsonEditor` ne lit `content` qu'à son montage. Si la réponse
+  arrive après, l'éditeur garde l'ancien mapping. Le `try/catch` autour ne
+  servait à rien : une erreur de mise à jour n'affichait jamais le toast.
+  `DeleteCollectionModal.vue` avait le même défaut sur `deleteCollection()`.
+  `Create.vue`, lui, attendait déjà.
+- **Solution** : `await` sur les deux appels ; `performDelete` devient
+  `async`. Garde-fou par mutation, écriture retardée de 1,5 s dans le store :
+
+  | `Update.vue` | Résultat |
+  |---|---|
+  | sans `await` | ❌ reproduit à chaque fois |
+  | avec `await` | ✅ |
+
+- **À retenir** : un `try/catch` autour d'un appel `async` non attendu est
+  un signal à lui seul — il ne rattrape rien. Et un test « instable » qui
+  vérifie une écriture puis une relecture pointe d'abord vers une écriture non
+  attendue, dans la spec (G-001) **ou dans l'application**.
+
+#### G-067 — Sous Vite 8, l'import par défaut d'un paquet CommonJS rend `module.exports`
+
+- **Contexte** : phase 0, montée de Vite 5.4.6 → 8.3.1
+  ([ADR-0039](adr/0039-vite-8.md)).
+- **Symptôme** : le build passe, **toutes** les specs échouent dès la première
+  page : *« K.default is not a constructor »*, levé par l'application.
+- **Cause** : `src/routes/index.ts` fait `import KeplerCompanion from
+  'kepler-companion'` puis `new KeplerCompanion()` à la création du routeur.
+  Le paquet est du CommonJS compilé par TypeScript : la classe est dans
+  `exports.default`, avec `__esModule: true`. Vite 5 lisait ce drapeau et
+  rendait la classe. Vite 8 (Rolldown) suit la sémantique de Node dans un
+  paquet `"type": "module"` : l'import par défaut rend `module.exports`, soit
+  `{ default: classe }`.
+- **Solution** : résoudre au site d'appel, `(module).default ?? module`, qui
+  marche sous les deux sémantiques. Les autres imports par défaut de paquets
+  ont été vérifiés un par un : `lodash`, `moment`, `bluebird`, `leaflet`,
+  `ace-builds`, `json-formatter-js` sont en CommonJS **sans** `__esModule`
+  (même résultat sous les deux interops), `vue3-apexcharts` et
+  `vue-multiselect` sont en ESM.
+- **À retenir** : un build vert sous Rolldown ne dit rien de l'interop
+  CommonJS, qui ne se révèle qu'à l'exécution. La seule question utile par
+  paquet : son entrée est-elle du CommonJS **avec** `__esModule` ?
+
+#### G-068 — Les specs envoyaient de la télémétrie, et la console reposait la question à qui avait d'autres cookies
+
+- **Contexte** : capture d'échec pendant la validation de Vite 8 : un
+  `POST https://kepler.app.kuzzle.io/_/telemetry/register` (401) au milieu
+  de `collections.spec.js`, alors que la spec pose `telemetry=false`.
+- **Symptôme** : deux, de sens opposés.
+  1. **Dans les specs**, la télémétrie part vers le vrai service à chaque
+     navigation, alors qu'elle est refusée.
+  2. **Chez un utilisateur** qui a d'autres cookies sur le domaine, le choix
+     n'est jamais retenu : la bannière « Usage telemetry » revient à chaque
+     chargement, et rien n'est envoyé, même après *Accept*.
+- **Cause** : `telemetryCookies.get()` faisait
+  `JSON.parse(document.cookie.split('telemetry=')[1])`.
+  1. Les specs posent `telemetry=false` sans guillemets : `JSON.parse` rend le
+     **booléen** `false`, et le routeur compare à la **chaîne** `'false'`. La
+     console, elle, écrit `"false"` via `JSON.stringify`.
+  2. `split('telemetry=')[1]` prend aussi tous les cookies qui suivent :
+     `"false"; other=value` fait échouer `JSON.parse`, et `get()` rend
+     `null` — « pas de choix ».
+- **Solution** : isoler le cookie `telemetry` dans `document.cookie`, et
+  ramener la valeur à `'true'`, `'false'` ou `null`. Trois tests dans
+  `login.spec.js`, avec `cy.intercept` qui bouchonne kepler et compte les
+  appels : refus + autre cookie, acceptation + autre cookie, `false` brut. **Les
+  trois échouent avant le correctif** (bannière réaffichée, 3 requêtes
+  envoyées), passent après.
+- **À retenir** : un appel réseau vers un service de production pendant les
+  specs ne fait rien échouer — il répond 401 et le `.catch()` l'avale. Lire les
+  requêtes dans les captures d'échec, pas seulement l'assertion.
+
+#### G-069 — `npm install` accepte une montée que `npm ci` refuse
+
+- **Contexte** : phase 0, montée de TypeScript 5.4.5 → 6.0.3.
+- **Symptôme** : `npm i -D typescript@6.0.3` passe, `vue-tsc` et le build
+  aussi. Puis `npm ci` — ce que lance la CI — échoue en `ERESOLVE` :
+  *« peerOptional typescript@">= 5.2 <5.5" from eslint-plugin-vue-kuzzle@0.0.13 »*.
+  En local, l'échec était en plus **silencieux** dans un `&&` dont la sortie
+  était masquée : `node_modules` était resté en 5.4.5, et les vérifications
+  suivantes tournaient sur l'ancienne version.
+- **Cause** : `npm install` ne fait qu'avertir sur un conflit de pair
+  *optionnel* et installe quand même ; `npm ci`, lui, le traite en erreur.
+- **Solution** : monter ESLint d'abord (`eslint-plugin-vue-kuzzle` 2.0.0 accepte
+  TypeScript jusqu'à 6.0.x, [ADR-0040](adr/0040-eslint-10-flat-config.md)),
+  TypeScript ensuite.
+- **À retenir** : une montée de dépendance se valide par `rm -rf node_modules &&
+  npm ci`, jamais par le `npm install` qui l'a faite. Et contrôler
+  `node_modules/<paquet>/package.json` avant de conclure d'une vérification.
+
+#### G-070 — TypeScript 7 casse `vue-tsc` au démarrage
+
+- **Contexte** : phase 0, montée de TypeScript 5.4.5
+  ([ADR-0041](adr/0041-typescript-6.md)).
+- **Symptôme** : avec `typescript@7.0.2`, `npx tsc -v` répond, mais
+  `vue-tsc` échoue immédiatement : *« Error [ERR_PACKAGE_PATH_NOT_EXPORTED]:
+  Package subpath './lib/tsc' is not defined by "exports" »*.
+- **Cause** : TypeScript 7 est le portage natif en Go. Le paquet `typescript`
+  ne livre plus que le binaire (`lib/` ne contient que `tsc.js`, un lanceur,
+  et `getExePath`), sans l'API JavaScript du compilateur. `vue-tsc` — comme
+  `typescript-eslint` — charge `typescript/lib/tsc` et s'en sert comme d'une
+  bibliothèque. `vue-tsc` 3.3.8 sait détecter l'alias `typescript` →
+  `@typescript/typescript6`, qui embarque la 6 en dépendance, mais c'est
+  alors la 6 qui vérifie les types.
+- **Solution** : TypeScript 6.0.3, la dernière ligne qui fournit l'API.
+- **À retenir** : « `vue-tsc` supporte TS 7 » veut dire qu'il cohabite avec,
+  pas qu'il s'en sert. Tant que l'outillage Vue passe par l'API JavaScript du
+  compilateur, la version qui vérifie les types est la 6.
+
+#### G-072 — Un bundle identique ne dit rien des specs : Cypress compile avec le TypeScript du projet
+
+- **Contexte** : montée de TypeScript 6 ([ADR-0041](adr/0041-typescript-6.md)).
+- **Symptôme** : le build de la console est identique octet pour octet à celui
+  d'avant la montée ; les specs n'ont donc pas été relancées. En CI, **les 17
+  échouent** avant le premier test : *« Webpack Compilation Error — TS5101:
+  Option 'baseUrl' is deprecated »*.
+- **Cause** : le préprocesseur webpack de Cypress compile les specs et
+  `support/commands.js` (qui importe `src/utils.ts`) avec le `typescript` du
+  projet, selon `test/e2e/cypress/tsconfig.json`. Ce fichier portait un
+  `baseUrl` que TypeScript 6 refuse. Le bundle de la console, lui, ne passe
+  pas par là.
+- **Solution** : retirer `baseUrl` de ce tsconfig ; `types: ["cypress"]` se
+  résout sans lui, en remontant jusqu'au `node_modules` de la racine.
+- **À retenir** : « le bundle n'a pas changé » prouve que la **console** n'a pas
+  changé. Une montée d'outil (TypeScript, Babel, webpack…) peut changer la
+  compilation des **specs**. Elle se valide en relançant les specs.
+
+#### G-071 — Un cast avec `|` dans un template est lu comme un filtre Vue 2
+
+- **Contexte** : ramener `test:types` à zéro
+  ([ADR-0042](adr/0042-test-types-bloquant-en-ci.md)).
+- **Symptôme** : `:environment-id="$attrs.id as string | undefined"` règle
+  l'erreur de `vue-tsc`, le build passe, mais ESLint échoue :
+  *« Filters are deprecated — vue/no-deprecated-filter »*.
+- **Cause** : `vue-eslint-parser` reconnaît toujours la syntaxe des filtres de
+  Vue 2 (`{{ x | f }}`) dans les expressions de template, pour pouvoir la
+  signaler. Le `|` d'une union TypeScript y ressemble trait pour trait. Le
+  compilateur de Vue 3, lui, ne connaît plus les filtres et lit l'union.
+- **Solution** : sortir le cast du template, dans une propriété calculée
+  typée.
+- **À retenir** : dans un template, un type qui contient `|` se déclare côté
+  script.
+
+#### G-073 — Un `npm ci` qui ne rend pas la main bloque le job six heures
+
+- **Contexte** : CI de #1102 (Vite 8), le 2026-09-25.
+- **Symptôme** : un seul des 17 jobs E2E (`indexes`) reste sur *Install
+  dependencies* pendant 1 h 30, jusqu'à son annulation manuelle. Les 16 autres,
+  sur le même commit, passent en 2 à 7 min.
+- **Cause** : `npm ci` avait **fini d'installer** — ses derniers messages
+  sont horodatés 09:27:13, une minute après le début du job — puis le processus
+  n'a pas rendu la main. Aucune cause côté code : même commit, même lockfile
+  que les jobs verts. Ce qui transforme l'incident en blocage, c'est
+  **l'absence de `timeout-minutes`** : le défaut de GitHub est de 360 min. Et
+  depuis [ADR-0037](adr/0037-serialiser-les-deploiements.md), un run pendu sur
+  `5-dev` ou `master` retiendrait tous les déploiements derrière lui.
+- **Solution** : `timeout-minutes` sur chaque job, calibré sur les durées
+  observées (E2E 7 min au plus → 25 ; Lint 1 min → 10 ; déploiement 1 min →
+  15 ; résumé → 5), et 10 min sur l'étape `npm ci` des jobs E2E, pour que
+  l'échec nomme l'étape. Le job pendu a été relancé (`gh run rerun --failed`).
+- **À retenir** : sérialiser des runs rend chaque run capable de bloquer les
+  suivants. Tout workflow sous `concurrency` a besoin de timeouts.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -2950,7 +3170,18 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-23 | Le chantier déménage sur `5-dev` et se déploie sur console-v5.kuzzle.io | [ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md) |
 | 2026-09-24 | `MODE: 3` global, et les bibliothèques Vue 2 épinglées en `MODE: 2` | [ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md) |
 | 2026-09-24 | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | [ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) |
+| 2026-09-24 | `vue-draggable-plus` remplace `vuedraggable` | [ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md) |
+| 2026-09-24 | `vue-multiselect` passe en 3.x, le Combobox shadcn-vue attendra la refonte | [ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md) |
+| 2026-09-24 | `vue-color` cède la place à `<input type="color">` | [ADR-0035](adr/0035-selecteur-de-couleur-natif.md) |
+| 2026-09-24 | Retrait de `@vue/compat` : la console tourne sur Vue 3 pur | [ADR-0036](adr/0036-retrait-de-vue-compat.md) |
+| 2026-09-24 | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | [ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) |
 | 2026-09-24 | `vue-draggable-plus` remplace `vuedraggable`, et non `vuedraggable@next` | [ADR-0033](adr/0033-vue-draggable-plus-remplace-vuedraggable.md) |
 | 2026-09-24 | `vue-multiselect` passe en 3.x, le Combobox shadcn-vue attendra la refonte | [ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md) |
 | 2026-09-24 | `vue-color` cède la place à `<input type="color">` | [ADR-0035](adr/0035-selecteur-de-couleur-natif.md) |
 | 2026-09-24 | Retrait de `@vue/compat` : la console tourne sur Vue 3 pur | [ADR-0036](adr/0036-retrait-de-vue-compat.md) |
+| 2026-09-25 | Sérialiser les runs de déploiement au niveau du workflow | [ADR-0037](adr/0037-serialiser-les-deploiements.md) |
+| 2026-09-25 | Cypress 16, sans changer ce que font les specs | [ADR-0038](adr/0038-cypress-16.md) |
+| 2026-09-25 | Vite 8, et `moduleResolution` reste au lot TypeScript | [ADR-0039](adr/0039-vite-8.md) |
+| 2026-09-25 | ESLint 10 en flat config, avec le standard Kuzzle 2.0 complété | [ADR-0040](adr/0040-eslint-10-flat-config.md) |
+| 2026-09-25 | TypeScript 6, pas 7, et `moduleResolution: "bundler"` | [ADR-0041](adr/0041-typescript-6.md) |
+| 2026-09-25 | `test:types` à zéro, et bloquant en CI | [ADR-0042](adr/0042-test-types-bloquant-en-ci.md) |

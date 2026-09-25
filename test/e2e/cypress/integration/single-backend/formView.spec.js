@@ -53,7 +53,7 @@ describe('Form view', function() {
       }
     )
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   it('should be able to create a new document with the form view enabled', function() {

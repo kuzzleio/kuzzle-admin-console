@@ -5,6 +5,14 @@ on:
     branches:
       - 5-dev
 
+# Un seul run à la fois, dans l'ordre des pushes : sans ce bloc, des fusions
+# rapprochées déploient en parallèle et le dernier run à *finir* gagne, pas le
+# dernier commit. `cancel-in-progress: false` laisse finir le run en cours ;
+# GitHub annule les runs en attente qu'un plus récent remplace. Voir ADR-0037.
+concurrency:
+  group: deploy-console-v5
+  cancel-in-progress: false
+
 env:
   NODE_VERSION: '24'
 
@@ -12,6 +20,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,6 +38,7 @@ jobs:
     name: E2E Test - ${{ matrix.spec }}
     needs: ['lint']
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -68,6 +78,8 @@ jobs:
           key: cypress-binary-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
+        # Un `npm ci` a déjà pendu 1 h 30 après avoir fini d'installer (G-073).
+        timeout-minutes: 10
         run: npm ci
 
       - name: Start Kuzzle
@@ -141,6 +153,7 @@ jobs:
     needs: [lint, e2e-tests]
     if: always()
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     steps:
       - name: Create Summary
         run: |
@@ -172,6 +185,7 @@ jobs:
     name: Deploy Admin Console v5 - console-v5.kuzzle.io
     needs: ['e2e-tests']
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     # Le bucket et la distribution CloudFront de console-v5.kuzzle.io n'existent
     # pas encore. Tant que les deux variables de dépôt ne sont pas renseignées,
     # ce job est ignoré : un push sur 5-dev reste vert, il ne déploie rien.

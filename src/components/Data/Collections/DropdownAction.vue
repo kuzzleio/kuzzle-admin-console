@@ -58,7 +58,7 @@
 <script lang="ts">
 import { defineComponent, markRaw } from 'vue';
 import { mapState } from 'pinia';
-import type { RawLocation } from 'vue-router';
+import type { RouteLocationRaw } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -116,7 +116,7 @@ export default defineComponent({
     canTruncate(): boolean {
       return this.canTruncateCollection(this.indexName, this.collectionName);
     },
-    editRoute(): RawLocation {
+    editRoute(): RouteLocationRaw {
       return {
         name: 'EditCollection',
         params: { collectionName: this.collectionName, indexName: this.indexName },

@@ -5,7 +5,6 @@
     "noEmit": true
   },
   "include": [
-    ".eslintrc.cjs",
     "vite.config.ts",
     "scripts/packScript.mjs",
     "src/**/*.ts",

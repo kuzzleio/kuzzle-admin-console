@@ -5,7 +5,7 @@ describe('API Actions - query', function() {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
     cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   it('Should be able to perform a query', () => {
@@ -116,7 +116,7 @@ describe('API Actions - tabs and save', function() {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
     cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   it('Should be able to open a new tab', () => {
@@ -261,7 +261,7 @@ describe('API Actions - tabs and save', function() {
     const queryName2 = "createIndexTiti"
     const indexName = 'toto'
     const indexName2 = 'titi'
-    const backendVersion = Cypress.env('BACKEND_VERSION') || 2
+    const backendVersion = 2
     const storedQueries = {
       [envName]: [
         {"query":{"controller":"index","action":"create","index": indexName},"name": queryName}

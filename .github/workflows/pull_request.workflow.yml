@@ -14,6 +14,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,6 +32,7 @@ jobs:
     name: E2E Test - ${{ matrix.spec }}
     needs: ['lint']
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -70,6 +72,8 @@ jobs:
           key: cypress-binary-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
+        # Un `npm ci` a déjà pendu 1 h 30 après avoir fini d'installer (G-073).
+        timeout-minutes: 10
         run: npm ci
 
       - name: Start Kuzzle
@@ -143,6 +147,7 @@ jobs:
     needs: [lint, e2e-tests]
     if: always()
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     steps:
       - name: Create Summary
         run: |

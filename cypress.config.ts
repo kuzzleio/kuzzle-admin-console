@@ -19,6 +19,11 @@ export default defineConfig({
   // essai reste visible. Ce n'est pas le correctif, c'est le garde-fou en
   // attendant de remplacer les attentes à durée fixe par des attentes sur
   // assertion.
+  // Cypress 16 a ramené le délai par défaut entre deux frappes de 10 ms à 0.
+  // On garde l'ancien : les saisies dans Ace sont celles qui perdent des
+  // frappes sous charge (G-001), et la montée de version ne doit pas changer
+  // ce que les specs font.
+  keystrokeDelay: 10,
   retries: {
     runMode: 2,
     openMode: 0,

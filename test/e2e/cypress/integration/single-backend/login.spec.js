@@ -5,7 +5,7 @@ const admin = {
 const validEnvName = 'valid'
 describe('Login', function() {
   beforeEach(() => {
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'), null)
+    cy.initLocalEnv(2, null)
     cy.setCookie('telemetry', 'false')
   })
 
@@ -79,7 +79,7 @@ describe('Login', function() {
             host: 'localhost',
             ssl: false,
             port: 7512,
-            backendMajorVersion: Cypress.env('BACKEND_VERSION') || 2,
+            backendMajorVersion: 2,
             token: response.body.result.jwt
           }
         })
@@ -111,7 +111,7 @@ describe('Login', function() {
   it('Should stay on the login page after selecting the same environment', () => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     const envName = 'local'
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'), null, 7512, envName)
+    cy.initLocalEnv(2, null, 7512, envName)
     cy.visit('/')
     cy.url().should('contain', '/#/login')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
@@ -145,7 +145,7 @@ describe('Login', function() {
             host: 'localhost',
             ssl: false,
             port: 7512,
-            backendMajorVersion: Cypress.env('BACKEND_VERSION') || 2,
+            backendMajorVersion: 2,
             token: response.body.result.jwt
           }
         })
@@ -161,5 +161,48 @@ describe('Login', function() {
       cy.get('[data-cy=MainMenu-logoutBtn]').click()
       cy.url().should('contain', '/#/login')
     })
+  })
+})
+
+describe('Telemetry', function() {
+  // Aucune requête ne doit atteindre le vrai service : on bouchonne kepler et
+  // on compte les appels.
+  beforeEach(() => {
+    cy.initLocalEnv(2, null)
+    cy.intercept('POST', 'https://kepler.app.kuzzle.io/**', {
+      statusCode: 200,
+      body: {}
+    }).as('telemetry')
+  })
+
+  // La console écrit le cookie avec `JSON.stringify` : `telemetry="false"`.
+  // Un second cookie placé après lui est le cas d'un vrai navigateur.
+  it('Should not send telemetry once disabled, even with other cookies', () => {
+    cy.setCookie('telemetry', '"false"')
+    cy.setCookie('other', 'value')
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+    cy.contains('Usage telemetry').should('not.exist')
+    cy.get('@telemetry.all').should('have.length', 0)
+  })
+
+  it('Should send telemetry once accepted, even with other cookies', () => {
+    cy.setCookie('telemetry', '"true"')
+    cy.setCookie('other', 'value')
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+    cy.contains('Usage telemetry').should('not.exist')
+    cy.wait('@telemetry')
+  })
+
+  // Le format qu'utilisent les specs : sans guillemets.
+  it('Should not send telemetry when the cookie is a bare false', () => {
+    cy.setCookie('telemetry', 'false')
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+    cy.get('@telemetry.all').should('have.length', 0)
   })
 })

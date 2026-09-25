@@ -1,4 +1,4 @@
-import KeplerCompanion from 'kepler-companion';
+import KeplerCompanionModule from 'kepler-companion';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 import PageNotFound from '../components/404.vue';
@@ -17,6 +17,15 @@ import type { Logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
 import DataSubRoutes from './children/data';
 import SecuritySubRoutes from './children/security';
+
+// `kepler-companion` est du CommonJS compilé par TypeScript : la classe est dans
+// `exports.default`, avec le drapeau `__esModule`. Vite 5 lisait ce drapeau et
+// rendait la classe ; Vite 8 suit la sémantique de Node dans un paquet
+// `"type": "module"` et rend `module.exports`, soit `{ default: classe }`.
+// Le repli couvre les deux. Voir G-067.
+const KeplerCompanion =
+  (KeplerCompanionModule as unknown as { default?: typeof KeplerCompanionModule }).default ??
+  KeplerCompanionModule;
 
 export default function createRoutes(log: Logger) {
   const environmentsGuard = async (_from, _to, next) => {

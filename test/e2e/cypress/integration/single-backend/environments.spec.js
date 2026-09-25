@@ -2,7 +2,7 @@ const fmt = word => {
   return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
 }
 
-const backendVersion = Cypress.env('BACKEND_VERSION') || 2
+const backendVersion = 2
 describe('Environments', function() {
   this.beforeEach(() => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
@@ -325,7 +325,7 @@ describe('Environments', function() {
 
   it('Should redirect to the edit environment page when the app opens and the current environment is malformed', () => {
     const envName = 'malformed'
-    const backendVersion = Cypress.env('BACKEND_VERSION') || 2
+    const backendVersion = 2
     localStorage.setItem(
       'environments',
       JSON.stringify({
@@ -414,13 +414,9 @@ describe('Import and export environments', function() {
     cy.get('[data-cy="CreateEnvironment-import"]').click()
     cy.contains('Import Connection')
 
-    cy.get('[data-cy="EnvironmentImport-fileInput"]').attachFile(
-      {
-        filePath: 'environment.json',
-        mimeType: 'application/json'
-      },
-      { subjectType: 'input', force: true }
-    )
+    cy.get('[data-cy="EnvironmentImport-fileInput"]').selectFile('test/e2e/cypress/fixtures/environment.json', {
+      force: true
+    })
     cy.get('[data-cy=EnvironmentImport-ok]')
       .should('exist')
       .should('contain', 'Found 2 connections')
@@ -440,13 +436,9 @@ describe('Import and export environments', function() {
     cy.get('[data-cy="CreateEnvironment-import"]').click()
     cy.contains('Import Connection')
 
-    cy.get('[data-cy="EnvironmentImport-fileInput"]').attachFile(
-      {
-        filePath: 'image.jpg',
-        mimeType: 'image/jpeg'
-      },
-      { subjectType: 'input', force: true }
-    )
+    cy.get('[data-cy="EnvironmentImport-fileInput"]').selectFile('test/e2e/cypress/fixtures/image.jpg', {
+      force: true
+    })
     cy.get('[data-cy=EnvironmentImport-err]')
       .should('exist')
       .should('contain', 'Uploaded file type (image/jpeg) is not supported.')
