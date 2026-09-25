@@ -5,6 +5,14 @@ on:
     branches:
       - master
 
+# Un seul run à la fois, dans l'ordre des pushes : sans ce bloc, des fusions
+# rapprochées déploient en parallèle et le dernier run à *finir* gagne, pas le
+# dernier commit. `cancel-in-progress: false` laisse finir le run en cours ;
+# GitHub annule les runs en attente qu'un plus récent remplace. Voir ADR-0037.
+concurrency:
+  group: deploy-console-production
+  cancel-in-progress: false
+
 env:
   NODE_VERSION: '24'
 

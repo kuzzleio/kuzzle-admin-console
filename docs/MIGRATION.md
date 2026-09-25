@@ -2858,6 +2858,26 @@ Gabarit à copier :
   `node_modules` qui a survécu ment. Réinstaller à neuf avant de conclure
   quoi que ce soit d'un échec de build.
 
+#### G-064 — Des fusions rapprochées déploient dans le désordre, et tous les runs sont verts
+
+- **Contexte** : fusion de la pile #1094 → #1095 → #1096 sur `5-dev`, le
+  2026-09-24, en une minute.
+- **Symptôme** : les trois runs *5-dev push checks* sont verts, mais
+  console-v5.kuzzle.io sert encore `@vue/compat`, que #1096 a retiré.
+- **Cause** : pas de bloc `concurrency` sur `push_5_dev.workflow.yml`. Les trois
+  runs tournent en parallèle et chacun déploie après ses E2E : **le dernier run
+  à finir gagne, pas le dernier commit**. Celui de #1095 a fini après celui de
+  #1096 et a écrasé son déploiement.
+- **Comment il a été trouvé** : pas par la CI. `__COMMIT_HASH__` est inliné
+  dans le bundle ; chercher le SHA court de la tête dans les
+  `/assets/*.js` servis ne le trouvait pas.
+- **Solution** : sur le moment, `gh run rerun` du run de tête. Durablement,
+  `concurrency` au niveau du **workflow**
+  ([ADR-0037](adr/0037-serialiser-les-deploiements.md)) sur `push_5_dev` et
+  `push_master` — au niveau du seul job de déploiement, la course subsiste.
+- **À retenir** : un run vert dit que *ce commit* est bon, pas que *ce commit*
+  est en ligne. Pour savoir ce qui est servi, lire le bundle.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -2954,3 +2974,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-24 | `vue-multiselect` passe en 3.x, le Combobox shadcn-vue attendra la refonte | [ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md) |
 | 2026-09-24 | `vue-color` cède la place à `<input type="color">` | [ADR-0035](adr/0035-selecteur-de-couleur-natif.md) |
 | 2026-09-24 | Retrait de `@vue/compat` : la console tourne sur Vue 3 pur | [ADR-0036](adr/0036-retrait-de-vue-compat.md) |
+| 2026-09-25 | Sérialiser les runs de déploiement au niveau du workflow | [ADR-0037](adr/0037-serialiser-les-deploiements.md) |
