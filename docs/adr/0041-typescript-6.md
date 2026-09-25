@@ -36,6 +36,10 @@ TypeScript 7 ne fournit plus. La dernière ligne qui la fournit est la 6.
   pas les nôtres. Effet de bord assumé : nos propres `shims-*.d.ts` ne sont
   plus vérifiés non plus — ce sont des restes de Vue 2 à supprimer.
 - **Le shim `@tailwindcss/vite` est supprimé**, comme il le prévoyait.
+- **`baseUrl` sort aussi de `test/e2e/cypress/tsconfig.json`** : le
+  préprocesseur de Cypress compile les specs avec le TypeScript du projet, et
+  TypeScript 6 refuse l'option — les 17 specs échouaient à la compilation
+  ([G-072](../MIGRATION.md#g-072)).
 
 Avec la résolution `bundler`, les types de Vue 3 sont enfin lus correctement :
 `$refs.x` devient `unknown`, et deux `as unknown as T` deviennent `as T`
@@ -50,7 +54,8 @@ Avec la résolution `bundler`, les types de Vue 3 sont enfin lus correctement :
   (×2), `TabsTrigger.vue`, `CreateEnvironmentPage.vue`. Les ramener à zéro et
   faire entrer `test:types` en CI devient un lot court.
 - Le bundle est **identique**, octet pour octet : le lot ne change rien à
-  l'exécution.
+  l'exécution de la console. Il change en revanche la compilation des specs,
+  que le bundle ne couvre pas : 17/17 specs revalidées.
 
 ### Négatives
 

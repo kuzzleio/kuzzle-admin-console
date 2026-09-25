@@ -3023,6 +3023,24 @@ Gabarit à copier :
   pas qu'il s'en sert. Tant que l'outillage Vue passe par l'API JavaScript du
   compilateur, la version qui vérifie les types est la 6.
 
+#### G-072 — Un bundle identique ne dit rien des specs : Cypress compile avec le TypeScript du projet
+
+- **Contexte** : montée de TypeScript 6 ([ADR-0041](adr/0041-typescript-6.md)).
+- **Symptôme** : le build de la console est identique octet pour octet à celui
+  d'avant la montée ; les specs n'ont donc pas été relancées. En CI, **les 17
+  échouent** avant le premier test : *« Webpack Compilation Error — TS5101:
+  Option 'baseUrl' is deprecated »*.
+- **Cause** : le préprocesseur webpack de Cypress compile les specs et
+  `support/commands.js` (qui importe `src/utils.ts`) avec le `typescript` du
+  projet, selon `test/e2e/cypress/tsconfig.json`. Ce fichier portait un
+  `baseUrl` que TypeScript 6 refuse. Le bundle de la console, lui, ne passe
+  pas par là.
+- **Solution** : retirer `baseUrl` de ce tsconfig ; `types: ["cypress"]` se
+  résout sans lui, en remontant jusqu'au `node_modules` de la racine.
+- **À retenir** : « le bundle n'a pas changé » prouve que la **console** n'a pas
+  changé. Une montée d'outil (TypeScript, Babel, webpack…) peut changer la
+  compilation des **specs**. Elle se valide en relançant les specs.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
