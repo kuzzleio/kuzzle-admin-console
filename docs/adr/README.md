@@ -66,6 +66,8 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0042](0042-test-types-bloquant-en-ci.md) | `test:types` à zéro, et bloquant en CI | Acceptée |
 | [0043](0043-da-kuzzle-pour-la-console.md) | La DA de la console est celle du design system produit Kuzzle | Acceptée |
 | [0044](0044-impeccable-versionne-sans-hooks.md) | Impeccable versionné dans le repo, sans ses hooks | Acceptée |
+| [0045](0045-pagination-masquee-sur-une-page.md) | Les listes Security masquent leur pagination quand tout tient sur une page | Acceptée |
+| [0046](0046-aide-api-action-au-clic.md) | L'aide d'API Action s'ouvre au clic | Acceptée |
 
 ## Gabarit
 

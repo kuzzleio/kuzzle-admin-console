@@ -293,6 +293,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `TagsInput` — pour le seul champ à étiquettes ([ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md)) | ✅ |
 | `Resizable` — splitter maison, poignée au clavier ([ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md)) | ✅ |
 | `Toast` — zone unique et store ([ADR-0020](adr/0020-systeme-de-toasts.md)) | ✅ |
+| `FileInput` — l'input natif masqué, le texte de la console (E-15 de la comparaison v4 / v5) | ✅ |
 | ~~Dernière primitive interactive : `Combobox` (pour `vue-multiselect`)~~ | ➖ `vue-multiselect` 3.5.0 est gardé : le `Combobox` attendra la refonte, qui dira s'il en faut un ([ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md)) |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
@@ -436,6 +437,9 @@ Trois points méritaient d'être tranchés plutôt que transposés :
   natif ignore `placeholder`, et « Select a JSON file to import mappings.. »
   était la seule indication que `b-form-file` affichait. La perdre sans la
   remplacer aurait retiré le seul mot qui disait à quoi sert le champ.
+  *Remplacé depuis* par la primitive `ui/file-input` : l'input natif affichait
+  son bouton et son « aucun fichier choisi » dans la langue du navigateur
+  (E-15 de [`ecarts.md`](comparaison-v4-v5/ecarts.md#e-15)).
 - **« Export Mapping » est un cas de G-016** : `<b-button :href :disabled>`
   arbitrait tout seul, notre `Button` non. Le bouton est rendu en `<a>` quand le
   mapping est un JSON valide, et en `<button disabled>` sinon — le cas interdit
@@ -3133,9 +3137,31 @@ Gabarit à copier :
   ```
 
   Et une seule validation E2E à la fois sur la machine : le backend est partagé.
+- **Vu de l'autre session** (captures v4 / v5, le même jour) : en plein run,
+  `cy.request()` échoue sur `_resetDatabase` (« failed without a response »),
+  ou les états réussissent jusqu'à un point puis tombent tous faute de
+  données — l'index de test et les utilisateurs ont disparu. Les specs de
+  l'autre session (`_resetDatabase`, `_resetSecurity`) vidaient le backend
+  commun, et un `docker compose down -v` dans l'autre worktree le détruisait.
+  Avant de lancer : `docker ps` et `ps aux | grep 'cypress run'`.
 - **À retenir** : un run vert ne prouve que ce qu'on a servi. Même principe
   qu'[ADR-0028](adr/0028-valider-les-specs-contre-un-build.md) : il faut savoir
   **quel** build les specs ont validé.
+
+#### G-075 — En Electron headless, une capture de viewport est rognée à 1280×720
+
+- **Contexte** : `cypress.captures.config.ts`, viewport 1440×900.
+- **Symptôme** : les PNG font 1280×720, ont des barres de défilement, et la
+  page est coupée à droite (ou décalée à gauche) — alors que
+  `capture: 'viewport'` devrait donner le viewport entier.
+- **Cause** : Electron headless ouvre sa fenêtre en 1280×720. Plus petite que
+  le viewport, elle ne peut pas le contenir, et la capture prend ce qui tient
+  dans la fenêtre.
+- **Solution** : agrandir la fenêtre au lancement, dans `setupNodeEvents` —
+  `launchOptions.preferences.width/height` pour Electron,
+  `--window-size` pour Chromium. Les specs ne sont pas touchées : elles ne
+  capturent rien.
+- **Ref** : étape 2 de la comparaison v4 / v5.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
@@ -3246,3 +3272,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-25 | `test:types` à zéro, et bloquant en CI | [ADR-0042](adr/0042-test-types-bloquant-en-ci.md) |
 | 2026-09-25 | La DA de la console est celle du design system produit Kuzzle ; comparaison v4 / v5 d'abord | [ADR-0043](adr/0043-da-kuzzle-pour-la-console.md) |
 | 2026-09-25 | Impeccable versionné dans le repo, sans ses hooks | [ADR-0044](adr/0044-impeccable-versionne-sans-hooks.md) |
+| 2026-09-25 | Une pagination ne s'affiche que s'il y a plus d'une page, sur toutes les listes | [ADR-0045](adr/0045-pagination-masquee-sur-une-page.md) |
+| 2026-09-25 | L'aide d'API Action s'ouvre au clic, dans un `DropdownMenu` | [ADR-0046](adr/0046-aide-api-action-au-clic.md) |

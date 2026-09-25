@@ -6,22 +6,15 @@
     <div class="flex flex-wrap items-start justify-between gap-4">
       <headline>Edit User Custom Data Mapping</headline>
       <div class="flex flex-wrap items-center gap-3">
-        <!--
-          Le libellé est visible : un `<input type="file">` natif ignore
-          `placeholder`, et « Import mapping » était la seule indication que
-          `b-form-file` affichait.
-        -->
-        <div class="flex items-center gap-2">
-          <Label for="user-mapping-import">Import mapping</Label>
-          <Input
-            id="user-mapping-import"
-            ref="file-input"
-            accept=".json"
-            class="w-auto"
-            type="file"
-            @change="loadMappingValue($event)"
-          />
-        </div>
+        <FileInput
+          id="user-mapping-import"
+          ref="file-input"
+          accept=".json"
+          aria-label="Import mapping"
+          class="w-72"
+          placeholder="Import mapping"
+          @change="loadMappingValue($event)"
+        />
         <!--
           `as` bascule sur `button` quand l'export est impossible : un `<a>`
           ignore `disabled` et resterait cliquable (G-016).
@@ -106,8 +99,7 @@ import Headline from '../../Materialize/Headline.vue';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { FileInput } from '@/components/ui/file-input';
 import { useKuzzleStore } from '@/stores';
 
 export default {
@@ -118,10 +110,9 @@ export default {
     Card,
     CardContent,
     CardFooter,
+    FileInput,
     Headline,
-    Input,
     JsonEditor,
-    Label,
   },
   data() {
     return {

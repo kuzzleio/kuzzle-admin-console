@@ -7,13 +7,11 @@
 
       <div class="flex flex-col gap-1.5">
         <Label for="env-import-file">Upload a file</Label>
-        <input
+        <FileInput
           id="env-import-file"
           ref="file-input"
           accept=".json"
-          class="block w-full cursor-pointer rounded-md border border-input bg-background p-2 font-sans text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           data-cy="EnvironmentImport-fileInput"
-          type="file"
           @change="onFileChange"
         />
         <DialogDescription> You can drag and drop your file in this input field </DialogDescription>
@@ -63,6 +61,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { FileInput } from '@/components/ui/file-input';
 import { Label } from '@/components/ui/label';
 import { useKuzzleStore } from '@/stores';
 import type { Environment } from '@/stores/types/kuzzle';
@@ -78,6 +77,7 @@ export default defineComponent({
     DialogFooter,
     DialogHeader,
     DialogTitle,
+    FileInput,
     Label,
   },
   props: {
@@ -131,13 +131,8 @@ export default defineComponent({
     close() {
       this.$emit('update:open', false);
     },
-    // `b-form-file` exposait `reset()`. Sur un `<input type="file">` natif, la
-    // seule façon de vider la sélection est de remettre `value` à vide.
     clearFiles() {
-      const input = this.$refs['file-input'] as HTMLInputElement | undefined;
-      if (input) {
-        input.value = '';
-      }
+      (this.$refs['file-input'] as InstanceType<typeof FileInput> | undefined)?.reset();
       this.file = null;
     },
     onFileChange(event: Event) {

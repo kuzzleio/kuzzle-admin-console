@@ -25,3 +25,6 @@ test/e2e/screenshots
 # vise que le dossier `cypress/` que Cypress crée éventuellement à la racine.
 /cypress/
 stats.html
+
+# Captures de la comparaison v4 / v5 : sortie locale, publiée à part.
+/test/e2e/captures/

@@ -46,21 +46,14 @@
         </FormItem>
 
         <div class="flex flex-wrap items-center gap-3">
-          <!--
-            Le libellé est visible : un `<input type="file">` natif ignore
-            `placeholder`, qui était la seule indication que `b-form-file`
-            affichait.
-          -->
-          <div class="flex items-center gap-2">
-            <Label for="collection-mapping-import">Import mappings</Label>
-            <Input
-              id="collection-mapping-import"
-              accept=".json"
-              class="w-auto"
-              type="file"
-              @change="loadMappingValue($event)"
-            />
-          </div>
+          <FileInput
+            id="collection-mapping-import"
+            accept=".json"
+            aria-label="Import mappings"
+            class="w-96"
+            placeholder="Select a JSON file to import mappings.."
+            @change="loadMappingValue($event)"
+          />
 
           <!--
             `disabled` n'a aucun effet sur un `<a>` (G-016) : quand le mapping
@@ -144,6 +137,7 @@ import JsonEditor from '../../Common/JsonEditor.vue';
 import Headline from '../../Materialize/Headline.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { FileInput } from '@/components/ui/file-input';
 import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -168,6 +162,7 @@ export default {
     FormItem,
     FormMessage,
     Headline,
+    FileInput,
     Input,
     JsonEditor,
     Label,
