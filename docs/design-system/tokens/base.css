@@ -1,0 +1,21 @@
+/* Kuzzle IoT base element defaults. Light application canvas. */
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--secondary);
+  background: var(--body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: var(--primary); text-decoration: none; transition: color var(--dur-fast) var(--ease-standard); }
+a:hover { color: var(--primary-dark); text-decoration: underline; }
+
+.mono { font-family: var(--font-mono); }
+
+::selection { background: rgba(230, 68, 114, 0.18); color: var(--secondary); }
+
+h1, h2 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: var(--ls-display); line-height: var(--lh-tight); font-weight: 700; }
+h3, h4 { font-family: var(--font-head); font-weight: 800; line-height: var(--lh-heading); }

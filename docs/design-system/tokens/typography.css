@@ -1,0 +1,35 @@
+/* Kuzzle IoT typography.
+   Gobold (fallback Oswald) display · Montserrat headings/accroche · Ubuntu body & UI. */
+:root {
+  --font-display: 'Gobold', 'Oswald', sans-serif;   /* H1/H2 — UPPERCASE, impact */
+  --font-head: 'Montserrat', sans-serif;            /* section titles, accroche */
+  --font-body: 'Ubuntu', sans-serif;                /* body + UI labels */
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; /* IDs, values, JSON */
+
+  /* weights */
+  --fw-body: 400; /* @kind font */
+  --fw-medium: 500; /* @kind font */
+  --fw-bold: 700; /* @kind font */
+  --fw-head: 800; /* @kind font */
+
+  /* type scale (px) — matched to the app */
+  --fs-display: 40px;   /* Gobold display H1 */
+  --fs-section: 26px;   /* Montserrat 800 section title */
+  --fs-hero-name: 24px; /* KHero entity name */
+  --fs-card-title: 16px;/* Ubuntu 700 card title */
+  --fs-body: 14.5px;    /* body copy */
+  --fs-ui: 13.5px;      /* controls / rows */
+  --fs-small: 12.5px;
+  --fs-label: 11px;     /* CAPS labels */
+  --fs-mono: 13px;
+
+  /* line-heights */
+  --lh-tight: 1;    /* @kind other */
+  --lh-heading: 1.15; /* @kind other */
+  --lh-body: 1.55; /* @kind other */
+
+  /* tracking */
+  --ls-display: 0.01em; /* @kind other */
+  --ls-supertitle: 0.14em; /* @kind other */
+  --ls-label: 0.07em; /* @kind other */
+}
