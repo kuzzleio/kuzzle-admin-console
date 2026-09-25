@@ -890,8 +890,8 @@ Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026*
 | Node | 20 (EOL) / 22 dans le Dockerfile | 24 LTS « Krypton » | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
 | `.nvmrc` / `engines` / CI / Dockerfile / compose | 3 valeurs différentes | alignés, `.nvmrc` fait foi | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
 | Job `Lint` de la CI | `continue-on-error: true`, ne scanne que `src` | bloquant, scanne aussi `test/` | ✅ [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020) |
-| Vite | 5.4.6 | 8.x — plafond levé : `@vitejs/plugin-vue` 6.0.9 remplace `plugin-vue2` depuis la phase 3 | ⬜ |
-| TypeScript | 5.4.5 | à évaluer (TS 7 disponible) | ⬜ |
+| Vite | ~~5.4.6~~ 8.3.1 | 8.x ([ADR-0039](adr/0039-vite-8.md)) | ✅ 17/17 specs |
+| TypeScript | 5.4.5 | ≥ 5.6, avec `moduleResolution: "bundler"` ([ADR-0039](adr/0039-vite-8.md)) | ⬜ |
 | ESLint | eslintrc | flat config, ESLint 10 | ⬜ |
 | Cypress | ~~13.14.2~~ 16.1.0 | 16.x ([ADR-0038](adr/0038-cypress-16.md)) | ✅ 17/17 specs |
 
@@ -2932,6 +2932,29 @@ Gabarit à copier :
   vérifie une écriture puis une relecture pointe d'abord vers une écriture non
   attendue, dans la spec (G-001) **ou dans l'application**.
 
+#### G-067 — Sous Vite 8, l'import par défaut d'un paquet CommonJS rend `module.exports`
+
+- **Contexte** : phase 0, montée de Vite 5.4.6 → 8.3.1
+  ([ADR-0039](adr/0039-vite-8.md)).
+- **Symptôme** : le build passe, **toutes** les specs échouent dès la première
+  page : *« K.default is not a constructor »*, levé par l'application.
+- **Cause** : `src/routes/index.ts` fait `import KeplerCompanion from
+  'kepler-companion'` puis `new KeplerCompanion()` à la création du routeur.
+  Le paquet est du CommonJS compilé par TypeScript : la classe est dans
+  `exports.default`, avec `__esModule: true`. Vite 5 lisait ce drapeau et
+  rendait la classe. Vite 8 (Rolldown) suit la sémantique de Node dans un
+  paquet `"type": "module"` : l'import par défaut rend `module.exports`, soit
+  `{ default: classe }`.
+- **Solution** : résoudre au site d'appel, `(module).default ?? module`, qui
+  marche sous les deux sémantiques. Les autres imports par défaut de paquets
+  ont été vérifiés un par un : `lodash`, `moment`, `bluebird`, `leaflet`,
+  `ace-builds`, `json-formatter-js` sont en CommonJS **sans** `__esModule`
+  (même résultat sous les deux interops), `vue3-apexcharts` et
+  `vue-multiselect` sont en ESM.
+- **À retenir** : un build vert sous Rolldown ne dit rien de l'interop
+  CommonJS, qui ne se révèle qu'à l'exécution. La seule question utile par
+  paquet : son entrée est-elle du CommonJS **avec** `__esModule` ?
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3035,3 +3058,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-24 | Retrait de `@vue/compat` : la console tourne sur Vue 3 pur | [ADR-0036](adr/0036-retrait-de-vue-compat.md) |
 | 2026-09-25 | Sérialiser les runs de déploiement au niveau du workflow | [ADR-0037](adr/0037-serialiser-les-deploiements.md) |
 | 2026-09-25 | Cypress 16, sans changer ce que font les specs | [ADR-0038](adr/0038-cypress-16.md) |
+| 2026-09-25 | Vite 8, et `moduleResolution` reste au lot TypeScript | [ADR-0039](adr/0039-vite-8.md) |
