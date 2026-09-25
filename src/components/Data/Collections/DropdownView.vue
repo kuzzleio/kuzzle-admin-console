@@ -67,7 +67,7 @@
 <script lang="ts">
 import { defineComponent, markRaw, type PropType } from 'vue';
 import { mapState } from 'pinia';
-import type { RawLocation } from 'vue-router';
+import type { RouteLocationRaw } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -137,7 +137,7 @@ export default defineComponent({
     mappingHasIntegerField(): boolean {
       return Object.values(this.attributes).some((attribute) => attribute?.type === 'integer');
     },
-    watchRoute(): RawLocation {
+    watchRoute(): RouteLocationRaw {
       return {
         name: 'WatchCollection',
         params: { collection: this.collection, index: this.index },

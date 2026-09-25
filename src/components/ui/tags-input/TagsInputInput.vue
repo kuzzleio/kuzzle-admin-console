@@ -7,7 +7,7 @@
     type="text"
     :value="draft"
     v-bind="$attrs"
-    @input="draft = $event.target.value"
+    @input="draft = ($event.target as HTMLInputElement).value"
     @keydown.enter.prevent="commit"
     @keydown.delete="onBackspace"
     @blur="commit"

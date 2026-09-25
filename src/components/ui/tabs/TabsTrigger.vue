@@ -2,7 +2,7 @@
   <button
     :id="`${tabs.baseId}-trigger-${value}`"
     :aria-controls="`${tabs.baseId}-content-${value}`"
-    :aria-selected="String(isActive)"
+    :aria-selected="isActive ? 'true' : 'false'"
     :class="classes"
     data-slot="tabs-trigger"
     :disabled="disabled"

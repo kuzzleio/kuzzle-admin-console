@@ -63,6 +63,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0039](0039-vite-8.md) | Vite 8, et `moduleResolution` reste au lot TypeScript | Acceptée |
 | [0040](0040-eslint-10-flat-config.md) | ESLint 10 en flat config, avec le standard Kuzzle 2.0 complété | Acceptée |
 | [0041](0041-typescript-6.md) | TypeScript 6, pas 7, et `moduleResolution: "bundler"` | Acceptée |
+| [0042](0042-test-types-bloquant-en-ci.md) | `test:types` à zéro, et bloquant en CI | Acceptée |
 
 ## Gabarit
 

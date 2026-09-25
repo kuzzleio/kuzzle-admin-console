@@ -890,6 +890,7 @@ Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026*
 | Node | 20 (EOL) / 22 dans le Dockerfile | 24 LTS « Krypton » | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
 | `.nvmrc` / `engines` / CI / Dockerfile / compose | 3 valeurs différentes | alignés, `.nvmrc` fait foi | ✅ [#1023](https://github.com/kuzzleio/kuzzle-admin-console/pull/1023) |
 | Job `Lint` de la CI | `continue-on-error: true`, ne scanne que `src` | bloquant, scanne aussi `test/` | ✅ [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020) |
+| `test:types` (`vue-tsc`) | hors CI, 12 erreurs | 0 erreur, bloquant dans le job `Lint` ([ADR-0042](adr/0042-test-types-bloquant-en-ci.md)) | ✅ |
 | Vite | ~~5.4.6~~ 8.3.1 | 8.x ([ADR-0039](adr/0039-vite-8.md)) | ✅ 17/17 specs |
 | TypeScript | ~~5.4.5~~ 6.0.3 | 6.x — la 7 casse `vue-tsc` ([ADR-0041](adr/0041-typescript-6.md)) | ✅ |
 | ESLint | ~~8.57, eslintrc~~ 10.11, flat config | flat config, ESLint 10 ([ADR-0040](adr/0040-eslint-10-flat-config.md)) | ✅ |
@@ -3041,6 +3042,22 @@ Gabarit à copier :
   changé. Une montée d'outil (TypeScript, Babel, webpack…) peut changer la
   compilation des **specs**. Elle se valide en relançant les specs.
 
+#### G-071 — Un cast avec `|` dans un template est lu comme un filtre Vue 2
+
+- **Contexte** : ramener `test:types` à zéro
+  ([ADR-0042](adr/0042-test-types-bloquant-en-ci.md)).
+- **Symptôme** : `:environment-id="$attrs.id as string | undefined"` règle
+  l'erreur de `vue-tsc`, le build passe, mais ESLint échoue :
+  *« Filters are deprecated — vue/no-deprecated-filter »*.
+- **Cause** : `vue-eslint-parser` reconnaît toujours la syntaxe des filtres de
+  Vue 2 (`{{ x | f }}`) dans les expressions de template, pour pouvoir la
+  signaler. Le `|` d'une union TypeScript y ressemble trait pour trait. Le
+  compilateur de Vue 3, lui, ne connaît plus les filtres et lit l'union.
+- **Solution** : sortir le cast du template, dans une propriété calculée
+  typée.
+- **À retenir** : dans un template, un type qui contient `|` se déclare côté
+  script.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3147,3 +3164,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-25 | Vite 8, et `moduleResolution` reste au lot TypeScript | [ADR-0039](adr/0039-vite-8.md) |
 | 2026-09-25 | ESLint 10 en flat config, avec le standard Kuzzle 2.0 complété | [ADR-0040](adr/0040-eslint-10-flat-config.md) |
 | 2026-09-25 | TypeScript 6, pas 7, et `moduleResolution: "bundler"` | [ADR-0041](adr/0041-typescript-6.md) |
+| 2026-09-25 | `test:types` à zéro, et bloquant en CI | [ADR-0042](adr/0042-test-types-bloquant-en-ci.md) |

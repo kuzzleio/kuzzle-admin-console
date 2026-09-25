@@ -20,7 +20,7 @@
         <CardContent>
           <create-environment
             ref="createEnvironmentComponent"
-            :environment-id="$attrs.id"
+            :environment-id="environmentId"
             @environment::importEnv="importEnv"
           />
         </CardContent>
@@ -88,6 +88,11 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useKuzzleStore, ['hasEnvironment', 'environments']),
+    // `id` n'est pas déclaré en prop : le déclarer le retirerait de `$attrs`,
+    // donc de l'attribut `id` posé sur le nœud racine.
+    environmentId(): string | undefined {
+      return this.$attrs.id as string | undefined;
+    },
   },
   methods: {
     async submit() {
