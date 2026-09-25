@@ -7,6 +7,21 @@ import type { AuthState } from './types/auth';
 const TOKEN_EXPIRY_CHECK_INTERVAL_MS = 20_000;
 const TOKEN_REFRESH_THRESHOLD_MS = 30_000;
 
+// Reads the kuid from a Kuzzle token ("kauth-" prefix included), even an expired one.
+const kuidFromToken = (token?: string | null): string | undefined => {
+  const payload = token?.split('.')[1];
+
+  if (!payload) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')))._id;
+  } catch {
+    return undefined;
+  }
+};
+
 const isActionAllowed = (user, controller, action, index = '*', collection = '*'): boolean => {
   if (!user) {
     return false;
@@ -254,16 +269,25 @@ export const useAuthStore = defineStore('auth', {
         throw new Error('Kuzzle is not initialized');
       }
 
-      await this.checkFirstAdmin();
+      try {
+        await this.checkFirstAdmin();
 
-      const sessionId = localStorage.getItem('openid-sessionId');
+        const sessionId = localStorage.getItem('openid-sessionId');
 
-      if (sessionId) {
-        this.strategy = 'keycloak';
-        await this.loginByOpenId(sessionId);
-      } else {
-        this.strategy = 'local';
-        await this.loginByToken();
+        if (sessionId) {
+          this.strategy = 'keycloak';
+          await this.loginByOpenId(sessionId);
+        } else {
+          this.strategy = 'local';
+          await this.loginByToken();
+        }
+      } catch (error) {
+        // Without this, the default SessionUser (id -1) passes the
+        // authentication guard and the main spinner never goes away.
+        this.user = null;
+        this.tokenValid = false;
+        this.initializing = false;
+        throw error;
       }
     },
     async createSingleUseToken(): Promise<string> {
@@ -355,6 +379,11 @@ export const useAuthStore = defineStore('auth', {
         const result = await kuzzle.auth.checkToken(kuzzle.jwt);
         await this.afterLogin(result.expiresAt);
         return await this.setSession(kuzzle.jwt);
+      }
+
+      // checkToken() logged out an expired session: its sessionId is closed.
+      if (localStorage.getItem('openid-sessionId') === null) {
+        return await this.setSession(null);
       }
 
       try {
@@ -488,16 +517,24 @@ export const useAuthStore = defineStore('auth', {
       }
 
       if (this.strategy === 'keycloak') {
-        const kuid = this.user?.id;
+        // After init() the user is the default one (id -1): the kuid is in the token.
+        const kuid =
+          this.user && this.user.id !== -1
+            ? this.user.id
+            : kuidFromToken(kuzzleStore.currentEnvironment?.token);
 
-        await kuzzle.query({
-          controller: 'keycloak',
-          action: 'closeSession',
-          userId: kuid,
-          sessionId: localStorage.getItem('openid-sessionId'),
-        });
-
-        localStorage.removeItem('openid-sessionId');
+        try {
+          await kuzzle.query({
+            controller: 'keycloak',
+            action: 'closeSession',
+            kuid,
+            sessionId: localStorage.getItem('openid-sessionId'),
+          });
+        } catch (error) {
+          console.error('Error while closing the OpenID session:', error);
+        } finally {
+          localStorage.removeItem('openid-sessionId');
+        }
       }
 
       if (kuzzle.jwt) {
