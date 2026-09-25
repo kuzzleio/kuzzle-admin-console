@@ -68,7 +68,8 @@ Si le disque de Docker dépasse 90 %, Elasticsearch n'alloue plus les shards des
 nouveaux index et Kuzzle ne démarre pas ([G-060](../MIGRATION.md#g-060)).
 
 Les captures et la planche sont une sortie locale (`test/e2e/captures/`,
-ignoré par git), publiée à part. Un état non atteint sur une version n'arrête
+ignoré par git), publiée à part : [planche du 2026-09-25](https://claude.ai/artifact/XN8VJfk9ykaRtQvvvCebek)
+(`4-dev` d6134eaa, `5-dev` da6be679). Un état non atteint sur une version n'arrête
 pas la passe : il laisse un trou sur la planche.
 
 ### Choix du script

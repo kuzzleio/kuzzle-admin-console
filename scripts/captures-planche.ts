@@ -124,41 +124,62 @@ const sections = ids.map((id) => {
 
 const missing = ids.filter((id) => !shots.get(id)?.v4 || !shots.get(id)?.v5);
 
-const html = `<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Planche v4 / v5</title>
+// Pas de `<!doctype>` ni de `<head>` : la planche se publie aussi comme
+// Artifact, qui fournit son propre squelette. Couleurs : DESIGN.md.
+const html = `<title>Planche v4 / v5</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Ubuntu:wght@400;500&display=swap">
 <style>
-  :root { --bg: #f6f7fb; --fg: #002835; --muted: #6c757d; --line: #d0dde1; --card: #fff; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #0b1a20; --fg: #e6edf0; --muted: #9db0b8; --line: #23414c; --card: #10242c; } }
-  body { margin: 0; padding: 24px 16px; background: var(--bg); color: var(--fg); font: 14px/1.5 system-ui, sans-serif; }
-  header, section { max-width: 1800px; margin: 0 auto 32px; }
-  h1 { margin: 0 0 4px; font-size: 22px; }
-  h2 { margin: 0 0 4px; font-size: 16px; }
-  small, .status { color: var(--muted); font-weight: normal; }
-  ul { margin: 0 0 12px; padding-left: 18px; }
-  code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  :root {
+    --bg: #f6f7fb; --card: #ffffff; --panel: #eef1f5; --fg: #002835; --muted: #43565b;
+    --line: #d0dde1; --accent: #e64472; --chip: #daedf6; --chip-fg: #00536f; --miss: #c9821f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #04161d; --card: #0a222b; --panel: #0f2c37; --fg: #e6eff2; --muted: #9fb6be;
+      --line: #1e3e4a; --accent: #f06b93; --chip: #12394a; --chip-fg: #9fd3e6; --miss: #e0a24a;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #04161d; --card: #0a222b; --panel: #0f2c37; --fg: #e6eff2; --muted: #9fb6be;
+    --line: #1e3e4a; --accent: #f06b93; --chip: #12394a; --chip-fg: #9fd3e6; --miss: #e0a24a;
+  }
+  body { background: var(--bg); color: var(--fg); font: 15px/1.55 Ubuntu, system-ui, sans-serif; padding-inline: 16px; padding-block: 32px 64px; }
+  header, nav, section { max-width: 1800px; margin-inline: auto; }
+  header { display: grid; gap: 8px; margin-bottom: 20px; }
+  h1, h2 { font-family: Montserrat, Ubuntu, system-ui, sans-serif; text-wrap: balance; margin: 0; }
+  h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.01em; }
+  h2 { font-size: 18px; font-weight: 700; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  header p { margin: 0; max-width: 72ch; color: var(--muted); }
+  .count { color: var(--fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; margin-bottom: 32px; background: var(--panel); border-radius: 8px; }
+  nav a { font: 500 12px/1 Ubuntu, system-ui, sans-serif; padding: 6px 8px; border-radius: 4px; background: var(--chip); color: var(--chip-fg); text-decoration: none; font-variant-numeric: tabular-nums; }
+  nav a.incomplete { background: transparent; color: var(--miss); box-shadow: inset 0 0 0 1px var(--miss); }
+  section { display: grid; gap: 10px; padding-block: 24px; border-top: 1px solid var(--line); scroll-margin-top: 16px; }
+  h2 small { font: 400 13px/1 ui-monospace, Menlo, monospace; color: var(--muted); }
+  ul { margin: 0; padding-left: 18px; display: grid; gap: 2px; max-width: 110ch; }
+  li b { font-weight: 500; font-variant-numeric: tabular-nums; }
+  .status { color: var(--muted); }
+  code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
   .row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
   figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-  figcaption { padding: 4px 8px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); }
-  img { display: block; width: 100%; height: auto; }
+  figcaption { padding: 6px 10px; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); }
+  img { display: block; width: 100%; max-width: 100%; height: auto; }
   .diff { position: relative; }
   .diff img + img { position: absolute; inset: 0; mix-blend-mode: difference; }
-  .missing p { margin: 0; padding: 48px 8px; text-align: center; color: var(--muted); }
+  .missing p { margin: 0; padding: 48px 8px; text-align: center; color: var(--miss); }
   @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
 </style>
-</head>
-<body>
 <header>
   <h1>Planche v4 / v5</h1>
-  <p>${ids.length} états, ${ids.length - missing.length} capturés sur les deux versions.${missing.length ? ` Incomplets : ${missing.map((id) => `<a href="#${id}">${id}</a>`).join(', ')}.` : ''}</p>
-  <p>Colonne « différence » : les deux captures superposées ; le noir est identique, tout ce qui ressort a bougé.</p>
+  <p><span class="count">${ids.length} états</span>, <span class="count">${ids.length - missing.length}</span> capturés sur les deux versions, même backend, même jeu de données, en 1440×900.${missing.length ? ` Incomplets : ${missing.map((id) => `<a href="#${id}">${id}</a>`).join(', ')}.` : ''}</p>
+  <p>Colonne « différence » : les deux captures superposées en <code>mix-blend-mode: difference</code>. Le noir est identique, tout ce qui ressort a bougé. Sous chaque état, les fonctions de l'inventaire qu'il doit montrer.</p>
 </header>
+<nav aria-label="États">${ids.map((id) => `<a href="#${id}"${missing.includes(id) ? ' class="incomplete"' : ''}>${id}</a>`).join('')}</nav>
 ${sections.join('\n')}
-</body>
-</html>
 `;
 
 mkdirSync(CAPTURES, { recursive: true });
