@@ -662,13 +662,13 @@ describe('Captures v4 / v5', () => {
 
   it("C93 — édition d'utilisateur, Basic", () => {
     openApp('/security/users/bob')
-    cy.get('[data-cy="UserBasic-kuid"]').should('exist')
+    cy.get('[data-cy="UserBasic-kuid"]').should('be.visible')
     shot('C93-user-basic')
   })
 
   it("C94 — création d'utilisateur, credentials", () => {
     openApp('/security/users/create')
-    cy.get('[data-cy="CredentialsSelector-local-username"]').should('exist')
+    cy.get('[data-cy="CredentialsSelector-local-username"]').should('be.visible')
     shot('C94-user-credentials')
   })
 
@@ -723,6 +723,7 @@ describe('Captures v4 / v5', () => {
   it('C110 — liste des rôles', () => {
     openApp('/security/roles')
     cy.get('[data-cy="RoleItem-data-reader--toggle"]').should('be.visible')
+    cy.get('[data-cy="RolesFilters"]').contains('Controllers')
     shot('C110-roles')
   })
 
@@ -744,6 +745,7 @@ describe('Captures v4 / v5', () => {
   it('C113 — Revoke anonymous rights', () => {
     openApp('/security/roles')
     cy.get('[data-cy="RolesManagement-revokeAnonymous"]').should('be.visible')
+    cy.get('[data-cy="RolesFilters"]').contains('Controllers')
     shot('C113-revoke-anonymous')
   })
 
