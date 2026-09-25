@@ -3,7 +3,7 @@ describe('Indexes', () => {
     // reset all the indexes
     cy.request('POST', 'http://localhost:7512/admin/_resetDatabase')
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   it('Should be able to create a new index', () => {

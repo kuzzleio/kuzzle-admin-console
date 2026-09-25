@@ -1,6 +1,6 @@
 describe('404 page', function() {
   beforeEach(() => {
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   it('shows when browsing to an unexisting index and has a valid link to the home page', function() {

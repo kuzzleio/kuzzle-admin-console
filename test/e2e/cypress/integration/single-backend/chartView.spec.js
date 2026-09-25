@@ -31,7 +31,7 @@ describe('Chart view', function() {
       }
     )
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   function openChartView() {

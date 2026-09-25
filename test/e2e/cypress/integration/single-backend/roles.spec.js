@@ -12,7 +12,7 @@ describe('Roles', () => {
         }
       }
     })
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
     cy.setCookie('telemetry', 'false')
   })
 
@@ -315,7 +315,7 @@ describe('Roles', () => {
             host: 'localhost',
             ssl: false,
             port: 7512,
-            backendMajorVersion: Cypress.env('BACKEND_VERSION') || 2,
+            backendMajorVersion: 2,
             token: token
           }
         })

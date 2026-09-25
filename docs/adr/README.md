@@ -59,6 +59,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0035](0035-selecteur-de-couleur-natif.md) | `vue-color` cède la place à `<input type="color">` | Acceptée |
 | [0036](0036-retrait-de-vue-compat.md) | Retrait de `@vue/compat` | Acceptée |
 | [0037](0037-serialiser-les-deploiements.md) | Sérialiser les runs de déploiement au niveau du workflow | Acceptée |
+| [0038](0038-cypress-16.md) | Cypress 16, sans changer ce que font les specs | Acceptée |
 
 ## Gabarit
 

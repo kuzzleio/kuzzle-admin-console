@@ -5,7 +5,7 @@ const admin = {
 const validEnvName = 'valid'
 describe('Login', function() {
   beforeEach(() => {
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'), null)
+    cy.initLocalEnv(2, null)
     cy.setCookie('telemetry', 'false')
   })
 
@@ -79,7 +79,7 @@ describe('Login', function() {
             host: 'localhost',
             ssl: false,
             port: 7512,
-            backendMajorVersion: Cypress.env('BACKEND_VERSION') || 2,
+            backendMajorVersion: 2,
             token: response.body.result.jwt
           }
         })
@@ -111,7 +111,7 @@ describe('Login', function() {
   it('Should stay on the login page after selecting the same environment', () => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     const envName = 'local'
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'), null, 7512, envName)
+    cy.initLocalEnv(2, null, 7512, envName)
     cy.visit('/')
     cy.url().should('contain', '/#/login')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
@@ -145,7 +145,7 @@ describe('Login', function() {
             host: 'localhost',
             ssl: false,
             port: 7512,
-            backendMajorVersion: Cypress.env('BACKEND_VERSION') || 2,
+            backendMajorVersion: 2,
             token: response.body.result.jwt
           }
         })

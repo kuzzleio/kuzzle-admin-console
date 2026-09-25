@@ -39,7 +39,7 @@ describe('Watch', () => {
       }
     })
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   it('Should subscribe without filters and receive all notifications', () => {

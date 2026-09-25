@@ -37,7 +37,7 @@ describe('Document List', function() {
       }
     )
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   it('Should default to List view if no settings are specified', function() {
@@ -483,7 +483,7 @@ describe('Document update/replace', () => {
       }
     )
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   it('Should be able to update a document', () => {
@@ -608,7 +608,7 @@ describe('Realtime', () => {
       }
     )
 
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv()
   })
 
   it('Remembers auto-update settings through page reload', function() {

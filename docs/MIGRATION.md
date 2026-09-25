@@ -893,7 +893,7 @@ Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026*
 | Vite | 5.4.6 | 8.x — plafond levé : `@vitejs/plugin-vue` 6.0.9 remplace `plugin-vue2` depuis la phase 3 | ⬜ |
 | TypeScript | 5.4.5 | à évaluer (TS 7 disponible) | ⬜ |
 | ESLint | eslintrc | flat config, ESLint 10 | ⬜ |
-| Cypress | 13.14.2 | 16.x | ⬜ |
+| Cypress | ~~13.14.2~~ 16.1.0 | 16.x ([ADR-0038](adr/0038-cypress-16.md)) | ✅ 17/17 specs |
 
 Le plafond que `@vitejs/plugin-vue2` imposait à Vite est **levé depuis la
 phase 3** : la console compile avec `@vitejs/plugin-vue` 6.0.9, qui accepte
@@ -2881,6 +2881,25 @@ Gabarit à copier :
 - **À retenir** : un run vert dit que *ce commit* est bon, pas que *ce commit*
   est en ligne. Pour savoir ce qui est servi, lire le bundle.
 
+#### G-065 — Sous Cypress 16, `cypress-file-upload` joint un JSON encodé deux fois
+
+- **Contexte** : phase 0, montée de Cypress 13.14.2 → 16.1.0
+  ([ADR-0038](adr/0038-cypress-16.md)).
+- **Symptôme** : dans `environments.spec.js`, « Should be able to import
+  environments » échoue : l'alerte n'affiche pas *« Found 2 connections »*.
+  L'import d'un `.jpg` refusé, lui, passe toujours.
+- **Cause** : le fichier que `attachFile` place dans l'`<input>` a bien le
+  type `application/json`, mais son contenu commence par `"{\n  \"localhost\"` :
+  c'est **une chaîne JSON** contenant le fichier, pas le fichier. `JSON.parse`
+  rend une chaîne, la console n'y trouve aucune connexion. Relevé par une spec
+  sonde qui lit `input.files[0].text()`.
+- **Solution** : `selectFile('test/e2e/cypress/fixtures/environment.json',
+  { force: true })`, natif depuis Cypress 9.3 ; le type MIME est déduit de
+  l'extension. `cypress-file-upload` sort des dépendances.
+- **À retenir** : un plugin Cypress qui s'appuie sur `cy.fixture` peut changer
+  de comportement à chaque version majeure sans changer lui-même. Préférer la
+  commande native quand elle existe.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -2983,3 +3002,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-24 | `vue-color` cède la place à `<input type="color">` | [ADR-0035](adr/0035-selecteur-de-couleur-natif.md) |
 | 2026-09-24 | Retrait de `@vue/compat` : la console tourne sur Vue 3 pur | [ADR-0036](adr/0036-retrait-de-vue-compat.md) |
 | 2026-09-25 | Sérialiser les runs de déploiement au niveau du workflow | [ADR-0037](adr/0037-serialiser-les-deploiements.md) |
+| 2026-09-25 | Cypress 16, sans changer ce que font les specs | [ADR-0038](adr/0038-cypress-16.md) |
