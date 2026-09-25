@@ -16,7 +16,7 @@
   perdue, écran illisible, action hors d'atteinte).
 
 **Bilan** : 153 fonctions — 121 ✅ (dont 43 touchées par un écart
-transverse), 7 🎯, 24 🔴, 0 ⛔, 1 ❓. Aucune fonction n'a disparu. Les
+transverse), 11 🎯, 20 🔴, 0 ⛔, 1 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -151,7 +151,8 @@ rendrait plus difficiles à isoler.
 - **Cause** : `v-show="totalDocuments > paginationSize"` dans
   `Security/{Users,Profiles,Roles}/List.vue`, ajouté au commit 3ead0a5a. La v4
   l'affichait toujours sur les listes Security.
-- **À trancher** : défendable, mais sans ADR.
+- **Tranché** : comportement v5 conservé et généralisé,
+  [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md).
 
 <a id="e-11"></a>
 
@@ -195,7 +196,8 @@ rendrait plus difficiles à isoler.
 - **Fonctions** : API-08.
 - **Cause** : `ApiAction/QueryCard.vue:80-107` remplace le popover par un
   `DropdownMenu` ; le commentaire cite ADR-0012, qui ne le décide pas.
-- **À trancher** : défendable (accessible au clavier), mais sans ADR.
+- **Tranché** : comportement v5 conservé,
+  [ADR-0046](../adr/0046-aide-api-action-au-clic.md).
 
 <a id="e-15"></a>
 

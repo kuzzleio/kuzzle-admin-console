@@ -262,7 +262,7 @@ Routes `/security/users`, `/security/users/create`, `/security/users/:id`,
 | USR-02 | Quick search, recherche avancée, recherche JSON | C91 | users | 🔴 [E-06](ecarts.md#e-06) [E-24](ecarts.md#e-24) |
 | USR-03 | Sélection, « Toggle all », « Delete selected », modale de suppression | C92 | users | ✅ · [E-05](ecarts.md#e-05) |
 | USR-04 | Éditer / supprimer par ligne, droits en infobulle | C90 | users | ✅ |
-| USR-05 | Pagination, paramètre `from` erroné toléré | — | users | 🔴 [E-10](ecarts.md#e-10) |
+| USR-05 | Pagination, paramètre `from` erroné toléré | — | users | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
 | USR-06 | « Create User », menu « Edit user content mapping » | C90 | users | ✅ |
 | USR-07 | États vides : « No user is defined », « no result matching your query » | — | users | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
 | USR-08 | Formulaire, onglet Basic : KUID (vide = auto-généré), profils (sélection, pastilles, retrait), « Please add at least one profile » | C93 | users | ✅ · [E-20](ecarts.md#e-20) [E-23](ecarts.md#e-23) |
@@ -282,7 +282,7 @@ Routes `/security/profiles`, `/security/profiles/create`,
 | PRF-01 | Liste des profils, dépliage des politiques | C100 | profiles | ✅ |
 | PRF-02 | Filtre par rôles (multiselect), pastille « applied », « Reset » | C101 | profiles | 🔴 [E-12](ecarts.md#e-12) |
 | PRF-03 | Sélection, « Toggle all », « Delete selected », modale | C102 | profiles | ✅ · [E-05](ecarts.md#e-05) |
-| PRF-04 | Éditer / supprimer par ligne, pagination | C100 | profiles | 🔴 [E-10](ecarts.md#e-10) |
+| PRF-04 | Éditer / supprimer par ligne, pagination | C100 | profiles | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
 | PRF-05 | « Create Profile », état « No profile is defined » | C100 | profiles | ✅ |
 | PRF-06 | Formulaire : « Profile ID », éditeur JSON, aide-mémoire (policies, restrictedTo), validation | C103 | profiles | 🔴 [E-01](ecarts.md#e-01) |
 | PRF-07 | Avertissement « you are editing a profile that applies to yourself » | C104 | — | ✅ |
@@ -297,7 +297,7 @@ Composants : `Security/Roles/*`.
 | ROL-01 | Liste des rôles, dépliage des contrôleurs | C110 | roles | ✅ |
 | ROL-02 | Filtre par contrôleur, « Reset », « Unable to retrieve controller list » | C111 | roles | ✅ |
 | ROL-03 | Sélection, « Delete selected », modale | C112 | roles | ✅ · [E-05](ecarts.md#e-05) |
-| ROL-04 | Éditer / supprimer par ligne, pagination | C110 | roles | 🔴 [E-10](ecarts.md#e-10) |
+| ROL-04 | Éditer / supprimer par ligne, pagination | C110 | roles | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
 | ROL-05 | « Revoke anonymous rights » : bouton (désactivé avec raison si impossible) et modale | C113 | roles | ✅ · [E-05](ecarts.md#e-05) |
 | ROL-06 | « Create Role », état « No role is defined » | C110 | roles | ✅ |
 | ROL-07 | Formulaire : « Role ID », éditeur JSON, aide-mémoire (controllers / actions), validation | C114 | roles | ✅ |
@@ -316,7 +316,7 @@ Route `/api-action` → `ApiAction.vue`, `ApiAction/*`.
 | API-05 | « SAVE » : modale « Choose a name for this query » | C123 | api-actions | ✅ · [E-05](ecarts.md#e-05) |
 | API-06 | Liste des requêtes enregistrées : ouvrir, lancer, éditer ; état vide ; par connexion | C120 | api-actions | ✅ |
 | API-07 | Panneaux redimensionnables (liste / requête / réponse) | — | — | 🎯 [ADR-0021](../adr/0021-reprise-apiaction-splitter-et-onglets.md) |
-| API-08 | Texte d'accueil avec lien vers la documentation de l'API | C120 | — | 🔴 [E-14](ecarts.md#e-14) |
+| API-08 | Texte d'accueil avec lien vers la documentation de l'API | C120 | — | 🎯 [ADR-0046](../adr/0046-aide-api-action-au-clic.md) |
 
 ---
 

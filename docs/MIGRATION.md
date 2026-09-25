@@ -3268,3 +3268,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-25 | `test:types` à zéro, et bloquant en CI | [ADR-0042](adr/0042-test-types-bloquant-en-ci.md) |
 | 2026-09-25 | La DA de la console est celle du design system produit Kuzzle ; comparaison v4 / v5 d'abord | [ADR-0043](adr/0043-da-kuzzle-pour-la-console.md) |
 | 2026-09-25 | Impeccable versionné dans le repo, sans ses hooks | [ADR-0044](adr/0044-impeccable-versionne-sans-hooks.md) |
+| 2026-09-25 | Une pagination ne s'affiche que s'il y a plus d'une page, sur toutes les listes | [ADR-0045](adr/0045-pagination-masquee-sur-une-page.md) |
+| 2026-09-25 | L'aide d'API Action s'ouvre au clic, dans un `DropdownMenu` | [ADR-0046](adr/0046-aide-api-action-au-clic.md) |
