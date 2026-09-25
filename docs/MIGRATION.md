@@ -293,7 +293,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `TagsInput` — pour le seul champ à étiquettes ([ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md)) | ✅ |
 | `Resizable` — splitter maison, poignée au clavier ([ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md)) | ✅ |
 | `Toast` — zone unique et store ([ADR-0020](adr/0020-systeme-de-toasts.md)) | ✅ |
-| Dernière primitive interactive : `Combobox` (pour `vue-multiselect`) | ⬜ |
+| ~~Dernière primitive interactive : `Combobox` (pour `vue-multiselect`)~~ | ➖ `vue-multiselect` 3.5.0 est gardé : le `Combobox` attendra la refonte, qui dira s'il en faut un ([ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md)) |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
 plomberie est posée, l'apparence n'est pas décidée. La refonte visuelle se fera
