@@ -305,7 +305,7 @@ précisément ce qu'on achète.
 | Étape de la DA ([ADR-0043](adr/0043-da-kuzzle-pour-la-console.md)) | Statut |
 |---|---|
 | `DESIGN.md`, `PRODUCT.md`, copie des tokens du DS, skill Impeccable ([ADR-0044](adr/0044-impeccable-versionne-sans-hooks.md)) | ✅ |
-| 1. Comparaison v4 / v5 : inventaire fonctionnel écran par écran | ⬜ |
+| 1. Comparaison v4 / v5 : inventaire fonctionnel écran par écran — 153 fonctions, 30 sans spec ([`comparaison-v4-v5/`](comparaison-v4-v5/inventaire.md)) | ✅ |
 | 1. Comparaison v4 / v5 : captures des mêmes écrans, même backend | ⬜ |
 | 1. Comparaison v4 / v5 : tri des écarts (voulu / régression / manquant) | ⬜ |
 | 2. Tokens + polices + 20 primitives à la DA Kuzzle | ⬜ |
