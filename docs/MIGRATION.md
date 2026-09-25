@@ -892,14 +892,16 @@ Versions relevées le 2026-09-18. Node 20 « Iron » est **EOL depuis mars 2026*
 | Job `Lint` de la CI | `continue-on-error: true`, ne scanne que `src` | bloquant, scanne aussi `test/` | ✅ [#1020](https://github.com/kuzzleio/kuzzle-admin-console/issues/1020) |
 | Vite | ~~5.4.6~~ 8.3.1 | 8.x ([ADR-0039](adr/0039-vite-8.md)) | ✅ 17/17 specs |
 | TypeScript | 5.4.5 | ≥ 5.6, avec `moduleResolution: "bundler"` ([ADR-0039](adr/0039-vite-8.md)) | ⬜ |
-| ESLint | eslintrc | flat config, ESLint 10 | ⬜ |
+| ESLint | ~~8.57, eslintrc~~ 10.11, flat config | flat config, ESLint 10 ([ADR-0040](adr/0040-eslint-10-flat-config.md)) | ✅ |
 | Cypress | ~~13.14.2~~ 16.1.0 | 16.x ([ADR-0038](adr/0038-cypress-16.md)) | ✅ 17/17 specs |
 
 Le plafond que `@vitejs/plugin-vue2` imposait à Vite est **levé depuis la
 phase 3** : la console compile avec `@vitejs/plugin-vue` 6.0.9, qui accepte
 Vite 5 à 8. Plus rien ne bloque les quatre montées ci-dessus. Ordre retenu :
 **Cypress d'abord** — c'est le filet de sécurité, il doit être validé avant de
-servir à valider le reste —, puis Vite, TypeScript et ESLint, un lot chacun.
+servir à valider le reste —, puis Vite, **ESLint, puis TypeScript**, un lot
+chacun. ESLint passe avant TypeScript : `eslint-plugin-vue-kuzzle` 0.0.13
+bloquait TypeScript sous 5.5 ([G-069](#g-069)).
 
 ---
 
@@ -2984,6 +2986,24 @@ Gabarit à copier :
   specs ne fait rien échouer — il répond 401 et le `.catch()` l'avale. Lire les
   requêtes dans les captures d'échec, pas seulement l'assertion.
 
+#### G-069 — `npm install` accepte une montée que `npm ci` refuse
+
+- **Contexte** : phase 0, montée de TypeScript 5.4.5 → 6.0.3.
+- **Symptôme** : `npm i -D typescript@6.0.3` passe, `vue-tsc` et le build
+  aussi. Puis `npm ci` — ce que lance la CI — échoue en `ERESOLVE` :
+  *« peerOptional typescript@">= 5.2 <5.5" from eslint-plugin-vue-kuzzle@0.0.13 »*.
+  En local, l'échec était en plus **silencieux** dans un `&&` dont la sortie
+  était masquée : `node_modules` était resté en 5.4.5, et les vérifications
+  suivantes tournaient sur l'ancienne version.
+- **Cause** : `npm install` ne fait qu'avertir sur un conflit de pair
+  *optionnel* et installe quand même ; `npm ci`, lui, le traite en erreur.
+- **Solution** : monter ESLint d'abord (`eslint-plugin-vue-kuzzle` 2.0.0 accepte
+  TypeScript jusqu'à 6.0.x, [ADR-0040](adr/0040-eslint-10-flat-config.md)),
+  TypeScript ensuite.
+- **À retenir** : une montée de dépendance se valide par `rm -rf node_modules &&
+  npm ci`, jamais par le `npm install` qui l'a faite. Et contrôler
+  `node_modules/<paquet>/package.json` avant de conclure d'une vérification.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3088,3 +3108,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-25 | Sérialiser les runs de déploiement au niveau du workflow | [ADR-0037](adr/0037-serialiser-les-deploiements.md) |
 | 2026-09-25 | Cypress 16, sans changer ce que font les specs | [ADR-0038](adr/0038-cypress-16.md) |
 | 2026-09-25 | Vite 8, et `moduleResolution` reste au lot TypeScript | [ADR-0039](adr/0039-vite-8.md) |
+| 2026-09-25 | ESLint 10 en flat config, avec le standard Kuzzle 2.0 complété | [ADR-0040](adr/0040-eslint-10-flat-config.md) |

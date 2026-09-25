@@ -119,7 +119,6 @@ export class KuzzleWrapperV1 {
           const res = await this.kuzzle.security.getCredentials(strategy, user._id);
           formattedUser.credentials[strategy] = res;
         } catch (e) {
-          /* eslint-disable no-empty */
           // Strategies contains local by default but some user
           // might not have local credentials
         }

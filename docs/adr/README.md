@@ -61,6 +61,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0037](0037-serialiser-les-deploiements.md) | Sérialiser les runs de déploiement au niveau du workflow | Acceptée |
 | [0038](0038-cypress-16.md) | Cypress 16, sans changer ce que font les specs | Acceptée |
 | [0039](0039-vite-8.md) | Vite 8, et `moduleResolution` reste au lot TypeScript | Acceptée |
+| [0040](0040-eslint-10-flat-config.md) | ESLint 10 en flat config, avec le standard Kuzzle 2.0 complété | Acceptée |
 
 ## Gabarit
 

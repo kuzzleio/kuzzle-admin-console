@@ -558,7 +558,7 @@ describe('Document update/replace', () => {
       `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}`
     ).then(res => {
       expect(res.body.result._source.foo).to.be.equals('changed')
-      expect(res.body.result._source.more).to.be.undefined // eslint-disable-line no-unused-expressions
+      expect(res.body.result._source.more).to.be.undefined
     })
   })
 

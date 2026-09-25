@@ -28,7 +28,7 @@ to it. Each subsection must contain a `Page.vue` file, used as the entry-point t
 
 ## Javascript
 
-We use ESLint to enforce coding style conventions. ESLint triggers errors at build whenever conventions are not respected. See also `.eslintrc.cjs`.
+We use ESLint to enforce coding style conventions. ESLint triggers errors at build whenever conventions are not respected. See also `eslint.config.mjs`.
 
 ## CSS / Sass
 
