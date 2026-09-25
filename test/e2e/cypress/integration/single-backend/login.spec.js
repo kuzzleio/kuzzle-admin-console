@@ -163,3 +163,46 @@ describe('Login', function() {
     })
   })
 })
+
+describe('Telemetry', function() {
+  // Aucune requête ne doit atteindre le vrai service : on bouchonne kepler et
+  // on compte les appels.
+  beforeEach(() => {
+    cy.initLocalEnv(2, null)
+    cy.intercept('POST', 'https://kepler.app.kuzzle.io/**', {
+      statusCode: 200,
+      body: {}
+    }).as('telemetry')
+  })
+
+  // La console écrit le cookie avec `JSON.stringify` : `telemetry="false"`.
+  // Un second cookie placé après lui est le cas d'un vrai navigateur.
+  it('Should not send telemetry once disabled, even with other cookies', () => {
+    cy.setCookie('telemetry', '"false"')
+    cy.setCookie('other', 'value')
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+    cy.contains('Usage telemetry').should('not.exist')
+    cy.get('@telemetry.all').should('have.length', 0)
+  })
+
+  it('Should send telemetry once accepted, even with other cookies', () => {
+    cy.setCookie('telemetry', '"true"')
+    cy.setCookie('other', 'value')
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+    cy.contains('Usage telemetry').should('not.exist')
+    cy.wait('@telemetry')
+  })
+
+  // Le format qu'utilisent les specs : sans guillemets.
+  it('Should not send telemetry when the cookie is a bare false', () => {
+    cy.setCookie('telemetry', 'false')
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+    cy.get('@telemetry.all').should('have.length', 0)
+  })
+})

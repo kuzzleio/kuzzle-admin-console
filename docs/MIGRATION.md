@@ -2955,6 +2955,35 @@ Gabarit à copier :
   CommonJS, qui ne se révèle qu'à l'exécution. La seule question utile par
   paquet : son entrée est-elle du CommonJS **avec** `__esModule` ?
 
+#### G-068 — Les specs envoyaient de la télémétrie, et la console reposait la question à qui avait d'autres cookies
+
+- **Contexte** : capture d'échec pendant la validation de Vite 8 : un
+  `POST https://kepler.app.kuzzle.io/_/telemetry/register` (401) au milieu
+  de `collections.spec.js`, alors que la spec pose `telemetry=false`.
+- **Symptôme** : deux, de sens opposés.
+  1. **Dans les specs**, la télémétrie part vers le vrai service à chaque
+     navigation, alors qu'elle est refusée.
+  2. **Chez un utilisateur** qui a d'autres cookies sur le domaine, le choix
+     n'est jamais retenu : la bannière « Usage telemetry » revient à chaque
+     chargement, et rien n'est envoyé, même après *Accept*.
+- **Cause** : `telemetryCookies.get()` faisait
+  `JSON.parse(document.cookie.split('telemetry=')[1])`.
+  1. Les specs posent `telemetry=false` sans guillemets : `JSON.parse` rend le
+     **booléen** `false`, et le routeur compare à la **chaîne** `'false'`. La
+     console, elle, écrit `"false"` via `JSON.stringify`.
+  2. `split('telemetry=')[1]` prend aussi tous les cookies qui suivent :
+     `"false"; other=value` fait échouer `JSON.parse`, et `get()` rend
+     `null` — « pas de choix ».
+- **Solution** : isoler le cookie `telemetry` dans `document.cookie`, et
+  ramener la valeur à `'true'`, `'false'` ou `null`. Trois tests dans
+  `login.spec.js`, avec `cy.intercept` qui bouchonne kepler et compte les
+  appels : refus + autre cookie, acceptation + autre cookie, `false` brut. **Les
+  trois échouent avant le correctif** (bannière réaffichée, 3 requêtes
+  envoyées), passent après.
+- **À retenir** : un appel réseau vers un service de production pendant les
+  specs ne fait rien échouer — il répond 401 et le `.catch()` l'avale. Lire les
+  requêtes dans les captures d'échec, pas seulement l'assertion.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
