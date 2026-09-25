@@ -31,6 +31,7 @@ rendrait plus difficiles à isoler.
 
 ### E-01 — Formulaire de profil : les boutons sortent de l'écran
 
+- **Issue** : #1119
 - **Fonctions** : PRF-06 (C103, C104).
 - **Symptôme** : l'aide-mémoire des politiques ne défile plus ; la carte
   grandit, Cancel / Create / Update passent sous la ligne de flottaison.
@@ -43,6 +44,7 @@ rendrait plus difficiles à isoler.
 
 ### E-02 — Le plein écran des filtres recouvre toute l'application
 
+- **Issue** : #1120
 - **Fonctions** : FLT-10 (C61).
 - **Symptôme** : le panneau couvre la barre de navigation et l'arbre, au lieu
   de la seule zone de contenu.
@@ -54,6 +56,7 @@ rendrait plus difficiles à isoler.
 
 ### E-03 — Le toast « Offline » est illisible
 
+- **Issue** : #1121
 - **Fonctions** : APP-05 (C22).
 - **Symptôme** : fond presque transparent, le titre se superpose à la barre
   de navigation.
@@ -64,6 +67,7 @@ rendrait plus difficiles à isoler.
 
 ### E-04 — Le menu des connexions reste ouvert par-dessus la modale
 
+- **Issue** : #1122
 - **Fonctions** : ENV-07 (C06).
 - **Symptôme** : après le crayon ou la corbeille, la modale s'ouvre et le menu
   reste affiché devant elle.
@@ -76,6 +80,7 @@ rendrait plus difficiles à isoler.
 
 ### E-05 — Plus de croix de fermeture sur les modales
 
+- **Issue** : #1123
 - **Fonctions** : toutes les modales (ENV-09, ENV-10, AUTH-08, IDX-05, IDX-07,
   IDX-08, COL-04, COL-05, DOC-04, LST-04, CLM-04, USR-03, PRF-03, ROL-03,
   ROL-05, API-05).
@@ -88,6 +93,7 @@ rendrait plus difficiles à isoler.
 
 ### E-06 — Le sélecteur d'opérateur affiche la clé brute
 
+- **Issue** : #1124
 - **Fonctions** : FLT-03 (C57), USR-02 (C91).
 - **Symptôme** : `contains` au lieu de « Contains » (et `not_equal`,
   `not_exists`…) tant que la liste n'a jamais été ouverte.
@@ -101,6 +107,7 @@ rendrait plus difficiles à isoler.
 
 ### E-07 — Vue formulaire : un champ objet affiche `null` au lieu de `{}`
 
+- **Issue** : #1125
 - **Fonctions** : DOCF-03 (C71).
 - **Cause** : `Data/Documents/FormInputs/JsonFormInput.vue:37`,
   `value: { default: null }` ; `JSON.stringify(null)` donne `"null"`, et le
@@ -111,6 +118,7 @@ rendrait plus difficiles à isoler.
 
 ### E-08 — Retours de formulaire appauvris
 
+- **Issue** : #1126
 - **Fonctions** : ENV-03 (C02), IDX-05 (C34).
 - **Symptôme** : les champs valides ne sont plus marqués (bordure verte,
   coche), les champs en erreur perdent leur icône ; dans la modale de
@@ -124,6 +132,7 @@ rendrait plus difficiles à isoler.
 
 ### E-09 — Toasts : lien, infobulle et choix obligatoire perdus
 
+- **Issue** : #1127
 - **Fonctions** : AUTH-10 (C16), AUTH-11 (C17).
 - **Symptôme** : « that you create one » n'est plus un lien vers
   `#/signup`, « Ok, got it » a perdu son `title` ; le bandeau de télémétrie a
@@ -136,6 +145,7 @@ rendrait plus difficiles à isoler.
 
 ### E-10 — Pagination masquée quand tout tient sur une page
 
+- **Issue** : #1128
 - **Fonctions** : USR-05, PRF-04, ROL-04 (C90, C100, C110) ; aussi
   `Data/Documents/Page.vue:201`.
 - **Cause** : `v-show="totalDocuments > paginationSize"` dans
@@ -147,6 +157,7 @@ rendrait plus difficiles à isoler.
 
 ### E-11 — Import de connexions : les erreurs ne se ferment plus
 
+- **Issue** : #1129
 - **Fonctions** : ENV-11 (C07).
 - **Cause** : `Common/Environments/ModalImport.vue:30-37`, `Alert` sans croix
   (v4 : `b-alert dismissible`).
@@ -155,6 +166,7 @@ rendrait plus difficiles à isoler.
 
 ### E-12 — Menus : cases décochées invisibles, déclencheurs sans chevron
 
+- **Issue** : #1130
 - **Fonctions** : PRF-02 (C101), DOC-06 (C54), AUTH-02 (C10), filtre
   « Controllers » des rôles (C111).
 - **Symptôme** : un élément décoché n'a plus de case, l'état « Auto-Sync
@@ -169,6 +181,7 @@ rendrait plus difficiles à isoler.
 
 ### E-13 — API Action : barre de défilement parasite dans les onglets
 
+- **Issue** : #1131
 - **Fonctions** : API-01 (C120, C122, C123).
 - **Cause probable** : `ApiAction.vue:27`, `overflow-x-auto` sur `TabsList`
   force `overflow-y: auto`, et l'onglet actif déborde d'1 px (`-mb-px`,
@@ -178,6 +191,7 @@ rendrait plus difficiles à isoler.
 
 ### E-14 — API Action : l'aide s'ouvre au clic, plus au survol
 
+- **Issue** : #1132
 - **Fonctions** : API-08.
 - **Cause** : `ApiAction/QueryCard.vue:80-107` remplace le popover par un
   `DropdownMenu` ; le commentaire cite ADR-0012, qui ne le décide pas.
@@ -187,6 +201,7 @@ rendrait plus difficiles à isoler.
 
 ### E-15 — Champ fichier natif, dans la langue du navigateur
 
+- **Issue** : #1133
 - **Fonctions** : COLF-03, USR-13, ENV-11 (C07, C44, C96).
 - **Symptôme** : « Choisir un fichier / Aucun fichier choisi » dans une
   interface en anglais.
@@ -208,6 +223,7 @@ doit exister dans la nouvelle palette.
 
 ### E-20 — `text-secondary` est bleu, les destructifs sont roses
 
+- **Issue** : #1134
 - **Fonctions** : ENV-02, AUTH-03, TREE-01, IDX-01, IDX-03, IDX-04, COL-01,
   COL-07, COLF-02, FLT-01, FLT-03, FLT-08, FLT-09, USR-01, USR-07, USR-08,
   USR-13.
@@ -225,6 +241,7 @@ doit exister dans la nouvelle palette.
 
 ### E-21 — Plus de variante « info » ni « success »
 
+- **Issue** : #1134
 - **Fonctions** : AUTH-05, AUTH-06, AUTH-10, AUTH-11, RT-02, RT-06, FLT-02,
   DOC-07, API-04 ; encadré Notice de Security (C103, C104, C114).
 - **Symptôme** : alertes et toasts cyan devenus jaunes ou blancs, badges
@@ -239,6 +256,7 @@ doit exister dans la nouvelle palette.
 
 ### E-22 — Titres d'états vides réduits, fonds gris perdus
 
+- **Issue** : #1134
 - **Fonctions** : IDX-03, IDX-04, COL-07, DOC-10, CHT-04, MAP-04, RT-04,
   FLT-08, FLT-09, USR-07.
 - **Cause** : les `<h4>` restés bruts tombent à la taille du texte (preflight),
@@ -252,6 +270,7 @@ doit exister dans la nouvelle palette.
 
 ### E-23 — Libellés au-dessus des champs
 
+- **Issue** : #1134
 - **Fonctions** : ENV-01, AUTH-01, COLF-01, DOCF-01, USR-08, et tous les
   formulaires en `label-cols` (C01, C05, C10, C13, C14, C15, C44, C70, C94).
 - **À trancher par la DA** : disposition décidée par personne ; les champs
@@ -261,6 +280,7 @@ doit exister dans la nouvelle palette.
 
 ### E-24 — Bandeaux gris perdus : jumbotron, en-têtes et pieds de carte
 
+- **Issue** : #1134
 - **Fonctions** : ENV-01, ENV-06 (C01, C03), FLT-01, USR-02 (C50, C90).
 - **Symptôme** : l'en-tête des pages de connexion n'est plus dans son bloc gris
   (alors que `Signup.vue` et `KuzzleErrorPage.vue` l'ont gardé) ; les
@@ -274,6 +294,7 @@ doit exister dans la nouvelle palette.
 
 ### E-25 — Tableaux : ni lignes alternées, ni bordures de cellules
 
+- **Issue** : #1134
 - **Fonctions** : IDX-01, COL-01 (C32, C40), CLM-02 (C64).
 - **Cause** : `striped` et `bordered` de `b-table` ne sont pas repris ;
   [ADR-0011](../adr/0011-table-sans-data-table.md) ne décide pas de les
@@ -283,6 +304,7 @@ doit exister dans la nouvelle palette.
 
 ### E-26 — Variantes de boutons converties sans décision
 
+- **Issue** : #1134
 - **Partout** : `secondary` plein (Cancel, Export Mapping, Generate Raw JSON)
   → `outline` ; `outline-danger` → `destructive` plein, rose même désactivé ;
   `light` → `outline` ; « Delete index / collection » passent en rouge.
