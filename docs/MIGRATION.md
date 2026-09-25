@@ -3058,6 +3058,26 @@ Gabarit à copier :
 - **À retenir** : dans un template, un type qui contient `|` se déclare côté
   script.
 
+#### G-073 — Un `npm ci` qui ne rend pas la main bloque le job six heures
+
+- **Contexte** : CI de #1102 (Vite 8), le 2026-09-25.
+- **Symptôme** : un seul des 17 jobs E2E (`indexes`) reste sur *Install
+  dependencies* pendant 1 h 30, jusqu'à son annulation manuelle. Les 16 autres,
+  sur le même commit, passent en 2 à 7 min.
+- **Cause** : `npm ci` avait **fini d'installer** — ses derniers messages
+  sont horodatés 09:27:13, une minute après le début du job — puis le processus
+  n'a pas rendu la main. Aucune cause côté code : même commit, même lockfile
+  que les jobs verts. Ce qui transforme l'incident en blocage, c'est
+  **l'absence de `timeout-minutes`** : le défaut de GitHub est de 360 min. Et
+  depuis [ADR-0037](adr/0037-serialiser-les-deploiements.md), un run pendu sur
+  `5-dev` ou `master` retiendrait tous les déploiements derrière lui.
+- **Solution** : `timeout-minutes` sur chaque job, calibré sur les durées
+  observées (E2E 7 min au plus → 25 ; Lint 1 min → 10 ; déploiement 1 min →
+  15 ; résumé → 5), et 10 min sur l'étape `npm ci` des jobs E2E, pour que
+  l'échec nomme l'étape. Le job pendu a été relancé (`gh run rerun --failed`).
+- **À retenir** : sérialiser des runs rend chaque run capable de bloquer les
+  suivants. Tout workflow sous `concurrency` a besoin de timeouts.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
