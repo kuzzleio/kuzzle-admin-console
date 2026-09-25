@@ -293,6 +293,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `TagsInput` — pour le seul champ à étiquettes ([ADR-0019](adr/0019-primitive-tags-input-en-vue-2.md)) | ✅ |
 | `Resizable` — splitter maison, poignée au clavier ([ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md)) | ✅ |
 | `Toast` — zone unique et store ([ADR-0020](adr/0020-systeme-de-toasts.md)) | ✅ |
+| `FileInput` — l'input natif masqué, le texte de la console (E-15 de la comparaison v4 / v5) | ✅ |
 | ~~Dernière primitive interactive : `Combobox` (pour `vue-multiselect`)~~ | ➖ `vue-multiselect` 3.5.0 est gardé : le `Combobox` attendra la refonte, qui dira s'il en faut un ([ADR-0034](adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md)) |
 
 Les tokens reprennent la palette existante (`styles/_variables.scss`) : la
@@ -436,6 +437,9 @@ Trois points méritaient d'être tranchés plutôt que transposés :
   natif ignore `placeholder`, et « Select a JSON file to import mappings.. »
   était la seule indication que `b-form-file` affichait. La perdre sans la
   remplacer aurait retiré le seul mot qui disait à quoi sert le champ.
+  *Remplacé depuis* par la primitive `ui/file-input` : l'input natif affichait
+  son bouton et son « aucun fichier choisi » dans la langue du navigateur
+  (E-15 de [`ecarts.md`](comparaison-v4-v5/ecarts.md#e-15)).
 - **« Export Mapping » est un cas de G-016** : `<b-button :href :disabled>`
   arbitrait tout seul, notre `Button` non. Le bouton est rendu en `<a>` quand le
   mapping est un JSON valide, et en `<button disabled>` sinon — le cas interdit

@@ -43,7 +43,7 @@ plus le sélecteur de la barre de navigation. Composants :
 | ENV-08 | « Export all » (téléchargement JSON) et « Import » depuis le sélecteur | C04 | environments | ✅ |
 | ENV-09 | Modale de création / édition depuis le sélecteur | C05 | environments | ✅ · [E-05](ecarts.md#e-05) |
 | ENV-10 | Modale de suppression : confirmation par saisie du nom | C06 | environments | ✅ · [E-05](ecarts.md#e-05) |
-| ENV-11 | Modale d'import : fichier, validation (« Found N connections »), erreur d'extension | C07 | environments | 🔴 [E-11](ecarts.md#e-11) [E-15](ecarts.md#e-15) |
+| ENV-11 | Modale d'import : fichier, validation (« Found N connections »), erreur d'extension | C07 | environments | 🔴 [E-11](ecarts.md#e-11) |
 | ENV-12 | Titre d'onglet du navigateur propre à la connexion | — | environments | ✅ |
 | ENV-13 | Mauvaise version de backend : erreur, puis correction possible | — | environments | ✅ |
 
@@ -141,7 +141,7 @@ Routes `/data/:indexName/create`, `/data/:indexName/:collectionName/edit` →
 |---|---|---|---|---|
 | COLF-01 | Nom de la collection : requis, validé, non modifiable en édition | C44 | collections | ✅ |
 | COLF-02 | Éditeur JSON du mapping, avec l'exemple et les liens de doc (mappings, dynamic policy) | C44 | collections | 🔴 [E-20](ecarts.md#e-20) |
-| COLF-03 | Import du mapping depuis un fichier JSON | C44 | — | ❓ [E-15](ecarts.md#e-15) |
+| COLF-03 | Import du mapping depuis un fichier JSON | C44 | — | ✅ |
 | COLF-04 | « Export Mapping » | C45 | collections | ✅ |
 | COLF-05 | Erreur JSON signalée dans l'éditeur | — | JSONEditor | ✅ |
 
@@ -270,7 +270,7 @@ Routes `/security/users`, `/security/users/create`, `/security/users/:id`,
 | USR-10 | Onglet Custom : contenu JSON et mapping | C95 | users | ✅ |
 | USR-11 | Icône d'erreur sur l'onglet fautif, « Save » / « Create » / « Cancel » | C93 | users | ✅ |
 | USR-12 | Utilisateur avec beaucoup de profils | — | users | ✅ |
-| USR-13 | Mapping personnalisé : éditeur, import de fichier, export, « Save » | C96 | users | 🔴 [E-20](ecarts.md#e-20) [E-15](ecarts.md#e-15) |
+| USR-13 | Mapping personnalisé : éditeur, import de fichier, export, « Save » | C96 | users | 🔴 [E-20](ecarts.md#e-20) |
 
 ## 12. Security — profils
 

@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 121 ✅ (dont 43 touchées par un écart
-transverse), 11 🎯, 20 🔴, 0 ⛔, 1 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 122 ✅ (dont 43 touchées par un écart
+transverse), 11 🎯, 20 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -209,7 +209,10 @@ rendrait plus difficiles à isoler.
   interface en anglais.
 - **Cause** : `<input type="file">` natif à la place de `b-form-file` ;
   décidé dans `MIGRATION.md` (§ 3, « champ fichier »), sans ADR.
-- **À trancher** : ADR, ou un bouton qui déclenche un input masqué.
+- **Corrigé** : primitive `ui/file-input` — l'input natif reste le contrôle,
+  masqué ; le cadre affiche le texte de la console (« No file chosen »,
+  « Browse », le placeholder de la v4) et accepte toujours le dépôt d'un
+  fichier.
 
 ---
 
