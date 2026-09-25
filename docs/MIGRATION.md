@@ -1167,7 +1167,8 @@ gros et le plus risqué.
   `expected 42 to equal 43`. Taux mesuré le 2026-09-18 : **1 échec sur 16** en
   exécution isolée, machine au repos. Même famille de symptôme sur `collections`
   (`Should be able to update a collection`, assertion sur le contenu de
-  l'éditeur Ace) observé une fois puis non reproduit.
+  l'éditeur Ace) observé une fois puis non reproduit. *Élucidé le
+  2026-09-25 : un `await` manquant dans l'application, voir [G-066](#g-066).*
 - **Cause** : trois sources distinctes, à ne pas confondre.
   1. **`cy.request()` n'est pas réessayée, et rien n'attend que l'application
      ait écrit.** Le test « update a document » clique
@@ -2899,6 +2900,37 @@ Gabarit à copier :
 - **À retenir** : un plugin Cypress qui s'appuie sur `cy.fixture` peut changer
   de comportement à chaque version majeure sans changer lui-même. Préférer la
   commande native quand elle existe.
+
+#### G-066 — Mettre à jour une collection puis la rouvrir montre l'ancien mapping
+
+- **Contexte** : validation de la montée de Vite 8, suite complète contre un
+  build. Même test que celui qu'évoque [G-001](#g-001) : *« observé une fois
+  puis non reproduit »*.
+- **Symptôme** : `collections.spec.js`, « Should be able to update a
+  collection » : `expected '<div#collection…ace_editor>' to contain
+  '"firstName": {'`. L'éditeur rouvert affiche le mapping **d'avant**. Mesuré
+  2 échecs sur 8 exécutions sous Vite 8, 0 sur 6 sous Vite 5 : l'écart ne
+  tranche pas, le défaut est dans l'application.
+- **Cause** : `Update.vue` appelait `storageIndexStore.updateCollection()`
+  **sans `await`**, puis naviguait vers la liste. Le store ne remplace la
+  collection qu'après la réponse de Kuzzle ; la spec clique « modifier »
+  aussitôt, et `JsonEditor` ne lit `content` qu'à son montage. Si la réponse
+  arrive après, l'éditeur garde l'ancien mapping. Le `try/catch` autour ne
+  servait à rien : une erreur de mise à jour n'affichait jamais le toast.
+  `DeleteCollectionModal.vue` avait le même défaut sur `deleteCollection()`.
+  `Create.vue`, lui, attendait déjà.
+- **Solution** : `await` sur les deux appels ; `performDelete` devient
+  `async`. Garde-fou par mutation, écriture retardée de 1,5 s dans le store :
+
+  | `Update.vue` | Résultat |
+  |---|---|
+  | sans `await` | ❌ reproduit à chaque fois |
+  | avec `await` | ✅ |
+
+- **À retenir** : un `try/catch` autour d'un appel `async` non attendu est
+  un signal à lui seul — il ne rattrape rien. Et un test « instable » qui
+  vérifie une écriture puis une relecture pointe d'abord vers une écriture non
+  attendue, dans la spec (G-001) **ou dans l'application**.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

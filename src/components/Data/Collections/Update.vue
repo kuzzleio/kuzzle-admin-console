@@ -74,7 +74,7 @@ export default {
     async update(payload) {
       this.error = '';
       try {
-        this.storageIndexStore.updateCollection({
+        await this.storageIndexStore.updateCollection({
           index: this.index,
           name: payload.name,
           mapping: payload.mapping,

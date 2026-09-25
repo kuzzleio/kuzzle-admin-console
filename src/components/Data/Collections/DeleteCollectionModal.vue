@@ -126,13 +126,13 @@ export default defineComponent({
       this.close();
       this.$emit('cancel');
     },
-    performDelete(): void {
+    async performDelete(): Promise<void> {
       if (!this.isConfirmationValid || !this.index || !this.collection) {
         return;
       }
 
       try {
-        this.storageIndexStore.deleteCollection({
+        await this.storageIndexStore.deleteCollection({
           index: this.index,
           collection: this.collection,
         });
