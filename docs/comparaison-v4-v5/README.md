@@ -12,7 +12,7 @@ régressions se noieraient dans les écarts voulus.
 |---|---|---|
 | 1. Inventaire fonctionnel de la v4, écran par écran | [`inventaire.md`](inventaire.md) | ✅ |
 | 2. Captures des mêmes états sur les deux versions, même backend | [script Cypress](../../test/e2e/cypress/captures/captures.js) + [planche](../../scripts/captures-planche.ts) | ✅ |
-| 3. Tri des écarts : voulu (avec son ADR), régression, manquant | colonne *v5* de l'inventaire + issues | ⬜ |
+| 3. Tri des écarts : voulu (avec son ADR), régression, manquant | colonne *v5* de l'inventaire + [`ecarts.md`](ecarts.md) + issues | 🟡 tri fait, issues à ouvrir |
 
 ## Principes
 
