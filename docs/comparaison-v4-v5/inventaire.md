@@ -35,7 +35,7 @@ plus le sélecteur de la barre de navigation. Composants :
 |---|---|---|---|---|
 | ENV-01 | Page « Create a Connection » : nom, hôte, port, SSL, version de Kuzzle (1 / 2) | C01 | environments | ✅ · [E-23](ecarts.md#e-23) [E-24](ecarts.md#e-24) |
 | ENV-02 | Sélecteur de couleur de la connexion, appliquée à la barre de navigation ; erreur si aucune couleur | C01 | environments | ✅ · [E-20](ecarts.md#e-20) |
-| ENV-03 | Validation du formulaire (champs requis, nom déjà pris) avec retour visuel | C02 | environments | 🔴 [E-08](ecarts.md#e-08) |
+| ENV-03 | Validation du formulaire (champs requis, nom déjà pris) avec retour visuel | C02 | environments | ✅ · [E-21](ecarts.md#e-21) |
 | ENV-04 | Lien « Import connections » depuis la page de création | C01 | environments | ✅ |
 | ENV-05 | Page « Edit a Connection », ouverte d'office si la connexion courante est malformée | — | environments | ✅ |
 | ENV-06 | Page « Select Kuzzle » : liste des connexions, « Connect to » | C03 | — | ✅ · [E-24](ecarts.md#e-24) |
@@ -112,7 +112,7 @@ Route `/data` → `Data/Indexes/Page.vue`.
 | IDX-02 | Tri par nom et par nombre de collections | — | indexes | 🎯 [ADR-0011](../adr/0011-table-sans-data-table.md) |
 | IDX-03 | Filtre de la liste, état « no index matching your filter » | C33 | — | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
 | IDX-04 | État vide « There is no index » | — | — | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
-| IDX-05 | Création : modale, règle de nommage, alerte, doublon refusé | C34 | indexes | 🔴 [E-08](ecarts.md#e-08) |
+| IDX-05 | Création : modale, règle de nommage, alerte, doublon refusé | C34 | indexes | ✅ |
 | IDX-06 | Actions de ligne : parcourir, créer une collection dans l'index, supprimer | C32 | indexes | ✅ |
 | IDX-07 | Suppression : modale, confirmation par saisie du nom | C35 | indexes | ✅ |
 | IDX-08 | Sélection (cases, « Toggle all ») et suppression groupée : modale « DELETE » | C36 | indexes | ✅ |

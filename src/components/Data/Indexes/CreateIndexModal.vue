@@ -16,7 +16,9 @@
             type="text"
           />
           <FormMessage v-if="indexFeedback">{{ indexFeedback }}</FormMessage>
-          <FormDescription v-else>
+          <!-- Toujours affichée : c'est quand la saisie est refusée qu'on a
+               besoin de la liste des caractères interdits (E-08). -->
+          <FormDescription>
             The index name should contain only lowercase characters and no spaces. It also must not
             contain de following characters: <code>\</code>, <code>/</code>, <code>*</code>,
             <code>?</code>, <code>"</code>, <code>&lt;</code>, <code>></code>, <code>|</code>,
