@@ -7,44 +7,66 @@
  * primitives écrites à la main en Vue 2 puissent être remplacées en phase 4 par
  * les vrais composants shadcn-vue sans toucher aux sites d'appel.
  *
- * Les valeurs claires reprennent la palette existante de la console
- * (`styles/_variables.scss`) : cette PR pose la plomberie, elle ne décide pas
- * de l'apparence. La refonte visuelle se fera en changeant ces valeurs, à un
- * seul endroit — c'est précisément ce qu'on achète ici.
+ * Les valeurs claires sont celles du design system produit Kuzzle
+ * (ADR-0043), selon la table de correspondance de `DESIGN.md` (« Mapping to
+ * the console's tokens ») : le DS fournit les valeurs, shadcn-vue les noms.
+ *
+ * Trois tokens ont changé de sens avec la DA, et non seulement de valeur :
+ * `secondary` n'est plus un texte gris-bleu mais le fond pâle des tags,
+ * `accent` n'est plus le jaune des avertissements mais le fond de survol, et
+ * `background` n'est plus blanc mais le fond de page. Les avertissements ont
+ * leur propre token (`warning`), comme le succès et l'information : shadcn
+ * n'en a pas, la console en a besoin (E-20, E-21 de la comparaison v4 / v5).
  *
  * Le jeu sombre est défini mais n'est branché sur aucun sélecteur de thème :
- * rien ne l'active aujourd'hui.
+ * rien ne l'active aujourd'hui. Il garde l'ancienne palette ; le DS n'a pas
+ * de thème sombre, il faudra le dériver le jour où on l'active (ADR-0043).
  */
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Surfaces */
-  --background: #ffffff;
+  /* Surfaces — fond de page Page Mist, cartes et panneaux flottants blancs */
+  --background: #f6f7fb;
   --foreground: #002835;
   --card: #ffffff;
   --card-foreground: #002835;
   --popover: #ffffff;
   --popover-foreground: #002835;
 
-  /* Couleurs de marque */
-  --primary: #002835;
+  /* Marque — un seul accent saturé, le fuchsia (« The One Accent Rule ») */
+  --primary: #e64472;
+  --primary-hover: #c93960;
   --primary-foreground: #ffffff;
-  --secondary: #3498db;
-  --secondary-foreground: #ffffff;
-  --accent: #efc94c;
+  /* Soft Sky : tags, remplissages doux */
+  --secondary: #daedf6;
+  --secondary-foreground: #002835;
+  /* Row Hover : survol des lignes et des éléments de menu */
+  --accent: #eef4f8;
   --accent-foreground: #002835;
 
-  /* Neutres et états */
-  --muted: #f5f5f5;
-  --muted-foreground: #7b7b7b;
-  --destructive: #e94e77;
-  --destructive-foreground: #ffffff;
+  /* Neutres */
+  --muted: #eef1f5;
+  --muted-foreground: #6c757d;
+  /* Label Slate : libellés en capitales */
+  --label: #43565b;
 
-  /* Traits */
-  --border: #eeeeee;
-  --input: #eeeeee;
-  --ring: #73626e;
+  /* États. Le vert et l'orange du DS ne portent pas de texte blanc lisible
+     (contraste < 4,5:1) : leur texte est le bleu Kuzzle. `info` n'existe pas
+     dans le DS ; il prend Captain Blue sur Soft Sky. */
+  --destructive: #dc3545;
+  --destructive-foreground: #ffffff;
+  --success: #3ddc84;
+  --success-foreground: #002835;
+  --warning: #c9821f;
+  --warning-foreground: #002835;
+  --info: #00536f;
+  --info-foreground: #ffffff;
+
+  /* Traits — Hairline pour bordures et champs, Captain Blue pour le focus */
+  --border: #d0dde1;
+  --input: #d0dde1;
+  --ring: #00536f;
 
   /* Notifications temps réel — quatre familles à distinguer d'un coup d'œil
      dans un flux qui défile. Ce ne sont pas des états (`destructive` dirait
@@ -118,10 +140,18 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
 
+  --color-primary-hover: var(--primary-hover);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-label: var(--label);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 
   --color-border: var(--border);
   --color-input: var(--input);

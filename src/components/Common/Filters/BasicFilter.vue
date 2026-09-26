@@ -15,7 +15,7 @@
                 class="flex flex-wrap items-center gap-2"
               >
                 <span
-                  class="w-10 shrink-0 text-center font-bold text-secondary"
+                  class="w-10 shrink-0 text-center font-bold text-muted-foreground"
                   :class="filterIndex === 0 ? 'invisible' : ''"
                   >AND</span
                 >
@@ -134,7 +134,7 @@
 
           <div
             v-if="groupIndex < filters.basic.length - 1"
-            class="my-2 flex items-center gap-3 text-secondary"
+            class="my-2 flex items-center gap-3 text-muted-foreground"
           >
             <hr class="flex-1 border-border" />
             <b>OR</b>

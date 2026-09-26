@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 138 ✅ (dont 33 touchées par un écart
-transverse), 11 🎯, 4 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 142 ✅ (dont 21 touchées par un écart
+transverse), 11 🎯, 0 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -285,6 +285,11 @@ doit exister dans la nouvelle palette.
   rendait les couleurs Bootstrap par défaut (secondary `#6c757d`, danger
   `#dc3545`, info `#17a2b8`). 45 occurrences de `text-secondary` dans 23
   fichiers ; `ui/button/Button.vue:75` pour `link`.
+- **Corrigé** avec la palette de la DA : `--secondary` devient le fond pâle
+  des tags, et les 45 `text-secondary` passent à `text-muted-foreground` (texte
+  secondaire) ou `text-primary` (liens, dont ceux de l'aide de COLF-02 et
+  USR-13) ; la variante `link` des boutons est fuchsia ; `--destructive` est le
+  rouge `#DC3545` du DS.
 
 <a id="e-21"></a>
 
@@ -300,8 +305,16 @@ doit exister dans la nouvelle palette.
 - **Cause** : `Alert`, `Toast`, `Badge` et `Button` n'ont pas de variante
   `info` ; `ApiAction/ResponseCard.vue:59-63` renvoie encore `secondary` /
   `danger`, que `ui/alert/Alert.vue` ne connaît pas.
-- **Aussi** : le marquage des champs valides de la v4 (bordure verte et coche
-  sur ENV-03, C02), reporté d'[E-08](#e-08) faute de couleur « succès ».
+- **Corrigé** avec la palette de la DA : tokens `--success`, `--warning` et
+  `--info`, variantes `info` et `success` sur `Alert`, `Toast`, `Badge` et
+  `Button`. Les alertes et toasts cyan de la v4 repassent en `info`, les
+  pastilles « Filters are being applied » et « controller : action » aussi ;
+  `ResponseCard` renvoie `success` / `destructive` ; la pastille « new
+  documents » devient verte, comme son infobulle le promet. **Voulu** : RUN
+  reste fuchsia, c'est l'action principale de l'écran (« The One Accent Rule »).
+- **Reste** : le marquage des champs valides de la v4 (bordure verte et coche
+  sur ENV-03, C02), reporté d'[E-08](#e-08). La couleur existe désormais
+  (`--success`) ; il viendra avec les primitives de formulaire.
 
 <a id="e-22"></a>
 

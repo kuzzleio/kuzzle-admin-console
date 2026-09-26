@@ -54,7 +54,7 @@ export default defineComponent({
       return this.mergeClasses(
         'flex h-9 w-full items-center justify-between gap-2',
         'appearance-none cursor-pointer',
-        'rounded-md border border-input bg-background',
+        'rounded-md border border-input bg-card',
         'px-3 py-2',
         'font-sans text-sm leading-none text-foreground',
         'transition-colors outline-none',

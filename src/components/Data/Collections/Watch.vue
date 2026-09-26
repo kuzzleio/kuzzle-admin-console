@@ -72,7 +72,7 @@
             <Badge
               v-if="hasFilter && !advancedFiltersVisible"
               data-cy="Watch-filterAppliedPill"
-              variant="secondary"
+              variant="info"
             >
               Filters are being applied
             </Badge>
@@ -183,7 +183,7 @@
                   </CardTitle>
                 </CardHeader>
                 <CardContent class="overflow-auto px-3 py-3">
-                  <Badge title="controller : action" variant="secondary">
+                  <Badge title="controller : action" variant="info">
                     {{ lastNotification.controller }} : {{ lastNotification.action }}
                   </Badge>
                   <p

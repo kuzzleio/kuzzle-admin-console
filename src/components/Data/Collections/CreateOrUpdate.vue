@@ -1,7 +1,7 @@
 <template>
   <div class="CollectionCreateOrUpdate flex h-full flex-col">
     <headline>
-      <span class="code text-secondary">
+      <span class="code text-muted-foreground">
         {{ index }}
         <i class="fa fa-angle-right" />
       </span>
@@ -89,12 +89,13 @@
             Pas de `flex flex-col` sur ce bloc : il mêle du texte et des
             éléments en ligne, que la colonne casserait ligne à ligne (G-018).
           -->
-          <div class="min-h-0 overflow-auto text-secondary lg:w-4/12">
+          <div class="min-h-0 overflow-auto text-muted-foreground lg:w-4/12">
             You can (optionally) use this editor to define the mappings for this collection.
             <br />
             The mappings of a collection is the definition of how each document in the collection
             (and its fields) are stored and indexed.
             <a
+              class="text-primary underline underline-offset-4 hover:text-primary-hover"
               href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
               target="_blank"
               >Read more about mappings</a

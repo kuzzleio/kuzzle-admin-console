@@ -64,7 +64,7 @@
             advancedFiltersVisible ? 'Hide filters' : 'Show filters'
           }}
         </Button>
-        <Badge v-if="!advancedFiltersVisible" variant="secondary">Filters are being applied</Badge>
+        <Badge v-if="!advancedFiltersVisible" variant="info">Filters are being applied</Badge>
       </div>
 
       <Button data-cy="QuickFilter-resetBtn" variant="outline" @click="resetSearch">Reset</Button>

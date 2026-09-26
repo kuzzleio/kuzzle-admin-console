@@ -2,7 +2,7 @@
   <Alert class="mb-4">
     For more information about security policies please visit
     <a
-      class="text-secondary underline underline-offset-4"
+      class="text-primary underline underline-offset-4 hover:text-primary-hover"
       href="https://docs.kuzzle.io/core/2/guides/main-concepts/permissions/"
       rel="noopener noreferrer"
       target="_blank"

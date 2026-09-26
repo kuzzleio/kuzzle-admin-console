@@ -84,7 +84,7 @@
       <div class="flex flex-col gap-3 sm:flex-row">
         <div class="sm:w-1/3">
           <div>Pick a color</div>
-          <small class="text-secondary"
+          <small class="text-muted-foreground"
             >It will be applied to the header navbar so you can distinguish this connection from
             other ones.</small
           >

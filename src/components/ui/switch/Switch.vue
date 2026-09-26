@@ -73,7 +73,7 @@ export default defineComponent({
     },
     thumbClasses(): string {
       return [
-        'pointer-events-none block size-4 rounded-full bg-background shadow-sm',
+        'pointer-events-none block size-4 rounded-full bg-card shadow-sm',
         'transition-transform',
       ].join(' ');
     },

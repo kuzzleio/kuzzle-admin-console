@@ -7,7 +7,7 @@
         <CardDescription class="italic">
           Learn more about security &amp; permissions on the
           <a
-            class="text-secondary underline underline-offset-4"
+            class="text-primary underline underline-offset-4 hover:text-primary-hover"
             href="https://docs.kuzzle.io/core/2/guides/main-concepts/permissions/"
             rel="noopener noreferrer"
             target="_blank"

@@ -70,7 +70,7 @@ export default defineComponent({
     classes(): string {
       return this.mergeClasses(
         'flex h-9 w-full min-w-0 cursor-pointer items-center overflow-hidden',
-        'rounded-md border border-input bg-background font-sans text-sm text-foreground',
+        'rounded-md border border-input bg-card font-sans text-sm text-foreground',
         'transition-colors',
         'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
         'data-dragging:border-ring',

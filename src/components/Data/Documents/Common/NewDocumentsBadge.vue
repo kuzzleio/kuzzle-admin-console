@@ -8,7 +8,7 @@
         ? 'New documents that might match your filters have been created. Click to refresh.'
         : 'This circle will turn green when new documents are added to this collection'
     "
-    :variant="hasNewDocuments ? 'default' : 'secondary'"
+    :variant="hasNewDocuments ? 'success' : 'secondary'"
     @click="hasNewDocuments ? $emit('refresh') : $emit('noop')"
     >{{ hasNewDocuments ? 'new documents' : '' }}</Badge
   >

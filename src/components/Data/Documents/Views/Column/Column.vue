@@ -504,6 +504,6 @@ export default {
 }
 
 .multiselect__option--selected.multiselect__option--highlight {
-  background: #e64472 !important;
+  background: var(--primary) !important;
 }
 </style>
