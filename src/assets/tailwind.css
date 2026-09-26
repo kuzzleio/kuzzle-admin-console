@@ -27,6 +27,7 @@
 @import 'tailwindcss/utilities.css' layer(utilities);
 
 @import './tokens.css';
+@import './fonts.css';
 
 /*
  * FontAwesome, rangé dans la même couche que le reste du legacy.

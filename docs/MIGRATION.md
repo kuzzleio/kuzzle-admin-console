@@ -310,7 +310,9 @@ précisément ce qu'on achète.
 | 1. Comparaison v4 / v5 : captures des mêmes écrans, même backend ([script](../test/e2e/cypress/captures/captures.js), [planche du 2026-09-25](https://claude.ai/artifact/XN8VJfk9ykaRtQvvvCebek)) | ✅ |
 | 1. Comparaison v4 / v5 : tri des écarts (voulu / régression / manquant) — [`ecarts.md`](comparaison-v4-v5/ecarts.md), issues #1119 à #1134 | ✅ |
 | 1. Comparaison v4 / v5 : régressions fonctionnelles E-01 à E-15 corrigées ou tranchées (#1136, #1138 à #1149) ; reste le vert des champs valides d'E-08, versé à E-21 | ✅ |
-| 2. Tokens + polices + 20 primitives à la DA Kuzzle | ⬜ |
+| 2. Polices embarquées, familles dans `tokens.css` ([ADR-0047](adr/0047-polices-embarquees.md)) | ✅ |
+| 2. Valeurs des tokens (palette, rayons, ombres, durées) à la DA Kuzzle | ⬜ |
+| 2. 20 primitives à la DA Kuzzle | ⬜ |
 | 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
 
@@ -3309,3 +3311,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-25 | Impeccable versionné dans le repo, sans ses hooks | [ADR-0044](adr/0044-impeccable-versionne-sans-hooks.md) |
 | 2026-09-25 | Une pagination ne s'affiche que s'il y a plus d'une page, sur toutes les listes | [ADR-0045](adr/0045-pagination-masquee-sur-une-page.md) |
 | 2026-09-25 | L'aide d'API Action s'ouvre au clic, dans un `DropdownMenu` | [ADR-0046](adr/0046-aide-api-action-au-clic.md) |
+| 2026-09-26 | Polices de la DA embarquées (Ubuntu, Montserrat par `@fontsource`, Gobold) ; Cousine et Google Fonts retirés | [ADR-0047](adr/0047-polices-embarquees.md) |

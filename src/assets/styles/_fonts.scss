@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css?family=Cousine&display=swap');
-
+// Les données qui viennent du backend (identifiants, noms de rôles, valeurs)
+// sont en monospace (DESIGN.md, « The Mono For Data Rule »). La pile vient des
+// tokens : plus de Cousine chargée depuis Google Fonts (ADR-0047).
 .code {
-  font-family: 'Cousine', monospace;
+  font-family: var(--font-mono);
 }

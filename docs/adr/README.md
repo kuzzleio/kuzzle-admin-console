@@ -68,6 +68,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0044](0044-impeccable-versionne-sans-hooks.md) | Impeccable versionné dans le repo, sans ses hooks | Acceptée |
 | [0045](0045-pagination-masquee-sur-une-page.md) | Les listes Security masquent leur pagination quand tout tient sur une page | Acceptée |
 | [0046](0046-aide-api-action-au-clic.md) | L'aide d'API Action s'ouvre au clic | Acceptée |
+| [0047](0047-polices-embarquees.md) | Les polices de la DA sont embarquées, Gobold comprise | Acceptée |
 
 ## Gabarit
 
