@@ -56,7 +56,7 @@ Routes : `/login`, `/signup`, `/reset-password/:token`. Composants :
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
 | AUTH-01 | Login : identifiant, mot de passe, « Connected to <connexion> » | C10 | login | ✅ · [E-23](ecarts.md#e-23) |
-| AUTH-02 | Login par stratégie (un bouton par stratégie d'authentification) | C10 | — | 🔴 [E-12](ecarts.md#e-12) |
+| AUTH-02 | Login par stratégie (un bouton par stratégie d'authentification) | C10 | — | ✅ |
 | AUTH-03 | « Login as Anonymous » | C10 | login | ✅ · [E-20](ecarts.md#e-20) |
 | AUTH-04 | Échec de connexion : « Login failed: … » | C11 | — | ✅ |
 | AUTH-05 | Bandeau « no administrator user » sur le login, avec lien vers la création | C12 | — | ✅ · [E-21](ecarts.md#e-21) |
@@ -159,7 +159,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | DOC-03 | Menu d'actions : « Edit collection », « Delete collection », « Clear documents » (droits en infobulle) | C52 | collections | ✅ |
 | DOC-04 | Modale « Clear » : confirmation par saisie du nom | C53 | collections | ✅ |
 | DOC-05 | « Create New Document » | C50 | docs | ✅ |
-| DOC-06 | « Refresh » et bascule « Auto-Sync » (retenue au rechargement) | C54 | docs | 🔴 [E-12](ecarts.md#e-12) |
+| DOC-06 | « Refresh » et bascule « Auto-Sync » (retenue au rechargement) | C54 | docs | ✅ |
 | DOC-07 | Pastille « nouveaux documents » : grise, verte quand il y en a, clic = rafraîchir | C50 | docs | 🔴 [E-21](ecarts.md#e-21) |
 | DOC-08 | Pagination, sélecteur « Show N of M total items » | C50 | search | ✅ |
 | DOC-09 | Message au-delà de 10 000 documents (limite Elasticsearch) | — | docs | ✅ |
@@ -280,7 +280,7 @@ Routes `/security/profiles`, `/security/profiles/create`,
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
 | PRF-01 | Liste des profils, dépliage des politiques | C100 | profiles | ✅ |
-| PRF-02 | Filtre par rôles (multiselect), pastille « applied », « Reset » | C101 | profiles | 🔴 [E-12](ecarts.md#e-12) |
+| PRF-02 | Filtre par rôles (multiselect), pastille « applied », « Reset » | C101 | profiles | ✅ |
 | PRF-03 | Sélection, « Toggle all », « Delete selected », modale | C102 | profiles | ✅ |
 | PRF-04 | Éditer / supprimer par ligne, pagination | C100 | profiles | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
 | PRF-05 | « Create Profile », état « No profile is defined » | C100 | profiles | ✅ |

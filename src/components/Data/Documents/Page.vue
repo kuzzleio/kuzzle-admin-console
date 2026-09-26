@@ -39,7 +39,7 @@
             >
               <i
                 aria-hidden="true"
-                :class="['fas', 'fa-sync', { 'fa-spin': autoSync }]"
+                :class="['fas', 'fa-sync', autoSync ? 'fa-spin' : 'text-muted-foreground']"
                 :data-autosync="autoSync ? 'on' : 'off'"
                 data-cy="Autosync-icon"
               />

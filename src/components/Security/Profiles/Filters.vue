@@ -12,18 +12,20 @@
       <DropdownMenu data-cy="ProfileFilters-roleSelect">
         <DropdownMenuTrigger :as="Button" variant="outline">
           Select roles to be contained in the profiles
+          <i aria-hidden="true" class="fas fa-caret-down" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" class="max-h-96 overflow-y-auto">
           <DropdownMenuCheckboxItem
             v-for="role of roleList"
             :key="`dropdown-${role}`"
             :checked="roleIsSelected(role)"
-            class="code"
             :data-cy="`RoleSelect--${role}`"
             :title="role"
             @update:checked="(checked) => toggleRole(role, checked)"
           >
-            {{ role }}
+            <!-- Sur l'élément de menu, `code` perdait contre le `font-sans`
+                 de la primitive : il est porté par le texte lui-même (E-12). -->
+            <span class="code">{{ role }}</span>
           </DropdownMenuCheckboxItem>
           <p v-if="roleList.length === 0" class="px-3 py-2 text-sm text-muted-foreground">
             No roles found.
