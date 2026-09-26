@@ -32,6 +32,9 @@ import { classMerge } from '../class-merge';
  *   annoncé n'existe pas pour qui n'a pas l'écran.
  *
  * Les variantes reprennent celles d'`Alert` : la console a besoin des quatre.
+ * Contrairement à `Alert`, un toast flotte au-dessus du contenu : sa teinte
+ * est mêlée à `card` plutôt qu'à la transparence, sans quoi il est illisible
+ * sur ce qu'il recouvre (E-03 de la comparaison v4 / v5).
  */
 export const toastVariants = cva(
   [
@@ -45,10 +48,13 @@ export const toastVariants = cva(
     },
     variants: {
       variant: {
-        danger: 'border-destructive/40 bg-destructive/10 text-destructive',
+        danger:
+          'border-destructive/40 bg-[color-mix(in_oklab,var(--color-destructive)_10%,var(--color-card))] text-destructive',
         info: 'border-border bg-card text-card-foreground',
-        success: 'border-secondary/40 bg-secondary/10 text-foreground',
-        warning: 'border-accent bg-accent/20 text-foreground',
+        success:
+          'border-secondary/40 bg-[color-mix(in_oklab,var(--color-secondary)_10%,var(--color-card))] text-foreground',
+        warning:
+          'border-accent bg-[color-mix(in_oklab,var(--color-accent)_20%,var(--color-card))] text-foreground',
       },
     },
   },

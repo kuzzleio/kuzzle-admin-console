@@ -80,7 +80,7 @@ Composants : `Common/MainMenu.vue`, `ConnectionAwareContainer.vue`,
 | APP-02 | Couleur de la barre = couleur de la connexion | C20 | environments | ✅ |
 | APP-03 | Menu « Feedback » : liens externes (Discord…) | C21 | — | ✅ |
 | APP-04 | Nom de l'utilisateur connecté, tronqué avec infobulle | C20 | — | ✅ |
-| APP-05 | Surcouche « Kuzzle unreachable » quand le backend tombe, disparition au retour | C22 | environments | 🔴 [E-03](ecarts.md#e-03) |
+| APP-05 | Surcouche « Kuzzle unreachable » quand le backend tombe, disparition au retour | C22 | environments | ✅ |
 | APP-06 | Page « Connecting to Kuzzle at … » au démarrage | — | — | ✅ |
 | APP-07 | Page d'erreur de connexion (« Something went wrong while connecting ») | — | — | ✅ |
 | APP-08 | Page 404 générale, lien retour | C23 | 404 | ✅ |

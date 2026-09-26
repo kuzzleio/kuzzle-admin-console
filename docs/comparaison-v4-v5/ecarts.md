@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 124 ✅ (dont 43 touchées par un écart
-transverse), 11 🎯, 18 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 125 ✅ (dont 43 touchées par un écart
+transverse), 11 🎯, 17 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -67,6 +67,9 @@ rendrait plus difficiles à isoler.
   de navigation.
 - **Cause** : `ui/toast/Toast.vue:51`, `warning: 'bg-accent/20'` (20 %
   d'opacité) ; `danger` est à `bg-destructive/10`. Le `b-toast` v4 était opaque.
+- **Corrigé** : les variantes teintées (`warning`, `danger`, `success`) mêlent
+  leur couleur à `card` (`color-mix`) au lieu de la transparence ; mêmes
+  proportions, le toast devient opaque. La palette reste celle du lot tokens.
 
 <a id="e-04"></a>
 
