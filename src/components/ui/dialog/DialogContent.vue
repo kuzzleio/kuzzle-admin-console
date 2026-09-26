@@ -11,6 +11,13 @@
     @keydown.tab="trapFocus"
   >
     <slot />
+    <DialogClose
+      v-if="showCloseButton"
+      aria-label="Close"
+      class="absolute top-4 right-4 rounded-sm leading-none opacity-60 outline-none hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <i aria-hidden="true" class="fa fa-times" />
+    </DialogClose>
   </div>
 </template>
 
@@ -18,6 +25,8 @@
 import { defineComponent } from 'vue';
 
 import { classMerge } from '../class-merge';
+
+import DialogClose from './DialogClose.vue';
 
 /*
  * DialogContent — le panneau de la modale (ADR-0010).
@@ -30,6 +39,10 @@ import { classMerge } from '../class-merge';
  * Le focus est posé à l'ouverture sur le premier élément focalisable — ou sur
  * le panneau lui-même s'il n'y en a pas — et rendu à l'élément qui avait le
  * focus avant l'ouverture.
+ *
+ * La croix de fermeture est rendue par défaut, comme dans shadcn-vue
+ * (`showCloseButton`) et comme le faisait `b-modal`. Elle vient après le slot
+ * dans le DOM : le focus d'ouverture reste sur le premier champ.
  */
 const FOCUSABLE = [
   'a[href]',
@@ -42,6 +55,7 @@ const FOCUSABLE = [
 
 export default defineComponent({
   name: 'DialogContent',
+  components: { DialogClose },
   mixins: [classMerge],
   inheritAttrs: false,
   props: {
@@ -52,6 +66,10 @@ export default defineComponent({
     labelledBy: {
       default: undefined,
       type: String,
+    },
+    showCloseButton: {
+      default: true,
+      type: Boolean,
     },
   },
   data() {

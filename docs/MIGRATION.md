@@ -284,7 +284,7 @@ jamais eu lieu d'être. `cy.wait('@alias')` reste autorisé, et une durée pass�
 | `Label` et `Alert` (ajoutées en reprenant les modales d'import et de requête) | ✅ |
 | `Checkbox` (ajoutée en reprenant les trois lignes de liste de Security) | ✅ |
 | `FormItem`, `FormDescription`, `FormMessage` (sans `FormField` ni `FormControl`) | ✅ |
-| `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) | ✅ |
+| `Dialog` — écrite à la main ([ADR-0010](adr/0010-primitive-dialog-en-vue-2.md)) ; `DialogClose`, que l'ADR annonçait, ajouté depuis (E-05 de la comparaison v4 / v5) | ✅ |
 | `Switch` (ajoutée en reprenant la bascule « Form view » des documents) | ✅ |
 | `Table` — du balisage, pas de `DataTable` ([ADR-0011](adr/0011-table-sans-data-table.md)) | ✅ |
 | `DropdownMenu` — panneau dans `<body>` ([ADR-0012](adr/0012-primitive-dropdown-menu-en-vue-2.md)) | ✅ |

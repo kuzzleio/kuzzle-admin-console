@@ -19,6 +19,15 @@ describe('Indexes', () => {
     cy.contains(indexName)
   })
 
+  it('Should close the index creation modal with its close button', () => {
+    cy.waitOverlay()
+
+    cy.get('[data-cy="IndexesPage-createBtn"]').click()
+    cy.get('[data-cy="CreateIndexModal-name"]').should('be.visible')
+    cy.get('[role="dialog"] [aria-label="Close"]').click()
+    cy.get('[data-cy="CreateIndexModal-name"]').should('not.exist')
+  })
+
   it('Should show visual feedback when creating invalid index', () => {
     cy.waitOverlay()
 

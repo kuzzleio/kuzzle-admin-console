@@ -41,8 +41,8 @@ plus le sélecteur de la barre de navigation. Composants :
 | ENV-06 | Page « Select Kuzzle » : liste des connexions, « Connect to » | C03 | — | ✅ · [E-24](ecarts.md#e-24) |
 | ENV-07 | Sélecteur de connexion dans la barre : liste, édition, suppression, « Create new connection » | C04 | environments | 🔴 [E-04](ecarts.md#e-04) |
 | ENV-08 | « Export all » (téléchargement JSON) et « Import » depuis le sélecteur | C04 | environments | ✅ |
-| ENV-09 | Modale de création / édition depuis le sélecteur | C05 | environments | ✅ · [E-05](ecarts.md#e-05) |
-| ENV-10 | Modale de suppression : confirmation par saisie du nom | C06 | environments | ✅ · [E-05](ecarts.md#e-05) |
+| ENV-09 | Modale de création / édition depuis le sélecteur | C05 | environments | ✅ |
+| ENV-10 | Modale de suppression : confirmation par saisie du nom | C06 | environments | ✅ |
 | ENV-11 | Modale d'import : fichier, validation (« Found N connections »), erreur d'extension | C07 | environments | 🔴 [E-11](ecarts.md#e-11) |
 | ENV-12 | Titre d'onglet du navigateur propre à la connexion | — | environments | ✅ |
 | ENV-13 | Mauvaise version de backend : erreur, puis correction possible | — | environments | ✅ |
@@ -62,7 +62,7 @@ Routes : `/login`, `/signup`, `/reset-password/:token`. Composants :
 | AUTH-05 | Bandeau « no administrator user » sur le login, avec lien vers la création | C12 | — | ✅ · [E-21](ecarts.md#e-21) |
 | AUTH-06 | Signup du premier admin : identifiant, mot de passe ×2, case « Remove anonymous user credentials », « Go to Login Page », « Login as Anonymous » | C13 | login | ✅ · [E-21](ecarts.md#e-21) |
 | AUTH-07 | Réinitialisation du mot de passe : nouveau ×2, alerte « You must update your password », validation | C14 | resetpassword | ✅ |
-| AUTH-08 | Session expirée : modale de reconnexion sans perdre le contexte | C15 | login | ✅ · [E-05](ecarts.md#e-05) |
+| AUTH-08 | Session expirée : modale de reconnexion sans perdre le contexte | C15 | login | ✅ |
 | AUTH-09 | Redirection vers le login sans session | — | login | ✅ |
 | AUTH-10 | Toast « no administrator user » après connexion, avec « Don't show this toast again » | C16 | — | 🔴 [E-09](ecarts.md#e-09) [E-21](ecarts.md#e-21) |
 | AUTH-11 | Bandeau de télémétrie : « Accept » / « Disable telemetry », choix retenu | C17 | login | 🔴 [E-09](ecarts.md#e-09) [E-21](ecarts.md#e-21) |
@@ -112,10 +112,10 @@ Route `/data` → `Data/Indexes/Page.vue`.
 | IDX-02 | Tri par nom et par nombre de collections | — | indexes | 🎯 [ADR-0011](../adr/0011-table-sans-data-table.md) |
 | IDX-03 | Filtre de la liste, état « no index matching your filter » | C33 | — | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
 | IDX-04 | État vide « There is no index » | — | — | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
-| IDX-05 | Création : modale, règle de nommage, alerte, doublon refusé | C34 | indexes | 🔴 [E-08](ecarts.md#e-08) [E-05](ecarts.md#e-05) |
+| IDX-05 | Création : modale, règle de nommage, alerte, doublon refusé | C34 | indexes | 🔴 [E-08](ecarts.md#e-08) |
 | IDX-06 | Actions de ligne : parcourir, créer une collection dans l'index, supprimer | C32 | indexes | ✅ |
-| IDX-07 | Suppression : modale, confirmation par saisie du nom | C35 | indexes | ✅ · [E-05](ecarts.md#e-05) |
-| IDX-08 | Sélection (cases, « Toggle all ») et suppression groupée : modale « DELETE » | C36 | indexes | ✅ · [E-05](ecarts.md#e-05) |
+| IDX-07 | Suppression : modale, confirmation par saisie du nom | C35 | indexes | ✅ |
+| IDX-08 | Sélection (cases, « Toggle all ») et suppression groupée : modale « DELETE » | C36 | indexes | ✅ |
 | IDX-09 | Création refusée par les droits : bouton désactivé avec infobulle | — | — | ✅ |
 
 ## 6. Data — collections d'un index
@@ -127,8 +127,8 @@ Route `/data/:indexName` → `Data/Collections/CollectionList.vue`.
 | COL-01 | Tableau des collections : type (Realtime / Stored), nom, actions | C40 | collections | ✅ · [E-20](ecarts.md#e-20) [E-25](ecarts.md#e-25) |
 | COL-02 | Tri par nom, filtre sur le nom seul, champ de recherche au focus | — | collections | 🎯 [ADR-0011](../adr/0011-table-sans-data-table.md) |
 | COL-03 | « Create a collection » | C40 | collections | ✅ |
-| COL-04 | Actions de ligne : parcourir, éditer, supprimer (modale avec saisie du nom) | C41 | collections | ✅ · [E-05](ecarts.md#e-05) |
-| COL-05 | Sélection et suppression groupée (modale « DELETE ») ; désactivée pour Kuzzle v1 | C42 | collections | ✅ · [E-05](ecarts.md#e-05) |
+| COL-04 | Actions de ligne : parcourir, éditer, supprimer (modale avec saisie du nom) | C41 | collections | ✅ |
+| COL-05 | Sélection et suppression groupée (modale « DELETE ») ; désactivée pour Kuzzle v1 | C42 | collections | ✅ |
 | COL-06 | Menu de l'index : « Delete index » | C43 | collections | ✅ |
 | COL-07 | États vides : « no collections », « no collection matching your filter » | — | — | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
 
@@ -157,7 +157,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | DOC-01 | Nom de la collection en titre | C50 | — | ✅ |
 | DOC-02 | Menu « View » : List, Column, Chart, Map, Realtime ; vues indisponibles grisées avec raison | C51 | docs, chartView, collections | 🎯 [ADR-0012](../adr/0012-primitive-dropdown-menu-en-vue-2.md) |
 | DOC-03 | Menu d'actions : « Edit collection », « Delete collection », « Clear documents » (droits en infobulle) | C52 | collections | ✅ |
-| DOC-04 | Modale « Clear » : confirmation par saisie du nom | C53 | collections | ✅ · [E-05](ecarts.md#e-05) |
+| DOC-04 | Modale « Clear » : confirmation par saisie du nom | C53 | collections | ✅ |
 | DOC-05 | « Create New Document » | C50 | docs | ✅ |
 | DOC-06 | « Refresh » et bascule « Auto-Sync » (retenue au rechargement) | C54 | docs | 🔴 [E-12](ecarts.md#e-12) |
 | DOC-07 | Pastille « nouveaux documents » : grise, verte quand il y en a, clic = rafraîchir | C50 | docs | 🔴 [E-21](ecarts.md#e-21) |
@@ -187,7 +187,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | LST-01 | Une ligne par document : `_id`, dépliage du contenu JSON | C62 | docs | ✅ |
 | LST-02 | Case par ligne, « Toggle all », « Delete » groupé | C62 | docs | ✅ |
 | LST-03 | Éditer / supprimer par ligne, droits en infobulle | C62 | docs | ✅ |
-| LST-04 | Modale de suppression d'un ou plusieurs documents | C63 | docs | ✅ · [E-05](ecarts.md#e-05) |
+| LST-04 | Modale de suppression d'un ou plusieurs documents | C63 | docs | ✅ |
 
 ### 8.4 Vue colonnes
 
@@ -196,7 +196,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | CLM-01 | Sélecteur de champs (multiselect) avec ajout d'un champ libre, « Reset » | C64 | docs | 🎯 [ADR-0034](../adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md) |
 | CLM-02 | Tableau : une colonne par champ, `null` / `undefined` / `array` / `object` signalés | C64 | docs | ✅ · [E-25](ecarts.md#e-25) |
 | CLM-03 | Sélection, édition, suppression par ligne ; « Toggle all », « Delete » | C64 | docs | ✅ |
-| CLM-04 | Export CSV : préparation puis lien de téléchargement | C65 | — | ✅ · [E-05](ecarts.md#e-05) |
+| CLM-04 | Export CSV : préparation puis lien de téléchargement | C65 | — | ✅ |
 | CLM-05 | Réglages de colonnes retenus d'une collection à l'autre | — | docs | ✅ |
 
 ### 8.5 Vue graphique
@@ -260,7 +260,7 @@ Routes `/security/users`, `/security/users/create`, `/security/users/:id`,
 | SEC-01 | Onglets Users / Profiles / Roles, fil d'Ariane | C90 | users | ✅ |
 | USR-01 | Liste : KUID, nom d'utilisateur de la stratégie `local`, profils, dépliage du contenu | C90 | users | ✅ · [E-20](ecarts.md#e-20) |
 | USR-02 | Quick search, recherche avancée, recherche JSON | C91 | users | 🔴 [E-06](ecarts.md#e-06) [E-24](ecarts.md#e-24) |
-| USR-03 | Sélection, « Toggle all », « Delete selected », modale de suppression | C92 | users | ✅ · [E-05](ecarts.md#e-05) |
+| USR-03 | Sélection, « Toggle all », « Delete selected », modale de suppression | C92 | users | ✅ |
 | USR-04 | Éditer / supprimer par ligne, droits en infobulle | C90 | users | ✅ |
 | USR-05 | Pagination, paramètre `from` erroné toléré | — | users | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
 | USR-06 | « Create User », menu « Edit user content mapping » | C90 | users | ✅ |
@@ -281,7 +281,7 @@ Routes `/security/profiles`, `/security/profiles/create`,
 |---|---|---|---|---|
 | PRF-01 | Liste des profils, dépliage des politiques | C100 | profiles | ✅ |
 | PRF-02 | Filtre par rôles (multiselect), pastille « applied », « Reset » | C101 | profiles | 🔴 [E-12](ecarts.md#e-12) |
-| PRF-03 | Sélection, « Toggle all », « Delete selected », modale | C102 | profiles | ✅ · [E-05](ecarts.md#e-05) |
+| PRF-03 | Sélection, « Toggle all », « Delete selected », modale | C102 | profiles | ✅ |
 | PRF-04 | Éditer / supprimer par ligne, pagination | C100 | profiles | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
 | PRF-05 | « Create Profile », état « No profile is defined » | C100 | profiles | ✅ |
 | PRF-06 | Formulaire : « Profile ID », éditeur JSON, aide-mémoire (policies, restrictedTo), validation | C103 | profiles | ✅ |
@@ -296,9 +296,9 @@ Composants : `Security/Roles/*`.
 |---|---|---|---|---|
 | ROL-01 | Liste des rôles, dépliage des contrôleurs | C110 | roles | ✅ |
 | ROL-02 | Filtre par contrôleur, « Reset », « Unable to retrieve controller list » | C111 | roles | ✅ |
-| ROL-03 | Sélection, « Delete selected », modale | C112 | roles | ✅ · [E-05](ecarts.md#e-05) |
+| ROL-03 | Sélection, « Delete selected », modale | C112 | roles | ✅ |
 | ROL-04 | Éditer / supprimer par ligne, pagination | C110 | roles | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
-| ROL-05 | « Revoke anonymous rights » : bouton (désactivé avec raison si impossible) et modale | C113 | roles | ✅ · [E-05](ecarts.md#e-05) |
+| ROL-05 | « Revoke anonymous rights » : bouton (désactivé avec raison si impossible) et modale | C113 | roles | ✅ |
 | ROL-06 | « Create Role », état « No role is defined » | C110 | roles | ✅ |
 | ROL-07 | Formulaire : « Role ID », éditeur JSON, aide-mémoire (controllers / actions), validation | C114 | roles | ✅ |
 | ROL-08 | Avertissement « you are editing a role that applies to yourself » | — | — | ✅ |
@@ -313,7 +313,7 @@ Route `/api-action` → `ApiAction.vue`, `ApiAction/*`.
 | API-02 | Contrôleur et action : saisie libre et autocomplétion (`<datalist>` natif, invisible sur une capture) ; pas d'options sans droits | — | api-actions | ✅ |
 | API-03 | Éditeur JSON de la requête, « The query is invalid » | C120 | api-actions | ✅ |
 | API-04 | « RUN » ; carte « Response » avec statut et JSON | C122 | api-actions | 🔴 [E-21](ecarts.md#e-21) |
-| API-05 | « SAVE » : modale « Choose a name for this query » | C123 | api-actions | ✅ · [E-05](ecarts.md#e-05) |
+| API-05 | « SAVE » : modale « Choose a name for this query » | C123 | api-actions | ✅ |
 | API-06 | Liste des requêtes enregistrées : ouvrir, lancer, éditer ; état vide ; par connexion | C120 | api-actions | ✅ |
 | API-07 | Panneaux redimensionnables (liste / requête / réponse) | — | — | 🎯 [ADR-0021](../adr/0021-reprise-apiaction-splitter-et-onglets.md) |
 | API-08 | Texte d'accueil avec lien vers la documentation de l'API | C120 | — | 🎯 [ADR-0046](../adr/0046-aide-api-action-au-clic.md) |
