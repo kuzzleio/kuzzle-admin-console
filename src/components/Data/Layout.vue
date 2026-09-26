@@ -16,17 +16,20 @@
         `b-overlay` avec `opacity="0"` ne servait qu'à centrer une roue de
         chargement : son voile était transparent, et le contenu qu'il
         recouvrait n'était de toute façon pas rendu (`v-if="!loading"`).
+        Il était aussi l'ancêtre positionné du `.full-screen` des filtres :
+        le `relative` le remplace, sans quoi le plein écran recouvre toute
+        l'application (E-02 de la comparaison v4 / v5).
       -->
       <div v-if="loading" class="flex h-full items-center justify-center">
         <Spinner size="lg" />
       </div>
-      <template v-else>
+      <div v-else class="relative h-full">
         <data-not-found v-if="dataNotFound" class="mt-3" />
         <router-view
           @start-init="viewIsInitializing = true"
           @end-init="viewIsInitializing = false"
         />
-      </template>
+      </div>
     </ResizablePanel>
   </ResizablePanelGroup>
 </template>

@@ -178,7 +178,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | FLT-07 | Onglet « Raw JSON » : éditeur, erreur de JSON, tri | C58 | search | ✅ |
 | FLT-08 | Onglet « History » : liste, réutiliser, supprimer, ajouter aux favoris, état vide | C59 | search | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
 | FLT-09 | Onglet « Saved » : favoris, renommer, utiliser, supprimer, état vide | C60 | search | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
-| FLT-10 | Plein écran des filtres, fermeture | C61 | search | 🔴 [E-02](ecarts.md#e-02) |
+| FLT-10 | Plein écran des filtres, fermeture | C61 | search | ✅ |
 
 ### 8.3 Vue liste
 

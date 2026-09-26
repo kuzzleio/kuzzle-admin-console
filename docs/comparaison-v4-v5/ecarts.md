@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 123 ✅ (dont 43 touchées par un écart
-transverse), 11 🎯, 19 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 124 ✅ (dont 43 touchées par un écart
+transverse), 11 🎯, 18 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -54,6 +54,8 @@ rendrait plus difficiles à isoler.
 - **Cause** : `.full-screen` (`assets/styles/_layout.scss:22`) est en
   `position: absolute` ; son ancêtre positionné était le `b-overlay` de
   `Data/Layout.vue`, retiré sans rendre `ResizablePanel` `relative`.
+- **Corrigé** : un `div.relative.h-full` remplace le `b-overlay` autour du
+  `router-view` ([G-076](../MIGRATION.md)).
 
 <a id="e-03"></a>
 
