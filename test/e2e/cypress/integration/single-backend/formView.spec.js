@@ -109,6 +109,27 @@ describe('Form view', function() {
     )
   })
 
+  it('should save an untouched object field as an empty object', function() {
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('[data-cy="CreateDocument-btn"]').click()
+
+    cy.get('[data-cy="formView-switch"]').click({ force: true })
+    cy.get('[data-cy="DocumentCreate-input--id"]').type('empty-items')
+    cy.get('[name="items"]').should('contain', '{}')
+    cy.get('[data-cy=FormField-name]').type('Bombi')
+
+    cy.get('[data-cy="DocumentCreate-btn"]').click({ force: true })
+
+    cy.contains('empty-items')
+    cy.expectBackend(
+      `${kuzzleUrl}/${indexName}/${collectionName}/empty-items`,
+      res => {
+        expect(res.body.result._source.items).to.deep.equal({})
+      }
+    )
+  })
+
   it('should be able to update a document with the form view enabled', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 

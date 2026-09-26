@@ -34,7 +34,13 @@ export default {
     schema: { type: Object, required: true },
     // Le type dépend du mapping — objet, tableau, ou la chaîne d'un
     // `geo_point`. L'éditeur JSON les rend tous.
-    value: { default: null },
+    //
+    // Pas de `default: null` : un champ absent du document doit rester
+    // `undefined`, pour que `JSON.stringify` rende `undefined` et que le
+    // repli `'{}'` du template joue. Sinon l'éditeur affiche `null`, et
+    // comme il émet `change` à l'initialisation, `null` est enregistré dans
+    // le document (E-07 de la comparaison v4 / v5).
+    value: { default: undefined },
   },
   emits: ['input'],
   methods: {
