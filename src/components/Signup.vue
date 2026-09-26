@@ -15,7 +15,9 @@
               height="60"
               class="h-15 w-auto"
             />
-            <h2 class="mt-4 text-2xl font-bold text-foreground">Create an Admin Account</h2>
+            <h2 class="mt-4 font-display text-display font-bold uppercase text-foreground">
+              Create an Admin Account
+            </h2>
 
             <p class="mt-4 text-foreground">
               Your Kuzzle instance does not seem to have an administrator user. To continue using an
@@ -87,7 +89,9 @@
           <FormItem>
             <div class="flex items-center gap-2">
               <Checkbox id="reset" v-model="reset" />
-              <Label for="reset">Remove anonymous user credentials.</Label>
+              <Label class="text-ui font-normal normal-case text-foreground" for="reset"
+                >Remove anonymous user credentials.</Label
+              >
             </div>
             <FormDescription>
               This will avoid non-authenticated users to perform operations on this instance.

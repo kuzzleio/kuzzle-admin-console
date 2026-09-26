@@ -29,7 +29,7 @@
 
       <!-- Mapping -->
       <div class="flex flex-col lg:w-5/12">
-        <h3 class="text-lg font-semibold text-foreground">Cheatsheet</h3>
+        <h3 class="text-title font-bold text-foreground">Cheatsheet</h3>
         <div class="ProfileCreateOrUpdate-cheatsheet">
           Your profile is a set of <code>policies</code>, each of which will contain a set of roles,
           like the example below:

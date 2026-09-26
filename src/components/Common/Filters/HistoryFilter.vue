@@ -16,7 +16,9 @@
       />
     </template>
     <template v-else>
-      <h4 class="text-center text-muted-foreground">You haven't performed any search yet.</h4>
+      <h4 class="text-center text-title font-bold text-muted-foreground">
+        You haven't performed any search yet.
+      </h4>
       <p class="text-center text-muted-foreground">
         You'll find all your searches in this history.
       </p>

@@ -1,7 +1,7 @@
 <template>
   <div class="NoSearchResult flex flex-col items-center gap-3 py-8 text-center">
     <i class="fa fa-5x fa-search text-muted-foreground" aria-hidden="true" />
-    <h3 class="max-w-xl font-bold text-muted-foreground">
+    <h3 class="max-w-xl font-heading text-headline font-extrabold text-muted-foreground">
       There is no result matching your query. Please try with another filter.
     </h3>
     <p class="text-sm text-muted-foreground">

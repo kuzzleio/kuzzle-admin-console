@@ -8,7 +8,7 @@
           height="60"
           src="../../assets/logo.svg"
         />
-        <CardTitle class="text-xl">
+        <CardTitle class="font-heading text-headline font-extrabold">
           Connecting to Kuzzle at
           <span class="code">{{ host }}:{{ port }}</span>
         </CardTitle>

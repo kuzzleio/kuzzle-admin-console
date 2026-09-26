@@ -33,7 +33,7 @@ plus le sélecteur de la barre de navigation. Composants :
 
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
-| ENV-01 | Page « Create a Connection » : nom, hôte, port, SSL, version de Kuzzle (1 / 2) | C01 | environments | ✅ · [E-23](ecarts.md#e-23) [E-24](ecarts.md#e-24) |
+| ENV-01 | Page « Create a Connection » : nom, hôte, port, SSL, version de Kuzzle (1 / 2) | C01 | environments | ✅ · [E-24](ecarts.md#e-24) |
 | ENV-02 | Sélecteur de couleur de la connexion, appliquée à la barre de navigation ; erreur si aucune couleur | C01 | environments | ✅ |
 | ENV-03 | Validation du formulaire (champs requis, nom déjà pris) avec retour visuel | C02 | environments | ✅ · [E-21](ecarts.md#e-21) |
 | ENV-04 | Lien « Import connections » depuis la page de création | C01 | environments | ✅ |
@@ -55,7 +55,7 @@ Routes : `/login`, `/signup`, `/reset-password/:token`. Composants :
 
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
-| AUTH-01 | Login : identifiant, mot de passe, « Connected to <connexion> » | C10 | login | ✅ · [E-23](ecarts.md#e-23) |
+| AUTH-01 | Login : identifiant, mot de passe, « Connected to <connexion> » | C10 | login | ✅ |
 | AUTH-02 | Login par stratégie (un bouton par stratégie d'authentification) | C10 | — | ✅ |
 | AUTH-03 | « Login as Anonymous » | C10 | login | ✅ |
 | AUTH-04 | Échec de connexion : « Login failed: … » | C11 | — | ✅ |
@@ -110,8 +110,8 @@ Route `/data` → `Data/Indexes/Page.vue`.
 |---|---|---|---|---|
 | IDX-01 | Titre « Indexes », tableau des index avec nombre de collections | C32 | indexes | ✅ · [E-25](ecarts.md#e-25) |
 | IDX-02 | Tri par nom et par nombre de collections | — | indexes | 🎯 [ADR-0011](../adr/0011-table-sans-data-table.md) |
-| IDX-03 | Filtre de la liste, état « no index matching your filter » | C33 | — | ✅ · [E-22](ecarts.md#e-22) |
-| IDX-04 | État vide « There is no index » | — | — | ✅ · [E-22](ecarts.md#e-22) |
+| IDX-03 | Filtre de la liste, état « no index matching your filter » | C33 | — | ✅ |
+| IDX-04 | État vide « There is no index » | — | — | ✅ |
 | IDX-05 | Création : modale, règle de nommage, alerte, doublon refusé | C34 | indexes | ✅ |
 | IDX-06 | Actions de ligne : parcourir, créer une collection dans l'index, supprimer | C32 | indexes | ✅ |
 | IDX-07 | Suppression : modale, confirmation par saisie du nom | C35 | indexes | ✅ |
@@ -130,7 +130,7 @@ Route `/data/:indexName` → `Data/Collections/CollectionList.vue`.
 | COL-04 | Actions de ligne : parcourir, éditer, supprimer (modale avec saisie du nom) | C41 | collections | ✅ |
 | COL-05 | Sélection et suppression groupée (modale « DELETE ») ; désactivée pour Kuzzle v1 | C42 | collections | ✅ |
 | COL-06 | Menu de l'index : « Delete index » | C43 | collections | ✅ |
-| COL-07 | États vides : « no collections », « no collection matching your filter » | — | — | ✅ · [E-22](ecarts.md#e-22) |
+| COL-07 | États vides : « no collections », « no collection matching your filter » | — | — | ✅ |
 
 ## 7. Data — création et édition d'une collection
 
@@ -163,7 +163,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | DOC-07 | Pastille « nouveaux documents » : grise, verte quand il y en a, clic = rafraîchir | C50 | docs | ✅ |
 | DOC-08 | Pagination, sélecteur « Show N of M total items » | C50 | search | ✅ |
 | DOC-09 | Message au-delà de 10 000 documents (limite Elasticsearch) | — | docs | ✅ |
-| DOC-10 | État vide : « No documents matching your filters », « There are new documents » | C55 | — | ✅ · [E-22](ecarts.md#e-22) |
+| DOC-10 | État vide : « No documents matching your filters », « There are new documents » | C55 | — | ✅ |
 
 ### 8.2 Filtres
 
@@ -176,8 +176,8 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | FLT-05 | Tri (attribut, ordre) ; refus du tri sur un champ `text` | C57 | search | ✅ |
 | FLT-06 | « Generate Raw JSON » : passage du filtre avancé au JSON | — | search | ✅ |
 | FLT-07 | Onglet « Raw JSON » : éditeur, erreur de JSON, tri | C58 | search | ✅ |
-| FLT-08 | Onglet « History » : liste, réutiliser, supprimer, ajouter aux favoris, état vide | C59 | search | ✅ · [E-22](ecarts.md#e-22) |
-| FLT-09 | Onglet « Saved » : favoris, renommer, utiliser, supprimer, état vide | C60 | search | ✅ · [E-22](ecarts.md#e-22) |
+| FLT-08 | Onglet « History » : liste, réutiliser, supprimer, ajouter aux favoris, état vide | C59 | search | ✅ |
+| FLT-09 | Onglet « Saved » : favoris, renommer, utiliser, supprimer, état vide | C60 | search | ✅ |
 | FLT-10 | Plein écran des filtres, fermeture | C61 | search | ✅ |
 
 ### 8.3 Vue liste
@@ -206,7 +206,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | CHT-01 | Choix du champ date | C66 | chartView | ✅ |
 | CHT-02 | Ajout de champs numériques, plusieurs à la fois, suppression | C66 | chartView | ✅ |
 | CHT-03 | Couleur de chaque série (sélecteur de couleur) | C66 | chartView | 🎯 [ADR-0035](../adr/0035-selecteur-de-couleur-natif.md) |
-| CHT-04 | États : « You must select at least one field », « No data », mapping sans date ni nombre | C67 | chartView | ✅ · [E-22](ecarts.md#e-22) |
+| CHT-04 | États : « You must select at least one field », « No data », mapping sans date ni nombre | C67 | chartView | ✅ |
 
 ### 8.6 Vue carte
 
@@ -215,7 +215,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | MAP-01 | Choix du champ `geo_point` ou `geo_shape` | C68 | docs | ✅ |
 | MAP-02 | Marqueurs et formes sur la carte | C68 | docs | ✅ |
 | MAP-03 | Carte du document sélectionné : `_id`, éditer, supprimer, fermer | C69 | docs | ✅ |
-| MAP-04 | États « No document selected », « does not contain geo_point field » | — | docs | ✅ · [E-22](ecarts.md#e-22) |
+| MAP-04 | États « No document selected », « does not contain geo_point field » | — | docs | ✅ |
 
 ## 9. Data — création et édition d'un document
 
@@ -224,7 +224,7 @@ Routes `/data/:i/:c/create`, `/data/:i/:c/update/:id` →
 
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
-| DOCF-01 | « Document ID » (optionnel à la création) | C70 | docs | ✅ · [E-23](ecarts.md#e-23) |
+| DOCF-01 | « Document ID » (optionnel à la création) | C70 | docs | ✅ |
 | DOCF-02 | Éditeur JSON du document et panneau « Mapping » | C70 | docs | ✅ |
 | DOCF-03 | Bascule « Form view », synchronisée avec le JSON | C71 | formView | ✅ |
 | DOCF-04 | Avertissement « fields are not supported in the form view » | C71 | formView | ✅ |
@@ -242,7 +242,7 @@ Route `/data/:i/:c/watch` → `Data/Collections/Watch.vue`,
 | RT-01 | En-tête : nom de la collection, suppression de la collection | C80 | — | ✅ |
 | RT-02 | Filtres (mêmes onglets que § 8.2), affichage / masquage, pastille « applied » ou « contains errors » | C81 | watch | ✅ |
 | RT-03 | « Subscribe » / « Unsubscribe », « Reset filters » (réinitialise et désabonne) | C80 | watch | ✅ |
-| RT-04 | Alertes : « You did not subscribe yet », « Waiting for notifications… » | C80 | watch | ✅ · [E-22](ecarts.md#e-22) |
+| RT-04 | Alertes : « You did not subscribe yet », « Waiting for notifications… » | C80 | watch | ✅ |
 | RT-05 | Liste des notifications : en-tête (controller : action, heure), dépliage du contenu | C82 | watch | ✅ |
 | RT-06 | « Received N notifications », « Clear all notifications », « Latest notification (…) » | C82 | watch | ✅ |
 | RT-07 | Nombre de notifications affichées limité | — | watch | ✅ |
@@ -264,8 +264,8 @@ Routes `/security/users`, `/security/users/create`, `/security/users/:id`,
 | USR-04 | Éditer / supprimer par ligne, droits en infobulle | C90 | users | ✅ |
 | USR-05 | Pagination, paramètre `from` erroné toléré | — | users | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
 | USR-06 | « Create User », menu « Edit user content mapping » | C90 | users | ✅ |
-| USR-07 | États vides : « No user is defined », « no result matching your query » | — | users | ✅ · [E-22](ecarts.md#e-22) |
-| USR-08 | Formulaire, onglet Basic : KUID (vide = auto-généré), profils (sélection, pastilles, retrait), « Please add at least one profile » | C93 | users | ✅ · [E-23](ecarts.md#e-23) |
+| USR-07 | États vides : « No user is defined », « no result matching your query » | — | users | ✅ |
+| USR-08 | Formulaire, onglet Basic : KUID (vide = auto-généré), profils (sélection, pastilles, retrait), « Please add at least one profile » | C93 | users | ✅ |
 | USR-09 | Onglet Credentials : champs par stratégie, « No strategies found » | C94 | users | ✅ |
 | USR-10 | Onglet Custom : contenu JSON et mapping | C95 | users | ✅ |
 | USR-11 | Icône d'erreur sur l'onglet fautif, « Save » / « Create » / « Cancel » | C93 | users | ✅ |

@@ -13,7 +13,9 @@
       />
     </template>
     <template v-else>
-      <h4 class="text-center text-muted-foreground">You don't have any favorite filters.</h4>
+      <h4 class="text-center text-title font-bold text-muted-foreground">
+        You don't have any favorite filters.
+      </h4>
       <p class="text-center text-muted-foreground">
         You can add more by browsing the history of your filters.
       </p>

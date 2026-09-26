@@ -313,7 +313,9 @@ précisément ce qu'on achète.
 | 2. Polices embarquées, familles dans `tokens.css` ([ADR-0047](adr/0047-polices-embarquees.md)) | ✅ |
 | 2. Palette de la DA dans `tokens.css`, tokens d'état `success` / `warning` / `info`, sites d'appel migrés (E-20, E-21) | ✅ |
 | 2. Rayons, ombres, durées à la DA Kuzzle, branchés dans les primitives | ✅ |
-| 2. 20 primitives à la DA Kuzzle | ⬜ |
+| 2. Primitives : échelle typographique, titres, libellés, états vides (E-22, E-23) | ✅ |
+| 2. Primitives : tables, cartes, formulaires (E-24, E-25, vert d'E-08) | ⬜ |
+| 2. Primitives : boutons, focus (E-26) | ⬜ |
 | 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
 
@@ -3216,6 +3218,23 @@ Gabarit à copier :
   un « avant » local, reconstruire la version voulue dans un worktree et
   refaire la passe.
 - **Ref** : étape « couleurs » du lot 2 de la DA, le 2026-09-26.
+
+#### G-079 — `tailwind-merge` prend une taille qu'il ne connaît pas pour une couleur
+
+- **Contexte** : `src/lib/utils.ts` (`cn`), échelle typographique de la DA dans
+  `tokens.css` (`--text-title`, `--text-label`…).
+- **Symptôme** : `CardTitle` perd sa taille : `text-title` disparaît de
+  l'attribut `class`, seul `text-card-foreground` reste. Aucune erreur, le build
+  passe, les specs aussi.
+- **Cause** : `tailwind-merge` ne lit pas la configuration Tailwind. Un
+  `text-<nom>` absent de son échelle par défaut passe pour une couleur ; deux
+  « couleurs » sont en conflit, la dernière gagne. Même chose pour un rayon
+  (`rounded-pill`) ou une ombre inconnus, qui ne tranchent plus leurs conflits.
+- **Solution** : déclarer les noms de la DA dans `extendTailwindMerge`
+  (`theme.text`, `theme.radius`, `theme.shadow`), à côté des valeurs. Tout
+  nouveau nom d'échelle dans `tokens.css` doit y être ajouté. Vérification :
+  `twMerge('text-title text-card-foreground')` doit garder les deux.
+- **Ref** : étape « typographie » du lot 2 de la DA, le 2026-09-26.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

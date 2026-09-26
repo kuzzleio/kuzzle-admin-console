@@ -51,7 +51,7 @@
 
           <!-- Mapping -->
           <div class="flex min-h-0 flex-col lg:w-5/12">
-            <h3 class="text-lg font-semibold text-foreground">Mapping</h3>
+            <h3 class="text-title font-bold text-foreground">Mapping</h3>
 
             <pre
               v-json-formatter="{

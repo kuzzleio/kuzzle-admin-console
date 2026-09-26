@@ -3,7 +3,9 @@
     <CardContent class="flex items-start gap-6">
       <i class="fa fa-6x fa-lock text-muted-foreground" aria-hidden="true" />
       <div>
-        <CardTitle class="mb-2 text-xl"> You are not allowed to access this list </CardTitle>
+        <CardTitle class="mb-2 font-heading text-headline font-extrabold">
+          You are not allowed to access this list
+        </CardTitle>
         <CardDescription class="italic">
           Learn more about security &amp; permissions on the
           <a

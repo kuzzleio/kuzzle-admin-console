@@ -4,7 +4,7 @@
       <CardContent class="flex items-start gap-6">
         <i class="fa fa-6x fa-lock text-muted-foreground" aria-hidden="true" />
         <div>
-          <CardTitle class="mb-2 text-xl"> Sorry </CardTitle>
+          <CardTitle class="mb-2 font-heading text-headline font-extrabold"> Sorry </CardTitle>
           <CardDescription class="mb-2"> You are not allowed to access this page </CardDescription>
           <CardDescription class="italic">
             Learn more about security &amp; permissions on
