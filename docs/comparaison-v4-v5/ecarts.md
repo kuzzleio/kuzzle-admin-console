@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 137 ✅ (dont 33 touchées par un écart
-transverse), 11 🎯, 5 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 138 ✅ (dont 33 touchées par un écart
+transverse), 11 🎯, 4 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -229,6 +229,8 @@ rendrait plus difficiles à isoler.
 - **Cause probable** : `ApiAction.vue:27`, `overflow-x-auto` sur `TabsList`
   force `overflow-y: auto`, et l'onglet actif déborde d'1 px (`-mb-px`,
   `ui/tabs/TabsTrigger.vue:84`).
+- **Corrigé** : cause confirmée. `TabsList` prend `pb-px`, qui loge le pixel
+  du repère dans la barre, et `overflow-y-hidden`.
 
 <a id="e-14"></a>
 
