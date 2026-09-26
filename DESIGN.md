@@ -129,10 +129,11 @@ components:
 > the console. The decision, and what is deliberately left out, is in
 > [ADR-0043](docs/adr/0043-da-kuzzle-pour-la-console.md).
 >
-> **State on 2026-09-26: fonts and colors are applied, the rest is still the
-> target.** `src/assets/tokens.css` carries the palette below and the fonts
-> are served by the console (ADR-0047). Radii, shadows, motion, the type scale
-> and the layout (navigation rail, page headers) are not applied yet.
+> **State on 2026-09-26: fonts, colors, radii, shadows and motion are
+> applied; the rest is still the target.** `src/assets/tokens.css` carries
+> them and the fonts are served by the console (ADR-0047). The type scale,
+> the component details below and the layout (navigation rail, page headers)
+> are not applied yet.
 >
 > **Two vocabularies.** The frontmatter keeps the design system's names. The
 > console consumes shadcn-vue tokens (`--primary`, `--muted`, `--border`…,
@@ -331,6 +332,13 @@ the layout never moves.
   containers 12px, pills and tags 20px (fully rounded at their height).
 - Borders are 1px Hairline. No double borders: a card inside a panel has a
   shadow, not a border.
+
+In `tokens.css`, the Tailwind scale carries these values: `rounded-sm` is the
+field (4px), `rounded-md` the control and card (6px), `rounded-lg` the dialog
+and hero (8px), `rounded-xl` the panel (12px), `rounded-pill` the badge and
+tag (20px). Shadows are `shadow-card`, `shadow-hover`, `shadow-menu`,
+`shadow-modal`, `shadow-tooltip` and `shadow-signature`; transitions default
+to 160ms.
 
 ## Components
 

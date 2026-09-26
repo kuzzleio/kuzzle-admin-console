@@ -27,7 +27,7 @@ import { classMerge } from '../class-merge';
 export const badgeVariants = cva(
   [
     'inline-flex items-center gap-1.5 shrink-0',
-    'border border-transparent rounded-md',
+    'border border-transparent rounded-pill',
     'px-2 py-0.5',
     'font-sans text-xs font-medium leading-normal whitespace-nowrap',
     'transition-colors',

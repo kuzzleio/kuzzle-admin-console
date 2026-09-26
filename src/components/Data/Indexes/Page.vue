@@ -36,7 +36,7 @@
           Delete
         </Button>
 
-        <div class="flex items-stretch overflow-hidden rounded-md border border-input">
+        <div class="flex items-stretch overflow-hidden rounded-sm border border-input">
           <label
             class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"
             for="indexes-filter"
