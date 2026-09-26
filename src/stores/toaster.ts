@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-import type { Toast, ToastAction, ToasterState, ToastVariant } from './types';
+import type { Toast, ToastAction, ToasterState, ToastLink, ToastVariant } from './types';
 
 /*
  * Durée d'affichage par défaut, reprise de `b-toast` (5 s).
@@ -15,6 +15,9 @@ let nextId = 0;
 
 export interface PushToastOptions {
   actions?: ToastAction[];
+  /** `false` pour un toast qui attend une réponse : pas de croix. */
+  dismissible?: boolean;
+  link?: ToastLink;
   message?: string;
   title: string;
   variant?: ToastVariant;
@@ -33,7 +36,9 @@ export const useToasterStore = defineStore('toaster', {
 
       const toast: Toast = {
         actions: options.actions ?? [],
+        dismissible: options.dismissible ?? true,
         id,
+        link: options.link ?? null,
         message: options.message ?? '',
         title: options.title,
         variant,

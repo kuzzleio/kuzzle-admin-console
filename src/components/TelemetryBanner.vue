@@ -25,6 +25,10 @@ export default {
         { label: 'Accept', handler: this.enableTelemetry },
       ],
       autoHideAfter: null,
+      // Pas de croix, comme `no-close-button` en v4 : le bandeau attend un
+      // choix, et le fermer sans répondre le ferait revenir au chargement
+      // suivant sans que rien n'ait été décidé (E-09).
+      dismissible: false,
       message:
         'We use an Open Source analytics to study the use of our products in order to improve them. We do not collect any personal data.',
       title: 'Usage telemetry',

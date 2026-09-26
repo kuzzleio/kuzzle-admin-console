@@ -132,10 +132,16 @@ export default {
         return;
       }
       this.$toast.show({
-        actions: [{ label: 'Ok, got it', handler: this.hideNoAdminWarning }],
+        actions: [
+          {
+            label: 'Ok, got it',
+            handler: this.hideNoAdminWarning,
+            title: "Don't show this toast again for the current environment",
+          },
+        ],
         autoHideAfter: null,
-        message:
-          'Your Kuzzle has no administrator user. It is strongly recommended that you create one.',
+        link: { href: '#/signup', label: 'that you create one.' },
+        message: 'Your Kuzzle has no administrator user. It is strongly recommended',
         title: 'Warning!',
         variant: 'warning',
       });

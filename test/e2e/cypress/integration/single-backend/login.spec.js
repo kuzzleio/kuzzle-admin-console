@@ -197,6 +197,20 @@ describe('Telemetry', function() {
     cy.wait('@telemetry')
   })
 
+  // Le bandeau attend un choix : pas de croix pour le fermer sans répondre
+  // (E-09). Répondre le retire.
+  it('Should ask for a telemetry choice without a close button', () => {
+    cy.clearCookie('telemetry')
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.contains('[data-slot="toast"]', 'Usage telemetry')
+      .should('be.visible')
+      .find('[data-slot="toast-close"]')
+      .should('not.exist')
+    cy.contains('[data-slot="toast"] button', 'Disable telemetry').click()
+    cy.contains('Usage telemetry').should('not.exist')
+  })
+
   // Le format qu'utilisent les specs : sans guillemets.
   it('Should not send telemetry when the cookie is a bare false', () => {
     cy.setCookie('telemetry', 'false')
@@ -204,5 +218,30 @@ describe('Telemetry', function() {
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.get('[data-cy="App-loggedIn"]')
     cy.get('@telemetry.all').should('have.length', 0)
+  })
+})
+
+describe('No administrator warning', function() {
+  // Masqué par défaut sur localhost (`NO_ADMIN_WARNING_HOSTS`) : on le
+  // réactive sur la connexion, comme la capture C16.
+  it('Should link to the signup page and explain its dismiss button', () => {
+    cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
+    cy.initLocalEnv(2, 'anonymous').then(() => {
+      const environments = JSON.parse(localStorage.getItem('environments'))
+      environments.valid.hideAdminWarning = false
+      localStorage.setItem('environments', JSON.stringify(environments))
+    })
+    cy.setCookie('telemetry', '"false"')
+    cy.visit('/#/data')
+    cy.contains('[data-slot="toast"]', 'Your Kuzzle has no administrator user')
+      .as('toast')
+      .should('be.visible')
+    cy.get('@toast')
+      .contains('a', 'that you create one.')
+      .should('have.attr', 'href', '#/signup')
+    cy.get('@toast')
+      .contains('button', 'Ok, got it')
+      .should('have.attr', 'title')
+      .and('contain', "Don't show this toast again")
   })
 })
