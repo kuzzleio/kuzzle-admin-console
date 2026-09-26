@@ -77,10 +77,32 @@
   --notification-subscribe: #e1c8e8;
   --notification-delete: #e6c6c4;
 
-  /* Rayon — aligné sur Bootstrap 4 pour ne pas glisser une décision
-     visuelle dans une PR de plomberie. C'est un des premiers tokens que la
-     refonte fera bouger. */
-  --radius: 0.25rem;
+  /* Rayons de la DA (DESIGN.md, « rounded ») : 4 px pour les champs, 6 px
+     pour les boutons, cartes et menus, 8 px pour les modales, 12 px pour les
+     panneaux, 20 px pour les pastilles et tags. `--radius` reste la valeur
+     des contrôles, que lit l'échelle Tailwind ci-dessous. */
+  --radius: 6px;
+  --radius-field: 4px;
+  --radius-hero: 8px;
+  --radius-panel: 12px;
+  --radius-tag: 20px;
+
+  /* Élévations teintées de bleu Kuzzle, jamais de noir pur (DESIGN.md,
+     « Elevation & Depth »). */
+  --elevation-card: 0 1px 3px rgb(0 40 53 / 0.09);
+  --elevation-hover: 0 12px 28px -12px rgb(0 40 53 / 0.28);
+  --elevation-menu: 0 18px 44px -12px rgb(10 28 41 / 0.4);
+  --elevation-modal: 0 30px 60px -20px rgb(10 28 41 / 0.55);
+  --elevation-tooltip: 0 24px 46px -18px rgb(0 20 28 / 0.7);
+  /* Carte « signature » : filet fuchsia en haut, sur l'ombre de carte. */
+  --elevation-signature: inset 0 1px 0 0 var(--primary), var(--elevation-card);
+
+  /* Mouvement (DESIGN.md) : 160 ms pour les transitions d'état, 200 ms pour
+     les apparitions, courbe dédiée à la navigation. */
+  --duration-fast: 160ms;
+  --duration-base: 200ms;
+  --duration-nav: 700ms;
+  --easing-nav: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Largeur minimale de la barre latérale de Data. Reprise telle quelle de
      `$sidebar-width` : c'est une contrainte de mise en page, pas une décision
@@ -162,9 +184,21 @@
   --color-notification-subscribe: var(--notification-subscribe);
   --color-notification-delete: var(--notification-delete);
 
-  --radius-sm: calc(var(--radius) - 2px);
+  --radius-sm: var(--radius-field);
   --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
+  --radius-lg: var(--radius-hero);
+  --radius-xl: var(--radius-panel);
+  --radius-pill: var(--radius-tag);
+
+  --shadow-card: var(--elevation-card);
+  --shadow-hover: var(--elevation-hover);
+  --shadow-menu: var(--elevation-menu);
+  --shadow-modal: var(--elevation-modal);
+  --shadow-tooltip: var(--elevation-tooltip);
+  --shadow-signature: var(--elevation-signature);
+
+  --default-transition-duration: var(--duration-fast);
+  --ease-nav: var(--easing-nav);
 
   /* Familles de la DA (DESIGN.md, Typography), chargées par `fonts.css`.
      `--font-sans` est aussi la police du document : le preflight la lit. */

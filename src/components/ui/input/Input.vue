@@ -25,7 +25,7 @@ import { classMerge } from '../class-merge';
  */
 export const inputClasses = [
   'flex h-9 w-full min-w-0',
-  'appearance-none rounded-md border border-input bg-card',
+  'appearance-none rounded-sm border border-input bg-card',
   'px-3 py-1',
   'font-sans text-sm leading-none text-foreground',
   'transition-colors outline-none',

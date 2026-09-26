@@ -2,7 +2,7 @@
   <div class="QuickFilter">
     <div v-if="!complexFilterActive" class="flex flex-wrap items-center gap-2">
       <div
-        class="QuickFilter-searchBar flex min-w-0 flex-1 items-stretch overflow-hidden rounded-md border border-input"
+        class="QuickFilter-searchBar flex min-w-0 flex-1 items-stretch overflow-hidden rounded-sm border border-input"
       >
         <span class="flex items-center bg-muted px-3 text-muted-foreground" aria-hidden="true">
           <i class="fa fa-search" />

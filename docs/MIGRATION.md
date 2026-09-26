@@ -312,7 +312,7 @@ précisément ce qu'on achète.
 | 1. Comparaison v4 / v5 : régressions fonctionnelles E-01 à E-15 corrigées ou tranchées (#1136, #1138 à #1149) ; reste le vert des champs valides d'E-08, versé à E-21 | ✅ |
 | 2. Polices embarquées, familles dans `tokens.css` ([ADR-0047](adr/0047-polices-embarquees.md)) | ✅ |
 | 2. Palette de la DA dans `tokens.css`, tokens d'état `success` / `warning` / `info`, sites d'appel migrés (E-20, E-21) | ✅ |
-| 2. Rayons, ombres, durées à la DA Kuzzle | ⬜ |
+| 2. Rayons, ombres, durées à la DA Kuzzle, branchés dans les primitives | ✅ |
 | 2. 20 primitives à la DA Kuzzle | ⬜ |
 | 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
 Le jeu sombre est défini mais branché sur rien.

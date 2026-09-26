@@ -21,8 +21,8 @@ import { Badge } from '@/components/ui/badge';
 
 /*
  * `rounded-full` et une taille minimale : sans document nouveau, le badge n'a
- * pas de texte et c'est sa seule forme visible — une pastille. `Badge` est en
- * `rounded-md` par défaut, ce qui donnerait un carré de 4 px.
+ * pas de texte et c'est sa seule forme visible — une pastille. Le rayon de
+ * `Badge` (20 px) ne suffit pas à garantir un cercle si la taille change.
  */
 export default defineComponent({
   name: 'NewDocumentsBadge',

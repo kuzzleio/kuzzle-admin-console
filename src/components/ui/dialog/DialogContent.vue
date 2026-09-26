@@ -82,7 +82,7 @@ export default defineComponent({
       return this.mergeClasses(
         'relative z-10 my-8 flex w-full max-w-lg flex-col gap-4',
         'rounded-lg border border-border bg-card text-card-foreground',
-        'p-6 shadow-lg outline-none',
+        'p-6 shadow-modal outline-none',
       );
     },
   },

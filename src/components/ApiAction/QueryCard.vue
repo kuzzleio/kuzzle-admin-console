@@ -7,7 +7,7 @@
         navigateur l'affiche sans directive.
       -->
       <div
-        class="flex min-w-60 flex-1 items-stretch overflow-hidden rounded-md border border-input"
+        class="flex min-w-60 flex-1 items-stretch overflow-hidden rounded-sm border border-input"
       >
         <label
           class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"
@@ -41,7 +41,7 @@
       </datalist>
 
       <div
-        class="flex min-w-60 flex-1 items-stretch overflow-hidden rounded-md border border-input"
+        class="flex min-w-60 flex-1 items-stretch overflow-hidden rounded-sm border border-input"
       >
         <label
           class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"

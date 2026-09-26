@@ -39,7 +39,7 @@ import { classMerge } from '../class-merge';
 export const toastVariants = cva(
   [
     'pointer-events-auto flex w-full flex-col gap-1',
-    'rounded-md border p-4 shadow-md',
+    'rounded-md border p-4 shadow-menu',
     'font-sans text-sm',
   ].join(' '),
   {

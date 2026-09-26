@@ -146,7 +146,7 @@
 
     <div class="mt-3 flex flex-wrap items-center gap-2">
       <template v-if="sortingEnabled">
-        <div class="flex items-stretch overflow-hidden rounded-md border border-input">
+        <div class="flex items-stretch overflow-hidden rounded-sm border border-input">
           <span
             id="basic-filter-sort-label"
             class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"
