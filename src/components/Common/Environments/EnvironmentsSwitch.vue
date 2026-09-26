@@ -1,5 +1,6 @@
 <template>
   <DropdownMenu
+    ref="menu"
     class="EnvironmentSwitch"
     :class="blendColor ? 'EnvironmentSwitch--blendColor' : ''"
   >
@@ -38,6 +39,9 @@
         (éditer, supprimer). `b-dropdown-item` les empilait dans le même `<a>`,
         donc des zones cliquables imbriquées dans un lien. Ici l'élément de
         menu ne porte que le nom, et les deux icônes sont des boutons à côté.
+        N'étant pas des `DropdownMenuItem`, ils ferment le menu eux-mêmes :
+        la modale qu'ils ouvrent passerait sinon sous le panneau (ADR-0018
+        § 2, E-04 de la comparaison v4 / v5).
       -->
       <div
         v-for="(env, index) in sortObject(environments)"
@@ -67,7 +71,7 @@
           :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-edit`"
           size="icon"
           variant="ghost"
-          @click="$emit('environment::create', index)"
+          @click="onEnvironmentAction('environment::create', index)"
         >
           <i class="fa fa-pencil-alt" aria-hidden="true" />
         </Button>
@@ -77,7 +81,7 @@
           :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-delete`"
           size="icon"
           variant="ghost"
-          @click="$emit('environment::delete', index)"
+          @click="onEnvironmentAction('environment::delete', index)"
         >
           <i class="fa fa-trash" aria-hidden="true" />
         </Button>
@@ -178,6 +182,10 @@ export default {
   },
   methods: {
     isValidEnvironment,
+    onEnvironmentAction(event, index) {
+      this.$refs.menu.close();
+      this.$emit(event, index);
+    },
     async switchEnv(id) {
       try {
         await this.kuzzleStore.setCurrentEnvironment(id);
