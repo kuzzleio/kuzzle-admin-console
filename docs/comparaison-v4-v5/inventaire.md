@@ -80,7 +80,7 @@ Composants : `Common/MainMenu.vue`, `ConnectionAwareContainer.vue`,
 | APP-02 | Couleur de la barre = couleur de la connexion | C20 | environments | ✅ |
 | APP-03 | Menu « Feedback » : liens externes (Discord…) | C21 | — | ✅ |
 | APP-04 | Nom de l'utilisateur connecté, tronqué avec infobulle | C20 | — | ✅ |
-| APP-05 | Surcouche « Kuzzle unreachable » quand le backend tombe, disparition au retour | C22 | environments | 🔴 [E-03](ecarts.md#e-03) |
+| APP-05 | Surcouche « Kuzzle unreachable » quand le backend tombe, disparition au retour | C22 | environments | ✅ |
 | APP-06 | Page « Connecting to Kuzzle at … » au démarrage | — | — | ✅ |
 | APP-07 | Page d'erreur de connexion (« Something went wrong while connecting ») | — | — | ✅ |
 | APP-08 | Page 404 générale, lien retour | C23 | 404 | ✅ |
@@ -178,7 +178,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | FLT-07 | Onglet « Raw JSON » : éditeur, erreur de JSON, tri | C58 | search | ✅ |
 | FLT-08 | Onglet « History » : liste, réutiliser, supprimer, ajouter aux favoris, état vide | C59 | search | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
 | FLT-09 | Onglet « Saved » : favoris, renommer, utiliser, supprimer, état vide | C60 | search | ✅ · [E-20](ecarts.md#e-20) [E-22](ecarts.md#e-22) |
-| FLT-10 | Plein écran des filtres, fermeture | C61 | search | 🔴 [E-02](ecarts.md#e-02) |
+| FLT-10 | Plein écran des filtres, fermeture | C61 | search | ✅ |
 
 ### 8.3 Vue liste
 
@@ -284,7 +284,7 @@ Routes `/security/profiles`, `/security/profiles/create`,
 | PRF-03 | Sélection, « Toggle all », « Delete selected », modale | C102 | profiles | ✅ · [E-05](ecarts.md#e-05) |
 | PRF-04 | Éditer / supprimer par ligne, pagination | C100 | profiles | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
 | PRF-05 | « Create Profile », état « No profile is defined » | C100 | profiles | ✅ |
-| PRF-06 | Formulaire : « Profile ID », éditeur JSON, aide-mémoire (policies, restrictedTo), validation | C103 | profiles | 🔴 [E-01](ecarts.md#e-01) |
+| PRF-06 | Formulaire : « Profile ID », éditeur JSON, aide-mémoire (policies, restrictedTo), validation | C103 | profiles | ✅ |
 | PRF-07 | Avertissement « you are editing a profile that applies to yourself » | C104 | — | ✅ |
 
 ## 13. Security — rôles

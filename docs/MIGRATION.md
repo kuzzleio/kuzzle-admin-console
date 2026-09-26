@@ -3163,6 +3163,22 @@ Gabarit à copier :
   capturent rien.
 - **Ref** : étape 2 de la comparaison v4 / v5.
 
+#### G-076 — Un composant Bootstrap retiré emporte l'ancêtre positionné d'un autre
+
+- **Contexte** : `Data/Layout.vue`, retrait du `b-overlay` qui enveloppait le
+  `router-view` (il ne servait qu'à centrer une roue de chargement).
+- **Symptôme** : le plein écran des filtres couvre la barre de navigation et
+  l'arbre des index, au lieu de la seule zone de contenu. Aucune spec ne le
+  voit.
+- **Cause** : `b-overlay` rend un `div.b-overlay-wrap.position-relative`. Le
+  `.full-screen` des filtres (`assets/styles/_layout.scss`,
+  `position: absolute`) se calait dessus sans que rien ne le dise ; sans lui,
+  l'ancêtre positionné le plus proche est la racine.
+- **Solution** : un `div.relative.h-full` à la place du `b-overlay`. Avant de
+  retirer un composant Bootstrap enveloppant, chercher les `position: absolute`
+  de ses descendants.
+- **Ref** : E-02 de la [comparaison v4 / v5](comparaison-v4-v5/ecarts.md#e-02).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

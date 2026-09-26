@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 122 ✅ (dont 43 touchées par un écart
-transverse), 11 🎯, 20 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 125 ✅ (dont 43 touchées par un écart
+transverse), 11 🎯, 17 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -39,6 +39,9 @@ rendrait plus difficiles à isoler.
   `lg:w-5/12` n'est plus `flex flex-col` (v4 : `d-flex flex-column`), donc le
   `flex: 1 1 1px; overflow: auto` de `.ProfileCreateOrUpdate-cheatsheet` ne
   joue plus.
+- **Corrigé** : la colonne redevient `flex flex-col`, et `CardContent` passe
+  de `h-full` à `flex-1 min-h-0` : il prend la place que lui laisse le pied de
+  carte, et non plus toute la hauteur de la carte.
 
 <a id="e-02"></a>
 
@@ -51,6 +54,8 @@ rendrait plus difficiles à isoler.
 - **Cause** : `.full-screen` (`assets/styles/_layout.scss:22`) est en
   `position: absolute` ; son ancêtre positionné était le `b-overlay` de
   `Data/Layout.vue`, retiré sans rendre `ResizablePanel` `relative`.
+- **Corrigé** : un `div.relative.h-full` remplace le `b-overlay` autour du
+  `router-view` ([G-076](../MIGRATION.md)).
 
 <a id="e-03"></a>
 
@@ -62,6 +67,9 @@ rendrait plus difficiles à isoler.
   de navigation.
 - **Cause** : `ui/toast/Toast.vue:51`, `warning: 'bg-accent/20'` (20 %
   d'opacité) ; `danger` est à `bg-destructive/10`. Le `b-toast` v4 était opaque.
+- **Corrigé** : les variantes teintées (`warning`, `danger`, `success`) mêlent
+  leur couleur à `card` (`color-mix`) au lieu de la transparence ; mêmes
+  proportions, le toast devient opaque. La palette reste celle du lot tokens.
 
 <a id="e-04"></a>
 
