@@ -71,7 +71,7 @@
           :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-edit`"
           size="icon"
           variant="ghost"
-          @click="onEnvironmentAction('environment::create', index)"
+          @click="(closeMenu(), $emit('environment::create', index))"
         >
           <i class="fa fa-pencil-alt" aria-hidden="true" />
         </Button>
@@ -81,7 +81,7 @@
           :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-delete`"
           size="icon"
           variant="ghost"
-          @click="onEnvironmentAction('environment::delete', index)"
+          @click="(closeMenu(), $emit('environment::delete', index))"
         >
           <i class="fa fa-trash" aria-hidden="true" />
         </Button>
@@ -182,9 +182,10 @@ export default {
   },
   methods: {
     isValidEnvironment,
-    onEnvironmentAction(event, index) {
+    // Le nom de l'événement reste écrit en toutes lettres dans le template :
+    // `check:dom-emits` ne sait pas suivre un nom calculé (ADR-0029).
+    closeMenu() {
       this.$refs.menu.close();
-      this.$emit(event, index);
     },
     async switchEnv(id) {
       try {
