@@ -25,14 +25,31 @@
         ✅ Uploaded file is valid. Found {{ envNames.length }} connections.
       </Alert>
 
-      <Alert
-        v-for="(err, k) in errors"
-        :key="k"
-        data-cy="EnvironmentImport-err"
-        variant="destructive"
-      >
-        {{ err }}
-      </Alert>
+      <!--
+        `b-alert dismissible` posait sa croix ; `Alert` n'en rend pas, elle est
+        écrite ici comme dans `Login/Form.vue`. Fermer une erreur la masque
+        sans la retirer de `errors` : le fichier reste invalide, et
+        « Uploaded file is valid » ne doit pas apparaître (E-11).
+      -->
+      <template v-for="(err, k) in errors" :key="k">
+        <Alert
+          v-if="!dismissedErrors.includes(k)"
+          class="flex items-start gap-3"
+          data-cy="EnvironmentImport-err"
+          variant="destructive"
+        >
+          <span class="flex-1">{{ err }}</span>
+          <button
+            aria-label="Dismiss"
+            class="cursor-pointer leading-none"
+            data-cy="EnvironmentImport-errDismiss"
+            type="button"
+            @click="dismissedErrors.push(k)"
+          >
+            <i class="fa fa-times" aria-hidden="true" />
+          </button>
+        </Alert>
+      </template>
 
       <DialogFooter>
         <Button variant="outline" @click="close"> Cancel </Button>
@@ -92,6 +109,7 @@ export default defineComponent({
     };
   },
   data(): {
+    dismissedErrors: number[];
     env: Record<string, Environment>;
     errors: string[];
     file: File | null;
@@ -102,6 +120,7 @@ export default defineComponent({
     // attend, pas ce qu'on a vérifié. À reprendre le jour où l'import sera
     // validé pour de bon.
     return {
+      dismissedErrors: [],
       env: {},
       errors: [],
       file: null,
@@ -142,6 +161,7 @@ export default defineComponent({
     reset() {
       this.clearFiles();
       this.errors = [];
+      this.dismissedErrors = [];
       this.env = {};
       this.loading = false;
     },
@@ -175,6 +195,7 @@ export default defineComponent({
       this.$log.debug('Uploading!');
 
       this.errors = [];
+      this.dismissedErrors = [];
       this.env = {};
       this.loading = true;
       const reader = new FileReader();

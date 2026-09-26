@@ -445,6 +445,11 @@ describe('Import and export environments', function() {
     cy.get('[data-cy=EnvironmentImport-err]')
       .should('exist')
       .should('contain', 'Uploaded file type (image/jpeg) is not supported.')
+
+    // L'erreur se ferme, sans que le fichier passe pour valide (E-11)
+    cy.get('[data-cy=EnvironmentImport-errDismiss]').click()
+    cy.get('[data-cy=EnvironmentImport-err]').should('not.exist')
+    cy.get('[data-cy=EnvironmentImport-ok]').should('not.exist')
   })
 
   it('Should be able to export environments', function() {

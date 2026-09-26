@@ -43,7 +43,7 @@ plus le sélecteur de la barre de navigation. Composants :
 | ENV-08 | « Export all » (téléchargement JSON) et « Import » depuis le sélecteur | C04 | environments | ✅ |
 | ENV-09 | Modale de création / édition depuis le sélecteur | C05 | environments | ✅ |
 | ENV-10 | Modale de suppression : confirmation par saisie du nom | C06 | environments | ✅ |
-| ENV-11 | Modale d'import : fichier, validation (« Found N connections »), erreur d'extension | C07 | environments | 🔴 [E-11](ecarts.md#e-11) |
+| ENV-11 | Modale d'import : fichier, validation (« Found N connections »), erreur d'extension | C07 | environments | ✅ |
 | ENV-12 | Titre d'onglet du navigateur propre à la connexion | — | environments | ✅ |
 | ENV-13 | Mauvaise version de backend : erreur, puis correction possible | — | environments | ✅ |
 
