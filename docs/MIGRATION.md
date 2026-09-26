@@ -307,8 +307,9 @@ précisément ce qu'on achète.
 |---|---|
 | `DESIGN.md`, `PRODUCT.md`, copie des tokens du DS, skill Impeccable ([ADR-0044](adr/0044-impeccable-versionne-sans-hooks.md)) | ✅ |
 | 1. Comparaison v4 / v5 : inventaire fonctionnel écran par écran — 153 fonctions, 30 sans spec ([`comparaison-v4-v5/`](comparaison-v4-v5/inventaire.md)) | ✅ |
-| 1. Comparaison v4 / v5 : captures des mêmes écrans, même backend | ⬜ |
-| 1. Comparaison v4 / v5 : tri des écarts (voulu / régression / manquant) | ⬜ |
+| 1. Comparaison v4 / v5 : captures des mêmes écrans, même backend ([script](../test/e2e/cypress/captures/captures.js), [planche du 2026-09-25](https://claude.ai/artifact/XN8VJfk9ykaRtQvvvCebek)) | ✅ |
+| 1. Comparaison v4 / v5 : tri des écarts (voulu / régression / manquant) — [`ecarts.md`](comparaison-v4-v5/ecarts.md), issues #1119 à #1134 | ✅ |
+| 1. Comparaison v4 / v5 : régressions fonctionnelles E-01 à E-15 corrigées ou tranchées (#1136, #1138 à #1149) ; reste le vert des champs valides d'E-08, versé à E-21 | ✅ |
 | 2. Tokens + polices + 20 primitives à la DA Kuzzle | ⬜ |
 | 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
