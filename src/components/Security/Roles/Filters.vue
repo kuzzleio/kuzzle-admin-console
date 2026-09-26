@@ -25,6 +25,7 @@
           variant="outline"
         >
           Controllers
+          <i aria-hidden="true" class="fas fa-caret-down" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem

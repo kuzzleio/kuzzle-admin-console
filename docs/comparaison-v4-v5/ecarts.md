@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 134 ✅ (dont 33 touchées par un écart
-transverse), 11 🎯, 8 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 137 ✅ (dont 33 touchées par un écart
+transverse), 11 🎯, 5 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -213,6 +213,12 @@ rendrait plus difficiles à isoler.
   coche ; `DropdownMenuTrigger` n'ajoute pas de chevron (seul
   `EnvironmentsSwitch.vue:32` le pose à la main). `item-classes.ts` impose
   `font-sans`, qui écrase la classe `code` des noms de rôles.
+- **Corrigé** : `DropdownMenuCheckboxItem` dessine la case dans les deux états
+  (`far fa-square` / `fa-check-square`, les icônes de la v4) ; l'icône Refresh
+  est grisée quand Auto-Sync est coupé ; « Login with », le filtre des profils
+  et « Controllers » ont leur `fa-caret-down`, comme `EnvironmentsSwitch` ; la
+  classe `code` des noms de rôles passe sur le texte, où `font-sans` ne l'atteint
+  pas.
 
 <a id="e-13"></a>
 

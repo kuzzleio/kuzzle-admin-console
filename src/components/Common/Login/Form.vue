@@ -61,6 +61,7 @@
           variant="outline"
         >
           Login with
+          <i aria-hidden="true" class="fas fa-caret-down" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem

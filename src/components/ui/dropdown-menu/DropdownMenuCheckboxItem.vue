@@ -13,7 +13,7 @@
     @keydown.space.prevent="onSelectKey"
   >
     <span aria-hidden="true" class="absolute left-2 flex w-4 justify-center">
-      <i v-if="checked" class="fa fa-check" />
+      <i :class="['far', checked ? 'fa-check-square' : 'fa-square']" />
     </span>
     <slot />
   </component>
@@ -32,8 +32,9 @@ import { itemClasses } from './item-classes';
  * Remplace un `<b-dropdown-item>` qui portait lui-même une icône de case à
  * cocher. Le seul de la console est « Auto-Sync » sur la liste de documents :
  * l'icône disait l'état, rien ne l'annonçait. Ici c'est `role="menuitemcheckbox"`
- * et `aria-checked`, et la coche est celle de la famille — la même que
- * `DropdownMenuRadioItem`, au même emplacement.
+ * et `aria-checked`. La case est dessinée dans les deux états, comme en v4 :
+ * une coche seule ne laisse rien voir d'un élément décoché, et « Auto-Sync
+ * désactivé » devenait un simple libellé (E-12 de la comparaison v4 / v5).
  *
  * Le menu **ne se ferme pas** à la sélection, contrairement à `DropdownMenuItem` :
  * cocher n'est pas choisir, et fermer le menu retirerait de l'écran le retour
