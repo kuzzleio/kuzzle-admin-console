@@ -284,7 +284,7 @@ Routes `/security/profiles`, `/security/profiles/create`,
 | PRF-03 | Sélection, « Toggle all », « Delete selected », modale | C102 | profiles | ✅ · [E-05](ecarts.md#e-05) |
 | PRF-04 | Éditer / supprimer par ligne, pagination | C100 | profiles | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
 | PRF-05 | « Create Profile », état « No profile is defined » | C100 | profiles | ✅ |
-| PRF-06 | Formulaire : « Profile ID », éditeur JSON, aide-mémoire (policies, restrictedTo), validation | C103 | profiles | 🔴 [E-01](ecarts.md#e-01) |
+| PRF-06 | Formulaire : « Profile ID », éditeur JSON, aide-mémoire (policies, restrictedTo), validation | C103 | profiles | ✅ |
 | PRF-07 | Avertissement « you are editing a profile that applies to yourself » | C104 | — | ✅ |
 
 ## 13. Security — rôles

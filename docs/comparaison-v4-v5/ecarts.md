@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 122 ✅ (dont 43 touchées par un écart
-transverse), 11 🎯, 20 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 123 ✅ (dont 43 touchées par un écart
+transverse), 11 🎯, 19 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -39,6 +39,9 @@ rendrait plus difficiles à isoler.
   `lg:w-5/12` n'est plus `flex flex-col` (v4 : `d-flex flex-column`), donc le
   `flex: 1 1 1px; overflow: auto` de `.ProfileCreateOrUpdate-cheatsheet` ne
   joue plus.
+- **Corrigé** : la colonne redevient `flex flex-col`, et `CardContent` passe
+  de `h-full` à `flex-1 min-h-0` : il prend la place que lui laisse le pied de
+  carte, et non plus toute la hauteur de la carte.
 
 <a id="e-02"></a>
 
