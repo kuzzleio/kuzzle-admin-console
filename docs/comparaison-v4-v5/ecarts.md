@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 126 ✅ (dont 28 touchées par un écart
-transverse), 11 🎯, 16 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 127 ✅ (dont 28 touchées par un écart
+transverse), 11 🎯, 15 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -83,6 +83,9 @@ rendrait plus difficiles à isoler.
   supprimer sont des `Button`, pas des `DropdownMenuItem`, et ne ferment pas
   le menu ; les panneaux (z-index 1035) passent devant `Dialog` (1030).
   Contredit [ADR-0018](../adr/0018-panneaux-flottants-au-dessus-des-modales.md) § 2.
+- **Corrigé** : les deux boutons ferment le menu (`close()` de
+  `DropdownMenu`) avant d'émettre ; `environments.spec` vérifie que le menu a
+  disparu après le crayon et la corbeille.
 
 <a id="e-05"></a>
 

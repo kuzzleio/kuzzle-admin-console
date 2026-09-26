@@ -39,7 +39,7 @@ plus le sélecteur de la barre de navigation. Composants :
 | ENV-04 | Lien « Import connections » depuis la page de création | C01 | environments | ✅ |
 | ENV-05 | Page « Edit a Connection », ouverte d'office si la connexion courante est malformée | — | environments | ✅ |
 | ENV-06 | Page « Select Kuzzle » : liste des connexions, « Connect to » | C03 | — | ✅ · [E-24](ecarts.md#e-24) |
-| ENV-07 | Sélecteur de connexion dans la barre : liste, édition, suppression, « Create new connection » | C04 | environments | 🔴 [E-04](ecarts.md#e-04) |
+| ENV-07 | Sélecteur de connexion dans la barre : liste, édition, suppression, « Create new connection » | C04 | environments | ✅ |
 | ENV-08 | « Export all » (téléchargement JSON) et « Import » depuis le sélecteur | C04 | environments | ✅ |
 | ENV-09 | Modale de création / édition depuis le sélecteur | C05 | environments | ✅ |
 | ENV-10 | Modale de suppression : confirmation par saisie du nom | C06 | environments | ✅ |

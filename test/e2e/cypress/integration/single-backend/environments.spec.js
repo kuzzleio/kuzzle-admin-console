@@ -144,6 +144,8 @@ describe('Environments', function() {
     cy.get(`[data-cy="EnvironmentSwitch-env_${envNames[0]}-delete"]`).click({
       force: true
     })
+    // Le menu se referme : sinon il reste devant la modale (E-04)
+    cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').should('not.exist')
 
     cy.get('[data-cy="EnvironmentDeleteModal-envName"]').type(envNames[0])
     cy.get('[data-cy="EnvironmentDeleteModal-submit"]').click({ force: true })
@@ -314,6 +316,7 @@ describe('Environments', function() {
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()
     cy.get(`[data-cy="EnvironmentSwitch-env_valid-edit"]`).click()
+    cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').should('not.exist')
     cy.selectOption(
       '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`
