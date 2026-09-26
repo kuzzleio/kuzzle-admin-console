@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 129 ✅ (dont 30 touchées par un écart
-transverse), 11 🎯, 13 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 131 ✅ (dont 31 touchées par un écart
+transverse), 11 🎯, 11 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -151,6 +151,10 @@ rendrait plus difficiles à isoler.
 - **Cause** : `CreateEnvironment.vue:9-38` ne pose qu'`aria-invalid` ;
   `Data/Indexes/CreateIndexModal.vue:18-19`, `FormMessage v-if` /
   `FormDescription v-else`.
+- **Corrigé** : la règle de nommage reste affichée sous l'erreur ; l'icône
+  d'erreur revient, dans `FormMessage`, donc pour tous les formulaires.
+- **Reporté à [E-21](#e-21)** : le marquage des champs valides (bordure verte,
+  coche) demande une couleur « succès » que la palette n'a pas.
 
 <a id="e-09"></a>
 
@@ -272,7 +276,7 @@ doit exister dans la nouvelle palette.
 
 - **Issue** : #1134
 - **Fonctions** : AUTH-05, AUTH-06, AUTH-10, AUTH-11, RT-02, RT-06, FLT-02,
-  DOC-07, API-04 ; encadré Notice de Security (C103, C104, C114).
+  DOC-07, API-04, ENV-03 ; encadré Notice de Security (C103, C104, C114).
 - **Symptôme** : alertes et toasts cyan devenus jaunes ou blancs, badges
   turquoise gris. Sur API-04, le statut 200 est bleu au lieu de vert et une
   erreur n'est plus rouge — la couleur y portait le sens. RUN n'est plus vert ;
@@ -280,6 +284,8 @@ doit exister dans la nouvelle palette.
 - **Cause** : `Alert`, `Toast`, `Badge` et `Button` n'ont pas de variante
   `info` ; `ApiAction/ResponseCard.vue:59-63` renvoie encore `secondary` /
   `danger`, que `ui/alert/Alert.vue` ne connaît pas.
+- **Aussi** : le marquage des champs valides de la v4 (bordure verte et coche
+  sur ENV-03, C02), reporté d'[E-08](#e-08) faute de couleur « succès ».
 
 <a id="e-22"></a>
 

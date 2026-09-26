@@ -1,5 +1,6 @@
 <template>
   <p :class="classes" aria-live="assertive" data-slot="form-message" role="alert" v-bind="$attrs">
+    <i aria-hidden="true" class="fas fa-exclamation-circle me-1" />
     <slot />
   </p>
 </template>
@@ -19,6 +20,11 @@ import { classMerge } from '../class-merge';
  * Le composant ne s'affiche que s'il est rendu : c'est au site d'appel de le
  * mettre sous `v-if`. Un message d'erreur vide mais présent dans le DOM est
  * exactement ce qui fait passer une spec qui devrait échouer.
+ *
+ * L'icône double la couleur : une erreur qui ne se signale que par le rouge
+ * ne se voit pas pour tout le monde. `b-form-group` la posait dans le champ ;
+ * elle est ici dans le message, qui la porte pour tous les formulaires
+ * (E-08 de la comparaison v4 / v5).
  */
 export default defineComponent({
   name: 'FormMessage',
