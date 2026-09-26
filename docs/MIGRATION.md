@@ -3201,6 +3201,22 @@ Gabarit à copier :
   l'absence de valeur, pas seulement de la valeur.
 - **Ref** : E-07 de la [comparaison v4 / v5](comparaison-v4-v5/ecarts.md#e-07).
 
+#### G-078 — Une passe partielle de captures efface la passe complète
+
+- **Contexte** : `cypress.captures.config.ts`, vérification d'un correctif sur
+  deux ou trois états (`it.only` dans une copie de `captures.js`).
+- **Symptôme** : la planche de référence n'a plus ses images « v5 » ; le dossier
+  `test/e2e/captures/v5/` ne contient que les deux ou trois états de la
+  dernière vérification.
+- **Cause** : `trashAssetsBeforeRuns: true` vide `screenshotsFolder` avant
+  chaque run, et ce dossier ne dépend que de `CAPTURES_VERSION`. Une passe
+  partielle lancée avec `CAPTURES_VERSION=v5` efface la passe complète.
+- **Solution** : pour une vérification ponctuelle, un `CAPTURES_VERSION` à
+  soi (`v5-check`, `v5-e07`…). La planche publiée reste la référence ; pour
+  un « avant » local, reconstruire la version voulue dans un worktree et
+  refaire la passe.
+- **Ref** : étape « couleurs » du lot 2 de la DA, le 2026-09-26.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

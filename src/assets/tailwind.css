@@ -30,6 +30,18 @@
 @import './fonts.css';
 
 /*
+ * Fond et texte du document. Le preflight ne les pose pas, et le reboot de
+ * Bootstrap posait du blanc : sans cette règle, le fond de page de la DA
+ * (Page Mist) ne s'affiche nulle part.
+ */
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+/*
  * FontAwesome, rangé dans la même couche que le reste du legacy.
  *
  * Il ne peut pas être importé depuis `style.scss` : Sass hisse l'`@import`
