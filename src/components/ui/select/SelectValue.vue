@@ -17,10 +17,10 @@ import { selectContext } from './context';
  * Affiche le libellé de l'option retenue, et le `placeholder` quand il n'y en a
  * pas. Le libellé vient de l'index tenu par la racine, que les `SelectItem`
  * renseignent à leur montage ; tant que le panneau n'a jamais été ouvert, il
- * est vide et c'est la valeur brute qui s'affiche. Les sites d'appel de la
- * console ont des valeurs lisibles — `25`, `payloadDate` — et l'écart ne s'y
- * voit pas. Ceux qui auront des valeurs opaques devront ouvrir la liste une
- * fois, ou passer leur libellé dans le slot.
+ * est vide et c'est la valeur brute qui s'affiche. Un site d'appel dont les
+ * valeurs diffèrent des libellés passe donc son libellé dans le slot : c'est
+ * le cas de l'ordre de tri et de l'opérateur des filtres, où l'oubli affichait
+ * `not_equal` au lieu de « Not equal » (E-06 de la comparaison v4 / v5).
  */
 export default defineComponent({
   name: 'SelectValue',

@@ -753,6 +753,8 @@ describe('Search', function() {
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
+    // Le libellé, pas la clé, avant toute ouverture de la liste (E-06)
+    cy.get('[data-cy="BasicFilter-operator"]').should('contain', 'Contains')
     cy.selectOption('[data-cy="BasicFilter-operator"]', 'Range')
     cy.get(`[data-cy="BasicFilter-operator-Range-Value1"]`)
       .invoke('innerWidth')
