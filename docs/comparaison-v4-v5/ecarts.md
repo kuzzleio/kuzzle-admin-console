@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 125 ✅ (dont 28 touchées par un écart
-transverse), 11 🎯, 17 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 126 ✅ (dont 28 touchées par un écart
+transverse), 11 🎯, 16 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -124,6 +124,12 @@ rendrait plus difficiles à isoler.
   `value: { default: null }` ; `JSON.stringify(null)` donne `"null"`, et le
   repli `|| '{}'` de la l. 7 ne joue plus. À vérifier : si l'éditeur émet
   `change` à l'initialisation, `null` finit dans le document enregistré.
+- **Vérifié** : oui. Un document créé en vue formulaire sans toucher aux
+  champs objet était enregistré avec `items: null` et `skill: null` ; la v4,
+  qui a le même `JsonEditor`, enregistrait `{}`.
+- **Corrigé** : `value` n'a plus de `default: null` ; un champ absent reste
+  `undefined` et l'éditeur part de `{}` ([G-077](../MIGRATION.md)).
+  `formView.spec` vérifie le `{}` enregistré.
 
 <a id="e-08"></a>
 

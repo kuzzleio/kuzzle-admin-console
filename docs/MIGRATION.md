@@ -3179,6 +3179,24 @@ Gabarit à copier :
   de ses descendants.
 - **Ref** : E-02 de la [comparaison v4 / v5](comparaison-v4-v5/ecarts.md#e-02).
 
+#### G-077 — Un `default: null` sur une prop défait le repli `|| '{}'` du template
+
+- **Contexte** : `Data/Documents/FormInputs/JsonFormInput.vue`, sortie de
+  `vue-form-generator` ([ADR-0025](adr/0025-reimplementer-vue-form-generator.md)).
+- **Symptôme** : en vue formulaire, un champ objet vide affiche `null` au lieu
+  de `{}` ; et un document créé sans toucher à ce champ est enregistré avec
+  `null`. Les specs ne le voyaient pas : elles remplissaient toujours le champ.
+- **Cause** : le mixin `abstractField` laissait `value` à `undefined` ;
+  `JSON.stringify(undefined)` vaut `undefined`, et le repli
+  `|| '{}'` jouait. La prop `value: { default: null }` qui l'a remplacé
+  donne `JSON.stringify(null)`, soit la chaîne `"null"`, qui n'est pas
+  fausse. Et `JsonEditor` émet `change` au premier `setValue` : ce qu'il
+  affiche à l'ouverture remonte dans le modèle.
+- **Solution** : pas de `default` — l'absence reste `undefined`. En
+  convertissant un mixin en props, regarder ce que le template faisait de
+  l'absence de valeur, pas seulement de la valeur.
+- **Ref** : E-07 de la [comparaison v4 / v5](comparaison-v4-v5/ecarts.md#e-07).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

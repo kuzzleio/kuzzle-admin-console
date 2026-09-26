@@ -226,7 +226,7 @@ Routes `/data/:i/:c/create`, `/data/:i/:c/update/:id` →
 |---|---|---|---|---|
 | DOCF-01 | « Document ID » (optionnel à la création) | C70 | docs | ✅ · [E-23](ecarts.md#e-23) |
 | DOCF-02 | Éditeur JSON du document et panneau « Mapping » | C70 | docs | ✅ |
-| DOCF-03 | Bascule « Form view », synchronisée avec le JSON | C71 | formView | 🔴 [E-07](ecarts.md#e-07) |
+| DOCF-03 | Bascule « Form view », synchronisée avec le JSON | C71 | formView | ✅ |
 | DOCF-04 | Avertissement « fields are not supported in the form view » | C71 | formView | ✅ |
 | DOCF-05 | Champs date / heure du formulaire | C71 | formView | 🎯 [ADR-0015](../adr/0015-pas-de-primitive-calendar.md) |
 | DOCF-06 | « Create », « Update », « Replace », « Cancel » | C70 | docs, formView | ✅ |
