@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 133 ✅ (dont 33 touchées par un écart
-transverse), 11 🎯, 9 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 134 ✅ (dont 33 touchées par un écart
+transverse), 11 🎯, 8 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -194,6 +194,10 @@ rendrait plus difficiles à isoler.
 - **Fonctions** : ENV-11 (C07).
 - **Cause** : `Common/Environments/ModalImport.vue:30-37`, `Alert` sans croix
   (v4 : `b-alert dismissible`).
+- **Corrigé** : chaque erreur a sa croix, écrite dans le site d'appel comme
+  pour l'erreur de connexion (`Login/Form.vue`). Fermer une erreur la masque
+  sans la retirer de `errors` : sinon « Uploaded file is valid » apparaîtrait
+  pour un fichier refusé.
 
 <a id="e-12"></a>
 
