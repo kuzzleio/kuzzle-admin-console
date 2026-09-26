@@ -136,5 +136,10 @@
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
 
+  /* Familles de la DA (DESIGN.md, Typography), chargées par `fonts.css`.
+     `--font-sans` est aussi la police du document : le preflight la lit. */
   --font-sans: 'Ubuntu', sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
+  --font-display: 'Gobold', 'Oswald', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
