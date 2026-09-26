@@ -57,9 +57,9 @@ export default {
       return this.response ? this.response.message : null;
     },
     statusBarVariant() {
-      if (this.currentStatus === null || this.currentStatus === 'undefined') return 'secondary';
+      if (this.currentStatus === null || this.currentStatus === 'undefined') return 'default';
       if (this.currentStatus.toString().match(/20[0-9]/) != null) return 'success';
-      return 'danger';
+      return 'destructive';
     },
   },
   watch: {

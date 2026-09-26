@@ -16,7 +16,7 @@
 
         <Tabs v-else orientation="vertical">
           <div class="flex flex-col gap-2">
-            <span class="px-3 text-sm text-secondary">Auth strategies</span>
+            <span class="px-3 text-sm text-muted-foreground">Auth strategies</span>
             <TabsList>
               <TabsTrigger
                 v-for="strategy in strategies"

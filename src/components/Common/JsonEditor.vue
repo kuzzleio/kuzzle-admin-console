@@ -94,14 +94,15 @@ export default {
   position: relative;
 }
 
+// Lecture seule : fond Panel Grey et sélection Soft Sky, depuis les tokens.
 .ace-tomorrow.ace_editor.readonly {
-  background-color: #d6d6d6;
+  background-color: var(--muted);
   .ace_gutter,
   .ace_active-line {
-    background-color: #d6d6d6;
+    background-color: var(--muted);
   }
   .ace_selection {
-    background: #a7c4de;
+    background: var(--secondary);
   }
 }
 </style>

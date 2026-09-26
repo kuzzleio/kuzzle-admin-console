@@ -42,7 +42,10 @@ export const badgeVariants = cva(
         destructive: 'bg-destructive text-destructive-foreground',
         outline: 'border-border text-foreground',
         secondary: 'bg-muted text-muted-foreground',
-        warning: 'bg-accent text-accent-foreground',
+        // Info en « tag » du DS : Soft Sky et Captain Blue, pas un aplat.
+        info: 'bg-secondary text-info',
+        success: 'bg-success text-success-foreground',
+        warning: 'bg-warning text-warning-foreground',
       },
     },
   },

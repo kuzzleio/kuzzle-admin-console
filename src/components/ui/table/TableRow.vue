@@ -15,7 +15,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('border-b border-border transition-colors hover:bg-muted/50');
+      return this.mergeClasses('border-b border-border transition-colors hover:bg-accent');
     },
   },
 });

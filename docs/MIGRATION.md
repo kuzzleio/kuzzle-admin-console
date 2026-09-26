@@ -311,7 +311,8 @@ précisément ce qu'on achète.
 | 1. Comparaison v4 / v5 : tri des écarts (voulu / régression / manquant) — [`ecarts.md`](comparaison-v4-v5/ecarts.md), issues #1119 à #1134 | ✅ |
 | 1. Comparaison v4 / v5 : régressions fonctionnelles E-01 à E-15 corrigées ou tranchées (#1136, #1138 à #1149) ; reste le vert des champs valides d'E-08, versé à E-21 | ✅ |
 | 2. Polices embarquées, familles dans `tokens.css` ([ADR-0047](adr/0047-polices-embarquees.md)) | ✅ |
-| 2. Valeurs des tokens (palette, rayons, ombres, durées) à la DA Kuzzle | ⬜ |
+| 2. Palette de la DA dans `tokens.css`, tokens d'état `success` / `warning` / `info`, sites d'appel migrés (E-20, E-21) | ✅ |
+| 2. Rayons, ombres, durées à la DA Kuzzle | ⬜ |
 | 2. 20 primitives à la DA Kuzzle | ⬜ |
 | 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
@@ -3199,6 +3200,22 @@ Gabarit à copier :
   convertissant un mixin en props, regarder ce que le template faisait de
   l'absence de valeur, pas seulement de la valeur.
 - **Ref** : E-07 de la [comparaison v4 / v5](comparaison-v4-v5/ecarts.md#e-07).
+
+#### G-078 — Une passe partielle de captures efface la passe complète
+
+- **Contexte** : `cypress.captures.config.ts`, vérification d'un correctif sur
+  deux ou trois états (`it.only` dans une copie de `captures.js`).
+- **Symptôme** : la planche de référence n'a plus ses images « v5 » ; le dossier
+  `test/e2e/captures/v5/` ne contient que les deux ou trois états de la
+  dernière vérification.
+- **Cause** : `trashAssetsBeforeRuns: true` vide `screenshotsFolder` avant
+  chaque run, et ce dossier ne dépend que de `CAPTURES_VERSION`. Une passe
+  partielle lancée avec `CAPTURES_VERSION=v5` efface la passe complète.
+- **Solution** : pour une vérification ponctuelle, un `CAPTURES_VERSION` à
+  soi (`v5-check`, `v5-e07`…). La planche publiée reste la référence ; pour
+  un « avant » local, reconstruire la version voulue dans un worktree et
+  refaire la passe.
+- **Ref** : étape « couleurs » du lot 2 de la DA, le 2026-09-26.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

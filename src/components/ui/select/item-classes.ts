@@ -19,7 +19,7 @@ export const itemClasses = cva(
     'py-1.5 pr-2 pl-8',
     'font-sans text-sm leading-normal text-popover-foreground',
     'outline-none transition-colors',
-    'focus-visible:bg-muted hover:bg-muted',
+    'focus-visible:bg-accent hover:bg-accent',
   ].join(' '),
   {
     defaultVariants: {

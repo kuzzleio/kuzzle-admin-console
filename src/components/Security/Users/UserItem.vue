@@ -24,7 +24,7 @@
             class="code"
             :data-cy="`local-strategy-username-${localStrategyUsername}`"
           >
-            <i class="fas fa-user text-secondary" title="Username (local strategy)" />
+            <i class="fas fa-user text-muted-foreground" title="Username (local strategy)" />
             {{ localStrategyUsername }}
           </span>
           <span

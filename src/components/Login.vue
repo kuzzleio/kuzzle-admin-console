@@ -13,7 +13,7 @@
           v-if="displayNoAdminWarning"
           class="mb-4 text-center"
           data-cy="noAdminWarning"
-          variant="warning"
+          variant="info"
         >
           <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended
           <a class="font-semibold underline" data-cy="NoAdminWarning-link" href="#/signup">

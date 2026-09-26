@@ -22,7 +22,7 @@ export const itemClasses = cva(
     'px-2 py-1.5',
     'font-sans text-sm leading-normal',
     'outline-none transition-colors',
-    'focus-visible:bg-muted hover:bg-muted',
+    'focus-visible:bg-accent hover:bg-accent',
   ].join(' '),
   {
     defaultVariants: {

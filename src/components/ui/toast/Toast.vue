@@ -50,11 +50,11 @@ export const toastVariants = cva(
       variant: {
         danger:
           'border-destructive/40 bg-[color-mix(in_oklab,var(--color-destructive)_10%,var(--color-card))] text-destructive',
-        info: 'border-border bg-card text-card-foreground',
+        info: 'border-info/30 bg-secondary text-foreground',
         success:
-          'border-secondary/40 bg-[color-mix(in_oklab,var(--color-secondary)_10%,var(--color-card))] text-foreground',
+          'border-success/60 bg-[color-mix(in_oklab,var(--color-success)_15%,var(--color-card))] text-foreground',
         warning:
-          'border-accent bg-[color-mix(in_oklab,var(--color-accent)_20%,var(--color-card))] text-foreground',
+          'border-warning/60 bg-[color-mix(in_oklab,var(--color-warning)_15%,var(--color-card))] text-foreground',
       },
     },
   },

@@ -17,7 +17,7 @@
         />
       </div>
       <div class="min-h-0 flex-1 overflow-y-auto p-3">
-        <router-link class="text-secondary" data-cy="Treeview-item" :to="{ name: 'Data' }">
+        <router-link class="text-muted-foreground" data-cy="Treeview-item" :to="{ name: 'Data' }">
           <i class="fas fa-list mr-1" aria-hidden="true" />
           All indexes <Spinner v-if="isLoading" size="sm" />
         </router-link>

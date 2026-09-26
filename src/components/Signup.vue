@@ -78,7 +78,7 @@
             <FormDescription>Re-type the password for confirmation</FormDescription>
           </FormItem>
 
-          <Alert variant="warning">
+          <Alert variant="info">
             <i class="fa fa-exclamation-triangle" aria-hidden="true" /> To secure your Kuzzle
             installation we recommend you select the “Remove anonymous user credentials” checkbox
             below.

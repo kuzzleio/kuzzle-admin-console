@@ -129,10 +129,10 @@ components:
 > the console. The decision, and what is deliberately left out, is in
 > [ADR-0043](docs/adr/0043-da-kuzzle-pour-la-console.md).
 >
-> **State on 2026-09-25: this is the target, not yet the rendering.**
-> `src/assets/tokens.css` still carries the v4 palette until the DA lot lands.
-> The before/after comparison of v4 and v5 is captured first, so that
-> regressions from the Bootstrap exit are not drowned in intended changes.
+> **State on 2026-09-26: fonts and colors are applied, the rest is still the
+> target.** `src/assets/tokens.css` carries the palette below and the fonts
+> are served by the console (ADR-0047). Radii, shadows, motion, the type scale
+> and the layout (navigation rail, page headers) are not applied yet.
 >
 > **Two vocabularies.** The frontmatter keeps the design system's names. The
 > console consumes shadcn-vue tokens (`--primary`, `--muted`, `--border`…,
@@ -227,6 +227,19 @@ A cool, low-chroma neutral world with one warm, saturated accent.
 | `--destructive` | `#DC3545` | `--status-danger` |
 | `--border` / `--input` | `#D0DDE1` | `--grey-bright` |
 | `--ring` | `#00536F` | `--secondary-captain` |
+
+The console adds tokens that shadcn-vue does not have, because it needs them:
+
+| Console token | Value | Design-system source |
+|---|---|---|
+| `--primary-hover` | `#C93960` | `--primary-dark` |
+| `--label` | `#43565B` | `--grey` |
+| `--success` / `--success-foreground` | `#3DDC84` / `#002835` | `--status-success` |
+| `--warning` / `--warning-foreground` | `#C9821F` / `#002835` | `--status-warning` |
+| `--info` / `--info-foreground` | `#00536F` / `#FFFFFF` | `--secondary-captain` (no info color in the DS) |
+
+Success and warning carry Kuzzle Blue text, not white: white on either fails
+the 4.5:1 contrast ratio.
 
 The v4 palette mapped `--primary` to Kuzzle Blue and `--destructive` to a pink
 (`#E94E77`) almost identical to the new accent. Both move together in the DA

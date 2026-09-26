@@ -59,7 +59,7 @@
         </Badge>
       </template>
       <template v-else>
-        <span class="text-secondary">No profiles selected</span>
+        <span class="text-muted-foreground">No profiles selected</span>
       </template>
     </div>
   </div>

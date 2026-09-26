@@ -143,7 +143,7 @@ export default {
         link: { href: '#/signup', label: 'that you create one.' },
         message: 'Your Kuzzle has no administrator user. It is strongly recommended',
         title: 'Warning!',
-        variant: 'warning',
+        variant: 'info',
       });
     },
   },
