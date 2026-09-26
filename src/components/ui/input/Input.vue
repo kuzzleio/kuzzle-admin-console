@@ -38,8 +38,13 @@ export const inputClasses = [
   // comme `b-input` : l'attribut porte l'information pour le lecteur d'écran
   // **et** pour la feuille de styles, au lieu de la dupliquer.
   'aria-invalid:border-destructive aria-invalid:focus-visible:ring-destructive',
+  // Un champ vérifié et valide porte `aria-invalid="false"` : bordure verte,
+  // comme `b-input` avec `:state="true"` (E-08). Sans l'attribut, rien. Un
+  // `aria-invalid` booléen se rend `"false"` : le site d'appel passe
+  // `undefined` plutôt que `false`, et un champ désactivé n'est jamais vert.
+  'aria-[invalid=false]:enabled:border-success',
   'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-  'disabled:cursor-not-allowed disabled:opacity-50',
+  'disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted-foreground',
 ].join(' ');
 
 export default defineComponent({

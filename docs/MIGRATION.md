@@ -314,7 +314,7 @@ précisément ce qu'on achète.
 | 2. Palette de la DA dans `tokens.css`, tokens d'état `success` / `warning` / `info`, sites d'appel migrés (E-20, E-21) | ✅ |
 | 2. Rayons, ombres, durées à la DA Kuzzle, branchés dans les primitives | ✅ |
 | 2. Primitives : échelle typographique, titres, libellés, états vides (E-22, E-23) | ✅ |
-| 2. Primitives : tables, cartes, formulaires (E-24, E-25, vert d'E-08) | ⬜ |
+| 2. Primitives : tables, cartes, formulaires (E-24, E-25, vert d'E-08) | ✅ |
 | 2. Primitives : boutons, focus (E-26) | ⬜ |
 | 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
@@ -3235,6 +3235,25 @@ Gabarit à copier :
   nouveau nom d'échelle dans `tokens.css` doit y être ajouté. Vérification :
   `twMerge('text-title text-card-foreground')` doit garder les deux.
 - **Ref** : étape « typographie » du lot 2 de la DA, le 2026-09-26.
+
+#### G-080 — Un `cypress run` se fige sans échouer ni rendre la main
+
+- **Contexte** : suite complète en local (`npx cypress run`), Electron headless,
+  contre `vite preview` et une stack neuve.
+- **Symptôme** : le run s'arrête au milieu d'une spec, après un test réussi, et
+  n'écrit plus rien pendant des heures. Pas d'échec, pas de timeout : les
+  timeouts de Cypress sont par commande, et aucune commande n'est en cours. Vu
+  deux fois le 2026-09-26, dans des specs différentes (validation d'E-08, puis
+  `collections.spec` au 4ᵉ test).
+- **Cause** : non identifiée. Le backend et le preview répondent pendant le
+  blocage, et la même spec, rejouée seule sur une stack neuve, passe en 36 s :
+  c'est le runner qui se fige, pas le produit.
+- **Solution** : ne jamais lancer une suite longue sans la suivre. Écrire la
+  sortie dans un fichier et surveiller les lignes `Running:` : une spec qui
+  n'avance plus au-delà de sa durée habituelle signale le gel. Tuer le run, le
+  rejouer sur une stack neuve ; si la spec passe seule, le gel ne vient pas du
+  code. Ne pas compter sur `timeout`, absent de macOS.
+- **Ref** : lot « tables et formulaires » de la DA, le 2026-09-26.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

@@ -17,7 +17,8 @@ export default defineComponent({
     classes(): string {
       return this.mergeClasses(
         'h-10 px-3 text-left align-middle',
-        'font-medium whitespace-nowrap text-muted-foreground',
+        // Libellé de section du DS : capitales, 11 px, Label Slate.
+        'text-label font-bold uppercase whitespace-nowrap text-label-slate',
       );
     },
   },

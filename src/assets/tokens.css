@@ -48,6 +48,8 @@
   /* Neutres */
   --muted: #eef1f5;
   --muted-foreground: #6c757d;
+  /* Table Head : en-têtes de tableau, champs désactivés */
+  --subtle: #f9fafd;
   /* Label Slate : libellés en capitales */
   --label: #43565b;
 
@@ -166,6 +168,7 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-label-slate: var(--label);
+  --color-subtle: var(--subtle);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);

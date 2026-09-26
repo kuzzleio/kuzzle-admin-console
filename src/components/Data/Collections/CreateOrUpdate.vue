@@ -15,7 +15,7 @@
           <Input
             id="collection-name-input"
             v-model="v$.name.$model"
-            :aria-invalid="isNameInvalid"
+            :aria-invalid="isNameInvalid ? 'true' : undefined"
             :disabled="!!collection"
             name="collection"
             tabindex="1"

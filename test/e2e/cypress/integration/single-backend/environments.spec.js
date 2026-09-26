@@ -25,6 +25,8 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
+    // Un champ touché et valide est marqué comme tel (E-08)
+    cy.get('[data-cy="CreateEnvironment-name"]').should('have.attr', 'aria-invalid', 'false')
     cy.selectOption(
       '[data-cy=CreateEnvironment-backendVersion]',
       `v${backendVersion}.x`

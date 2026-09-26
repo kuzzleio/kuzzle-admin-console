@@ -32,7 +32,7 @@ export default defineComponent({
       return 'relative w-full overflow-x-auto';
     },
     classes(): string {
-      return this.mergeClasses('w-full caption-bottom font-sans text-sm');
+      return this.mergeClasses('w-full caption-bottom bg-card font-sans text-sm');
     },
   },
 });

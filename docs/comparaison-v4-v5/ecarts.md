@@ -15,7 +15,7 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 142 ✅ (dont 8 touchées par un écart
+**Bilan** : 153 fonctions — 142 ✅ (dont 0 touchées par un écart
 transverse), 11 🎯, 0 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
@@ -153,8 +153,9 @@ rendrait plus difficiles à isoler.
   `FormDescription v-else`.
 - **Corrigé** : la règle de nommage reste affichée sous l'erreur ; l'icône
   d'erreur revient, dans `FormMessage`, donc pour tous les formulaires.
-- **Reporté à [E-21](#e-21)** : le marquage des champs valides (bordure verte,
-  coche) demande une couleur « succès » que la palette n'a pas.
+- **Corrigé depuis** (lot « tables et formulaires » de la DA) : le marquage
+  des champs valides, reporté un temps à [E-21](#e-21), est une bordure
+  `--success` portée par `aria-invalid="false"`.
 
 <a id="e-09"></a>
 
@@ -312,9 +313,10 @@ doit exister dans la nouvelle palette.
   `ResponseCard` renvoie `success` / `destructive` ; la pastille « new
   documents » devient verte, comme son infobulle le promet. **Voulu** : RUN
   reste fuchsia, c'est l'action principale de l'écran (« The One Accent Rule »).
-- **Reste** : le marquage des champs valides de la v4 (bordure verte et coche
-  sur ENV-03, C02), reporté d'[E-08](#e-08). La couleur existe désormais
-  (`--success`) ; il viendra avec les primitives de formulaire.
+- **Corrigé** (report d'[E-08](#e-08)) : un champ touché et valide porte
+  `aria-invalid="false"`, et `Input` l'affiche en bordure `--success`. La coche
+  de la v4 n'est pas reprise : l'icône d'erreur de `FormMessage` dit l'état
+  en erreur, la bordure suffit à l'état valide.
 
 <a id="e-22"></a>
 
@@ -347,8 +349,8 @@ doit exister dans la nouvelle palette.
 - **Tranché par la DA** : les libellés restent au-dessus des champs, en
   capitales, style « Label » du DS (Ubuntu 700, 11 px, +0,07em, Label Slate).
   Les libellés d'option (case « Use SSL », « Remove anonymous user
-  credentials ») restent en casse normale. **Reste** : le fond des champs
-  désactivés, avec les primitives de formulaire.
+  credentials ») restent en casse normale. Les champs désactivés prennent le
+  fond Table Head du DS (`bg-subtle`) au lieu d'une opacité réduite.
 
 <a id="e-24"></a>
 
@@ -363,6 +365,12 @@ doit exister dans la nouvelle palette.
 - **Cause** : `CreateEnvironmentPage.vue:4-18`, `SelectEnvironmentPage.vue` ;
   `ui/card/Card.vue` impose `py-6`, que `Common/Filters/Filters.vue:2`
   n'annule pas.
+- **Corrigé** : la carte des filtres n'a plus de bande vide (`gap-0 py-0`, le
+  bandeau porte sa marge). **Tranché par la DA** : pas de bandeaux gris
+  d'en-tête ni de pied de carte, le DS sépare par filets et ombres ; le
+  titre de marque en Gobold tient lieu de jumbotron sur les pages de
+  connexion. `Signup.vue` et `KuzzleErrorPage.vue` gardent leur bloc gris
+  jusqu'au lot « mise en page ».
 
 <a id="e-25"></a>
 
@@ -373,6 +381,10 @@ doit exister dans la nouvelle palette.
 - **Cause** : `striped` et `bordered` de `b-table` ne sont pas repris ;
   [ADR-0011](../adr/0011-table-sans-data-table.md) ne décide pas de les
   retirer. En-têtes réduits à 12 px gris.
+- **Tranché par la DA** : ni lignes alternées ni bordures de cellules ; des
+  filets Hairline entre les lignes, le survol en Row Hover, l'en-tête sur fond
+  Table Head (`bg-subtle`) en libellé de section du DS (capitales 11 px, Label
+  Slate). Le tableau a un fond de carte, il ne repose plus sur le fond de page.
 
 <a id="e-26"></a>
 

@@ -33,12 +33,12 @@ plus le sélecteur de la barre de navigation. Composants :
 
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
-| ENV-01 | Page « Create a Connection » : nom, hôte, port, SSL, version de Kuzzle (1 / 2) | C01 | environments | ✅ · [E-24](ecarts.md#e-24) |
+| ENV-01 | Page « Create a Connection » : nom, hôte, port, SSL, version de Kuzzle (1 / 2) | C01 | environments | ✅ |
 | ENV-02 | Sélecteur de couleur de la connexion, appliquée à la barre de navigation ; erreur si aucune couleur | C01 | environments | ✅ |
-| ENV-03 | Validation du formulaire (champs requis, nom déjà pris) avec retour visuel | C02 | environments | ✅ · [E-21](ecarts.md#e-21) |
+| ENV-03 | Validation du formulaire (champs requis, nom déjà pris) avec retour visuel | C02 | environments | ✅ |
 | ENV-04 | Lien « Import connections » depuis la page de création | C01 | environments | ✅ |
 | ENV-05 | Page « Edit a Connection », ouverte d'office si la connexion courante est malformée | — | environments | ✅ |
-| ENV-06 | Page « Select Kuzzle » : liste des connexions, « Connect to » | C03 | — | ✅ · [E-24](ecarts.md#e-24) |
+| ENV-06 | Page « Select Kuzzle » : liste des connexions, « Connect to » | C03 | — | ✅ |
 | ENV-07 | Sélecteur de connexion dans la barre : liste, édition, suppression, « Create new connection » | C04 | environments | ✅ |
 | ENV-08 | « Export all » (téléchargement JSON) et « Import » depuis le sélecteur | C04 | environments | ✅ |
 | ENV-09 | Modale de création / édition depuis le sélecteur | C05 | environments | ✅ |
@@ -108,7 +108,7 @@ Route `/data` → `Data/Indexes/Page.vue`.
 
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
-| IDX-01 | Titre « Indexes », tableau des index avec nombre de collections | C32 | indexes | ✅ · [E-25](ecarts.md#e-25) |
+| IDX-01 | Titre « Indexes », tableau des index avec nombre de collections | C32 | indexes | ✅ |
 | IDX-02 | Tri par nom et par nombre de collections | — | indexes | 🎯 [ADR-0011](../adr/0011-table-sans-data-table.md) |
 | IDX-03 | Filtre de la liste, état « no index matching your filter » | C33 | — | ✅ |
 | IDX-04 | État vide « There is no index » | — | — | ✅ |
@@ -124,7 +124,7 @@ Route `/data/:indexName` → `Data/Collections/CollectionList.vue`.
 
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
-| COL-01 | Tableau des collections : type (Realtime / Stored), nom, actions | C40 | collections | ✅ · [E-25](ecarts.md#e-25) |
+| COL-01 | Tableau des collections : type (Realtime / Stored), nom, actions | C40 | collections | ✅ |
 | COL-02 | Tri par nom, filtre sur le nom seul, champ de recherche au focus | — | collections | 🎯 [ADR-0011](../adr/0011-table-sans-data-table.md) |
 | COL-03 | « Create a collection » | C40 | collections | ✅ |
 | COL-04 | Actions de ligne : parcourir, éditer, supprimer (modale avec saisie du nom) | C41 | collections | ✅ |
@@ -169,7 +169,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
-| FLT-01 | Quick Search, persistée dans l'URL et d'une collection à l'autre | C56 | search | ✅ · [E-24](ecarts.md#e-24) |
+| FLT-01 | Quick Search, persistée dans l'URL et d'une collection à l'autre | C56 | search | ✅ |
 | FLT-02 | Pastille « Filters are being applied », « Reset » | C56 | search | ✅ |
 | FLT-03 | Filtre avancé : groupes OR de conditions AND, attribut (autocomplétion), opérateur, valeur | C57 | search | ✅ |
 | FLT-04 | Opérateur « range » à deux valeurs | C57 | search | ✅ |
@@ -194,7 +194,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
 | CLM-01 | Sélecteur de champs (multiselect) avec ajout d'un champ libre, « Reset » | C64 | docs | 🎯 [ADR-0034](../adr/0034-vue-multiselect-3-plutot-qu-un-combobox.md) |
-| CLM-02 | Tableau : une colonne par champ, `null` / `undefined` / `array` / `object` signalés | C64 | docs | ✅ · [E-25](ecarts.md#e-25) |
+| CLM-02 | Tableau : une colonne par champ, `null` / `undefined` / `array` / `object` signalés | C64 | docs | ✅ |
 | CLM-03 | Sélection, édition, suppression par ligne ; « Toggle all », « Delete » | C64 | docs | ✅ |
 | CLM-04 | Export CSV : préparation puis lien de téléchargement | C65 | — | ✅ |
 | CLM-05 | Réglages de colonnes retenus d'une collection à l'autre | — | docs | ✅ |
@@ -259,7 +259,7 @@ Routes `/security/users`, `/security/users/create`, `/security/users/:id`,
 |---|---|---|---|---|
 | SEC-01 | Onglets Users / Profiles / Roles, fil d'Ariane | C90 | users | ✅ |
 | USR-01 | Liste : KUID, nom d'utilisateur de la stratégie `local`, profils, dépliage du contenu | C90 | users | ✅ |
-| USR-02 | Quick search, recherche avancée, recherche JSON | C91 | users | ✅ · [E-24](ecarts.md#e-24) |
+| USR-02 | Quick search, recherche avancée, recherche JSON | C91 | users | ✅ |
 | USR-03 | Sélection, « Toggle all », « Delete selected », modale de suppression | C92 | users | ✅ |
 | USR-04 | Éditer / supprimer par ligne, droits en infobulle | C90 | users | ✅ |
 | USR-05 | Pagination, paramètre `from` erroné toléré | — | users | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |
