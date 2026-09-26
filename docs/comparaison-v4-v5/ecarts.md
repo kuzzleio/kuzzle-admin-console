@@ -15,7 +15,7 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 125 ✅ (dont 43 touchées par un écart
+**Bilan** : 153 fonctions — 125 ✅ (dont 28 touchées par un écart
 transverse), 11 🎯, 17 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
@@ -96,6 +96,9 @@ rendrait plus difficiles à isoler.
 - **Cause** : `ui/dialog/` n'a pas de `DialogClose`, que
   [ADR-0010](../adr/0010-primitive-dialog-en-vue-2.md) annonce ;
   `DialogContent.vue` ne rend que son slot.
+- **Corrigé** : primitive `DialogClose`, qui ferme par le même chemin qu'Échap
+  (`update:open`) ; `DialogContent` rend la croix par défaut, après son slot
+  (`showCloseButton`, comme shadcn-vue), sur les 19 modales.
 
 <a id="e-06"></a>
 
