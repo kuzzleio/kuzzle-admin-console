@@ -171,7 +171,7 @@ Route `/data/:indexName/:collectionName` → `Data/Documents/Page.vue`, ses vues
 |---|---|---|---|---|
 | FLT-01 | Quick Search, persistée dans l'URL et d'une collection à l'autre | C56 | search | ✅ · [E-20](ecarts.md#e-20) [E-24](ecarts.md#e-24) |
 | FLT-02 | Pastille « Filters are being applied », « Reset » | C56 | search | ✅ · [E-21](ecarts.md#e-21) |
-| FLT-03 | Filtre avancé : groupes OR de conditions AND, attribut (autocomplétion), opérateur, valeur | C57 | search | 🔴 [E-06](ecarts.md#e-06) [E-20](ecarts.md#e-20) |
+| FLT-03 | Filtre avancé : groupes OR de conditions AND, attribut (autocomplétion), opérateur, valeur | C57 | search | ✅ · [E-20](ecarts.md#e-20) |
 | FLT-04 | Opérateur « range » à deux valeurs | C57 | search | ✅ |
 | FLT-05 | Tri (attribut, ordre) ; refus du tri sur un champ `text` | C57 | search | ✅ |
 | FLT-06 | « Generate Raw JSON » : passage du filtre avancé au JSON | — | search | ✅ |
@@ -259,7 +259,7 @@ Routes `/security/users`, `/security/users/create`, `/security/users/:id`,
 |---|---|---|---|---|
 | SEC-01 | Onglets Users / Profiles / Roles, fil d'Ariane | C90 | users | ✅ |
 | USR-01 | Liste : KUID, nom d'utilisateur de la stratégie `local`, profils, dépliage du contenu | C90 | users | ✅ · [E-20](ecarts.md#e-20) |
-| USR-02 | Quick search, recherche avancée, recherche JSON | C91 | users | 🔴 [E-06](ecarts.md#e-06) [E-24](ecarts.md#e-24) |
+| USR-02 | Quick search, recherche avancée, recherche JSON | C91 | users | ✅ · [E-24](ecarts.md#e-24) |
 | USR-03 | Sélection, « Toggle all », « Delete selected », modale de suppression | C92 | users | ✅ |
 | USR-04 | Éditer / supprimer par ligne, droits en infobulle | C90 | users | ✅ |
 | USR-05 | Pagination, paramètre `from` erroné toléré | — | users | 🎯 [ADR-0045](../adr/0045-pagination-masquee-sur-une-page.md) |

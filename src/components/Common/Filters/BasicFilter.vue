@@ -57,7 +57,11 @@
 
                 <Select v-model="andBlock.operator" class="min-w-40 flex-1">
                   <SelectTrigger aria-label="Operator" data-cy="BasicFilter-operator">
-                    <SelectValue />
+                    <!-- Libellé dans le slot, comme pour le tri : la clé
+                         (`not_equal`) n'est pas le libellé (E-06). -->
+                    <SelectValue>{{
+                      availableOperands[andBlock.operator] || andBlock.operator
+                    }}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem

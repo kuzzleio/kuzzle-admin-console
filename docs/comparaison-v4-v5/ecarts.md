@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 127 ✅ (dont 28 touchées par un écart
-transverse), 11 🎯, 15 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 129 ✅ (dont 30 touchées par un écart
+transverse), 11 🎯, 13 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -116,6 +116,10 @@ rendrait plus difficiles à isoler.
   [ADR-0014](../adr/0014-primitive-select-en-vue-2.md) affirme que l'écart ne
   se voit pas : ici il se voit. `Common/Filters/BasicFilter.vue:60` n'utilise
   pas le slot de libellé, contrairement au tri (l. 173-179).
+- **Corrigé** : l'opérateur passe son libellé dans le slot de `SelectValue`,
+  comme le tri. C'était le seul `Select` de la console dont les valeurs
+  diffèrent des libellés sans slot ; le commentaire de `SelectValue` le dit
+  désormais. `search.spec` vérifie « Contains » avant toute ouverture.
 
 <a id="e-07"></a>
 
