@@ -22,9 +22,14 @@
             `b-tabs` avait un slot `#tabs-end` pour le bouton « + ». La
             primitive n'en a pas : la barre et le bouton sont composés ici,
             là où l'on sait ce que ce bouton fait (ADR-0017).
+
+            `overflow-x-auto` force `overflow-y: auto`, et le repère de l'onglet
+            actif déborde d'1 px (`-mb-px`) : une barre de défilement verticale
+            apparaissait. `pb-px` loge ce pixel dans la barre, `overflow-y-hidden`
+            écarte toute autre cause (E-13 de la comparaison v4 / v5).
           -->
           <div class="flex items-center border-b border-border px-2">
-            <TabsList class="min-w-0 flex-1 overflow-x-auto border-b-0">
+            <TabsList class="min-w-0 flex-1 overflow-x-auto overflow-y-hidden border-b-0 pb-px">
               <TabsTrigger
                 v-for="(tabContent, tabIdx) of tabs"
                 :key="`query-${tabIdx}-${tabContent.name}`"

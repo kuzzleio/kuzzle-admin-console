@@ -309,7 +309,7 @@ Route `/api-action` → `ApiAction.vue`, `ApiAction/*`.
 
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
-| API-01 | Onglets de requêtes, « + » pour en ouvrir un, requête retenue par onglet | C120 | api-actions | 🔴 [E-13](ecarts.md#e-13) |
+| API-01 | Onglets de requêtes, « + » pour en ouvrir un, requête retenue par onglet | C120 | api-actions | ✅ |
 | API-02 | Contrôleur et action : saisie libre et autocomplétion (`<datalist>` natif, invisible sur une capture) ; pas d'options sans droits | — | api-actions | ✅ |
 | API-03 | Éditeur JSON de la requête, « The query is invalid » | C120 | api-actions | ✅ |
 | API-04 | « RUN » ; carte « Response » avec statut et JSON | C122 | api-actions | 🔴 [E-21](ecarts.md#e-21) |
