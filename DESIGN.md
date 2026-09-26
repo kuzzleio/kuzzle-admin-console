@@ -129,11 +129,11 @@ components:
 > the console. The decision, and what is deliberately left out, is in
 > [ADR-0043](docs/adr/0043-da-kuzzle-pour-la-console.md).
 >
-> **State on 2026-09-26: fonts, colors, radii, shadows, motion and the type
-> scale are applied; the rest is still the target.** `src/assets/tokens.css`
-> carries them (`text-display` … `text-label`) and the fonts are served by the
-> console (ADR-0047). Tables, form states, button details and the layout
-> (navigation rail, page headers) are not applied yet.
+> **State on 2026-09-27: the foundations and the primitives are applied**
+> (fonts, colors, radii, shadows, motion, type scale, tables, form states,
+> buttons, focus). `src/assets/tokens.css` carries the values and the fonts
+> are served by the console (ADR-0047). The layout (navigation rail, page
+> headers, signature card) is still the target.
 >
 > **Two vocabularies.** The frontmatter keeps the design system's names. The
 > console consumes shadcn-vue tokens (`--primary`, `--muted`, `--border`…,

@@ -315,7 +315,7 @@ précisément ce qu'on achète.
 | 2. Rayons, ombres, durées à la DA Kuzzle, branchés dans les primitives | ✅ |
 | 2. Primitives : échelle typographique, titres, libellés, états vides (E-22, E-23) | ✅ |
 | 2. Primitives : tables, cartes, formulaires (E-24, E-25, vert d'E-08) | ✅ |
-| 2. Primitives : boutons, focus (E-26) | ⬜ |
+| 2. Primitives : boutons, focus (E-26) | ✅ |
 | 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
 

@@ -395,6 +395,13 @@ doit exister dans la nouvelle palette.
   → `outline` ; `outline-danger` → `destructive` plein, rose même désactivé ;
   `light` → `outline` ; « Delete index / collection » passent en rouge.
 - **À trancher par la DA.**
+- **Tranché par la DA** (`DESIGN.md`, « Buttons ») : les conversions sont
+  conservées. `outline` est le bouton neutre (Cancel, Export Mapping, Generate
+  Raw JSON) ; `destructive` est plein, en Danger `#DC3545`, et une suppression
+  est rouge partout, menus compris. Un bouton désactivé garde sa variante à
+  50 % d'opacité, quelle qu'elle soit. Les boutons passent en Ubuntu 500
+  13,5 px ; les champs prennent le focus du DS (bordure Captain Blue et halo),
+  les contrôles un anneau Captain Blue au clavier seulement.
 
 ---
 

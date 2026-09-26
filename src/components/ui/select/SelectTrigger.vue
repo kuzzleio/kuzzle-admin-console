@@ -58,7 +58,7 @@ export default defineComponent({
         'px-3 py-2',
         'font-sans text-sm leading-none text-foreground',
         'transition-colors outline-none',
-        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/10',
         'disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted-foreground',
       );
     },

@@ -95,6 +95,9 @@ export default defineComponent({
       return [
         'flex w-full cursor-pointer items-center gap-2',
         'border-0 px-3 py-2 text-left',
+        // Sans cette règle, le navigateur dessinait son propre contour (orange
+        // en Electron) au clic, et rien de cohérent au clavier.
+        'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
         'font-sans text-sm text-card-foreground',
         HEADER_BACKGROUNDS[this.family] ?? 'bg-muted',
       ];

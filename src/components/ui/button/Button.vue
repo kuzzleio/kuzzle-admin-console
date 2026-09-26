@@ -51,7 +51,7 @@ export const buttonVariants = cva(
     // variantes qui posent un fond gagnent, `tailwind-merge` les départage.
     'bg-transparent',
     'border border-transparent rounded-md',
-    'font-sans text-sm font-medium leading-none',
+    'font-sans text-ui font-medium leading-none',
     'transition-colors outline-none',
     'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'disabled:pointer-events-none disabled:opacity-50',
@@ -66,7 +66,7 @@ export const buttonVariants = cva(
         default: 'h-9 px-4 py-2',
         icon: 'h-9 w-9 p-0',
         lg: 'h-10 px-6',
-        sm: 'h-8 px-3 text-xs',
+        sm: 'h-8 px-3 text-small',
       },
       variant: {
         default: 'bg-primary text-primary-foreground hover:bg-primary-hover',
