@@ -64,8 +64,8 @@ Routes : `/login`, `/signup`, `/reset-password/:token`. Composants :
 | AUTH-07 | Réinitialisation du mot de passe : nouveau ×2, alerte « You must update your password », validation | C14 | resetpassword | ✅ |
 | AUTH-08 | Session expirée : modale de reconnexion sans perdre le contexte | C15 | login | ✅ |
 | AUTH-09 | Redirection vers le login sans session | — | login | ✅ |
-| AUTH-10 | Toast « no administrator user » après connexion, avec « Don't show this toast again » | C16 | — | 🔴 [E-09](ecarts.md#e-09) [E-21](ecarts.md#e-21) |
-| AUTH-11 | Bandeau de télémétrie : « Accept » / « Disable telemetry », choix retenu | C17 | login | 🔴 [E-09](ecarts.md#e-09) [E-21](ecarts.md#e-21) |
+| AUTH-10 | Toast « no administrator user » après connexion, avec « Don't show this toast again » | C16 | — | ✅ · [E-21](ecarts.md#e-21) |
+| AUTH-11 | Bandeau de télémétrie : « Accept » / « Disable telemetry », choix retenu | C17 | login | ✅ · [E-21](ecarts.md#e-21) |
 | AUTH-12 | Logout (barre de navigation) | C20 | login | ✅ |
 
 ## 3. Cadre de l'application

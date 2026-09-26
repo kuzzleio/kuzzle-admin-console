@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 131 ✅ (dont 31 touchées par un écart
-transverse), 11 🎯, 11 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 133 ✅ (dont 33 touchées par un écart
+transverse), 11 🎯, 9 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -168,6 +168,10 @@ rendrait plus difficiles à isoler.
   `no-close-button`).
 - **Cause** : `Home.vue:134-141` (message en chaîne, action sans `title`) ;
   `Common/Toaster.vue:26` rend `ToastClose` sur tous les toasts, sans option.
+- **Corrigé** : les toasts du store gagnent `link` (rendu dans la phrase du
+  message), `title` sur les actions et `dismissible` ; « that you create one. »
+  pointe à nouveau vers `#/signup`, « Ok, got it » a son infobulle, le bandeau
+  de télémétrie n'a plus de croix. `login.spec` couvre les trois.
 
 <a id="e-10"></a>
 

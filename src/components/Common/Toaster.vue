@@ -9,13 +9,19 @@
     >
       <div class="min-w-0 flex-1">
         <ToastTitle>{{ toast.title }}</ToastTitle>
-        <ToastDescription v-if="toast.message">{{ toast.message }}</ToastDescription>
+        <ToastDescription v-if="toast.message || toast.link">
+          {{ toast.message }}
+          <a v-if="toast.link" class="font-semibold underline" :href="toast.link.href">{{
+            toast.link.label
+          }}</a>
+        </ToastDescription>
 
         <div v-if="toast.actions.length" class="mt-2 flex flex-wrap gap-2">
           <Button
             v-for="action of toast.actions"
             :key="action.label"
             size="sm"
+            :title="action.title"
             :variant="action.variant || 'default'"
             @click="runAction(toast.id, action)"
           >
@@ -23,7 +29,7 @@
           </Button>
         </div>
       </div>
-      <ToastClose @click="toasterStore.dismiss(toast.id)" />
+      <ToastClose v-if="toast.dismissible" @click="toasterStore.dismiss(toast.id)" />
     </Toast>
   </ToastViewport>
 </template>
