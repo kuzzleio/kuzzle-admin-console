@@ -44,13 +44,14 @@ export const floatingPanel = defineComponent({
     return {
       anchorEl: null as HTMLElement | null,
       panelEl: null as HTMLElement | null,
-      panelPosition: { left: 0, minWidth: 0, top: 0 },
+      panelPosition: { left: 0, maxHeight: 0, minWidth: 0, top: 0 },
     };
   },
   computed: {
     panelStyle(): Record<string, string> {
       return {
         left: `${this.panelPosition.left}px`,
+        maxHeight: `${this.panelPosition.maxHeight}px`,
         minWidth: `${this.panelPosition.minWidth}px`,
         position: 'fixed',
         top: `${this.panelPosition.top}px`,
@@ -87,18 +88,25 @@ export const floatingPanel = defineComponent({
       }
       const anchor = anchorEl.getBoundingClientRect();
       const width = panel.offsetWidth;
-      const height = panel.offsetHeight;
+      // Hauteur naturelle, et non celle déjà plafonnée par `maxHeight` : sinon
+      // le panneau changerait de côté d'un appel à l'autre.
+      const height = panel.scrollHeight;
 
       let left = this.align === 'end' ? anchor.right - width : anchor.left;
       left = Math.max(SIDE_OFFSET, Math.min(left, window.innerWidth - width - SIDE_OFFSET));
 
-      // Bascule au-dessus de l'ancre quand le bas manque de place, et seulement
-      // si le haut en a davantage : sinon on déplace le problème.
+      // Bascule au-dessus de l'ancre quand le bas manque de place et que le
+      // haut en a davantage. Le panneau est plafonné à la place du côté
+      // retenu, et défile : un menu de connexions ouvert en pied de rail ne
+      // tenait ni dessous ni dessus, et sortait de l'écran.
       const below = anchor.bottom + SIDE_OFFSET;
-      const flip = below + height > window.innerHeight && anchor.top - SIDE_OFFSET - height > 0;
-      const top = flip ? anchor.top - SIDE_OFFSET - height : below;
+      const spaceBelow = window.innerHeight - below - SIDE_OFFSET;
+      const spaceAbove = anchor.top - SIDE_OFFSET * 2;
+      const flip = height > spaceBelow && spaceAbove > spaceBelow;
+      const maxHeight = Math.max(0, flip ? spaceAbove : spaceBelow);
+      const top = flip ? anchor.top - SIDE_OFFSET - Math.min(height, maxHeight) : below;
 
-      this.panelPosition = { left, minWidth: anchor.width, top };
+      this.panelPosition = { left, maxHeight, minWidth: anchor.width, top };
     },
   },
 });

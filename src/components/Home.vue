@@ -1,6 +1,7 @@
 <template>
-  <div class="Home m-0 flex h-full flex-col">
-    <div class="Home-menuWrapper shrink-0">
+  <!-- Rail à gauche à partir de `md`, barre en haut en dessous (ADR-0048). -->
+  <div class="Home m-0 flex h-full flex-col md:flex-row">
+    <div class="Home-menuWrapper shrink-0 md:h-full">
       <main-menu
         @environment::create="$emit('environment::create', $event)"
         @environment::delete="$emit('environment::delete', $event)"
@@ -8,7 +9,7 @@
       />
     </div>
 
-    <div class="Home-routeWrapper grow overflow-hidden" data-cy="App-loggedIn">
+    <div class="Home-routeWrapper min-w-0 grow overflow-hidden" data-cy="App-loggedIn">
       <main-spinner v-if="authInitializing" />
       <router-view v-else />
     </div>

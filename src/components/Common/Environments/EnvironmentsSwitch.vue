@@ -5,35 +5,51 @@
     :class="blendColor ? 'EnvironmentSwitch--blendColor' : ''"
   >
     <!--
-      `blendColor` : fond translucide sur la barre colorée du menu principal.
-      La couleur vient de `EnvColor--*`, un reste de l'ancienne charte ; ce
-      blanc translucide s'en ira avec elle, pas avant.
+      `blendColor` : sur le rail, dont le fond est la couleur de la connexion
+      (ADR-0048), la pastille assombrit ce fond au lieu de l'éclaircir : le
+      texte blanc garde son contraste sur toutes les couleurs (ADR-0049).
+      `iconOnly` : rail replié, le déclencheur n'est plus qu'une icône, mais
+      le menu reste le même et le nom de la connexion est annoncé.
     -->
     <DropdownMenuTrigger
       :as="Button"
+      :aria-label="
+        iconOnly
+          ? `Connection: ${currentEnvironment ? currentEnvironment.name : 'none'}`
+          : undefined
+      "
       :class="[
-        'max-w-full justify-between gap-2',
+        'max-w-full gap-2',
+        iconOnly ? 'justify-center' : 'justify-between',
         block ? 'w-full' : '',
-        blendColor ? 'border-transparent bg-white/40 text-white hover:bg-white/60' : '',
+        blendColor ? 'border-white/30 bg-black/20 text-white hover:bg-black/30' : '',
       ]"
       data-cy="EnvironmentSwitch"
+      :size="iconOnly ? 'icon' : 'default'"
+      :title="iconOnly && currentEnvironment ? currentEnvironment.name : undefined"
       variant="outline"
     >
-      <span class="truncate">
-        <template v-if="currentEnvironment">
-          <i
-            v-if="!isValidEnvironment(currentEnvironment)"
-            class="fas fa-exclamation-triangle text-destructive"
-            aria-hidden="true"
-          />
-          {{ currentEnvironment.name }}
-        </template>
-        <template v-else>Select a connection</template>
-      </span>
-      <i class="fas fa-caret-down" aria-hidden="true" />
+      <i v-if="iconOnly" class="fas fa-plug" aria-hidden="true" />
+      <template v-else>
+        <span class="truncate">
+          <template v-if="currentEnvironment">
+            <i
+              v-if="!isValidEnvironment(currentEnvironment)"
+              class="fas fa-exclamation-triangle text-destructive"
+              aria-hidden="true"
+            />
+            <span v-if="!isValidEnvironment(currentEnvironment)" class="sr-only">
+              Invalid connection:
+            </span>
+            {{ currentEnvironment.name }}
+          </template>
+          <template v-else>Select a connection</template>
+        </span>
+        <i class="fas fa-caret-down" aria-hidden="true" />
+      </template>
     </DropdownMenuTrigger>
 
-    <DropdownMenuContent :align="right ? 'end' : 'start'" class="max-h-[98vh] overflow-auto">
+    <DropdownMenuContent :align="right ? 'end' : 'start'">
       <!--
         Une connexion, c'est une action (s'y rendre) et deux actions annexes
         (éditer, supprimer). `b-dropdown-item` les empilait dans le même `<a>`,
@@ -143,6 +159,10 @@ export default {
     block: {
       type: Boolean,
       default: true,
+    },
+    iconOnly: {
+      type: Boolean,
+      default: false,
     },
     right: {
       type: Boolean,

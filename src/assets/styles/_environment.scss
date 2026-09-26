@@ -1,24 +1,14 @@
-// Palette des couleurs de connexion (`EnvColor--*`).
+// Couleurs des connexions (`EnvColor--*`), appliquées au rail de navigation
+// et aux pastilles du sélecteur de couleur. Les valeurs sont des tokens
+// (`--env-*`, `tokens.css`), au contraste AA avec du texte blanc (ADR-0049).
 //
 // Les classes sont construites à l'exécution — `EnvColor--${color}` dans
 // `MainMenu` et `CreateEnvironment` — donc invisibles à un grep sur les
 // attributs `class` (G-037).
-//
-// Ces valeurs sont du design en dur : elles rejoindront les tokens quand la
-// charte des connexions sera reprise.
-$colors: (
-  'darkblue': #002835,
-  'lightblue': #0277bd,
-  'purple': #8e24aa,
-  'green': #689f38,
-  'orange': #da740f,
-  'red': #e53935,
-  'grey': #546e7a,
-  'magenta': #d81b60
-);
+$colors: darkblue, lightblue, purple, green, orange, red, grey, magenta;
 
-@each $name, $value in $colors {
+@each $name in $colors {
   .EnvColor--#{$name} {
-    background-color: $value !important;
+    background-color: var(--env-#{$name}) !important;
   }
 }

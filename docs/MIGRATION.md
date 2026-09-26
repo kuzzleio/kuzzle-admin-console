@@ -316,7 +316,8 @@ précisément ce qu'on achète.
 | 2. Primitives : échelle typographique, titres, libellés, états vides (E-22, E-23) | ✅ |
 | 2. Primitives : tables, cartes, formulaires (E-24, E-25, vert d'E-08) | ✅ |
 | 2. Primitives : boutons, focus (E-26) | ✅ |
-| 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
+| 3. Rail de navigation ([ADR-0048](adr/0048-rail-de-navigation.md)) | ✅ |
+| 3. En-têtes de page et cartes, écran par écran | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
@@ -3367,3 +3368,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-25 | Une pagination ne s'affiche que s'il y a plus d'une page, sur toutes les listes | [ADR-0045](adr/0045-pagination-masquee-sur-une-page.md) |
 | 2026-09-25 | L'aide d'API Action s'ouvre au clic, dans un `DropdownMenu` | [ADR-0046](adr/0046-aide-api-action-au-clic.md) |
 | 2026-09-26 | Polices de la DA embarquées (Ubuntu, Montserrat par `@fontsource`, Gobold) ; Cousine et Google Fonts retirés | [ADR-0047](adr/0047-polices-embarquees.md) |
+| 2026-09-27 | Rail de navigation à gauche, à la couleur de la connexion ; repli par bouton | [ADR-0048](adr/0048-rail-de-navigation.md) |
+| 2026-09-27 | Couleurs de connexion en tokens, au contraste AA ; élément actif du rail en fuchsia profond avec filet | [ADR-0049](adr/0049-couleurs-de-connexion-contrastees.md) |

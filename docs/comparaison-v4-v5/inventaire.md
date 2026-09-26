@@ -76,7 +76,7 @@ Composants : `Common/MainMenu.vue`, `ConnectionAwareContainer.vue`,
 
 | Id | Fonction | Capture | Spec | v5 |
 |---|---|---|---|---|
-| APP-01 | Barre de navigation : logo, Data, Security, API Action, onglet actif | C20 | — | ✅ |
+| APP-01 | Barre de navigation : logo, Data, Security, API Action, onglet actif | C20 | — | 🎯 [ADR-0048](../adr/0048-rail-de-navigation.md) |
 | APP-02 | Couleur de la barre = couleur de la connexion | C20 | environments | ✅ |
 | APP-03 | Menu « Feedback » : liens externes (Discord…) | C21 | — | ✅ |
 | APP-04 | Nom de l'utilisateur connecté, tronqué avec infobulle | C20 | — | ✅ |

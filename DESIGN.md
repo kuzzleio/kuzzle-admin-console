@@ -133,7 +133,8 @@ components:
 > (fonts, colors, radii, shadows, motion, type scale, tables, form states,
 > buttons, focus). `src/assets/tokens.css` carries the values and the fonts
 > are served by the console (ADR-0047). The layout (navigation rail, page
-> headers, signature card) is still the target.
+> headers, signature card) is still the target, except the navigation rail
+> (ADR-0048).
 >
 > **Two vocabularies.** The frontmatter keeps the design system's names. The
 > console consumes shadcn-vue tokens (`--primary`, `--muted`, `--border`…,
@@ -297,9 +298,9 @@ what the specs and screen readers expect.
   design system's ~1200px cap applies to forms and detail pages only.
 - Page actions (create, refresh, overflow menu) sit top-right of the page
   header. Row actions appear on row hover and on keyboard focus.
-- **Navigation, target:** a collapsible dark left rail (Kuzzle Blue) with Data,
-  Security and API Action. The current top navbar stays until the layout lot;
-  moving it is a layout change, not a token change.
+- **Navigation:** a collapsible left rail with Data, Security and API Action
+  (ADR-0048). It carries the connection color; the default one, `darkblue`,
+  is Kuzzle Blue. Below `md` it is a top bar with a menu button.
 
 ## Elevation & Depth
 
@@ -402,11 +403,12 @@ Confident, compact, one primary per area.
 
 ### Navigation
 
-- **Rail (target):** Kuzzle Blue background, white Ubuntu 500 items with a
-  Font Awesome icon; hover `rgba(230,68,114,.22)` plus a 3px inset Fuchsia bar
-  on the left; active item full Fuchsia bar, white bold text. Sub-menus indent
-  on a darker band. Opens after a 350ms hover delay and expands over 700ms
-  `cubic-bezier(.22,1,.36,1)`.
+- **Rail:** Kuzzle Blue background (in the console, the connection color,
+  ADR-0048), white Ubuntu 500 items with a Font Awesome icon; hover
+  `rgba(230,68,114,.22)` plus a 3px inset Fuchsia bar on the left; active item
+  full Fuchsia, white bold text. Sub-menus indent on a darker band. The design
+  system opens the rail on a 350ms hover delay; the console collapses it with
+  a button instead, because the rail holds two dropdown menus (ADR-0048).
 
 ### Tooltip and JSON surfaces
 

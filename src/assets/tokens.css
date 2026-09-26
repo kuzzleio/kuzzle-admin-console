@@ -117,6 +117,21 @@
      les atteignait par la taille de son logo. Les deux lisent désormais la
      même valeur. */
   --navbar-height: 66px;
+
+  /* Couleurs de connexion (ADR-0049) : fond du rail, texte blanc à 4,5:1 au
+     moins. `darkblue`, la couleur par défaut, est le bleu Kuzzle. */
+  --env-darkblue: #002835;
+  --env-lightblue: #0277bd;
+  --env-purple: #8e24aa;
+  --env-green: #4e7a29;
+  --env-orange: #a85a0b;
+  --env-red: #c62828;
+  --env-grey: #546e7a;
+  --env-magenta: #d81b60;
+
+  /* Rail de navigation (ADR-0048) : déplié, replié sur ses icônes. */
+  --rail-width: 224px;
+  --rail-collapsed-width: 64px;
 }
 
 .dark {
