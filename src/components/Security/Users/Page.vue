@@ -55,7 +55,9 @@
         <Card class="EmptyState">
           <CardContent class="flex flex-col items-center text-center">
             <i class="fas fa-user fa-6x mb-4 text-muted-foreground" aria-hidden="true" />
-            <CardTitle class="text-muted-foreground">No user is defined</CardTitle>
+            <CardTitle class="font-heading text-headline font-extrabold text-muted-foreground"
+              >No user is defined</CardTitle
+            >
             <CardDescription v-if="canCreateUser" class="mt-2 text-muted-foreground">
               You can create a new user by hitting the button above
             </CardDescription>

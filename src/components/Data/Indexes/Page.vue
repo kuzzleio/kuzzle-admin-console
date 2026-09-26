@@ -91,10 +91,12 @@
           <TableRow v-if="rows.length === 0">
             <TableCell class="py-6 text-center" colspan="5">
               <template v-if="filtering">
-                <h4 class="text-muted-foreground">There is no index matching your filter.</h4>
+                <h4 class="text-title font-bold text-muted-foreground">
+                  There is no index matching your filter.
+                </h4>
               </template>
               <template v-else>
-                <h4 class="text-muted-foreground">There is no index.</h4>
+                <h4 class="text-title font-bold text-muted-foreground">There is no index.</h4>
                 <p v-if="canCreateIndex" class="text-muted-foreground">
                   You can create one by hitting the button above.
                 </p>

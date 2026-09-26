@@ -165,7 +165,7 @@
   --color-primary-hover: var(--primary-hover);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --color-label: var(--label);
+  --color-label-slate: var(--label);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
@@ -196,6 +196,26 @@
   --shadow-modal: var(--elevation-modal);
   --shadow-tooltip: var(--elevation-tooltip);
   --shadow-signature: var(--elevation-signature);
+
+  /* Échelle typographique du DS (DESIGN.md, « Hierarchy »). Chaque taille
+     porte son interlignage, et le libellé son approche : `text-label` suffit
+     à poser les trois. */
+  --text-display: 40px;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: 0.01em;
+  --text-headline: 26px;
+  --text-headline--line-height: 1.15;
+  --text-title: 16px;
+  --text-title--line-height: 1.15;
+  --text-body: 14.5px;
+  --text-body--line-height: 1.55;
+  --text-ui: 13.5px;
+  --text-ui--line-height: 1.55;
+  --text-small: 12.5px;
+  --text-small--line-height: 1.55;
+  --text-label: 11px;
+  --text-label--line-height: 1.15;
+  --text-label--letter-spacing: 0.07em;
 
   --default-transition-duration: var(--duration-fast);
   --ease-nav: var(--easing-nav);

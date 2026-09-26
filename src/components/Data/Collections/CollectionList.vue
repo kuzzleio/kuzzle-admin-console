@@ -104,12 +104,14 @@
             <TableRow v-if="rows.length === 0">
               <TableCell class="py-6 text-center" colspan="4">
                 <template v-if="filtering">
-                  <h4 class="text-muted-foreground">
+                  <h4 class="text-title font-bold text-muted-foreground">
                     There is no collection matching your filter.
                   </h4>
                 </template>
                 <template v-else>
-                  <h4 class="text-muted-foreground">This index has no collections.</h4>
+                  <h4 class="text-title font-bold text-muted-foreground">
+                    This index has no collections.
+                  </h4>
                   <p v-if="canCreateCollection(index.name)" class="text-muted-foreground">
                     You can create the collection by hitting the button above.
                   </p>

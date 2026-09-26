@@ -45,6 +45,7 @@
           :key="index"
           class="gap-1 py-1"
           :data-cy="`UserProfileList-badge--${profile}`"
+          variant="info"
         >
           {{ profile }}
           <button

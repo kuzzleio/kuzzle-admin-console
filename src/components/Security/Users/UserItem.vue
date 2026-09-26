@@ -36,7 +36,7 @@
           >
         </div>
         <div class="flex flex-row flex-wrap gap-1 py-1">
-          <Badge v-for="profile in profileList" :key="profile">
+          <Badge v-for="profile in profileList" :key="profile" variant="info">
             <router-link class="truncate text-primary-foreground" :to="profileRoute(profile)">{{
               profile
             }}</router-link>

@@ -17,9 +17,14 @@ import { classMerge } from '../class-merge';
  * `primary`, `secondary`, `danger` et `light`. `light` n'existe pas en amont :
  * le rendu correspondant se fait avec `variant="secondary"`.
  *
- * `warning` est en plus de l'amont, sur le token `accent`, comme sur `Alert` et
- * `Button` : les notifications temps réel distinguent « mis à jour » de
- * « supprimé », et les deux ne peuvent pas être rouges.
+ * `warning`, `success` et `info` sont en plus de l'amont, sur les tokens
+ * d'état, comme sur `Alert` et `Button` : les notifications temps réel
+ * distinguent « mis à jour » de « supprimé », et les deux ne peuvent pas être
+ * rouges.
+ *
+ * `default` (fuchsia) est réservé aux compteurs : c'est le « count badge » du
+ * DS, et le fuchsia est le seul accent de l'écran. Un tag (nom de profil,
+ * controller : action) prend `info`, le « tag » Soft Sky du DS.
  *
  * Le preflight n'étant pas chargé (ADR-0008), la bordure et le rayon sont
  * posés explicitement.

@@ -70,7 +70,7 @@
         >
           <CardContent>
             <i aria-hidden="true" class="fas fa-file-alt fa-6x mb-3 text-muted-foreground" />
-            <h2 class="m-0 text-xl font-bold text-muted-foreground">
+            <h2 class="m-0 font-heading text-headline font-extrabold text-muted-foreground">
               You must select at least one field
             </h2>
           </CardContent>
@@ -83,7 +83,9 @@
     >
       <CardContent>
         <i aria-hidden="true" class="fas fa-file-alt fa-6x mb-3 text-muted-foreground" />
-        <h2 class="m-0 text-xl font-bold text-muted-foreground">No data to display</h2>
+        <h2 class="m-0 font-heading text-headline font-extrabold text-muted-foreground">
+          No data to display
+        </h2>
         <p class="mt-2 mb-0 text-sm text-muted-foreground">
           You can only use chart view on collection that has mapping with fields of date and numeric
           fields...

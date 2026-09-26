@@ -40,7 +40,7 @@
           </div>
 
           <div class="CreateOrUpdateRole-cheatsheet lg:w-5/12">
-            <h3 class="text-lg font-semibold text-foreground">Cheatsheet</h3>
+            <h3 class="text-title font-bold text-foreground">Cheatsheet</h3>
             Your role consists of a <code>controllers</code> object, in which each key represents a
             controller in your Kuzzle. Each contoller key contains an <code>actions</code> object,
             in which each key represents a valid action within that controller. Whitelist your

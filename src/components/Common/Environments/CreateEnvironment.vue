@@ -41,7 +41,9 @@
       <FormItem>
         <div class="flex items-center gap-2">
           <Checkbox id="env-ssl" v-model="environment.ssl" name="env-use-ssl" />
-          <Label for="env-ssl">Use SSL</Label>
+          <Label class="text-ui font-normal normal-case text-foreground" for="env-ssl"
+            >Use SSL</Label
+          >
         </div>
         <!--
           `b-form-invalid-feedback` ne rendait qu'une icône d'alerte, sans
@@ -83,7 +85,7 @@
 
       <div class="flex flex-col gap-3 sm:flex-row">
         <div class="sm:w-1/3">
-          <div>Pick a color</div>
+          <div class="text-label font-bold uppercase text-label-slate">Pick a color</div>
           <small class="text-muted-foreground"
             >It will be applied to the header navbar so you can distinguish this connection from
             other ones.</small

@@ -129,11 +129,11 @@ components:
 > the console. The decision, and what is deliberately left out, is in
 > [ADR-0043](docs/adr/0043-da-kuzzle-pour-la-console.md).
 >
-> **State on 2026-09-26: fonts, colors, radii, shadows and motion are
-> applied; the rest is still the target.** `src/assets/tokens.css` carries
-> them and the fonts are served by the console (ADR-0047). The type scale,
-> the component details below and the layout (navigation rail, page headers)
-> are not applied yet.
+> **State on 2026-09-26: fonts, colors, radii, shadows, motion and the type
+> scale are applied; the rest is still the target.** `src/assets/tokens.css`
+> carries them (`text-display` … `text-label`) and the fonts are served by the
+> console (ADR-0047). Tables, form states, button details and the layout
+> (navigation rail, page headers) are not applied yet.
 >
 > **Two vocabularies.** The frontmatter keeps the design system's names. The
 > console consumes shadcn-vue tokens (`--primary`, `--muted`, `--border`…,
@@ -234,7 +234,7 @@ The console adds tokens that shadcn-vue does not have, because it needs them:
 | Console token | Value | Design-system source |
 |---|---|---|
 | `--primary-hover` | `#C93960` | `--primary-dark` |
-| `--label` | `#43565B` | `--grey` |
+| `--label` (`text-label-slate`) | `#43565B` | `--grey` |
 | `--success` / `--success-foreground` | `#3DDC84` / `#002835` | `--status-success` |
 | `--warning` / `--warning-foreground` | `#C9821F` / `#002835` | `--status-warning` |
 | `--info` / `--info-foreground` | `#00536F` / `#FFFFFF` | `--secondary-captain` (no info color in the DS) |

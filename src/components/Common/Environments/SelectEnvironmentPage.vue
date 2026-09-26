@@ -9,7 +9,7 @@
             height="60"
             src="../../../assets/logo.svg"
           />
-          <CardTitle class="text-3xl">Select Kuzzle</CardTitle>
+          <CardTitle class="font-display text-display font-bold uppercase">Select Kuzzle</CardTitle>
           <CardDescription class="text-base">
             Please select a Kuzzle instance to connect to.
           </CardDescription>

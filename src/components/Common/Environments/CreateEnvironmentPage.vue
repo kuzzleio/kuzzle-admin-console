@@ -9,7 +9,7 @@
             height="60"
             src="../../../assets/logo.svg"
           />
-          <CardTitle class="text-3xl">
+          <CardTitle class="font-display text-display font-bold uppercase">
             {{ $attrs.id ? 'Edit a Connection' : 'Create a Connection' }}
           </CardTitle>
           <CardDescription class="text-base">

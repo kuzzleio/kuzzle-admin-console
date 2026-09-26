@@ -9,7 +9,7 @@
             height="60"
             src="../../assets/logo.svg"
           />
-          <h2 class="text-2xl font-bold text-foreground">
+          <h2 class="font-heading text-headline font-extrabold text-foreground">
             Something went wrong while connecting to Kuzzle
           </h2>
 

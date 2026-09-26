@@ -15,7 +15,7 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 142 ✅ (dont 21 touchées par un écart
+**Bilan** : 153 fonctions — 142 ✅ (dont 8 touchées par un écart
 transverse), 11 🎯, 0 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
@@ -329,6 +329,11 @@ doit exister dans la nouvelle palette.
   § 3 veut qu'un titre porte sa taille, sans décider de la réduire.
   `Common/Filters/{FavoriteFilters,HistoryFilter}.vue` portent encore des
   classes Bootstrap (`list-group`, `h4`).
+- **Tranché par la DA** : les titres d'états vides prennent l'échelle du DS,
+  « Headline » (Montserrat 800, 26 px) pour les grands états à icône,
+  « Title » (Ubuntu 700, 16 px) pour les états en ligne (tableaux, filtres).
+  Le fond gris de la v4 n'est pas repris : les cartes blanches se détachent
+  désormais du fond de page (Page Mist).
 
 <a id="e-23"></a>
 
@@ -339,6 +344,11 @@ doit exister dans la nouvelle palette.
   formulaires en `label-cols` (C01, C05, C10, C13, C14, C15, C44, C70, C94).
 - **À trancher par la DA** : disposition décidée par personne ; les champs
   désactivés ont aussi perdu leur fond gris (C45).
+- **Tranché par la DA** : les libellés restent au-dessus des champs, en
+  capitales, style « Label » du DS (Ubuntu 700, 11 px, +0,07em, Label Slate).
+  Les libellés d'option (case « Use SSL », « Remove anonymous user
+  credentials ») restent en casse normale. **Reste** : le fond des champs
+  désactivés, avec les primitives de formulaire.
 
 <a id="e-24"></a>
 
