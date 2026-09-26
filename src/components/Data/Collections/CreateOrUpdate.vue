@@ -8,7 +8,7 @@
       {{ headline }}
     </headline>
 
-    <Card class="min-h-0 grow">
+    <Card class="min-h-0 grow shadow-signature">
       <CardContent class="flex min-h-0 grow flex-col gap-4">
         <FormItem id="collection-name" data-cy="CollectionCreateOrUpdate-name">
           <Label for="collection-name-input">Collection name</Label>

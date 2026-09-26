@@ -18,6 +18,11 @@ import { classMerge } from '../class-merge';
  *
  * Le preflight n'étant pas chargé (ADR-0008), bordure, fond et rayon sont posés
  * explicitement plutôt que supposés.
+ *
+ * L'ombre de repos est `shadow-card`. La carte de contenu principal d'un écran
+ * — la carte d'entrée, le formulaire d'édition, la liste — prend
+ * `class="shadow-signature"`, le filet fuchsia du DS : une seule par écran,
+ * sans quoi la marque devient du bruit (DESIGN.md, « Cards »).
  */
 export default defineComponent({
   name: 'Card',

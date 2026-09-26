@@ -317,7 +317,8 @@ précisément ce qu'on achète.
 | 2. Primitives : tables, cartes, formulaires (E-24, E-25, vert d'E-08) | ✅ |
 | 2. Primitives : boutons, focus (E-26) | ✅ |
 | 3. Rail de navigation ([ADR-0048](adr/0048-rail-de-navigation.md)) | ✅ |
-| 3. En-têtes de page et cartes, écran par écran | ⬜ |
+| 3. Cartes signature (une par écran), blocs gris de `Signup` et `KuzzleErrorPage` retirés | ✅ |
+| 3. Suite de la mise en page (raccourcis, lien d'évitement, place de la connexion dans le rail) | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2

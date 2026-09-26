@@ -117,7 +117,7 @@
             />
           </template>
         </template>
-        <Card v-else>
+        <Card v-else class="shadow-signature">
           <CardContent>
             <List
               v-if="listViewType === LIST_VIEW_LIST"

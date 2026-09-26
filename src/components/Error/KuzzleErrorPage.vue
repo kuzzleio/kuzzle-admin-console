@@ -1,8 +1,8 @@
 <template>
   <div class="KuzzleErrorPage flex min-h-screen items-center justify-center p-4">
-    <Card class="w-full max-w-4xl">
+    <Card class="w-full max-w-4xl shadow-signature">
       <CardContent>
-        <header class="rounded-md bg-muted p-8">
+        <header>
           <img
             alt="Welcome to the Kuzzle Admin Console"
             class="mb-4 h-15 w-auto"

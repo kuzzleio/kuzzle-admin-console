@@ -1,6 +1,6 @@
 <template>
   <div class="DocumentCreateOrUpdate grow">
-    <Card class="h-full">
+    <Card class="h-full shadow-signature">
       <CardContent class="flex h-full flex-col gap-4">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-end">
           <FormItem class="lg:w-7/12">

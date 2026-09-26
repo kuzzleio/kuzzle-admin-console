@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen overflow-auto">
     <form class="flex min-h-full justify-center px-4 py-6" @submit.prevent="submit">
-      <Card class="my-auto w-full max-w-3xl">
+      <Card class="my-auto w-full max-w-3xl shadow-signature">
         <CardHeader class="gap-4">
           <img
             alt="Welcome to the Kuzzle Admin Console"

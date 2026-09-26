@@ -1,14 +1,16 @@
 <template>
   <div class="Signup h-screen overflow-y-auto">
     <div class="Signup-flexContainer mx-auto flex max-w-4xl justify-center p-4">
-      <Card class="my-3 w-full">
+      <Card class="my-3 w-full shadow-signature">
         <CardContent class="flex flex-col gap-4">
           <!--
             `b-jumbotron` n'était qu'un bloc gris à gros titre. Il disparaît
             avec Bootstrap : l'en-tête est du balisage ordinaire, et le
-            séparateur un `<hr>` aux tokens.
+            séparateur un `<hr>` aux tokens. Le bloc gris qui le remplaçait
+            part aussi : comme sur les pages de connexion, le titre en Gobold et
+            le filet de la carte signature portent la marque (E-24).
           -->
-          <header class="rounded-md bg-muted p-8">
+          <header>
             <img
               src="../assets/logo.svg"
               alt="Welcome to the Kuzzle Admin Console"

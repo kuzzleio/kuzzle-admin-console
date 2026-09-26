@@ -8,7 +8,7 @@
         :collection="collection"
         @filters-updated="onFiltersUpdated"
       />
-      <Card key="list" class="mt-3">
+      <Card key="list" class="mt-3 shadow-signature">
         <CardContent>
           <div v-if="loading" class="flex justify-center py-8">
             <Spinner size="lg" />

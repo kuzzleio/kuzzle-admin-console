@@ -374,7 +374,9 @@ Confident, compact, one primary per area.
 - **Background:** White on Page Mist; groups of cards may sit on a Panel Grey
   panel with 16px padding.
 - **Shadow Strategy:** Card at rest; Signature for primary content cards;
-  Hover lift only if the whole card is clickable.
+  Hover lift only if the whole card is clickable. In the console, one
+  signature card per screen: the entry card (login, connection, signup), the
+  edit form, or the main list (`class="shadow-signature"` on `Card`).
 - **Internal Padding:** 16px (24px for forms).
 
 ### Inputs / Fields

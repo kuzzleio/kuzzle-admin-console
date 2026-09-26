@@ -13,7 +13,7 @@
     </Alert>
     <template v-if="loading" />
     <template v-else>
-      <Card class="h-full">
+      <Card class="h-full shadow-signature">
         <CardContent class="flex h-full flex-col gap-6 lg:flex-row">
           <div class="flex flex-col gap-4 lg:w-7/12">
             <FormItem v-if="!id" data-cy="RoleCreateOrUpdate-id">

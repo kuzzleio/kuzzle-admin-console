@@ -1,5 +1,5 @@
 <template>
-  <Card class="ProfileCreateOrUpdate">
+  <Card class="ProfileCreateOrUpdate shadow-signature">
     <CardContent class="flex min-h-0 flex-1 flex-col gap-6 lg:flex-row">
       <!-- Json view -->
       <div class="flex flex-col gap-4 lg:w-7/12">

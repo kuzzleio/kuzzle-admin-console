@@ -369,8 +369,8 @@ doit exister dans la nouvelle palette.
   bandeau porte sa marge). **Tranché par la DA** : pas de bandeaux gris
   d'en-tête ni de pied de carte, le DS sépare par filets et ombres ; le
   titre de marque en Gobold tient lieu de jumbotron sur les pages de
-  connexion. `Signup.vue` et `KuzzleErrorPage.vue` gardent leur bloc gris
-  jusqu'au lot « mise en page ».
+  connexion. `Signup.vue` et `KuzzleErrorPage.vue` ont perdu le leur au
+  lot « cartes » de la mise en page.
 
 <a id="e-25"></a>
 
