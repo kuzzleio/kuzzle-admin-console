@@ -8,7 +8,7 @@
 
       <Notice />
 
-      <Card>
+      <Card class="shadow-signature">
         <CardContent>
           <MainSpinner v-if="loading" class="my-8" />
 

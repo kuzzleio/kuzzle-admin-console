@@ -21,7 +21,12 @@
           Delete
         </Button>
       </div>
-      <Spinner v-if="isFetching" class="text-secondary" label="Loading documents" size="sm" />
+      <Spinner
+        v-if="isFetching"
+        class="text-muted-foreground"
+        label="Loading documents"
+        size="sm"
+      />
       <PerPageSelector
         :current-page-size="currentPageSize"
         :total-documents="totalDocuments"

@@ -17,9 +17,14 @@ import { classMerge } from '../class-merge';
  * `primary`, `secondary`, `danger` et `light`. `light` n'existe pas en amont :
  * le rendu correspondant se fait avec `variant="secondary"`.
  *
- * `warning` est en plus de l'amont, sur le token `accent`, comme sur `Alert` et
- * `Button` : les notifications temps réel distinguent « mis à jour » de
- * « supprimé », et les deux ne peuvent pas être rouges.
+ * `warning`, `success` et `info` sont en plus de l'amont, sur les tokens
+ * d'état, comme sur `Alert` et `Button` : les notifications temps réel
+ * distinguent « mis à jour » de « supprimé », et les deux ne peuvent pas être
+ * rouges.
+ *
+ * `default` (fuchsia) est réservé aux compteurs : c'est le « count badge » du
+ * DS, et le fuchsia est le seul accent de l'écran. Un tag (nom de profil,
+ * controller : action) prend `info`, le « tag » Soft Sky du DS.
  *
  * Le preflight n'étant pas chargé (ADR-0008), la bordure et le rayon sont
  * posés explicitement.
@@ -27,7 +32,7 @@ import { classMerge } from '../class-merge';
 export const badgeVariants = cva(
   [
     'inline-flex items-center gap-1.5 shrink-0',
-    'border border-transparent rounded-md',
+    'border border-transparent rounded-pill',
     'px-2 py-0.5',
     'font-sans text-xs font-medium leading-normal whitespace-nowrap',
     'transition-colors',
@@ -42,7 +47,10 @@ export const badgeVariants = cva(
         destructive: 'bg-destructive text-destructive-foreground',
         outline: 'border-border text-foreground',
         secondary: 'bg-muted text-muted-foreground',
-        warning: 'bg-accent text-accent-foreground',
+        // Info en « tag » du DS : Soft Sky et Captain Blue, pas un aplat.
+        info: 'bg-secondary text-info',
+        success: 'bg-success text-success-foreground',
+        warning: 'bg-warning text-warning-foreground',
       },
     },
   },

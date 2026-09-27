@@ -4,12 +4,12 @@
       <CardContent class="flex items-start gap-6">
         <i class="fa fa-6x fa-lock text-muted-foreground" aria-hidden="true" />
         <div>
-          <CardTitle class="mb-2 text-xl"> Sorry </CardTitle>
+          <CardTitle class="mb-2 font-heading text-headline font-extrabold"> Sorry </CardTitle>
           <CardDescription class="mb-2"> You are not allowed to access this page </CardDescription>
           <CardDescription class="italic">
             Learn more about security &amp; permissions on
             <a
-              class="text-secondary underline underline-offset-4"
+              class="text-primary underline underline-offset-4 hover:text-primary-hover"
               href="https://docs.kuzzle.io/core/2/guides/main-concepts/permissions/#user-permissions"
               rel="noopener noreferrer"
               target="_blank"

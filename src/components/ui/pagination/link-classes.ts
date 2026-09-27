@@ -25,8 +25,8 @@ export const paginationLinkClasses = cva(
     },
     variants: {
       active: {
-        false: 'bg-transparent text-foreground hover:bg-muted',
-        true: 'border-input bg-background text-foreground hover:bg-muted',
+        false: 'bg-transparent text-foreground hover:bg-accent',
+        true: 'border-input bg-card text-foreground hover:bg-accent',
       },
     },
   },

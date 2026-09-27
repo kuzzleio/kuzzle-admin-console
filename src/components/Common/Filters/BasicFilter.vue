@@ -15,7 +15,7 @@
                 class="flex flex-wrap items-center gap-2"
               >
                 <span
-                  class="w-10 shrink-0 text-center font-bold text-secondary"
+                  class="w-10 shrink-0 text-center font-bold text-muted-foreground"
                   :class="filterIndex === 0 ? 'invisible' : ''"
                   >AND</span
                 >
@@ -80,6 +80,7 @@
                   <template v-if="andBlock.operator !== 'range'">
                     <Input
                       v-model="andBlock.value"
+                      aria-label="Value"
                       class="BasicFilter--value"
                       :data-cy="`BasicFilter-valueInput--${groupIndex}.${filterIndex}`"
                       placeholder="Value"
@@ -89,6 +90,7 @@
                   <template v-else>
                     <Input
                       v-model="andBlock.gt_value"
+                      aria-label="Range lower bound"
                       class="BasicFilter--gtValue"
                       data-cy="BasicFilter-operator-Range-Value1"
                       placeholder="Value 1"
@@ -96,6 +98,7 @@
                     />
                     <Input
                       v-model="andBlock.lt_value"
+                      aria-label="Range upper bound"
                       class="BasicFilter--ltValue"
                       data-cy="BasicFilter-operator-Range-Value2"
                       placeholder="Value 2"
@@ -134,7 +137,7 @@
 
           <div
             v-if="groupIndex < filters.basic.length - 1"
-            class="my-2 flex items-center gap-3 text-secondary"
+            class="my-2 flex items-center gap-3 text-muted-foreground"
           >
             <hr class="flex-1 border-border" />
             <b>OR</b>
@@ -146,7 +149,7 @@
 
     <div class="mt-3 flex flex-wrap items-center gap-2">
       <template v-if="sortingEnabled">
-        <div class="flex items-stretch overflow-hidden rounded-md border border-input">
+        <div class="flex items-stretch overflow-hidden rounded-sm border border-input">
           <span
             id="basic-filter-sort-label"
             class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"

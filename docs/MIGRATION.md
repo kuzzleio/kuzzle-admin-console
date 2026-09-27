@@ -307,10 +307,19 @@ précisément ce qu'on achète.
 |---|---|
 | `DESIGN.md`, `PRODUCT.md`, copie des tokens du DS, skill Impeccable ([ADR-0044](adr/0044-impeccable-versionne-sans-hooks.md)) | ✅ |
 | 1. Comparaison v4 / v5 : inventaire fonctionnel écran par écran — 153 fonctions, 30 sans spec ([`comparaison-v4-v5/`](comparaison-v4-v5/inventaire.md)) | ✅ |
-| 1. Comparaison v4 / v5 : captures des mêmes écrans, même backend | ⬜ |
-| 1. Comparaison v4 / v5 : tri des écarts (voulu / régression / manquant) | ⬜ |
-| 2. Tokens + polices + 20 primitives à la DA Kuzzle | ⬜ |
-| 3. Mise en page écran par écran (rail de navigation, en-têtes, cartes) | ⬜ |
+| 1. Comparaison v4 / v5 : captures des mêmes écrans, même backend ([script](../test/e2e/cypress/captures/captures.js), [planche du 2026-09-25](https://claude.ai/artifact/XN8VJfk9ykaRtQvvvCebek)) | ✅ |
+| 1. Comparaison v4 / v5 : tri des écarts (voulu / régression / manquant) — [`ecarts.md`](comparaison-v4-v5/ecarts.md), issues #1119 à #1134 | ✅ |
+| 1. Comparaison v4 / v5 : régressions fonctionnelles E-01 à E-15 corrigées ou tranchées (#1136, #1138 à #1149) ; reste le vert des champs valides d'E-08, versé à E-21 | ✅ |
+| 2. Polices embarquées, familles dans `tokens.css` ([ADR-0047](adr/0047-polices-embarquees.md)) | ✅ |
+| 2. Palette de la DA dans `tokens.css`, tokens d'état `success` / `warning` / `info`, sites d'appel migrés (E-20, E-21) | ✅ |
+| 2. Rayons, ombres, durées à la DA Kuzzle, branchés dans les primitives | ✅ |
+| 2. Primitives : échelle typographique, titres, libellés, états vides (E-22, E-23) | ✅ |
+| 2. Primitives : tables, cartes, formulaires (E-24, E-25, vert d'E-08) | ✅ |
+| 2. Primitives : boutons, focus (E-26) | ✅ |
+| 3. Rail de navigation ([ADR-0048](adr/0048-rail-de-navigation.md)) | ✅ |
+| 3. Cartes signature (une par écran), blocs gris de `Signup` et `KuzzleErrorPage` retirés | ✅ |
+| 3. Audit `/impeccable` : repère `main`, lien d'évitement, `h1`, `lang`, contraste AA (ADR-0050), noms accessibles, focus des menus, éditeur JSON au clavier, mouvement réduit | ✅ |
+| 3. Reste de l'audit : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
@@ -3197,6 +3206,58 @@ Gabarit à copier :
   l'absence de valeur, pas seulement de la valeur.
 - **Ref** : E-07 de la [comparaison v4 / v5](comparaison-v4-v5/ecarts.md#e-07).
 
+#### G-078 — Une passe partielle de captures efface la passe complète
+
+- **Contexte** : `cypress.captures.config.ts`, vérification d'un correctif sur
+  deux ou trois états (`it.only` dans une copie de `captures.js`).
+- **Symptôme** : la planche de référence n'a plus ses images « v5 » ; le dossier
+  `test/e2e/captures/v5/` ne contient que les deux ou trois états de la
+  dernière vérification.
+- **Cause** : `trashAssetsBeforeRuns: true` vide `screenshotsFolder` avant
+  chaque run, et ce dossier ne dépend que de `CAPTURES_VERSION`. Une passe
+  partielle lancée avec `CAPTURES_VERSION=v5` efface la passe complète.
+- **Solution** : pour une vérification ponctuelle, un `CAPTURES_VERSION` à
+  soi (`v5-check`, `v5-e07`…). La planche publiée reste la référence ; pour
+  un « avant » local, reconstruire la version voulue dans un worktree et
+  refaire la passe.
+- **Ref** : étape « couleurs » du lot 2 de la DA, le 2026-09-26.
+
+#### G-079 — `tailwind-merge` prend une taille qu'il ne connaît pas pour une couleur
+
+- **Contexte** : `src/lib/utils.ts` (`cn`), échelle typographique de la DA dans
+  `tokens.css` (`--text-title`, `--text-label`…).
+- **Symptôme** : `CardTitle` perd sa taille : `text-title` disparaît de
+  l'attribut `class`, seul `text-card-foreground` reste. Aucune erreur, le build
+  passe, les specs aussi.
+- **Cause** : `tailwind-merge` ne lit pas la configuration Tailwind. Un
+  `text-<nom>` absent de son échelle par défaut passe pour une couleur ; deux
+  « couleurs » sont en conflit, la dernière gagne. Même chose pour un rayon
+  (`rounded-pill`) ou une ombre inconnus, qui ne tranchent plus leurs conflits.
+- **Solution** : déclarer les noms de la DA dans `extendTailwindMerge`
+  (`theme.text`, `theme.radius`, `theme.shadow`), à côté des valeurs. Tout
+  nouveau nom d'échelle dans `tokens.css` doit y être ajouté. Vérification :
+  `twMerge('text-title text-card-foreground')` doit garder les deux.
+- **Ref** : étape « typographie » du lot 2 de la DA, le 2026-09-26.
+
+#### G-080 — Un `cypress run` se fige sans échouer ni rendre la main
+
+- **Contexte** : suite complète en local (`npx cypress run`), Electron headless,
+  contre `vite preview` et une stack neuve.
+- **Symptôme** : le run s'arrête au milieu d'une spec, après un test réussi, et
+  n'écrit plus rien pendant des heures. Pas d'échec, pas de timeout : les
+  timeouts de Cypress sont par commande, et aucune commande n'est en cours. Vu
+  deux fois le 2026-09-26, dans des specs différentes (validation d'E-08, puis
+  `collections.spec` au 4ᵉ test).
+- **Cause** : non identifiée. Le backend et le preview répondent pendant le
+  blocage, et la même spec, rejouée seule sur une stack neuve, passe en 36 s :
+  c'est le runner qui se fige, pas le produit.
+- **Solution** : ne jamais lancer une suite longue sans la suivre. Écrire la
+  sortie dans un fichier et surveiller les lignes `Running:` : une spec qui
+  n'avance plus au-delà de sa durée habituelle signale le gel. Tuer le run, le
+  rejouer sur une stack neuve ; si la spec passe seule, le gel ne vient pas du
+  code. Ne pas compter sur `timeout`, absent de macOS.
+- **Ref** : lot « tables et formulaires » de la DA, le 2026-09-26.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3308,3 +3369,7 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-25 | Impeccable versionné dans le repo, sans ses hooks | [ADR-0044](adr/0044-impeccable-versionne-sans-hooks.md) |
 | 2026-09-25 | Une pagination ne s'affiche que s'il y a plus d'une page, sur toutes les listes | [ADR-0045](adr/0045-pagination-masquee-sur-une-page.md) |
 | 2026-09-25 | L'aide d'API Action s'ouvre au clic, dans un `DropdownMenu` | [ADR-0046](adr/0046-aide-api-action-au-clic.md) |
+| 2026-09-26 | Polices de la DA embarquées (Ubuntu, Montserrat par `@fontsource`, Gobold) ; Cousine et Google Fonts retirés | [ADR-0047](adr/0047-polices-embarquees.md) |
+| 2026-09-27 | Rail de navigation à gauche, à la couleur de la connexion ; repli par bouton | [ADR-0048](adr/0048-rail-de-navigation.md) |
+| 2026-09-27 | Couleurs de connexion en tokens, au contraste AA ; élément actif du rail en fuchsia profond avec filet | [ADR-0049](adr/0049-couleurs-de-connexion-contrastees.md) |
+| 2026-09-27 | `--primary`, `--muted-foreground` et `--input` assombris d'un cran pour le contraste AA | [ADR-0050](adr/0050-contraste-aa-de-la-palette.md) |

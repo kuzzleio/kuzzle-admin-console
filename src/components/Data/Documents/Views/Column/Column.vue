@@ -85,6 +85,7 @@
                 <template v-if="field.key === 'acColumnTableActions'">
                   <div class="flex items-center gap-1">
                     <Checkbox
+                      :aria-label="`Select document ${item._id}`"
                       :checked="isChecked(item._id)"
                       :data-cy="`ColumnView-table-select-btn--${item._id}`"
                       @change="toggleSelectDocument(item._id)"
@@ -500,13 +501,10 @@ export default {
 }
 
 .downloadCSVLink {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
-    'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    'Noto Color Emoji';
+  font-family: var(--font-sans);
 }
 
 .multiselect__option--selected.multiselect__option--highlight {
-  background: #e64472 !important;
+  background: var(--primary) !important;
 }
 </style>

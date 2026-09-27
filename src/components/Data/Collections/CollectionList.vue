@@ -8,7 +8,7 @@
       <headline>
         <div class="flex flex-row">
           <span class="flex-1 truncate">
-            <i class="fa fa-database text-secondary" /> &nbsp;
+            <i class="fa fa-database text-muted-foreground" /> &nbsp;
             <span class="code">{{ indexName }}</span>
           </span>
           <span class="flex items-center gap-2">
@@ -40,7 +40,7 @@
       <list-not-allowed v-if="!canSearchCollection(indexName)" />
       <div v-else-if="collections" class="CollectionList-content">
         <div class="mb-3 flex flex-wrap items-center gap-2">
-          <span class="flex-1 text-sm text-secondary">
+          <span class="flex-1 text-sm text-muted-foreground">
             {{ collections.length }}
             {{ collections.length === 1 ? 'collection' : 'collections' }}
           </span>
@@ -61,7 +61,7 @@
             Delete
           </Button>
 
-          <div class="flex items-stretch overflow-hidden rounded-md border border-input">
+          <div class="flex items-stretch overflow-hidden rounded-sm border border-input">
             <label
               class="flex items-center bg-muted px-3 font-sans text-sm text-muted-foreground"
               for="collections-filter"
@@ -104,11 +104,15 @@
             <TableRow v-if="rows.length === 0">
               <TableCell class="py-6 text-center" colspan="4">
                 <template v-if="filtering">
-                  <h4 class="text-secondary">There is no collection matching your filter.</h4>
+                  <h4 class="text-title font-bold text-muted-foreground">
+                    There is no collection matching your filter.
+                  </h4>
                 </template>
                 <template v-else>
-                  <h4 class="text-secondary">This index has no collections.</h4>
-                  <p v-if="canCreateCollection(index.name)" class="text-secondary">
+                  <h4 class="text-title font-bold text-muted-foreground">
+                    This index has no collections.
+                  </h4>
+                  <p v-if="canCreateCollection(index.name)" class="text-muted-foreground">
                     You can create the collection by hitting the button above.
                   </p>
                 </template>
@@ -118,12 +122,13 @@
             <TableRow v-for="collection of rows" :key="collection.name">
               <TableCell>
                 <Checkbox
+                  :aria-label="`Select collection ${collection.name}`"
                   :checked="isChecked(collection)"
                   :data-cy="`CollectionList-checkbox--${collection.name}`"
                   @change="onCheckboxClick(collection)"
                 />
               </TableCell>
-              <TableCell class="text-secondary">
+              <TableCell class="text-muted-foreground">
                 <i
                   class="fa fa-2x"
                   :class="{

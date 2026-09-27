@@ -1,6 +1,6 @@
 <template>
   <div class="DocumentCreateOrUpdate grow">
-    <Card class="h-full">
+    <Card class="h-full shadow-signature">
       <CardContent class="flex h-full flex-col gap-4">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-end">
           <FormItem class="lg:w-7/12">
@@ -51,7 +51,7 @@
 
           <!-- Mapping -->
           <div class="flex min-h-0 flex-col lg:w-5/12">
-            <h3 class="text-lg font-semibold text-foreground">Mapping</h3>
+            <h3 class="text-title font-bold text-foreground">Mapping</h3>
 
             <pre
               v-json-formatter="{

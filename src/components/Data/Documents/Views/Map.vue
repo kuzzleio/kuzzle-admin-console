@@ -158,7 +158,7 @@
           <CardContent class="flex items-center gap-4">
             <i aria-hidden="true" class="fa fa-3x fa-search text-muted-foreground" />
             <div>
-              <h3 class="m-0 text-lg font-bold text-muted-foreground">No document selected.</h3>
+              <h3 class="m-0 text-title font-bold text-muted-foreground">No document selected.</h3>
               <p class="m-0 text-sm text-muted-foreground">
                 <em>You can view a document content by clicking on a marker</em>
               </p>

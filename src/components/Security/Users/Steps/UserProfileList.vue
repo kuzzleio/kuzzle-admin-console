@@ -45,6 +45,7 @@
           :key="index"
           class="gap-1 py-1"
           :data-cy="`UserProfileList-badge--${profile}`"
+          variant="info"
         >
           {{ profile }}
           <button
@@ -59,7 +60,7 @@
         </Badge>
       </template>
       <template v-else>
-        <span class="text-secondary">No profiles selected</span>
+        <span class="text-muted-foreground">No profiles selected</span>
       </template>
     </div>
   </div>

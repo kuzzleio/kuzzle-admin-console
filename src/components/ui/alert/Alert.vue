@@ -31,8 +31,9 @@ export const alertVariants = cva(
       variant: {
         default: 'border-border bg-card text-card-foreground',
         destructive: 'border-destructive/40 bg-destructive/10 text-destructive',
-        success: 'border-secondary/40 bg-secondary/10 text-foreground',
-        warning: 'border-accent bg-accent/20 text-foreground',
+        info: 'border-info/30 bg-secondary text-foreground',
+        success: 'border-success/60 bg-success/15 text-foreground',
+        warning: 'border-warning/60 bg-warning/15 text-foreground',
       },
     },
   },

@@ -22,7 +22,7 @@ export default defineComponent({
   inheritAttrs: false,
   computed: {
     classes(): string {
-      return this.mergeClasses('font-sans text-sm font-medium leading-none text-foreground');
+      return this.mergeClasses('font-sans text-label font-bold uppercase text-label-slate');
     },
   },
 });

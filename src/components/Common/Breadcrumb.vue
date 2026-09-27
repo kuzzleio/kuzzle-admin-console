@@ -1,9 +1,9 @@
 <template>
-  <div class="nav-breadcrumb">
+  <nav aria-label="Breadcrumb" class="nav-breadcrumb">
     <ul v-if="$route.path.indexOf('/security') === 0">
       <li>
         <router-link :to="{ name: 'Security' }">
-          <i class="fa fa-home" />
+          <i class="fa fa-home" aria-hidden="true" />
           security
         </router-link>
       </li>
@@ -46,7 +46,7 @@
     <ul v-if="$route.path.indexOf('/data') === 0">
       <li>
         <router-link :to="{ name: 'Data' }">
-          <i class="fa fa-home" />
+          <i class="fa fa-home" aria-hidden="true" />
           data
         </router-link>
       </li>
@@ -94,7 +94,7 @@
         </router-link>
       </li>
     </ul>
-  </div>
+  </nav>
 </template>
 
 <script>
@@ -141,7 +141,7 @@ export default {
     margin-right: 3px;
   }
   ul {
-    color: #aaa;
+    color: var(--muted-foreground);
     padding: 0;
     margin: 0;
     .separator {
@@ -151,9 +151,9 @@ export default {
       display: inline-block;
     }
     a {
-      color: #aaa;
+      color: var(--muted-foreground);
       &:hover {
-        color: #444;
+        color: var(--foreground);
       }
     }
   }

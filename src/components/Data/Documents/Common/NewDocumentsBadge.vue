@@ -8,7 +8,7 @@
         ? 'New documents that might match your filters have been created. Click to refresh.'
         : 'This circle will turn green when new documents are added to this collection'
     "
-    :variant="hasNewDocuments ? 'default' : 'secondary'"
+    :variant="hasNewDocuments ? 'success' : 'secondary'"
     @click="hasNewDocuments ? $emit('refresh') : $emit('noop')"
     >{{ hasNewDocuments ? 'new documents' : '' }}</Badge
   >
@@ -21,8 +21,8 @@ import { Badge } from '@/components/ui/badge';
 
 /*
  * `rounded-full` et une taille minimale : sans document nouveau, le badge n'a
- * pas de texte et c'est sa seule forme visible — une pastille. `Badge` est en
- * `rounded-md` par défaut, ce qui donnerait un carré de 4 px.
+ * pas de texte et c'est sa seule forme visible — une pastille. Le rayon de
+ * `Badge` (20 px) ne suffit pas à garantir un cercle si la taille change.
  */
 export default defineComponent({
   name: 'NewDocumentsBadge',

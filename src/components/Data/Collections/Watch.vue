@@ -39,7 +39,7 @@
       <CardContent class="flex flex-wrap items-center gap-6">
         <i class="fa fa-6x fa-lock text-muted-foreground" aria-hidden="true" />
         <div class="flex-1">
-          <h2 class="text-xl font-semibold text-foreground">
+          <h2 class="font-heading text-headline font-extrabold text-foreground">
             You are not allowed to watch realtime messages on collection
             <strong>{{ collectionName }}</strong> of index <strong>{{ indexName }}</strong>
           </h2>
@@ -72,7 +72,7 @@
             <Badge
               v-if="hasFilter && !advancedFiltersVisible"
               data-cy="Watch-filterAppliedPill"
-              variant="secondary"
+              variant="info"
             >
               Filters are being applied
             </Badge>
@@ -120,7 +120,7 @@
               :class="subscribed ? 'fa-hourglass-half' : 'fa-paper-plane'"
             />
             <div v-if="subscribed" class="flex-1">
-              <h2 class="text-xl font-semibold text-foreground">
+              <h2 class="font-heading text-headline font-extrabold text-foreground">
                 Waiting for notifications matching your filters ...
               </h2>
               <p>
@@ -131,7 +131,7 @@
               </p>
             </div>
             <div v-else class="flex-1">
-              <h3 class="text-lg font-semibold text-foreground">
+              <h3 class="text-title font-bold text-foreground">
                 You did not subscribe yet to the collection
                 <strong>{{ collectionName }}</strong>
               </h3>
@@ -183,7 +183,7 @@
                   </CardTitle>
                 </CardHeader>
                 <CardContent class="overflow-auto px-3 py-3">
-                  <Badge title="controller : action" variant="secondary">
+                  <Badge title="controller : action" variant="info">
                     {{ lastNotification.controller }} : {{ lastNotification.action }}
                   </Badge>
                   <p

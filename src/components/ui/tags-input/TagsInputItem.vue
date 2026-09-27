@@ -29,7 +29,7 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'inline-flex max-w-full items-center gap-1 rounded-md',
+        'inline-flex max-w-full items-center gap-1 rounded-pill',
         'bg-secondary px-2 py-0.5',
         'font-sans text-sm text-secondary-foreground',
       );

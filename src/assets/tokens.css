@@ -7,44 +7,73 @@
  * primitives écrites à la main en Vue 2 puissent être remplacées en phase 4 par
  * les vrais composants shadcn-vue sans toucher aux sites d'appel.
  *
- * Les valeurs claires reprennent la palette existante de la console
- * (`styles/_variables.scss`) : cette PR pose la plomberie, elle ne décide pas
- * de l'apparence. La refonte visuelle se fera en changeant ces valeurs, à un
- * seul endroit — c'est précisément ce qu'on achète ici.
+ * Les valeurs claires sont celles du design system produit Kuzzle
+ * (ADR-0043), selon la table de correspondance de `DESIGN.md` (« Mapping to
+ * the console's tokens ») : le DS fournit les valeurs, shadcn-vue les noms.
+ *
+ * Trois tokens ont changé de sens avec la DA, et non seulement de valeur :
+ * `secondary` n'est plus un texte gris-bleu mais le fond pâle des tags,
+ * `accent` n'est plus le jaune des avertissements mais le fond de survol, et
+ * `background` n'est plus blanc mais le fond de page. Les avertissements ont
+ * leur propre token (`warning`), comme le succès et l'information : shadcn
+ * n'en a pas, la console en a besoin (E-20, E-21 de la comparaison v4 / v5).
  *
  * Le jeu sombre est défini mais n'est branché sur aucun sélecteur de thème :
- * rien ne l'active aujourd'hui.
+ * rien ne l'active aujourd'hui. Il garde l'ancienne palette ; le DS n'a pas
+ * de thème sombre, il faudra le dériver le jour où on l'active (ADR-0043).
  */
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Surfaces */
-  --background: #ffffff;
+  /* Surfaces — fond de page Page Mist, cartes et panneaux flottants blancs */
+  --background: #f6f7fb;
   --foreground: #002835;
   --card: #ffffff;
   --card-foreground: #002835;
   --popover: #ffffff;
   --popover-foreground: #002835;
 
-  /* Couleurs de marque */
-  --primary: #002835;
+  /* Marque — un seul accent saturé, le fuchsia (« The One Accent Rule ») */
+  /* Fuchsia assombri d'un cran (ADR-0050) : le `#E64472` du DS ne porte du
+     texte blanc qu'à 3,9:1, et ne se lit comme lien qu'à 3,9:1 sur blanc. */
+  --primary: #c93960;
+  --primary-hover: #b8325a;
   --primary-foreground: #ffffff;
-  --secondary: #3498db;
-  --secondary-foreground: #ffffff;
-  --accent: #efc94c;
+  /* Soft Sky : tags, remplissages doux */
+  --secondary: #daedf6;
+  --secondary-foreground: #002835;
+  /* Row Hover : survol des lignes et des éléments de menu */
+  --accent: #eef4f8;
   --accent-foreground: #002835;
 
-  /* Neutres et états */
-  --muted: #f5f5f5;
-  --muted-foreground: #7b7b7b;
-  --destructive: #e94e77;
-  --destructive-foreground: #ffffff;
+  /* Neutres */
+  --muted: #eef1f5;
+  /* Assombri (ADR-0050) : `#6C757D` tombait à 4,4:1 sur le fond de page. */
+  --muted-foreground: #5c6670;
+  /* Table Head : en-têtes de tableau, champs désactivés */
+  --subtle: #f9fafd;
+  /* Label Slate : libellés en capitales */
+  --label: #43565b;
 
-  /* Traits */
-  --border: #eeeeee;
-  --input: #eeeeee;
-  --ring: #73626e;
+  /* États. Le vert et l'orange du DS ne portent pas de texte blanc lisible
+     (contraste < 4,5:1) : leur texte est le bleu Kuzzle. `info` n'existe pas
+     dans le DS ; il prend Captain Blue sur Soft Sky. */
+  --destructive: #dc3545;
+  --destructive-foreground: #ffffff;
+  --success: #3ddc84;
+  --success-foreground: #002835;
+  --warning: #c9821f;
+  --warning-foreground: #002835;
+  --info: #00536f;
+  --info-foreground: #ffffff;
+
+  /* Traits — Hairline pour bordures et champs, Captain Blue pour le focus */
+  --border: #d0dde1;
+  /* Bordure des champs à 3:1 (WCAG 1.4.11, ADR-0050) ; `--border` reste le
+     filet Hairline des séparateurs. */
+  --input: #7b939b;
+  --ring: #00536f;
 
   /* Notifications temps réel — quatre familles à distinguer d'un coup d'œil
      dans un flux qui défile. Ce ne sont pas des états (`destructive` dirait
@@ -55,10 +84,32 @@
   --notification-subscribe: #e1c8e8;
   --notification-delete: #e6c6c4;
 
-  /* Rayon — aligné sur Bootstrap 4 pour ne pas glisser une décision
-     visuelle dans une PR de plomberie. C'est un des premiers tokens que la
-     refonte fera bouger. */
-  --radius: 0.25rem;
+  /* Rayons de la DA (DESIGN.md, « rounded ») : 4 px pour les champs, 6 px
+     pour les boutons, cartes et menus, 8 px pour les modales, 12 px pour les
+     panneaux, 20 px pour les pastilles et tags. `--radius` reste la valeur
+     des contrôles, que lit l'échelle Tailwind ci-dessous. */
+  --radius: 6px;
+  --radius-field: 4px;
+  --radius-hero: 8px;
+  --radius-panel: 12px;
+  --radius-tag: 20px;
+
+  /* Élévations teintées de bleu Kuzzle, jamais de noir pur (DESIGN.md,
+     « Elevation & Depth »). */
+  --elevation-card: 0 1px 3px rgb(0 40 53 / 0.09);
+  --elevation-hover: 0 12px 28px -12px rgb(0 40 53 / 0.28);
+  --elevation-menu: 0 18px 44px -12px rgb(10 28 41 / 0.4);
+  --elevation-modal: 0 30px 60px -20px rgb(10 28 41 / 0.55);
+  --elevation-tooltip: 0 24px 46px -18px rgb(0 20 28 / 0.7);
+  /* Carte « signature » : filet fuchsia en haut, sur l'ombre de carte. */
+  --elevation-signature: inset 0 1px 0 0 var(--primary), var(--elevation-card);
+
+  /* Mouvement (DESIGN.md) : 160 ms pour les transitions d'état, 200 ms pour
+     les apparitions, courbe dédiée à la navigation. */
+  --duration-fast: 160ms;
+  --duration-base: 200ms;
+  --duration-nav: 700ms;
+  --easing-nav: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Largeur minimale de la barre latérale de Data. Reprise telle quelle de
      `$sidebar-width` : c'est une contrainte de mise en page, pas une décision
@@ -71,6 +122,21 @@
      les atteignait par la taille de son logo. Les deux lisent désormais la
      même valeur. */
   --navbar-height: 66px;
+
+  /* Couleurs de connexion (ADR-0049) : fond du rail, texte blanc à 4,5:1 au
+     moins. `darkblue`, la couleur par défaut, est le bleu Kuzzle. */
+  --env-darkblue: #002835;
+  --env-lightblue: #0277bd;
+  --env-purple: #8e24aa;
+  --env-green: #4e7a29;
+  --env-orange: #a85a0b;
+  --env-red: #c62828;
+  --env-grey: #546e7a;
+  --env-magenta: #d81b60;
+
+  /* Rail de navigation (ADR-0048) : déplié, replié sur ses icônes. */
+  --rail-width: 224px;
+  --rail-collapsed-width: 64px;
 }
 
 .dark {
@@ -118,10 +184,19 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
 
+  --color-primary-hover: var(--primary-hover);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-label-slate: var(--label);
+  --color-subtle: var(--subtle);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 
   --color-border: var(--border);
   --color-input: var(--input);
@@ -132,9 +207,46 @@
   --color-notification-subscribe: var(--notification-subscribe);
   --color-notification-delete: var(--notification-delete);
 
-  --radius-sm: calc(var(--radius) - 2px);
+  --radius-sm: var(--radius-field);
   --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
+  --radius-lg: var(--radius-hero);
+  --radius-xl: var(--radius-panel);
+  --radius-pill: var(--radius-tag);
 
+  --shadow-card: var(--elevation-card);
+  --shadow-hover: var(--elevation-hover);
+  --shadow-menu: var(--elevation-menu);
+  --shadow-modal: var(--elevation-modal);
+  --shadow-tooltip: var(--elevation-tooltip);
+  --shadow-signature: var(--elevation-signature);
+
+  /* Échelle typographique du DS (DESIGN.md, « Hierarchy »). Chaque taille
+     porte son interlignage, et le libellé son approche : `text-label` suffit
+     à poser les trois. */
+  --text-display: 40px;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: 0.01em;
+  --text-headline: 26px;
+  --text-headline--line-height: 1.15;
+  --text-title: 16px;
+  --text-title--line-height: 1.15;
+  --text-body: 14.5px;
+  --text-body--line-height: 1.55;
+  --text-ui: 13.5px;
+  --text-ui--line-height: 1.55;
+  --text-small: 12.5px;
+  --text-small--line-height: 1.55;
+  --text-label: 11px;
+  --text-label--line-height: 1.15;
+  --text-label--letter-spacing: 0.07em;
+
+  --default-transition-duration: var(--duration-fast);
+  --ease-nav: var(--easing-nav);
+
+  /* Familles de la DA (DESIGN.md, Typography), chargées par `fonts.css`.
+     `--font-sans` est aussi la police du document : le preflight la lit. */
   --font-sans: 'Ubuntu', sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
+  --font-display: 'Gobold', 'Oswald', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }

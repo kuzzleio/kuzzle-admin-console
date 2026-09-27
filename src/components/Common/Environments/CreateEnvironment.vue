@@ -6,7 +6,7 @@
         <Input
           id="input-env-name"
           v-model="v$.environment.name.$model"
-          :aria-invalid="nameFeedback ? 'true' : undefined"
+          :aria-invalid="fieldState('name')"
           data-cy="CreateEnvironment-name"
         />
         <FormDescription>A friendly name for the connection</FormDescription>
@@ -18,7 +18,7 @@
         <Input
           id="input-env-host"
           v-model="v$.environment.host.$model"
-          :aria-invalid="hostFeedback ? 'true' : undefined"
+          :aria-invalid="fieldState('host')"
           data-cy="CreateEnvironment-host"
         />
         <FormDescription>The host where your Kuzzle is running</FormDescription>
@@ -30,7 +30,7 @@
         <Input
           id="input-env-port"
           v-model="v$.environment.port.$model"
-          :aria-invalid="portFeedback ? 'true' : undefined"
+          :aria-invalid="fieldState('port')"
           data-cy="CreateEnvironment-port"
           type="number"
         />
@@ -41,7 +41,9 @@
       <FormItem>
         <div class="flex items-center gap-2">
           <Checkbox id="env-ssl" v-model="environment.ssl" name="env-use-ssl" />
-          <Label for="env-ssl">Use SSL</Label>
+          <Label class="text-ui font-normal normal-case text-foreground" for="env-ssl"
+            >Use SSL</Label
+          >
         </div>
         <!--
           `b-form-invalid-feedback` ne rendait qu'une icône d'alerte, sans
@@ -83,8 +85,8 @@
 
       <div class="flex flex-col gap-3 sm:flex-row">
         <div class="sm:w-1/3">
-          <div>Pick a color</div>
-          <small class="text-secondary"
+          <div class="text-label font-bold uppercase text-label-slate">Pick a color</div>
+          <small class="text-muted-foreground"
             >It will be applied to the header navbar so you can distinguish this connection from
             other ones.</small
           >
@@ -319,6 +321,15 @@ export default {
     }
   },
   methods: {
+    /*
+     * `aria-invalid` à trois états, comme le `:state` de `b-input` : absent tant
+     * que le champ n'a pas été touché, `"true"` s'il est en erreur, `"false"`
+     * s'il est valide — `Input` affiche alors la bordure verte (E-08).
+     */
+    fieldState(field) {
+      const { $dirty, $error } = this.v$.environment[field];
+      return $dirty ? String($error) : undefined;
+    },
     showValidationErrors() {
       this.v$.environment.$touch();
       Object.keys(this.v$.environment).forEach((field) => {

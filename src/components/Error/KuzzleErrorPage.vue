@@ -1,15 +1,15 @@
 <template>
   <div class="KuzzleErrorPage flex min-h-screen items-center justify-center p-4">
-    <Card class="w-full max-w-4xl">
+    <Card class="w-full max-w-4xl shadow-signature">
       <CardContent>
-        <header class="rounded-md bg-muted p-8">
+        <header>
           <img
             alt="Welcome to the Kuzzle Admin Console"
             class="mb-4 h-15 w-auto"
             height="60"
             src="../../assets/logo.svg"
           />
-          <h2 class="text-2xl font-bold text-foreground">
+          <h2 class="font-heading text-headline font-extrabold text-foreground">
             Something went wrong while connecting to Kuzzle
           </h2>
 

@@ -9,7 +9,7 @@
           'fa-file-alt': hasNewDocuments,
         }"
       />
-      <CardTitle class="text-2xl text-muted-foreground">
+      <CardTitle class="font-heading text-headline font-extrabold text-muted-foreground">
         <span v-if="hasNewDocuments">There are new documents in the collection</span>
         <span v-else>No documents matching your filters</span>
       </CardTitle>

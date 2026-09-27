@@ -33,7 +33,7 @@
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Badge v-if="hasFilter" data-cy="ProfileFilters-filterAppliedPill" variant="secondary">
+      <Badge v-if="hasFilter" data-cy="ProfileFilters-filterAppliedPill" variant="info">
         Filters are being applied
       </Badge>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="LoginPage flex min-h-screen items-center justify-center p-4">
-    <Card class="w-full max-w-2xl">
+    <Card class="w-full max-w-2xl shadow-signature">
       <CardContent>
         <div class="text-center">
           <img
@@ -13,7 +13,7 @@
           v-if="displayNoAdminWarning"
           class="mb-4 text-center"
           data-cy="noAdminWarning"
-          variant="warning"
+          variant="info"
         >
           <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended
           <a class="font-semibold underline" data-cy="NoAdminWarning-link" href="#/signup">

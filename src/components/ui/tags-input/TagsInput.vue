@@ -48,8 +48,8 @@ export default defineComponent({
     classes(): string {
       return this.mergeClasses(
         'flex flex-wrap items-center gap-2',
-        'rounded-md border border-input bg-background px-3 py-2',
-        'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
+        'rounded-sm border border-input bg-card px-3 py-2',
+        'focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/10',
         this.disabled ? 'cursor-not-allowed opacity-50' : '',
       );
     },

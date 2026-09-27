@@ -129,10 +129,12 @@ components:
 > the console. The decision, and what is deliberately left out, is in
 > [ADR-0043](docs/adr/0043-da-kuzzle-pour-la-console.md).
 >
-> **State on 2026-09-25: this is the target, not yet the rendering.**
-> `src/assets/tokens.css` still carries the v4 palette until the DA lot lands.
-> The before/after comparison of v4 and v5 is captured first, so that
-> regressions from the Bootstrap exit are not drowned in intended changes.
+> **State on 2026-09-27: the foundations and the primitives are applied**
+> (fonts, colors, radii, shadows, motion, type scale, tables, form states,
+> buttons, focus). `src/assets/tokens.css` carries the values and the fonts
+> are served by the console (ADR-0047). The layout (navigation rail, page
+> headers, signature card) is still the target, except the navigation rail
+> (ADR-0048).
 >
 > **Two vocabularies.** The frontmatter keeps the design system's names. The
 > console consumes shadcn-vue tokens (`--primary`, `--muted`, `--border`…,
@@ -216,17 +218,31 @@ A cool, low-chroma neutral world with one warm, saturated accent.
 | `--foreground` | `#002835` | `--secondary` |
 | `--card` / `--popover` | `#FFFFFF` | `--surface-card` |
 | `--card-foreground` / `--popover-foreground` | `#002835` | `--text-strong` |
-| `--primary` | `#E64472` | `--primary` |
+| `--primary` | `#C93960` (console, ADR-0050) | `--primary-dark` ; le DS met `#E64472`, à 3,9:1 avec du blanc |
 | `--primary-foreground` | `#FFFFFF` | — |
 | `--secondary` | `#DAEDF6` | `--tertiary` |
 | `--secondary-foreground` | `#002835` | `--secondary` |
 | `--accent` | `#EEF4F8` | table row hover |
 | `--accent-foreground` | `#002835` | `--secondary` |
 | `--muted` | `#EEF1F5` | `--panel` |
-| `--muted-foreground` | `#6C757D` | `--secondary-light` |
+| `--muted-foreground` | `#5C6670` (console, ADR-0050) | `--secondary-light` (`#6C757D`, 4,4:1 sur le fond de page) |
 | `--destructive` | `#DC3545` | `--status-danger` |
-| `--border` / `--input` | `#D0DDE1` | `--grey-bright` |
+| `--border` | `#D0DDE1` | `--grey-bright` |
+| `--input` | `#7B939B` (console, ADR-0050) | bordure des champs à 3:1 ; le Hairline du DS n'atteint que 1,4:1 |
 | `--ring` | `#00536F` | `--secondary-captain` |
+
+The console adds tokens that shadcn-vue does not have, because it needs them:
+
+| Console token | Value | Design-system source |
+|---|---|---|
+| `--primary-hover` | `#B8325A` (console, ADR-0050) | un cran sous `--primary-dark` |
+| `--label` (`text-label-slate`) | `#43565B` | `--grey` |
+| `--success` / `--success-foreground` | `#3DDC84` / `#002835` | `--status-success` |
+| `--warning` / `--warning-foreground` | `#C9821F` / `#002835` | `--status-warning` |
+| `--info` / `--info-foreground` | `#00536F` / `#FFFFFF` | `--secondary-captain` (no info color in the DS) |
+
+Success and warning carry Kuzzle Blue text, not white: white on either fails
+the 4.5:1 contrast ratio.
 
 The v4 palette mapped `--primary` to Kuzzle Blue and `--destructive` to a pink
 (`#E94E77`) almost identical to the new accent. Both move together in the DA
@@ -283,9 +299,9 @@ what the specs and screen readers expect.
   design system's ~1200px cap applies to forms and detail pages only.
 - Page actions (create, refresh, overflow menu) sit top-right of the page
   header. Row actions appear on row hover and on keyboard focus.
-- **Navigation, target:** a collapsible dark left rail (Kuzzle Blue) with Data,
-  Security and API Action. The current top navbar stays until the layout lot;
-  moving it is a layout change, not a token change.
+- **Navigation:** a collapsible left rail with Data, Security and API Action
+  (ADR-0048). It carries the connection color; the default one, `darkblue`,
+  is Kuzzle Blue. Below `md` it is a top bar with a menu button.
 
 ## Elevation & Depth
 
@@ -318,6 +334,13 @@ the layout never moves.
   containers 12px, pills and tags 20px (fully rounded at their height).
 - Borders are 1px Hairline. No double borders: a card inside a panel has a
   shadow, not a border.
+
+In `tokens.css`, the Tailwind scale carries these values: `rounded-sm` is the
+field (4px), `rounded-md` the control and card (6px), `rounded-lg` the dialog
+and hero (8px), `rounded-xl` the panel (12px), `rounded-pill` the badge and
+tag (20px). Shadows are `shadow-card`, `shadow-hover`, `shadow-menu`,
+`shadow-modal`, `shadow-tooltip` and `shadow-signature`; transitions default
+to 160ms.
 
 ## Components
 
@@ -352,7 +375,9 @@ Confident, compact, one primary per area.
 - **Background:** White on Page Mist; groups of cards may sit on a Panel Grey
   panel with 16px padding.
 - **Shadow Strategy:** Card at rest; Signature for primary content cards;
-  Hover lift only if the whole card is clickable.
+  Hover lift only if the whole card is clickable. In the console, one
+  signature card per screen: the entry card (login, connection, signup), the
+  edit form, or the main list (`class="shadow-signature"` on `Card`).
 - **Internal Padding:** 16px (24px for forms).
 
 ### Inputs / Fields
@@ -381,11 +406,12 @@ Confident, compact, one primary per area.
 
 ### Navigation
 
-- **Rail (target):** Kuzzle Blue background, white Ubuntu 500 items with a
-  Font Awesome icon; hover `rgba(230,68,114,.22)` plus a 3px inset Fuchsia bar
-  on the left; active item full Fuchsia bar, white bold text. Sub-menus indent
-  on a darker band. Opens after a 350ms hover delay and expands over 700ms
-  `cubic-bezier(.22,1,.36,1)`.
+- **Rail:** Kuzzle Blue background (in the console, the connection color,
+  ADR-0048), white Ubuntu 500 items with a Font Awesome icon; hover
+  `rgba(230,68,114,.22)` plus a 3px inset Fuchsia bar on the left; active item
+  full Fuchsia, white bold text. Sub-menus indent on a darker band. The design
+  system opens the rail on a 350ms hover delay; the console collapses it with
+  a button instead, because the rail holds two dropdown menus (ADR-0048).
 
 ### Tooltip and JSON surfaces
 

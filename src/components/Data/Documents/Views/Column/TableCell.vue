@@ -7,12 +7,16 @@
       <code>undefined</code>
     </template>
     <template v-else-if="Array.isArray(data)">
-      <Badge title="Unable to display array values in table cells, use the List view instead"
+      <Badge
+        variant="secondary"
+        title="Unable to display array values in table cells, use the List view instead"
         >array</Badge
       >
     </template>
     <template v-else-if="isObject(data)">
-      <Badge title="Unable to display object values in table cells, use the List view instead"
+      <Badge
+        variant="secondary"
+        title="Unable to display object values in table cells, use the List view instead"
         >object</Badge
       >
     </template>

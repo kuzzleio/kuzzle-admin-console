@@ -3,7 +3,7 @@
     <Card class="w-full max-w-lg bg-muted">
       <CardContent class="flex flex-col items-center text-center">
         <i class="fas fa-question fa-6x mb-6 text-muted-foreground" />
-        <CardTitle class="mb-2 text-2xl">404 not found</CardTitle>
+        <CardTitle class="mb-2 font-heading text-headline font-extrabold">404 not found</CardTitle>
         <CardDescription>
           The index or collection that you requested doesn't exist.
         </CardDescription>

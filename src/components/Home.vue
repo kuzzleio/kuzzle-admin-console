@@ -1,6 +1,19 @@
 <template>
-  <div class="Home m-0 flex h-full flex-col">
-    <div class="Home-menuWrapper shrink-0">
+  <!-- Rail à gauche à partir de `md`, barre en haut en dessous (ADR-0048). -->
+  <div class="Home m-0 flex h-full flex-col md:flex-row">
+    <!--
+      Lien d'évitement : au clavier, on saute le rail pour aller au contenu.
+      Un bouton et non `<a href="#main">` : le routeur est en mode hash, et
+      l'ancre changerait de route au lieu de déplacer le focus.
+    -->
+    <button
+      class="sr-only cursor-pointer border-0 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-1050 focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:text-foreground focus:shadow-menu focus:ring-2 focus:ring-ring"
+      type="button"
+      @click="skipToContent"
+    >
+      Skip to content
+    </button>
+    <div class="Home-menuWrapper shrink-0 md:h-full">
       <main-menu
         @environment::create="$emit('environment::create', $event)"
         @environment::delete="$emit('environment::delete', $event)"
@@ -8,10 +21,15 @@
       />
     </div>
 
-    <div class="Home-routeWrapper grow overflow-hidden" data-cy="App-loggedIn">
+    <main
+      id="main"
+      class="Home-routeWrapper min-w-0 grow overflow-hidden outline-none"
+      data-cy="App-loggedIn"
+      tabindex="-1"
+    >
       <main-spinner v-if="authInitializing" />
       <router-view v-else />
-    </div>
+    </main>
 
     <Dialog :open="tokenExpiredIsOpen" @update:open="tokenExpiredIsOpen = $event">
       <DialogContent data-cy="Modal-tokenExpired" labelled-by="token-expired-title">
@@ -120,6 +138,9 @@ export default {
 
       /* Rien à masquer : l'action ferme le toast. */
     },
+    skipToContent() {
+      document.getElementById('main')?.focus();
+    },
     onTokenExpired() {
       this.authStore.setSession(null);
     },
@@ -143,7 +164,7 @@ export default {
         link: { href: '#/signup', label: 'that you create one.' },
         message: 'Your Kuzzle has no administrator user. It is strongly recommended',
         title: 'Warning!',
-        variant: 'warning',
+        variant: 'info',
       });
     },
   },

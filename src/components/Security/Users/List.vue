@@ -17,7 +17,7 @@
       </div>
 
       <template v-else>
-        <Card v-if="!isCollectionEmpty" key="list">
+        <Card v-if="!isCollectionEmpty" key="list" class="shadow-signature">
           <CardContent>
             <NoSearchResult v-show="!documents.length" />
 

@@ -1,7 +1,7 @@
 <template>
   <div class="DocumentList mb-20">
     <div
-      class="mx-auto w-full px-4 transition-[max-width] duration-500"
+      class="mx-auto w-full px-4 transition-[max-width] duration-500 motion-reduce:transition-none"
       :class="listViewType === LIST_VIEW_LIST ? 'max-w-6xl' : 'max-w-full'"
     >
       <div class="flex flex-wrap items-start justify-between gap-4">
@@ -117,7 +117,7 @@
             />
           </template>
         </template>
-        <Card v-else>
+        <Card v-else class="shadow-signature">
           <CardContent>
             <List
               v-if="listViewType === LIST_VIEW_LIST"

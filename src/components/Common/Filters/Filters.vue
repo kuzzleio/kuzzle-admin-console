@@ -1,6 +1,11 @@
 <template>
+  <!--
+    `gap-0 py-0` : `Card` pose `py-6`, qui laissait une bande vide sous la
+    recherche rapide ; le bandeau et les onglets portent leur propre marge
+    (E-24 de la comparaison v4 / v5).
+  -->
   <Card
-    class="Filters"
+    class="Filters gap-0 py-0"
     :class="{ 'full-screen': isFullscreen && advancedFiltersVisible }"
     data-cy="Filters"
   >
@@ -11,7 +16,10 @@
       (ADR-0017), et le bandeau reste un bandeau.
     -->
     <Tabs v-model="complexFiltersSelectedTab">
-      <div class="relative border-b border-border px-4 pt-3">
+      <div
+        class="relative px-4 pt-3"
+        :class="advancedFiltersVisible ? 'border-b border-border' : 'pb-3'"
+      >
         <quick-filter
           v-if="!advancedFiltersVisible"
           class="grow"

@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen overflow-auto">
     <div class="flex min-h-full justify-center px-4 py-6">
-      <Card class="my-auto w-full max-w-3xl">
+      <Card class="my-auto w-full max-w-3xl shadow-signature">
         <CardHeader class="gap-4">
           <img
             alt="Welcome to the Kuzzle Admin Console"
@@ -9,7 +9,7 @@
             height="60"
             src="../../../assets/logo.svg"
           />
-          <CardTitle class="text-3xl">Select Kuzzle</CardTitle>
+          <CardTitle class="font-display text-display font-bold uppercase">Select Kuzzle</CardTitle>
           <CardDescription class="text-base">
             Please select a Kuzzle instance to connect to.
           </CardDescription>

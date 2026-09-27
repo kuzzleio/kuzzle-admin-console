@@ -43,7 +43,7 @@
     -->
     <div
       v-if="collectionsFetched"
-      class="grid pl-6 transition-[grid-template-rows] duration-500 ease-out"
+      class="grid pl-6 transition-[grid-template-rows] duration-500 ease-out motion-reduce:transition-none"
       :class="open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
     >
       <div class="overflow-hidden">

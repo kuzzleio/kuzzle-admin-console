@@ -50,11 +50,11 @@
               @change="onMappingChange"
             />
           </div>
-          <div class="text-secondary lg:w-4/12">
+          <div class="text-muted-foreground lg:w-4/12">
             Mapping is the process of defining how a document, and the fields it contains, are
             stored and indexed.
             <a
-              class="underline underline-offset-4"
+              class="text-primary underline underline-offset-4 hover:text-primary-hover"
               href="https://docs.kuzzle.io/core/2/guides/main-concepts/data-storage/#mappings-dynamic-policy"
               rel="noopener noreferrer"
               target="_blank"

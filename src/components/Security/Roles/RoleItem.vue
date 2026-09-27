@@ -10,6 +10,7 @@
       />
       <Checkbox
         v-model="checked"
+        :aria-label="`Select role ${document._id}`"
         :data-cy="`RoleItem-checkbox--${document._id}`"
         @change="notifyCheckboxClick"
       />

@@ -54,12 +54,12 @@ export default defineComponent({
       return this.mergeClasses(
         'flex h-9 w-full items-center justify-between gap-2',
         'appearance-none cursor-pointer',
-        'rounded-md border border-input bg-background',
+        'rounded-sm border border-input bg-card',
         'px-3 py-2',
         'font-sans text-sm leading-none text-foreground',
         'transition-colors outline-none',
-        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-        'disabled:cursor-not-allowed disabled:opacity-50',
+        'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/10',
+        'disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted-foreground',
       );
     },
     disabled(): boolean {

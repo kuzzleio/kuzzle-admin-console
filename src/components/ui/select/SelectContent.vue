@@ -55,7 +55,7 @@ export default defineComponent({
       return this.mergeClasses(
         'z-1035 min-w-32 max-h-96 overflow-y-auto rounded-md',
         'border border-border bg-popover text-popover-foreground',
-        'p-1 shadow-md outline-none',
+        'p-1 shadow-menu outline-none',
       );
     },
     isOpen(): boolean {

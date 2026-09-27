@@ -7,7 +7,7 @@
         :current-filter="currentFilter.basic"
         @filters-updated="onFiltersUpdated"
       />
-      <Card key="list">
+      <Card key="list" class="shadow-signature">
         <CardContent>
           <div v-if="loading" class="flex justify-center py-8">
             <Spinner size="lg" />

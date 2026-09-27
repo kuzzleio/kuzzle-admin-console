@@ -15,8 +15,8 @@
   visuellement. `🔴 E-06` : l'écart abîme la fonction elle-même (information
   perdue, écran illisible, action hors d'atteinte).
 
-**Bilan** : 153 fonctions — 138 ✅ (dont 33 touchées par un écart
-transverse), 11 🎯, 4 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
+**Bilan** : 153 fonctions — 141 ✅ (dont 0 touchées par un écart
+transverse), 12 🎯, 0 🔴, 0 ⛔, 0 ❓. Aucune fonction n'a disparu. Les
 régressions viennent de 15 causes fonctionnelles (E-01 à E-15) et de 7 causes
 visuelles (E-20 à E-26).
 
@@ -153,8 +153,9 @@ rendrait plus difficiles à isoler.
   `FormDescription v-else`.
 - **Corrigé** : la règle de nommage reste affichée sous l'erreur ; l'icône
   d'erreur revient, dans `FormMessage`, donc pour tous les formulaires.
-- **Reporté à [E-21](#e-21)** : le marquage des champs valides (bordure verte,
-  coche) demande une couleur « succès » que la palette n'a pas.
+- **Corrigé depuis** (lot « tables et formulaires » de la DA) : le marquage
+  des champs valides, reporté un temps à [E-21](#e-21), est une bordure
+  `--success` portée par `aria-invalid="false"`.
 
 <a id="e-09"></a>
 
@@ -285,6 +286,11 @@ doit exister dans la nouvelle palette.
   rendait les couleurs Bootstrap par défaut (secondary `#6c757d`, danger
   `#dc3545`, info `#17a2b8`). 45 occurrences de `text-secondary` dans 23
   fichiers ; `ui/button/Button.vue:75` pour `link`.
+- **Corrigé** avec la palette de la DA : `--secondary` devient le fond pâle
+  des tags, et les 45 `text-secondary` passent à `text-muted-foreground` (texte
+  secondaire) ou `text-primary` (liens, dont ceux de l'aide de COLF-02 et
+  USR-13) ; la variante `link` des boutons est fuchsia ; `--destructive` est le
+  rouge `#DC3545` du DS.
 
 <a id="e-21"></a>
 
@@ -300,8 +306,17 @@ doit exister dans la nouvelle palette.
 - **Cause** : `Alert`, `Toast`, `Badge` et `Button` n'ont pas de variante
   `info` ; `ApiAction/ResponseCard.vue:59-63` renvoie encore `secondary` /
   `danger`, que `ui/alert/Alert.vue` ne connaît pas.
-- **Aussi** : le marquage des champs valides de la v4 (bordure verte et coche
-  sur ENV-03, C02), reporté d'[E-08](#e-08) faute de couleur « succès ».
+- **Corrigé** avec la palette de la DA : tokens `--success`, `--warning` et
+  `--info`, variantes `info` et `success` sur `Alert`, `Toast`, `Badge` et
+  `Button`. Les alertes et toasts cyan de la v4 repassent en `info`, les
+  pastilles « Filters are being applied » et « controller : action » aussi ;
+  `ResponseCard` renvoie `success` / `destructive` ; la pastille « new
+  documents » devient verte, comme son infobulle le promet. **Voulu** : RUN
+  reste fuchsia, c'est l'action principale de l'écran (« The One Accent Rule »).
+- **Corrigé** (report d'[E-08](#e-08)) : un champ touché et valide porte
+  `aria-invalid="false"`, et `Input` l'affiche en bordure `--success`. La coche
+  de la v4 n'est pas reprise : l'icône d'erreur de `FormMessage` dit l'état
+  en erreur, la bordure suffit à l'état valide.
 
 <a id="e-22"></a>
 
@@ -316,6 +331,11 @@ doit exister dans la nouvelle palette.
   § 3 veut qu'un titre porte sa taille, sans décider de la réduire.
   `Common/Filters/{FavoriteFilters,HistoryFilter}.vue` portent encore des
   classes Bootstrap (`list-group`, `h4`).
+- **Tranché par la DA** : les titres d'états vides prennent l'échelle du DS,
+  « Headline » (Montserrat 800, 26 px) pour les grands états à icône,
+  « Title » (Ubuntu 700, 16 px) pour les états en ligne (tableaux, filtres).
+  Le fond gris de la v4 n'est pas repris : les cartes blanches se détachent
+  désormais du fond de page (Page Mist).
 
 <a id="e-23"></a>
 
@@ -326,6 +346,11 @@ doit exister dans la nouvelle palette.
   formulaires en `label-cols` (C01, C05, C10, C13, C14, C15, C44, C70, C94).
 - **À trancher par la DA** : disposition décidée par personne ; les champs
   désactivés ont aussi perdu leur fond gris (C45).
+- **Tranché par la DA** : les libellés restent au-dessus des champs, en
+  capitales, style « Label » du DS (Ubuntu 700, 11 px, +0,07em, Label Slate).
+  Les libellés d'option (case « Use SSL », « Remove anonymous user
+  credentials ») restent en casse normale. Les champs désactivés prennent le
+  fond Table Head du DS (`bg-subtle`) au lieu d'une opacité réduite.
 
 <a id="e-24"></a>
 
@@ -340,6 +365,12 @@ doit exister dans la nouvelle palette.
 - **Cause** : `CreateEnvironmentPage.vue:4-18`, `SelectEnvironmentPage.vue` ;
   `ui/card/Card.vue` impose `py-6`, que `Common/Filters/Filters.vue:2`
   n'annule pas.
+- **Corrigé** : la carte des filtres n'a plus de bande vide (`gap-0 py-0`, le
+  bandeau porte sa marge). **Tranché par la DA** : pas de bandeaux gris
+  d'en-tête ni de pied de carte, le DS sépare par filets et ombres ; le
+  titre de marque en Gobold tient lieu de jumbotron sur les pages de
+  connexion. `Signup.vue` et `KuzzleErrorPage.vue` ont perdu le leur au
+  lot « cartes » de la mise en page.
 
 <a id="e-25"></a>
 
@@ -350,6 +381,10 @@ doit exister dans la nouvelle palette.
 - **Cause** : `striped` et `bordered` de `b-table` ne sont pas repris ;
   [ADR-0011](../adr/0011-table-sans-data-table.md) ne décide pas de les
   retirer. En-têtes réduits à 12 px gris.
+- **Tranché par la DA** : ni lignes alternées ni bordures de cellules ; des
+  filets Hairline entre les lignes, le survol en Row Hover, l'en-tête sur fond
+  Table Head (`bg-subtle`) en libellé de section du DS (capitales 11 px, Label
+  Slate). Le tableau a un fond de carte, il ne repose plus sur le fond de page.
 
 <a id="e-26"></a>
 
@@ -360,6 +395,13 @@ doit exister dans la nouvelle palette.
   → `outline` ; `outline-danger` → `destructive` plein, rose même désactivé ;
   `light` → `outline` ; « Delete index / collection » passent en rouge.
 - **À trancher par la DA.**
+- **Tranché par la DA** (`DESIGN.md`, « Buttons ») : les conversions sont
+  conservées. `outline` est le bouton neutre (Cancel, Export Mapping, Generate
+  Raw JSON) ; `destructive` est plein, en Danger `#DC3545`, et une suppression
+  est rouge partout, menus compris. Un bouton désactivé garde sa variante à
+  50 % d'opacité, quelle qu'elle soit. Les boutons passent en Ubuntu 500
+  13,5 px ; les champs prennent le focus du DS (bordure Captain Blue et halo),
+  les contrôles un anneau Captain Blue au clavier seulement.
 
 ---
 

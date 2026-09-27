@@ -1,0 +1,25 @@
+/*
+ * Polices de la DA Kuzzle (ADR-0043, ADR-0047), toutes servies par la console :
+ * elle tourne en image Docker, parfois hors ligne, et ne dépend d'aucun CDN.
+ *
+ * - Ubuntu (texte et interface) et Montserrat (titres) viennent de
+ *   `@fontsource`, qui fournit les fichiers et leurs `@font-face`. On
+ *   n'importe que les graisses que `DESIGN.md` emploie.
+ * - Gobold (titres de marque) est dans le dépôt depuis la v4 ; sa licence est
+ *   confirmée depuis le 2026-09-26. Le fichier n'a qu'une graisse, déclarée
+ *   en 700 : c'est celle que demande `DESIGN.md`, et le navigateur n'a pas à
+ *   synthétiser un faux gras par-dessus une police déjà grasse.
+ * - Pas de police mono : la pile système de `--font-mono` suffit.
+ */
+@import '@fontsource/ubuntu/400.css';
+@import '@fontsource/ubuntu/500.css';
+@import '@fontsource/ubuntu/700.css';
+@import '@fontsource/montserrat/800.css';
+
+@font-face {
+  font-display: swap;
+  font-family: 'Gobold';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/gobold/Gobold.ttf.woff') format('woff');
+}

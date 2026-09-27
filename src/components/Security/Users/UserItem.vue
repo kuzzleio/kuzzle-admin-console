@@ -11,6 +11,7 @@
       <Checkbox
         :id="checkboxId"
         v-model="checked"
+        :aria-label="`Select user ${document.id}`"
         class="me-2"
         :data-cy="`UserListItem-checkbox--${document.id}`"
         @change="notifyCheckboxClick"
@@ -24,7 +25,7 @@
             class="code"
             :data-cy="`local-strategy-username-${localStrategyUsername}`"
           >
-            <i class="fas fa-user text-secondary" title="Username (local strategy)" />
+            <i class="fas fa-user text-muted-foreground" title="Username (local strategy)" />
             {{ localStrategyUsername }}
           </span>
           <span
@@ -36,10 +37,8 @@
           >
         </div>
         <div class="flex flex-row flex-wrap gap-1 py-1">
-          <Badge v-for="profile in profileList" :key="profile">
-            <router-link class="truncate text-primary-foreground" :to="profileRoute(profile)">{{
-              profile
-            }}</router-link>
+          <Badge v-for="profile in profileList" :key="profile" variant="info">
+            <router-link class="truncate" :to="profileRoute(profile)">{{ profile }}</router-link>
           </Badge>
         </div>
       </div>

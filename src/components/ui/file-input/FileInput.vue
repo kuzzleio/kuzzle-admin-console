@@ -70,9 +70,9 @@ export default defineComponent({
     classes(): string {
       return this.mergeClasses(
         'flex h-9 w-full min-w-0 cursor-pointer items-center overflow-hidden',
-        'rounded-md border border-input bg-background font-sans text-sm text-foreground',
+        'rounded-sm border border-input bg-card font-sans text-sm text-foreground',
         'transition-colors',
-        'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
+        'focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/10',
         'data-dragging:border-ring',
         this.disabled ? 'cursor-not-allowed opacity-50' : '',
       );

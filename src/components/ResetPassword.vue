@@ -1,6 +1,6 @@
 <template>
   <div class="ResetPassword flex min-h-screen items-center justify-center p-4">
-    <Card class="w-full max-w-2xl">
+    <Card class="w-full max-w-2xl shadow-signature">
       <CardContent>
         <div class="text-center">
           <img
