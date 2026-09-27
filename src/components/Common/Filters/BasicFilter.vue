@@ -80,6 +80,7 @@
                   <template v-if="andBlock.operator !== 'range'">
                     <Input
                       v-model="andBlock.value"
+                      aria-label="Value"
                       class="BasicFilter--value"
                       :data-cy="`BasicFilter-valueInput--${groupIndex}.${filterIndex}`"
                       placeholder="Value"
@@ -89,6 +90,7 @@
                   <template v-else>
                     <Input
                       v-model="andBlock.gt_value"
+                      aria-label="Range lower bound"
                       class="BasicFilter--gtValue"
                       data-cy="BasicFilter-operator-Range-Value1"
                       placeholder="Value 1"
@@ -96,6 +98,7 @@
                     />
                     <Input
                       v-model="andBlock.lt_value"
+                      aria-label="Range upper bound"
                       class="BasicFilter--ltValue"
                       data-cy="BasicFilter-operator-Range-Value2"
                       placeholder="Value 2"

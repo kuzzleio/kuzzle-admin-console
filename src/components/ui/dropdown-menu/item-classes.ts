@@ -22,7 +22,8 @@ export const itemClasses = cva(
     'px-2 py-1.5',
     'font-sans text-sm leading-normal',
     'outline-none transition-colors',
-    'focus-visible:bg-accent hover:bg-accent',
+    // Le fond Row Hover seul (1,1:1) ne signale pas le focus : filet Captain Blue.
+    'focus-visible:bg-accent focus-visible:shadow-[inset_3px_0_0_var(--color-ring)] hover:bg-accent',
   ].join(' '),
   {
     defaultVariants: {

@@ -85,6 +85,7 @@
                 <template v-if="field.key === 'acColumnTableActions'">
                   <div class="flex items-center gap-1">
                     <Checkbox
+                      :aria-label="`Select document ${item._id}`"
                       :checked="isChecked(item._id)"
                       :data-cy="`ColumnView-table-select-btn--${item._id}`"
                       @change="toggleSelectDocument(item._id)"

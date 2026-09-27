@@ -9,6 +9,7 @@
         </span>
         <Input
           v-focus
+          aria-label="Quick search"
           class="rounded-none border-0"
           data-cy="QuickFilter-input"
           :model-value="value"

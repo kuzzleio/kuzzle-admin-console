@@ -218,23 +218,24 @@ A cool, low-chroma neutral world with one warm, saturated accent.
 | `--foreground` | `#002835` | `--secondary` |
 | `--card` / `--popover` | `#FFFFFF` | `--surface-card` |
 | `--card-foreground` / `--popover-foreground` | `#002835` | `--text-strong` |
-| `--primary` | `#E64472` | `--primary` |
+| `--primary` | `#C93960` (console, ADR-0050) | `--primary-dark` ; le DS met `#E64472`, à 3,9:1 avec du blanc |
 | `--primary-foreground` | `#FFFFFF` | — |
 | `--secondary` | `#DAEDF6` | `--tertiary` |
 | `--secondary-foreground` | `#002835` | `--secondary` |
 | `--accent` | `#EEF4F8` | table row hover |
 | `--accent-foreground` | `#002835` | `--secondary` |
 | `--muted` | `#EEF1F5` | `--panel` |
-| `--muted-foreground` | `#6C757D` | `--secondary-light` |
+| `--muted-foreground` | `#5C6670` (console, ADR-0050) | `--secondary-light` (`#6C757D`, 4,4:1 sur le fond de page) |
 | `--destructive` | `#DC3545` | `--status-danger` |
-| `--border` / `--input` | `#D0DDE1` | `--grey-bright` |
+| `--border` | `#D0DDE1` | `--grey-bright` |
+| `--input` | `#7B939B` (console, ADR-0050) | bordure des champs à 3:1 ; le Hairline du DS n'atteint que 1,4:1 |
 | `--ring` | `#00536F` | `--secondary-captain` |
 
 The console adds tokens that shadcn-vue does not have, because it needs them:
 
 | Console token | Value | Design-system source |
 |---|---|---|
-| `--primary-hover` | `#C93960` | `--primary-dark` |
+| `--primary-hover` | `#B8325A` (console, ADR-0050) | un cran sous `--primary-dark` |
 | `--label` (`text-label-slate`) | `#43565B` | `--grey` |
 | `--success` / `--success-foreground` | `#3DDC84` / `#002835` | `--status-success` |
 | `--warning` / `--warning-foreground` | `#C9821F` / `#002835` | `--status-warning` |

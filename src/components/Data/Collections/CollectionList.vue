@@ -122,6 +122,7 @@
             <TableRow v-for="collection of rows" :key="collection.name">
               <TableCell>
                 <Checkbox
+                  :aria-label="`Select collection ${collection.name}`"
                   :checked="isChecked(collection)"
                   :data-cy="`CollectionList-checkbox--${collection.name}`"
                   @change="onCheckboxClick(collection)"

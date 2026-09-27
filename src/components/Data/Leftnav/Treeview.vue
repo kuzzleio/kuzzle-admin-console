@@ -11,6 +11,7 @@
       <div class="border-b border-border p-3">
         <Input
           v-model="filter"
+          aria-label="Search index and collection"
           data-cy="Treeview-filter"
           placeholder="Search index &amp; collection"
           type="search"

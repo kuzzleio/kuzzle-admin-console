@@ -57,7 +57,10 @@
       c'est-à-dire la hauteur réelle du contenu, sans nombre magique — même
       traitement que l'arborescence de Data.
     -->
-    <div class="grid transition-all" :class="expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'">
+    <div
+      class="grid transition-all motion-reduce:transition-none"
+      :class="expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+    >
       <div class="overflow-hidden">
         <pre class="ml-3 whitespace-pre-wrap">{{ getFilter() }}</pre>
       </div>

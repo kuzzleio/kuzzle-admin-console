@@ -50,9 +50,13 @@ export default {
   mounted() {
     nextTick(() => {
       /* eslint no-undef: 0 */
+      // `enableKeyboardAccessibility` : sans lui, Tab indente et le focus ne
+      // sort plus de l'éditeur au clavier (WCAG 2.1.2, audit de la DA).
       this.editor = ace.edit(this.$refs[this.id], {
+        enableKeyboardAccessibility: true,
         mode: 'ace/mode/json',
       });
+      this.editor.textInput.getElement().setAttribute('aria-label', 'JSON editor');
       this.editor.setTheme('ace/theme/tomorrow');
       this.editor.setFontSize(15);
       this.editor.getSession().setTabSize(2);

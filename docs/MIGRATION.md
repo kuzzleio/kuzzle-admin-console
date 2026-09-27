@@ -318,7 +318,8 @@ précisément ce qu'on achète.
 | 2. Primitives : boutons, focus (E-26) | ✅ |
 | 3. Rail de navigation ([ADR-0048](adr/0048-rail-de-navigation.md)) | ✅ |
 | 3. Cartes signature (une par écran), blocs gris de `Signup` et `KuzzleErrorPage` retirés | ✅ |
-| 3. Suite de la mise en page (raccourcis, lien d'évitement, place de la connexion dans le rail) | ⬜ |
+| 3. Audit `/impeccable` : repère `main`, lien d'évitement, `h1`, `lang`, contraste AA (ADR-0050), noms accessibles, focus des menus, éditeur JSON au clavier, mouvement réduit | ✅ |
+| 3. Reste de l'audit : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier | ⬜ |
 Le jeu sombre est défini mais branché sur rien.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
@@ -3371,3 +3372,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-26 | Polices de la DA embarquées (Ubuntu, Montserrat par `@fontsource`, Gobold) ; Cousine et Google Fonts retirés | [ADR-0047](adr/0047-polices-embarquees.md) |
 | 2026-09-27 | Rail de navigation à gauche, à la couleur de la connexion ; repli par bouton | [ADR-0048](adr/0048-rail-de-navigation.md) |
 | 2026-09-27 | Couleurs de connexion en tokens, au contraste AA ; élément actif du rail en fuchsia profond avec filet | [ADR-0049](adr/0049-couleurs-de-connexion-contrastees.md) |
+| 2026-09-27 | `--primary`, `--muted-foreground` et `--input` assombris d'un cran pour le contraste AA | [ADR-0050](adr/0050-contraste-aa-de-la-palette.md) |

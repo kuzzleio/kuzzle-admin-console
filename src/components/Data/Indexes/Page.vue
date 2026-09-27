@@ -107,6 +107,7 @@
           <TableRow v-for="index of rows" :key="index.name">
             <TableCell>
               <Checkbox
+                :aria-label="`Select index ${index.name}`"
                 :checked="isChecked(index)"
                 :data-cy="`IndexesPage-checkbox--${index.name}`"
                 @change="onCheckboxClick(index)"

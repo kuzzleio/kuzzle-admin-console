@@ -35,8 +35,10 @@
   --popover-foreground: #002835;
 
   /* Marque — un seul accent saturé, le fuchsia (« The One Accent Rule ») */
-  --primary: #e64472;
-  --primary-hover: #c93960;
+  /* Fuchsia assombri d'un cran (ADR-0050) : le `#E64472` du DS ne porte du
+     texte blanc qu'à 3,9:1, et ne se lit comme lien qu'à 3,9:1 sur blanc. */
+  --primary: #c93960;
+  --primary-hover: #b8325a;
   --primary-foreground: #ffffff;
   /* Soft Sky : tags, remplissages doux */
   --secondary: #daedf6;
@@ -47,7 +49,8 @@
 
   /* Neutres */
   --muted: #eef1f5;
-  --muted-foreground: #6c757d;
+  /* Assombri (ADR-0050) : `#6C757D` tombait à 4,4:1 sur le fond de page. */
+  --muted-foreground: #5c6670;
   /* Table Head : en-têtes de tableau, champs désactivés */
   --subtle: #f9fafd;
   /* Label Slate : libellés en capitales */
@@ -67,7 +70,9 @@
 
   /* Traits — Hairline pour bordures et champs, Captain Blue pour le focus */
   --border: #d0dde1;
-  --input: #d0dde1;
+  /* Bordure des champs à 3:1 (WCAG 1.4.11, ADR-0050) ; `--border` reste le
+     filet Hairline des séparateurs. */
+  --input: #7b939b;
   --ring: #00536f;
 
   /* Notifications temps réel — quatre familles à distinguer d'un coup d'œil

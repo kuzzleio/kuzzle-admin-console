@@ -106,7 +106,7 @@
         class="flex flex-wrap items-center gap-2 md:mt-auto md:flex-col md:flex-nowrap md:items-stretch md:gap-1 md:pt-4"
       >
         <div :class="['min-w-0 md:px-5 md:pb-2', collapsed ? 'md:hidden' : '']">
-          <span class="hidden text-label font-bold uppercase text-white/70 md:block"
+          <span class="hidden text-label font-bold uppercase text-white/90 md:block"
             >Signed in as</span
           >
           <b class="MainMenu-username block max-w-full truncate" :title="currentUserName">{{
@@ -116,7 +116,7 @@
         <div :class="['min-w-0 md:px-5 md:pb-2', collapsed ? 'md:px-3' : '']">
           <span
             :class="[
-              'hidden text-label font-bold uppercase text-white/70',
+              'hidden text-label font-bold uppercase text-white/90',
               collapsed ? '' : 'md:block md:pb-1',
             ]"
             >Connection</span
@@ -146,7 +146,7 @@
           :class="[
             itemClasses,
             hoverItemClasses,
-            'hidden cursor-pointer border-0 bg-transparent text-white/70 md:flex',
+            'hidden cursor-pointer border-0 bg-transparent text-white/90 md:flex',
           ]"
           data-cy="MainMenu-collapseBtn"
           type="button"

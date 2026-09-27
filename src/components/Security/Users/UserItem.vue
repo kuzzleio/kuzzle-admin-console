@@ -11,6 +11,7 @@
       <Checkbox
         :id="checkboxId"
         v-model="checked"
+        :aria-label="`Select user ${document.id}`"
         class="me-2"
         :data-cy="`UserListItem-checkbox--${document.id}`"
         @change="notifyCheckboxClick"

@@ -11,6 +11,7 @@
       <Checkbox
         :id="checkboxId"
         v-model="checked"
+        :aria-label="`Select profile ${document._id}`"
         :data-cy="`ProfileListItem-checkbox--${document._id}`"
         @change="notifyCheckboxClick"
       />
