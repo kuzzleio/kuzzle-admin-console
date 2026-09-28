@@ -63,7 +63,7 @@ celles des tokens, et les cibles restent à 24 px au moins (WCAG 2.5.8). Chaque
 diff se relit contre l'ancienne primitive : un comportement qu'elle avait et
 que l'amont n'a pas est soit retrouvé, soit nommé dans la PR.
 
-**2. Le comportement vient de `reka-ui`.** `Dialog`, `DropdownMenu`, `Select`,
+**2. Le comportement vient de `reka-ui`.** `DropdownMenu`, `Select`, `Dialog`,
 `Tabs`, `Pagination`, `TagsInput` et `Resizable` passent sur leurs racines
 `reka-ui`, et `Button` sur `Primitive` (`as-child` compris). `floating-panel.ts`
 et `class-merge.ts` partent avec la dernière famille qui s'en sert.
@@ -95,14 +95,19 @@ héritées de Bootstrap (1020 à 1050) disparaissent.
 1. le socle (`reka-ui`, `components.json`), `Button`, puis les primitives sans
    comportement : `Badge`, `Card`, `Alert`, `Label`, `Input`, `Textarea`,
    `Table`, `Spinner` ;
-2. `Dialog` ;
-3. `DropdownMenu` ;
-4. `Select`, puis le retrait de `floating-panel.ts` ;
+2. `DropdownMenu` ;
+3. `Select`, puis le retrait de `floating-panel.ts` ;
+4. `Dialog` ;
 5. `Tabs` ;
 6. `Pagination` ;
 7. `TagsInput` ;
 8. `Resizable` ;
 9. `Toast`.
+
+Les panneaux flottants passent avant la modale : une modale de `reka-ui` rend
+le reste de la page inerte (`pointer-events: none` sur `<body>`, piège de
+focus), et un panneau écrit à la main, ouvert dans `<body>` depuis la modale,
+ne se clique plus. Des couches de `reka-ui` imbriquées, elles, se connaissent.
 
 Chaque lot passe les 17 specs contre un build et une stack neuve. Une spec ne
 change que si elle vise un DOM que l'amont rend autrement, et elle vise alors

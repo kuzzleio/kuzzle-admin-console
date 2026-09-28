@@ -904,9 +904,9 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
 - [x] Retirer `@vue/compat` (ADR-0036)
 - [ ] Vrai shadcn-vue à la place des primitives écrites à la main ([ADR-0054](adr/0054-vrai-shadcn-vue.md)), une famille par lot :
   - [x] 1. Socle (`reka-ui`, `components.json`), `Button`, `Badge`, `Card`, `Alert`, `Label`, `Input`, `Textarea`, `Table`, `Spinner`
-  - [ ] 2. `Dialog`
-  - [ ] 3. `DropdownMenu`
-  - [ ] 4. `Select`, retrait de `floating-panel.ts`
+  - [ ] 2. `DropdownMenu`
+  - [ ] 3. `Select`, retrait de `floating-panel.ts`
+  - [ ] 4. `Dialog`
   - [ ] 5. `Tabs`
   - [ ] 6. `Pagination`
   - [ ] 7. `TagsInput`
