@@ -3324,6 +3324,24 @@ Gabarit à copier :
   `controller: null` : elle répond 400, pas 200.
 - **Ref** : lot « cibles, titres et raccourcis », le 2026-09-28.
 
+#### G-084 — Un clic pendant une redirection ouvre un menu que la page emporte
+
+- **Contexte** : suite complète, `environments.spec.js`, test « Should be able
+  to set the tab title of an environment ».
+- **Symptôme** : une fois sur trois suites environ, `Expected to find element:
+  [data-cy=EnvironmentSwitch-env_localEnvTestTabTitle] …, but never found it`,
+  sur les trois tentatives. Rejouée seule, la spec passe. La capture d'échec
+  montre la page de login avec le sélecteur fermé, et le journal Cypress note
+  `(new url) /login?to=Indexes` juste **après** le clic.
+- **Cause** : créer une connexion redirige vers `/login`. Le test cliquait le
+  sélecteur dès qu'il était visible, c'est-à-dire parfois encore sur la page de
+  création. Le menu s'ouvrait, puis la navigation démontait la page et lui
+  avec. Rien ne le rouvrait.
+- **Solution** : attendre la page d'arrivée (`cy.url().should('contain',
+  'login')`) avant le clic. Le test voisin, « Should be able to create a
+  valid environment », le faisait déjà.
+- **Ref** : validation d'ADR-0053, le 2026-09-28.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
