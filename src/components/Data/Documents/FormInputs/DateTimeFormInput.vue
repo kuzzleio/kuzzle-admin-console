@@ -28,14 +28,10 @@
 </template>
 
 <script>
-import moment from 'moment';
-
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-const DATE_PICKER_FORMAT = 'YYYY-MM-DD';
-const TIME_PICKER_FORMAT = 'HH:mm:ss';
+import { fromDateTimeInputs, toDateInputValue, toTimeInputValue } from '@/lib/date';
 
 /*
  * Le champ date est le seul de la console (ADR-0015). Il s'appuie sur les
@@ -72,10 +68,12 @@ export default {
     }
 
     // if no date format specified, ES save date in ms timestamp
-    const dateTime = this.schema.mapping.format ? moment(this.value) : moment(parseInt(this.value));
+    const dateTime = this.schema.mapping.format
+      ? new Date(this.value)
+      : new Date(parseInt(this.value));
 
-    this.date = dateTime.format(DATE_PICKER_FORMAT);
-    this.time = dateTime.format(TIME_PICKER_FORMAT);
+    this.date = toDateInputValue(dateTime);
+    this.time = toTimeInputValue(dateTime);
   },
   methods: {
     /*
@@ -93,7 +91,7 @@ export default {
       this.emitValue();
     },
     emitValue() {
-      this.$emit('input', moment(`${this.date} ${this.time}`).format('x'));
+      this.$emit('input', fromDateTimeInputs(this.date, this.time));
     },
   },
 };

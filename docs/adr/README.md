@@ -73,6 +73,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0049](0049-couleurs-de-connexion-contrastees.md) | Les couleurs de connexion passent le contraste AA | Acceptée |
 | [0050](0050-contraste-aa-de-la-palette.md) | La palette de la DA est ajustée au contraste AA | Acceptée |
 | [0051](0051-criteres-de-sortie-de-la-v5.md) | Les critères de sortie de la v5 | Acceptée |
+| [0052](0052-dates-natives-plutot-que-moment.md) | Dates natives plutôt que `moment` | Acceptée |
 
 ## Gabarit
 

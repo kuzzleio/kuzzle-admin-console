@@ -989,7 +989,7 @@ lui-même (§ 3.2).
 |---|---|---|
 | ~~`kuzzle-sdk` v6 **et** v7~~ | **Conservé** — c'est le support des backends Kuzzle v1, pas de la dette. Voir [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) | ➖ |
 | ~~`bluebird`~~ | **Retiré** : deux imports, qui ne servaient qu'à `Promise.all` et `Promise.reject`, natifs l'un et l'autre | ✅ |
-| `moment` | en maintenance depuis 2020 → `date-fns` ou `Temporal` | ⬜ |
+| ~~`moment`~~ | **Retiré**, sans successeur : `src/lib/date.ts` couvre les cinq usages ([ADR-0052](adr/0052-dates-natives-plutot-que-moment.md)) | ✅ |
 | ~~`velocity-animate`~~ | **Retiré** — son seul client était `Common/Stepper.vue`, code mort (ADR-0016) | ✅ |
 | ~~`@fortawesome/fontawesome-free`~~ | **Conservé** — le design system Kuzzle en fait son système d'icônes ([ADR-0043](adr/0043-da-kuzzle-pour-la-console.md)) | ➖ |
 | `json-formatter-js` | utilisé via une directive ; à réévaluer | ⬜ |
@@ -3440,3 +3440,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-27 | Couleurs de connexion en tokens, au contraste AA ; élément actif du rail en fuchsia profond avec filet | [ADR-0049](adr/0049-couleurs-de-connexion-contrastees.md) |
 | 2026-09-27 | `--primary`, `--muted-foreground` et `--input` assombris d'un cran pour le contraste AA | [ADR-0050](adr/0050-contraste-aa-de-la-palette.md) |
 | 2026-09-28 | Critères de sortie de la v5 : audit DA, dette, #1092, shadcn-vue, `apexcharts` 5, thème sombre, Composition API, revue de sortie, puis bascule `master` → `4-stable` | [ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md) |
+| 2026-09-28 | `moment` retiré sans successeur : cinq fonctions sur `Date` dans `src/lib/date.ts`, formats identiques | [ADR-0052](adr/0052-dates-natives-plutot-que-moment.md) |

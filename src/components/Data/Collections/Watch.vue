@@ -209,7 +209,6 @@
 
 <script>
 import { isEqual } from 'lodash';
-import moment from 'moment';
 import { mapState } from 'pinia';
 
 import JsonEditor from '../../Common/JsonEditor.vue';
@@ -220,6 +219,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import JsonFormatter from '@/directives/json-formatter.directive';
+import { formatClockTime } from '@/lib/date';
 import * as filterManager from '@/services/filterManager';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
@@ -303,7 +303,7 @@ export default {
       if (!this.notifications.length) {
         return null;
       }
-      return moment(this.lastNotification.timestamp).format('H:mm:ss');
+      return formatClockTime(this.lastNotification.timestamp);
     },
     realtimeQuery() {
       try {

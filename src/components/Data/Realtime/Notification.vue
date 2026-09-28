@@ -23,10 +23,10 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import moment from 'moment';
 
 import { Card } from '@/components/ui/card';
 import JsonFormatter from '@/directives/json-formatter.directive';
+import { formatClockTime } from '@/lib/date';
 import { truncateName } from '@/utils';
 
 interface RealtimeNotification {
@@ -120,7 +120,7 @@ export default defineComponent({
       return 'file';
     },
     time(): string {
-      return moment(this.notification.timestamp).format('H:mm:ss');
+      return formatClockTime(this.notification.timestamp);
     },
     text(): string {
       switch (this.notification.action) {
