@@ -1,22 +1,13 @@
 <template>
-  <thead :class="classes" data-slot="table-header" v-bind="$attrs">
+  <thead :class="cn('border-b border-border bg-subtle', props.class)" data-slot="table-header">
     <slot />
   </thead>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-export default defineComponent({
-  name: 'TableHeader',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('border-b border-border bg-subtle');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

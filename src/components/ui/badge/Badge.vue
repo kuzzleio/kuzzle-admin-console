@@ -1,82 +1,29 @@
 <template>
-  <component :is="as" :class="classes" data-slot="badge" v-bind="$attrs">
+  <Primitive
+    :as="as"
+    :as-child="asChild"
+    :class="cn(badgeVariants({ variant }), props.class)"
+    data-slot="badge"
+  >
     <slot />
-  </component>
+  </Primitive>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import { cva, type VariantProps } from 'class-variance-authority';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { Primitive, type PrimitiveProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-/*
- * Badge — API publique de shadcn-vue (ADR-0009).
- *
- * Remplace `<b-badge>`, dont la console utilise surtout les variantes
- * `primary`, `secondary`, `danger` et `light`. `light` n'existe pas en amont :
- * le rendu correspondant se fait avec `variant="secondary"`.
- *
- * `warning`, `success` et `info` sont en plus de l'amont, sur les tokens
- * d'état, comme sur `Alert` et `Button` : les notifications temps réel
- * distinguent « mis à jour » de « supprimé », et les deux ne peuvent pas être
- * rouges.
- *
- * `default` (fuchsia) est réservé aux compteurs : c'est le « count badge » du
- * DS, et le fuchsia est le seul accent de l'écran. Un tag (nom de profil,
- * controller : action) prend `info`, le « tag » Soft Sky du DS.
- *
- * Le preflight n'étant pas chargé (ADR-0008), la bordure et le rayon sont
- * posés explicitement.
- */
-export const badgeVariants = cva(
-  [
-    'inline-flex items-center gap-1.5 shrink-0',
-    'border border-transparent rounded-pill',
-    'px-2 py-0.5',
-    'font-sans text-xs font-medium leading-normal whitespace-nowrap',
-    'transition-colors',
-  ].join(' '),
-  {
-    defaultVariants: {
-      variant: 'default',
-    },
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground',
-        destructive: 'bg-destructive text-destructive-foreground',
-        outline: 'border-border text-foreground',
-        secondary: 'bg-muted text-muted-foreground',
-        // Info en « tag » du DS : Soft Sky et Captain Blue, pas un aplat.
-        info: 'bg-secondary text-info',
-        success: 'bg-success text-success-foreground',
-        warning: 'bg-warning text-warning-foreground',
-      },
-    },
-  },
-);
+import { badgeVariants, type BadgeVariants } from '.';
 
-type BadgeVariantProps = VariantProps<typeof badgeVariants>;
-export type BadgeVariant = NonNullable<BadgeVariantProps['variant']>;
+/* Badge de shadcn-vue (ADR-0054). Les variantes sont dans `index.ts`. */
+interface Props extends PrimitiveProps {
+  class?: HTMLAttributes['class'];
+  variant?: BadgeVariants['variant'];
+}
 
-export default defineComponent({
-  name: 'Badge',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  props: {
-    as: {
-      default: 'span',
-      type: [String, Object] as PropType<string | Record<string, unknown>>,
-    },
-    variant: {
-      default: 'default',
-      type: String as PropType<BadgeVariant>,
-    },
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses(badgeVariants({ variant: this.variant }));
-    },
-  },
+const props = withDefaults(defineProps<Props>(), {
+  as: 'span',
 });
 </script>

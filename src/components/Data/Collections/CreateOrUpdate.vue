@@ -126,7 +126,7 @@
 
       <CardFooter class="justify-end gap-2">
         <Button
-          as="router-link"
+          :as="RouterLink"
           :to="{ name: 'Collections', params: { indexName: index } }"
           variant="outline"
           >Cancel</Button
@@ -140,9 +140,11 @@
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { requiredUnless } from '@vuelidate/validators';
 import { mapState } from 'pinia';
+import { RouterLink } from 'vue-router';
 
 import JsonEditor from '../../Common/JsonEditor.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -201,6 +203,7 @@ export default {
   },
   data() {
     return {
+      RouterLink: markRaw(RouterLink),
       name: this.collection || '',
       rawMapping: '{}',
     };

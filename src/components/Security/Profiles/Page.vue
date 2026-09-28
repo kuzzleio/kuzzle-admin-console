@@ -7,7 +7,7 @@
         `router-link` ignore `disabled` et resterait cliquable (G-016).
       -->
       <Button
-        :as="canCreateProfile ? 'router-link' : 'button'"
+        :as="canCreateProfile ? RouterLink : 'button'"
         data-cy="ProfilesManagement-createBtn"
         :disabled="!canCreateProfile"
         :to="canCreateProfile ? { name: 'SecurityProfilesCreate' } : undefined"
@@ -43,7 +43,9 @@
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'pinia';
+import { RouterLink } from 'vue-router';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -64,6 +66,11 @@ export default {
     List,
     ListNotAllowed,
     Headline,
+  },
+  data() {
+    return {
+      RouterLink: markRaw(RouterLink),
+    };
   },
   computed: {
     ...mapState(useAuthStore, ['canSearchProfile', 'canCreateProfile']),

@@ -902,7 +902,16 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
 
 - [x] Remplacer les quatre bibliothèques Vue 2 (ADR-0032 à ADR-0035)
 - [x] Retirer `@vue/compat` (ADR-0036)
-- [ ] Vrai shadcn-vue à la place des primitives écrites à la main
+- [ ] Vrai shadcn-vue à la place des primitives écrites à la main ([ADR-0054](adr/0054-vrai-shadcn-vue.md)), une famille par lot :
+  - [x] 1. Socle (`reka-ui`, `components.json`), `Button`, `Badge`, `Card`, `Alert`, `Label`, `Input`, `Textarea`, `Table`, `Spinner`
+  - [ ] 2. `Dialog`
+  - [ ] 3. `DropdownMenu`
+  - [ ] 4. `Select`, retrait de `floating-panel.ts`
+  - [ ] 5. `Tabs`
+  - [ ] 6. `Pagination`
+  - [ ] 7. `TagsInput`
+  - [ ] 8. `Resizable`
+  - [ ] 9. `Toast`
 - [ ] Composition API
 
 ### 1.6 Critères de sortie — ADR-0051
@@ -3342,6 +3351,37 @@ Gabarit à copier :
   valid environment », le faisait déjà.
 - **Ref** : validation d'ADR-0053, le 2026-09-28.
 
+#### G-085 — `Primitive` de `reka-ui` rend `as="router-link"` en balise inconnue
+
+- **Contexte** : critère 4 d'ADR-0051, `Button` passé sur `Primitive`
+  ([ADR-0054](adr/0054-vrai-shadcn-vue.md)).
+- **Symptôme** (à la lecture, avant tout build) : `<Button as="router-link"
+  :to="…">` rendrait un élément `<router-link to="[object Object]">`, qui ne
+  navigue pas. Aucune erreur, aucun avertissement de Vue.
+- **Cause** : `Primitive` appelle `h(props.as, attrs, …)` avec la chaîne telle
+  quelle. `h()` ne résout pas un nom de composant : seuls le compilateur de
+  templates et `<component :is>` le font, par `resolveComponent`. L'ancien
+  `Button` passait par `<component :is>`, qui résolvait `router-link`.
+- **Solution** : passer le composant lui-même, `:as="RouterLink"`, importé de
+  `vue-router` et exposé par `markRaw` dans `data()` tant que le composant est
+  en Options API. Ou `as-child` autour d'un `<router-link>`.
+- **À retenir** : toute primitive posée sur `Primitive` (`DropdownMenuItem`
+  aussi, dans son lot) a le même comportement. Chercher `'router-link'` avant
+  de fusionner une famille.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-086 — `shadcn-vue add` installe `@lucide/vue` même sans icône
+
+- **Contexte** : premier appel de la CLI (`npx shadcn-vue@2.8.2 add button`).
+- **Symptôme** : `package.json` gagne `@lucide/vue`, alors que `Button` n'importe
+  aucune icône.
+- **Cause** : la CLI installe la bibliothèque d'icônes de `components.json`
+  (`iconLibrary`) à chaque appel, quel que soit le composant.
+- **Solution** : retirer `@lucide/vue` après chaque appel et remplacer les
+  icônes lucide des fichiers produits par Font Awesome (DESIGN.md). La CLI
+  n'a pas de `--dry-run` : appeler sur un arbre propre, puis relire `git diff`.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
 #### G-092 — Une spec verte en local, rouge en CI : la barre d'outils qui ne passe pas à la ligne
 
 - **Contexte** : `docs.spec`, « Should add a column when a field is picked in
@@ -3484,3 +3524,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-28 | Critères de sortie de la v5 : audit DA, dette, #1092, shadcn-vue, `apexcharts` 5, thème sombre, Composition API, revue de sortie, puis bascule `master` → `4-stable` | [ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md) |
 | 2026-09-28 | `moment` retiré sans successeur : cinq fonctions sur `Date` dans `src/lib/date.ts`, formats identiques | [ADR-0052](adr/0052-dates-natives-plutot-que-moment.md) |
 | 2026-09-28 | `json-formatter-js` et `v-json-formatter` remplacés par un composant `JsonTree` (clavier, tokens, pas de style injecté) | [ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md) |
+| 2026-09-28 | Le vrai shadcn-vue, famille par famille : CLI puis report de la DA, comportement de `reka-ui`, écarts nommés (Font Awesome, `Checkbox`/`Switch` natifs, `Form`, `FileInput`) | [ADR-0054](adr/0054-vrai-shadcn-vue.md) |

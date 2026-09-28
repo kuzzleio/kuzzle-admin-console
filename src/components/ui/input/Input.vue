@@ -1,76 +1,32 @@
 <template>
-  <input :class="classes" :value="modelValue" v-bind="$attrs" @input="handleInput" />
+  <input v-model="modelValue" :class="cn(inputClasses, props.class)" data-slot="input" />
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { useVModel } from '@vueuse/core';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
+
+import { inputClasses } from '.';
 
 /*
- * Input — API publique de shadcn-vue (ADR-0009).
- *
- * La prop et l'événement portent les noms de l'amont Vue 3 — `modelValue` et
- * `update:modelValue` — alors que le `v-model` de Vue 2 attend `value` et
- * `input`. L'option `model` de Vue 2 fait le pont : `<Input v-model="x" />`
- * fonctionne ici, et les noms n'auront pas à changer en phase 4.
- *
- * Le preflight n'étant pas chargé (ADR-0008), un `<input>` garde les styles par
- * défaut du navigateur et le reboot de Bootstrap : `appearance-none`, la
- * bordure, le fond et la police sont posés explicitement.
- *
- * La méthode s'appelle `handleInput` et non `onInput` : un `@input` posé par le
- * site d'appel — `DateTimeFormInput` le fait — arrive ici comme une prop nommée
- * `onInput`, qui masquerait la méthode (G-047).
+ * Input de shadcn-vue (ADR-0054). `v-model` passe par `useVModel` en mode
+ * passif, comme en amont : sans `v-model` au site d'appel, le champ garde sa
+ * saisie pour lui.
  */
-export const inputClasses = [
-  'flex h-9 w-full min-w-0',
-  'appearance-none rounded-sm border border-input bg-card',
-  'px-3 py-1',
-  'font-sans text-sm leading-none text-foreground',
-  'transition-colors outline-none',
-  'placeholder:text-muted-foreground',
-  // `type="file"` : l'input natif dessine son propre bouton, que le preflight
-  // absent laisse tel quel. Les variantes `file:` le raccordent aux tokens.
-  'file:mr-3 file:border-0 file:bg-transparent file:font-sans file:text-sm file:font-medium file:text-foreground',
-  'cursor-pointer file:cursor-pointer',
-  // L'état invalide se déclare avec `aria-invalid`, pas avec une prop `state`
-  // comme `b-input` : l'attribut porte l'information pour le lecteur d'écran
-  // **et** pour la feuille de styles, au lieu de la dupliquer.
-  'aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive aria-invalid:focus-visible:ring-destructive/10',
-  // Un champ vérifié et valide porte `aria-invalid="false"` : bordure verte,
-  // comme `b-input` avec `:state="true"` (E-08). Sans l'attribut, rien. Un
-  // `aria-invalid` booléen se rend `"false"` : le site d'appel passe
-  // `undefined` plutôt que `false`, et un champ désactivé n'est jamais vert.
-  'aria-[invalid=false]:enabled:border-success',
-  // Focus du DS pour les champs : bordure Captain Blue et halo de 3 px à
-  // 10 % (DESIGN.md, « Focus ring »), plutôt qu'un anneau décalé.
-  'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/10',
-  'disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted-foreground',
-].join(' ');
+const props = defineProps<{
+  class?: HTMLAttributes['class'];
+  defaultValue?: string | number;
+  modelValue?: string | number;
+}>();
 
-export default defineComponent({
-  name: 'Input',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  props: {
-    modelValue: {
-      default: '',
-      type: [String, Number] as PropType<string | number>,
-    },
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses(inputClasses);
-    },
-  },
-  methods: {
-    // Le `@input` du site d'appel arrive dans `$attrs` sous la clé `onInput`
-    // et Vue fusionne les deux gestionnaires sur l'élément, il ne les
-    // substitue pas : celui du site d'appel reste appelé.
-    handleInput(event: Event): void {
-      this.$emit('update:modelValue', (event.target as HTMLInputElement).value);
-    },
-  },
+const emits = defineEmits<{
+  (e: 'update:modelValue', payload: string | number): void;
+}>();
+
+const modelValue = useVModel(props, 'modelValue', emits, {
+  defaultValue: props.defaultValue,
+  passive: true,
 });
 </script>

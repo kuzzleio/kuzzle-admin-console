@@ -1,24 +1,16 @@
 <template>
-  <p :class="classes" v-bind="$attrs">
+  <p
+    :class="cn('font-sans text-sm leading-normal text-muted-foreground', props.class)"
+    data-slot="card-description"
+  >
     <slot />
   </p>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-/* Description de Card. `m-0` est nécessaire : sans preflight, la marge du
- * navigateur sur `<p>` subsiste (ADR-0008). */
-export default defineComponent({
-  name: 'CardDescription',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('font-sans text-sm leading-normal text-muted-foreground m-0');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

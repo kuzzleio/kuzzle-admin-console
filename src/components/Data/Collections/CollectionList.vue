@@ -13,7 +13,7 @@
           </span>
           <span class="flex items-center gap-2">
             <Button
-              :as="canCreateCollection(indexName) && index ? 'router-link' : 'button'"
+              :as="canCreateCollection(indexName) && index ? RouterLink : 'button'"
               data-cy="CollectionList-create"
               :disabled="!canCreateCollection(indexName) || !index"
               :title="
@@ -149,7 +149,7 @@
               </TableCell>
               <TableCell class="text-right">
                 <Button
-                  as="router-link"
+                  :as="RouterLink"
                   size="icon"
                   title="Browse contents"
                   :to="collectionRoute(collection)"
@@ -161,7 +161,7 @@
                   `router-link` ignore `disabled` et resterait cliquable (G-016).
                 -->
                 <Button
-                  :as="canEditCollection(collection.name) ? 'router-link' : 'button'"
+                  :as="canEditCollection(collection.name) ? RouterLink : 'button'"
                   :data-cy="`CollectionList-edit--${collection.name}`"
                   :disabled="collection.type !== 'stored' || !canEditCollection(collection.name)"
                   size="icon"
@@ -219,7 +219,9 @@
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'pinia';
+import { RouterLink } from 'vue-router';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -295,6 +297,7 @@ export default {
   },
   data() {
     return {
+      RouterLink: markRaw(RouterLink),
       bulkDeleteCollectionsOpen: false,
       deleteCollectionOpen: false,
       deleteIndexOpen: false,

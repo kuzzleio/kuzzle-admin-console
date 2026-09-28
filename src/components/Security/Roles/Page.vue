@@ -19,7 +19,7 @@
           `router-link` ignore `disabled` et resterait cliquable (G-016).
         -->
         <Button
-          :as="canCreateRole ? 'router-link' : 'button'"
+          :as="canCreateRole ? RouterLink : 'button'"
           data-cy="RolesManagement-createBtn"
           :disabled="!canCreateRole"
           :to="canCreateRole ? { name: 'SecurityRolesCreate' } : undefined"
@@ -73,7 +73,9 @@
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'pinia';
+import { RouterLink } from 'vue-router';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -116,6 +118,7 @@ export default {
   },
   data() {
     return {
+      RouterLink: markRaw(RouterLink),
       revokeAnonymousOpen: false,
     };
   },

@@ -7,7 +7,7 @@
           <CardDescription>There is nothing here...</CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button as="router-link" :to="{ name: 'Data' }" class="404BackToHome-link">
+          <Button :as="RouterLink" :to="{ name: 'Data' }" class="404BackToHome-link">
             Go back to the main page
           </Button>
         </CardFooter>
@@ -17,7 +17,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, markRaw } from 'vue';
+import { RouterLink } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,6 +32,11 @@ export default defineComponent({
     CardFooter,
     CardHeader,
     CardTitle,
+  },
+  data() {
+    return {
+      RouterLink: markRaw(RouterLink),
+    };
   },
 });
 </script>

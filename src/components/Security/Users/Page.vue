@@ -8,7 +8,7 @@
           `router-link` ignore `disabled` et resterait cliquable (G-016).
         -->
         <Button
-          :as="canCreateUser ? 'router-link' : 'button'"
+          :as="canCreateUser ? RouterLink : 'button'"
           data-cy="UsersManagement-createBtn"
           :disabled="!canCreateUser"
           :to="canCreateUser ? { name: 'SecurityUsersCreate' } : undefined"
@@ -71,6 +71,7 @@
 <script>
 import { markRaw } from 'vue';
 import { mapState } from 'pinia';
+import { RouterLink } from 'vue-router';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -105,6 +106,7 @@ export default {
   },
   data() {
     return {
+      RouterLink: markRaw(RouterLink),
       /*
        * `DropdownMenuTrigger` prend le composant lui-même en prop `as`, pas
        * son nom : c'est l'API de l'amont, et `Button` doit donc être une

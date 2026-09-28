@@ -11,7 +11,7 @@
 
         <div class="flex flex-wrap items-center gap-2">
           <Button
-            :as="cannotCreateDocument ? 'button' : 'router-link'"
+            :as="cannotCreateDocument ? 'button' : RouterLink"
             data-cy="CreateDocument-btn"
             :disabled="cannotCreateDocument"
             :to="
@@ -243,6 +243,7 @@ import isUndefined from 'lodash/isUndefined';
 import mapValues from 'lodash/mapValues';
 import pickBy from 'lodash/pickBy';
 import { mapState } from 'pinia';
+import { RouterLink } from 'vue-router';
 
 import DeleteCollectionModal from '../Collections/DeleteCollectionModal.vue';
 import CollectionDropdownAction from '../Collections/DropdownAction.vue';
@@ -329,6 +330,7 @@ export default {
   },
   data() {
     return {
+      RouterLink: markRaw(RouterLink),
       ES_RESULT_WINDOW_LIMIT,
       // Le composant passé à `as` n'a pas à être réactif. `markRaw` — que
       // Vue 2.7 fournit — et non `Object.freeze` : Vue met en cache le

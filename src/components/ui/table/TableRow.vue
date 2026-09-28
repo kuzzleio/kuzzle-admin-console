@@ -1,22 +1,16 @@
 <template>
-  <tr :class="classes" data-slot="table-row" v-bind="$attrs">
+  <tr
+    :class="cn('border-b border-border transition-colors hover:bg-accent', props.class)"
+    data-slot="table-row"
+  >
     <slot />
   </tr>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-export default defineComponent({
-  name: 'TableRow',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('border-b border-border transition-colors hover:bg-accent');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>
