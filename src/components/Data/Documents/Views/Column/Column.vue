@@ -1,8 +1,13 @@
 <template>
   <div class="Column" data-cy="DocumentList-Column">
-    <div class="flex flex-row items-center gap-2">
-      <div class="flex flex-1 items-stretch gap-2">
-        <div class="inline-block w-full max-w-96">
+    <!--
+      La barre passe à la ligne, comme celle de la vue liste : sur une seule
+      ligne, les boutons écrasaient le sélecteur de champs à quelques dizaines
+      de pixels, et ses options n'étaient plus lisibles ni cliquables.
+    -->
+    <div class="flex flex-row flex-wrap items-center gap-2">
+      <div class="flex flex-1 flex-wrap items-stretch gap-2">
+        <div class="inline-block min-w-32 max-w-96 grow basis-32">
           <multiselect
             v-model="selectedFieldsComputed"
             :allow-empty="true"

@@ -3342,6 +3342,30 @@ Gabarit à copier :
   valid environment », le faisait déjà.
 - **Ref** : validation d'ADR-0053, le 2026-09-28.
 
+#### G-092 — Une spec verte en local, rouge en CI : la barre d'outils qui ne passe pas à la ligne
+
+- **Contexte** : `docs.spec`, « Should add a column when a field is picked in
+  the column selector », rouge en CI depuis #1164 (mise en page sous 400 px),
+  verte en local. Le push de `5-dev` échouait, et le déploiement de
+  console-v5 était ignoré.
+- **Symptôme** : `cy.click()` sur `.multiselect__option` « is being covered by
+  another element: `.multiselect__content-wrapper` ». La capture de la CI
+  montre le sélecteur de champs écrasé à une soixantaine de pixels.
+- **Cause** : la barre de la vue colonnes tenait sur une ligne `flex` sans
+  retour à la ligne. Les boutons ne rétrécissent pas, le sélecteur si. Sous
+  Linux, les polices de la CI sont plus larges qu'en local, et il ne lui
+  restait presque rien.
+- **Solution** : `flex-wrap` sur la barre, et un sélecteur qui part de 8rem,
+  grandit jusqu'à 24rem et ne descend pas sous 8rem (`basis-32 grow min-w-32
+  max-w-96`) : la barre ne passe à la ligne que quand il n'a plus ses 8rem.
+  `flex-1` le faisait grandir d'abord, et poussait « CSV » à la ligne à
+  1400 px. Reproduit en local avec `--config viewportWidth=1200`.
+- **À retenir** : 17/17 en local ne dit pas que la CI est verte. Relire
+  `gh pr checks` avant de déclarer une PR prête ; un échec qui ne se reproduit
+  pas se cherche d'abord dans la capture d'écran de la CI, puis avec un
+  viewport plus étroit.
+- **Ref** : [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
