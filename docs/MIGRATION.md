@@ -905,7 +905,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
 - [ ] Vrai shadcn-vue à la place des primitives écrites à la main ([ADR-0054](adr/0054-vrai-shadcn-vue.md)), une famille par lot :
   - [x] 1. Socle (`reka-ui`, `components.json`), `Button`, `Badge`, `Card`, `Alert`, `Label`, `Input`, `Textarea`, `Table`, `Spinner`
   - [x] 2. `DropdownMenu`, `z-index` en tokens
-  - [ ] 3. `Select`, retrait de `floating-panel.ts`
+  - [x] 3. `Select`, retrait de `floating-panel.ts`
   - [ ] 4. `Dialog`
   - [ ] 5. `Tabs`
   - [ ] 6. `Pagination`
@@ -3419,6 +3419,22 @@ Gabarit à copier :
   test qui ouvre un panneau juste après une navigation doit attendre que la
   page ait posé son focus.
 - **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md), [G-084](#g-084).
+
+#### G-090 — Une option de `Select` ne se retrouve plus si la valeur change de type
+
+- **Contexte** : lot 3 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md).
+- **Symptôme** : le déclencheur affiche le `placeholder`, et aucune option
+  n'est cochée à l'ouverture, alors que la valeur est bien posée.
+- **Cause** : l'ancienne primitive comparait `String(valeur)` des deux côtés ;
+  `reka-ui` compare strictement une chaîne, et par empreinte le reste. `'25'`
+  ne retrouve pas l'option `25`, ni `2` l'option `'2'`.
+- **Solution** : donner à `modelValue` le type des `value` des options. Une
+  valeur lue d'une URL ou de `localStorage` se convertit avant d'arriver au
+  `Select`.
+- **À retenir** : aucun site d'appel de la console n'est dans ce cas
+  aujourd'hui (tailles de page et versions en nombres des deux côtés), mais
+  rien ne le signale : la spec ne voit qu'un champ vide.
+- **Ref** : [ADR-0014](adr/0014-primitive-select-en-vue-2.md), décision 5.
 
 #### G-092 — Une spec verte en local, rouge en CI : la barre d'outils qui ne passe pas à la ligne
 

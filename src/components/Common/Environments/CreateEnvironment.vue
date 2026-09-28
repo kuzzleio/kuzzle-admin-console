@@ -64,15 +64,7 @@
             :aria-invalid="versionFeedback ? 'true' : undefined"
             data-cy="CreateEnvironment-backendVersion"
           >
-            <!--
-              Le libellé est passé dans le slot : `SelectValue` ne connaît les
-              libellés qu'une fois la liste ouverte, puisque les `SelectItem`
-              s'enregistrent à leur montage. Ici la valeur (`2`) et le libellé
-              (`v2.x`) diffèrent, et le champ affichait « 2 » tant que la liste
-              n'avait pas été déployée une première fois. Le cas est prévu par
-              la documentation de la primitive (ADR-0014).
-            -->
-            <SelectValue placeholder="Select version">{{ versionLabel }}</SelectValue>
+            <SelectValue placeholder="Select version" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem v-for="version of majorVersions" :key="version.value" :value="version.value"
@@ -278,13 +270,6 @@ export default {
       }
 
       return '';
-    },
-    versionLabel() {
-      const version = this.majorVersions.find(
-        (entry) => entry.value === this.environment.backendMajorVersion,
-      );
-
-      return version ? version.text : '';
     },
     versionFeedback() {
       if (this.v$.environment.backendMajorVersion.$errors.length > 0) {

@@ -33,7 +33,6 @@
                 <span v-else class="w-5 shrink-0" />
 
                 <Select
-                  class="min-w-40 flex-1"
                   :model-value="filters.basic[groupIndex][filterIndex].attribute || ''"
                   @update:modelValue="
                     (attribute) => selectAttribute(attribute, groupIndex, filterIndex)
@@ -41,6 +40,7 @@
                 >
                   <SelectTrigger
                     aria-label="Attribute"
+                    class="min-w-40 flex-1"
                     :data-cy="`BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`"
                   >
                     <SelectValue placeholder="Attribute" />
@@ -55,13 +55,13 @@
                   </SelectContent>
                 </Select>
 
-                <Select v-model="andBlock.operator" class="min-w-40 flex-1">
-                  <SelectTrigger aria-label="Operator" data-cy="BasicFilter-operator">
-                    <!-- Libellé dans le slot, comme pour le tri : la clé
-                         (`not_equal`) n'est pas le libellé (E-06). -->
-                    <SelectValue>{{
-                      availableOperands[andBlock.operator] || andBlock.operator
-                    }}</SelectValue>
+                <Select v-model="andBlock.operator">
+                  <SelectTrigger
+                    aria-label="Operator"
+                    class="min-w-40 flex-1"
+                    data-cy="BasicFilter-operator"
+                  >
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem
@@ -161,7 +161,7 @@
           >
             <SelectTrigger
               aria-labelledby="basic-filter-sort-label"
-              class="rounded-none border-0"
+              class="w-auto rounded-none border-0"
               data-cy="BasicFilter-sortAttributeSelect"
             >
               <SelectValue placeholder="Attribute" />
@@ -178,13 +178,12 @@
         </div>
 
         <Select v-model="filters.sorting.order">
-          <SelectTrigger aria-label="Sort order" data-cy="BasicFilter-sortOrderSelect">
-            <!--
-              Le libellé est passé dans le slot : `SelectValue` ne les connaît
-              qu'une fois la liste ouverte, et ici la valeur (`asc`) et le
-              libellé (`Ascending`) diffèrent.
-            -->
-            <SelectValue>{{ sortOrderLabel }}</SelectValue>
+          <SelectTrigger
+            aria-label="Sort order"
+            class="w-auto"
+            data-cy="BasicFilter-sortOrderSelect"
+          >
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="asc">Ascending</SelectItem>
@@ -308,9 +307,6 @@ export default {
           text: a,
           value: a,
         }));
-    },
-    sortOrderLabel() {
-      return this.filters.sorting.order === 'desc' ? 'Descending' : 'Ascending';
     },
     availableOperandsFormatted() {
       return Object.keys(this.availableOperands).map((e) => ({

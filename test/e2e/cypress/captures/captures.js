@@ -498,6 +498,17 @@ describe('Captures v4 / v5', () => {
     shot('C57-basic-filter')
   })
 
+  // La liste ouverte : placement sous le déclencheur, largeur, coche de
+  // l'option retenue et option désignée au clavier.
+  it('C57b — liste déroulante ouverte', () => {
+    openApp(docsPath)
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="BasicFilter-operator"]').click()
+    cy.get('[data-slot="select-content"] [role="option"]').should('be.visible')
+    cy.focused().type('{downarrow}')
+    shot('C57b-select-open')
+  })
+
   it('C58 — filtre JSON', () => {
     openApp(docsPath)
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
