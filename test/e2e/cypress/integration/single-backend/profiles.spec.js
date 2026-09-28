@@ -99,6 +99,7 @@ describe('Profiles', () => {
     cy.waitOverlay()
     cy.visit('/#/security/profiles/create')
     cy.contains('Create a new profile')
+    cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor--dangerIcon"]').should('not.exist')
 
     cy.get('[data-cy="ProfileCreateOrUpdate-id"] input').type(' ', {
       force: true
@@ -134,8 +135,21 @@ describe('Profiles', () => {
       .clear({ force: true })
       .type(`SuM UNV4L1d jayZON Kood`)
 
+    // Le JSON invalide est refusé ET le formulaire le dit (#1027, porté de
+    // #1092) : avant, le bouton semblait ne rien faire.
+    let createRequestCount = 0
+    cy.intercept('**/profiles/validprofile/_create*', () => {
+      createRequestCount += 1
+    })
     cy.get('[data-cy=ProfileCreateOrUpdate-createBtn]').click()
+    cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor--dangerIcon"]')
+      .should('be.visible')
+      .and('have.attr', 'role', 'alert')
+      .and('contain.text', 'Invalid JSON')
     cy.shouldStayOn('#/security/profiles/create')
+    cy.then(() => {
+      expect(createRequestCount).to.equal(0)
+    })
   })
 
   it('Should be able to create a new profile', () => {

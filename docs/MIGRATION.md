@@ -913,7 +913,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
 
 - [x] 1. Audit DA terminé : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier (§1.2)
 - [x] 2. Dette de §3.3 : `bluebird`, `moment`, `json-formatter-js`
-- [ ] 3. #1092 vérifiée sur `5-dev`, portée à la main si le défaut existe
+- [x] 3. #1092 vérifiée sur `5-dev` : le défaut existait (formulaires de collection, profil et rôle muets sur un JSON invalide), porté avec `FormMessage`
 - [ ] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
 - [ ] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3)
 - [ ] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes

@@ -74,7 +74,17 @@
         </div>
 
         <div class="flex min-h-0 grow flex-col gap-4 lg:flex-row">
-          <div class="flex min-h-0 flex-col lg:w-8/12">
+          <div class="flex min-h-0 flex-col gap-2 lg:w-8/12">
+            <!--
+              La validation refusait déjà un JSON invalide, mais rien ne le disait :
+              le bouton semblait ne rien faire (#1027, porté de #1092).
+            -->
+            <FormMessage
+              v-if="v$.rawMapping.$errors.length > 0"
+              data-cy="CollectionCreateOrUpdate-jsonEditor--dangerIcon"
+            >
+              Invalid JSON. Fix the syntax before submitting.
+            </FormMessage>
             <json-editor
               id="collection"
               ref="jsoneditor"

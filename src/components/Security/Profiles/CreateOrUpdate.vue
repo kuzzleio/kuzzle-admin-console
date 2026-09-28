@@ -18,6 +18,16 @@
           <Input id="profile-id" disabled :value="id" />
         </FormItem>
 
+        <!--
+          La validation refusait déjà un JSON invalide, mais rien ne le disait :
+          le bouton semblait ne rien faire (#1027, porté de #1092).
+        -->
+        <FormMessage
+          v-if="v$.profileValue.$errors.length > 0"
+          data-cy="ProfileCreateOrUpdate-jsonEditor--dangerIcon"
+        >
+          Invalid JSON. Fix the syntax before submitting.
+        </FormMessage>
         <json-editor
           ref="jsoneditor"
           class="ProfileCreateOrUpdate-jsonEditor"
