@@ -24,7 +24,7 @@
       class="DataLayout-contentWrapper min-h-0 flex-1 overflow-auto p-2 md:h-full md:p-4"
     >
       <Card v-if="!loading" class="md:h-full">
-        <Tabs v-model="currentTab" class="min-h-0 md:h-full">
+        <Tabs v-model="currentTab" class="min-h-0 md:h-full" :unmount-on-hide="false">
           <!--
             `b-tabs` avait un slot `#tabs-end` pour le bouton « + ». La
             primitive n'en a pas : la barre et le bouton sont composés ici,
@@ -79,16 +79,16 @@
           </div>
 
           <!--
-            `force-mount` : chaque onglet porte un éditeur Ace dont la saisie
-            n'est remontée au parent que lorsqu'elle est un JSON valide. Un
-            panneau démonté perdrait la saisie en cours — ce que `b-tabs`, qui
-            gardait tout monté, ne faisait pas (ADR-0021).
+            `:unmount-on-hide="false"` sur `Tabs` : chaque onglet porte un
+            éditeur Ace dont la saisie n'est remontée au parent que lorsqu'elle
+            est un JSON valide. Un panneau démonté perdrait la saisie en cours
+            — ce que `b-tabs`, qui gardait tout monté, ne faisait pas
+            (ADR-0021).
           -->
           <TabsContent
             v-for="(tabContent, tabIdx) of tabs"
             :key="`query-content-${tabIdx}-${tabContent.name}`"
             class="min-h-0 p-3"
-            force-mount
             :value="String(tabIdx)"
           >
             <QueryCard

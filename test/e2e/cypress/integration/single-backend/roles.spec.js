@@ -223,9 +223,37 @@ describe('Roles', () => {
     cy.get('[data-cy="RoleFilters-searchBar"]').type('document{enter}')
     cy.get('[data-cy="RoleList-list"]').should('contain', roleId)
 
+    // Le bouton dit qu'il retire, pas seulement quelle étiquette (ADR-0054).
+    cy.removeFormTag('document')
+      .should('have.attr', 'aria-label', 'Remove document')
+      .and('not.have.attr', 'aria-labelledby')
     cy.removeFormTag('document').click()
     cy.get('[data-cy="RoleFilters-searchBar"]').type('security{enter}')
     cy.get('[data-cy="RoleList-list"]').should('not.contain', roleId)
+  })
+
+  it('Should edit controller tags from the keyboard', () => {
+    cy.visit('#/security/roles')
+    cy.contains('Roles')
+    // Pas de coupe à la virgule, espaces retirés, doublon refusé.
+    cy.get('[data-cy="RoleFilters-searchBar"]').type('auth,index{enter}  document {enter}')
+    cy.get('[data-slot="tags-input-item"][title="auth,index"]').should('exist')
+    cy.get('[data-slot="tags-input-item"][title="document"]').should('exist')
+    cy.get('[data-cy="RoleFilters-searchBar"]').type('document{enter}')
+    cy.get('[data-slot="tags-input-item"]').should('have.length', 2)
+    cy.get('[data-cy="RoleFilters-searchBar"]').clear()
+
+    // Retour arrière sur un champ vide désigne la dernière étiquette, puis la
+    // retire.
+    cy.get('[data-cy="RoleFilters-searchBar"]').type('{backspace}')
+    cy.get('[data-slot="tags-input-item"][title="document"]').should(
+      'have.attr',
+      'data-state',
+      'active'
+    )
+    cy.get('[data-cy="RoleFilters-searchBar"]').type('{backspace}')
+    cy.get('[data-slot="tags-input-item"]').should('have.length', 1)
+    cy.get('[data-slot="tags-input-item"][title="auth,index"]').should('exist')
   })
 
   it('Should be able to delete a role', () => {

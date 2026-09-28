@@ -1,65 +1,36 @@
 <template>
-  <div
-    v-if="isActive || forceMount"
-    v-show="isActive"
-    :id="`${tabs.baseId}-content-${value}`"
-    :aria-labelledby="`${tabs.baseId}-trigger-${value}`"
-    :class="classes"
+  <TabsContent
+    :class="cn('min-w-0 flex-1 outline-none [&[hidden]]:hidden', props.class)"
     data-slot="tabs-content"
-    role="tabpanel"
-    tabindex="0"
-    v-bind="$attrs"
+    v-bind="forwarded"
   >
     <slot />
-  </div>
+  </TabsContent>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { TabsContent, type TabsContentProps, useForwardProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
-import { tabsContext } from './context';
+import { cn } from '@/lib/utils';
 
 /*
- * TabsContent — API publique de shadcn-vue (ADR-0017).
+ * TabsContent de shadcn-vue (ADR-0017, ADR-0054), `role="tabpanel"` relié à
+ * son onglet par `reka-ui`.
  *
- * `v-if` et non `v-show` : un panneau masqué reste dans le DOM, et ses champs
- * continuent de porter leurs `id` et de participer au formulaire. C'est ce qui
- * fait qu'un `id` en double passe inaperçu jusqu'au jour où une spec le vise.
+ * `reka-ui` rend **toujours** l'élément du panneau, et le masque par
+ * l'attribut `hidden` quand il est inactif. Sans preflight (ADR-0008), seule
+ * la feuille du navigateur applique `[hidden] { display: none }`, et une
+ * classe `flex` posée au site d'appel l'emporte : le panneau vide restait
+ * affiché, avec ses marges. `[&[hidden]]:hidden` rétablit la règle.
  *
- * `force-mount` renverse cette règle pour un site d'appel qui en a besoin.
- *
- * `tabindex="0"` : le panneau est atteignable au clavier depuis son onglet,
- * sans quoi le contenu d'un panneau sans élément focalisable serait
- * inaccessible.
+ * `force-mount` de `reka-ui` n'est pas celui de la primitive précédente : il
+ * rend le panneau **visible** même inactif. Pour garder un panneau monté et
+ * caché, c'est `:unmount-on-hide="false"` sur `Tabs`.
  */
-export default defineComponent({
-  name: 'TabsContent',
-  mixins: [classMerge, tabsContext],
-  inheritAttrs: false,
-  props: {
-    /*
-     * Monte le panneau même inactif, et le masque en CSS. C'est l'échappatoire
-     * de l'amont (`forceMount`), à n'utiliser que lorsqu'un panneau porte un
-     * état que son hôte ne sait pas restaurer — l'éditeur Ace d'ApiAction, par
-     * exemple, garde une saisie invalide que rien ne persiste (ADR-0021).
-     */
-    forceMount: {
-      default: false,
-      type: Boolean,
-    },
-    value: {
-      required: true,
-      type: String,
-    },
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses('min-w-0 flex-1 outline-none');
-    },
-    isActive(): boolean {
-      return this.tabs.value === this.value;
-    },
-  },
-});
+const props = defineProps<TabsContentProps & { class?: HTMLAttributes['class'] }>();
+
+const delegatedProps = reactiveOmit(props, 'class');
+const forwarded = useForwardProps(delegatedProps);
 </script>

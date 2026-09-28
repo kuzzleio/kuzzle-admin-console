@@ -1,21 +1,25 @@
 <template>
-  <span :class="classes" data-slot="tags-input-item-text"><slot /></span>
+  <TagsInputItemText
+    :class="cn('truncate', props.class)"
+    data-slot="tags-input-item-text"
+    v-bind="forwardedProps"
+  />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { TagsInputItemText, type TagsInputItemTextProps, useForwardProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-/* TagsInputItemText — API publique de shadcn-vue (ADR-0019). */
-export default defineComponent({
-  name: 'TagsInputItemText',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('truncate');
-    },
-  },
-});
+/*
+ * TagsInputItemText de shadcn-vue (ADR-0019, ADR-0054) : rend la valeur de
+ * l'étiquette (`display-value` de la racine) ; le site d'appel n'a rien à
+ * passer.
+ */
+const props = defineProps<TagsInputItemTextProps & { class?: HTMLAttributes['class'] }>();
+
+const delegatedProps = reactiveOmit(props, 'class');
+const forwardedProps = useForwardProps(delegatedProps);
 </script>

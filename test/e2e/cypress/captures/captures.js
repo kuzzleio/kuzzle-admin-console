@@ -188,10 +188,13 @@ describe('Captures v4 / v5', () => {
   })
 
   beforeEach(() => {
-    cy.clearLocalStorage()
     cy.clearCookies()
     // Thème imposé plutôt que celui du système (ADR-0056), lu au chargement.
-    localStorage.setItem('kuz-ac-theme', Cypress.expose('theme') ?? 'light')
+    // Dans la file de Cypress, après le nettoyage : écrit en dehors, il
+    // passait avant `clearLocalStorage` et s'effaçait (G-097).
+    cy.clearLocalStorage().then(() => {
+      localStorage.setItem('kuz-ac-theme', Cypress.expose('theme') ?? 'light')
+    })
   })
 
   // C22 coupe le réseau : s'il échoue avant de le rétablir, tous les états
@@ -456,6 +459,20 @@ describe('Captures v4 / v5', () => {
     openApp(docsPath)
     documentItem('taxi-001').should('be.visible')
     shot('C50-documents-list')
+  })
+
+  // La barre de pagination : page courante, boutons de bord désactivés ou
+  // non. 10 par page donne trois pages sur les 24 taxis.
+  it('C50b — documents, pagination', () => {
+    setListView(TAXI_INDEX, TAXI, 'list')
+    openApp(docsPath)
+    documentItem('taxi-001').should('be.visible')
+    cy.get('[data-cy="perPageSelector"]').click()
+    cy.get('[role="option"]').contains(/^10$/).click()
+    cy.paginationPage('[data-cy=DocumentList-pagination]', 2).click()
+    documentItem('taxi-011').should('be.visible')
+    cy.get('[data-cy=DocumentList-pagination]').scrollIntoView()
+    shot('C50b-documents-pagination')
   })
 
   it('C51 — menu View', () => {
@@ -762,6 +779,15 @@ describe('Captures v4 / v5', () => {
     openApp('/security/roles')
     cy.get('[data-cy="RoleFilters-searchBar"]').click()
     shot('C111-roles-filter')
+  })
+
+  // Des étiquettes : l'une désignée au clavier (Retour arrière sur le champ
+  // vide), l'autre au repos.
+  it('C111b — rôles, étiquettes de contrôleur', () => {
+    openApp('/security/roles')
+    cy.get('[data-cy="RoleFilters-searchBar"]').type('document{enter}security{enter}{backspace}')
+    cy.get('[data-slot="tags-input-item"][title="security"]').should('have.attr', 'data-state', 'active')
+    shot('C111b-roles-filter-tags')
   })
 
   it('C112 — rôles, suppression groupée', () => {
