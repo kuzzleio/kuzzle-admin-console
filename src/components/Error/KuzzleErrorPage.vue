@@ -3,11 +3,10 @@
     <Card class="w-full max-w-4xl shadow-signature">
       <CardContent>
         <header>
-          <img
+          <KuzzleLogo
             alt="Welcome to the Kuzzle Admin Console"
             class="mb-4 h-15 w-auto"
             height="60"
-            src="../../assets/logo.svg"
           />
           <h2 class="font-heading text-headline font-extrabold text-foreground">
             Something went wrong while connecting to Kuzzle
@@ -36,10 +35,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue';
+import KuzzleLogo from '@/components/Common/KuzzleLogo.vue';
 
 export default {
   name: 'KuzzleErrorPage',
   components: {
+    KuzzleLogo,
     Card,
     CardContent,
     EnvironmentSwitch,

@@ -1,7 +1,7 @@
 <template>
   <DialogPortal>
     <DialogOverlay
-      class="fixed inset-0 z-(--z-modal) flex items-start justify-center overflow-y-auto bg-foreground/50 p-4 sm:p-6"
+      class="fixed inset-0 z-(--z-modal) flex items-start justify-center overflow-y-auto bg-overlay p-4 sm:p-6"
       data-slot="dialog-overlay"
     >
       <DialogContent

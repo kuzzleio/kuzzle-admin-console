@@ -162,6 +162,27 @@ describe('Login', function() {
       cy.url().should('contain', '/#/login')
     })
   })
+
+  // Bascule de thème de la barre de session (ADR-0056) : le choix pose
+  // `.dark` sur `<html>` et survit au rechargement. Le thème par défaut suit
+  // le système, celui de la machine qui lance la spec : on choisit d'abord.
+  it('Should switch to the dark theme and keep it after a reload', () => {
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+
+    cy.get('[data-cy="SessionBar-theme"]').click()
+    cy.get('[data-cy="SessionBar-theme--light"]').click()
+    cy.get('html').should('not.have.class', 'dark')
+
+    cy.get('[data-cy="SessionBar-theme"]').click()
+    cy.get('[data-cy="SessionBar-theme--dark"]').click()
+    cy.get('html').should('have.class', 'dark')
+
+    cy.reload()
+    cy.get('[data-cy="App-loggedIn"]')
+    cy.get('html').should('have.class', 'dark')
+  })
 })
 
 // Gestion de session (ADR-0057). L'horloge de la page est remplacée par

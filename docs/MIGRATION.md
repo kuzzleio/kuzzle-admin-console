@@ -321,7 +321,7 @@ précisément ce qu'on achète.
 | 3. Cartes signature (une par écran), blocs gris de `Signup` et `KuzzleErrorPage` retirés | ✅ |
 | 3. Audit `/impeccable` : repère `main`, lien d'évitement, `h1`, `lang`, contraste AA (ADR-0050), noms accessibles, focus des menus, éditeur JSON au clavier, mouvement réduit | ✅ |
 | 3. Reste de l'audit : mise en page sous 400 px (panneaux empilés sous `md`, G-081, G-082), onglets d'API Action (Suppr ferme l'onglet), cibles tactiles de 24 px (WCAG 2.5.8 ; seuls restent les replis de code d'Ace, dans un éditeur tiers), titre du document par route (2.4.2), Ctrl/⌘ + Entrée et Ctrl/⌘ + S dans API Action (G-083) | ✅ |
-Le jeu sombre est défini mais branché sur rien.
+Le jeu sombre est branché ([ADR-0056](adr/0056-theme-sombre-avance.md)) : dérivé de la DA, bascule dans la barre de session.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
 (cf. [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) : **pas de
@@ -925,7 +925,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
 - [x] 3. #1092 vérifiée sur `5-dev` : le défaut existait (formulaires de collection, profil et rôle muets sur un JSON invalide), porté avec `FormMessage`
 - [ ] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
 - [ ] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3)
-- [ ] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes
+- [x] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes — avancé avant les lots 5 à 9 du critère 4 ([ADR-0056](adr/0056-theme-sombre-avance.md))
 - [ ] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5)
 - [ ] 8. Revue de sortie : technique, sécurité, livraison (`Dockerfile`, `infra/`, workflows)
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
@@ -3519,6 +3519,22 @@ Gabarit à copier :
   configuration.
 - **Ref** : [ADR-0057](adr/0057-gestion-de-session.md).
 
+#### G-094 — `Cypress.env()` n'existe plus depuis Cypress 16
+
+- **Contexte** : captures dans le thème sombre
+  ([ADR-0056](adr/0056-theme-sombre-avance.md)), un réglage passé du
+  `cypress.captures.config.ts` au fichier de captures.
+- **Symptôme** : le premier `it` échoue en 12 s, les 79 autres sont sautés :
+  « `Cypress.env()` was removed in Cypress version 16.0.0 ».
+- **Cause** : Cypress 16 retire `Cypress.env()` et la clé `env` de la
+  configuration. Une valeur non sensible passe par `expose` et se lit par
+  `Cypress.expose()` ; une valeur sensible, par `cy.env()`.
+- **Solution** : `expose: { theme }` dans la configuration,
+  `Cypress.expose('theme')` dans le fichier.
+- **À retenir** : la documentation et les exemples d'avant la version 16
+  montrent encore `env` ; ne pas les recopier.
+- **Ref** : [ADR-0056](adr/0056-theme-sombre-avance.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3639,4 +3655,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-28 | `json-formatter-js` et `v-json-formatter` remplacés par un composant `JsonTree` (clavier, tokens, pas de style injecté) | [ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md) |
 | 2026-09-28 | Le vrai shadcn-vue, famille par famille : CLI puis report de la DA, comportement de `reka-ui`, écarts nommés (Font Awesome, `Checkbox`/`Switch` natifs, `Form`, `FileInput`) | [ADR-0054](adr/0054-vrai-shadcn-vue.md) |
 | 2026-09-28 | Barre de session en haut à droite : l'utilisateur reste visible rail replié, ses profils et « Log out » dans son menu | [ADR-0055](adr/0055-barre-de-session.md) |
+| 2026-09-28 | Thème sombre avancé avant les lots 5 à 9 de shadcn-vue : jeu dérivé de la DA et mesuré AA, bascule système / clair / sombre, Ace et ApexCharts suivent | [ADR-0056](adr/0056-theme-sombre-avance.md) |
 | 2026-09-28 | Gestion de session : surveillance armée à chaque ouverture (identifiants compris), vérification au retour sur l'onglet, rafraîchissement unique entre onglets, session perdue sur place dans la popup | [ADR-0057](adr/0057-gestion-de-session.md) |

@@ -18,9 +18,8 @@
  * leur propre token (`warning`), comme le succès et l'information : shadcn
  * n'en a pas, la console en a besoin (E-20, E-21 de la comparaison v4 / v5).
  *
- * Le jeu sombre est défini mais n'est branché sur aucun sélecteur de thème :
- * rien ne l'active aujourd'hui. Il garde l'ancienne palette ; le DS n'a pas
- * de thème sombre, il faudra le dériver le jour où on l'active (ADR-0043).
+ * Le jeu sombre (`.dark`, ADR-0056) redéfinit chaque couleur et chaque
+ * ombre ; rayons, typographie et mouvement sont communs aux deux thèmes.
  */
 
 @custom-variant dark (&:is(.dark *));
@@ -74,6 +73,10 @@
      filet Hairline des séparateurs. */
   --input: #7b939b;
   --ring: #00536f;
+
+  /* Voile des modales : Kuzzle Blue à 50 %, comme l'ancien
+     `bg-foreground/50`, qui s'éclaircirait en sombre. */
+  --overlay: rgb(0 40 53 / 0.5);
 
   /* Notifications temps réel — quatre familles à distinguer d'un coup d'œil
      dans un flux qui défile. Ce ne sont pas des états (`destructive` dirait
@@ -134,6 +137,13 @@
   --env-grey: #546e7a;
   --env-magenta: #d81b60;
 
+  /* Élément actif du rail : fuchsia profond et filet blanc, dans les deux
+     thèmes. Le rail garde sa couleur de connexion quel que soit le thème, et
+     son texte reste blanc : il ne peut pas suivre `--primary-hover`, qui
+     s'éclaircit en sombre. */
+  --rail-active: #b8325a;
+  --rail-active-rule: #ffffff;
+
   /* Rail de navigation (ADR-0048) : déplié, replié sur ses icônes. */
   --rail-width: 224px;
   --rail-collapsed-width: 64px;
@@ -147,34 +157,61 @@
   --z-skip-link: 1050;
 }
 
+/*
+ * Jeu sombre (ADR-0056), dérivé de la DA : le DS n'en a pas. Surfaces dans
+ * la famille Kuzzle Blue, plus claires à mesure qu'elles montent (page, carte,
+ * panneau flottant) ; le fuchsia reste l'accent, éclairci jusqu'à 4,5:1 sur
+ * les surfaces, et porte alors un texte sombre. Chaque paire employée est
+ * mesurée dans la table de `DESIGN.md`. Posé sur `<html>` par `useTheme`.
+ */
 .dark {
-  --background: #0b1a20;
-  --foreground: #e6edf0;
-  --card: #10242c;
-  --card-foreground: #e6edf0;
-  --popover: #10242c;
-  --popover-foreground: #e6edf0;
+  color-scheme: dark;
 
-  --primary: #7fd3f2;
-  --primary-foreground: #002835;
-  --secondary: #3498db;
-  --secondary-foreground: #ffffff;
-  --accent: #efc94c;
-  --accent-foreground: #002835;
+  --background: #06161c;
+  --foreground: #e4edf0;
+  --card: #0d232b;
+  --card-foreground: #e4edf0;
+  --popover: #112a33;
+  --popover-foreground: #e4edf0;
 
-  --muted: #17313a;
-  --muted-foreground: #9db0b8;
-  --destructive: #e94e77;
-  --destructive-foreground: #ffffff;
+  --primary: #f0739a;
+  --primary-hover: #f78fb0;
+  --primary-foreground: #06161c;
+  --secondary: #143a47;
+  --secondary-foreground: #d8eef6;
+  --accent: #163540;
+  --accent-foreground: #e4edf0;
 
-  --border: #23414c;
-  --input: #23414c;
-  --ring: #7fd3f2;
+  --muted: #11282f;
+  --muted-foreground: #9db2b9;
+  --subtle: #0a1d24;
+  --label: #b5c6cc;
 
-  --notification-publish: #1d3a46;
-  --notification-document: #1c4433;
-  --notification-subscribe: #3a2542;
-  --notification-delete: #4a2726;
+  --destructive: #ff7a7a;
+  --destructive-foreground: #06161c;
+  --success: #3ddc84;
+  --success-foreground: #06161c;
+  --warning: #e8a44a;
+  --warning-foreground: #06161c;
+  --info: #72c7e8;
+  --info-foreground: #06161c;
+
+  --border: #21404a;
+  --input: #6a8b95;
+  --ring: #72c7e8;
+  --overlay: rgb(0 0 0 / 0.6);
+
+  --notification-publish: #16323d;
+  --notification-document: #173a2a;
+  --notification-subscribe: #33243d;
+  --notification-delete: #3d2422;
+
+  /* Sur fond sombre, une ombre teintée ne se voit plus : noir, plus dense. */
+  --elevation-card: 0 1px 3px rgb(0 0 0 / 0.45);
+  --elevation-hover: 0 12px 28px -12px rgb(0 0 0 / 0.6);
+  --elevation-menu: 0 18px 44px -12px rgb(0 0 0 / 0.7);
+  --elevation-modal: 0 30px 60px -20px rgb(0 0 0 / 0.8);
+  --elevation-tooltip: 0 24px 46px -18px rgb(0 0 0 / 0.85);
 }
 
 @theme inline {
@@ -209,6 +246,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
 
   --color-notification-publish: var(--notification-publish);
   --color-notification-document: var(--notification-document);

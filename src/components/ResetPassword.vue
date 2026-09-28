@@ -3,8 +3,7 @@
     <Card class="w-full max-w-2xl shadow-signature">
       <CardContent>
         <div class="text-center">
-          <img
-            src="../assets/logo.svg"
+          <KuzzleLogo
             alt="Welcome to the Kuzzle Admin Console"
             class="mb-8 inline-block h-auto max-w-full"
           />
@@ -31,10 +30,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useRoutingStore } from '@/stores';
 
 import ResetPasswordForm from './Common/Login/ResetPasswordForm.vue';
+import KuzzleLogo from './Common/KuzzleLogo.vue';
 
 export default {
   name: 'ResetPassword',
   components: {
+    KuzzleLogo,
     Alert,
     Card,
     CardContent,

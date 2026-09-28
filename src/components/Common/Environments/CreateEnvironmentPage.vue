@@ -3,11 +3,10 @@
     <form class="flex min-h-full justify-center px-4 py-6" @submit.prevent="submit">
       <Card class="my-auto w-full max-w-3xl shadow-signature">
         <CardHeader class="gap-4">
-          <img
+          <KuzzleLogo
             alt="Welcome to the Kuzzle Admin Console"
             class="h-15 w-auto self-start"
             height="60"
-            src="../../../assets/logo.svg"
           />
           <CardTitle class="font-display text-display font-bold uppercase">
             {{ $attrs.id ? 'Edit a Connection' : 'Create a Connection' }}
@@ -68,10 +67,12 @@ import {
 import { useKuzzleStore } from '@/stores';
 
 import CreateEnvironment from './CreateEnvironment.vue';
+import KuzzleLogo from '../KuzzleLogo.vue';
 
 export default defineComponent({
   name: 'CreateEnvironmentPage',
   components: {
+    KuzzleLogo,
     Button,
     Card,
     CardContent,

@@ -5,6 +5,7 @@ import loggerPlugin, { logger } from './plugins/logger';
 import toastPlugin from './plugins/toast';
 import 'leaflet/dist/leaflet.css';
 
+import { initTheme } from './composables/useTheme';
 import createRoutes from './routes/index';
 import { useKuzzleStore } from './stores';
 
@@ -16,6 +17,9 @@ Reflect.defineProperty(window, 'kuzzle', {
     return kuzzleStore.$kuzzle;
   },
 });
+
+// Le thème avant le montage : la première image est déjà dans le bon thème.
+initTheme();
 
 const app = createApp(App);
 

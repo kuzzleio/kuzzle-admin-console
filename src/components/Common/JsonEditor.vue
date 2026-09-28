@@ -6,7 +6,14 @@
 import { nextTick } from 'vue';
 import ace from 'ace-builds';
 import 'ace-builds/src-noconflict/theme-tomorrow';
+import 'ace-builds/src-noconflict/theme-tomorrow_night';
 import 'ace-builds/src-noconflict/mode-json';
+
+import { useTheme } from '@/composables/useTheme';
+
+// Thème d'Ace selon celui de la console (ADR-0056) : la même famille, pour
+// que la coloration du JSON ne change pas de sens d'un thème à l'autre.
+const aceTheme = (isDark) => (isDark ? 'ace/theme/tomorrow_night' : 'ace/theme/tomorrow');
 
 export default {
   name: 'JsonEditor',
@@ -33,10 +40,12 @@ export default {
   },
   emits: ['change', 'shortcut'],
   setup() {
+    const { isDark } = useTheme();
     ace.config.setModuleUrl(
       'ace/mode/json_worker',
       `https://cdn.jsdelivr.net/npm/ace-builds@${ace.version}/src-min-noconflict/worker-json.js`,
     );
+    return { isDark };
   },
   data() {
     return {
@@ -65,7 +74,7 @@ export default {
         mode: 'ace/mode/json',
       });
       this.editor.textInput.getElement().setAttribute('aria-label', 'JSON editor');
-      this.editor.setTheme('ace/theme/tomorrow');
+      this.editor.setTheme(aceTheme(this.isDark));
       this.editor.setFontSize(15);
       this.editor.getSession().setTabSize(2);
       this.editor.setReadOnly(this.readonly);
@@ -87,6 +96,11 @@ export default {
         this.$emit('change', this.getRawValue());
       });
     });
+  },
+  watch: {
+    isDark(value) {
+      this.editor?.setTheme(aceTheme(value));
+    },
   },
   beforeUnmount() {
     if (this.editor) {
@@ -114,8 +128,17 @@ export default {
   position: relative;
 }
 
+// Sombre : les surfaces de la console plutôt que le gris neutre du thème.
+.ace-tomorrow-night.ace_editor {
+  background-color: var(--card);
+  .ace_gutter {
+    background-color: var(--subtle);
+  }
+}
+
 // Lecture seule : fond Panel Grey et sélection Soft Sky, depuis les tokens.
-.ace-tomorrow.ace_editor.readonly {
+.ace-tomorrow.ace_editor.readonly,
+.ace-tomorrow-night.ace_editor.readonly {
   background-color: var(--muted);
   .ace_gutter,
   .ace_active-line {

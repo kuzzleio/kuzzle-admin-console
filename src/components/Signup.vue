@@ -11,12 +11,7 @@
             le filet de la carte signature portent la marque (E-24).
           -->
           <header>
-            <img
-              src="../assets/logo.svg"
-              alt="Welcome to the Kuzzle Admin Console"
-              height="60"
-              class="h-15 w-auto"
-            />
+            <KuzzleLogo alt="Welcome to the Kuzzle Admin Console" height="60" class="h-15 w-auto" />
             <h2 class="mt-4 font-display text-display font-bold uppercase text-foreground">
               Create an Admin Account
             </h2>
@@ -139,10 +134,12 @@ import { Label } from '@/components/ui/label';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
+import KuzzleLogo from './Common/KuzzleLogo.vue';
 
 export default {
   name: 'Signup',
   components: {
+    KuzzleLogo,
     Alert,
     Button,
     Card,

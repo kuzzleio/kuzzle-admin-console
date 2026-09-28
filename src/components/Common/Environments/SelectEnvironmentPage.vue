@@ -3,11 +3,10 @@
     <div class="flex min-h-full justify-center px-4 py-6">
       <Card class="my-auto w-full max-w-3xl shadow-signature">
         <CardHeader class="gap-4">
-          <img
+          <KuzzleLogo
             alt="Welcome to the Kuzzle Admin Console"
             class="h-15 w-auto self-start"
             height="60"
-            src="../../../assets/logo.svg"
           />
           <CardTitle class="font-display text-display font-bold uppercase">Select Kuzzle</CardTitle>
           <CardDescription class="text-base">
@@ -46,10 +45,12 @@ import {
 } from '@/components/ui/card';
 
 import EnvironmentSelector from './EnvironmentsSwitch.vue';
+import KuzzleLogo from '../KuzzleLogo.vue';
 
 export default defineComponent({
   name: 'SelectEnvironmentPage',
   components: {
+    KuzzleLogo,
     Card,
     CardContent,
     CardDescription,

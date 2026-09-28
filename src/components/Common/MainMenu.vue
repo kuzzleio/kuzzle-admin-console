@@ -255,7 +255,7 @@ export default {
       // Fuchsia profond (texte blanc à 5:1, le fuchsia clair n'atteint que 3,9)
       // et un filet blanc : l'élément actif reste lisible sur un rail rouge ou
       // magenta, où le fond seul se confondrait avec la couleur de connexion.
-      return 'bg-primary-hover font-bold shadow-[inset_3px_0_0_var(--color-primary-foreground)]';
+      return 'bg-(--rail-active) font-bold shadow-[inset_3px_0_0_var(--rail-active-rule)]';
     },
     currentEnvironmentColor() {
       return this.kuzzleStore.currentEnvironment?.color;
