@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-25 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
+**Dernière mise à jour** : 2026-09-28 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -23,6 +23,7 @@
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ✅ **Close** : `MODE: 3` a remplacé la liste de drapeaux ([ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)) — 17/17 specs |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 En cours — ouverte le 2026-09-24. **`@vue/compat` est retiré** ([ADR-0036](adr/0036-retrait-de-vue-compat.md)) : restent shadcn-vue et la Composition API |
+| **5** | Sortie : revue technique, sécurité et livraison, puis bascule sur `master` | — | ⬜ Critères fixés par [ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md), suivis en [§1.6](#16-critères-de-sortie--adr-0051) |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
 [ADR-0002](adr/0002-sortir-de-bootstrap-vue-avant-vue-3.md).
@@ -903,6 +904,22 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
 - [x] Retirer `@vue/compat` (ADR-0036)
 - [ ] Vrai shadcn-vue à la place des primitives écrites à la main
 - [ ] Composition API
+
+### 1.6 Critères de sortie — ADR-0051
+
+La v5 sort quand toutes ces lignes sont cochées, dans l'ordre
+([ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md)). Chaque ligne est un lot
+par PR, validé par les 17 specs contre un build et une stack neuve.
+
+- [ ] 1. Audit DA terminé : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier (§1.2)
+- [ ] 2. Dette de §3.3 : `bluebird`, `moment`, `json-formatter-js`
+- [ ] 3. #1092 vérifiée sur `5-dev`, portée à la main si le défaut existe
+- [ ] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
+- [ ] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3)
+- [ ] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes
+- [ ] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5)
+- [ ] 8. Revue de sortie : technique, sécurité, livraison (`Dockerfile`, `infra/`, workflows)
+- [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
 ---
 
@@ -3373,3 +3390,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-27 | Rail de navigation à gauche, à la couleur de la connexion ; repli par bouton | [ADR-0048](adr/0048-rail-de-navigation.md) |
 | 2026-09-27 | Couleurs de connexion en tokens, au contraste AA ; élément actif du rail en fuchsia profond avec filet | [ADR-0049](adr/0049-couleurs-de-connexion-contrastees.md) |
 | 2026-09-27 | `--primary`, `--muted-foreground` et `--input` assombris d'un cran pour le contraste AA | [ADR-0050](adr/0050-contraste-aa-de-la-palette.md) |
+| 2026-09-28 | Critères de sortie de la v5 : audit DA, dette, #1092, shadcn-vue, `apexcharts` 5, thème sombre, Composition API, revue de sortie, puis bascule `master` → `4-stable` | [ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md) |
