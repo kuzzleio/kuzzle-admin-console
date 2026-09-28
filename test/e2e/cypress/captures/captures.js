@@ -461,6 +461,20 @@ describe('Captures v4 / v5', () => {
     shot('C50-documents-list')
   })
 
+  // La barre de pagination : page courante, boutons de bord désactivés ou
+  // non. 10 par page donne trois pages sur les 24 taxis.
+  it('C50b — documents, pagination', () => {
+    setListView(TAXI_INDEX, TAXI, 'list')
+    openApp(docsPath)
+    documentItem('taxi-001').should('be.visible')
+    cy.get('[data-cy="perPageSelector"]').click()
+    cy.get('[role="option"]').contains(/^10$/).click()
+    cy.paginationPage('[data-cy=DocumentList-pagination]', 2).click()
+    documentItem('taxi-011').should('be.visible')
+    cy.get('[data-cy=DocumentList-pagination]').scrollIntoView()
+    shot('C50b-documents-pagination')
+  })
+
   it('C51 — menu View', () => {
     openApp(docsPath)
     cy.get('[data-cy="CollectionDropdownView"]').click()

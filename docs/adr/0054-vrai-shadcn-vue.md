@@ -89,6 +89,7 @@ pour un motif que l'amont traite par `as-child`.
 | La coche de `SelectItem` est à gauche, et `SelectTrigger` n'a pas de prop `size` | La DA : l'option retenue ne se décale pas des autres, et la console n'a qu'une hauteur de champ |
 | `DialogContent` rend le focus à l'élément qui l'avait à l'ouverture, pas au `DialogTrigger` | Les modales de la console s'ouvrent par un état, sans `DialogTrigger` : le focus tombait sur `<body>` (G-087) |
 | `TabsList` et `TabsTrigger` : un filet sous la barre et l'onglet courant souligné, pas la pastille de l'amont ; `TabsContent` pose `[&[hidden]]:hidden` | La DA ; sans preflight, l'attribut `hidden` de `reka-ui` ne cache pas un panneau qui porte une classe `display` (G-095) |
+| `PaginationContent` rend un `<ul>`, chaque bouton dans son `<li>` ; les boutons de bord n'ont que leur icône ; la page affichée est bornée par `ListPagination` | Une barre de pagination est une liste : c'est ce qui donne le nombre de pages aux lecteurs d'écran. La barre n'a pas la place des libellés « Previous » / « Next ». `PaginationRoot` prend la page telle quelle, là où l'ancienne primitive la bornait au nombre de pages |
 | `Toast` : décidé dans son propre lot | Passer à `vue-sonner` garde-t-il les erreurs persistantes, les actions et le toast hors ligne ? Si non, une ADR le dira |
 
 **5. Les `z-index` deviennent des tokens**, comme [ADR-0018](0018-panneaux-flottants-au-dessus-des-modales.md)

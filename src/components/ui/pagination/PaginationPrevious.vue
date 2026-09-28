@@ -1,42 +1,37 @@
 <template>
   <li data-slot="pagination-item">
-    <button
-      :aria-label="ariaLabel"
-      :class="classes"
+    <PaginationPrev
+      aria-label="Go to previous page"
+      :class="cn(buttonVariants({ variant: 'ghost', size }), props.class)"
       data-slot="pagination-previous"
-      :disabled="pagination.disabled || pagination.isFirst"
-      type="button"
-      v-bind="$attrs"
-      @click="onClick"
+      v-bind="{ ...$attrs, ...delegatedProps }"
     >
       <slot><i aria-hidden="true" class="fas fa-angle-left" /></slot>
-    </button>
+    </PaginationPrev>
   </li>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { PaginationPrev, type PaginationPrevProps } from 'reka-ui';
 
-import { paginationEdge } from './edge';
+import { type ButtonVariants, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 /*
- * PaginationPrevious — API publique de shadcn-vue (ADR-0013).
- *
- * Désactivé sur la première page plutôt que masqué : une barre dont les boutons apparaissent et disparaissent change de largeur à chaque clic.
+ * PaginationPrevious de shadcn-vue (ADR-0013, ADR-0054). Désactivé sur la
+ * première page plutôt que masqué : une barre dont les boutons apparaissent et
+ * disparaissent change de largeur à chaque clic.
  */
-export default defineComponent({
-  name: 'PaginationPrevious',
-  mixins: [paginationEdge],
-  props: {
-    ariaLabel: {
-      default: 'Go to previous page',
-      type: String,
-    },
-  },
-  methods: {
-    onClick(): void {
-      this.pagination.goTo(this.pagination.currentPage - 1);
-    },
-  },
-});
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
+  defineProps<
+    PaginationPrevProps & { class?: HTMLAttributes['class']; size?: ButtonVariants['size'] }
+  >(),
+  { size: 'icon' },
+);
+
+const delegatedProps = reactiveOmit(props, 'class', 'size');
 </script>

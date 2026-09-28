@@ -1,7 +1,7 @@
 <template>
   <Pagination
     :items-per-page="itemsPerPage"
-    :page="page"
+    :page="currentPage"
     show-edges
     :total="total"
     v-bind="$attrs"
@@ -14,7 +14,7 @@
         <PaginationItem
           v-if="item.type === 'page'"
           :key="item.value"
-          :is-active="item.value === page"
+          :is-active="item.value === currentPage"
           :value="item.value"
         />
         <PaginationEllipsis v-else :key="`ellipsis-${index}`" />
@@ -77,6 +77,19 @@ export default defineComponent({
     total: {
       required: true,
       type: Number,
+    },
+  },
+  emits: ['update:page'],
+  computed: {
+    /*
+     * La page affichée, bornée au nombre de pages : quand le nombre de
+     * résultats passe sous la page courante, la barre ne doit pas désigner une
+     * page qui n'existe plus. La primitive précédente le faisait elle-même ;
+     * `PaginationRoot` prend la page telle quelle.
+     */
+    currentPage(): number {
+      const pageCount = Math.max(1, Math.ceil(this.total / this.itemsPerPage));
+      return Math.min(Math.max(1, this.page), pageCount);
     },
   },
 });

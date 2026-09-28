@@ -1,66 +1,42 @@
 <template>
   <li data-slot="pagination-item">
-    <button
-      :aria-current="isActive ? 'page' : undefined"
-      :class="classes"
+    <PaginationListItem
+      :class="cn(buttonVariants({ variant: isActive ? 'outline' : 'ghost', size }), props.class)"
       data-slot="pagination-link"
-      :disabled="pagination.disabled"
-      type="button"
-      :value="String(value)"
-      v-bind="$attrs"
-      @click="onClick"
+      v-bind="{ ...$attrs, ...delegatedProps }"
     >
-      <slot>{{ value }}</slot>
-    </button>
+      <slot />
+    </PaginationListItem>
   </li>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { PaginationListItem, type PaginationListItemProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
-import { paginationContext } from './context';
-import { paginationLinkClasses } from './link-classes';
+import { type ButtonVariants, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 /*
- * PaginationItem — API publique de shadcn-vue (ADR-0013).
+ * PaginationItem de shadcn-vue (ADR-0013, ADR-0054) : un `<button>` qui porte
+ * `aria-current="page"` sur la page courante et le numéro dans `value` —
+ * l'ancrage de `cy.paginationPage()`.
  *
- * Remplace un `.page-item`/`.page-link` de `b-pagination`. Deux choses que
- * l'ancien markup ne faisait pas :
- *
- * - **la page courante est annoncée** par `aria-current="page"`.
- *   `b-pagination` posait `aria-posinset`/`aria-setsize` sur chaque lien et
- *   `.active` sur le courant : de la position, jamais l'état. C'est
- *   `aria-current` qui dit « vous êtes ici » ;
- * - **c'est un `<button>`**, pas un `<a>` sans `href`. La barre ne navigue pas,
- *   elle change l'état de la liste.
- *
- * L'ancrage de test est `data-slot="pagination-link"` et l'attribut `value`,
- * qui porte le numéro de page comme en amont — voir `cy.paginationPage()`.
+ * Dans un `<li>`, voir `PaginationContent`.
  */
-export default defineComponent({
-  name: 'PaginationItem',
-  mixins: [classMerge, paginationContext],
-  inheritAttrs: false,
-  props: {
-    isActive: {
-      default: false,
-      type: Boolean,
-    },
-    value: {
-      required: true,
-      type: Number,
-    },
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses(paginationLinkClasses({ active: this.isActive }));
-    },
-  },
-  methods: {
-    onClick(): void {
-      this.pagination.goTo(this.value);
-    },
-  },
-});
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
+  defineProps<
+    PaginationListItemProps & {
+      class?: HTMLAttributes['class'];
+      isActive?: boolean;
+      size?: ButtonVariants['size'];
+    }
+  >(),
+  { size: 'icon' },
+);
+
+const delegatedProps = reactiveOmit(props, 'class', 'isActive', 'size');
 </script>

@@ -908,7 +908,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 3. `Select`, retrait de `floating-panel.ts`
   - [x] 4. `Dialog`
   - [x] 5. `Tabs`
-  - [ ] 6. `Pagination`
+  - [x] 6. `Pagination`
   - [ ] 7. `TagsInput`
   - [ ] 8. `Resizable`
   - [ ] 9. `Toast`

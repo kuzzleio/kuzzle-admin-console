@@ -1,33 +1,34 @@
 <template>
   <li data-slot="pagination-item">
-    <span aria-hidden="true" :class="classes" data-slot="pagination-ellipsis" v-bind="$attrs">
+    <PaginationEllipsis
+      aria-hidden="true"
+      :class="
+        cn(
+          'inline-flex size-9 items-center justify-center text-sm text-muted-foreground',
+          props.class,
+        )
+      "
+      data-slot="pagination-ellipsis"
+      v-bind="delegatedProps"
+    >
       <slot>…</slot>
-    </span>
+    </PaginationEllipsis>
   </li>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { PaginationEllipsis, type PaginationEllipsisProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /*
- * PaginationEllipsis — API publique de shadcn-vue (ADR-0013).
- *
- * `aria-hidden` : les pages omises ne sont pas une information pour un lecteur
- * d'écran, qui connaît déjà le nombre d'éléments de la liste. L'annoncer
- * donnerait « points de suspension » entre deux numéros de page.
+ * PaginationEllipsis de shadcn-vue (ADR-0013, ADR-0054). `aria-hidden` : les
+ * pages omises ne sont pas une information pour un lecteur d'écran, qui
+ * connaît déjà le nombre d'éléments de la liste.
  */
-export default defineComponent({
-  name: 'PaginationEllipsis',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses(
-        'inline-flex h-9 min-w-9 items-center justify-center text-sm text-muted-foreground',
-      );
-    },
-  },
-});
+const props = defineProps<PaginationEllipsisProps & { class?: HTMLAttributes['class'] }>();
+
+const delegatedProps = reactiveOmit(props, 'class');
 </script>

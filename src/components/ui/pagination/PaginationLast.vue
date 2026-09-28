@@ -1,42 +1,36 @@
 <template>
   <li data-slot="pagination-item">
-    <button
-      :aria-label="ariaLabel"
-      :class="classes"
+    <PaginationLast
+      aria-label="Go to last page"
+      :class="cn(buttonVariants({ variant: 'ghost', size }), props.class)"
       data-slot="pagination-last"
-      :disabled="pagination.disabled || pagination.isLast"
-      type="button"
-      v-bind="$attrs"
-      @click="onClick"
+      v-bind="{ ...$attrs, ...delegatedProps }"
     >
       <slot><i aria-hidden="true" class="fas fa-angle-double-right" /></slot>
-    </button>
+    </PaginationLast>
   </li>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { PaginationLast, type PaginationLastProps } from 'reka-ui';
 
-import { paginationEdge } from './edge';
+import { type ButtonVariants, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 /*
- * PaginationLast — API publique de shadcn-vue (ADR-0013).
- *
- * Symétrique de `PaginationFirst`.
+ * PaginationLast de shadcn-vue (ADR-0013, ADR-0054). Symétrique de
+ * `PaginationFirst`.
  */
-export default defineComponent({
-  name: 'PaginationLast',
-  mixins: [paginationEdge],
-  props: {
-    ariaLabel: {
-      default: 'Go to last page',
-      type: String,
-    },
-  },
-  methods: {
-    onClick(): void {
-      this.pagination.goTo(this.pagination.pageCount);
-    },
-  },
-});
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
+  defineProps<
+    PaginationLastProps & { class?: HTMLAttributes['class']; size?: ButtonVariants['size'] }
+  >(),
+  { size: 'icon' },
+);
+
+const delegatedProps = reactiveOmit(props, 'class', 'size');
 </script>

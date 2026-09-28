@@ -1,31 +1,33 @@
 <template>
-  <ul :class="classes" data-slot="pagination-content" v-bind="$attrs">
-    <slot :items="pagination.items" />
-  </ul>
+  <PaginationList
+    v-slot="slotProps"
+    :class="cn('m-0 flex list-none flex-row items-center gap-1 p-0', props.class)"
+    data-slot="pagination-content"
+    v-bind="delegatedProps"
+  >
+    <slot v-bind="slotProps" />
+  </PaginationList>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { PaginationList, type PaginationListProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
-import { paginationContext } from './context';
+import { cn } from '@/lib/utils';
 
 /*
- * PaginationContent — API publique de shadcn-vue (ADR-0013).
+ * PaginationContent de shadcn-vue (ADR-0013, ADR-0054) : donne au site d'appel
+ * les emplacements calculés par `reka-ui`.
  *
- * Donne les emplacements calculés par la racine au site d'appel, comme le
- * `PaginationList` de `reka-ui` en amont. Le `<ul>` n'est pas décoratif : une
- * barre de pagination est une liste de liens, et c'est ce qui donne aux
- * lecteurs d'écran le nombre de pages.
+ * Écart avec l'amont, qui rend une `<div>` : la barre reste une liste (`<ul>`,
+ * chaque bouton dans son `<li>`). C'est ce qui donne aux lecteurs d'écran le
+ * nombre de pages.
  */
-export default defineComponent({
-  name: 'PaginationContent',
-  mixins: [classMerge, paginationContext],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('flex flex-row items-center gap-1 list-none m-0 p-0');
-    },
-  },
-});
+const props = withDefaults(
+  defineProps<PaginationListProps & { class?: HTMLAttributes['class'] }>(),
+  { as: 'ul' },
+);
+
+const delegatedProps = reactiveOmit(props, 'class');
 </script>

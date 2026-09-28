@@ -1,42 +1,38 @@
 <template>
   <li data-slot="pagination-item">
-    <button
-      :aria-label="ariaLabel"
-      :class="classes"
+    <PaginationFirst
+      aria-label="Go to first page"
+      :class="cn(buttonVariants({ variant: 'ghost', size }), props.class)"
       data-slot="pagination-first"
-      :disabled="pagination.disabled || pagination.isFirst"
-      type="button"
-      v-bind="$attrs"
-      @click="onClick"
+      v-bind="{ ...$attrs, ...delegatedProps }"
     >
       <slot><i aria-hidden="true" class="fas fa-angle-double-left" /></slot>
-    </button>
+    </PaginationFirst>
   </li>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { PaginationFirst, type PaginationFirstProps } from 'reka-ui';
 
-import { paginationEdge } from './edge';
+import { type ButtonVariants, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 /*
- * PaginationFirst — API publique de shadcn-vue (ADR-0013).
- *
- * Le libellé est une prop : la barre des documents et celle des rôles n'ont pas à s'annoncer de la même façon quand elles cohabitent sur un même écran.
+ * PaginationFirst de shadcn-vue (ADR-0013, ADR-0054). Icône seule, comme les
+ * trois autres boutons de bord : l'amont affiche aussi un libellé, que la
+ * barre de la console n'a pas la place de porter. Le libellé accessible se
+ * remplace par un `aria-label` du site d'appel.
  */
-export default defineComponent({
-  name: 'PaginationFirst',
-  mixins: [paginationEdge],
-  props: {
-    ariaLabel: {
-      default: 'Go to first page',
-      type: String,
-    },
-  },
-  methods: {
-    onClick(): void {
-      this.pagination.goTo(1);
-    },
-  },
-});
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
+  defineProps<
+    PaginationFirstProps & { class?: HTMLAttributes['class']; size?: ButtonVariants['size'] }
+  >(),
+  { size: 'icon' },
+);
+
+const delegatedProps = reactiveOmit(props, 'class', 'size');
 </script>
