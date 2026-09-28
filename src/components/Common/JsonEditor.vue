@@ -22,8 +22,16 @@ export default {
     },
     readonly: Boolean,
     height: { type: Number, default: 250 },
+    /*
+     * Raccourcis que l'éditeur rend au parent : `{ run: { win: 'Ctrl-Enter',
+     * mac: 'Command-Enter' } }` émet `shortcut` avec `'run'`. Ace traite les
+     * combinaisons à modificateur avant qu'elles ne remontent le DOM : un
+     * `@keydown` posé sur un ancêtre ne les voit pas. Déclarées ici comme
+     * commandes Ace, elles passent par lui.
+     */
+    shortcuts: { type: Object, default: () => ({}) },
   },
-  emits: ['change'],
+  emits: ['change', 'shortcut'],
   setup() {
     ace.config.setModuleUrl(
       'ace/mode/json_worker',
@@ -63,6 +71,14 @@ export default {
       this.editor.setReadOnly(this.readonly);
       this.editor.$blockScrolling = Infinity;
       this.setContent(this.content);
+
+      for (const [name, bindKey] of Object.entries(this.shortcuts)) {
+        this.editor.commands.addCommand({
+          name,
+          bindKey,
+          exec: () => this.$emit('shortcut', name),
+        });
+      }
 
       // WARNING - Beware of update loops!
       // This event is triggered both when the content changes after

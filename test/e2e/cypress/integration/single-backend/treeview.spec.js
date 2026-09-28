@@ -20,6 +20,8 @@ describe('Treeview', () => {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    // Le titre du document dit la page, pas seulement la connexion (2.4.2).
+    cy.title().should('match', new RegExp(`^${indexName}/${collectionName} — `))
 
     cy.get(`[data-cy=Treeview-item-index--${indexName}]`).click()
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).should('be.visible')

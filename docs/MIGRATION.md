@@ -320,7 +320,7 @@ précisément ce qu'on achète.
 | 3. Rail de navigation ([ADR-0048](adr/0048-rail-de-navigation.md)) | ✅ |
 | 3. Cartes signature (une par écran), blocs gris de `Signup` et `KuzzleErrorPage` retirés | ✅ |
 | 3. Audit `/impeccable` : repère `main`, lien d'évitement, `h1`, `lang`, contraste AA (ADR-0050), noms accessibles, focus des menus, éditeur JSON au clavier, mouvement réduit | ✅ |
-| 3. Reste de l'audit : ~~mise en page sous 400 px~~ (panneaux empilés sous `md`, G-081, G-082), ~~onglets d'API Action~~ (Suppr ferme l'onglet, plus de contrôle imbriqué), cibles tactiles, raccourcis clavier | 🟡 |
+| 3. Reste de l'audit : mise en page sous 400 px (panneaux empilés sous `md`, G-081, G-082), onglets d'API Action (Suppr ferme l'onglet), cibles tactiles de 24 px (WCAG 2.5.8 ; seuls restent les replis de code d'Ace, dans un éditeur tiers), titre du document par route (2.4.2), Ctrl/⌘ + Entrée et Ctrl/⌘ + S dans API Action (G-083) | ✅ |
 Le jeu sombre est défini mais branché sur rien.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
@@ -911,7 +911,7 @@ La v5 sort quand toutes ces lignes sont cochées, dans l'ordre
 ([ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md)). Chaque ligne est un lot
 par PR, validé par les 17 specs contre un build et une stack neuve.
 
-- [ ] 1. Audit DA terminé : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier (§1.2)
+- [x] 1. Audit DA terminé : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier (§1.2)
 - [ ] 2. Dette de §3.3 : `bluebird`, `moment`, `json-formatter-js`
 - [ ] 3. #1092 vérifiée sur `5-dev`, portée à la main si le défaut existe
 - [ ] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
@@ -3306,6 +3306,23 @@ Gabarit à copier :
   `shrink-0 whitespace-nowrap`, les boutons en `shrink-0`. C'est déjà la
   composition de la barre d'onglets d'API Action.
 - **Ref** : lot « mise en page sous 400 px », le 2026-09-28.
+
+#### G-083 — Un `@keydown` posé autour d'Ace ne voit pas les combinaisons à modificateur
+
+- **Contexte** : raccourcis d'API Action (ADR-0051, critère 1) : Ctrl/⌘ + Entrée
+  et Ctrl/⌘ + S posés en `@keydown` sur le conteneur de l'onglet.
+- **Symptôme** : les raccourcis marchent quand le focus est sur un champ ou un
+  bouton, jamais depuis l'éditeur JSON, qui est pourtant l'endroit où l'on tape
+  la requête. Aucune erreur.
+- **Cause** : Ace écoute `keydown` sur sa zone de saisie et traite lui-même les
+  combinaisons à modificateur. Il les arrête avant qu'elles ne remontent le
+  DOM, qu'une commande Ace leur corresponde ou non.
+- **Solution** : les déclarer comme commandes Ace. `JsonEditor` accepte une prop
+  `shortcuts` (`{ run: { win: 'Ctrl-Enter', mac: 'Command-Enter' } }`) et émet
+  `shortcut` avec le nom. Le `@keydown` du conteneur reste pour le reste de
+  l'onglet. Au passage, dans le test, la requête par défaut a
+  `controller: null` : elle répond 400, pas 200.
+- **Ref** : lot « cibles, titres et raccourcis », le 2026-09-28.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

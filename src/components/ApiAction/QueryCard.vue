@@ -1,5 +1,18 @@
 <template>
-  <div class="flex flex-col gap-3 md:h-full">
+  <!--
+    Raccourcis de l'onglet : Ctrl/⌘ + Entrée lance la requête, Ctrl/⌘ + S
+    l'enregistre, où que soit le focus dans l'onglet. Dans l'éditeur, Ace
+    intercepte ces combinaisons avant qu'elles ne remontent jusqu'ici : il les
+    reçoit comme commandes (`shortcuts`). Les boutons les annoncent par
+    `aria-keyshortcuts` et leur `title`.
+  -->
+  <div
+    class="flex flex-col gap-3 md:h-full"
+    @keydown.ctrl.enter.exact.prevent="runFromKeyboard"
+    @keydown.meta.enter.exact.prevent="runFromKeyboard"
+    @keydown.ctrl.s.exact.prevent="saveFromKeyboard"
+    @keydown.meta.s.exact.prevent="saveFromKeyboard"
+  >
     <div class="flex flex-wrap items-center gap-2">
       <!--
         `b-tooltip` disait « The query is invalid. » sur trois cibles à la
@@ -109,8 +122,11 @@
       <div class="ml-auto flex gap-2">
         <Button
           :data-cy="`api-actions-run-button-${tabIdx}`"
+          aria-keyshortcuts="Control+Enter Meta+Enter"
           :disabled="!isQueryValid(jsonQuery)"
-          :title="isQueryValid(jsonQuery) ? '' : 'The query is invalid.'"
+          :title="
+            isQueryValid(jsonQuery) ? `Run (${shortcutModifier} + Enter)` : 'The query is invalid.'
+          "
           @click="performQuery"
         >
           <i class="fas fa-rocket" aria-hidden="true" />
@@ -118,8 +134,11 @@
         </Button>
         <Button
           :data-cy="`api-actions-save-button-${tabIdx}`"
+          aria-keyshortcuts="Control+S Meta+S"
           :disabled="!isQueryValid(jsonQuery)"
-          :title="isQueryValid(jsonQuery) ? '' : 'The query is invalid.'"
+          :title="
+            isQueryValid(jsonQuery) ? `Save (${shortcutModifier} + S)` : 'The query is invalid.'
+          "
           variant="outline"
           @click="saveQuery"
         >
@@ -147,7 +166,9 @@
               class="min-h-0 flex-1"
               :content="jsonQuery"
               :data-cy="`api-actions-query-JSONEditor-${tabIdx}`"
+              :shortcuts="editorShortcuts"
               @change="queryBodyChange"
+              @shortcut="onEditorShortcut"
             />
           </CardContent>
         </Card>
@@ -221,6 +242,16 @@ export default {
     };
   },
   computed: {
+    /* Le modificateur que l'utilisateur a sous les doigts, pour le `title`. */
+    editorShortcuts() {
+      return {
+        run: { mac: 'Command-Enter', win: 'Ctrl-Enter' },
+        save: { mac: 'Command-S', win: 'Ctrl-S' },
+      };
+    },
+    shortcutModifier() {
+      return /Mac|iPhone|iPad/.test(navigator.userAgent) ? '⌘' : 'Ctrl';
+    },
     controllers() {
       return this.api ? Object.keys(this.api) : [];
     },
@@ -278,6 +309,23 @@ export default {
     },
     saveQuery() {
       this.$emit('saveQuery', this.tabIdx);
+    },
+    onEditorShortcut(name) {
+      if (name === 'run') {
+        this.runFromKeyboard();
+      } else if (name === 'save') {
+        this.saveFromKeyboard();
+      }
+    },
+    runFromKeyboard() {
+      if (this.isQueryValid(this.jsonQuery)) {
+        this.performQuery();
+      }
+    },
+    saveFromKeyboard() {
+      if (this.isQueryValid(this.jsonQuery)) {
+        this.saveQuery();
+      }
     },
     performQuery() {
       this.$emit('performQuery', this.tabIdx);

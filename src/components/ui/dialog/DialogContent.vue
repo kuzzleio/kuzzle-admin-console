@@ -14,7 +14,7 @@
     <DialogClose
       v-if="showCloseButton"
       aria-label="Close"
-      class="absolute top-4 right-4 rounded-sm leading-none opacity-60 outline-none hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring"
+      class="absolute top-3 right-3 inline-flex size-8 items-center justify-center rounded-sm leading-none opacity-60 outline-none hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring"
     >
       <i aria-hidden="true" class="fa fa-times" />
     </DialogClose>

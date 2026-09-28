@@ -45,6 +45,7 @@
 <script>
 import { mapState } from 'pinia';
 
+import { pageTitle } from '../services/pageTitle';
 import { antiGlitchOverlayTimeout } from '../utils';
 import { Toast, ToastDescription, ToastTitle, ToastViewport } from '@/components/ui/toast';
 import { useAuthStore, useKuzzleStore } from '@/stores';
@@ -185,9 +186,7 @@ export default {
       this.offlineVisible = this.online === false && this.connecting === false;
     },
     updatePageTitle() {
-      document.title = this.currentEnvironment
-        ? `[${this.currentEnvironment.name}] Kuzzle Admin Console`
-        : 'Kuzzle Admin Console';
+      document.title = pageTitle(this.$route, this.currentEnvironment?.name);
     },
     async onEnvironmentSwitch() {
       this.$log.debug('ConnectionAwareContainer::environmentSwitched');
