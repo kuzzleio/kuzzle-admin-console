@@ -97,22 +97,15 @@
       </ul>
 
       <!--
-        Pied de rail : qui est connecté, sur quelle connexion, et la sortie.
-        La connexion est l'information la plus importante du pied — c'est elle
-        qui dit « local » ou « production » : elle a son libellé, et reste
-        accessible rail replié, par une icône qui ouvre le même menu.
+        Pied de rail : la connexion, et le repli. La connexion est
+        l'information la plus importante du pied — c'est elle qui dit « local »
+        ou « production » : elle a son libellé, et reste accessible rail
+        replié, par une icône qui ouvre le même menu. L'utilisateur et la
+        déconnexion sont dans la barre de session (ADR-0055).
       -->
       <div
         class="flex flex-wrap items-center gap-2 md:mt-auto md:flex-col md:flex-nowrap md:items-stretch md:gap-1 md:pt-4"
       >
-        <div :class="['min-w-0 md:px-5 md:pb-2', collapsed ? 'md:hidden' : '']">
-          <span class="hidden text-label font-bold uppercase text-white/90 md:block"
-            >Signed in as</span
-          >
-          <b class="MainMenu-username block max-w-full truncate" :title="currentUserName">{{
-            currentUserName
-          }}</b>
-        </div>
         <div :class="['min-w-0 md:px-5 md:pb-2', collapsed ? 'md:px-3' : '']">
           <span
             :class="[
@@ -131,16 +124,6 @@
             @environment::delete="deleteEnvironment"
           />
         </div>
-        <button
-          :class="[itemClasses, hoverItemClasses, 'cursor-pointer border-0 bg-transparent']"
-          data-cy="MainMenu-logoutBtn"
-          title="Log out"
-          type="button"
-          @click="doLogout"
-        >
-          <i class="logout fas fa-power-off w-5 shrink-0 text-center" aria-hidden="true" />
-          <span :class="collapsed ? 'sr-only' : 'sr-only md:not-sr-only'">Log out</span>
-        </button>
         <button
           :aria-label="collapsed ? 'Expand navigation' : 'Collapse navigation'"
           :class="[
@@ -204,7 +187,6 @@ export default {
   },
   setup() {
     return {
-      authStore: useAuthStore(),
       kuzzleStore: useKuzzleStore(),
     };
   },
@@ -239,7 +221,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAuthStore, ['hasSecurityRights', 'user']),
+    ...mapState(useAuthStore, ['hasSecurityRights']),
     sections() {
       return [
         { icon: 'fa-database', label: 'Data', route: 'Data', segment: '/data' },
@@ -273,22 +255,10 @@ export default {
       // Fuchsia profond (texte blanc à 5:1, le fuchsia clair n'atteint que 3,9)
       // et un filet blanc : l'élément actif reste lisible sur un rail rouge ou
       // magenta, où le fond seul se confondrait avec la couleur de connexion.
-      return 'bg-primary-hover font-bold shadow-[inset_3px_0_0_var(--color-primary-foreground)]';
+      return 'bg-(--rail-active) font-bold shadow-[inset_3px_0_0_var(--rail-active-rule)]';
     },
     currentEnvironmentColor() {
       return this.kuzzleStore.currentEnvironment?.color;
-    },
-    currentUserName() {
-      if (!this.user) {
-        return 'Not authenticated';
-      }
-      if (this.user.id === -1) {
-        return 'Anonymous';
-      }
-      if (this.user.params && this.user.params.name) {
-        return this.user.params.name;
-      }
-      return this.user.id;
     },
     adminConsoleVersion() {
       return __APP_VERSION__;
@@ -309,16 +279,6 @@ export default {
     isCurrent(section) {
       return this.$route.path.includes(section.segment);
     },
-    async doLogout() {
-      try {
-        await this.authStore.doLogout();
-      } catch (error) {
-        this.$log.error(error);
-      } finally {
-        this.$router.push({ name: 'Login' });
-      }
-    },
-
     editEnvironment(id) {
       this.$emit('environment::create', id);
     },

@@ -1,20 +1,19 @@
 <template>
-  <div :class="classes" data-slot="select-separator" role="separator" v-bind="$attrs" />
+  <SelectSeparator
+    :class="cn('pointer-events-none -mx-1 my-1 h-px bg-border', props.class)"
+    data-slot="select-separator"
+    v-bind="delegatedProps"
+  />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { SelectSeparator, type SelectSeparatorProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-export default defineComponent({
-  name: 'SelectSeparator',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('-mx-1 my-1 h-px bg-border');
-    },
-  },
-});
+const props = defineProps<SelectSeparatorProps & { class?: HTMLAttributes['class'] }>();
+
+const delegatedProps = reactiveOmit(props, 'class');
 </script>

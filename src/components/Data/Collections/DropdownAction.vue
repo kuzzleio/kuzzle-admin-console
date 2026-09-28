@@ -16,7 +16,7 @@
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
           <DropdownMenuItem
-            :as="canEdit ? 'router-link' : 'button'"
+            :as="canEdit ? RouterLink : 'button'"
             data-cy="CollectionDropdown-edit"
             :disabled="!canEdit"
             :title="canEdit ? '' : 'Your rights do not allow you to edit this collection'"
@@ -58,6 +58,7 @@
 <script lang="ts">
 import { defineComponent, markRaw } from 'vue';
 import { mapState } from 'pinia';
+import { RouterLink } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
@@ -101,6 +102,7 @@ export default defineComponent({
   },
   data() {
     return {
+      RouterLink: markRaw(RouterLink),
       Button: markRaw(Button),
       clearOpen: false,
     };

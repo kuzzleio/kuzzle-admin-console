@@ -161,6 +161,15 @@ function openApp(path, { token = 'anonymous', telemetry = true } = {}) {
   cy.visit(`/#${path}`)
 }
 
+// La page Data pose le focus sur son filtre (`v-focus`) une fois rendue. Un
+// menu ouvert avant se refermerait : `reka-ui` ferme un menu dont le focus
+// sort (G-089). On attend donc ce focus avant d'ouvrir le sélecteur.
+function openEnvironmentSwitch() {
+  openApp('/data')
+  cy.focused().should('have.attr', 'data-cy', 'IndexesPage-filter')
+  cy.get('[data-cy="EnvironmentSwitch"]').click()
+}
+
 // `DocumentListItem-<id>` en v4, `DocumentListItem--<id>` en v5.
 function documentItem(id) {
   return pick(`[data-cy="DocumentListItem-${id}"]`, `[data-cy="DocumentListItem--${id}"]`)
@@ -181,6 +190,8 @@ describe('Captures v4 / v5', () => {
   beforeEach(() => {
     cy.clearLocalStorage()
     cy.clearCookies()
+    // Thème imposé plutôt que celui du système (ADR-0056), lu au chargement.
+    localStorage.setItem('kuz-ac-theme', Cypress.expose('theme') ?? 'light')
   })
 
   // C22 coupe le réseau : s'il échoue avant de le rétablir, tous les états
@@ -213,31 +224,27 @@ describe('Captures v4 / v5', () => {
   })
 
   it('C04 — sélecteur de connexion ouvert', () => {
-    openApp('/data')
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    openEnvironmentSwitch()
     cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').should('be.visible')
     shot('C04-environment-switch')
   })
 
   it('C05 — modale de création de connexion', () => {
-    openApp('/data')
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    openEnvironmentSwitch()
     cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').click()
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').should('be.visible')
     shot('C05-environment-create-modal')
   })
 
   it('C06 — modale de suppression de connexion', () => {
-    openApp('/data')
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    openEnvironmentSwitch()
     cy.get('[data-cy="EnvironmentSwitch-env_valid-delete"]').click()
     cy.get('[data-cy="EnvironmentDeleteModal-envName"]').should('be.visible')
     shot('C06-environment-delete-modal')
   })
 
   it("C07 — modale d'import de connexions", () => {
-    openApp('/data')
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    openEnvironmentSwitch()
     cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').should('be.visible')
     cy.contains('[role="menuitem"], .dropdown-item', /^\s*Import\s*$/).should('be.visible').click()
     cy.get('[data-cy="EnvironmentImport-fileInput"]').should('exist')
@@ -310,6 +317,19 @@ describe('Captures v4 / v5', () => {
     cy.contains('Feedback').click()
     cy.contains('Talk with our community').should('be.visible')
     shot('C21-feedback-menu')
+  })
+
+  // Rail replié : l'utilisateur reste lisible dans la barre de session
+  // (ADR-0055), et son menu dit ses profils.
+  it('C21b — barre de session, rail replié', () => {
+    openApp('/data')
+    cy.focused().should('have.attr', 'data-cy', 'IndexesPage-filter')
+    cy.get('[data-cy="MainMenu-collapseBtn"]').click()
+    cy.get('[data-cy="SessionBar-user"]').click()
+    cy.get('[data-cy="SessionBar-logoutBtn"]').should('be.visible')
+    shot('C21b-session-bar')
+    cy.get('body').type('{esc}')
+    cy.get('[data-cy="MainMenu-collapseBtn"]').click()
   })
 
   it('C22 — backend injoignable', () => {
@@ -491,6 +511,17 @@ describe('Captures v4 / v5', () => {
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
     cy.get('[data-cy="BasicFilter-submitBtn"]').should('be.visible')
     shot('C57-basic-filter')
+  })
+
+  // La liste ouverte : placement sous le déclencheur, largeur, coche de
+  // l'option retenue et option désignée au clavier.
+  it('C57b — liste déroulante ouverte', () => {
+    openApp(docsPath)
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="BasicFilter-operator"]').click()
+    cy.get('[data-slot="select-content"] [role="option"]').should('be.visible')
+    cy.focused().type('{downarrow}')
+    shot('C57b-select-open')
   })
 
   it('C58 — filtre JSON', () => {

@@ -2,11 +2,10 @@
   <div class="flex h-screen items-center justify-center px-4">
     <Card class="w-full max-w-3xl bg-muted">
       <CardHeader class="gap-4">
-        <img
+        <KuzzleLogo
           alt="Welcome to the Kuzzle Admin Console"
           class="h-15 w-auto self-start"
           height="60"
-          src="../../assets/logo.svg"
         />
         <CardTitle class="font-heading text-headline font-extrabold">
           Connecting to Kuzzle at
@@ -39,10 +38,12 @@ import { Spinner } from '@/components/ui/spinner';
 import { useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue';
+import KuzzleLogo from './KuzzleLogo.vue';
 
 export default {
   name: 'OfflinePage',
   components: {
+    KuzzleLogo,
     Card,
     CardContent,
     CardFooter,

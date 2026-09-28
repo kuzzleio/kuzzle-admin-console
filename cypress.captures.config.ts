@@ -4,6 +4,9 @@ import { defineConfig } from 'cypress'
 // Même fichier contre les deux versions : `CAPTURES_VERSION` choisit le dossier
 // de sortie, `--config baseUrl=…` la version photographiée.
 const version = process.env.CAPTURES_VERSION ?? 'v5'
+// `CAPTURES_THEME=dark` photographie le thème sombre (ADR-0056) : à combiner
+// avec un `CAPTURES_VERSION` à part (`v5-dark`). Sans effet sur la v4.
+const theme = process.env.CAPTURES_THEME ?? 'light'
 
 export default defineConfig({
   fixturesFolder: 'test/e2e/cypress/fixtures',
@@ -18,6 +21,7 @@ export default defineConfig({
   retries: 0,
   screenshotOnRunFailure: false,
   trashAssetsBeforeRuns: true,
+  expose: { theme },
   e2e: {
     setupNodeEvents(on) {
       // Electron headless ouvre une fenêtre de 1280×720 : plus petite que le

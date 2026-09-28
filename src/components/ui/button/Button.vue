@@ -1,116 +1,37 @@
-<template>
-  <!--
-    Le cas par défaut est écrit en dur plutôt que passé par `<component :is>`.
-    Vue 3 résout la chaîne d'un `:is` **comme un composant avant de la traiter
-    comme une balise**, et `resolveAsset` compare le nom demandé au nom du
-    composant courant : `capitalize(camelize('button'))` vaut `Button`, donc
-    `<component :is="'button'">` se rendait lui-même, à l'infini (G-039).
-  -->
-  <button v-if="as === 'button'" :class="classes" v-bind="$attrs">
-    <slot />
-  </button>
-  <component :is="as" v-else :class="classes" v-bind="$attrs">
-    <slot />
-  </component>
-</template>
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { Primitive, type PrimitiveProps } from 'reka-ui';
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
-import { classMerge } from '../class-merge';
+import { buttonVariants, type ButtonVariants } from '.';
 
 /*
- * Première primitive du design system (ADR-0003, ADR-0009).
+ * `Button` de shadcn-vue (ADR-0054), sur `Primitive` de `reka-ui`.
  *
- * L'API publique est celle de `shadcn-vue` — mêmes noms de variantes, mêmes
- * tailles, même `buttonVariants` exporté — pour qu'en phase 4 le remplacement
- * par le vrai composant amont soit un changement d'import, pas une reprise des
- * sites d'appel.
- *
- * Une variante en plus de l'amont : `warning`, sur le token `accent`. La
- * console s'en sert pour les actions qui écrasent sans supprimer — « Replace »
- * sur un document en est le cas type. `destructive` dirait « ça détruit »,
- * `secondary` ne dirait rien ; `Alert` porte déjà la même variante pour la même
- * raison.
- *
- * Un écart subsiste, dû à Vue 2 : pas de `asChild`, il repose sur `Primitive`
- * de `reka-ui`, qui demande Vue 3. La prop `as` couvre le besoin courant
- * (`as="a"`, `as="router-link"`).
- *
- * La bordure, le fond, le rayon et le curseur restent posés explicitement :
- * le preflight ne les donne pas, il ne fait que normaliser.
+ * `as` prend une balise ou un composant : `Primitive` passe une chaîne telle
+ * quelle à `h()`, et `as="router-link"` rendrait un élément `<router-link>`
+ * inconnu. Un lien de routeur s'écrit `:as="RouterLink"`, ou `as-child` autour
+ * d'un `<router-link>`.
  */
-export const buttonVariants = cva(
-  [
-    'inline-flex items-center justify-center gap-2 shrink-0',
-    'whitespace-nowrap align-middle appearance-none cursor-pointer',
-    // `bg-transparent` dans la base, pas seulement dans les variantes qui n'ont
-    // pas de fond : sans preflight, un `<button>` garde le fond gris par défaut
-    // du navigateur, et `ghost` comme `link` s'affichaient en gris (G-021). Les
-    // variantes qui posent un fond gagnent, `tailwind-merge` les départage.
-    'bg-transparent',
-    'border border-transparent rounded-md',
-    'font-sans text-ui font-medium leading-none',
-    'transition-colors outline-none',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-    'disabled:pointer-events-none disabled:opacity-50',
-  ].join(' '),
-  {
-    defaultVariants: {
-      size: 'default',
-      variant: 'default',
-    },
-    variants: {
-      size: {
-        default: 'h-9 px-4 py-2',
-        icon: 'h-9 w-9 p-0',
-        lg: 'h-10 px-6',
-        sm: 'h-8 px-3 text-small',
-      },
-      variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary-hover',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        ghost: 'text-foreground hover:bg-accent hover:text-foreground',
-        info: 'bg-info text-info-foreground hover:bg-info/90',
-        link: 'text-primary underline-offset-4 hover:text-primary-hover hover:underline',
-        outline: 'border-input bg-card text-foreground hover:bg-accent',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        success: 'bg-success text-success-foreground hover:bg-success/90',
-        warning: 'bg-warning text-warning-foreground hover:bg-warning/90',
-      },
-    },
-  },
-);
+interface Props extends PrimitiveProps {
+  class?: HTMLAttributes['class'];
+  size?: ButtonVariants['size'];
+  variant?: ButtonVariants['variant'];
+}
 
-type ButtonVariantProps = VariantProps<typeof buttonVariants>;
-export type ButtonVariant = NonNullable<ButtonVariantProps['variant']>;
-export type ButtonSize = NonNullable<ButtonVariantProps['size']>;
-
-export default defineComponent({
-  name: 'Button',
-  mixins: [classMerge],
-  // Les attributs non déclarés (`type`, `disabled`, `data-cy`, `aria-*`) sont
-  // posés à la main sur l'élément rendu, pas sur la racine par défaut.
-  inheritAttrs: false,
-  props: {
-    as: {
-      default: 'button',
-      type: [String, Object] as PropType<string | Record<string, unknown>>,
-    },
-    size: {
-      default: 'default',
-      type: String as PropType<ButtonSize>,
-    },
-    variant: {
-      default: 'default',
-      type: String as PropType<ButtonVariant>,
-    },
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses(buttonVariants({ size: this.size, variant: this.variant }));
-    },
-  },
+const props = withDefaults(defineProps<Props>(), {
+  as: 'button',
 });
 </script>
+
+<template>
+  <Primitive
+    :as="as"
+    :as-child="asChild"
+    :class="cn(buttonVariants({ size, variant }), props.class)"
+    data-slot="button"
+  >
+    <slot />
+  </Primitive>
+</template>

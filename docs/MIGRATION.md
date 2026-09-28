@@ -321,7 +321,7 @@ précisément ce qu'on achète.
 | 3. Cartes signature (une par écran), blocs gris de `Signup` et `KuzzleErrorPage` retirés | ✅ |
 | 3. Audit `/impeccable` : repère `main`, lien d'évitement, `h1`, `lang`, contraste AA (ADR-0050), noms accessibles, focus des menus, éditeur JSON au clavier, mouvement réduit | ✅ |
 | 3. Reste de l'audit : mise en page sous 400 px (panneaux empilés sous `md`, G-081, G-082), onglets d'API Action (Suppr ferme l'onglet), cibles tactiles de 24 px (WCAG 2.5.8 ; seuls restent les replis de code d'Ace, dans un éditeur tiers), titre du document par route (2.4.2), Ctrl/⌘ + Entrée et Ctrl/⌘ + S dans API Action (G-083) | ✅ |
-Le jeu sombre est défini mais branché sur rien.
+Le jeu sombre est branché ([ADR-0056](adr/0056-theme-sombre-avance.md)) : dérivé de la DA, bascule dans la barre de session.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
 (cf. [ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)) : **pas de
@@ -902,7 +902,16 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
 
 - [x] Remplacer les quatre bibliothèques Vue 2 (ADR-0032 à ADR-0035)
 - [x] Retirer `@vue/compat` (ADR-0036)
-- [ ] Vrai shadcn-vue à la place des primitives écrites à la main
+- [ ] Vrai shadcn-vue à la place des primitives écrites à la main ([ADR-0054](adr/0054-vrai-shadcn-vue.md)), une famille par lot :
+  - [x] 1. Socle (`reka-ui`, `components.json`), `Button`, `Badge`, `Card`, `Alert`, `Label`, `Input`, `Textarea`, `Table`, `Spinner`
+  - [x] 2. `DropdownMenu`, `z-index` en tokens
+  - [x] 3. `Select`, retrait de `floating-panel.ts`
+  - [x] 4. `Dialog`
+  - [ ] 5. `Tabs`
+  - [ ] 6. `Pagination`
+  - [ ] 7. `TagsInput`
+  - [ ] 8. `Resizable`
+  - [ ] 9. `Toast`
 - [ ] Composition API
 
 ### 1.6 Critères de sortie — ADR-0051
@@ -916,7 +925,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
 - [x] 3. #1092 vérifiée sur `5-dev` : le défaut existait (formulaires de collection, profil et rôle muets sur un JSON invalide), porté avec `FormMessage`
 - [ ] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
 - [ ] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3)
-- [ ] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes
+- [x] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes — avancé avant les lots 5 à 9 du critère 4 ([ADR-0056](adr/0056-theme-sombre-avance.md))
 - [ ] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5)
 - [ ] 8. Revue de sortie : technique, sécurité, livraison (`Dockerfile`, `infra/`, workflows)
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
@@ -3342,6 +3351,190 @@ Gabarit à copier :
   valid environment », le faisait déjà.
 - **Ref** : validation d'ADR-0053, le 2026-09-28.
 
+#### G-085 — `Primitive` de `reka-ui` rend `as="router-link"` en balise inconnue
+
+- **Contexte** : critère 4 d'ADR-0051, `Button` passé sur `Primitive`
+  ([ADR-0054](adr/0054-vrai-shadcn-vue.md)).
+- **Symptôme** (à la lecture, avant tout build) : `<Button as="router-link"
+  :to="…">` rendrait un élément `<router-link to="[object Object]">`, qui ne
+  navigue pas. Aucune erreur, aucun avertissement de Vue.
+- **Cause** : `Primitive` appelle `h(props.as, attrs, …)` avec la chaîne telle
+  quelle. `h()` ne résout pas un nom de composant : seuls le compilateur de
+  templates et `<component :is>` le font, par `resolveComponent`. L'ancien
+  `Button` passait par `<component :is>`, qui résolvait `router-link`.
+- **Solution** : passer le composant lui-même, `:as="RouterLink"`, importé de
+  `vue-router` et exposé par `markRaw` dans `data()` tant que le composant est
+  en Options API. Ou `as-child` autour d'un `<router-link>`.
+- **À retenir** : toute primitive posée sur `Primitive` (`DropdownMenuItem`
+  aussi, dans son lot) a le même comportement. Chercher `'router-link'` avant
+  de fusionner une famille.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-086 — `shadcn-vue add` installe `@lucide/vue` même sans icône
+
+- **Contexte** : premier appel de la CLI (`npx shadcn-vue@2.8.2 add button`).
+- **Symptôme** : `package.json` gagne `@lucide/vue`, alors que `Button` n'importe
+  aucune icône.
+- **Cause** : la CLI installe la bibliothèque d'icônes de `components.json`
+  (`iconLibrary`) à chaque appel, quel que soit le composant.
+- **Solution** : retirer `@lucide/vue` après chaque appel et remplacer les
+  icônes lucide des fichiers produits par Font Awesome (DESIGN.md). La CLI
+  n'a pas de `--dry-run` : appeler sur un arbre propre, puis relire `git diff`.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-087 — Sans `DialogTrigger`, `reka-ui` ne rend le focus à personne
+
+- **Contexte** : lot 4 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md), `Dialog` sur
+  `reka-ui`.
+- **Symptôme** (à la lecture de `DialogContentModal.js`) : à la fermeture d'une
+  modale ouverte par un état, le focus tomberait sur `<body>`. Le clavier
+  repartirait du haut de la page.
+- **Cause** : sur `close-auto-focus`, `reka-ui` appelle `preventDefault()` puis
+  focalise `rootContext.triggerElement`, qui n'existe que si la modale a un
+  `DialogTrigger`. Les 19 modales de la console s'ouvrent par un booléen,
+  depuis un bouton qui vit souvent dans un autre composant : aucune n'en a.
+- **Solution** : `DialogContent` retient `document.activeElement` sur
+  `open-auto-focus` et le refocalise sur `close-auto-focus`, sauf si le site
+  d'appel a déjà appelé `preventDefault()`.
+- **À retenir** : `reka-ui` suppose que chaque couche a son déclencheur. Même
+  question à poser pour `DropdownMenu` et `Select`, qui en ont un, et pour tout
+  composant ouvert par un état.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-088 — La racine de `DropdownMenu` ne rend plus d'élément : ses attributs se perdent
+
+- **Contexte** : lot 2 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md).
+- **Symptôme** : `<DropdownMenu data-cy="ProfileFilters-roleSelect">` ne pose
+  plus rien dans le DOM, et `profiles.spec` ne trouve plus
+  `[data-cy="ProfileFilters-roleSelect"] > button`. Vue avertit d'attributs
+  « extraneous » en développement, rien au build.
+- **Cause** : l'ancienne racine rendait un `<div class="inline-block">` qui
+  recevait `data-cy`, `class` et `ref`. `DropdownMenuRoot` de `reka-ui`, comme
+  la racine de l'amont, ne rend que ses enfants.
+- **Solution** : poser l'attribut sur le déclencheur, ou sur un élément du site
+  d'appel qui enveloppe le menu. Un `ref` sur la racine pour appeler `close()`
+  devient un état : `v-model:open`.
+- **À retenir** : même chose pour `Dialog`, `Select` et les autres racines de
+  `reka-ui` qui ne rendent rien. Chercher les attributs posés sur la racine avant de
+  migrer une famille.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-089 — Un menu ouvert pendant le chargement se referme tout seul
+
+- **Contexte** : captures du lot 2 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md),
+  C04 à C07 (sélecteur de connexion ouvert depuis `/data`).
+- **Symptôme** : `EnvironmentSwitch-newConnectionBtn` introuvable. Le clic
+  sur le sélecteur a bien lieu, mais le menu est fermé à la capture. Avec une
+  attente de trois secondes avant le clic, ou en relançant le test, il
+  s'ouvre.
+- **Cause** : la page Data pose le focus sur son filtre par `v-focus`, une fois
+  rendue. `reka-ui` ferme un menu dont le focus sort (`focus-outside`) ;
+  l'ancienne primitive ne fermait qu'au clic à côté. Le clic arrivait avant ce
+  focus.
+- **Solution** : attendre le focus de la page avant d'ouvrir le menu
+  (`cy.focused().should('have.attr', 'data-cy', 'IndexesPage-filter')`), comme
+  G-084 attend la fin d'une redirection.
+- **À retenir** : c'est un comportement voulu de `reka-ui`, pas un défaut. Un
+  test qui ouvre un panneau juste après une navigation doit attendre que la
+  page ait posé son focus.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md), [G-084](#g-084).
+
+#### G-090 — Une option de `Select` ne se retrouve plus si la valeur change de type
+
+- **Contexte** : lot 3 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md).
+- **Symptôme** : le déclencheur affiche le `placeholder`, et aucune option
+  n'est cochée à l'ouverture, alors que la valeur est bien posée.
+- **Cause** : l'ancienne primitive comparait `String(valeur)` des deux côtés ;
+  `reka-ui` compare strictement une chaîne, et par empreinte le reste. `'25'`
+  ne retrouve pas l'option `25`, ni `2` l'option `'2'`.
+- **Solution** : donner à `modelValue` le type des `value` des options. Une
+  valeur lue d'une URL ou de `localStorage` se convertit avant d'arriver au
+  `Select`.
+- **À retenir** : aucun site d'appel de la console n'est dans ce cas
+  aujourd'hui (tailles de page et versions en nombres des deux côtés), mais
+  rien ne le signale : la spec ne voit qu'un champ vide.
+- **Ref** : [ADR-0014](adr/0014-primitive-select-en-vue-2.md), décision 5.
+
+#### G-091 — Une modale montée tôt passe sous une modale montée après elle
+
+- **Contexte** : lot 4 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md), `login.spec`
+  « without losing context when token expires ».
+- **Symptôme** : la session expire pendant la création d'un index. La modale
+  « Sorry, your session has expired » s'ouvre, mais `LoginAsAnonymous-Btn` est
+  « covered by » le fond de la modale de création, pourtant ouverte avant.
+- **Cause** : un `Teleport` réserve sa place dans `<body>` au montage du
+  composant, pas à l'ouverture. La modale de `Home` est montée avec
+  l'application, celle de la page après : à `z-index` égal, c'est l'ordre du
+  DOM qui décide, et la plus récente dans le DOM est la plus ancienne ouverte.
+  L'ancienne primitive ne montait son portail qu'à l'ouverture.
+- **Solution** : une modale qui doit pouvoir s'ouvrir par-dessus une autre est
+  montée à l'ouverture (`v-if` sur `Dialog`), comme celle de session expirée.
+- **À retenir** : une modale ouverte par un clic ne peut pas s'ouvrir sur une
+  autre, puisque la première rend la page inerte. Seule celle de `Home`
+  s'ouvre d'elle-même, sur un événement : c'est le cas à surveiller pour toute
+  modale ouverte par un état qu'aucun clic ne déclenche.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-092 — Une spec verte en local, rouge en CI : la barre d'outils qui ne passe pas à la ligne
+
+- **Contexte** : `docs.spec`, « Should add a column when a field is picked in
+  the column selector », rouge en CI depuis #1164 (mise en page sous 400 px),
+  verte en local. Le push de `5-dev` échouait, et le déploiement de
+  console-v5 était ignoré.
+- **Symptôme** : `cy.click()` sur `.multiselect__option` « is being covered by
+  another element: `.multiselect__content-wrapper` ». La capture de la CI
+  montre le sélecteur de champs écrasé à une soixantaine de pixels.
+- **Cause** : la barre de la vue colonnes tenait sur une ligne `flex` sans
+  retour à la ligne. Les boutons ne rétrécissent pas, le sélecteur si. Sous
+  Linux, les polices de la CI sont plus larges qu'en local, et il ne lui
+  restait presque rien.
+- **Solution** : `flex-wrap` sur la barre, et un sélecteur qui part de 8rem,
+  grandit jusqu'à 24rem et ne descend pas sous 8rem (`basis-32 grow min-w-32
+  max-w-96`) : la barre ne passe à la ligne que quand il n'a plus ses 8rem.
+  `flex-1` le faisait grandir d'abord, et poussait « CSV » à la ligne à
+  1400 px. Reproduit en local avec `--config viewportWidth=1200`.
+- **À retenir** : 17/17 en local ne dit pas que la CI est verte. Relire
+  `gh pr checks` avant de déclarer une PR prête ; un échec qui ne se reproduit
+  pas se cherche d'abord dans la capture d'écran de la CI, puis avec un
+  viewport plus étroit.
+- **Ref** : [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md).
+
+#### G-093 — Un token rafraîchi dans la seconde de son émission meurt avec l'ancien
+
+- **Contexte** : specs de session d'[ADR-0057](adr/0057-gestion-de-session.md),
+  « Should adopt a token refreshed by another tab ».
+- **Symptôme** : le test passe seul, et échoue dans son fichier. Le token
+  « rafraîchi » par l'autre onglet est refusé une seconde plus tard
+  (`security.token.invalid`), et la popup de reconnexion s'ouvre.
+- **Cause** : `auth:refreshToken` appelé dans la même seconde que le `login`
+  rend un JWT identique à l'ancien : même utilisateur, mêmes `iat` et `exp` à
+  la seconde près, donc même signature. À la fin du délai de grâce
+  (`security.jwt.gracePeriod`, 1 s), Kuzzle invalide « l'ancien », c'est-à-dire
+  les deux. Seul, le test mettait plus d'une seconde à charger la page.
+- **Solution** : dans les specs, attendre plus d'une seconde entre l'émission
+  d'un token et son rafraîchissement.
+- **À retenir** : la console rafraîchit 30 s avant l'expiration, jamais dans
+  la seconde de l'émission. Un token de moins de 31 s serait rafraîchi au
+  premier tick : ne pas descendre sous cette durée, ni en test ni en
+  configuration.
+- **Ref** : [ADR-0057](adr/0057-gestion-de-session.md).
+
+#### G-094 — `Cypress.env()` n'existe plus depuis Cypress 16
+
+- **Contexte** : captures dans le thème sombre
+  ([ADR-0056](adr/0056-theme-sombre-avance.md)), un réglage passé du
+  `cypress.captures.config.ts` au fichier de captures.
+- **Symptôme** : le premier `it` échoue en 12 s, les 79 autres sont sautés :
+  « `Cypress.env()` was removed in Cypress version 16.0.0 ».
+- **Cause** : Cypress 16 retire `Cypress.env()` et la clé `env` de la
+  configuration. Une valeur non sensible passe par `expose` et se lit par
+  `Cypress.expose()` ; une valeur sensible, par `cy.env()`.
+- **Solution** : `expose: { theme }` dans la configuration,
+  `Cypress.expose('theme')` dans le fichier.
+- **À retenir** : la documentation et les exemples d'avant la version 16
+  montrent encore `env` ; ne pas les recopier.
+- **Ref** : [ADR-0056](adr/0056-theme-sombre-avance.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3460,3 +3653,7 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-28 | Critères de sortie de la v5 : audit DA, dette, #1092, shadcn-vue, `apexcharts` 5, thème sombre, Composition API, revue de sortie, puis bascule `master` → `4-stable` | [ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md) |
 | 2026-09-28 | `moment` retiré sans successeur : cinq fonctions sur `Date` dans `src/lib/date.ts`, formats identiques | [ADR-0052](adr/0052-dates-natives-plutot-que-moment.md) |
 | 2026-09-28 | `json-formatter-js` et `v-json-formatter` remplacés par un composant `JsonTree` (clavier, tokens, pas de style injecté) | [ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md) |
+| 2026-09-28 | Le vrai shadcn-vue, famille par famille : CLI puis report de la DA, comportement de `reka-ui`, écarts nommés (Font Awesome, `Checkbox`/`Switch` natifs, `Form`, `FileInput`) | [ADR-0054](adr/0054-vrai-shadcn-vue.md) |
+| 2026-09-28 | Barre de session en haut à droite : l'utilisateur reste visible rail replié, ses profils et « Log out » dans son menu | [ADR-0055](adr/0055-barre-de-session.md) |
+| 2026-09-28 | Thème sombre avancé avant les lots 5 à 9 de shadcn-vue : jeu dérivé de la DA et mesuré AA, bascule système / clair / sombre, Ace et ApexCharts suivent | [ADR-0056](adr/0056-theme-sombre-avance.md) |
+| 2026-09-28 | Gestion de session : surveillance armée à chaque ouverture (identifiants compris), vérification au retour sur l'onglet, rafraîchissement unique entre onglets, session perdue sur place dans la popup | [ADR-0057](adr/0057-gestion-de-session.md) |

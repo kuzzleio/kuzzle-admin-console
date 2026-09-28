@@ -134,7 +134,7 @@
             </TableCell>
             <TableCell class="text-right">
               <Button
-                as="router-link"
+                :as="RouterLink"
                 :data-cy="`IndexesPage-browse--${index.name}`"
                 size="icon"
                 title="browse this index"
@@ -146,7 +146,7 @@
                 ><i class="fa fa-eye"
               /></Button>
               <Button
-                as="router-link"
+                :as="RouterLink"
                 :data-cy="`IndexesPage-createCollection--${index.name}`"
                 size="icon"
                 title="Create a collection in this index"
@@ -188,7 +188,9 @@
 </template>
 
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'pinia';
+import { RouterLink } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -257,6 +259,7 @@ export default {
   },
   data() {
     return {
+      RouterLink: markRaw(RouterLink),
       bulkDeleteIndexesOpen: false,
       createIndexOpen: false,
       deleteIndexOpen: false,

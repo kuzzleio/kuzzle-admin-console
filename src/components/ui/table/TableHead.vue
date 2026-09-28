@@ -1,26 +1,22 @@
 <template>
-  <th :class="classes" data-slot="table-head" v-bind="$attrs">
+  <th
+    :class="
+      cn(
+        'h-10 px-3 text-left align-middle text-label font-bold uppercase whitespace-nowrap text-label-slate',
+        props.class,
+      )
+    "
+    data-slot="table-head"
+  >
     <slot />
   </th>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-export default defineComponent({
-  name: 'TableHead',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses(
-        'h-10 px-3 text-left align-middle',
-        // Libellé de section du DS : capitales, 11 px, Label Slate.
-        'text-label font-bold uppercase whitespace-nowrap text-label-slate',
-      );
-    },
-  },
-});
+/* Libellé de section du DS : capitales, 11 px, Label Slate. */
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

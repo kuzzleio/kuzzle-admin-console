@@ -67,9 +67,9 @@
     </div>
 
     <Dialog :open="editOpen" @update:open="onDialogToggle">
-      <DialogContent labelled-by="filter-name-title">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle id="filter-name-title">Edit favorite filter name</DialogTitle>
+          <DialogTitle>Edit favorite filter name</DialogTitle>
         </DialogHeader>
         <Input v-model="filter.name" required type="text" />
         <DialogFooter>

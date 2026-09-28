@@ -1,36 +1,25 @@
 import { cva } from 'class-variance-authority';
 
 /**
- * Habillage d'une option de `Select` (ADR-0014).
+ * Habillage d'une option de `Select` (ADR-0014, ADR-0054).
  *
- * Volontairement proche de `dropdownMenuItemVariants` sans le partager : une
+ * Volontairement proche des éléments de `DropdownMenu` sans le partager : une
  * option de liste et un élément de menu se ressemblent aujourd'hui, mais ils ne
- * sont pas la même chose, et l'amont les tient séparés. Les factoriser ferait
- * qu'une retouche du menu changerait les listes sans qu'on le veuille.
+ * sont pas la même chose, et l'amont les tient séparés.
  *
- * Le décalage à gauche est constant, coche ou non : sans lui, l'option
- * sélectionnée se décalerait des autres.
+ * La coche est à gauche et le décalage est constant, coche ou non : sans lui,
+ * l'option retenue se décalerait des autres. `reka-ui` pose `data-highlighted`
+ * sur l'option que le clavier ou la souris désigne.
  */
 export const itemClasses = cva(
   [
     'relative flex w-full items-center gap-2',
-    'cursor-pointer appearance-none text-left',
-    'border border-transparent bg-transparent rounded-sm',
-    'py-1.5 pr-2 pl-8',
+    'cursor-pointer select-none text-left',
+    'rounded-sm py-1.5 pr-2 pl-8',
     'font-sans text-sm leading-normal text-popover-foreground',
     'outline-none transition-colors',
     // Le fond Row Hover seul (1,1:1) ne signale pas le focus : filet Captain Blue.
-    'focus-visible:bg-accent focus-visible:shadow-[inset_3px_0_0_var(--color-ring)] hover:bg-accent',
+    'data-highlighted:bg-accent data-highlighted:shadow-[inset_3px_0_0_var(--color-ring)]',
+    'data-disabled:pointer-events-none data-disabled:cursor-default data-disabled:opacity-50',
   ].join(' '),
-  {
-    defaultVariants: {
-      disabled: false,
-    },
-    variants: {
-      disabled: {
-        false: '',
-        true: 'pointer-events-none cursor-default opacity-50',
-      },
-    },
-  },
 );

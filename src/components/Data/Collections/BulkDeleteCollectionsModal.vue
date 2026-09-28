@@ -1,10 +1,8 @@
 <template>
-  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="max-w-2xl" labelled-by="bulk-delete-collections-title">
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent class="max-w-2xl" @interact-outside.prevent>
       <DialogHeader>
-        <DialogTitle id="bulk-delete-collections-title">
-          Are you sure you want to delete all the selected collections?
-        </DialogTitle>
+        <DialogTitle> Are you sure you want to delete all the selected collections? </DialogTitle>
       </DialogHeader>
 
       <form @submit.prevent="performDelete">
@@ -74,7 +72,7 @@ export default defineComponent({
     Input,
     Label,
   },
-  // `dismissible: false` : une suppression ne se ferme pas sur un clic à côté.
+  // `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
   props: {
     collections: {
       default: () => [],

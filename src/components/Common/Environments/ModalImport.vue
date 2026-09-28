@@ -1,8 +1,8 @@
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent data-cy="EnvironmentImport" labelled-by="env-import-title">
+    <DialogContent data-cy="EnvironmentImport">
       <DialogHeader>
-        <DialogTitle id="env-import-title">Import Connection</DialogTitle>
+        <DialogTitle>Import Connection</DialogTitle>
       </DialogHeader>
 
       <div class="flex flex-col gap-1.5">

@@ -1,8 +1,8 @@
 <template>
-  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent data-cy="CollectionClearModal" labelled-by="collection-clear-title">
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent data-cy="CollectionClearModal" @interact-outside.prevent>
       <DialogHeader>
-        <DialogTitle id="collection-clear-title">
+        <DialogTitle>
           Clear <span class="code">{{ collection }}</span>
         </DialogTitle>
       </DialogHeader>
@@ -63,7 +63,7 @@ export default defineComponent({
     Input,
     Label,
   },
-  // `dismissible: false` : vider une collection n'est pas annulable, la modale
+  // `@interact-outside.prevent` : vider une collection n'est pas annulable, la modale
   // ne se ferme pas sur un clic à côté.
   props: {
     collection: {

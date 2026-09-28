@@ -1,22 +1,13 @@
 <template>
-  <caption :class="classes" data-slot="table-caption" v-bind="$attrs">
+  <caption :class="cn('mt-4 text-sm text-muted-foreground', props.class)" data-slot="table-caption">
     <slot />
   </caption>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-export default defineComponent({
-  name: 'TableCaption',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('mt-4 text-sm text-muted-foreground');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

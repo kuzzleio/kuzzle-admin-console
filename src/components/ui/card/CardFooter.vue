@@ -1,23 +1,14 @@
 <template>
-  <div :class="classes" v-bind="$attrs">
+  <div :class="cn('flex items-center gap-2 px-6', props.class)" data-slot="card-footer">
     <slot />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /* Pied de Card : les actions. */
-export default defineComponent({
-  name: 'CardFooter',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('flex items-center gap-2 px-6');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

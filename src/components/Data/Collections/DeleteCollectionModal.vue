@@ -1,8 +1,8 @@
 <template>
-  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="max-w-2xl" labelled-by="delete-collection-title">
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent class="max-w-2xl" @interact-outside.prevent>
       <DialogHeader>
-        <DialogTitle id="delete-collection-title">
+        <DialogTitle>
           <template v-if="collection">
             Collection <strong>{{ truncateName(collection.name) }}</strong> deletion
           </template>
@@ -75,7 +75,7 @@ export default defineComponent({
     Input,
     Label,
   },
-  // `dismissible: false` : une suppression ne se ferme pas sur un clic à côté.
+  // `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
   props: {
     collection: {
       default: null,

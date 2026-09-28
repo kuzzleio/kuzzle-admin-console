@@ -1,22 +1,13 @@
 <template>
-  <div :class="classes" v-bind="$attrs">
+  <div :class="cn('px-6', props.class)" data-slot="card-content">
     <slot />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-export default defineComponent({
-  name: 'CardContent',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('px-6');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

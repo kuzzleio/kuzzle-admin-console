@@ -1,22 +1,16 @@
 <template>
-  <tfoot :class="classes" data-slot="table-footer" v-bind="$attrs">
+  <tfoot
+    :class="cn('border-t border-border bg-muted/50 font-medium', props.class)"
+    data-slot="table-footer"
+  >
     <slot />
   </tfoot>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-export default defineComponent({
-  name: 'TableFooter',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('border-t border-border bg-muted/50 font-medium');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

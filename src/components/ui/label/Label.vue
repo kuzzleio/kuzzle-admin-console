@@ -1,29 +1,29 @@
 <template>
-  <label :class="classes" v-bind="$attrs">
+  <Label
+    v-bind="delegatedProps"
+    :class="cn('font-sans text-label font-bold uppercase text-label-slate', props.class)"
+    data-slot="label"
+  >
     <slot />
-  </label>
+  </Label>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { Label, type LabelProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /*
- * Label — API publique de shadcn-vue (ADR-0009).
+ * Label de shadcn-vue (ADR-0054), sur `Label` de `reka-ui` : un double clic ne
+ * sélectionne plus le texte du libellé.
  *
- * Remplace le libellé de `b-form-group`. L'association au champ reste au site
- * d'appel (`for` / `id`) : c'est lui qui connaît l'identifiant, et un libellé
- * qui devinerait son champ serait plus fragile qu'utile.
+ * L'association au champ reste au site d'appel (`for` / `id`) : c'est lui qui
+ * connaît l'identifiant, et un libellé qui devinerait son champ serait plus
+ * fragile qu'utile.
  */
-export default defineComponent({
-  name: 'Label',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('font-sans text-label font-bold uppercase text-label-slate');
-    },
-  },
-});
+const props = defineProps<LabelProps & { class?: HTMLAttributes['class'] }>();
+
+const delegatedProps = reactiveOmit(props, 'class');
 </script>

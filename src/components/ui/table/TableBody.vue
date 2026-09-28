@@ -1,22 +1,13 @@
 <template>
-  <tbody :class="classes" data-slot="table-body" v-bind="$attrs">
+  <tbody :class="cn('[&_tr:last-child]:border-0', props.class)" data-slot="table-body">
     <slot />
   </tbody>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-export default defineComponent({
-  name: 'TableBody',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('[&_tr:last-child]:border-0');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

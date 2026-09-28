@@ -1,8 +1,8 @@
 <template>
-  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="max-w-2xl" labelled-by="delete-index-title">
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent class="max-w-2xl" @interact-outside.prevent>
       <DialogHeader>
-        <DialogTitle id="delete-index-title">
+        <DialogTitle>
           Index <strong>{{ truncateName(index ? index.name : '') }}</strong> deletion
         </DialogTitle>
       </DialogHeader>
@@ -70,7 +70,7 @@ export default defineComponent({
     Input,
     Label,
   },
-  // `dismissible: false` : une suppression ne se ferme pas sur un clic à côté.
+  // `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
   props: {
     index: {
       default: null,

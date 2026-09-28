@@ -1,24 +1,23 @@
 <template>
-  <p :class="classes" v-bind="$attrs">
+  <DialogDescription
+    :class="cn('font-sans text-sm leading-normal text-muted-foreground', props.class)"
+    data-slot="dialog-description"
+    v-bind="delegatedProps"
+  >
     <slot />
-  </p>
+  </DialogDescription>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { DialogDescription, type DialogDescriptionProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-/* Description de modale. `m-0` : sans preflight, la marge du navigateur sur
- * `<p>` subsiste (ADR-0008). */
-export default defineComponent({
-  name: 'DialogDescription',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('m-0 font-sans text-sm leading-normal text-muted-foreground');
-    },
-  },
-});
+/* Description de la modale (ADR-0054), reliée au panneau par
+ * `aria-describedby`. */
+const props = defineProps<DialogDescriptionProps & { class?: HTMLAttributes['class'] }>();
+
+const delegatedProps = reactiveOmit(props, 'class');
 </script>

@@ -1,26 +1,23 @@
 <template>
-  <div :class="classes" data-slot="select-label" v-bind="$attrs">
+  <SelectLabel
+    :class="cn('px-2 py-1.5 pl-8 font-sans text-xs font-medium text-muted-foreground', props.class)"
+    data-slot="select-label"
+    v-bind="delegatedProps"
+  >
     <slot />
-  </div>
+  </SelectLabel>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { SelectLabel, type SelectLabelProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /* Intitulé d'un groupe d'options. Décalé comme les options pour que les textes
- * s'alignent, coche comprise. */
-export default defineComponent({
-  name: 'SelectLabel',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses(
-        'px-2 py-1.5 pl-8 font-sans text-xs font-medium text-muted-foreground',
-      );
-    },
-  },
-});
+ * s'alignent, coche comprise ; `reka-ui` en fait le nom du `SelectGroup`. */
+const props = defineProps<SelectLabelProps & { class?: HTMLAttributes['class'] }>();
+
+const delegatedProps = reactiveOmit(props, 'class');
 </script>

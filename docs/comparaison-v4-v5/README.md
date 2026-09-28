@@ -58,6 +58,8 @@ kill %1
 docker compose down -v && docker compose up --wait
 npm run build && npx vite preview --host 127.0.0.1 --port 8080 --strictPort &
 CAPTURES_VERSION=v5 npx cypress run --config-file cypress.captures.config.ts
+# Thème sombre (ADR-0056), même stack
+CAPTURES_VERSION=v5-dark CAPTURES_THEME=dark npx cypress run --config-file cypress.captures.config.ts
 kill %1
 
 # Planche : test/e2e/captures/index.html

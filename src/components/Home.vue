@@ -7,7 +7,7 @@
       l'ancre changerait de route au lieu de déplacer le focus.
     -->
     <button
-      class="sr-only cursor-pointer border-0 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-1050 focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:text-foreground focus:shadow-menu focus:ring-2 focus:ring-ring"
+      class="sr-only cursor-pointer border-0 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-(--z-skip-link) focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:text-foreground focus:shadow-menu focus:ring-2 focus:ring-ring"
       type="button"
       @click="skipToContent"
     >
@@ -21,20 +21,33 @@
       />
     </div>
 
-    <main
-      id="main"
-      class="Home-routeWrapper min-w-0 grow overflow-hidden outline-none"
-      data-cy="App-loggedIn"
-      tabindex="-1"
-    >
-      <main-spinner v-if="authInitializing" />
-      <router-view v-else />
-    </main>
+    <div class="flex min-h-0 min-w-0 grow flex-col">
+      <session-bar />
+      <main
+        id="main"
+        class="Home-routeWrapper min-h-0 min-w-0 grow overflow-hidden outline-none"
+        data-cy="App-loggedIn"
+        tabindex="-1"
+      >
+        <main-spinner v-if="authInitializing" />
+        <router-view v-else />
+      </main>
+    </div>
 
-    <Dialog :open="tokenExpiredIsOpen" @update:open="tokenExpiredIsOpen = $event">
-      <DialogContent data-cy="Modal-tokenExpired" labelled-by="token-expired-title">
+    <!--
+      Monté à l'ouverture seulement : la session expire le plus souvent
+      pendant qu'une autre modale est ouverte, et un portail de `reka-ui` rend
+      son contenu là où il a été monté dans `<body>`. Monté avec `Home`, il
+      passait sous cette modale (G-091).
+    -->
+    <Dialog
+      v-if="tokenExpiredIsOpen"
+      :open="tokenExpiredIsOpen"
+      @update:open="tokenExpiredIsOpen = $event"
+    >
+      <DialogContent data-cy="Modal-tokenExpired">
         <DialogHeader>
-          <DialogTitle id="token-expired-title">Sorry, your session has expired</DialogTitle>
+          <DialogTitle>Sorry, your session has expired</DialogTitle>
         </DialogHeader>
         <login-form />
       </DialogContent>
@@ -51,6 +64,7 @@ import { useAuthStore, useKuzzleStore } from '@/stores';
 import LoginForm from './Common/Login/Form.vue';
 import MainMenu from './Common/MainMenu.vue';
 import MainSpinner from './Common/MainSpinner.vue';
+import SessionBar from './Common/SessionBar.vue';
 
 export default {
   name: 'Home',
@@ -62,6 +76,7 @@ export default {
     LoginForm,
     MainMenu,
     MainSpinner,
+    SessionBar,
   },
   setup() {
     return {
@@ -142,7 +157,9 @@ export default {
       document.getElementById('main')?.focus();
     },
     onTokenExpired() {
-      this.authStore.setSession(null);
+      // Arrête aussi la surveillance du token : il n'y a plus rien à
+      // rafraîchir, et la popup de reconnexion prend le relais (ADR-0057).
+      this.authStore.loseSession();
     },
     noop() {},
     displayNoAdminWarning() {

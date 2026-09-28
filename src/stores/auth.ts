@@ -1,11 +1,47 @@
 import { defineStore } from 'pinia';
 
 import { SessionUser } from '@/models/SessionUser';
+import { LS_ENVIRONMENTS } from '@/utils';
 import { useKuzzleStore } from './kuzzle';
 import type { AuthState } from './types/auth';
 
 const TOKEN_EXPIRY_CHECK_INTERVAL_MS = 20_000;
 const TOKEN_REFRESH_THRESHOLD_MS = 30_000;
+const TOKEN_REFRESH_MAX_RETRIES = 2;
+const TOKEN_REFRESH_RETRY_DELAY_MS = 3_000;
+
+/*
+ * Surveillance de la session (ADR-0057), tenue hors de l'état du store : ni
+ * un identifiant d'intervalle ni une promesse n'ont à être réactifs, ni à
+ * être remis à zéro par `$reset()`.
+ *
+ * - `watchdogId` : l'intervalle qui compare l'expiration à l'heure ; une seule
+ *   session est surveillée à la fois, celle de l'environnement courant.
+ * - `currentCheck` : la même vérification, rejouée au retour sur l'onglet — un
+ *   onglet en arrière-plan ou une machine en veille ne font pas tourner
+ *   l'intervalle.
+ * - `refreshInFlight` : l'intervalle, le retour sur l'onglet et un autre
+ *   onglet peuvent demander un rafraîchissement en même temps ; ils attendent
+ *   le même.
+ */
+let watchdogId: ReturnType<typeof setInterval> | undefined;
+let currentCheck: (() => void) | undefined;
+let refreshInFlight: Promise<void> | null = null;
+let tabCheckInFlight: Promise<void> | null = null;
+let tabListenersAttached = false;
+
+const stopWatchdog = (): void => {
+  if (watchdogId !== undefined) {
+    clearInterval(watchdogId);
+    watchdogId = undefined;
+  }
+  currentCheck = undefined;
+};
+
+const wait = (ms: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
 // Reads the kuid from a Kuzzle token ("kauth-" prefix included), even an expired one.
 const kuidFromToken = (token?: string | null): string | undefined => {
@@ -360,6 +396,11 @@ export const useAuthStore = defineStore('auth', {
       kuzzle.jwt = null;
 
       const jwt = await kuzzle.auth.login('local', credentials, '2h');
+      // `login` ne rend que le token : son expiration vient de `checkToken`.
+      // Sans elle, une session ouverte par identifiants n'était jamais
+      // surveillée, et expirait au bout de 2 h sans prévenir (ADR-0057).
+      const { expiresAt } = await kuzzle.auth.checkToken(jwt);
+      await this.afterLogin(expiresAt);
       return await this.setSession(jwt);
     },
 
@@ -516,6 +557,8 @@ export const useAuthStore = defineStore('auth', {
         throw new Error('Kuzzle is not initialized');
       }
 
+      stopWatchdog();
+
       if (this.strategy === 'keycloak') {
         // After init() the user is the default one (id -1): the kuid is in the token.
         const kuid =
@@ -574,33 +617,146 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async afterLogin(expiresAt: number) {
-      const tokenExpiryCheckIntervalMs = TOKEN_EXPIRY_CHECK_INTERVAL_MS;
-
-      const tokenRefreshThresholdMs = TOKEN_REFRESH_THRESHOLD_MS;
+      // Une seule session surveillée : celle d'avant (autre environnement,
+      // token rafraîchi) ne doit pas continuer de tourner à côté.
+      stopWatchdog();
 
       // Le rappel de `setInterval` ne peut pas être `async` : la promesse
       // rendue n'est attendue par personne, donc un rejet passerait sans bruit
       // (`@typescript-eslint/no-misused-promises`). On la chaîne explicitement.
       //
-      // L'intervalle est arrêté *avant* de lancer le rafraîchissement, et non
-      // après : sinon un rafraîchissement qui échoue laisse l'intervalle vivant
-      // et le relance à chaque tick, et un rafraîchissement plus long que le
-      // tick se chevauche avec le suivant.
-      const intervalId = setInterval(() => {
-        const timeBeforeExpiryMs = expiresAt - Date.now();
-        if (timeBeforeExpiryMs > tokenRefreshThresholdMs) {
+      // La surveillance est arrêtée *avant* de lancer le rafraîchissement : un
+      // rafraîchissement plus long que le tick se chevaucherait avec le
+      // suivant. C'est lui qui la réarme, avec la nouvelle expiration.
+      const check = (): void => {
+        if (expiresAt - Date.now() > TOKEN_REFRESH_THRESHOLD_MS) {
           return;
         }
 
-        clearInterval(intervalId);
+        stopWatchdog();
 
         void this.tryRefreshConnection().catch((error) => {
           console.error('TRY_REFRESH_CONNECTION', error);
         });
-      }, tokenExpiryCheckIntervalMs);
+      };
+
+      currentCheck = check;
+      watchdogId = setInterval(check, TOKEN_EXPIRY_CHECK_INTERVAL_MS);
+
+      this.attachTabListeners();
     },
 
-    async tryRefreshConnection() {
+    /*
+     * Deux filets, posés une fois pour toutes :
+     *
+     * - au retour sur l'onglet (`visibilitychange`, `focus`), l'expiration est
+     *   revérifiée tout de suite, et le token est vérifié auprès de Kuzzle : une
+     *   session fermée ailleurs se voit ici, et non à la requête suivante ;
+     * - quand un autre onglet écrit un nouveau token pour l'environnement
+     *   courant (`storage`), celui-ci l'adopte au lieu de rafraîchir le sien.
+     */
+    attachTabListeners() {
+      if (tabListenersAttached || typeof window === 'undefined') {
+        return;
+      }
+      tabListenersAttached = true;
+
+      const onTabBack = (): void => {
+        void this.checkSessionOnTabBack().catch((error) => {
+          console.error('CHECK_SESSION_ON_TAB_BACK', error);
+        });
+      };
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          onTabBack();
+        }
+      });
+      window.addEventListener('focus', onTabBack);
+
+      window.addEventListener('storage', (event) => {
+        if (event.key !== LS_ENVIRONMENTS || event.newValue === null) {
+          return;
+        }
+        void this.adoptTokenFromOtherTab(event.newValue).catch((error) => {
+          console.error('ADOPT_TOKEN_FROM_OTHER_TAB', error);
+        });
+      });
+    },
+
+    async checkSessionOnTabBack() {
+      // `visibilitychange` et `focus` arrivent ensemble au retour sur l'onglet.
+      if (tabCheckInFlight) {
+        return tabCheckInFlight;
+      }
+
+      const kuzzle = useKuzzleStore().$kuzzle;
+      if (kuzzle === null || !kuzzle.jwt || !this.tokenValid) {
+        return;
+      }
+
+      const jwt = kuzzle.jwt;
+      tabCheckInFlight = (async () => {
+        currentCheck?.();
+
+        const { valid } = await kuzzle.auth.checkToken(jwt);
+        // Un rafraîchissement a pu changer le token pendant la vérification.
+        if (!valid && kuzzle.jwt === jwt) {
+          await this.loseSession();
+        }
+      })().finally(() => {
+        tabCheckInFlight = null;
+      });
+
+      return tabCheckInFlight;
+    },
+
+    async adoptTokenFromOtherTab(serializedEnvironments: string) {
+      const kuzzleStore = useKuzzleStore();
+      const kuzzle = kuzzleStore.$kuzzle;
+      if (kuzzle === null || kuzzleStore.currentId === undefined || !this.tokenValid) {
+        return;
+      }
+
+      let token: unknown;
+      try {
+        token = JSON.parse(serializedEnvironments)?.[kuzzleStore.currentId]?.token;
+      } catch {
+        return;
+      }
+
+      // Une déconnexion ailleurs (`null`) n'est pas adoptée : la session de
+      // cet onglet se perdra d'elle-même, à la vérification suivante.
+      if (typeof token !== 'string' || token === 'anonymous' || token === kuzzle.jwt) {
+        return;
+      }
+
+      const { valid, expiresAt } = await kuzzle.auth.checkToken(token);
+      if (!valid) {
+        return;
+      }
+
+      kuzzle.jwt = token;
+      await this.afterLogin(expiresAt);
+      await this.setSession(token);
+    },
+
+    /*
+     * La session ne peut plus être prolongée : la popup de reconnexion de
+     * `Home` s'ouvre sur `tokenValid`, et la page reste où elle est. Se
+     * déconnecter, comme avant, renvoyait à l'écran de connexion et perdait
+     * le contexte.
+     */
+    async loseSession() {
+      stopWatchdog();
+      await this.setSession(null);
+    },
+
+    async tryRefreshConnection(retriesLeft?: number): Promise<void> {
+      if (retriesLeft === undefined && refreshInFlight) {
+        return refreshInFlight;
+      }
+
       const kuzzleStore = useKuzzleStore();
       const kuzzle = kuzzleStore.$kuzzle;
 
@@ -608,23 +764,63 @@ export const useAuthStore = defineStore('auth', {
         throw new Error('Kuzzle is not initialized');
       }
 
-      try {
-        let response: any;
-        if (this.strategy === 'keycloak') {
-          response = await kuzzle.auth.refreshToken({
-            sessionId: localStorage.getItem('openid-sessionId'),
-            strategy: 'keycloak',
-          });
-        } else {
-          response = await kuzzle.auth.refreshToken();
-        }
+      const attemptsLeft = retriesLeft ?? TOKEN_REFRESH_MAX_RETRIES;
 
-        this.setSession(response.jwt);
-        this.afterLogin(response.expiresAt);
-      } catch (error) {
-        console.error('TRY_REFRESH_CONNECTION', error);
-        await this.doLogout();
+      const attempt = async (): Promise<void> => {
+        const jwtBefore = kuzzle.jwt;
+
+        const refresh = async (): Promise<void> => {
+          // Un autre onglet a pu rafraîchir, et cet onglet adopter son token,
+          // pendant l'attente du verrou.
+          if (kuzzle.jwt !== jwtBefore) {
+            return;
+          }
+
+          const response =
+            this.strategy === 'keycloak'
+              ? await kuzzle.auth.refreshToken({
+                  sessionId: localStorage.getItem('openid-sessionId'),
+                  strategy: 'keycloak',
+                })
+              : await kuzzle.auth.refreshToken();
+
+          kuzzle.jwt = response.jwt;
+          await this.afterLogin(response.expiresAt);
+          await this.setSession(response.jwt);
+        };
+
+        try {
+          // Un verrou par environnement, partagé par les onglets : un seul
+          // rafraîchit, les autres adoptent son token (`storage`).
+          if (typeof navigator !== 'undefined' && navigator.locks) {
+            await navigator.locks.request(
+              `kuzzle-admin-console:token-refresh:${kuzzleStore.currentId}`,
+              refresh,
+            );
+          } else {
+            await refresh();
+          }
+        } catch (error) {
+          console.error('TRY_REFRESH_CONNECTION', error);
+
+          if (attemptsLeft > 0) {
+            await wait(TOKEN_REFRESH_RETRY_DELAY_MS);
+            await this.tryRefreshConnection(attemptsLeft - 1);
+            return;
+          }
+
+          await this.loseSession();
+        }
+      };
+
+      if (retriesLeft === undefined) {
+        refreshInFlight = attempt().finally(() => {
+          refreshInFlight = null;
+        });
+        return refreshInFlight;
       }
+
+      return attempt();
     },
   },
 });

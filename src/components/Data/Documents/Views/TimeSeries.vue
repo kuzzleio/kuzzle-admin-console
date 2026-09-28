@@ -107,6 +107,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useTheme } from '@/composables/useTheme';
 import { dateFromTimestamp } from '@/utils';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
@@ -165,6 +166,9 @@ export default {
       type: Number,
     },
   },
+  setup() {
+    return { isDark: useTheme().isDark };
+  },
   data() {
     return {
       customDateField: null,
@@ -174,10 +178,16 @@ export default {
       newCustomDateField: null,
       newCustomNumberField: null,
       chartOptions: {
+        // Axes, grille et info-bulles suivent le thème (ADR-0056) ; le fond
+        // reste celui de la carte, les séries gardent leurs couleurs.
         chart: {
+          background: 'transparent',
           type: 'line',
         },
         colors: [],
+        theme: {
+          mode: this.isDark ? 'dark' : 'light',
+        },
         xaxis: {
           categories: [],
         },
@@ -194,6 +204,10 @@ export default {
     },
   },
   watch: {
+    isDark(value) {
+      this.chartOptions.theme = { mode: value ? 'dark' : 'light' };
+      this.$refs.Chart?.updateOptions({ theme: this.chartOptions.theme });
+    },
     $route() {
       const columnsConfig = JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}');
 

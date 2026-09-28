@@ -28,6 +28,30 @@ describe('Indexes', () => {
     cy.get('[data-cy="CreateIndexModal-name"]').should('not.exist')
   })
 
+  // `reka-ui` ne rend le focus qu'à un `DialogTrigger`, que la console n'a
+  // pas : c'est `DialogContent` qui s'en charge (G-087).
+  it('Should close the index creation modal on Escape and give the focus back', () => {
+    cy.waitOverlay()
+
+    cy.get('[data-cy="IndexesPage-createBtn"]').click()
+    cy.get('[data-cy="CreateIndexModal-name"]').should('be.visible')
+    cy.get('body').type('{esc}')
+    cy.get('[data-cy="CreateIndexModal-name"]').should('not.exist')
+    cy.focused().should('have.attr', 'data-cy', 'IndexesPage-createBtn')
+  })
+
+  it('Should not close a deletion modal on a click outside', () => {
+    const indexName = 'testindex'
+    cy.request('POST', `http://localhost:7512/${indexName}/_create`)
+
+    cy.waitOverlay()
+
+    cy.get(`[data-cy=IndexesPage-delete--${indexName}]`).click()
+    cy.get('[data-cy="DeleteIndexModal-name"]').should('be.visible')
+    cy.get('[data-slot="dialog-overlay"]').click('topLeft')
+    cy.get('[data-cy="DeleteIndexModal-name"]').should('be.visible')
+  })
+
   it('Should show visual feedback when creating invalid index', () => {
     cy.waitOverlay()
 

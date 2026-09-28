@@ -1,22 +1,13 @@
 <template>
-  <td :class="classes" data-slot="table-cell" v-bind="$attrs">
+  <td :class="cn('px-3 py-2 align-middle', props.class)" data-slot="table-cell">
     <slot />
   </td>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
-export default defineComponent({
-  name: 'TableCell',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('px-3 py-2 align-middle');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

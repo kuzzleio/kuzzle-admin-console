@@ -1,16 +1,11 @@
 <template>
-  <div data-slot="select-group" role="group" v-bind="$attrs">
+  <SelectGroup data-slot="select-group" v-bind="props">
     <slot />
-  </div>
+  </SelectGroup>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { SelectGroup, type SelectGroupProps } from 'reka-ui';
 
-/* Groupe d'options, associé à son `SelectLabel` par `aria-labelledby` au site
- * d'appel quand il y en a un. */
-export default defineComponent({
-  name: 'SelectGroup',
-  inheritAttrs: false,
-});
+const props = defineProps<SelectGroupProps>();
 </script>

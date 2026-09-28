@@ -212,37 +212,66 @@ A cool, low-chroma neutral world with one warm, saturated accent.
 
 ### Mapping to the console's tokens (`src/assets/tokens.css`)
 
-| Console token | Value | Design-system source |
-|---|---|---|
-| `--background` | `#F6F7FB` | `--body` |
-| `--foreground` | `#002835` | `--secondary` |
-| `--card` / `--popover` | `#FFFFFF` | `--surface-card` |
-| `--card-foreground` / `--popover-foreground` | `#002835` | `--text-strong` |
-| `--primary` | `#C93960` (console, ADR-0050) | `--primary-dark` ; le DS met `#E64472`, à 3,9:1 avec du blanc |
-| `--primary-foreground` | `#FFFFFF` | — |
-| `--secondary` | `#DAEDF6` | `--tertiary` |
-| `--secondary-foreground` | `#002835` | `--secondary` |
-| `--accent` | `#EEF4F8` | table row hover |
-| `--accent-foreground` | `#002835` | `--secondary` |
-| `--muted` | `#EEF1F5` | `--panel` |
-| `--muted-foreground` | `#5C6670` (console, ADR-0050) | `--secondary-light` (`#6C757D`, 4,4:1 sur le fond de page) |
-| `--destructive` | `#DC3545` | `--status-danger` |
-| `--border` | `#D0DDE1` | `--grey-bright` |
-| `--input` | `#7B939B` (console, ADR-0050) | bordure des champs à 3:1 ; le Hairline du DS n'atteint que 1,4:1 |
-| `--ring` | `#00536F` | `--secondary-captain` |
+| Console token | Value | Dark (ADR-0056) | Design-system source |
+|---|---|---|---|
+| `--background` | `#F6F7FB` | `#06161C` | `--body` |
+| `--foreground` | `#002835` | `#E4EDF0` | `--secondary` |
+| `--card` / `--popover` | `#FFFFFF` | `#0D232B` / `#112A33` | `--surface-card` |
+| `--card-foreground` / `--popover-foreground` | `#002835` | `#E4EDF0` | `--text-strong` |
+| `--primary` | `#C93960` (console, ADR-0050) | `#F0739A` | `--primary-dark` ; le DS met `#E64472`, à 3,9:1 avec du blanc |
+| `--primary-foreground` | `#FFFFFF` | `#06161C` | — |
+| `--secondary` | `#DAEDF6` | `#143A47` | `--tertiary` |
+| `--secondary-foreground` | `#002835` | `#D8EEF6` | `--secondary` |
+| `--accent` | `#EEF4F8` | `#163540` | table row hover |
+| `--accent-foreground` | `#002835` | `#E4EDF0` | `--secondary` |
+| `--muted` | `#EEF1F5` | `#11282F` | `--panel` |
+| `--muted-foreground` | `#5C6670` (console, ADR-0050) | `#9DB2B9` | `--secondary-light` (`#6C757D`, 4,4:1 sur le fond de page) |
+| `--destructive` | `#DC3545` | `#FF7A7A` (texte `#06161C`) | `--status-danger` |
+| `--border` | `#D0DDE1` | `#21404A` | `--grey-bright` |
+| `--input` | `#7B939B` (console, ADR-0050) | `#6A8B95` | bordure des champs à 3:1 ; le Hairline du DS n'atteint que 1,4:1 |
+| `--ring` | `#00536F` | `#72C7E8` | `--secondary-captain` |
 
 The console adds tokens that shadcn-vue does not have, because it needs them:
 
-| Console token | Value | Design-system source |
-|---|---|---|
-| `--primary-hover` | `#B8325A` (console, ADR-0050) | un cran sous `--primary-dark` |
-| `--label` (`text-label-slate`) | `#43565B` | `--grey` |
-| `--success` / `--success-foreground` | `#3DDC84` / `#002835` | `--status-success` |
-| `--warning` / `--warning-foreground` | `#C9821F` / `#002835` | `--status-warning` |
-| `--info` / `--info-foreground` | `#00536F` / `#FFFFFF` | `--secondary-captain` (no info color in the DS) |
+| Console token | Value | Dark (ADR-0056) | Design-system source |
+|---|---|---|---|
+| `--primary-hover` | `#B8325A` (console, ADR-0050) | `#F78FB0` | un cran sous `--primary-dark` |
+| `--label` (`text-label-slate`) | `#43565B` | `#B5C6CC` | `--grey` |
+| `--success` / `--success-foreground` | `#3DDC84` / `#002835` | `#3DDC84` / `#06161C` | `--status-success` |
+| `--warning` / `--warning-foreground` | `#C9821F` / `#002835` | `#E8A44A` / `#06161C` | `--status-warning` |
+| `--info` / `--info-foreground` | `#00536F` / `#FFFFFF` | `#72C7E8` / `#06161C` | `--secondary-captain` (no info color in the DS) |
 
 Success and warning carry Kuzzle Blue text, not white: white on either fails
 the 4.5:1 contrast ratio.
+
+### Dark theme (ADR-0056)
+
+The design system has no dark theme; the console derives one. Surfaces stay in
+the Kuzzle Blue family and lighten as they rise (page `#06161C`, card
+`#0D232B`, floating panel `#112A33`). Fuchsia stays the one accent, lightened
+to `#F0739A` so it reads at 4.5:1 on every surface; it then carries dark text,
+as do the status colors. Shadows turn black and denser: a blue-tinted shadow
+does not show on a dark surface. The rail keeps its connection color in both
+themes, and its active item keeps the deep fuchsia (`--rail-active`) under
+white text.
+
+Measured pairs (WCAG 2.1, `4.5:1` text, `3:1` field borders and focus):
+
+| Pair | Ratio |
+|---|---|
+| `foreground` / `background` · `card` · `popover` · `accent` | 15.5 · 13.7 · 12.6 · 10.9 |
+| `muted-foreground` / `background` · `card` · `muted` · `popover` | 8.3 · 7.4 · 6.9 · 6.8 |
+| `primary` / `background` · `card` | 6.7 · 5.9 |
+| `primary-foreground` / `primary` · `primary-hover` | 6.7 · 8.3 |
+| `secondary-foreground` / `secondary` | 10.1 |
+| `info` / `secondary` · `card` | 6.4 · 8.5 |
+| `destructive` / `card` · `destructive-foreground` / `destructive` | 6.4 · 7.3 |
+| `success-foreground` / `success` · `warning-foreground` / `warning` | 10.3 · 8.6 |
+| `label` / `background` · `card` | 10.5 · 9.2 |
+| `input` / `card` · `background` · `popover` (3:1) | 4.4 · 5.0 · 4.1 |
+| `ring` / `card` · `background` (3:1) | 8.5 · 9.7 |
+| `foreground` / notifications (publish · document · subscribe · delete) | 11.3 · 10.5 · 12.1 · 12.0 |
+| white / `--rail-active` (both themes) | 5.8 |
 
 The v4 palette mapped `--primary` to Kuzzle Blue and `--destructive` to a pink
 (`#E94E77`) almost identical to the new accent. Both move together in the DA

@@ -75,6 +75,10 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0051](0051-criteres-de-sortie-de-la-v5.md) | Les critères de sortie de la v5 | Acceptée |
 | [0052](0052-dates-natives-plutot-que-moment.md) | Dates natives plutôt que `moment` | Acceptée |
 | [0053](0053-json-tree-plutot-que-json-formatter-js.md) | Un composant `JsonTree` plutôt que `json-formatter-js` | Acceptée |
+| [0054](0054-vrai-shadcn-vue.md) | Le vrai shadcn-vue, famille par famille | Acceptée |
+| [0055](0055-barre-de-session.md) | Une barre de session en haut à droite : l'utilisateur connecté visible en permanence, ses profils et la déconnexion dans son menu | Acceptée |
+| [0056](0056-theme-sombre-avance.md) | Le thème sombre passe avant la fin de shadcn-vue : jeu dérivé de la DA, mesuré AA, bascule système / clair / sombre dans la barre de session | Acceptée |
+| [0057](0057-gestion-de-session.md) | La session se surveille à chaque ouverture, se prolonge une fois pour tous les onglets, et se perd sur place, dans la popup de reconnexion | Acceptée |
 
 ## Gabarit
 

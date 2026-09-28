@@ -368,3 +368,12 @@ Cypress.Commands.add('selectColumnField', (field) => {
   cy.get('[data-cy="ColumnView-fieldSelector"]').click();
   return cy.contains('.multiselect__option', field).click();
 });
+
+/**
+ * Se déconnecte par le menu de la barre de session (ADR-0055) : le nom de
+ * l'utilisateur ouvre le menu, « Log out » est son dernier élément.
+ */
+Cypress.Commands.add('logout', () => {
+  cy.get('[data-cy="SessionBar-user"]').click();
+  cy.get('[data-cy="SessionBar-logoutBtn"]').click();
+});

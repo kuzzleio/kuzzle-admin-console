@@ -223,7 +223,7 @@ export default {
   width: 100%;
   height: 100%;
   position: absolute;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: color-mix(in srgb, var(--background) 80%, transparent);
   z-index: 10;
 }
 </style>
