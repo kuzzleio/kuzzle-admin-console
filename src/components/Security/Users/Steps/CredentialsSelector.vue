@@ -14,7 +14,7 @@
           It looks like no authentication strategies are installed on your Kuzzle instance.
         </div>
 
-        <Tabs v-else orientation="vertical">
+        <Tabs v-else :default-value="strategies[0]" orientation="vertical">
           <div class="flex flex-col gap-2">
             <span class="px-3 text-sm text-muted-foreground">Auth strategies</span>
             <TabsList>

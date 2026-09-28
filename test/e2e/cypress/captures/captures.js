@@ -188,10 +188,13 @@ describe('Captures v4 / v5', () => {
   })
 
   beforeEach(() => {
-    cy.clearLocalStorage()
     cy.clearCookies()
     // Thème imposé plutôt que celui du système (ADR-0056), lu au chargement.
-    localStorage.setItem('kuz-ac-theme', Cypress.expose('theme') ?? 'light')
+    // Dans la file de Cypress, après le nettoyage : écrit en dehors, il
+    // passait avant `clearLocalStorage` et s'effaçait (G-097).
+    cy.clearLocalStorage().then(() => {
+      localStorage.setItem('kuz-ac-theme', Cypress.expose('theme') ?? 'light')
+    })
   })
 
   // C22 coupe le réseau : s'il échoue avant de le rétablir, tous les états

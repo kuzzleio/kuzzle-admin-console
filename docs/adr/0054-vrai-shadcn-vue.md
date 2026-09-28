@@ -88,6 +88,7 @@ pour un motif que l'amont traite par `as-child`.
 | `DropdownMenuGroup` se nomme d'après son `DropdownMenuLabel` (`aria-labelledby`) | `reka-ui` rend un groupe sans nom, qui n'est pas annoncé comme une section |
 | La coche de `SelectItem` est à gauche, et `SelectTrigger` n'a pas de prop `size` | La DA : l'option retenue ne se décale pas des autres, et la console n'a qu'une hauteur de champ |
 | `DialogContent` rend le focus à l'élément qui l'avait à l'ouverture, pas au `DialogTrigger` | Les modales de la console s'ouvrent par un état, sans `DialogTrigger` : le focus tombait sur `<body>` (G-087) |
+| `TabsList` et `TabsTrigger` : un filet sous la barre et l'onglet courant souligné, pas la pastille de l'amont ; `TabsContent` pose `[&[hidden]]:hidden` | La DA ; sans preflight, l'attribut `hidden` de `reka-ui` ne cache pas un panneau qui porte une classe `display` (G-095) |
 | `Toast` : décidé dans son propre lot | Passer à `vue-sonner` garde-t-il les erreurs persistantes, les actions et le toast hors ligne ? Si non, une ADR le dira |
 
 **5. Les `z-index` deviennent des tokens**, comme [ADR-0018](0018-panneaux-flottants-au-dessus-des-modales.md)

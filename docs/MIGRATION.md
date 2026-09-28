@@ -907,7 +907,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 2. `DropdownMenu`, `z-index` en tokens
   - [x] 3. `Select`, retrait de `floating-panel.ts`
   - [x] 4. `Dialog`
-  - [ ] 5. `Tabs`
+  - [x] 5. `Tabs`
   - [ ] 6. `Pagination`
   - [ ] 7. `TagsInput`
   - [ ] 8. `Resizable`
@@ -3533,6 +3533,60 @@ Gabarit à copier :
   `Cypress.expose('theme')` dans le fichier.
 - **À retenir** : la documentation et les exemples d'avant la version 16
   montrent encore `env` ; ne pas les recopier.
+- **Ref** : [ADR-0056](adr/0056-theme-sombre-avance.md).
+
+#### G-095 — Un panneau d'onglet inactif reste affiché, et `force-mount` ne le cache plus
+
+- **Contexte** : lot 5 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md), `Tabs` sur
+  `reka-ui`.
+- **Symptôme** (à la lecture de `TabsContent.js`) : un panneau inactif dont le
+  site d'appel pose `flex` — les stratégies de `CredentialsSelector` — reste
+  dans la page, vide mais avec ses marges. Et `force-mount`, que l'éditeur
+  d'`ApiAction` utilisait pour garder sa saisie, afficherait tous les panneaux
+  à la fois.
+- **Cause** : `reka-ui` rend toujours l'élément du panneau et le masque par
+  l'attribut `hidden`. Sans preflight ([ADR-0008](adr/0008-cohabitation-tailwind-bootstrap.md)),
+  seule la feuille du navigateur traduit `hidden` en `display: none`, et
+  n'importe quelle classe `display` l'emporte. Quant à `forceMount`, il veut
+  dire « présent », donc visible : c'est `unmountOnHide: false` sur la racine
+  qui garde un contenu monté et caché.
+- **Solution** : `TabsContent` pose `[&[hidden]]:hidden` ; `ApiAction` passe
+  `:unmount-on-hide="false"` à `Tabs` au lieu de `force-mount` à chaque
+  panneau.
+- **À retenir** : un attribut `hidden` posé par `reka-ui` ne cache rien dès
+  qu'une classe `display` s'y applique. La même question se pose pour chaque
+  primitive qui masque par `hidden`.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md), [ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md).
+
+#### G-096 — Sans `default-value`, `Tabs` ne sélectionne aucun onglet
+
+- **Contexte** : lot 5 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md).
+- **Symptôme** : la carte des identifiants d'un utilisateur afficherait la
+  liste des stratégies et aucun champ.
+- **Cause** : la primitive précédente prenait le premier onglet monté quand
+  rien n'était désigné, comme `b-tabs` et son index 0. `TabsRoot` laisse
+  `modelValue` à `undefined`.
+- **Solution** : `CredentialsSelector` passe `:default-value="strategies[0]"`.
+  Les trois autres sites d'appel ont déjà un `v-model` initialisé.
+- **À retenir** : tout nouvel usage de `Tabs` désigne son onglet de départ.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-097 — Les captures « claires » sortaient dans le thème du système
+
+- **Contexte** : captures du lot 5 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md),
+  sur un Mac en thème sombre.
+- **Symptôme** : la passe claire et la passe sombre donnent des fichiers
+  identiques (même empreinte), tous deux sombres. La passe « claire »
+  d'[ADR-0056](adr/0056-theme-sombre-avance.md) l'était aussi.
+- **Cause** : dans le `beforeEach`, `localStorage.setItem(…)` s'exécute tout
+  de suite, alors que `cy.clearLocalStorage()` est mis en file et passe après :
+  la préférence était effacée avant chaque état, et la console suivait
+  `prefers-color-scheme`.
+- **Solution** : écrire la préférence dans le `.then()` de
+  `cy.clearLocalStorage()`.
+- **À retenir** : dans un hook Cypress, un appel synchrone mêlé à des `cy.*`
+  passe avant eux. Une capture se vérifie en l'ouvrant, pas au compte de
+  « passing ».
 - **Ref** : [ADR-0056](adr/0056-theme-sombre-avance.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
