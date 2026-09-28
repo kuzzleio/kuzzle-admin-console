@@ -3499,6 +3499,26 @@ Gabarit à copier :
   viewport plus étroit.
 - **Ref** : [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md).
 
+#### G-093 — Un token rafraîchi dans la seconde de son émission meurt avec l'ancien
+
+- **Contexte** : specs de session d'[ADR-0057](adr/0057-gestion-de-session.md),
+  « Should adopt a token refreshed by another tab ».
+- **Symptôme** : le test passe seul, et échoue dans son fichier. Le token
+  « rafraîchi » par l'autre onglet est refusé une seconde plus tard
+  (`security.token.invalid`), et la popup de reconnexion s'ouvre.
+- **Cause** : `auth:refreshToken` appelé dans la même seconde que le `login`
+  rend un JWT identique à l'ancien : même utilisateur, mêmes `iat` et `exp` à
+  la seconde près, donc même signature. À la fin du délai de grâce
+  (`security.jwt.gracePeriod`, 1 s), Kuzzle invalide « l'ancien », c'est-à-dire
+  les deux. Seul, le test mettait plus d'une seconde à charger la page.
+- **Solution** : dans les specs, attendre plus d'une seconde entre l'émission
+  d'un token et son rafraîchissement.
+- **À retenir** : la console rafraîchit 30 s avant l'expiration, jamais dans
+  la seconde de l'émission. Un token de moins de 31 s serait rafraîchi au
+  premier tick : ne pas descendre sous cette durée, ni en test ni en
+  configuration.
+- **Ref** : [ADR-0057](adr/0057-gestion-de-session.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3618,3 +3638,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-28 | `moment` retiré sans successeur : cinq fonctions sur `Date` dans `src/lib/date.ts`, formats identiques | [ADR-0052](adr/0052-dates-natives-plutot-que-moment.md) |
 | 2026-09-28 | `json-formatter-js` et `v-json-formatter` remplacés par un composant `JsonTree` (clavier, tokens, pas de style injecté) | [ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md) |
 | 2026-09-28 | Le vrai shadcn-vue, famille par famille : CLI puis report de la DA, comportement de `reka-ui`, écarts nommés (Font Awesome, `Checkbox`/`Switch` natifs, `Form`, `FileInput`) | [ADR-0054](adr/0054-vrai-shadcn-vue.md) |
+| 2026-09-28 | Gestion de session : surveillance armée à chaque ouverture (identifiants compris), vérification au retour sur l'onglet, rafraîchissement unique entre onglets, session perdue sur place dans la popup | [ADR-0057](adr/0057-gestion-de-session.md) |

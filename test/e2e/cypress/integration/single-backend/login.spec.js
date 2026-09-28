@@ -164,6 +164,140 @@ describe('Login', function() {
   })
 })
 
+// Gestion de session (ADR-0057). L'horloge de la page est remplacée par
+// `cy.clock` pour `setInterval` et `Date` seulement : la surveillance du token
+// tourne toutes les 20 s et rafraîchit à 30 s de l'expiration, et les tests
+// avancent le temps au lieu de l'attendre. `setTimeout` reste réel : Vue, le
+// SDK et les nouvelles tentatives du rafraîchissement s'en servent.
+//
+// Pas de grand saut par `cy.tick` : il ferait tourner d'un coup le heartbeat
+// du SDK, qui croirait la connexion morte. On déplace l'heure
+// (`setSystemTime`), puis on fait passer un seul tick de la surveillance.
+describe('Session', function() {
+  const kuzzleUrl = 'http://localhost:7512'
+  const clockedFunctions = ['setInterval', 'clearInterval', 'Date']
+  const watchdogTick = 20 * 1000
+
+  const envToken = win =>
+    JSON.parse(win.localStorage.getItem('environments'))[validEnvName].token
+
+  const createAdmin = () => {
+    cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
+    cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
+    cy.request('POST', `${kuzzleUrl}/_createFirstAdmin`, {
+      content: {},
+      credentials: { local: admin }
+    })
+  }
+
+  const loginAsAdmin = (expiresIn = '1h') =>
+    cy
+      .request('POST', `${kuzzleUrl}/_login/local?expiresIn=${expiresIn}`, admin)
+      .then(({ body }) => body.result.jwt)
+
+  // `/#/data` redirige vers la liste des index une fois chargée : une session
+  // perdue pendant cette redirection renvoie à l'écran de connexion, par le
+  // garde d'authentification, et non à la popup (G-084). On attend la page.
+  const visitData = () => {
+    cy.visit('/#/data')
+    cy.get('[data-cy="App-loggedIn"]')
+    cy.get('[data-cy="IndexesPage-createBtn"]').should('be.visible')
+  }
+
+  beforeEach(() => {
+    cy.setCookie('telemetry', 'false')
+    createAdmin()
+  })
+
+  it('Should refresh the token of a session opened with credentials', () => {
+    cy.initLocalEnv(2, null)
+    cy.clock(Date.now(), clockedFunctions)
+    cy.visit('/')
+    cy.get('[data-cy="Login-username"]').type(admin.username)
+    cy.get('[data-cy="Login-password"]').type(admin.password)
+    cy.get('[data-cy="Login-submitBtn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+
+    cy.window().then(win => {
+      const token = envToken(win)
+      expect(token).to.be.a('string')
+
+      // `doLogin` demande un token de 2 h : 25 s avant l'expiration, le tick
+      // suivant de la surveillance doit le rafraîchir.
+      cy.clock().then(clock => clock.setSystemTime(Date.now() + 2 * 60 * 60 * 1000 - 45 * 1000))
+      cy.tick(watchdogTick)
+      cy.window().should(w => expect(envToken(w)).to.not.equal(token))
+    })
+    cy.get('[data-cy="Modal-tokenExpired"]').should('not.exist')
+  })
+
+  it('Should ask to log in again, in place, when the token cannot be refreshed', () => {
+    loginAsAdmin('40s').then(jwt => {
+      cy.initLocalEnv(2, jwt)
+      cy.clock(Date.now(), clockedFunctions)
+      visitData()
+
+      // L'utilisateur n'existe plus : le rafraîchissement échoue, sans que
+      // Kuzzle ait prévenu la connexion (`_logout` l'aurait fait).
+      cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
+      cy.tick(watchdogTick)
+
+      cy.get('[data-cy="Modal-tokenExpired"]', { timeout: 15000 }).should('be.visible')
+      cy.url().should('contain', '/#/data')
+    })
+  })
+
+  it('Should notice a revoked token when the tab comes back', () => {
+    loginAsAdmin().then(jwt => {
+      cy.initLocalEnv(2, jwt)
+      visitData()
+
+      // Même cas que ci-dessus, vu au retour sur l'onglet et non au tick.
+      cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
+      cy.document().then(doc => doc.dispatchEvent(new Event('visibilitychange')))
+
+      cy.get('[data-cy="Modal-tokenExpired"]').should('be.visible')
+      cy.url().should('contain', '/#/data')
+    })
+  })
+
+  it('Should adopt a token refreshed by another tab', () => {
+    loginAsAdmin().then(jwt => {
+      cy.initLocalEnv(2, jwt)
+      visitData()
+
+      // Un autre onglet rafraîchit la session et écrit le nouveau token.
+      // Kuzzle invalide l'ancien après son délai de grâce
+      // (`security.jwt.gracePeriod`, 1 s) : sans adoption, la requête qui
+      // suit partirait avec un token mort.
+      //
+      // Pas dans la seconde de l'émission : Kuzzle rendrait le même token,
+      // et l'invaliderait avec « l'ancien » (G-093).
+      cy.wait(1100)
+      cy.request({
+        method: 'POST',
+        url: `${kuzzleUrl}/_refreshToken`,
+        headers: { authorization: `Bearer ${jwt}` }
+      }).then(({ body }) => {
+        cy.window().then(win => {
+          const environments = JSON.parse(win.localStorage.getItem('environments'))
+          environments[validEnvName].token = body.result.jwt
+          const newValue = JSON.stringify(environments)
+          win.localStorage.setItem('environments', newValue)
+          win.dispatchEvent(new win.StorageEvent('storage', { key: 'environments', newValue }))
+        })
+      })
+      cy.wait(2000)
+
+      cy.get('[data-cy="IndexesPage-createBtn"]').click()
+      cy.get('[data-cy="CreateIndexModal-name"]').type('adoptedindex')
+      cy.get('[data-cy="CreateIndexModal-createBtn"]').click()
+      cy.get('[data-cy="IndexesPage-name--adoptedindex"]').should('be.visible')
+      cy.get('[data-cy="Modal-tokenExpired"]').should('not.exist')
+    })
+  })
+})
+
 describe('Telemetry', function() {
   // Aucune requête ne doit atteindre le vrai service : on bouchonne kepler et
   // on compte les appels.

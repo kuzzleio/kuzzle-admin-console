@@ -152,7 +152,9 @@ export default {
       document.getElementById('main')?.focus();
     },
     onTokenExpired() {
-      this.authStore.setSession(null);
+      // Arrête aussi la surveillance du token : il n'y a plus rien à
+      // rafraîchir, et la popup de reconnexion prend le relais (ADR-0057).
+      this.authStore.loseSession();
     },
     noop() {},
     displayNoAdminWarning() {
