@@ -5,8 +5,8 @@
         <i class="RolesFilters-searchIcon fa fa-search text-muted-foreground" aria-hidden="true" />
         <TagsInput v-model="controllers" class="min-w-0 flex-1">
           <TagsInputItem v-for="controller of controllers" :key="controller" :value="controller">
-            <TagsInputItemText>{{ controller }}</TagsInputItemText>
-            <TagsInputItemDelete :value="controller" />
+            <TagsInputItemText />
+            <TagsInputItemDelete />
           </TagsInputItem>
           <TagsInputInput
             aria-label="Search by controller"

@@ -781,6 +781,15 @@ describe('Captures v4 / v5', () => {
     shot('C111-roles-filter')
   })
 
+  // Des étiquettes : l'une désignée au clavier (Retour arrière sur le champ
+  // vide), l'autre au repos.
+  it('C111b — rôles, étiquettes de contrôleur', () => {
+    openApp('/security/roles')
+    cy.get('[data-cy="RoleFilters-searchBar"]').type('document{enter}security{enter}{backspace}')
+    cy.get('[data-slot="tags-input-item"][title="security"]').should('have.attr', 'data-state', 'active')
+    shot('C111b-roles-filter-tags')
+  })
+
   it('C112 — rôles, suppression groupée', () => {
     openApp('/security/roles')
     cy.get('[data-cy="RoleItem-checkbox--data-reader"]').click({ force: true })

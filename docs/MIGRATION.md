@@ -909,7 +909,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 4. `Dialog`
   - [x] 5. `Tabs`
   - [x] 6. `Pagination`
-  - [ ] 7. `TagsInput`
+  - [x] 7. `TagsInput`
   - [ ] 8. `Resizable`
   - [ ] 9. `Toast`
 - [ ] Composition API
@@ -3588,6 +3588,24 @@ Gabarit à copier :
   passe avant eux. Une capture se vérifie en l'ouvrant, pas au compte de
   « passing ».
 - **Ref** : [ADR-0056](adr/0056-theme-sombre-avance.md).
+
+#### G-098 — Un `aria-label` posé sur un bouton de `reka-ui` ne le renomme pas
+
+- **Contexte** : lot 7 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md),
+  `TagsInputItemDelete`.
+- **Symptôme** (à la lecture de `TagsInputItemDelete.js`) : le bouton de
+  retrait d'une étiquette porterait `aria-label="Remove document"`, et un
+  lecteur d'écran annoncerait pourtant « document, bouton ».
+- **Cause** : `reka-ui` nomme le bouton par `aria-labelledby`, qui pointe le
+  texte de l'étiquette. Dans le calcul du nom accessible, `aria-labelledby`
+  l'emporte sur `aria-label`.
+- **Solution** : `TagsInputItemDelete` pose son `aria-label` et passe
+  `:aria-labelledby="undefined"` : l'attribut transmis écrase celui de
+  `reka-ui`, et Vue ne rend pas un attribut `undefined`. `roles.spec` vérifie
+  les deux.
+- **À retenir** : pour renommer un élément de `reka-ui`, regarder d'abord s'il
+  porte un `aria-labelledby`.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
