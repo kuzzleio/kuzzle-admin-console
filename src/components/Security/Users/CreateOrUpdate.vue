@@ -81,7 +81,6 @@
 <script>
 import { useVuelidate } from '@vuelidate/core';
 import { not, helpers } from '@vuelidate/validators';
-import Promise from 'bluebird';
 import { mapState } from 'pinia';
 
 import MainSpinner from '../../Common/MainSpinner.vue';

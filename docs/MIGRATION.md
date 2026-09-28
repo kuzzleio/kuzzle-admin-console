@@ -988,7 +988,7 @@ lui-même (§ 3.2).
 | Paquet | Pourquoi | Statut |
 |---|---|---|
 | ~~`kuzzle-sdk` v6 **et** v7~~ | **Conservé** — c'est le support des backends Kuzzle v1, pas de la dette. Voir [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) | ➖ |
-| `bluebird` | les Promises natives suffisent depuis Node 4 | ⬜ |
+| ~~`bluebird`~~ | **Retiré** : deux imports, qui ne servaient qu'à `Promise.all` et `Promise.reject`, natifs l'un et l'autre | ✅ |
 | `moment` | en maintenance depuis 2020 → `date-fns` ou `Temporal` | ⬜ |
 | ~~`velocity-animate`~~ | **Retiré** — son seul client était `Common/Stepper.vue`, code mort (ADR-0016) | ✅ |
 | ~~`@fortawesome/fontawesome-free`~~ | **Conservé** — le design system Kuzzle en fait son système d'icônes ([ADR-0043](adr/0043-da-kuzzle-pour-la-console.md)) | ➖ |
