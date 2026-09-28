@@ -320,7 +320,7 @@ précisément ce qu'on achète.
 | 3. Rail de navigation ([ADR-0048](adr/0048-rail-de-navigation.md)) | ✅ |
 | 3. Cartes signature (une par écran), blocs gris de `Signup` et `KuzzleErrorPage` retirés | ✅ |
 | 3. Audit `/impeccable` : repère `main`, lien d'évitement, `h1`, `lang`, contraste AA (ADR-0050), noms accessibles, focus des menus, éditeur JSON au clavier, mouvement réduit | ✅ |
-| 3. Reste de l'audit : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier | ⬜ |
+| 3. Reste de l'audit : mise en page sous 400 px, ~~onglets d'API Action~~ (Suppr ferme l'onglet, plus de contrôle imbriqué), cibles tactiles, raccourcis clavier | 🟡 |
 Le jeu sombre est défini mais branché sur rien.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2

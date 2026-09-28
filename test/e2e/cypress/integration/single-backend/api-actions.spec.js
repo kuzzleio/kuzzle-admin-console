@@ -129,6 +129,22 @@ describe('API Actions - tabs and save', function() {
     cy.get('[role="tab"]').should('have.length', 2)
   })
 
+  it('Should close a tab with the mouse or the keyboard', () => {
+    cy.waitOverlay()
+    cy.visit(`/#/api-action`)
+    cy.get('[data-cy="api-actions-tab-plus"]').click()
+    cy.get('[data-cy="api-actions-tab-plus"]').click()
+    cy.get('[role="tab"]').should('have.length', 3)
+    // Aucun contrôle focalisable dans un onglet : la croix est réservée à la
+    // souris, Suppr ferme l'onglet au clavier.
+    cy.get('[role="tab"] button, [role="tab"] [tabindex]').should('not.exist')
+    cy.get('[data-cy="api-actions-tab-close-2"]').click()
+    cy.get('[role="tab"]').should('have.length', 2)
+    cy.get('[data-cy="api-actions-tab-1"]').focus().type('{del}')
+    cy.get('[role="tab"]').should('have.length', 1)
+    cy.focused().should('have.attr', 'data-cy', 'api-actions-tab-0')
+  })
+
   it('Should persist query by tabs', () => {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
