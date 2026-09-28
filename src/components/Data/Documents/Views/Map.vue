@@ -50,7 +50,7 @@
       />
     </div>
     <div class="grid grid-cols-12 gap-4">
-      <div class="col-span-8 h-150">
+      <div class="col-span-12 h-96 md:col-span-8 md:h-150">
         <l-map ref="map" data-cy="mapView-map" @ready="onMapReady">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
@@ -100,7 +100,7 @@
           </div>
         </l-map>
       </div>
-      <div class="col-span-4">
+      <div class="col-span-12 md:col-span-4">
         <Card
           v-if="currentDocument"
           class="h-150 gap-3 py-4"

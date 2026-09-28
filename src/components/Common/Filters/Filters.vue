@@ -38,18 +38,36 @@
           @submit="onQuickFilterSubmitted"
         />
 
-        <template v-if="advancedFiltersVisible">
-          <TabsList class="border-b-0 pr-24">
-            <TabsTrigger data-cy="Filters-basicTab" value="basic">
+        <!--
+          Les onglets et les deux boutons partagent une ligne `flex` ; la
+          barre défile plutôt que de passer à la ligne. Les boutons étaient
+          posés en absolu par-dessus une réserve de `pr-24` : sous 400 px, les
+          libellés se coupaient et « History » passait sous eux.
+        -->
+        <div v-if="advancedFiltersVisible" class="flex items-center gap-2">
+          <TabsList class="min-w-0 flex-1 overflow-x-auto overflow-y-hidden border-b-0 pb-px">
+            <TabsTrigger
+              class="shrink-0 whitespace-nowrap"
+              data-cy="Filters-basicTab"
+              value="basic"
+            >
               <i class="fas fa-filter" aria-hidden="true" />&nbsp;Advanced
             </TabsTrigger>
-            <TabsTrigger data-cy="Filters-rawTab" value="raw">
+            <TabsTrigger class="shrink-0 whitespace-nowrap" data-cy="Filters-rawTab" value="raw">
               <i class="fas fa-scroll" aria-hidden="true" />&nbsp;Raw JSON
             </TabsTrigger>
-            <TabsTrigger data-cy="Filters-historyTab" value="history">
+            <TabsTrigger
+              class="shrink-0 whitespace-nowrap"
+              data-cy="Filters-historyTab"
+              value="history"
+            >
               <i class="fas fa-history" aria-hidden="true" />&nbsp;History
             </TabsTrigger>
-            <TabsTrigger data-cy="Filters-favoriteTab" value="favorite">
+            <TabsTrigger
+              class="shrink-0 whitespace-nowrap"
+              data-cy="Filters-favoriteTab"
+              value="favorite"
+            >
               <i class="fas fa-star" aria-hidden="true" />&nbsp;Saved
             </TabsTrigger>
           </TabsList>
@@ -58,7 +76,7 @@
             Les deux icônes du bandeau étaient des `<i>` cliquables : ni
             atteignables au clavier, ni annoncées.
           -->
-          <div class="absolute right-4 top-3 flex items-center gap-2">
+          <div class="flex shrink-0 items-center gap-2">
             <Button
               :aria-label="isFullscreen ? 'Leave fullscreen' : 'Toggle fullscreen'"
               class="text-muted-foreground"
@@ -86,7 +104,7 @@
               <i class="fas fa-times-circle" aria-hidden="true" />
             </Button>
           </div>
-        </template>
+        </div>
       </div>
 
       <template v-if="advancedFiltersVisible">

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col gap-3">
+  <div class="flex flex-col gap-3 md:h-full">
     <div class="flex flex-wrap items-center gap-2">
       <!--
         `b-tooltip` disait « The query is invalid. » sur trois cibles à la
@@ -129,10 +129,14 @@
       </div>
     </div>
 
-    <ResizablePanelGroup class="QueryLayout min-h-0 flex-1" @resize="onPaneResize">
+    <!-- Sous `md`, la requête passe au-dessus de la réponse, chacune sur 18 rem. -->
+    <ResizablePanelGroup
+      class="QueryLayout min-h-0 flex-1 flex-col md:flex-row"
+      @resize="onPaneResize"
+    >
       <ResizablePanel
-        class="QueryLayout-sidebarWrapper h-full overflow-auto"
-        :style="paneWidth ? { width: paneWidth } : { width: '50%' }"
+        class="QueryLayout-sidebarWrapper h-72 shrink-0 overflow-auto md:h-full md:w-(--pane-size)"
+        :style="{ '--pane-size': paneWidth || '50%' }"
         data-cy="QueryLayout-sidebarWrapper"
       >
         <Card class="h-full">
@@ -149,9 +153,15 @@
         </Card>
       </ResizablePanel>
 
-      <ResizableHandle data-cy="sidebarResizer" label="Resize the query editor" />
+      <ResizableHandle
+        class="hidden md:flex"
+        data-cy="sidebarResizer"
+        label="Resize the query editor"
+      />
 
-      <ResizablePanel class="QueryLayout-contentWrapper h-full flex-1 overflow-auto">
+      <ResizablePanel
+        class="QueryLayout-contentWrapper min-h-72 flex-1 overflow-auto md:h-full md:min-h-0"
+      >
         <ResponseCard :tab-idx="tabIdx" :response="response" />
       </ResizablePanel>
     </ResizablePanelGroup>

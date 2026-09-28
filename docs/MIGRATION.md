@@ -320,7 +320,7 @@ précisément ce qu'on achète.
 | 3. Rail de navigation ([ADR-0048](adr/0048-rail-de-navigation.md)) | ✅ |
 | 3. Cartes signature (une par écran), blocs gris de `Signup` et `KuzzleErrorPage` retirés | ✅ |
 | 3. Audit `/impeccable` : repère `main`, lien d'évitement, `h1`, `lang`, contraste AA (ADR-0050), noms accessibles, focus des menus, éditeur JSON au clavier, mouvement réduit | ✅ |
-| 3. Reste de l'audit : mise en page sous 400 px, ~~onglets d'API Action~~ (Suppr ferme l'onglet, plus de contrôle imbriqué), cibles tactiles, raccourcis clavier | 🟡 |
+| 3. Reste de l'audit : ~~mise en page sous 400 px~~ (panneaux empilés sous `md`, G-081, G-082), ~~onglets d'API Action~~ (Suppr ferme l'onglet, plus de contrôle imbriqué), cibles tactiles, raccourcis clavier | 🟡 |
 Le jeu sombre est défini mais branché sur rien.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
@@ -3274,6 +3274,38 @@ Gabarit à copier :
   rejouer sur une stack neuve ; si la spec passe seule, le gel ne vient pas du
   code. Ne pas compter sur `timeout`, absent de macOS.
 - **Ref** : lot « tables et formulaires » de la DA, le 2026-09-26.
+
+#### G-081 — Une largeur posée en `:style` ne se retire pas sous un point de rupture
+
+- **Contexte** : mise en page sous 400 px (ADR-0051, critère 1). Les panneaux
+  latéraux de Data et d'API Action reçoivent leur largeur de la poignée de
+  `Resizable`, en `:style="{ width }"`.
+- **Symptôme** : les panneaux passent en colonne sous `md`, mais celui d'API
+  Action garde ses 252 px, et celui de Data les reprend dès qu'on a touché à la
+  poignée : le contenu reste à une centaine de pixels sur un écran de 375.
+- **Cause** : un style en ligne n'a pas de media query, et il bat toute classe
+  utilitaire. `md:w-…` ne peut rien contre lui.
+- **Solution** : le `:style` ne pose plus la largeur, mais une variable
+  (`{ '--pane-size': paneSize }`), que seule une classe `md:w-(--pane-size)` lit.
+  Sous `md`, rien ne la lit et le panneau prend toute la largeur. Même chose
+  pour les `min-w-[var(--sidebar-width)]`, passées en `md:`.
+- **Ref** : lot « mise en page sous 400 px », le 2026-09-28.
+
+#### G-082 — Des boutons en `absolute` sur une barre d'onglets finissent par la recouvrir
+
+- **Contexte** : même lot, barre d'onglets des filtres avancés (`Filters.vue`).
+- **Symptôme** : à 375 px, « History » et « Saved » ne se cliquent plus :
+  Cypress les dit « covered by » le bouton plein écran. Les libellés, eux,
+  se coupent sur deux lignes.
+- **Cause** : les deux boutons étaient posés en `absolute right-4`, au-dessus
+  d'une réserve de `pr-24` sur la barre. Dès que la barre défile, la réserve
+  défile avec elle : elle ne protège que la fin du contenu, pas le coin
+  qu'occupent les boutons.
+- **Solution** : barre et boutons dans une même ligne `flex`. La barre en
+  `min-w-0 flex-1 overflow-x-auto`, les déclencheurs en
+  `shrink-0 whitespace-nowrap`, les boutons en `shrink-0`. C'est déjà la
+  composition de la barre d'onglets d'API Action.
+- **Ref** : lot « mise en page sous 400 px », le 2026-09-28.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
