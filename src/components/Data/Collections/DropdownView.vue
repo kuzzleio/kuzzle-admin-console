@@ -47,7 +47,7 @@
             Map view
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem
-            :as="canSubscribeHere ? 'router-link' : 'button'"
+            :as="canSubscribeHere ? RouterLink : 'button'"
             data-cy="CollectionDropdown-realtime"
             :disabled="!canSubscribeHere"
             :title="
@@ -67,6 +67,7 @@
 <script lang="ts">
 import { defineComponent, markRaw, type PropType } from 'vue';
 import { mapState } from 'pinia';
+import { RouterLink } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
@@ -114,6 +115,7 @@ export default defineComponent({
   },
   data() {
     return {
+      RouterLink: markRaw(RouterLink),
       // Le composant passé à `as` n'a pas à être réactif. `markRaw` — que
       // Vue 2.7 fournit — et non `Object.freeze` : Vue met en cache le
       // constructeur sur les options du composant, et un objet gelé le lui

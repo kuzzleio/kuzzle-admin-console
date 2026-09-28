@@ -28,7 +28,7 @@
 
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              as="router-link"
+              :as="RouterLink"
               data-cy="UsersDropdown-editMapping"
               :to="{ name: 'SecurityUsersEditCustomMapping' }"
             >

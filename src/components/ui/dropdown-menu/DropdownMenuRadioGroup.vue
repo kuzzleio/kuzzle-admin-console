@@ -1,48 +1,24 @@
 <template>
-  <div :class="classes" role="group" v-bind="$attrs">
+  <DropdownMenuRadioGroup data-slot="dropdown-menu-radio-group" v-bind="forwarded">
     <slot />
-  </div>
+  </DropdownMenuRadioGroup>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-import { classMerge } from '../class-merge';
+<script setup lang="ts">
+import {
+  DropdownMenuRadioGroup,
+  type DropdownMenuRadioGroupEmits,
+  type DropdownMenuRadioGroupProps,
+  useForwardPropsEmits,
+} from 'reka-ui';
 
 /*
- * DropdownMenuRadioGroup — API publique de shadcn-vue (ADR-0012).
- *
- * `b-dropdown-item` n'avait qu'une prop `active`, qui posait une classe et
- * rien d'autre : à la lecture d'écran, l'élément courant était indiscernable
- * des autres. Un menu qui désigne l'élément en cours parmi plusieurs exclusifs
- * est un groupe de boutons radio, et l'amont a le composant qui va avec.
- *
- * La valeur suit `v-model` par l'option `model` de Vue 2, comme `Checkbox` et
- * `Input` (G-012). Le groupe ne la modifie pas de lui-même : il émet, et
- * l'appelant décide — ici, en naviguant.
+ * DropdownMenuRadioGroup de shadcn-vue (ADR-0012, ADR-0054). Un menu qui
+ * désigne l'élément en cours parmi plusieurs exclusifs est un groupe de
+ * boutons radio : `role="menuitemradio"` et `aria-checked` sur chaque élément.
  */
-export default defineComponent({
-  name: 'DropdownMenuRadioGroup',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  provide(): { dropdownMenuRadioGroup: unknown } {
-    return { dropdownMenuRadioGroup: this };
-  },
-  props: {
-    modelValue: {
-      default: undefined,
-      type: String,
-    },
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses('');
-    },
-  },
-  methods: {
-    select(value: string): void {
-      this.$emit('update:modelValue', value);
-    },
-  },
-});
+const props = defineProps<DropdownMenuRadioGroupProps>();
+const emits = defineEmits<DropdownMenuRadioGroupEmits>();
+
+const forwarded = useForwardPropsEmits(props, emits);
 </script>

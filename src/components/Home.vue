@@ -7,7 +7,7 @@
       l'ancre changerait de route au lieu de déplacer le focus.
     -->
     <button
-      class="sr-only cursor-pointer border-0 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-1050 focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:text-foreground focus:shadow-menu focus:ring-2 focus:ring-ring"
+      class="sr-only cursor-pointer border-0 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-(--z-skip-link) focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:text-foreground focus:shadow-menu focus:ring-2 focus:ring-ring"
       type="button"
       @click="skipToContent"
     >

@@ -44,7 +44,7 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'pointer-events-none fixed z-1045 flex max-h-screen w-full max-w-sm flex-col gap-2 p-4',
+        'pointer-events-none fixed z-(--z-toast) flex max-h-screen w-full max-w-sm flex-col gap-2 p-4',
         this.position === 'top-center' ? 'left-1/2 top-0 -translate-x-1/2' : 'bottom-0 right-0',
       );
     },

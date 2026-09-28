@@ -161,6 +161,15 @@ function openApp(path, { token = 'anonymous', telemetry = true } = {}) {
   cy.visit(`/#${path}`)
 }
 
+// La page Data pose le focus sur son filtre (`v-focus`) une fois rendue. Un
+// menu ouvert avant se refermerait : `reka-ui` ferme un menu dont le focus
+// sort (G-089). On attend donc ce focus avant d'ouvrir le sélecteur.
+function openEnvironmentSwitch() {
+  openApp('/data')
+  cy.focused().should('have.attr', 'data-cy', 'IndexesPage-filter')
+  cy.get('[data-cy="EnvironmentSwitch"]').click()
+}
+
 // `DocumentListItem-<id>` en v4, `DocumentListItem--<id>` en v5.
 function documentItem(id) {
   return pick(`[data-cy="DocumentListItem-${id}"]`, `[data-cy="DocumentListItem--${id}"]`)
@@ -213,31 +222,27 @@ describe('Captures v4 / v5', () => {
   })
 
   it('C04 — sélecteur de connexion ouvert', () => {
-    openApp('/data')
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    openEnvironmentSwitch()
     cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').should('be.visible')
     shot('C04-environment-switch')
   })
 
   it('C05 — modale de création de connexion', () => {
-    openApp('/data')
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    openEnvironmentSwitch()
     cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').click()
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').should('be.visible')
     shot('C05-environment-create-modal')
   })
 
   it('C06 — modale de suppression de connexion', () => {
-    openApp('/data')
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    openEnvironmentSwitch()
     cy.get('[data-cy="EnvironmentSwitch-env_valid-delete"]').click()
     cy.get('[data-cy="EnvironmentDeleteModal-envName"]').should('be.visible')
     shot('C06-environment-delete-modal')
   })
 
   it("C07 — modale d'import de connexions", () => {
-    openApp('/data')
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    openEnvironmentSwitch()
     cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').should('be.visible')
     cy.contains('[role="menuitem"], .dropdown-item', /^\s*Import\s*$/).should('be.visible').click()
     cy.get('[data-cy="EnvironmentImport-fileInput"]').should('exist')

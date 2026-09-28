@@ -83,6 +83,9 @@ pour un motif que l'amont traite par `as-child`.
 | `Checkbox` et `Switch` restent des `<input type="checkbox">` natifs | Rien à maintenir : le navigateur porte la sémantique, le clavier et le formulaire. `reka-ui` imite ce que l'élément natif fait déjà |
 | `FormItem`, `FormMessage`, `FormDescription` restent les nôtres | Passer à `vee-validate` est un changement de bibliothèque de validation, pas de primitive. Hors du critère |
 | `FileInput` reste le nôtre | Pas d'équivalent en amont |
+| `DropdownMenu` non modal par défaut (`modal: false`) | [ADR-0012](0012-primitive-dropdown-menu-en-vue-2.md) : un menu n'enferme pas, et un clic à côté doit atteindre ce qu'il vise |
+| `DropdownMenuCheckboxItem` ne ferme pas le menu, et dessine sa case dans les deux états | Cocher n'est pas choisir : le filtre par rôle se coche plusieurs fois de suite (E-12) |
+| `DropdownMenuGroup` se nomme d'après son `DropdownMenuLabel` (`aria-labelledby`) | `reka-ui` rend un groupe sans nom, qui n'est pas annoncé comme une section |
 | `Toast` : décidé dans son propre lot | Passer à `vue-sonner` garde-t-il les erreurs persistantes, les actions et le toast hors ligne ? Si non, une ADR le dira |
 
 **5. Les `z-index` deviennent des tokens**, comme [ADR-0018](0018-panneaux-flottants-au-dessus-des-modales.md)

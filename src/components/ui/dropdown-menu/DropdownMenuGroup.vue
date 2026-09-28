@@ -1,42 +1,25 @@
 <template>
-  <div :aria-labelledby="labelId" :class="classes" role="group" v-bind="$attrs">
+  <DropdownMenuGroup :aria-labelledby="labelId" data-slot="dropdown-menu-group" v-bind="props">
     <slot />
-  </div>
+  </DropdownMenuGroup>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { provide, useId } from 'vue';
+import { DropdownMenuGroup, type DropdownMenuGroupProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
+import { dropdownMenuGroupKey } from './group';
 
 /*
- * DropdownMenuGroup — API publique de shadcn-vue (ADR-0012).
+ * DropdownMenuGroup de shadcn-vue (ADR-0012, ADR-0054).
  *
- * Remplace `<b-dropdown-group header="…">`, qui prenait son intitulé en prop.
- * Chez l'amont l'intitulé est un `DropdownMenuLabel` placé dans le groupe : le
- * groupe fabrique l'identifiant, le libellé le porte. Aucune des deux
- * primitives n'expose d'`id` — un site d'appel ne doit pas avoir à inventer un
- * identifiant unique pour que le groupe soit annoncé.
+ * **Un ajout à l'amont** : le groupe se nomme d'après le `DropdownMenuLabel`
+ * qu'il contient. `reka-ui` rend un `role="group"` sans nom, et un groupe sans
+ * nom n'est pas annoncé comme une section. Le groupe fabrique l'identifiant, le
+ * libellé le porte : un site d'appel n'a pas à inventer un identifiant unique.
  */
-let sequence = 0;
+const props = defineProps<DropdownMenuGroupProps>();
 
-export default defineComponent({
-  name: 'DropdownMenuGroup',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  provide(): { dropdownMenuGroup: { labelId: string } } {
-    return { dropdownMenuGroup: { labelId: this.labelId } };
-  },
-  data() {
-    sequence += 1;
-    return {
-      labelId: `dropdown-menu-group-${sequence}`,
-    };
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses('');
-    },
-  },
-});
+const labelId = useId();
+provide(dropdownMenuGroupKey, labelId);
 </script>

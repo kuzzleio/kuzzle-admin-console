@@ -53,7 +53,7 @@ export default defineComponent({
   computed: {
     classes(): string {
       return this.mergeClasses(
-        'z-1035 min-w-32 max-h-96 overflow-y-auto rounded-md',
+        'z-(--z-floating) min-w-32 max-h-96 overflow-y-auto rounded-md',
         'border border-border bg-popover text-popover-foreground',
         'p-1 shadow-menu outline-none',
       );

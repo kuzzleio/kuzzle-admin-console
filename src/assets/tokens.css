@@ -137,6 +137,14 @@
   /* Rail de navigation (ADR-0048) : déplié, replié sur ses icônes. */
   --rail-width: 224px;
   --rail-collapsed-width: 64px;
+
+  /* Empilement (ADR-0018, ADR-0054) : la modale, ce qui flotte au-dessus
+     (menus, listes), les toasts, et le lien d'évitement. Tous au-dessus des
+     panneaux de Leaflet, qui montent jusqu'à 1000. */
+  --z-modal: 1030;
+  --z-floating: 1035;
+  --z-toast: 1045;
+  --z-skip-link: 1050;
 }
 
 .dark {

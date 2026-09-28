@@ -1,71 +1,27 @@
 <template>
-  <component
-    :is="as"
-    ref="trigger"
-    aria-haspopup="menu"
-    :aria-expanded="String(isOpen)"
-    :class="classes"
+  <DropdownMenuTrigger
+    :class="cn('cursor-pointer', props.class)"
     data-slot="dropdown-menu-trigger"
-    v-bind="$attrs"
-    @click="onClick"
-    @keydown.down.prevent="openFrom('first')"
-    @keydown.up.prevent="openFrom('last')"
+    v-bind="delegatedProps"
   >
     <slot />
-  </component>
+  </DropdownMenuTrigger>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { DropdownMenuTrigger, type DropdownMenuTriggerProps } from 'reka-ui';
 
-import { classMerge } from '../class-merge';
-import { dropdownMenuContext } from './context';
+import { cn } from '@/lib/utils';
 
 /*
- * DropdownMenuTrigger — API publique de shadcn-vue (ADR-0012).
- *
- * `asChild` n'existe pas en Vue 2 (ADR-0009) : la prop `as` couvre le besoin.
- * Le rendu par défaut est un `<button>` nu — un déclencheur de menu se style au
- * site d'appel, souvent avec les classes de `Button`, parfois pas du tout.
- *
- * Les flèches haut/bas ouvrent le menu **et** posent le focus sur le premier
- * ou le dernier élément : c'est ce qu'attend le motif `menu button` de l'ARIA
- * APG, et c'est ce qui rend le menu utilisable sans souris.
+ * DropdownMenuTrigger de shadcn-vue (ADR-0054). `:as="Button"` pour lui donner
+ * l'apparence d'un bouton, ou `as-child` autour de l'élément voulu. La flèche
+ * bas ouvre le menu sur son premier élément, Échap le referme et rend le focus
+ * ici : c'est `reka-ui`.
  */
-export default defineComponent({
-  name: 'DropdownMenuTrigger',
-  mixins: [classMerge, dropdownMenuContext],
-  inheritAttrs: false,
-  props: {
-    as: {
-      default: 'button',
-      type: [String, Object] as PropType<string | Record<string, unknown>>,
-    },
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses('cursor-pointer');
-    },
-    isOpen(): boolean {
-      return this.menu.isOpen;
-    },
-  },
-  mounted() {
-    this.menu.setTrigger(this.$el as HTMLElement);
-  },
-  beforeUnmount() {
-    this.menu.setTrigger(null);
-  },
-  methods: {
-    onClick(): void {
-      this.menu.toggle();
-    },
-    openFrom(edge: 'first' | 'last'): void {
-      this.menu.pendingFocus = edge;
-      if (!this.isOpen) {
-        this.menu.setOpen(true);
-      }
-    },
-  },
-});
+const props = defineProps<DropdownMenuTriggerProps & { class?: HTMLAttributes['class'] }>();
+
+const delegatedProps = reactiveOmit(props, 'class');
 </script>

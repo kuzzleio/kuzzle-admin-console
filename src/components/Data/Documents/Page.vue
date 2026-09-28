@@ -58,10 +58,10 @@
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuCheckboxItem
-                  :checked="autoSync"
+                  :model-value="autoSync"
                   data-cy="Autosync-toggle"
                   :disabled="!displayRealtimeButton.includes(listViewType)"
-                  @update:checked="autoSync = $event"
+                  @update:model-value="autoSync = $event === true"
                 >
                   Auto-Sync
                 </DropdownMenuCheckboxItem>

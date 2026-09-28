@@ -904,7 +904,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
 - [x] Retirer `@vue/compat` (ADR-0036)
 - [ ] Vrai shadcn-vue à la place des primitives écrites à la main ([ADR-0054](adr/0054-vrai-shadcn-vue.md)), une famille par lot :
   - [x] 1. Socle (`reka-ui`, `components.json`), `Button`, `Badge`, `Card`, `Alert`, `Label`, `Input`, `Textarea`, `Table`, `Spinner`
-  - [ ] 2. `DropdownMenu`
+  - [x] 2. `DropdownMenu`, `z-index` en tokens
   - [ ] 3. `Select`, retrait de `floating-panel.ts`
   - [ ] 4. `Dialog`
   - [ ] 5. `Tabs`
@@ -3381,6 +3381,44 @@ Gabarit à copier :
   icônes lucide des fichiers produits par Font Awesome (DESIGN.md). La CLI
   n'a pas de `--dry-run` : appeler sur un arbre propre, puis relire `git diff`.
 - **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-088 — La racine de `DropdownMenu` ne rend plus d'élément : ses attributs se perdent
+
+- **Contexte** : lot 2 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md).
+- **Symptôme** : `<DropdownMenu data-cy="ProfileFilters-roleSelect">` ne pose
+  plus rien dans le DOM, et `profiles.spec` ne trouve plus
+  `[data-cy="ProfileFilters-roleSelect"] > button`. Vue avertit d'attributs
+  « extraneous » en développement, rien au build.
+- **Cause** : l'ancienne racine rendait un `<div class="inline-block">` qui
+  recevait `data-cy`, `class` et `ref`. `DropdownMenuRoot` de `reka-ui`, comme
+  la racine de l'amont, ne rend que ses enfants.
+- **Solution** : poser l'attribut sur le déclencheur, ou sur un élément du site
+  d'appel qui enveloppe le menu. Un `ref` sur la racine pour appeler `close()`
+  devient un état : `v-model:open`.
+- **À retenir** : même chose pour `Dialog`, `Select` et les autres racines de
+  `reka-ui` qui ne rendent rien. Chercher les attributs posés sur la racine avant de
+  migrer une famille.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-089 — Un menu ouvert pendant le chargement se referme tout seul
+
+- **Contexte** : captures du lot 2 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md),
+  C04 à C07 (sélecteur de connexion ouvert depuis `/data`).
+- **Symptôme** : `EnvironmentSwitch-newConnectionBtn` introuvable. Le clic
+  sur le sélecteur a bien lieu, mais le menu est fermé à la capture. Avec une
+  attente de trois secondes avant le clic, ou en relançant le test, il
+  s'ouvre.
+- **Cause** : la page Data pose le focus sur son filtre par `v-focus`, une fois
+  rendue. `reka-ui` ferme un menu dont le focus sort (`focus-outside`) ;
+  l'ancienne primitive ne fermait qu'au clic à côté. Le clic arrivait avant ce
+  focus.
+- **Solution** : attendre le focus de la page avant d'ouvrir le menu
+  (`cy.focused().should('have.attr', 'data-cy', 'IndexesPage-filter')`), comme
+  G-084 attend la fin d'une redirection.
+- **À retenir** : c'est un comportement voulu de `reka-ui`, pas un défaut. Un
+  test qui ouvre un panneau juste après une navigation doit attendre que la
+  page ait posé son focus.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md), [G-084](#g-084).
 
 #### G-092 — Une spec verte en local, rouge en CI : la barre d'outils qui ne passe pas à la ligne
 
