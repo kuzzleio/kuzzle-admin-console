@@ -31,10 +31,20 @@
       <router-view v-else />
     </main>
 
-    <Dialog :open="tokenExpiredIsOpen" @update:open="tokenExpiredIsOpen = $event">
-      <DialogContent data-cy="Modal-tokenExpired" labelled-by="token-expired-title">
+    <!--
+      Monté à l'ouverture seulement : la session expire le plus souvent
+      pendant qu'une autre modale est ouverte, et un portail de `reka-ui` rend
+      son contenu là où il a été monté dans `<body>`. Monté avec `Home`, il
+      passait sous cette modale (G-091).
+    -->
+    <Dialog
+      v-if="tokenExpiredIsOpen"
+      :open="tokenExpiredIsOpen"
+      @update:open="tokenExpiredIsOpen = $event"
+    >
+      <DialogContent data-cy="Modal-tokenExpired">
         <DialogHeader>
-          <DialogTitle id="token-expired-title">Sorry, your session has expired</DialogTitle>
+          <DialogTitle>Sorry, your session has expired</DialogTitle>
         </DialogHeader>
         <login-form />
       </DialogContent>

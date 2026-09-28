@@ -1,8 +1,8 @@
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent labelled-by="save-query-title">
+    <DialogContent>
       <DialogHeader>
-        <DialogTitle id="save-query-title">Choose a name for this query</DialogTitle>
+        <DialogTitle>Choose a name for this query</DialogTitle>
       </DialogHeader>
 
       <form ref="form" class="flex flex-col gap-1.5" @submit.stop.prevent="handleOk">

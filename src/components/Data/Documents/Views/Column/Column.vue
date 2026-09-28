@@ -176,9 +176,9 @@
     </div>
 
     <Dialog v-model:open="exportCsvOpen">
-      <DialogContent class="max-w-2xl" labelled-by="export-csv-title">
+      <DialogContent class="max-w-2xl">
         <DialogHeader>
-          <DialogTitle id="export-csv-title">CSV export</DialogTitle>
+          <DialogTitle>CSV export</DialogTitle>
         </DialogHeader>
 
         <DialogDescription>Click the following link to download your CSV export</DialogDescription>

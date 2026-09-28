@@ -1,117 +1,32 @@
 <template>
-  <div
-    v-if="open"
-    class="fixed inset-0 z-1030 flex items-start justify-center overflow-y-auto p-4 sm:p-6"
-  >
-    <!-- Fond assombri. `aria-hidden` : il double la touche Échap et le bouton
-         de fermeture, il n'ajoute rien pour un lecteur d'écran. -->
-    <div
-      aria-hidden="true"
-      class="fixed inset-0 bg-foreground/50"
-      @click="requestClose('overlay')"
-    />
-    <slot />
-  </div>
+  <DialogRoot v-slot="slotProps" data-slot="dialog" v-bind="forwarded">
+    <slot v-bind="slotProps" />
+  </DialogRoot>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import {
+  DialogRoot,
+  type DialogRootEmits,
+  type DialogRootProps,
+  useForwardPropsEmits,
+} from 'reka-ui';
 
 /*
- * Dialog — racine, API publique de shadcn-vue (ADR-0010).
+ * Dialog de shadcn-vue (ADR-0010, ADR-0054), sur `DialogRoot` de `reka-ui`.
  *
- * L'état d'ouverture appartient au composant appelant : `:open` et
- * `@update:open`, pas un registre global indexé par chaîne comme `$bvModal`.
- * `v-model` fonctionne grâce à l'option `model` de Vue 2 (G-012).
+ * L'état d'ouverture appartient au composant appelant : `v-model:open`, ou
+ * `:open` et `@update:open`. Le portail dans `<body>`, le blocage du
+ * défilement, Échap, le piège de focus et `aria-hidden` sur le reste de la page
+ * sont ceux de `reka-ui`.
  *
- * Trois choses que la primitive porte pour que les sites d'appel n'aient pas à
- * y penser :
- *
- * - **le déplacement dans `<body>`** : Vue 2.7 n'a pas de `<Teleport>`, et une
- *   modale rendue en place est prisonnière du premier ancêtre `transform` ou
- *   `overflow: hidden`. Le nœud est retiré avant destruction, sans quoi il
- *   resterait orphelin dans le DOM ;
- * - **le blocage du défilement du fond** ;
- * - **la touche Échap**.
- *
- * Le `z-index` est à 1030, soit **sous** la bande modale de Bootstrap
- * (`.modal-backdrop` 1040, `.modal` 1050) et au-dessus de tout le reste de la
- * console. Tant que les deux familles de modales cohabitent, une `b-modal`
- * ouverte par-dessus un `Dialog` doit gagner — c'est le cas de l'écran
- * « session expirée », qui peut surgir sur n'importe quel écran (G-019). Mettre
- * les deux à 1050 laisse l'ordre dans le DOM trancher, et le `Dialog`, déplacé
- * en fin de `<body>` à l'ouverture, gagnait toujours. La valeur remonte quand
- * bootstrap-vue s'en va.
- *
- * Le piège de focus, lui, est dans `DialogContent` : c'est lui qui connaît les
- * éléments focalisables.
+ * Une modale qui ne doit pas se fermer sur un clic à côté — une suppression —
+ * le dit sur son `DialogContent`, comme en amont :
+ * `@interact-outside.prevent`. La prop `dismissible` de l'ancienne primitive
+ * n'existe plus.
  */
-export default defineComponent({
-  name: 'Dialog',
-  provide(): { dialog: { requestClose: (reason: string) => void } } {
-    return {
-      dialog: {
-        requestClose: (reason: string) => this.requestClose(reason),
-      },
-    };
-  },
-  props: {
-    // Une modale de confirmation destructrice ne doit pas se fermer sur un clic
-    // à côté : le geste est trop facile à faire par accident.
-    dismissible: {
-      default: true,
-      type: Boolean,
-    },
-    open: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  watch: {
-    open: {
-      immediate: true,
-      handler(open: boolean) {
-        this.$nextTick(() => {
-          this.syncBodyState(open);
-        });
-      },
-    },
-  },
-  mounted() {
-    document.addEventListener('keydown', this.onKeydown);
-  },
-  beforeUnmount() {
-    document.removeEventListener('keydown', this.onKeydown);
-    this.releaseBody();
-  },
-  methods: {
-    onKeydown(event: KeyboardEvent): void {
-      if (this.open && event.key === 'Escape') {
-        this.requestClose('escape');
-      }
-    },
-    requestClose(reason: string): void {
-      if (reason === 'overlay' && !this.dismissible) {
-        return;
-      }
-      this.$emit('update:open', false);
-    },
-    syncBodyState(open: boolean): void {
-      if (open) {
-        if (this.$el instanceof HTMLElement && this.$el.parentNode !== document.body) {
-          document.body.appendChild(this.$el);
-        }
-        document.body.style.overflow = 'hidden';
-        return;
-      }
-      this.releaseBody();
-    },
-    releaseBody(): void {
-      document.body.style.overflow = '';
-      if (this.$el instanceof HTMLElement && this.$el.parentNode === document.body) {
-        document.body.removeChild(this.$el);
-      }
-    },
-  },
-});
+const props = defineProps<DialogRootProps>();
+const emits = defineEmits<DialogRootEmits>();
+
+const forwarded = useForwardPropsEmits(props, emits);
 </script>

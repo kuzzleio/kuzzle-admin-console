@@ -52,9 +52,9 @@
     </role-list>
 
     <Dialog :open="revokeAnonymousOpen" @update:open="revokeAnonymousOpen = $event">
-      <DialogContent data-cy="revokeAnonymous-modal" labelled-by="revoke-anonymous-title">
+      <DialogContent data-cy="revokeAnonymous-modal">
         <DialogHeader>
-          <DialogTitle id="revoke-anonymous-title">Revoke anonymous rights</DialogTitle>
+          <DialogTitle>Revoke anonymous rights</DialogTitle>
         </DialogHeader>
 
         <DialogDescription>

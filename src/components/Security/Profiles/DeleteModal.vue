@@ -1,8 +1,8 @@
 <template>
-  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent :data-cy="'ModalDeleteProfiles'" labelled-by="profiles-delete-title">
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent :data-cy="'ModalDeleteProfiles'" @interact-outside.prevent>
       <DialogHeader>
-        <DialogTitle id="profiles-delete-title">Profile deletion</DialogTitle>
+        <DialogTitle>Profile deletion</DialogTitle>
       </DialogHeader>
 
       <template v-if="!isLoading">
@@ -63,7 +63,7 @@ export default defineComponent({
     DialogTitle,
     Spinner,
   },
-  // `dismissible: false` : une suppression ne se ferme pas sur un clic à côté.
+  // `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
   props: {
     candidatesForDeletion: {
       default: () => [],

@@ -1,23 +1,14 @@
 <template>
-  <div :class="classes" v-bind="$attrs">
+  <div :class="cn('flex flex-col gap-1.5 text-left', props.class)" data-slot="dialog-header">
     <slot />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /* En-tête de modale : titre et description. */
-export default defineComponent({
-  name: 'DialogHeader',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('flex flex-col gap-1.5 text-left');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

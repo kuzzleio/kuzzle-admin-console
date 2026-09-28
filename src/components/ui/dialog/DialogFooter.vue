@@ -1,23 +1,17 @@
 <template>
-  <div :class="classes" v-bind="$attrs">
+  <div
+    :class="cn('flex flex-wrap items-center justify-end gap-2', props.class)"
+    data-slot="dialog-footer"
+  >
     <slot />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /* Pied de modale : les actions, alignées à droite. */
-export default defineComponent({
-  name: 'DialogFooter',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('flex flex-wrap items-center justify-end gap-2');
-    },
-  },
-});
+const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 </script>

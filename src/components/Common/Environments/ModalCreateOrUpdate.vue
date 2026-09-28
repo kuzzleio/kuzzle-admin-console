@@ -1,10 +1,8 @@
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="max-w-4xl" labelled-by="env-create-title">
+    <DialogContent class="max-w-4xl">
       <DialogHeader>
-        <DialogTitle id="env-create-title">
-          {{ environmentId ? 'Update' : 'Create' }} Connection
-        </DialogTitle>
+        <DialogTitle> {{ environmentId ? 'Update' : 'Create' }} Connection </DialogTitle>
       </DialogHeader>
 
       <create-environment

@@ -1,8 +1,8 @@
 <template>
-  <Dialog :dismissible="false" :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent labelled-by="env-delete-title" described-by="env-delete-hint">
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent @interact-outside.prevent>
       <DialogHeader>
-        <DialogTitle id="env-delete-title">
+        <DialogTitle>
           Environment <span class="code">{{ environmentName }}</span> deletion
         </DialogTitle>
       </DialogHeader>
@@ -17,9 +17,7 @@
           data-cy="EnvironmentDeleteModal-envName"
           @keydown.enter="confirmDeleteEnvironment"
         />
-        <p id="env-delete-hint" class="m-0 text-sm text-muted-foreground">
-          This operation is not undoable.
-        </p>
+        <DialogDescription>This operation is not undoable.</DialogDescription>
       </div>
 
       <DialogFooter>
@@ -43,6 +41,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -56,12 +55,13 @@ export default defineComponent({
     Button,
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
     Input,
   },
-  // `dismissible: false` sur le Dialog : la suppression d'une connexion ne doit
+  // `@interact-outside.prevent` sur le panneau : la suppression d'une connexion ne doit
   // pas se fermer sur un clic à côté. Le geste est trop facile à faire par
   // accident au milieu d'une saisie de confirmation.
   props: {

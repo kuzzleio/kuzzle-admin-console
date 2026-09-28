@@ -1,8 +1,8 @@
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="max-w-2xl" labelled-by="create-index-title">
+    <DialogContent class="max-w-2xl">
       <DialogHeader>
-        <DialogTitle id="create-index-title">Index creation</DialogTitle>
+        <DialogTitle>Index creation</DialogTitle>
       </DialogHeader>
 
       <form @submit.prevent="tryCreateIndex">

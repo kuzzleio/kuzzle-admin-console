@@ -52,11 +52,9 @@
     </div>
 
     <Dialog :open="editOpen" @update:open="onDialogToggle">
-      <DialogContent labelled-by="favorite-name-title">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle id="favorite-name-title"
-            >you want to change this favorite name ?</DialogTitle
-          >
+          <DialogTitle>you want to change this favorite name ?</DialogTitle>
         </DialogHeader>
         <Input v-model="favorite.name" required type="text" />
         <DialogFooter>

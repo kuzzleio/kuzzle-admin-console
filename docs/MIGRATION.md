@@ -906,7 +906,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 1. Socle (`reka-ui`, `components.json`), `Button`, `Badge`, `Card`, `Alert`, `Label`, `Input`, `Textarea`, `Table`, `Spinner`
   - [x] 2. `DropdownMenu`, `z-index` en tokens
   - [x] 3. `Select`, retrait de `floating-panel.ts`
-  - [ ] 4. `Dialog`
+  - [x] 4. `Dialog`
   - [ ] 5. `Tabs`
   - [ ] 6. `Pagination`
   - [ ] 7. `TagsInput`
@@ -3382,6 +3382,25 @@ Gabarit à copier :
   n'a pas de `--dry-run` : appeler sur un arbre propre, puis relire `git diff`.
 - **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
 
+#### G-087 — Sans `DialogTrigger`, `reka-ui` ne rend le focus à personne
+
+- **Contexte** : lot 4 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md), `Dialog` sur
+  `reka-ui`.
+- **Symptôme** (à la lecture de `DialogContentModal.js`) : à la fermeture d'une
+  modale ouverte par un état, le focus tomberait sur `<body>`. Le clavier
+  repartirait du haut de la page.
+- **Cause** : sur `close-auto-focus`, `reka-ui` appelle `preventDefault()` puis
+  focalise `rootContext.triggerElement`, qui n'existe que si la modale a un
+  `DialogTrigger`. Les 19 modales de la console s'ouvrent par un booléen,
+  depuis un bouton qui vit souvent dans un autre composant : aucune n'en a.
+- **Solution** : `DialogContent` retient `document.activeElement` sur
+  `open-auto-focus` et le refocalise sur `close-auto-focus`, sauf si le site
+  d'appel a déjà appelé `preventDefault()`.
+- **À retenir** : `reka-ui` suppose que chaque couche a son déclencheur. Même
+  question à poser pour `DropdownMenu` et `Select`, qui en ont un, et pour tout
+  composant ouvert par un état.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
 #### G-088 — La racine de `DropdownMenu` ne rend plus d'élément : ses attributs se perdent
 
 - **Contexte** : lot 2 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md).
@@ -3435,6 +3454,26 @@ Gabarit à copier :
   aujourd'hui (tailles de page et versions en nombres des deux côtés), mais
   rien ne le signale : la spec ne voit qu'un champ vide.
 - **Ref** : [ADR-0014](adr/0014-primitive-select-en-vue-2.md), décision 5.
+
+#### G-091 — Une modale montée tôt passe sous une modale montée après elle
+
+- **Contexte** : lot 4 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md), `login.spec`
+  « without losing context when token expires ».
+- **Symptôme** : la session expire pendant la création d'un index. La modale
+  « Sorry, your session has expired » s'ouvre, mais `LoginAsAnonymous-Btn` est
+  « covered by » le fond de la modale de création, pourtant ouverte avant.
+- **Cause** : un `Teleport` réserve sa place dans `<body>` au montage du
+  composant, pas à l'ouverture. La modale de `Home` est montée avec
+  l'application, celle de la page après : à `z-index` égal, c'est l'ordre du
+  DOM qui décide, et la plus récente dans le DOM est la plus ancienne ouverte.
+  L'ancienne primitive ne montait son portail qu'à l'ouverture.
+- **Solution** : une modale qui doit pouvoir s'ouvrir par-dessus une autre est
+  montée à l'ouverture (`v-if` sur `Dialog`), comme celle de session expirée.
+- **À retenir** : une modale ouverte par un clic ne peut pas s'ouvrir sur une
+  autre, puisque la première rend la page inerte. Seule celle de `Home`
+  s'ouvre d'elle-même, sur un événement : c'est le cas à surveiller pour toute
+  modale ouverte par un état qu'aucun clic ne déclenche.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
 
 #### G-092 — Une spec verte en local, rouge en CI : la barre d'outils qui ne passe pas à la ligne
 

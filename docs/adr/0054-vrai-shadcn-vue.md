@@ -87,6 +87,7 @@ pour un motif que l'amont traite par `as-child`.
 | `DropdownMenuCheckboxItem` ne ferme pas le menu, et dessine sa case dans les deux états | Cocher n'est pas choisir : le filtre par rôle se coche plusieurs fois de suite (E-12) |
 | `DropdownMenuGroup` se nomme d'après son `DropdownMenuLabel` (`aria-labelledby`) | `reka-ui` rend un groupe sans nom, qui n'est pas annoncé comme une section |
 | La coche de `SelectItem` est à gauche, et `SelectTrigger` n'a pas de prop `size` | La DA : l'option retenue ne se décale pas des autres, et la console n'a qu'une hauteur de champ |
+| `DialogContent` rend le focus à l'élément qui l'avait à l'ouverture, pas au `DialogTrigger` | Les modales de la console s'ouvrent par un état, sans `DialogTrigger` : le focus tombait sur `<body>` (G-087) |
 | `Toast` : décidé dans son propre lot | Passer à `vue-sonner` garde-t-il les erreurs persistantes, les actions et le toast hors ligne ? Si non, une ADR le dira |
 
 **5. Les `z-index` deviennent des tokens**, comme [ADR-0018](0018-panneaux-flottants-au-dessus-des-modales.md)
