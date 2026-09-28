@@ -53,13 +53,7 @@
           <div class="flex min-h-0 flex-col lg:w-5/12">
             <h3 class="text-title font-bold text-foreground">Mapping</h3>
 
-            <pre
-              v-json-formatter="{
-                content: mapping,
-                open: true,
-              }"
-              class="mb-0 min-h-0 flex-1 overflow-auto"
-            />
+            <JsonTree class="mb-0 min-h-0 flex-1 overflow-auto" :value="mapping" />
           </div>
         </div>
       </CardContent>
@@ -107,15 +101,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch as UiSwitch } from '@/components/ui/switch';
 import Focus from '@/directives/focus.directive';
-import JsonFormatter from '@/directives/json-formatter.directive';
 import { formSchemaService, typesCorrespondance } from '@/services/formSchema';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
+import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 import DocumentForm from './DocumentForm.vue';
 
 export default {
   name: 'DocumentCreateOrUpdate',
   components: {
+    JsonTree,
     Alert,
     Button,
     Card,
@@ -131,7 +126,6 @@ export default {
   },
   directives: {
     Focus,
-    JsonFormatter,
   },
   props: {
     index: String,

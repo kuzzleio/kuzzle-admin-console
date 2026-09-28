@@ -141,13 +141,7 @@
             </div>
           </CardHeader>
           <CardContent class="min-h-0 grow px-4">
-            <pre
-              v-json-formatter="{
-                content: currentDocument,
-                open: true,
-              }"
-              class="json-formatter m-0 h-full overflow-auto"
-            />
+            <JsonTree class="m-0 h-full overflow-auto" :value="currentDocument" />
           </CardContent>
         </Card>
         <Card
@@ -186,14 +180,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import JsonFormatter from '@/directives/json-formatter.directive';
 import { useAuthStore } from '@/stores';
 
+import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 
 export default {
   name: 'ViewMap',
   components: {
+    JsonTree,
     Button,
     Card,
     CardContent,
@@ -209,9 +204,6 @@ export default {
     SelectItem,
     SelectTrigger,
     SelectValue,
-  },
-  directives: {
-    JsonFormatter,
   },
   props: {
     currentPageSize: {

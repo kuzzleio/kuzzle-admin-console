@@ -54,8 +54,9 @@ describe('Document List', function() {
     cy.get('[data-cy^=DocumentListItem--]').should('exist')
   })
 
-  // `v-json-formatter` : une directive dont le hook est mal nommé ne fait rien
-  // et ne dit rien (G-062). Rien d'autre ne regarde ce rendu dans la vue liste.
+  // Le contenu déplié est rendu par `JsonTree` (ADR-0053), qui a remplacé la
+  // directive `v-json-formatter` — dont un hook mal nommé ne faisait rien sans
+  // rien dire (G-062). Rien d'autre ne regarde ce rendu dans la vue liste.
   it('Should render the document content when a list item is expanded', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -64,7 +65,7 @@ describe('Document List', function() {
       .click()
 
     cy.get('[data-cy^=DocumentListItem--]')
-      .find('pre')
+      .find('[data-cy=JsonTree]')
       .should('be.visible')
       .and('contain', 'Luca')
   })

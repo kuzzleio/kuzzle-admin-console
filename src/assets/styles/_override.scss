@@ -1,6 +1,0 @@
-// Seul rappel qui reste ici : `json-formatter-js` rend ses nœuds lui-même, on
-// ne peut pas poser d'utilitaire dessus. La directive `v-json-formatter` est
-// vivante (UserItem, RoleItem, CustomData).
-.json-formatter-row .json-formatter-toggler:after {
-  font-size: 14px;
-}

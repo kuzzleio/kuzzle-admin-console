@@ -21,12 +21,7 @@
         <!-- Mapping -->
         <div class="lg:w-4/12">
           <h3 class="text-title font-bold text-foreground">Mapping</h3>
-          <pre
-            v-json-formatter="{
-              content: mapping,
-              open: true,
-            }"
-          />
+          <JsonTree :value="mapping" />
         </div>
       </div>
     </form>
@@ -34,17 +29,17 @@
 </template>
 
 <script>
-import JsonFormatter from '@/directives/json-formatter.directive';
 import { mergeSchemaMapping } from '@/services/collectionHelper';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
+import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 
 export default {
   name: 'CustomData',
   components: {
+    JsonTree,
     JsonEditor,
   },
-  directives: { JsonFormatter },
   props: {
     value: {
       type: String,

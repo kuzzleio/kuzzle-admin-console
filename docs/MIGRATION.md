@@ -912,7 +912,7 @@ La v5 sort quand toutes ces lignes sont cochées, dans l'ordre
 par PR, validé par les 17 specs contre un build et une stack neuve.
 
 - [x] 1. Audit DA terminé : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier (§1.2)
-- [ ] 2. Dette de §3.3 : `bluebird`, `moment`, `json-formatter-js`
+- [x] 2. Dette de §3.3 : `bluebird`, `moment`, `json-formatter-js`
 - [ ] 3. #1092 vérifiée sur `5-dev`, portée à la main si le défaut existe
 - [ ] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
 - [ ] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3)
@@ -992,7 +992,7 @@ lui-même (§ 3.2).
 | ~~`moment`~~ | **Retiré**, sans successeur : `src/lib/date.ts` couvre les cinq usages ([ADR-0052](adr/0052-dates-natives-plutot-que-moment.md)) | ✅ |
 | ~~`velocity-animate`~~ | **Retiré** — son seul client était `Common/Stepper.vue`, code mort (ADR-0016) | ✅ |
 | ~~`@fortawesome/fontawesome-free`~~ | **Conservé** — le design system Kuzzle en fait son système d'icônes ([ADR-0043](adr/0043-da-kuzzle-pour-la-console.md)) | ➖ |
-| `json-formatter-js` | utilisé via une directive ; à réévaluer | ⬜ |
+| ~~`json-formatter-js`~~ | **Retiré** : flèches inatteignables au clavier, style injecté dans `<head>`, couleurs en dur. Remplacé par `Common/JsonTree` ([ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md)) | ✅ |
 | `apexcharts` 3.53.0 | figé par `vue3-apexcharts` 1.7.0 ; la 5.x est la version courante ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | ⬜ |
 
 ---
@@ -3441,3 +3441,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-27 | `--primary`, `--muted-foreground` et `--input` assombris d'un cran pour le contraste AA | [ADR-0050](adr/0050-contraste-aa-de-la-palette.md) |
 | 2026-09-28 | Critères de sortie de la v5 : audit DA, dette, #1092, shadcn-vue, `apexcharts` 5, thème sombre, Composition API, revue de sortie, puis bascule `master` → `4-stable` | [ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md) |
 | 2026-09-28 | `moment` retiré sans successeur : cinq fonctions sur `Date` dans `src/lib/date.ts`, formats identiques | [ADR-0052](adr/0052-dates-natives-plutot-que-moment.md) |
+| 2026-09-28 | `json-formatter-js` et `v-json-formatter` remplacés par un composant `JsonTree` (clavier, tokens, pas de style injecté) | [ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md) |

@@ -1,13 +1,13 @@
 // Ce qui reste des feuilles SCSS historiques de la console.
 //
 // Quatre feuilles sont parties avec ADR-0024 — `variables`, `animations`,
-// `pages`, `utility` — parce qu'elles ne stylaient plus rien. Les cinq qui
-// restent le font pour une raison nommée en tête de chacune : une police
-// applicative, deux règles de document, la surbrillance temps réel posée par
-// `classList.add()`, la palette des connexions, et le rappel de
-// `json-formatter-js`.
+// `pages`, `utility` — parce qu'elles ne stylaient plus rien. `override` est
+// partie avec `json-formatter-js` (ADR-0053). Les quatre qui restent le font
+// pour une raison nommée en tête de chacune : une police applicative, deux
+// règles de document, la surbrillance temps réel posée par `classList.add()`,
+// et la palette des connexions.
 //
-// La couche `legacy` tient encore ces cinq feuilles et FontAwesome — `vfg.css`
+// La couche `legacy` tient encore ces quatre feuilles et FontAwesome — `vfg.css`
 // en est sorti avec `vue-form-generator` (ADR-0025). Ce qui est ici perd face
 // aux utilitaires Tailwind sans surenchère de spécificité (ADR-0008) ; l'ordre
 // des couches est déclaré dans `tailwind.css`, importé avant ce fichier.
@@ -16,7 +16,6 @@
   @import 'styles/layout';
   @import 'styles/realtime';
   @import 'styles/environment';
-  @import 'styles/override';
 }
 
 // FontAwesome est importé depuis `tailwind.css`, pas d'ici : Sass hisse

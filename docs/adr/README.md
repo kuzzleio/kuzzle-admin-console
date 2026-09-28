@@ -74,6 +74,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0050](0050-contraste-aa-de-la-palette.md) | La palette de la DA est ajustée au contraste AA | Acceptée |
 | [0051](0051-criteres-de-sortie-de-la-v5.md) | Les critères de sortie de la v5 | Acceptée |
 | [0052](0052-dates-natives-plutot-que-moment.md) | Dates natives plutôt que `moment` | Acceptée |
+| [0053](0053-json-tree-plutot-que-json-formatter-js.md) | Un composant `JsonTree` plutôt que `json-formatter-js` | Acceptée |
 
 ## Gabarit
 

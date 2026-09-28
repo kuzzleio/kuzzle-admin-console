@@ -225,7 +225,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import JsonFormatter from '@/directives/json-formatter.directive';
 import { flattenObjectMapping } from '@/services/collectionHelper';
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
 import { useAuthStore, useKuzzleStore } from '@/stores';
@@ -240,9 +239,6 @@ import {} from 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
   name: 'Column',
-  directives: {
-    JsonFormatter,
-  },
   components: {
     Badge,
     Button,
@@ -460,13 +456,6 @@ export default {
       const trimmedField = newField.trim();
       if (trimmedField && !this.selectedFields.includes(trimmedField)) {
         this.selectedFields.push(trimmedField);
-      }
-    },
-    toggleJsonFormatter(id) {
-      if (this.$refs[id][0].style.visibility === 'hidden') {
-        this.$refs[id][0].style.visibility = 'visible';
-      } else {
-        this.$refs[id][0].style.visibility = 'hidden';
       }
     },
     getNestedField(doc, customField) {
