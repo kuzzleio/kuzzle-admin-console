@@ -273,7 +273,11 @@ describe('Session', function() {
       //
       // Pas dans la seconde de l'émission : Kuzzle rendrait le même token,
       // et l'invaliderait avec « l'ancien » (G-093).
-      cy.wait(1100)
+      const { iat } = JSON.parse(atob(jwt.split('.')[1]))
+      cy.waitUntil(() => Math.floor(Date.now() / 1000) > iat, {
+        interval: 100,
+        errorMsg: "la seconde d'émission du token n'est pas passée"
+      })
       cy.request({
         method: 'POST',
         url: `${kuzzleUrl}/_refreshToken`,
@@ -287,7 +291,11 @@ describe('Session', function() {
           win.dispatchEvent(new win.StorageEvent('storage', { key: 'environments', newValue }))
         })
       })
-      cy.wait(2000)
+      // L'ancien token mort, la création d'index ne passe que par l'adoption.
+      cy.expectBackend(
+        { method: 'POST', url: `${kuzzleUrl}/_checkToken`, body: { token: jwt } },
+        response => expect(response.body.result.valid).to.equal(false)
+      )
 
       cy.get('[data-cy="IndexesPage-createBtn"]').click()
       cy.get('[data-cy="CreateIndexModal-name"]').type('adoptedindex')
