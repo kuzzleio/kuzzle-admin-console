@@ -1,6 +1,6 @@
 <template>
   <div class="DocumentsListView" data-cy="DocumentsListView">
-    <div class="mb-3 flex flex-row items-center gap-2">
+    <div class="mb-3 flex flex-row flex-wrap items-center gap-2">
       <div class="flex grow items-center gap-2">
         <Button
           data-cy="DocumentsListView-toggleAllBtn"

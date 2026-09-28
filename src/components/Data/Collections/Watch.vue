@@ -186,10 +186,7 @@
                   <Badge title="controller : action" variant="info">
                     {{ lastNotification.controller }} : {{ lastNotification.action }}
                   </Badge>
-                  <p
-                    v-json-formatter="{ content: lastNotification.result, open: true }"
-                    class="mt-3"
-                  />
+                  <JsonTree class="mt-3" :value="lastNotification.result" />
                 </CardContent>
               </Card>
             </div>
@@ -209,7 +206,6 @@
 
 <script>
 import { isEqual } from 'lodash';
-import moment from 'moment';
 import { mapState } from 'pinia';
 
 import JsonEditor from '../../Common/JsonEditor.vue';
@@ -219,22 +215,21 @@ import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import JsonFormatter from '@/directives/json-formatter.directive';
+import { formatClockTime } from '@/lib/date';
 import * as filterManager from '@/services/filterManager';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
 
+import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 import DeleteCollectionModal from './DeleteCollectionModal.vue';
 import CollectionDropdownAction from './DropdownAction.vue';
 import CollectionDropdownView from './DropdownView.vue';
 
 export default {
   name: 'CollectionWatch',
-  directives: {
-    JsonFormatter,
-  },
   components: {
+    JsonTree,
     Alert,
     Badge,
     Button,
@@ -303,7 +298,7 @@ export default {
       if (!this.notifications.length) {
         return null;
       }
-      return moment(this.lastNotification.timestamp).format('H:mm:ss');
+      return formatClockTime(this.lastNotification.timestamp);
     },
     realtimeQuery() {
       try {

@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-25 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
+**Dernière mise à jour** : 2026-09-28 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -23,6 +23,7 @@
 | **2** | Dé-bootstrapisation écran par écran + refonte UI/UX | [#1018](https://github.com/kuzzleio/kuzzle-admin-console/issues/1018) | ✅ **Bootstrap est sorti** ([ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)) |
 | **3** | Bascule Vue 3 (+ `@vue/compat` temporaire), router, Pinia | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | ✅ **Close** : `MODE: 3` a remplacé la liste de drapeaux ([ADR-0031](adr/0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md)) — 17/17 specs |
 | **4** | Nettoyage : retrait de `compat`, vrai shadcn-vue, Composition API | [#1019](https://github.com/kuzzleio/kuzzle-admin-console/issues/1019) | 🟡 En cours — ouverte le 2026-09-24. **`@vue/compat` est retiré** ([ADR-0036](adr/0036-retrait-de-vue-compat.md)) : restent shadcn-vue et la Composition API |
+| **5** | Sortie : revue technique, sécurité et livraison, puis bascule sur `master` | — | ⬜ Critères fixés par [ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md), suivis en [§1.6](#16-critères-de-sortie--adr-0051) |
 
 Le phasage et son ordre contre-intuitif (UI **avant** Vue 3) sont justifiés dans
 [ADR-0002](adr/0002-sortir-de-bootstrap-vue-avant-vue-3.md).
@@ -319,7 +320,7 @@ précisément ce qu'on achète.
 | 3. Rail de navigation ([ADR-0048](adr/0048-rail-de-navigation.md)) | ✅ |
 | 3. Cartes signature (une par écran), blocs gris de `Signup` et `KuzzleErrorPage` retirés | ✅ |
 | 3. Audit `/impeccable` : repère `main`, lien d'évitement, `h1`, `lang`, contraste AA (ADR-0050), noms accessibles, focus des menus, éditeur JSON au clavier, mouvement réduit | ✅ |
-| 3. Reste de l'audit : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier | ⬜ |
+| 3. Reste de l'audit : mise en page sous 400 px (panneaux empilés sous `md`, G-081, G-082), onglets d'API Action (Suppr ferme l'onglet), cibles tactiles de 24 px (WCAG 2.5.8 ; seuls restent les replis de code d'Ace, dans un éditeur tiers), titre du document par route (2.4.2), Ctrl/⌘ + Entrée et Ctrl/⌘ + S dans API Action (G-083) | ✅ |
 Le jeu sombre est défini mais branché sur rien.
 
 Trois réglages temporaires ont rendu la cohabitation tenable pendant la phase 2
@@ -904,6 +905,22 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
 - [ ] Vrai shadcn-vue à la place des primitives écrites à la main
 - [ ] Composition API
 
+### 1.6 Critères de sortie — ADR-0051
+
+La v5 sort quand toutes ces lignes sont cochées, dans l'ordre
+([ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md)). Chaque ligne est un lot
+par PR, validé par les 17 specs contre un build et une stack neuve.
+
+- [x] 1. Audit DA terminé : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier (§1.2)
+- [x] 2. Dette de §3.3 : `bluebird`, `moment`, `json-formatter-js`
+- [x] 3. #1092 vérifiée sur `5-dev` : le défaut existait (formulaires de collection, profil et rôle muets sur un JSON invalide), porté avec `FormMessage`
+- [ ] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
+- [ ] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3)
+- [ ] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes
+- [ ] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5)
+- [ ] 8. Revue de sortie : technique, sécurité, livraison (`Dockerfile`, `infra/`, workflows)
+- [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
+
 ---
 
 ## 2. Toolchain (phase 0)
@@ -971,11 +988,11 @@ lui-même (§ 3.2).
 | Paquet | Pourquoi | Statut |
 |---|---|---|
 | ~~`kuzzle-sdk` v6 **et** v7~~ | **Conservé** — c'est le support des backends Kuzzle v1, pas de la dette. Voir [ADR-0005](adr/0005-conserver-les-deux-sdk-kuzzle.md) | ➖ |
-| `bluebird` | les Promises natives suffisent depuis Node 4 | ⬜ |
-| `moment` | en maintenance depuis 2020 → `date-fns` ou `Temporal` | ⬜ |
+| ~~`bluebird`~~ | **Retiré** : deux imports, qui ne servaient qu'à `Promise.all` et `Promise.reject`, natifs l'un et l'autre | ✅ |
+| ~~`moment`~~ | **Retiré**, sans successeur : `src/lib/date.ts` couvre les cinq usages ([ADR-0052](adr/0052-dates-natives-plutot-que-moment.md)) | ✅ |
 | ~~`velocity-animate`~~ | **Retiré** — son seul client était `Common/Stepper.vue`, code mort (ADR-0016) | ✅ |
 | ~~`@fortawesome/fontawesome-free`~~ | **Conservé** — le design system Kuzzle en fait son système d'icônes ([ADR-0043](adr/0043-da-kuzzle-pour-la-console.md)) | ➖ |
-| `json-formatter-js` | utilisé via une directive ; à réévaluer | ⬜ |
+| ~~`json-formatter-js`~~ | **Retiré** : flèches inatteignables au clavier, style injecté dans `<head>`, couleurs en dur. Remplacé par `Common/JsonTree` ([ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md)) | ✅ |
 | `apexcharts` 3.53.0 | figé par `vue3-apexcharts` 1.7.0 ; la 5.x est la version courante ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | ⬜ |
 
 ---
@@ -3258,6 +3275,73 @@ Gabarit à copier :
   code. Ne pas compter sur `timeout`, absent de macOS.
 - **Ref** : lot « tables et formulaires » de la DA, le 2026-09-26.
 
+#### G-081 — Une largeur posée en `:style` ne se retire pas sous un point de rupture
+
+- **Contexte** : mise en page sous 400 px (ADR-0051, critère 1). Les panneaux
+  latéraux de Data et d'API Action reçoivent leur largeur de la poignée de
+  `Resizable`, en `:style="{ width }"`.
+- **Symptôme** : les panneaux passent en colonne sous `md`, mais celui d'API
+  Action garde ses 252 px, et celui de Data les reprend dès qu'on a touché à la
+  poignée : le contenu reste à une centaine de pixels sur un écran de 375.
+- **Cause** : un style en ligne n'a pas de media query, et il bat toute classe
+  utilitaire. `md:w-…` ne peut rien contre lui.
+- **Solution** : le `:style` ne pose plus la largeur, mais une variable
+  (`{ '--pane-size': paneSize }`), que seule une classe `md:w-(--pane-size)` lit.
+  Sous `md`, rien ne la lit et le panneau prend toute la largeur. Même chose
+  pour les `min-w-[var(--sidebar-width)]`, passées en `md:`.
+- **Ref** : lot « mise en page sous 400 px », le 2026-09-28.
+
+#### G-082 — Des boutons en `absolute` sur une barre d'onglets finissent par la recouvrir
+
+- **Contexte** : même lot, barre d'onglets des filtres avancés (`Filters.vue`).
+- **Symptôme** : à 375 px, « History » et « Saved » ne se cliquent plus :
+  Cypress les dit « covered by » le bouton plein écran. Les libellés, eux,
+  se coupent sur deux lignes.
+- **Cause** : les deux boutons étaient posés en `absolute right-4`, au-dessus
+  d'une réserve de `pr-24` sur la barre. Dès que la barre défile, la réserve
+  défile avec elle : elle ne protège que la fin du contenu, pas le coin
+  qu'occupent les boutons.
+- **Solution** : barre et boutons dans une même ligne `flex`. La barre en
+  `min-w-0 flex-1 overflow-x-auto`, les déclencheurs en
+  `shrink-0 whitespace-nowrap`, les boutons en `shrink-0`. C'est déjà la
+  composition de la barre d'onglets d'API Action.
+- **Ref** : lot « mise en page sous 400 px », le 2026-09-28.
+
+#### G-083 — Un `@keydown` posé autour d'Ace ne voit pas les combinaisons à modificateur
+
+- **Contexte** : raccourcis d'API Action (ADR-0051, critère 1) : Ctrl/⌘ + Entrée
+  et Ctrl/⌘ + S posés en `@keydown` sur le conteneur de l'onglet.
+- **Symptôme** : les raccourcis marchent quand le focus est sur un champ ou un
+  bouton, jamais depuis l'éditeur JSON, qui est pourtant l'endroit où l'on tape
+  la requête. Aucune erreur.
+- **Cause** : Ace écoute `keydown` sur sa zone de saisie et traite lui-même les
+  combinaisons à modificateur. Il les arrête avant qu'elles ne remontent le
+  DOM, qu'une commande Ace leur corresponde ou non.
+- **Solution** : les déclarer comme commandes Ace. `JsonEditor` accepte une prop
+  `shortcuts` (`{ run: { win: 'Ctrl-Enter', mac: 'Command-Enter' } }`) et émet
+  `shortcut` avec le nom. Le `@keydown` du conteneur reste pour le reste de
+  l'onglet. Au passage, dans le test, la requête par défaut a
+  `controller: null` : elle répond 400, pas 200.
+- **Ref** : lot « cibles, titres et raccourcis », le 2026-09-28.
+
+#### G-084 — Un clic pendant une redirection ouvre un menu que la page emporte
+
+- **Contexte** : suite complète, `environments.spec.js`, test « Should be able
+  to set the tab title of an environment ».
+- **Symptôme** : une fois sur trois suites environ, `Expected to find element:
+  [data-cy=EnvironmentSwitch-env_localEnvTestTabTitle] …, but never found it`,
+  sur les trois tentatives. Rejouée seule, la spec passe. La capture d'échec
+  montre la page de login avec le sélecteur fermé, et le journal Cypress note
+  `(new url) /login?to=Indexes` juste **après** le clic.
+- **Cause** : créer une connexion redirige vers `/login`. Le test cliquait le
+  sélecteur dès qu'il était visible, c'est-à-dire parfois encore sur la page de
+  création. Le menu s'ouvrait, puis la navigation démontait la page et lui
+  avec. Rien ne le rouvrait.
+- **Solution** : attendre la page d'arrivée (`cy.url().should('contain',
+  'login')`) avant le clic. Le test voisin, « Should be able to create a
+  valid environment », le faisait déjà.
+- **Ref** : validation d'ADR-0053, le 2026-09-28.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3373,3 +3457,6 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-27 | Rail de navigation à gauche, à la couleur de la connexion ; repli par bouton | [ADR-0048](adr/0048-rail-de-navigation.md) |
 | 2026-09-27 | Couleurs de connexion en tokens, au contraste AA ; élément actif du rail en fuchsia profond avec filet | [ADR-0049](adr/0049-couleurs-de-connexion-contrastees.md) |
 | 2026-09-27 | `--primary`, `--muted-foreground` et `--input` assombris d'un cran pour le contraste AA | [ADR-0050](adr/0050-contraste-aa-de-la-palette.md) |
+| 2026-09-28 | Critères de sortie de la v5 : audit DA, dette, #1092, shadcn-vue, `apexcharts` 5, thème sombre, Composition API, revue de sortie, puis bascule `master` → `4-stable` | [ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md) |
+| 2026-09-28 | `moment` retiré sans successeur : cinq fonctions sur `Date` dans `src/lib/date.ts`, formats identiques | [ADR-0052](adr/0052-dates-natives-plutot-que-moment.md) |
+| 2026-09-28 | `json-formatter-js` et `v-json-formatter` remplacés par un composant `JsonTree` (clavier, tokens, pas de style injecté) | [ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md) |

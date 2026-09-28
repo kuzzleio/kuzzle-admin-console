@@ -18,6 +18,16 @@
           <Input id="profile-id" disabled :value="id" />
         </FormItem>
 
+        <!--
+          La validation refusait déjà un JSON invalide, mais rien ne le disait :
+          le bouton semblait ne rien faire (#1027, porté de #1092).
+        -->
+        <FormMessage
+          v-if="v$.profileValue.$errors.length > 0"
+          data-cy="ProfileCreateOrUpdate-jsonEditor--dangerIcon"
+        >
+          Invalid JSON. Fix the syntax before submitting.
+        </FormMessage>
         <json-editor
           ref="jsoneditor"
           class="ProfileCreateOrUpdate-jsonEditor"
@@ -93,7 +103,6 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import JsonFormatter from '@/directives/json-formatter.directive';
 import { startsWithSpace, isWhitespace } from '@/validators';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
@@ -111,9 +120,6 @@ export default {
     Input,
     JsonEditor,
     Label,
-  },
-  directives: {
-    JsonFormatter,
   },
   props: {
     id: {

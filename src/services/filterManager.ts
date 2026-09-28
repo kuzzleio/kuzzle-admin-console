@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import moment from 'moment';
 
+import { formatHistoryName } from '@/lib/date';
 import type { MappingAttributes } from './mappingHelpers';
 
 export const NO_ACTIVE = null;
@@ -189,8 +189,7 @@ export const addNewHistoryItemAndSave = (filter, index, collection) => {
     return;
   }
   const filters = loadHistoyFromLocalStorage(index, collection);
-  const date = moment();
-  filter.name = date.format('YY/MM/DD k:mm');
+  filter.name = formatHistoryName(new Date());
   filter.id = Date.now();
   if (filters.length >= 10) {
     filters.shift();

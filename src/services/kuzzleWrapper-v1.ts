@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import { Kuzzle, WebSocket } from 'kuzzle-sdk-v6';
 import omit from 'lodash/omit';
 

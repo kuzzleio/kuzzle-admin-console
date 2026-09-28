@@ -70,7 +70,7 @@
     </div>
 
     <div v-show="expanded" :id="`collapse-${document.id}`" class="DocumentListItem-content ms-3">
-      <pre v-json-formatter="{ content: document, open: true }" />
+      <JsonTree :value="document" />
     </div>
   </div>
 </template>
@@ -81,20 +81,19 @@ import { mapState } from 'pinia';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import jsonFormatter from '@/directives/json-formatter.directive';
 import { useAuthStore } from '@/stores';
+
+import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 
 const MAX_PROFILES = 5;
 
 export default {
   name: 'UserItem',
   components: {
+    JsonTree,
     Badge,
     Button,
     Checkbox,
-  },
-  directives: {
-    jsonFormatter,
   },
   props: {
     document: Object,

@@ -49,12 +49,19 @@ export default defineComponent({
     classes(): string {
       return this.mergeClasses(
         'appearance-none border-0 p-0',
-        'relative flex shrink-0 items-center justify-center',
+        'relative z-2 flex shrink-0 items-center justify-center',
         'bg-border transition-colors hover:bg-muted-foreground',
         'outline-none focus-visible:ring-2 focus-visible:ring-ring',
         this.resizable.direction === 'vertical'
           ? 'h-1.5 w-full cursor-row-resize'
           : 'h-full w-1.5 cursor-col-resize',
+        /* La poignée fait 6 px ; sa zone de saisie en fait 24 (WCAG 2.5.8),
+           par un pseudo-élément qui déborde sur les panneaux sans les
+           décaler. */
+        "before:absolute before:content-['']",
+        this.resizable.direction === 'vertical'
+          ? 'before:inset-x-0 before:-inset-y-2.5'
+          : 'before:inset-y-0 before:-inset-x-2.5',
         this.resizable.dragging ? 'bg-muted-foreground' : '',
       );
     },

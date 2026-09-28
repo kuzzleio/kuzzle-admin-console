@@ -7,7 +7,7 @@
     <Button
       :aria-expanded="open ? 'true' : 'false'"
       :aria-label="`Collections of index ${index.name}`"
-      class="size-5 align-middle"
+      class="size-6 align-middle"
       :data-cy="`IndexBranch-toggle--${index.name}`"
       size="icon"
       variant="ghost"

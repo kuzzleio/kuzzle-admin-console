@@ -50,7 +50,7 @@
       />
     </div>
     <div class="grid grid-cols-12 gap-4">
-      <div class="col-span-8 h-150">
+      <div class="col-span-12 h-96 md:col-span-8 md:h-150">
         <l-map ref="map" data-cy="mapView-map" @ready="onMapReady">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
@@ -100,7 +100,7 @@
           </div>
         </l-map>
       </div>
-      <div class="col-span-4">
+      <div class="col-span-12 md:col-span-4">
         <Card
           v-if="currentDocument"
           class="h-150 gap-3 py-4"
@@ -141,13 +141,7 @@
             </div>
           </CardHeader>
           <CardContent class="min-h-0 grow px-4">
-            <pre
-              v-json-formatter="{
-                content: currentDocument,
-                open: true,
-              }"
-              class="json-formatter m-0 h-full overflow-auto"
-            />
+            <JsonTree class="m-0 h-full overflow-auto" :value="currentDocument" />
           </CardContent>
         </Card>
         <Card
@@ -186,14 +180,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import JsonFormatter from '@/directives/json-formatter.directive';
 import { useAuthStore } from '@/stores';
 
+import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 
 export default {
   name: 'ViewMap',
   components: {
+    JsonTree,
     Button,
     Card,
     CardContent,
@@ -209,9 +204,6 @@ export default {
     SelectItem,
     SelectTrigger,
     SelectValue,
-  },
-  directives: {
-    JsonFormatter,
   },
   props: {
     currentPageSize: {

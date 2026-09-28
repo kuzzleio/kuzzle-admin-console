@@ -60,7 +60,7 @@
       </div>
     </div>
     <div v-show="expanded" :id="contentId" class="DocumentListItem-content mt-2 pl-8">
-      <pre v-json-formatter="{ content: formattedDocument, open: true }" class="text-base" />
+      <JsonTree :value="formattedDocument" />
     </div>
   </li>
 </template>
@@ -74,20 +74,19 @@ import { mapState } from 'pinia';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import JsonFormatter from '@/directives/json-formatter.directive';
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
 import { useAuthStore } from '@/stores';
 import { dateFromTimestamp } from '@/utils';
 
+import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
+
 export default {
   name: 'DocumentListItem',
   components: {
+    JsonTree,
     Badge,
     Button,
     Checkbox,
-  },
-  directives: {
-    JsonFormatter,
   },
   props: {
     autoSync: Boolean,

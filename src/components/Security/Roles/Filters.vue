@@ -1,7 +1,7 @@
 <template>
   <Card class="RolesFilters" data-cy="RolesFilters">
     <CardContent class="flex flex-wrap items-center gap-2">
-      <div class="RolesFilters-searchBar flex min-w-0 flex-1 items-center gap-2">
+      <div class="RolesFilters-searchBar flex min-w-48 flex-1 items-center gap-2">
         <i class="RolesFilters-searchIcon fa fa-search text-muted-foreground" aria-hidden="true" />
         <TagsInput v-model="controllers" class="min-w-0 flex-1">
           <TagsInputItem v-for="controller of controllers" :key="controller" :value="controller">

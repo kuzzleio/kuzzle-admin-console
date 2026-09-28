@@ -51,6 +51,23 @@ describe('API Actions - query', function() {
     .should('contain', '"status": 200')
   })
 
+  it('Should run and save the query from the keyboard', () => {
+    cy.waitOverlay()
+    cy.visit(`/#/api-action`)
+    cy.title().should('contain', 'API Action')
+    cy.aceReady('[data-cy="api-actions-query-JSONEditor-0"]')
+    cy.get('[data-cy="api-actions-controller-input-0"]').type('server')
+    cy.get('[data-cy="api-actions-action-input-0"]').type('now')
+    // Ctrl + Entrée depuis l'éditeur : la requête part sans passer par le
+    // bouton.
+    cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
+    .type('{ctrl}{enter}', { force: true })
+    cy.get('[data-cy="api-actions-response-status-0"]').should('contain', '200')
+    cy.get('[data-cy="api-actions-query-JSONEditor-0"] textarea.ace_text-input')
+    .type('{ctrl}s', { force: true })
+    cy.get('[data-cy="api-actions-modal-name-input"]').should('be.visible')
+  })
+
   it('Should be able to set query controller using input', () => {
     cy.waitOverlay()
     cy.visit(`/#/api-action`)
@@ -127,6 +144,22 @@ describe('API Actions - tabs and save', function() {
     cy.get('[role="tab"]').should('have.length', 1)
     cy.get('[data-cy="api-actions-tab-plus"]').click()
     cy.get('[role="tab"]').should('have.length', 2)
+  })
+
+  it('Should close a tab with the mouse or the keyboard', () => {
+    cy.waitOverlay()
+    cy.visit(`/#/api-action`)
+    cy.get('[data-cy="api-actions-tab-plus"]').click()
+    cy.get('[data-cy="api-actions-tab-plus"]').click()
+    cy.get('[role="tab"]').should('have.length', 3)
+    // Aucun contrôle focalisable dans un onglet : la croix est réservée à la
+    // souris, Suppr ferme l'onglet au clavier.
+    cy.get('[role="tab"] button, [role="tab"] [tabindex]').should('not.exist')
+    cy.get('[data-cy="api-actions-tab-close-2"]').click()
+    cy.get('[role="tab"]').should('have.length', 2)
+    cy.get('[data-cy="api-actions-tab-1"]').focus().type('{del}')
+    cy.get('[role="tab"]').should('have.length', 1)
+    cy.focused().should('have.attr', 'data-cy', 'api-actions-tab-0')
   })
 
   it('Should persist query by tabs', () => {

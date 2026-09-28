@@ -12,6 +12,7 @@ import Login from '../components/Login.vue';
 import ResetPassword from '../components/ResetPassword.vue';
 import SecurityLayout from '../components/Security/Layout.vue';
 import Signup from '../components/Signup.vue';
+import { pageTitle } from '../services/pageTitle';
 import telemetryCookies from '../services/telemetryCookies';
 import type { Logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
@@ -181,6 +182,8 @@ export default function createRoutes(log: Logger) {
 
   const analytics = new KeplerCompanion();
   router.afterEach((to, _) => {
+    document.title = pageTitle(to, useKuzzleStore().currentEnvironment?.name);
+
     const shouldAddTelemetry = !(
       telemetryCookies.get() === null || telemetryCookies.get() === 'false'
     );

@@ -1,8 +1,14 @@
 <template>
-  <ResizablePanelGroup class="DataLayout" @resize="saveNewPaneSize">
+  <!--
+    Sous `md`, l'arbre passe au-dessus du contenu, sur une hauteur bornée :
+    côte à côte, ses 252 px ne laissaient qu'une centaine de pixels au contenu
+    d'un écran de 375. La largeur choisie à la poignée passe par
+    `--pane-size`, qu'une classe `md:` est seule à lire.
+  -->
+  <ResizablePanelGroup class="DataLayout flex-col md:flex-row" @resize="saveNewPaneSize">
     <ResizablePanel
-      class="DataLayout-sidebarWrapper z-1 h-full min-w-[var(--sidebar-width)] overflow-auto bg-muted"
-      :style="paneSize ? { width: paneSize } : undefined"
+      class="DataLayout-sidebarWrapper z-1 max-h-[35vh] shrink-0 overflow-auto bg-muted md:h-full md:max-h-none md:w-(--pane-size) md:min-w-[var(--sidebar-width)]"
+      :style="paneSize ? { '--pane-size': paneSize } : undefined"
       data-cy="DataLayout-sidebarWrapper"
     >
       <treeview
@@ -10,8 +16,14 @@
         :collection-name="$route.params.collectionName"
       />
     </ResizablePanel>
-    <ResizableHandle data-cy="sidebarResizer" label="Resize the index tree" />
-    <ResizablePanel class="DataLayout-contentWrapper h-full grow overflow-auto p-6">
+    <ResizableHandle
+      class="hidden md:flex"
+      data-cy="sidebarResizer"
+      label="Resize the index tree"
+    />
+    <ResizablePanel
+      class="DataLayout-contentWrapper min-h-0 flex-1 overflow-auto p-4 md:h-full md:p-6"
+    >
       <!--
         `b-overlay` avec `opacity="0"` ne servait qu'à centrer une roue de
         chargement : son voile était transparent, et le contenu qu'il

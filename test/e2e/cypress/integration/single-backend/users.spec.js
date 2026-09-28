@@ -656,6 +656,8 @@ describe('Users', function() {
       .contains('credentials:')
       .next()
       .should('not.contain', 'local:')
-      .should('have.class', 'json-formatter-empty')
+      // `JsonTree` (ADR-0053) rend un objet vide `{}`, dans une classe à lui ;
+      // `json-formatter-empty` était celle de `json-formatter-js`.
+      .should('have.class', 'JsonTree-empty')
   })
 })

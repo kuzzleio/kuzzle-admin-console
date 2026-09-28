@@ -43,7 +43,7 @@
     </div>
 
     <div v-show="expanded" class="RoleItem-content ms-3 mt-3">
-      <pre v-json-formatter="{ content: document, open: true }" />
+      <JsonTree :value="document" />
     </div>
   </div>
 </template>
@@ -53,17 +53,16 @@ import { mapState } from 'pinia';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import jsonFormatter from '@/directives/json-formatter.directive';
 import { useAuthStore } from '@/stores';
+
+import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 
 export default {
   name: 'RoleItem',
   components: {
+    JsonTree,
     Button,
     Checkbox,
-  },
-  directives: {
-    jsonFormatter,
   },
   props: {
     document: Object,

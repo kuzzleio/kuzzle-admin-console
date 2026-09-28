@@ -16,6 +16,7 @@ describe('Collection management', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/create`)
     cy.contains('Create a new collection')
+    cy.get('[data-cy="CollectionCreateOrUpdate-jsonEditor--dangerIcon"]').should('not.exist')
 
     cy.get('[data-cy="CollectionCreateOrUpdate-name"] input').type(' ', {
       force: true
@@ -51,8 +52,21 @@ describe('Collection management', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(`SuM UNV4L1d jayZON Kood`)
 
+    // Le JSON invalide est refusé ET le formulaire le dit (#1027, porté de
+    // #1092) : avant, le bouton semblait ne rien faire.
+    let createRequestCount = 0
+    cy.intercept('**/testindex/validcoll*', () => {
+      createRequestCount += 1
+    })
     cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click()
+    cy.get('[data-cy="CollectionCreateOrUpdate-jsonEditor--dangerIcon"]')
+      .should('be.visible')
+      .and('have.attr', 'role', 'alert')
+      .and('contain.text', 'Invalid JSON')
     cy.shouldStayOn(`#/data/${indexName}/create`)
+    cy.then(() => {
+      expect(createRequestCount).to.equal(0)
+    })
   })
 
   it('Should be able to create a collection and access it', function() {

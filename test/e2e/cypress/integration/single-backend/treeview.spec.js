@@ -20,6 +20,8 @@ describe('Treeview', () => {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    // Le titre du document dit la page, pas seulement la connexion (2.4.2).
+    cy.title().should('match', new RegExp(`^${indexName}/${collectionName} — `))
 
     cy.get(`[data-cy=Treeview-item-index--${indexName}]`).click()
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).should('be.visible')
@@ -48,6 +50,20 @@ describe('Treeview', () => {
 
     cy.get('[data-cy=Treeview-filter]').type(`{selectall}${indexes[0]}`)
     cy.get(`[data-cy=Treeview-item-index--${indexes[0]}]`).should('be.visible')
+  })
+
+  // Sous `md`, l'arbre passe au-dessus du contenu : côte à côte, il ne
+  // laissait qu'une centaine de pixels au contenu d'un écran de 375 (G-081).
+  it('Should stack the LeftBar above the content on a narrow screen', () => {
+    cy.viewport(375, 800)
+    cy.visit(`/#/data/`)
+    cy.get('[data-cy=sidebarResizer]').should('not.be.visible')
+    cy.get('.DataLayout-contentWrapper')
+      .invoke('outerWidth')
+      .should('be.gte', 360)
+    cy.get('[data-cy=DataLayout-sidebarWrapper]')
+      .invoke('outerWidth')
+      .should('be.gte', 360)
   })
 
   it('Should be able to resize the LeftBar', () => {

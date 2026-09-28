@@ -7,25 +7,20 @@
         :content="JSON.stringify(value, null, 2) || '{}'"
         @change="onChange"
       />
-      <pre
-        v-json-formatter="{ content: schema.mapping, open: true }"
-        class="mb-0 overflow-auto lg:w-4/12"
-      />
+      <JsonTree class="mb-0 overflow-auto lg:w-4/12" :value="schema.mapping" />
     </CardContent>
   </Card>
 </template>
 
 <script>
 import { Card, CardContent } from '@/components/ui/card';
-import JsonFormatter from '@/directives/json-formatter.directive';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
+import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 
 export default {
-  directives: {
-    JsonFormatter,
-  },
   components: {
+    JsonTree,
     Card,
     CardContent,
     JsonEditor,

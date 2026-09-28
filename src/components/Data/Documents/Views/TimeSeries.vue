@@ -1,7 +1,7 @@
 <template>
   <div class="TimeSeriesView" data-cy="TimeSeriesView-container">
     <div v-if="isChartViewAvailable" class="grid grid-cols-12 gap-4">
-      <Card class="col-span-3 py-4">
+      <Card class="col-span-12 py-4 md:col-span-3">
         <CardContent class="flex flex-col gap-4 px-4">
           <PerPageSelector
             :current-page-size="currentPageSize"
@@ -54,7 +54,7 @@
           </form>
         </CardContent>
       </Card>
-      <div class="col-span-9 h-full">
+      <div class="col-span-12 h-full min-h-96 md:col-span-9">
         <VueApexCharts
           v-show="customNumberFields.length"
           ref="Chart"

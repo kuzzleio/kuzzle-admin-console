@@ -1,8 +1,9 @@
 <template>
-  <ResizablePanelGroup class="ApiActionLayout" @resize="saveNewPaneSize">
+  <!-- Sous `md`, la liste passe au-dessus des onglets, comme l'arbre de Data. -->
+  <ResizablePanelGroup class="ApiActionLayout flex-col md:flex-row" @resize="saveNewPaneSize">
     <ResizablePanel
-      class="DataLayout-sidebarWrapper h-full overflow-auto"
-      :style="paneSize ? { width: paneSize } : { width: 'var(--sidebar-width)' }"
+      class="DataLayout-sidebarWrapper max-h-[35vh] shrink-0 overflow-auto md:h-full md:max-h-none md:w-(--pane-size)"
+      :style="{ '--pane-size': paneSize || 'var(--sidebar-width)' }"
       data-cy="DataLayout-sidebarWrapper"
     >
       <QueryList
@@ -13,11 +14,17 @@
       />
     </ResizablePanel>
 
-    <ResizableHandle data-cy="sidebarResizer" label="Resize the saved queries list" />
+    <ResizableHandle
+      class="hidden md:flex"
+      data-cy="sidebarResizer"
+      label="Resize the saved queries list"
+    />
 
-    <ResizablePanel class="DataLayout-contentWrapper h-full flex-1 overflow-auto p-4">
-      <Card v-if="!loading" class="h-full">
-        <Tabs v-model="currentTab" class="h-full min-h-0">
+    <ResizablePanel
+      class="DataLayout-contentWrapper min-h-0 flex-1 overflow-auto p-2 md:h-full md:p-4"
+    >
+      <Card v-if="!loading" class="md:h-full">
+        <Tabs v-model="currentTab" class="min-h-0 md:h-full">
           <!--
             `b-tabs` avait un slot `#tabs-end` pour le bouton « + ». La
             primitive n'en a pas : la barre et le bouton sont composés ici,
@@ -34,23 +41,27 @@
                 v-for="(tabContent, tabIdx) of tabs"
                 :key="`query-${tabIdx}-${tabContent.name}`"
                 :data-cy="`api-actions-tab-${tabIdx}`"
+                aria-keyshortcuts="Delete"
                 :title="tabContent.name"
                 :value="String(tabIdx)"
+                @keydown.delete.prevent="closeTabFromKeyboard(tabIdx)"
               >
                 <span class="max-w-40 truncate">{{ formatTabName(tabContent) }}</span>
                 <!--
-                  Fermer un onglet était une icône dans le titre : un `<i>`
-                  cliquable posé dans un lien. C'est un bouton à côté.
+                  Un bouton de fermeture dans l'onglet serait un contrôle
+                  imbriqué dans un autre (`nested-interactive`), et un bouton à
+                  côté serait un enfant du `tablist` qui n'est pas un onglet.
+                  La croix est donc réservée à la souris ; au clavier, Suppr
+                  ferme l'onglet, comme le prévoit le motif ARIA du *tablist*,
+                  et `aria-keyshortcuts` l'annonce.
                 -->
                 <span
-                  :aria-label="`Close the tab ${tabContent.name}`"
-                  class="cursor-pointer opacity-60 hover:opacity-100"
-                  role="button"
-                  tabindex="0"
+                  aria-hidden="true"
+                  class="-mr-1 inline-flex size-6 items-center justify-center rounded-sm opacity-60 hover:bg-muted hover:opacity-100"
+                  :data-cy="`api-actions-tab-close-${tabIdx}`"
                   @click.stop="closeTab(tabIdx)"
-                  @keydown.enter.stop.prevent="closeTab(tabIdx)"
                 >
-                  <i class="fas fa-times" aria-hidden="true" />
+                  <i class="fas fa-times" />
                 </span>
               </TabsTrigger>
             </TabsList>
@@ -246,6 +257,16 @@ export default {
         this.currentTabIdx = this.currentTabIdx - 1;
       }
       this.tabs.splice(tabIdx, 1);
+    },
+    /* L'onglet fermé avait le focus : il passe à celui qui prend sa place,
+       ou au bouton « + » s'il n'en reste aucun. */
+    async closeTabFromKeyboard(tabIdx) {
+      this.closeTab(tabIdx);
+      await this.$nextTick();
+      const target = this.tabs.length
+        ? `[data-cy="api-actions-tab-${this.currentTabIdx}"]`
+        : '[data-cy="api-actions-tab-plus"]';
+      this.$el.querySelector(target)?.focus();
     },
     deleteSavedQuery(savedQueryIdx) {
       const tabIdx = this.tabs.findIndex((t) => t.savedIdx === savedQueryIdx);

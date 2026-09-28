@@ -46,6 +46,7 @@ describe('Roles', () => {
     cy.waitOverlay()
     cy.visit('/#/security/roles/create')
     cy.contains('Create a new role')
+    cy.get('[data-cy="RoleCreateOrUpdate-jsonEditor--dangerIcon"]').should('not.exist')
 
     cy.get('[data-cy="RoleCreateOrUpdate-createBtn"]').click()
     cy.invalidFeedback('[data-cy="RoleCreateOrUpdate-id"]').should(
@@ -89,8 +90,21 @@ describe('Roles', () => {
       .clear({ force: true })
       .type(`SuM UNV4L1d jayZON Kood`)
 
+    // Le JSON invalide est refusé ET le formulaire le dit (#1027, porté de
+    // #1092) : avant, le bouton semblait ne rien faire.
+    let createRequestCount = 0
+    cy.intercept('**/roles/valid*', () => {
+      createRequestCount += 1
+    })
     cy.get('[data-cy=RoleCreateOrUpdate-createBtn]').click()
+    cy.get('[data-cy="RoleCreateOrUpdate-jsonEditor--dangerIcon"]')
+      .should('be.visible')
+      .and('have.attr', 'role', 'alert')
+      .and('contain.text', 'Invalid JSON')
     cy.shouldStayOn('#/security/roles/create')
+    cy.then(() => {
+      expect(createRequestCount).to.equal(0)
+    })
   })
 
   it('Should be able to create a new role', () => {

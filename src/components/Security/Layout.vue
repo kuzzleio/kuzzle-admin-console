@@ -1,7 +1,8 @@
 <template>
-  <div class="SecurityLayout flex h-full flex-row flex-nowrap">
+  <!-- Sous `md`, les sections passent en ligne au-dessus du contenu. -->
+  <div class="SecurityLayout flex h-full flex-col flex-nowrap md:flex-row">
     <div
-      class="SecurityLayout-sidebarWrapper z-1 h-full min-w-[var(--sidebar-width)] overflow-auto bg-muted pt-4"
+      class="SecurityLayout-sidebarWrapper z-1 shrink-0 overflow-auto bg-muted py-1 md:h-full md:min-w-[var(--sidebar-width)] md:py-0 md:pt-4"
       data-cy="SecurityLayout-sidebarWrapper"
     >
       <!--
@@ -9,7 +10,7 @@
         navigation, lui, n'était porté par rien : c'est le `<nav>` qui le dit.
       -->
       <nav aria-label="Security sections">
-        <ul class="flex list-none flex-col pl-0">
+        <ul class="flex list-none flex-row flex-wrap pl-0 md:flex-col">
           <li v-for="section of visibleSections" :key="section.route">
             <router-link
               class="flex items-center gap-2 px-4 py-2 text-foreground hover:bg-accent hover:text-accent-foreground"
@@ -25,7 +26,7 @@
         </ul>
       </nav>
     </div>
-    <div class="SecurityLayout-contentWrapper h-full grow overflow-auto p-6">
+    <div class="SecurityLayout-contentWrapper min-h-0 flex-1 overflow-auto p-4 md:h-full md:p-6">
       <router-view />
     </div>
   </div>

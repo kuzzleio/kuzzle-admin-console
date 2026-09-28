@@ -382,6 +382,10 @@ describe('Environments', function() {
       .click()
 
     cy.get('[data-cy="Environment-SubmitButton"]').click()
+    // La création redirige vers `/login` : un clic sur le sélecteur avant la
+    // fin de la redirection ouvre un menu que la page emporte avec elle
+    // (G-084). On attend la page d'arrivée.
+    cy.url().should('contain', 'login')
     cy.get('[data-cy="EnvironmentSwitch"]').should('be.visible').click()
 
     cy.get(
