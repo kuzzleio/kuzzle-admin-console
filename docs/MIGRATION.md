@@ -3638,4 +3638,5 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-28 | `moment` retiré sans successeur : cinq fonctions sur `Date` dans `src/lib/date.ts`, formats identiques | [ADR-0052](adr/0052-dates-natives-plutot-que-moment.md) |
 | 2026-09-28 | `json-formatter-js` et `v-json-formatter` remplacés par un composant `JsonTree` (clavier, tokens, pas de style injecté) | [ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md) |
 | 2026-09-28 | Le vrai shadcn-vue, famille par famille : CLI puis report de la DA, comportement de `reka-ui`, écarts nommés (Font Awesome, `Checkbox`/`Switch` natifs, `Form`, `FileInput`) | [ADR-0054](adr/0054-vrai-shadcn-vue.md) |
+| 2026-09-28 | Barre de session en haut à droite : l'utilisateur reste visible rail replié, ses profils et « Log out » dans son menu | [ADR-0055](adr/0055-barre-de-session.md) |
 | 2026-09-28 | Gestion de session : surveillance armée à chaque ouverture (identifiants compris), vérification au retour sur l'onglet, rafraîchissement unique entre onglets, session perdue sur place dans la popup | [ADR-0057](adr/0057-gestion-de-session.md) |

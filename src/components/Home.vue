@@ -21,15 +21,18 @@
       />
     </div>
 
-    <main
-      id="main"
-      class="Home-routeWrapper min-w-0 grow overflow-hidden outline-none"
-      data-cy="App-loggedIn"
-      tabindex="-1"
-    >
-      <main-spinner v-if="authInitializing" />
-      <router-view v-else />
-    </main>
+    <div class="flex min-h-0 min-w-0 grow flex-col">
+      <session-bar />
+      <main
+        id="main"
+        class="Home-routeWrapper min-h-0 min-w-0 grow overflow-hidden outline-none"
+        data-cy="App-loggedIn"
+        tabindex="-1"
+      >
+        <main-spinner v-if="authInitializing" />
+        <router-view v-else />
+      </main>
+    </div>
 
     <!--
       Monté à l'ouverture seulement : la session expire le plus souvent
@@ -61,6 +64,7 @@ import { useAuthStore, useKuzzleStore } from '@/stores';
 import LoginForm from './Common/Login/Form.vue';
 import MainMenu from './Common/MainMenu.vue';
 import MainSpinner from './Common/MainSpinner.vue';
+import SessionBar from './Common/SessionBar.vue';
 
 export default {
   name: 'Home',
@@ -72,6 +76,7 @@ export default {
     LoginForm,
     MainMenu,
     MainSpinner,
+    SessionBar,
   },
   setup() {
     return {

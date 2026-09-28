@@ -317,6 +317,19 @@ describe('Captures v4 / v5', () => {
     shot('C21-feedback-menu')
   })
 
+  // Rail replié : l'utilisateur reste lisible dans la barre de session
+  // (ADR-0055), et son menu dit ses profils.
+  it('C21b — barre de session, rail replié', () => {
+    openApp('/data')
+    cy.focused().should('have.attr', 'data-cy', 'IndexesPage-filter')
+    cy.get('[data-cy="MainMenu-collapseBtn"]').click()
+    cy.get('[data-cy="SessionBar-user"]').click()
+    cy.get('[data-cy="SessionBar-logoutBtn"]').should('be.visible')
+    shot('C21b-session-bar')
+    cy.get('body').type('{esc}')
+    cy.get('[data-cy="MainMenu-collapseBtn"]').click()
+  })
+
   it('C22 — backend injoignable', () => {
     openApp('/data')
     cy.get('[data-cy="IndexesPage-createBtn"]').should('be.visible')

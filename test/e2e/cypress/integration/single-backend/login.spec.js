@@ -158,7 +158,7 @@ describe('Login', function() {
         `http://localhost:7512/users/${admin.username}/tokens`
       )
 
-      cy.get('[data-cy=MainMenu-logoutBtn]').click()
+      cy.logout()
       cy.url().should('contain', '/#/login')
     })
   })

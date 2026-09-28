@@ -402,7 +402,7 @@ describe('Users', function() {
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
     cy.get('[data-cy=UserItem]').should('contain', '"LOL"')
 
-    cy.get('[data-cy="MainMenu-logoutBtn"]').click()
+    cy.logout()
 
     cy.get('[data-cy="Login-username"]').type(credentials.username)
     cy.get('[data-cy="Login-password"]').type(credentials.password)
@@ -503,7 +503,7 @@ describe('Users', function() {
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
     cy.get('[data-cy=UserItem]').should('contain', '"LOL"')
 
-    cy.get('[data-cy="MainMenu-logoutBtn"]').click()
+    cy.logout()
 
     cy.get('[data-cy="Login-username"]').type(newCredentials.username)
     cy.get('[data-cy="Login-password"]').type(newCredentials.password)
