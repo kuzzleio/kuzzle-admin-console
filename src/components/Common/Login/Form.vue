@@ -164,12 +164,12 @@ export default {
             'plugin.kuzzle-plugin-auth-passport-local.must_change_password',
           ].includes(err.id)
         ) {
+          // `showIntro` passe en query : vue-router 4 écarte un paramètre
+          // absent du chemin, et l'avertissement ne s'affichait plus (G-104).
           this.$router.push({
             name: 'ResetPassword',
-            params: {
-              showIntro: true,
-              token: err.resetToken,
-            },
+            params: { token: err.resetToken },
+            query: { showIntro: 'true' },
           });
         } else {
           this.error = err.message;

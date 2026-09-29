@@ -3732,6 +3732,30 @@ Gabarit à copier :
   Le typage l'attrape ; le JavaScript non typé le laissait passer sans bruit.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-104 — Un paramètre de route absent du chemin est écarté en silence
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  `Common/Login/Form.vue` typé. Régression de la phase 3 (vue-router 3 → 4),
+  pas de la v4.
+- **Symptôme** : un compte dont le mot de passe a expiré, ou doit être changé,
+  arrive sur la page de réinitialisation **sans** l'avertissement « You must
+  update your password to continue ». `vue-tsc` refuse `showIntro: true` dans
+  `params` : un paramètre est une chaîne.
+- **Cause** : le formulaire poussait `params: { showIntro: true, token }` vers
+  `/reset-password/:token`. Depuis vue-router 4.1.4, `resolve` ne garde que les
+  paramètres du chemin (`pickParams` sur `matcher.keys`) ; les autres sont
+  écartés, avec un avertissement en développement seulement. vue-router 3 les
+  transmettait. Aucune spec ne passe par `must_change_password`.
+- **Solution** : l'indicateur passe en query (`?showIntro=true`), et la route
+  le lit par une fonction `props`. Un test visite la page avec et sans.
+- **À retenir** : `params` ne sert qu'aux segments du chemin. Un état à
+  transmettre à la page suivante va en `query` ou en `state`. Plusieurs sites
+  poussent encore des `params` dont le nom ne figure pas dans le chemin cible
+  (`index` / `collection` là où la route attend `indexName` /
+  `collectionName`) : ils ne marchent que parce que les paramètres courants
+  sont repris. À relire dans leur lot.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

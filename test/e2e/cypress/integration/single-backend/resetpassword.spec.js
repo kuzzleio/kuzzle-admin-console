@@ -48,4 +48,20 @@ describe('Reset Password', () => {
       'Passwords do not match'
     )
   })
+
+  it('Should warn that the password must be updated when sent from the login form', () => {
+    cy.initLocalEnv()
+    // Ce que pousse le formulaire de connexion sur `must_change_password` :
+    // l'indicateur passait en paramètre de route, que vue-router 4 écarte
+    // (G-104).
+    cy.visit('/#/reset-password/anonymous?showIntro=true')
+    cy.get('[data-cy=resetPasswordAlert]').should(
+      'contain',
+      'You must update your password'
+    )
+
+    cy.visit('/#/reset-password/anonymous')
+    cy.get('[data-cy=ResetPassword-password]').should('be.visible')
+    cy.get('[data-cy=resetPasswordAlert]').should('not.exist')
+  })
 })
