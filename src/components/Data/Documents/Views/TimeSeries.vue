@@ -250,35 +250,34 @@ export default {
       if (!this.customNumberFields.length) {
         return;
       }
-      this.series = [];
-      this.chartOptions.colors = [];
-      for (const item of this.customNumberFields) {
-        this.chartOptions.colors.push(item.color);
-      }
 
-      const series = [];
-      for (const field of this.customNumberFields) {
-        const serie = {
-          name: field.name,
-          data: [],
-        };
-        for (const doc of this.documents) {
-          const timestamp = _.get(doc, this.customDateField, null);
-          const date = dateFromTimestamp(timestamp);
+      /*
+       * Une recherche renvoie des `{ _id, _source }` : les champs sont sous
+       * `_source`. Lus sur le document lui-même, ils valaient tous `null`, et
+       * aucun point n'était tracé.
+       *
+       * Les abscisses sont construites une fois, pour toutes les séries : elles
+       * s'ajoutaient auparavant à chaque série et à chaque mise à jour.
+       */
+      const points = [];
+      for (const doc of this.documents) {
+        const date = dateFromTimestamp(_.get(doc._source, this.customDateField, null));
 
-          if (date == null) {
-            continue;
-          }
-
-          serie.data.push(_.get(doc, field.name, ''));
-          this.chartOptions.xaxis.categories.push(date.toLocaleString('en-GB'));
+        if (date !== null) {
+          points.push({ date, source: doc._source });
         }
-        series.push(serie);
       }
+
+      this.chartOptions.colors = this.customNumberFields.map((field) => field.color);
+      this.chartOptions.xaxis.categories = points.map(({ date }) => date.toLocaleString('en-GB'));
+
       if (this.$refs.Chart) {
         this.$refs.Chart.updateOptions(this.chartOptions);
       }
-      this.series = series;
+      this.series = this.customNumberFields.map((field) => ({
+        name: field.name,
+        data: points.map(({ source }) => _.get(source, field.name, null)),
+      }));
     },
     saveToLocalStorage() {
       if (this.index && this.collection) {
