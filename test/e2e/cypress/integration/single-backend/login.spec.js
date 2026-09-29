@@ -361,16 +361,17 @@ describe('Telemetry', function() {
   })
 
   // Le bandeau attend un choix : pas de croix pour le fermer sans répondre
-  // (E-09). Répondre le retire.
+  // (E-09). Répondre le retire. Les sélecteurs sont ceux de `vue-sonner`
+  // (ADR-0058) ; `data-close-button` est bien rendu sur un toast qui se ferme.
   it('Should ask for a telemetry choice without a close button', () => {
     cy.clearCookie('telemetry')
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('[data-slot="toast"]', 'Usage telemetry')
+    cy.contains('[data-sonner-toast]', 'Usage telemetry')
       .should('be.visible')
-      .find('[data-slot="toast-close"]')
+      .find('[data-close-button]')
       .should('not.exist')
-    cy.contains('[data-slot="toast"] button', 'Disable telemetry').click()
+    cy.contains('[data-sonner-toast] button', 'Disable telemetry').click()
     cy.contains('Usage telemetry').should('not.exist')
   })
 
@@ -396,7 +397,7 @@ describe('No administrator warning', function() {
     })
     cy.setCookie('telemetry', '"false"')
     cy.visit('/#/data')
-    cy.contains('[data-slot="toast"]', 'Your Kuzzle has no administrator user')
+    cy.contains('[data-sonner-toast]', 'Your Kuzzle has no administrator user')
       .as('toast')
       .should('be.visible')
     cy.get('@toast')

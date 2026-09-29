@@ -93,6 +93,7 @@ pour un motif que l'amont traite par `as-child`.
 | `TagsInput` : `add-on-blur`, pas de coupe à la virgule et saisie sans espaces autour par défaut ; `TagsInputItem` porte la valeur en `title` ; `TagsInputItemDelete` se nomme « Remove … » | Le comportement de la primitive précédente : une valeur coupée en deux est un piège silencieux. `reka-ui` nomme le bouton de retrait par le seul texte de l'étiquette (G-098) |
 | `ResizableHandle` : une barre de 6 px et un trait pour poignée, pas le filet d'1 px ni `GripVertical` ; zone de saisie de 24 px par `hit-area-margins` ; `aria-orientation` posée | La DA et WCAG 2.5.8, comme la primitive précédente. `reka-ui` ne pose pas `aria-orientation`, et un `separator` sans elle est annoncé horizontal |
 | `Toast` : décidé dans son propre lot | Passer à `vue-sonner` garde-t-il les erreurs persistantes, les actions et le toast hors ligne ? Si non, une ADR le dira |
+| `Toaster` sur `vue-sonner` : icônes Font Awesome, `rich-colors` aux teintes de la DA, `--z-toast`, thème de `useTheme` | Décidé par [ADR-0058](0058-toasts-sur-vue-sonner.md), qui sort aussi l'état hors ligne de la pile |
 
 **5. Les `z-index` deviennent des tokens**, comme [ADR-0018](0018-panneaux-flottants-au-dessus-des-modales.md)
 le prévoyait : un pour la modale, un pour ce qui flotte au-dessus, un pour les

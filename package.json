@@ -42,6 +42,7 @@
     "vue-draggable-plus": "0.6.1",
     "vue-multiselect": "3.5.0",
     "vue-router": "4.6.4",
+    "vue-sonner": "^2.0.9",
     "vue3-apexcharts": "1.7.0"
   },
   "devDependencies": {

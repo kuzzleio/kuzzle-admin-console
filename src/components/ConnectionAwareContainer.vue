@@ -27,18 +27,21 @@
       />
     </template>
     <!--
-      Le toast hors-ligne garde son `id` : deux commandes Cypress s'y
-      accrochent, et c'est aussi ce qui le distingue des notifications
-      empilées — il n'y en a qu'un, et il dit l'état de la connexion.
+      L'état de la connexion n'est pas une notification : il ne dit pas qu'un
+      événement a eu lieu, il dure tant que la coupure dure. C'est un bandeau,
+      hors de la pile des toasts (ADR-0058). Il garde son `id` : deux
+      commandes Cypress s'y accrochent. Sa teinte est mêlée à `card`, comme
+      celle d'un toast : il flotte au-dessus du contenu (E-03).
     -->
-    <ToastViewport v-if="offlineVisible" label="Connection status" position="top-center">
-      <Toast id="offline-toast" variant="warning">
-        <ToastTitle>Offline</ToastTitle>
-        <ToastDescription>
-          It looks like your Kuzzle instance is currently unreachable
-        </ToastDescription>
-      </Toast>
-    </ToastViewport>
+    <Alert
+      v-if="offlineVisible"
+      id="offline-toast"
+      class="fixed top-4 left-1/2 z-(--z-toast) w-auto max-w-[calc(100vw-2rem)] -translate-x-1/2 bg-[color-mix(in_oklab,var(--color-warning)_15%,var(--color-card))] shadow-menu"
+      variant="warning"
+    >
+      <p class="m-0 font-semibold">Offline</p>
+      <p class="m-0">It looks like your Kuzzle instance is currently unreachable</p>
+    </Alert>
   </div>
 </template>
 
@@ -47,7 +50,7 @@ import { mapState } from 'pinia';
 
 import { pageTitle } from '../services/pageTitle';
 import { antiGlitchOverlayTimeout } from '../utils';
-import { Toast, ToastDescription, ToastTitle, ToastViewport } from '@/components/ui/toast';
+import { Alert } from '@/components/ui/alert';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import OfflineSpinner from './Common/Offline.vue';
@@ -56,12 +59,9 @@ import ErrorPage from './Error/KuzzleErrorPage.vue';
 export default {
   name: 'ConnectionAwareContainer',
   components: {
+    Alert,
     ErrorPage,
     OfflineSpinner,
-    Toast,
-    ToastDescription,
-    ToastTitle,
-    ToastViewport,
   },
   setup() {
     return {

@@ -11,9 +11,9 @@ import { useToasterStore, type PushToastOptions } from '@/stores';
  * événement, pas rendu par un état, et c'est le seul cas où ADR-0010 ne
  * s'applique pas.
  *
- * Le plugin ne fait que déléguer au store, qui garde la liste. En phase 4, un
- * composant en Composition API appellera `useToasterStore()` directement et ce
- * fichier pourra partir.
+ * Le plugin ne fait que déléguer au store, qui passe à `vue-sonner`
+ * (ADR-0058). En phase 4, un composant en Composition API appellera
+ * `useToasterStore()` directement et ce fichier pourra partir.
  *
  * L'installation passe par `app.config.globalProperties` : `Vue.prototype` est
  * un état global au paquet `vue`, partagé par toutes les applications du
