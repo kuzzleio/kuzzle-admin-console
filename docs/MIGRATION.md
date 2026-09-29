@@ -3915,6 +3915,25 @@ Gabarit à copier :
   rechargement (un marqueur posé sur `window` doit survivre).
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-113 — Supprimer un rôle coché laissait la ligne suivante cochée, depuis 2016
+
+- **Contexte** : lot 6 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  lecture de `Security/Roles/List.vue` avant conversion.
+- **Symptôme** : on coche un rôle, on le supprime par sa corbeille : le rôle
+  qui prend sa place dans la liste apparaît coché, sans être sélectionné, et
+  « Delete selected » reste actif sur un rôle qui n'existe plus.
+- **Cause** : la liste indexait ses lignes par `document.id` (`:key`,
+  `isChecked`). Un rôle du SDK v7 n'a que `_id` : toutes les lignes avaient la
+  clé `undefined`, et Vue les réutilisait par position, avec l'état local de
+  leur case. La sélection, elle, ne perdait jamais le rôle supprimé. Présent
+  depuis `e8265916` (2016), même code sur `4-dev`.
+- **Solution** : les lignes sont indexées par `_id`, et un rôle supprimé sort
+  de la sélection. `roles.spec` coche un rôle, le supprime, et vérifie qu'aucune
+  case ne reste cochée et que le bouton de suppression groupée est inactif.
+- **À retenir** : `Users/List.vue` a le même `document.id` ; à vérifier au lot
+  8 contre la forme de ses documents.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

@@ -44,13 +44,13 @@
           <ul class="RoleList-list flex list-none flex-col gap-2 pl-0">
             <li
               v-for="document in documents"
-              :key="document.id"
+              :key="document._id"
               class="rounded-md border border-border p-2"
               data-cy="RoleList-list"
             >
               <RoleItem
                 :document="document"
-                :is-checked="isChecked(document.id)"
+                :is-checked="isChecked(document._id)"
                 @checkbox-click="toggleSelectDocuments"
                 @common-list::edit-document="editDocument"
                 @delete-document="deleteRole"
@@ -175,6 +175,10 @@ export default {
       this.deleteModalIsLoading = true;
       try {
         await this.wrapper.performDeleteRoles(this.candidatesForDeletion);
+        // Un rôle supprimé sort de la sélection (G-113).
+        this.selectedDocuments = this.selectedDocuments.filter(
+          (id) => !this.candidatesForDeletion.includes(id),
+        );
         this.deleteModalOpen = false;
         this.deleteModalIsLoading = false;
         this.fetchRoles();
