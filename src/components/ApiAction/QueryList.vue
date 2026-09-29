@@ -41,21 +41,55 @@
           </button>
           <Button
             :aria-label="`Delete the query ${query.name}`"
+            :data-cy="`api-actions-delete-query-${query.name}`"
             size="icon"
             variant="ghost"
-            @click="deleteSavedQuery(query)"
+            @click="queryToDelete = query"
           >
             <i class="fas fa-trash" aria-hidden="true" />
           </Button>
         </li>
       </ul>
     </CardContent>
+
+    <!--
+      La confirmation passait par `$bvModal.msgBoxConfirm`, parti avec
+      bootstrap-vue : le bouton levait une erreur et ne supprimait rien (G-109).
+    -->
+    <Dialog :open="queryToDelete !== null" @update:open="onDeleteDialogOpen">
+      <DialogContent data-cy="api-actions-delete-modal">
+        <DialogHeader>
+          <DialogTitle>
+            Api Action <span class="code">{{ queryToDelete?.name }}</span> deletion
+          </DialogTitle>
+        </DialogHeader>
+        <DialogDescription>Please confirm the deletion of the API Action.</DialogDescription>
+        <DialogFooter>
+          <Button variant="outline" @click="queryToDelete = null"> Cancel </Button>
+          <Button
+            data-cy="api-actions-delete-modal-confirm"
+            variant="destructive"
+            @click="deleteSavedQuery"
+          >
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </Card>
 </template>
 
 <script>
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 export default {
   components: {
@@ -63,13 +97,19 @@ export default {
     Card,
     CardContent,
     CardTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
   },
   props: {
     currentQueryName: {},
     savedQueries: {},
   },
   data() {
-    return {};
+    return { queryToDelete: null };
   },
   computed: {
     currentQueryIndex() {
@@ -98,26 +138,14 @@ export default {
     },
   },
   methods: {
-    deleteSavedQuery(query) {
-      this.$bvModal
-        .msgBoxConfirm('Please confirm the deletion of the API Action.', {
-          title: `Api Action ${query.name} deletion`,
-          size: 'md',
-          buttonSize: 'sm',
-          okVariant: 'danger',
-          okTitle: 'YES',
-          cancelTitle: 'NO',
-          footerClass: 'p-2',
-          hideHeaderClose: false,
-        })
-        .then((value) => {
-          if (value) {
-            this.$emit('deleteSavedQuery', query.idx);
-          }
-        })
-        .catch((err) => {
-          this.$log.error(err);
-        });
+    deleteSavedQuery() {
+      this.$emit('deleteSavedQuery', this.queryToDelete.idx);
+      this.queryToDelete = null;
+    },
+    onDeleteDialogOpen(open) {
+      if (!open) {
+        this.queryToDelete = null;
+      }
     },
     loadSavedQuery(savedQueryIdx) {
       this.$emit('loadSavedQuery', savedQueryIdx);

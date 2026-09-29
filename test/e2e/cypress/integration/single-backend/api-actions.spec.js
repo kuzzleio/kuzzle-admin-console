@@ -287,6 +287,35 @@ describe('API Actions - tabs and save', function() {
    );
   })
 
+  it('Should delete a saved query after confirmation', () => {
+    const envName = 'valid'
+    const storedQueries = {
+      [envName]: [
+        {"query":{"controller":"server","action":"now"},"name": "first"},
+        {"query":{"controller":"server","action":"info"},"name": "second"}
+      ]
+    }
+    localStorage.setItem('storedQueries', JSON.stringify(storedQueries))
+    cy.waitOverlay()
+    cy.visit(`/#/api-action`)
+
+    // Annuler garde la requête.
+    cy.get('[data-cy="api-actions-delete-query-first"]').click()
+    cy.get('[data-cy="api-actions-delete-modal"]').contains('Cancel').click()
+    cy.get('[data-cy="api-actions-delete-modal"]').should('not.exist')
+    cy.get('[data-cy="api-actions-saved-query-first"]').should('exist')
+
+    // Confirmer la supprime, de la liste comme du stockage (G-109).
+    cy.get('[data-cy="api-actions-delete-query-first"]').click()
+    cy.get('[data-cy="api-actions-delete-modal-confirm"]').click()
+    cy.get('[data-cy="api-actions-saved-query-first"]').should('not.exist')
+    cy.get('[data-cy="api-actions-saved-query-second"]').should('exist')
+    cy.window().should(window => {
+      const stored = JSON.parse(window.localStorage.getItem('storedQueries'))
+      expect(stored[envName].map(q => q.name)).to.deep.equal(['second'])
+    })
+  })
+
   it('Should be able to persist saved queries by environment', () => {
     const envName = 'valid'
     const envName2 = 'valid2'

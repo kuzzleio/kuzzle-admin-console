@@ -3841,6 +3841,25 @@ Gabarit à copier :
   `payload.backendMajorVersion`.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-109 — Supprimer une requête d'API Action ne faisait rien, depuis le retrait de bootstrap-vue
+
+- **Contexte** : lot 5 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  lecture de `ApiAction/QueryList.vue` avant conversion.
+- **Symptôme** : la corbeille d'une requête sauvegardée ne demande rien et ne
+  supprime rien ; la console affiche `Cannot read properties of undefined
+  (reading 'msgBoxConfirm')`.
+- **Cause** : la confirmation passait par `this.$bvModal.msgBoxConfirm`, l'API
+  impérative de bootstrap-vue. Le recensement d'[ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)
+  (« `$bvModal` n'a plus un seul appel ») a manqué cet appel, et aucune spec ne
+  supprimait de requête. Régression de la phase 2 ; la v4 n'est pas touchée.
+- **Solution** : un `Dialog` dans `QueryList`, ouvert par l'état
+  `queryToDelete` (ADR-0010). `api-actions.spec` annule, puis confirme, et
+  vérifie la liste et le stockage.
+- **À retenir** : une API d'instance (`this.$bvModal`, `this.$toast`) ne se
+  recense pas par les balises. `vue-tsc` l'aurait refusée — c'est ce que les
+  lots d'ADR-0060 font entrer dans son périmètre.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
