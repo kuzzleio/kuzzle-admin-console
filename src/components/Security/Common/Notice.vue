@@ -12,9 +12,7 @@
   </Alert>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
+<script setup lang="ts">
 import { Alert } from '@/components/ui/alert';
 
 /*
@@ -22,10 +20,4 @@ import { Alert } from '@/components/ui/alert';
  * fonctionnels par template (§ 5.2). Le gain de performance était nul ici — un
  * seul rendu par page.
  */
-export default defineComponent({
-  name: 'SecurityNotice',
-  components: {
-    Alert,
-  },
-});
 </script>

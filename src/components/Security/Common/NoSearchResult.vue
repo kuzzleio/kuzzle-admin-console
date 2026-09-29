@@ -19,9 +19,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
+<script setup lang="ts">
 /*
  * L'état « aucun résultat » des trois listes de Security.
  *
@@ -36,7 +34,4 @@ import { defineComponent } from 'vue';
  * propre à chaque écran parce qu'il invite à créer un rôle, un profil ou un
  * utilisateur.
  */
-export default defineComponent({
-  name: 'NoSearchResult',
-});
 </script>

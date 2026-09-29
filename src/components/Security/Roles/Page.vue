@@ -1,7 +1,7 @@
 <template>
   <div class="RolesManagement mx-auto w-full max-w-6xl px-4 pb-12">
     <div class="flex flex-wrap items-start justify-between gap-4">
-      <headline>Roles</headline>
+      <Headline>Roles</Headline>
       <div class="flex flex-wrap gap-2">
         <Button
           data-cy="RolesManagement-revokeAnonymous"
@@ -19,19 +19,19 @@
           `router-link` ignore `disabled` et resterait cliquable (G-016).
         -->
         <Button
-          :as="canCreateRole ? RouterLink : 'button'"
+          :as="authStore.canCreateRole ? RouterLink : 'button'"
           data-cy="RolesManagement-createBtn"
-          :disabled="!canCreateRole"
-          :to="canCreateRole ? { name: 'SecurityRolesCreate' } : undefined"
+          :disabled="!authStore.canCreateRole"
+          :to="authStore.canCreateRole ? { name: 'SecurityRolesCreate' } : undefined"
           >Create Role</Button
         >
       </div>
     </div>
 
-    <list-not-allowed v-if="!canSearchRole" />
+    <ListNotAllowed v-if="!authStore.canSearchRole" />
 
-    <role-list
-      v-if="canSearchRole"
+    <RoleList
+      v-if="authStore.canSearchRole"
       item-name="RoleItem"
       route-create="SecurityRolesCreate"
       route-update="SecurityRolesUpdate"
@@ -43,13 +43,13 @@
             <CardTitle class="font-heading text-headline font-extrabold text-muted-foreground"
               >No role is defined</CardTitle
             >
-            <CardDescription v-if="canCreateRole" class="mt-2 text-muted-foreground">
+            <CardDescription v-if="authStore.canCreateRole" class="mt-2 text-muted-foreground">
               You can create a new role by hitting the button above
             </CardDescription>
           </CardContent>
         </Card>
       </template>
-    </role-list>
+    </RoleList>
 
     <Dialog :open="revokeAnonymousOpen" @update:open="revokeAnonymousOpen = $event">
       <DialogContent data-cy="revokeAnonymous-modal">
@@ -72,10 +72,9 @@
   </div>
 </template>
 
-<script>
-import { markRaw } from 'vue';
-import { mapState } from 'pinia';
-import { RouterLink } from 'vue-router';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { RouterLink, useRouter } from 'vue-router';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -89,78 +88,59 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useToast } from '@/composables/useToast';
+import { caught } from '@/lib/errors';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import RoleList from './List.vue';
 
-export default {
-  name: 'RolesManagement',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CardDescription,
-    CardTitle,
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    ListNotAllowed,
-    RoleList,
-    Headline,
-  },
-  setup() {
-    return {
-      authStore: useAuthStore(),
-    };
-  },
-  data() {
-    return {
-      RouterLink: markRaw(RouterLink),
-      revokeAnonymousOpen: false,
-    };
-  },
-  methods: {
-    async confirmRevokeAnonymous() {
-      this.revokeAnonymousOpen = false;
-      await this.revokeAnonymous();
-    },
-    async revokeAnonymous() {
-      try {
-        await this.$kuzzle.query({
-          controller: 'security',
-          action: 'restrictDefaultRights',
-        });
-        this.$router.go(this.$router.currentRoute);
-      } catch (err) {
-        if (err.status === 404) {
-          this.$toast.warning(
-            'Not supported!',
-            'This action is not supported by your Kuzzle version. You might need to upgrade.',
-          );
-        } else {
-          this.$log.error(err);
-          this.$toast.danger(
-            'Ooops! Something went wrong while revoking Anonymous role.',
-            'The complete error has been printed to the console.',
-          );
-        }
-      }
-    },
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle']),
-    ...mapState(useAuthStore, ['canSearchRole', 'canCreateRole']),
-    displayRevokeAnonymous() {
-      return (
-        this.authStore.adminAlreadyExists &&
-        this.authStore.canEditRole &&
-        this.authStore.canManageRoles &&
-        this.authStore.user?.id !== -1
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const router = useRouter();
+const toast = useToast();
+
+const revokeAnonymousOpen = ref(false);
+
+const displayRevokeAnonymous = computed(
+  () =>
+    authStore.adminAlreadyExists &&
+    authStore.canEditRole &&
+    authStore.canManageRoles &&
+    authStore.user?.id !== -1,
+);
+
+async function revokeAnonymous(): Promise<void> {
+  try {
+    const kuzzle = kuzzleStore.$kuzzle;
+    if (!kuzzle) {
+      throw new Error('No Kuzzle SDK for the current environment');
+    }
+    await kuzzle.query({
+      controller: 'security',
+      action: 'restrictDefaultRights',
+    });
+    // `go()` prend un nombre : la route qu'il recevait valait 0, soit un
+    // rechargement, qui relit les droits. C'est ce qu'il faut ici.
+    router.go(0);
+  } catch (err) {
+    if (caught(err).status === 404) {
+      toast.warning(
+        'Not supported!',
+        'This action is not supported by your Kuzzle version. You might need to upgrade.',
       );
-    },
-  },
-};
+    } else {
+      logger.error(err);
+      toast.danger(
+        'Ooops! Something went wrong while revoking Anonymous role.',
+        'The complete error has been printed to the console.',
+      );
+    }
+  }
+}
+
+async function confirmRevokeAnonymous(): Promise<void> {
+  revokeAnonymousOpen.value = false;
+  await revokeAnonymous();
+}
 </script>

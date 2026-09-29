@@ -918,7 +918,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 3. `Common/` hors `Filters` et `Environments`
   - [x] 4. `Common/Environments`
   - [x] 5. `ApiAction`
-  - [ ] 6. `Security` : `Layout`, `Common`, `Roles`
+  - [x] 6. `Security` : `Layout`, `Common`, `Roles`
   - [ ] 7. `Security/Profiles`
   - [ ] 8. `Security/Users`
   - [ ] 9. `Data` : `Indexes`, `Leftnav`, racine
