@@ -53,7 +53,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0029](0029-declarer-emits-sur-les-evenements-du-dom.md) | Déclarer dans `emits` tout événement qui porte un nom d'événement du DOM | Acceptée |
 | [0030](0030-branche-5-dev-et-deploiement-console-v5.md) | Le chantier déménage sur `5-dev` et se déploie sur console-v5.kuzzle.io | Acceptée |
 | [0031](0031-mode-3-global-et-bibliotheques-vue-2-epinglees.md) | `MODE: 3` global, et les bibliothèques Vue 2 épinglées en `MODE: 2` | Acceptée, les quatre bibliothèques remplacées par [0032](0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) à [0035](0035-selecteur-de-couleur-natif.md) |
-| [0032](0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | Acceptée |
+| [0032](0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md) | `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0 | Remplacée par [0059](0059-apexcharts-7-sans-wrapper.md) |
 | [0033](0033-vue-draggable-plus-remplace-vuedraggable.md) | `vue-draggable-plus` remplace `vuedraggable`, et non `vuedraggable@next` | Acceptée |
 | [0034](0034-vue-multiselect-3-plutot-qu-un-combobox.md) | `vue-multiselect` passe en 3.x, le Combobox shadcn-vue attendra la refonte | Acceptée |
 | [0035](0035-selecteur-de-couleur-natif.md) | `vue-color` cède la place à `<input type="color">` | Acceptée |
@@ -80,6 +80,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0056](0056-theme-sombre-avance.md) | Le thème sombre passe avant la fin de shadcn-vue : jeu dérivé de la DA, mesuré AA, bascule système / clair / sombre dans la barre de session | Acceptée |
 | [0057](0057-gestion-de-session.md) | La session se surveille à chaque ouverture, se prolonge une fois pour tous les onglets, et se perd sur place, dans la popup de reconnexion | Acceptée |
 | [0058](0058-toasts-sur-vue-sonner.md) | Les toasts passent sur `vue-sonner` derrière le store ; l'état hors ligne devient un bandeau, hors de la pile | Acceptée |
+| [0059](0059-apexcharts-7-sans-wrapper.md) | `apexcharts` 7.6.1, et `vue3-apexcharts` remplacé par un composant local : le critère 5 d'ADR-0051 visait la dernière majeure | Acceptée |
 
 ## Gabarit
 

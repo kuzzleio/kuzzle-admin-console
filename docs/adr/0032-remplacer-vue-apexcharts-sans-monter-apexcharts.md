@@ -1,6 +1,6 @@
 # ADR-0032 : `vue3-apexcharts` 1.7.0, et `apexcharts` reste en 3.53.0
 
-- **Statut** : Acceptée
+- **Statut** : Remplacée par [ADR-0059](0059-apexcharts-7-sans-wrapper.md)
 - **Date** : 2026-09-24
 - **Décideurs** : Ricky
 

@@ -55,7 +55,7 @@
         </CardContent>
       </Card>
       <div class="col-span-12 h-full min-h-96 md:col-span-9">
-        <VueApexCharts
+        <ApexChart
           v-show="customNumberFields.length"
           ref="Chart"
           class="h-full w-full"
@@ -97,7 +97,6 @@
 
 <script>
 import _ from 'lodash';
-import VueApexCharts from 'vue3-apexcharts';
 
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -110,6 +109,7 @@ import {
 import { useTheme } from '@/composables/useTheme';
 import { dateFromTimestamp } from '@/utils';
 
+import ApexChart from '@/components/Common/ApexChart.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import TimeSeriesItem from './TimeSeriesItem.vue';
 
@@ -128,6 +128,7 @@ const ES_NUMBER_DATA_TYPE = [
 export default {
   name: 'TimeSeries',
   components: {
+    ApexChart,
     Card,
     CardContent,
     PerPageSelector,
@@ -137,7 +138,6 @@ export default {
     SelectTrigger,
     SelectValue,
     TimeSeriesItem,
-    VueApexCharts,
   },
   props: {
     mapping: {

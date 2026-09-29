@@ -924,7 +924,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
 - [x] 2. Dette de §3.3 : `bluebird`, `moment`, `json-formatter-js`
 - [x] 3. #1092 vérifiée sur `5-dev` : le défaut existait (formulaires de collection, profil et rôle muets sur un JSON invalide), porté avec `FormMessage`
 - [x] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
-- [ ] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3)
+- [x] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3) — `apexcharts` 7.6.1, composant local `ApexChart` ([ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md))
 - [x] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes — avancé avant les lots 5 à 9 du critère 4 ([ADR-0056](adr/0056-theme-sombre-avance.md))
 - [ ] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5)
 - [ ] 8. Revue de sortie : technique, sécurité, livraison (`Dockerfile`, `infra/`, workflows)
@@ -1002,7 +1002,7 @@ lui-même (§ 3.2).
 | ~~`velocity-animate`~~ | **Retiré** — son seul client était `Common/Stepper.vue`, code mort (ADR-0016) | ✅ |
 | ~~`@fortawesome/fontawesome-free`~~ | **Conservé** — le design system Kuzzle en fait son système d'icônes ([ADR-0043](adr/0043-da-kuzzle-pour-la-console.md)) | ➖ |
 | ~~`json-formatter-js`~~ | **Retiré** : flèches inatteignables au clavier, style injecté dans `<head>`, couleurs en dur. Remplacé par `Common/JsonTree` ([ADR-0053](adr/0053-json-tree-plutot-que-json-formatter-js.md)) | ✅ |
-| `apexcharts` 3.53.0 | figé par `vue3-apexcharts` 1.7.0 ; la 5.x est la version courante ([ADR-0032](adr/0032-remplacer-vue-apexcharts-sans-monter-apexcharts.md)) | ⬜ |
+| ~~`apexcharts` 3.53.0~~ | **7.6.1**, `vue3-apexcharts` remplacé par `Common/ApexChart.vue` ([ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md)) | ✅ |
 
 ---
 
@@ -3780,3 +3780,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-28 | Thème sombre avancé avant les lots 5 à 9 de shadcn-vue : jeu dérivé de la DA et mesuré AA, bascule système / clair / sombre, Ace et ApexCharts suivent | [ADR-0056](adr/0056-theme-sombre-avance.md) |
 | 2026-09-28 | Gestion de session : surveillance armée à chaque ouverture (identifiants compris), vérification au retour sur l'onglet, rafraîchissement unique entre onglets, session perdue sur place dans la popup | [ADR-0057](adr/0057-gestion-de-session.md) |
 | 2026-09-29 | Toasts sur `vue-sonner` derrière le store (API inchangée), actions et lien dans la description ; l'état hors ligne devient un bandeau, hors de la pile | [ADR-0058](adr/0058-toasts-sur-vue-sonner.md) |
+| 2026-09-29 | `apexcharts` 7.6.1 plutôt que 5 (dernière majeure), `vue3-apexcharts` remplacé par un composant local | [ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md) |
