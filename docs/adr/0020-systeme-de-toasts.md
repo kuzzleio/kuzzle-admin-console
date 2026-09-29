@@ -1,6 +1,6 @@
 # ADR-0020 : les notifications passent par un store et une zone unique, et gardent une API impérative
 
-- **Statut** : Acceptée
+- **Statut** : Acceptée, points 1 et 2 remplacés par [ADR-0058](0058-toasts-sur-vue-sonner.md)
 - **Date** : 2026-09-22
 - **Décideurs** : Ricky
 

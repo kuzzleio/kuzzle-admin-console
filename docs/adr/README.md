@@ -41,7 +41,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0017](0017-primitive-tabs-en-vue-2.md) | `Tabs` écrite à la main, pilotée par valeur et non par rang | Acceptée |
 | [0018](0018-panneaux-flottants-au-dessus-des-modales.md) | Les panneaux flottants passent au-dessus de `Dialog` | Acceptée, amende la clause `z-index` de [0012](0012-primitive-dropdown-menu-en-vue-2.md) et [0014](0014-primitive-select-en-vue-2.md) |
 | [0019](0019-primitive-tags-input-en-vue-2.md) | `TagsInput` écrite à la main pour le seul champ à étiquettes | Acceptée |
-| [0020](0020-systeme-de-toasts.md) | Notifications : un store, une zone unique, et une API impérative assumée | Acceptée |
+| [0020](0020-systeme-de-toasts.md) | Notifications : un store, une zone unique, et une API impérative assumée | Acceptée, points 1 et 2 remplacés par [0058](0058-toasts-sur-vue-sonner.md) |
 | [0021](0021-reprise-apiaction-splitter-et-onglets.md) | Splitter écrit à la main, et onglets montés en permanence dans ApiAction | Acceptée |
 | [0022](0022-retrait-de-bootstrap-et-preflight.md) | Bootstrap sort et le preflight entre, dans le même geste | Acceptée, retire deux des trois réglages de [0008](0008-cohabitation-tailwind-bootstrap.md) |
 | [0023](0023-retrait-du-prefixe-tw.md) | Retirer le préfixe `tw:`, et ce que le renommage a réveillé | Acceptée |
@@ -79,6 +79,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0055](0055-barre-de-session.md) | Une barre de session en haut à droite : l'utilisateur connecté visible en permanence, ses profils et la déconnexion dans son menu | Acceptée |
 | [0056](0056-theme-sombre-avance.md) | Le thème sombre passe avant la fin de shadcn-vue : jeu dérivé de la DA, mesuré AA, bascule système / clair / sombre dans la barre de session | Acceptée |
 | [0057](0057-gestion-de-session.md) | La session se surveille à chaque ouverture, se prolonge une fois pour tous les onglets, et se perd sur place, dans la popup de reconnexion | Acceptée |
+| [0058](0058-toasts-sur-vue-sonner.md) | Les toasts passent sur `vue-sonner` derrière le store ; l'état hors ligne devient un bandeau, hors de la pile | Acceptée |
 
 ## Gabarit
 

@@ -902,7 +902,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
 
 - [x] Remplacer les quatre bibliothèques Vue 2 (ADR-0032 à ADR-0035)
 - [x] Retirer `@vue/compat` (ADR-0036)
-- [ ] Vrai shadcn-vue à la place des primitives écrites à la main ([ADR-0054](adr/0054-vrai-shadcn-vue.md)), une famille par lot :
+- [x] Vrai shadcn-vue à la place des primitives écrites à la main ([ADR-0054](adr/0054-vrai-shadcn-vue.md)), une famille par lot :
   - [x] 1. Socle (`reka-ui`, `components.json`), `Button`, `Badge`, `Card`, `Alert`, `Label`, `Input`, `Textarea`, `Table`, `Spinner`
   - [x] 2. `DropdownMenu`, `z-index` en tokens
   - [x] 3. `Select`, retrait de `floating-panel.ts`
@@ -911,7 +911,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 6. `Pagination`
   - [x] 7. `TagsInput`
   - [x] 8. `Resizable`
-  - [ ] 9. `Toast`
+  - [x] 9. `Toast` — sur `vue-sonner`, l'état hors ligne en bandeau ([ADR-0058](adr/0058-toasts-sur-vue-sonner.md))
 - [ ] Composition API
 
 ### 1.6 Critères de sortie — ADR-0051
@@ -923,7 +923,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
 - [x] 1. Audit DA terminé : mise en page sous 400 px, onglets d'API Action, cibles tactiles, raccourcis clavier (§1.2)
 - [x] 2. Dette de §3.3 : `bluebird`, `moment`, `json-formatter-js`
 - [x] 3. #1092 vérifiée sur `5-dev` : le défaut existait (formulaires de collection, profil et rôle muets sur un JSON invalide), porté avec `FormMessage`
-- [ ] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
+- [x] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
 - [ ] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3)
 - [x] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes — avancé avant les lots 5 à 9 du critère 4 ([ADR-0056](adr/0056-theme-sombre-avance.md))
 - [ ] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5)
@@ -3779,3 +3779,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-28 | Barre de session en haut à droite : l'utilisateur reste visible rail replié, ses profils et « Log out » dans son menu | [ADR-0055](adr/0055-barre-de-session.md) |
 | 2026-09-28 | Thème sombre avancé avant les lots 5 à 9 de shadcn-vue : jeu dérivé de la DA et mesuré AA, bascule système / clair / sombre, Ace et ApexCharts suivent | [ADR-0056](adr/0056-theme-sombre-avance.md) |
 | 2026-09-28 | Gestion de session : surveillance armée à chaque ouverture (identifiants compris), vérification au retour sur l'onglet, rafraîchissement unique entre onglets, session perdue sur place dans la popup | [ADR-0057](adr/0057-gestion-de-session.md) |
+| 2026-09-29 | Toasts sur `vue-sonner` derrière le store (API inchangée), actions et lien dans la description ; l'état hors ligne devient un bandeau, hors de la pile | [ADR-0058](adr/0058-toasts-sur-vue-sonner.md) |
