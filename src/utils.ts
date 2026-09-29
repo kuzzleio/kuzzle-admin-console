@@ -80,3 +80,10 @@ export const wait = async (ms: number): Promise<void> =>
       resolve();
     }, ms);
   });
+
+/*
+ * Valeur en pixels d'un token de `tokens.css` (`--sidebar-width`…), pour les
+ * API qui prennent un nombre et non une classe — `default-size` de `reka-ui`.
+ */
+export const cssPixels = (token: string): number =>
+  Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(token)) || 0;

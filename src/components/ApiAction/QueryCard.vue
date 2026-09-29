@@ -148,15 +148,19 @@
       </div>
     </div>
 
-    <!-- Sous `md`, la requête passe au-dessus de la réponse, chacune sur 18 rem. -->
+    <!--
+      Sous `md`, la requête passe au-dessus de la réponse, chacune sur 18 rem,
+      et le groupe déborde dans la zone qui défile. Les `!` remplacent le
+      style en ligne de `reka-ui` (G-099).
+    -->
     <ResizablePanelGroup
-      class="QueryLayout min-h-0 flex-1 flex-col md:flex-row"
-      @resize="onPaneResize"
+      class="QueryLayout min-h-0 flex-1 max-md:flex-col! max-md:overflow-visible!"
+      direction="horizontal"
     >
       <ResizablePanel
-        class="QueryLayout-sidebarWrapper h-72 shrink-0 overflow-auto md:h-full md:w-(--pane-size)"
-        :style="{ '--pane-size': paneWidth || '50%' }"
+        class="QueryLayout-sidebarWrapper h-72 overflow-auto! max-md:flex-none! md:h-auto"
         data-cy="QueryLayout-sidebarWrapper"
+        :default-size="50"
       >
         <Card class="h-full">
           <CardContent class="flex h-full min-h-0 flex-col">
@@ -175,14 +179,13 @@
       </ResizablePanel>
 
       <ResizableHandle
-        class="hidden md:flex"
+        v-if="sideBySide"
+        aria-label="Resize the query editor"
         data-cy="sidebarResizer"
-        label="Resize the query editor"
+        with-handle
       />
 
-      <ResizablePanel
-        class="QueryLayout-contentWrapper min-h-72 flex-1 overflow-auto md:h-full md:min-h-0"
-      >
+      <ResizablePanel class="QueryLayout-contentWrapper min-h-72 overflow-auto! md:min-h-0">
         <ResponseCard :tab-idx="tabIdx" :response="response" />
       </ResizablePanel>
     </ResizablePanelGroup>
@@ -201,6 +204,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { useSideBySide } from '@/composables/useSideBySide';
 
 import ResponseCard from '@/components/ApiAction/ResponseCard.vue';
 import jsonEditor from '@/components/Common/JsonEditor.vue';
@@ -228,12 +232,13 @@ export default {
     openapi: {},
     response: {},
   },
+  setup() {
+    return { sideBySide: useSideBySide() };
+  },
   data() {
     return {
       isFullScreen: false,
       jsonQuery: '{}',
-      /* Largeur de l'éditeur, en pixels : la moitié du groupe par défaut. */
-      paneWidth: '',
       editedQuery: {
         controller: null,
         action: null,
@@ -301,9 +306,6 @@ export default {
     this.jsonQuery = JSON.stringify(this.editedQuery, null, 2);
   },
   methods: {
-    onPaneResize(width) {
-      this.paneWidth = `${width}px`;
-    },
     toggleFullscreen() {
       this.isFullScreen = !this.isFullScreen;
     },

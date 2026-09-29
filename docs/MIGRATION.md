@@ -910,7 +910,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 5. `Tabs`
   - [x] 6. `Pagination`
   - [x] 7. `TagsInput`
-  - [ ] 8. `Resizable`
+  - [x] 8. `Resizable`
   - [ ] 9. `Toast`
 - [ ] Composition API
 
@@ -3605,6 +3605,56 @@ Gabarit à copier :
   les deux.
 - **À retenir** : pour renommer un élément de `reka-ui`, regarder d'abord s'il
   porte un `aria-labelledby`.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
+#### G-099 — `reka-ui` écrit la mise en page du `Splitter` en style en ligne
+
+- **Contexte** : lot 8 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md). Sous `md`,
+  les panneaux de Data et d'API Action s'empilent par des classes
+  (`flex-col`, hauteur bornée, défilement) et la poignée est cachée par
+  `hidden md:flex` ([G-081](#g-081)).
+- **Symptôme** (à la lecture de `SplitterGroup.js`, `style.ts` et
+  `registry.ts`) : sur un écran de 375, les panneaux resteraient côte à côte,
+  l'arbre ne défilerait plus, et un appui à moins de 15 px du coin haut gauche
+  de la page — là où est le menu — commencerait un glisser.
+- **Cause** : trois écritures de `reka-ui`, toutes en style en ligne, donc
+  au-dessus de toute classe : `flex-direction` sur le groupe, d'après
+  `direction` ; `flex: <taille> 1 0` et `overflow: hidden` sur chaque
+  panneau. Et la poignée n'est pas trouvée par le DOM : `reka-ui` compare la
+  position du pointeur au rectangle de chaque poignée enregistrée, élargi de
+  `hit-area-margins`. Une poignée en `display: none` reste enregistrée, avec
+  un rectangle nul en (0, 0).
+- **Solution** : les classes qui remplacent le style en ligne portent un `!`
+  (`max-md:flex-col!`, `max-md:flex-none!`, `overflow-auto!`) ; la poignée
+  sort du DOM sous `md` par un `v-if` sur `useSideBySide()`. `treeview.spec`
+  vérifie qu'elle n'existe pas sur un écran étroit.
+- **Et un padding sur un panneau fausse les tailles.** Avec `flex-basis: 0`,
+  le navigateur retire les paddings de l'espace qu'il répartit selon
+  `flex-grow` : mesuré, l'arbre de Data faisait 239 px pour 252 demandés, les
+  48 px du `md:p-6` du contenu en moins. Le padding passe dans un enfant du
+  panneau.
+- **À retenir** : c'est [G-081](#g-081) du côté de la bibliothèque. Avant de
+  poser une classe sur un composant de `reka-ui`, regarder ce qu'il écrit
+  dans `style` ; et cacher un composant qui écoute le document ne le
+  désactive pas.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md), [ADR-0021](adr/0021-reprise-apiaction-splitter-et-onglets.md).
+
+#### G-100 — Sans `direction`, le `Splitter` empile ses panneaux
+
+- **Contexte** : lot 8 d'[ADR-0054](adr/0054-vrai-shadcn-vue.md).
+- **Symptôme** : `treeview.spec`, sur grand écran : `cy.click()` échoue sur
+  un index de l'arbre, « being covered by another element: `<div
+  data-panel-group …>` ». Le groupe porte `flex-direction: column` en ligne.
+- **Cause** : `direction` est une prop **obligatoire** de `SplitterGroup`,
+  sans valeur par défaut, et `reka-ui` rend `column` pour tout ce qui n'est
+  pas `horizontal`. La primitive précédente valait `horizontal` par défaut,
+  et les sites d'appel ne la passaient pas. Ni `vue-tsc` ni ESLint ne le
+  signalent : les trois sites sont en Options API, sans `lang="ts"`.
+- **Solution** : `direction="horizontal"` sur les trois groupes.
+- **À retenir** : une prop que l'ancienne primitive avait par défaut n'est
+  pas forcément facultative en amont — lire le `required` des props de
+  `reka-ui`, puisque le typage ne couvre pas encore les sites d'appel
+  (critère 7).
 - **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain

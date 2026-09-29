@@ -2,14 +2,21 @@
   <!--
     Sous `md`, l'arbre passe au-dessus du contenu, sur une hauteur bornée :
     côte à côte, ses 252 px ne laissaient qu'une centaine de pixels au contenu
-    d'un écran de 375. La largeur choisie à la poignée passe par
-    `--pane-size`, qu'une classe `md:` est seule à lire.
+    d'un écran de 375. `reka-ui` écrit la direction, le `flex` et
+    l'`overflow` des panneaux en style en ligne : les classes qui les
+    remplacent portent un `!` (G-099).
   -->
-  <ResizablePanelGroup class="DataLayout flex-col md:flex-row" @resize="saveNewPaneSize">
+  <ResizablePanelGroup
+    class="DataLayout max-md:flex-col!"
+    direction="horizontal"
+    @layout="saveNewPaneSize"
+  >
     <ResizablePanel
-      class="DataLayout-sidebarWrapper z-1 max-h-[35vh] shrink-0 overflow-auto bg-muted md:h-full md:max-h-none md:w-(--pane-size) md:min-w-[var(--sidebar-width)]"
-      :style="paneSize ? { '--pane-size': paneSize } : undefined"
+      class="DataLayout-sidebarWrapper z-1 max-h-[35vh] overflow-auto! bg-muted max-md:flex-none! md:max-h-none"
       data-cy="DataLayout-sidebarWrapper"
+      :default-size="paneSize"
+      :min-size="sidebarWidth"
+      size-unit="px"
     >
       <treeview
         :index-name="$route.params.indexName"
@@ -17,30 +24,36 @@
       />
     </ResizablePanel>
     <ResizableHandle
-      class="hidden md:flex"
+      v-if="sideBySide"
+      aria-label="Resize the index tree"
       data-cy="sidebarResizer"
-      label="Resize the index tree"
+      with-handle
     />
-    <ResizablePanel
-      class="DataLayout-contentWrapper min-h-0 flex-1 overflow-auto p-4 md:h-full md:p-6"
-    >
+    <ResizablePanel class="DataLayout-contentWrapper min-h-0 overflow-auto!">
       <!--
-        `b-overlay` avec `opacity="0"` ne servait qu'à centrer une roue de
-        chargement : son voile était transparent, et le contenu qu'il
-        recouvrait n'était de toute façon pas rendu (`v-if="!loading"`).
-        Il était aussi l'ancêtre positionné du `.full-screen` des filtres :
-        le `relative` le remplace, sans quoi le plein écran recouvre toute
-        l'application (E-02 de la comparaison v4 / v5).
+        Le padding vit dans un enfant : sur le panneau, avec `flex-basis: 0`,
+        il est retiré de l'espace que `reka-ui` répartit, et l'arbre perdait
+        la largeur de ce padding (G-099).
       -->
-      <div v-if="loading" class="flex h-full items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-      <div v-else class="relative h-full">
-        <data-not-found v-if="dataNotFound" class="mt-3" />
-        <router-view
-          @start-init="viewIsInitializing = true"
-          @end-init="viewIsInitializing = false"
-        />
+      <div class="box-border h-full p-4 md:p-6">
+        <!--
+          `b-overlay` avec `opacity="0"` ne servait qu'à centrer une roue de
+          chargement : son voile était transparent, et le contenu qu'il
+          recouvrait n'était de toute façon pas rendu (`v-if="!loading"`).
+          Il était aussi l'ancêtre positionné du `.full-screen` des filtres :
+          le `relative` le remplace, sans quoi le plein écran recouvre toute
+          l'application (E-02 de la comparaison v4 / v5).
+        -->
+        <div v-if="loading" class="flex h-full items-center justify-center">
+          <Spinner size="lg" />
+        </div>
+        <div v-else class="relative h-full">
+          <data-not-found v-if="dataNotFound" class="mt-3" />
+          <router-view
+            @start-init="viewIsInitializing = true"
+            @end-init="viewIsInitializing = false"
+          />
+        </div>
       </div>
     </ResizablePanel>
   </ResizablePanelGroup>
@@ -50,7 +63,9 @@ import { mapState } from 'pinia';
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Spinner } from '@/components/ui/spinner';
+import { useSideBySide } from '@/composables/useSideBySide';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
+import { cssPixels } from '@/utils';
 import { setPersistedItem, getPersistedItem } from './itemsStorage';
 
 import Treeview from '@/components/Data/Leftnav/Treeview.vue';
@@ -68,6 +83,7 @@ export default {
   },
   setup() {
     return {
+      sideBySide: useSideBySide(),
       storageIndexStore: useStorageIndexStore(),
     };
   },
@@ -76,7 +92,12 @@ export default {
       isFetching: true,
       dataNotFound: false,
       viewIsInitializing: false,
-      paneSize: '',
+      /*
+       * Lues avant le montage : `reka-ui` ne prend `default-size` qu'à
+       * l'enregistrement du panneau.
+       */
+      paneSize: Number(getPersistedItem('paneSize')) || cssPixels('--sidebar-width'),
+      sidebarWidth: cssPixels('--sidebar-width'),
     };
   },
   computed: {
@@ -118,18 +139,17 @@ export default {
   },
   async mounted() {
     await this.lazyLoadingSequence();
-    const persisted = getPersistedItem('paneSize');
-    this.paneSize = persisted ? `${persisted}px` : '';
   },
   methods: {
     /*
-     * `vue-multipane` émettait le nœud DOM redimensionné et écrivait sa
-     * largeur lui-même ; la primitive émet la taille et laisse le site d'appel
-     * décider — ici : la persister (ADR-0021).
+     * Le groupe émet les tailles dans l'unité de chaque panneau : celle de
+     * l'arbre en pixels, comme la valeur déjà persistée (ADR-0021). Empilés,
+     * les panneaux n'ont pas de largeur choisie : rien à retenir.
      */
-    saveNewPaneSize(width) {
-      setPersistedItem('paneSize', width);
-      this.paneSize = `${width}px`;
+    saveNewPaneSize([width]) {
+      if (this.sideBySide) {
+        setPersistedItem('paneSize', String(Math.round(width)));
+      }
     },
     async fetchIndexList() {
       try {

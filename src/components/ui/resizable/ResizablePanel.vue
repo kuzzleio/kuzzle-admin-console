@@ -1,29 +1,35 @@
 <template>
-  <div :class="classes" data-slot="resizable-panel" v-bind="$attrs">
-    <slot />
-  </div>
+  <SplitterPanel
+    :ref="forwardRef"
+    v-slot="slotProps"
+    data-slot="resizable-panel"
+    v-bind="forwarded"
+  >
+    <slot v-bind="slotProps" />
+  </SplitterPanel>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-import { classMerge } from '../class-merge';
+<script setup lang="ts">
+import {
+  SplitterPanel,
+  type SplitterPanelEmits,
+  type SplitterPanelProps,
+  useForwardExpose,
+  useForwardPropsEmits,
+} from 'reka-ui';
 
 /*
- * ResizablePanel — API publique de shadcn-vue (ADR-0021).
+ * ResizablePanel de shadcn-vue (ADR-0021, ADR-0054). La taille vient de
+ * `default-size`, `min-size` et `max-size`, en pourcentage du groupe ou en
+ * pixels avec `size-unit="px"` — l'unité que `Data` persiste.
  *
- * Il ne porte aucune taille : le panneau redimensionnable reçoit la sienne du
- * site d'appel (un `:style` ou une classe), et l'autre occupe ce qui reste.
- * C'est la contrepartie du point 1 d'ADR-0021.
+ * `reka-ui` écrit en style en ligne `flex: <taille> 1 0` et
+ * `overflow: hidden` : aucune classe du site d'appel ne les remplace sans
+ * `!` (G-099).
  */
-export default defineComponent({
-  name: 'ResizablePanel',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('min-h-0 min-w-0');
-    },
-  },
-});
+const props = defineProps<SplitterPanelProps>();
+const emits = defineEmits<SplitterPanelEmits>();
+
+const forwarded = useForwardPropsEmits(props, emits);
+const { forwardRef } = useForwardExpose();
 </script>
