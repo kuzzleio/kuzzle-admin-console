@@ -3934,6 +3934,25 @@ Gabarit à copier :
   8 contre la forme de ses documents.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-114 — L'identifiant d'un rôle ou d'un profil édité s'affichait vide
+
+- **Contexte** : lot 6 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Security/Roles/CreateOrUpdate.vue`.
+- **Symptôme** : sur l'édition d'un rôle ou d'un profil, le champ inactif
+  « Role ID » / « Profile ID » est vide ; l'identifiant n'apparaît que dans le
+  titre.
+- **Cause** : les deux sites écrivent `<Input disabled :value="id" />`.
+  L'`Input` écrit à la main laissait l'attribut `value` passer après
+  `:value="modelValue"`, et il gagnait. Celui de shadcn-vue
+  ([ADR-0054](adr/0054-vrai-shadcn-vue.md), `6faf5fb3`) pilote le champ par
+  `v-model` : la directive écrit `modelValue`, absent, à chaque rendu, et
+  efface l'attribut. Régression d'ADR-0054.
+- **Solution** : `:model-value="id"` aux deux sites. `roles.spec` et
+  `profiles.spec` vérifient la valeur du champ à l'édition.
+- **À retenir** : sur une primitive à `v-model`, `:value` n'est pas la valeur.
+  `vue-tsc` ne le voit pas : `value` passe par les attributs.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

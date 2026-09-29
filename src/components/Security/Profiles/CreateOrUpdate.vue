@@ -15,7 +15,7 @@
         </FormItem>
         <FormItem v-else>
           <Label for="profile-id">Profile ID</Label>
-          <Input id="profile-id" disabled :value="id" />
+          <Input id="profile-id" disabled :model-value="id" />
         </FormItem>
 
         <!--

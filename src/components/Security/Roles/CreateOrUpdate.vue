@@ -28,7 +28,7 @@
             </FormItem>
             <FormItem v-else>
               <Label for="role-id">Role ID</Label>
-              <Input id="role-id" disabled :value="id" />
+              <Input id="role-id" disabled :model-value="id" />
             </FormItem>
             <!--
               La validation refusait déjà un JSON invalide, mais rien ne le disait :

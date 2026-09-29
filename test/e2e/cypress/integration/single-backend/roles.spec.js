@@ -152,6 +152,8 @@ describe('Roles', () => {
     cy.get('[data-cy="RoleCreateOrUpdate-jsonEditor"] .ace_line').should(
       'be.visible'
     )
+    // Le champ « Role ID », inactif, affiche le rôle édité (G-114).
+    cy.get('#role-id').should('have.value', roleId)
 
     cy.get('[data-cy="RoleCreateOrUpdate-jsonEditor"] .ace_line')
       .contains('{')
