@@ -3900,6 +3900,21 @@ Gabarit à copier :
   signalement en amont.
 - **Ref** : [G-108](#g-108).
 
+#### G-112 — « Login as Anonymous » sur la page de création d'admin rechargeait la page, depuis la v4
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Signup.vue` ; gardé tel quel à la conversion, corrigé ensuite.
+- **Symptôme** : sur `/signup` (instance sans administrateur), « Login as
+  Anonymous » recharge la page et laisse sur le formulaire de création : rien
+  ne semble se passer.
+- **Cause** : `this.$router.go({ name: 'Data' })`. `go()` prend un nombre de
+  pas dans l'historique ; l'objet valait 0, soit un rechargement. L'intention
+  était `push`. Même code sur `4-dev`. Aucune spec ne visitait `/signup`.
+- **Solution** : `router.push({ name: 'Data' })`. `login.spec` part de
+  `/signup`, se connecte en anonyme et vérifie qu'on arrive sur Data sans
+  rechargement (un marqueur posé sur `window` doit survivre).
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

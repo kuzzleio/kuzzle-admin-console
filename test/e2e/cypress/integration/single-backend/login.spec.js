@@ -15,6 +15,21 @@ describe('Login', function() {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
+  // Depuis la page de création du premier admin, « Login as Anonymous » mène à
+  // Data sans recharger la page : `router.go()` ne prend qu'un nombre, et
+  // l'objet qu'il recevait valait un rechargement (G-112).
+  it('Should login as anonymous from the signup page, without a reload', () => {
+    cy.visit('/#/signup')
+    cy.get('[data-cy="Signup-submitBtn"]')
+    cy.window().then(win => {
+      win.__signupPage = true
+    })
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+    cy.url().should('contain', '/data')
+    cy.window().its('__signupPage').should('equal', true)
+  })
+
   it('Should be able to login as an existing user', () => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     cy.request('POST', 'http://localhost:7512/_createFirstAdmin', {
