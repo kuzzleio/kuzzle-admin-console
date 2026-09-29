@@ -3756,6 +3756,23 @@ Gabarit à copier :
   sont repris. À relire dans leur lot.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-105 — `queryError` n'a pas la même forme selon le SDK
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  `Home.vue` typé.
+- **Symptôme** : aucun à l'écran. `vue-tsc` refuse l'écouteur de `queryError`
+  : le SDK v7 le type `(data: { error: KuzzleError; request }) => void`.
+- **Cause** : le SDK v6 (backend v1) émet `emit('queryError', error, request)`,
+  le SDK v7 (backend v2) `emit('queryError', { error, request })`. `Home` lisait
+  `e.id` dans les deux cas : sur un backend v2, `e.id` vaut `undefined`, et la
+  perte de session sur `security.token.expired` ne passait jamais par là. Elle
+  passait par `tokenExpired`, que le SDK émet aussi — d'où l'absence de
+  symptôme.
+- **Solution** : la branche v2 lit `e.error.id`.
+- **À retenir** : la console parle à deux SDK (`kuzzle-sdk-v6`,
+  `kuzzle-sdk-v7`) ; une charge d'événement se vérifie dans les deux.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

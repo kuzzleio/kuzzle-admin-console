@@ -122,6 +122,9 @@ export default {
     this.$kuzzle.removeListener('queryError', this.onQueryError);
   },
   methods: {
+    // Le SDK v6 (backend v1) émet `(error, request)`, le SDK v7 émet
+    // `{ error, request }` : lire `e.id` sur le second ne trouvait rien, et la
+    // branche v2 ne partait jamais (G-105).
     onQueryError(e) {
       if (this.currentEnvironment.backendMajorVersion === 1) {
         switch (e.id) {
@@ -132,7 +135,7 @@ export default {
             break;
         }
       } else {
-        switch (e.id) {
+        switch (e.error?.id) {
           case 'security.token.expired':
             this.onTokenExpired();
             break;
