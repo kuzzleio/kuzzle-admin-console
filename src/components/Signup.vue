@@ -213,7 +213,7 @@ export default {
       this.authStore
         .setSession('anonymous')
         .then(() => {
-          this.$router.go({ name: 'Data' });
+          this.$router.push({ name: 'Data' });
         })
         .catch((err) => {
           this.error = err.message;

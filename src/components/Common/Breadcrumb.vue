@@ -113,13 +113,20 @@ export default {
         ? this.storageIndexStore.getOneIndex(this.$route.params.indexName)
         : undefined;
     },
+    // `index` est une méthode et `isRealtime` aussi : les tester sans les
+    // appeler donnait toujours vrai, et la condition inversée sur
+    // `collectionName` renvoyait `false` dès qu'une collection était ouverte.
+    // Le fil d'Ariane d'une collection temps réel menait à ses documents
+    // (G-106).
     isCollectionRealtime() {
-      if (!this.index || this.$route.params.collectionName) {
+      const index = this.index();
+      const collectionName = this.$route.params.collectionName;
+      if (!index || !collectionName || index.collections == null) {
         return false;
       }
 
-      return this.storageIndexStore.getOneCollection(this.index, this.$route.params.collectionName)
-        .isRealtime;
+      const collection = this.storageIndexStore.getOneCollection(index, collectionName);
+      return collection ? collection.isRealtime() : false;
     },
     isRouteActive(routeName) {
       if (Array.isArray(routeName)) {

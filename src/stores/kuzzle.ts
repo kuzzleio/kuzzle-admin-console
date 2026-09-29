@@ -131,12 +131,20 @@ export const useKuzzleStore = defineStore('kuzzle', {
     updateEnvironment(payload: any) {
       let mustReconnect = false;
 
+      // `backendMajorVersion` est dans `payload.environment`, comme les trois
+      // autres : lu sur `payload`, il valait `undefined`, et toute modification
+      // de la connexion courante forçait une reconnexion (G-108). Une
+      // connexion malformée, sans version, n'en déclenche pas, comme avant :
+      // la reconnexion depuis cet état fait planter le SDK sur une socket
+      // jamais ouverte.
+      const currentVersion = this.currentEnvironment?.backendMajorVersion;
       if (
         payload.id === this.currentId &&
         (payload.environment.host !== this.currentEnvironment?.host ||
           payload.environment.port !== this.currentEnvironment?.port ||
           payload.environment.ssl !== this.currentEnvironment?.ssl ||
-          payload.backendMajorVersion !== this.currentEnvironment?.backendMajorVersion)
+          (currentVersion !== undefined &&
+            payload.environment.backendMajorVersion !== currentVersion))
       ) {
         mustReconnect = true;
       }
@@ -146,9 +154,14 @@ export const useKuzzleStore = defineStore('kuzzle', {
           environment.`);
       }
 
+      // Le formulaire d'édition n'envoie pas le jeton : sans reconnexion, la
+      // session continue, et elle doit le garder. Un jeton passé
+      // explicitement (`Home` masque l'avertissement d'admin) l'emporte.
       this.environments = {
         ...this.environments,
-        [payload.id]: payload.environment,
+        [payload.id]: mustReconnect
+          ? payload.environment
+          : { token: this.environments[payload.id].token, ...payload.environment },
       };
 
       localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(this.environments));

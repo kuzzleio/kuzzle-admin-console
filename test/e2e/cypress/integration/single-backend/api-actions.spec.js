@@ -262,6 +262,35 @@ describe('API Actions - tabs and save', function() {
    );
   })
 
+  it('Should edit a saved query after deleting the one before it', () => {
+    const envName = 'valid'
+    const storedQueries = {
+      [envName]: [
+        {"query":{"controller":"server","action":"now"},"name": "first"},
+        {"query":{"controller":"server","action":"info"},"name": "second"}
+      ]
+    }
+    localStorage.setItem('storedQueries', JSON.stringify(storedQueries))
+    cy.waitOverlay()
+    cy.visit(`/#/api-action`)
+
+    cy.get('[data-cy="api-actions-saved-query-second"] #query-list-1').click()
+    cy.get('[data-cy="api-actions-saved-query-first"] .fa-trash').click()
+    cy.contains('.modal-footer button', 'YES').click()
+    cy.get('[data-cy="api-actions-saved-query-first"]').should('not.exist')
+
+    // L'onglet de « second » désignait encore le rang 1, qui n'existait plus :
+    // la modification levait une erreur et n'arrivait jamais au stockage.
+    cy.get('[data-cy="api-actions-action-input-1"]').type('{selectall}{backspace}now')
+    cy.get('[data-cy="api-actions-save-button-1"]').click()
+    cy.window().should(window => {
+      const stored = JSON.parse(window.localStorage.getItem('storedQueries'))
+      expect(stored[envName]).to.have.length(1)
+      expect(stored[envName][0].name).to.equal('second')
+      expect(stored[envName][0].query.action).to.equal('now')
+    })
+  })
+
   it('Should be able to persist saved queries by environment', () => {
     const envName = 'valid'
     const envName2 = 'valid2'

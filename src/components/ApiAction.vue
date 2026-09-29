@@ -208,6 +208,16 @@ export default {
         this.tabs[tabIdx].saved = false;
       }
       this.savedQueries.splice(savedQueryIdx, 1);
+      /* Les rangs suivants reculent d'un cran : un onglet ne doit pas désigner
+         une requête qui n'existe plus (G-110). */
+      for (const tab of this.tabs) {
+        if (tab.savedIdx !== null && tab.savedIdx > savedQueryIdx) {
+          tab.savedIdx -= 1;
+        }
+      }
+      this.savedQueries.forEach((query, idx) => {
+        query.savedIdx = idx;
+      });
       this.storeQueriesToLocalStorage();
     },
     loadSavedQuery(savedQueryIdx) {
