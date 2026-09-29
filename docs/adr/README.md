@@ -81,6 +81,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0057](0057-gestion-de-session.md) | La session se surveille à chaque ouverture, se prolonge une fois pour tous les onglets, et se perd sur place, dans la popup de reconnexion | Acceptée |
 | [0058](0058-toasts-sur-vue-sonner.md) | Les toasts passent sur `vue-sonner` derrière le store ; l'état hors ligne devient un bandeau, hors de la pile | Acceptée |
 | [0059](0059-apexcharts-7-sans-wrapper.md) | `apexcharts` 7.6.1, et `vue3-apexcharts` remplacé par un composant local : le critère 5 d'ADR-0051 visait la dernière majeure | Acceptée |
+| [0060](0060-composition-api-par-domaine.md) | La Composition API, un domaine par lot, à comportement constant : conventions communes, `useToast()`, `defineExpose`, verrou ESLint au dernier lot | Acceptée |
 
 ## Gabarit
 

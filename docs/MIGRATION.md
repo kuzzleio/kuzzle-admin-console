@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-28 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
+**Dernière mise à jour** : 2026-09-29 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -912,7 +912,21 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 7. `TagsInput`
   - [x] 8. `Resizable`
   - [x] 9. `Toast` — sur `vue-sonner`, l'état hors ligne en bandeau ([ADR-0058](adr/0058-toasts-sur-vue-sonner.md))
-- [ ] Composition API
+- [ ] Composition API ([ADR-0060](adr/0060-composition-api-par-domaine.md)), un domaine par lot — 77 SFC sur 193 au départ :
+  - [ ] 1. `ui/` restants, retrait de `classMerge`
+  - [ ] 2. Racine, `Common/Login`, `Error`, `Materialize`
+  - [ ] 3. `Common/` hors `Filters` et `Environments`
+  - [ ] 4. `Common/Environments`
+  - [ ] 5. `ApiAction`
+  - [ ] 6. `Security` : `Layout`, `Common`, `Roles`
+  - [ ] 7. `Security/Profiles`
+  - [ ] 8. `Security/Users`
+  - [ ] 9. `Data` : `Indexes`, `Leftnav`, racine
+  - [ ] 10. `Data` : `Collections`, `Realtime`
+  - [ ] 11. `Common/Filters`
+  - [ ] 12. `Data/Documents`, les vues
+  - [ ] 13. `Data/Documents`, le reste
+  - [ ] 14. Retrait des plugins `$toast` / `$log`, verrou ESLint
 
 ### 1.6 Critères de sortie — ADR-0051
 
@@ -3803,3 +3817,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-28 | Gestion de session : surveillance armée à chaque ouverture (identifiants compris), vérification au retour sur l'onglet, rafraîchissement unique entre onglets, session perdue sur place dans la popup | [ADR-0057](adr/0057-gestion-de-session.md) |
 | 2026-09-29 | Toasts sur `vue-sonner` derrière le store (API inchangée), actions et lien dans la description ; l'état hors ligne devient un bandeau, hors de la pile | [ADR-0058](adr/0058-toasts-sur-vue-sonner.md) |
 | 2026-09-29 | `apexcharts` 7.6.1 plutôt que 5 (dernière majeure), `vue3-apexcharts` remplacé par un composant local | [ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md) |
+| 2026-09-29 | Composition API en 14 lots, un domaine par lot, à comportement constant ; conventions communes, verrou ESLint au dernier lot | [ADR-0060](adr/0060-composition-api-par-domaine.md) |
