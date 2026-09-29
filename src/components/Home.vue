@@ -110,8 +110,19 @@ export default {
     },
   },
   mounted() {
-    this.$kuzzle.on('tokenExpired', () => this.onTokenExpired());
-    this.$kuzzle.on('queryError', (e) => {
+    this.$kuzzle.on('tokenExpired', this.onTokenExpired);
+    this.$kuzzle.on('queryError', this.onQueryError);
+    this.displayNoAdminWarning();
+  },
+  beforeUnmount() {
+    // `removeListener` retire la fonction qu'on lui passe, et rien sans elle :
+    // appelé sur le seul nom d'événement, il laissait les écouteurs en place,
+    // et chaque montage de `Home` en ajoutait un jeu (G-103).
+    this.$kuzzle.removeListener('tokenExpired', this.onTokenExpired);
+    this.$kuzzle.removeListener('queryError', this.onQueryError);
+  },
+  methods: {
+    onQueryError(e) {
       if (this.currentEnvironment.backendMajorVersion === 1) {
         switch (e.id) {
           case 'security.token.invalid':
@@ -129,14 +140,7 @@ export default {
             break;
         }
       }
-    });
-    this.displayNoAdminWarning();
-  },
-  beforeUnmount() {
-    this.$kuzzle.removeListener('tokenExpired');
-    this.$kuzzle.removeListener('queryError');
-  },
-  methods: {
+    },
     /*
      * L'avertissement est un toast persistant avec une action, poussé dans la
      * zone unique (ADR-0020). `b-toast` le gardait monté en permanence et

@@ -3715,6 +3715,23 @@ Gabarit à copier :
   message.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-103 — `removeListener` sans la fonction ne retire rien
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  `Home.vue` typé.
+- **Symptôme** : aucun à l'écran. `vue-tsc` refuse
+  `$kuzzle.removeListener('tokenExpired')` : le second argument est requis.
+- **Cause** : le `KuzzleEventEmitter` du SDK retire l'écouteur **égal** à la
+  fonction passée ; sans elle, `findIndex` ne trouve rien et rien n'est retiré.
+  `Home` enregistrait deux fonctions fléchées au montage et ne les retirait
+  jamais : chaque retour à `Home` (déconnexion puis reconnexion) ajoutait un
+  jeu d'écouteurs `tokenExpired` / `queryError` sur la même instance.
+- **Solution** : les écouteurs sont des fonctions nommées, retirées par
+  référence au démontage.
+- **À retenir** : `removeListener(nom)` n'est pas `removeAllListeners(nom)`.
+  Le typage l'attrape ; le JavaScript non typé le laissait passer sans bruit.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
