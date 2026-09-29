@@ -3657,6 +3657,28 @@ Gabarit à copier :
   (critère 7).
 - **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
 
+#### G-101 — La vue graphique ne traçait rien, depuis la v4
+
+- **Contexte** : critère 5 d'[ADR-0051](adr/0051-criteres-de-sortie-de-la-v5.md),
+  montée d'`apexcharts` en 7 ([ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md)).
+  Les captures C66 / C67 ne choisissent aucune date : elles ne tracent rien,
+  avant comme après.
+- **Symptôme** : une date et deux valeurs choisies, le graphique garde son axe
+  de 0 à 6 et aucune courbe. Même résultat sur le build précédent
+  (`apexcharts` 3.53, `vue3-apexcharts`) : ce n'est pas la montée.
+- **Cause** : une recherche renvoie des `{ _id, _source }`, et `updateChart`
+  lisait `_.get(doc, champ)` au lieu de `_.get(doc._source, champ)`. Toutes les
+  dates valaient `null`, chaque point était écarté. Le code est le même sur
+  `4-dev` et `master`. En plus, les abscisses s'ajoutaient à chaque série et
+  à chaque mise à jour, sans être remises à zéro.
+- **Solution** : `updateChart` lit `_source` et construit les abscisses une
+  fois. `chartView.spec` vérifie qu'une courbe par valeur a au moins un
+  segment : ses sept tests passaient sur un graphique vide.
+- **À retenir** : `should('be.visible')` sur un graphique prouve que le
+  conteneur est là, pas qu'il montre quelque chose. Un test de rendu vise ce
+  qui est dessiné (`path.apexcharts-line`, son attribut `d`).
+- **Ref** : [ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

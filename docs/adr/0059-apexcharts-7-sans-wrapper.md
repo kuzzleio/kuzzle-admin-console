@@ -41,8 +41,12 @@ graphique au montage, suit `options` et `series` en profondeur
 `updateOptions()`. Le moteur reçoit une copie de l'objet brut (`toRaw`,
 `cloneDeep`) : il mute ce qu'on lui passe.
 
-**3. Le lot se valide par `chartView.spec` et par les captures C66 / C67**,
-en clair et en sombre, contre celles de la passe précédente.
+**3. Le lot se valide par ce qui est dessiné.** Les captures C66 / C67 ne
+choisissent aucune date et ne tracent rien, avant comme après ; et les sept
+tests de `chartView.spec` passaient sur un graphique vide. La mesure l'a montré
+: **la vue ne traçait rien depuis la v4** ([G-101](../MIGRATION.md#g-101)).
+Le défaut est corrigé dans le même lot, en commit séparé, et `chartView.spec`
+vérifie désormais une courbe par valeur, avec au moins un segment.
 
 ## Conséquences
 
