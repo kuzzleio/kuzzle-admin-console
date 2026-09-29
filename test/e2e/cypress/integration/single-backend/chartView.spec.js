@@ -86,6 +86,28 @@ describe('Chart view', function() {
     cy.get('[data-cy="timeSeries-chart"]').should('be.visible')
   })
 
+  // Les champs d'un résultat de recherche sont sous `_source` : lus sur le
+  // document, ils valaient `null`, et le graphique restait vide sans qu'aucun
+  // test le voie (G-101). Deux points, pour qu'une courbe ait un segment.
+  it('should draw one line per value', function() {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/second/_create?refresh=wait_for`,
+      { battery: 40, temperature: 23, payloadDate: 1607350151070 }
+    )
+    openChartView()
+
+    cy.selectOption('[data-cy="timeseriesView-dateSelector"]', 'payloadDate')
+    addValue('battery')
+    addValue('temperature')
+
+    cy.get('[data-cy="timeSeries-chart"] path.apexcharts-line')
+      .should('have.length', 2)
+      .each($path => {
+        expect($path.attr('d')).to.match(/ L /)
+      })
+  })
+
   it('should be able to remove a value from the chart', function() {
     openChartView()
 

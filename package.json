@@ -27,7 +27,7 @@
     "@vuelidate/validators": "2.0.4",
     "@vueuse/core": "^15.0.0",
     "ace-builds": "1.39.1",
-    "apexcharts": "3.53.0",
+    "apexcharts": "7.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "kepler-companion": "1.1.6",
@@ -42,8 +42,7 @@
     "vue-draggable-plus": "0.6.1",
     "vue-multiselect": "3.5.0",
     "vue-router": "4.6.4",
-    "vue-sonner": "^2.0.9",
-    "vue3-apexcharts": "1.7.0"
+    "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -55,7 +55,7 @@
         </CardContent>
       </Card>
       <div class="col-span-12 h-full min-h-96 md:col-span-9">
-        <VueApexCharts
+        <ApexChart
           v-show="customNumberFields.length"
           ref="Chart"
           class="h-full w-full"
@@ -97,7 +97,6 @@
 
 <script>
 import _ from 'lodash';
-import VueApexCharts from 'vue3-apexcharts';
 
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -110,6 +109,7 @@ import {
 import { useTheme } from '@/composables/useTheme';
 import { dateFromTimestamp } from '@/utils';
 
+import ApexChart from '@/components/Common/ApexChart.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import TimeSeriesItem from './TimeSeriesItem.vue';
 
@@ -128,6 +128,7 @@ const ES_NUMBER_DATA_TYPE = [
 export default {
   name: 'TimeSeries',
   components: {
+    ApexChart,
     Card,
     CardContent,
     PerPageSelector,
@@ -137,7 +138,6 @@ export default {
     SelectTrigger,
     SelectValue,
     TimeSeriesItem,
-    VueApexCharts,
   },
   props: {
     mapping: {
@@ -292,35 +292,34 @@ export default {
       if (!this.customNumberFields.length) {
         return;
       }
-      this.series = [];
-      this.chartOptions.colors = [];
-      for (const item of this.customNumberFields) {
-        this.chartOptions.colors.push(item.color);
-      }
 
-      const series = [];
-      for (const field of this.customNumberFields) {
-        const serie = {
-          name: field.name,
-          data: [],
-        };
-        for (const doc of this.documents) {
-          const timestamp = _.get(doc, this.customDateField, null);
-          const date = dateFromTimestamp(timestamp);
+      /*
+       * Une recherche renvoie des `{ _id, _source }` : les champs sont sous
+       * `_source`. Lus sur le document lui-même, ils valaient tous `null`, et
+       * aucun point n'était tracé — depuis la v4 (G-101).
+       *
+       * Les abscisses sont construites une fois, pour toutes les séries : elles
+       * s'ajoutaient auparavant à chaque série et à chaque mise à jour.
+       */
+      const points = [];
+      for (const doc of this.documents) {
+        const date = dateFromTimestamp(_.get(doc._source, this.customDateField, null));
 
-          if (date == null) {
-            continue;
-          }
-
-          serie.data.push(_.get(doc, field.name, ''));
-          this.chartOptions.xaxis.categories.push(date.toLocaleString('en-GB'));
+        if (date !== null) {
+          points.push({ date, source: doc._source });
         }
-        series.push(serie);
       }
+
+      this.chartOptions.colors = this.customNumberFields.map((field) => field.color);
+      this.chartOptions.xaxis.categories = points.map(({ date }) => date.toLocaleString('en-GB'));
+
       if (this.$refs.Chart) {
         this.$refs.Chart.updateOptions(this.chartOptions);
       }
-      this.series = series;
+      this.series = this.customNumberFields.map((field) => ({
+        name: field.name,
+        data: points.map(({ source }) => _.get(source, field.name, null)),
+      }));
     },
     saveToLocalStorage() {
       if (this.index && this.collection) {
