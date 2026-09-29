@@ -7,6 +7,13 @@ import { LS_ENVIRONMENTS, LS_LAST_ENV, NO_ADMIN_WARNING_HOSTS, SS_CURRENT_ENV } 
 import { isValidEnvironment } from '@/validators';
 import type { CreateEnvironmentPayload, KuzzleState } from './types/kuzzle';
 
+/* La connexion en cours d'ouverture, s'il y en a une (G-111). Hors de l'état :
+   une promesse n'a rien à faire dans ce que Pinia sérialise. */
+let pendingConnection: {
+  key: string;
+  promise: Promise<boolean | undefined>;
+} | null = null;
+
 export const useKuzzleStore = defineStore('kuzzle', {
   state: (): KuzzleState => ({
     environments: {},
@@ -137,18 +144,16 @@ export const useKuzzleStore = defineStore('kuzzle', {
 
       // `backendMajorVersion` est dans `payload.environment`, comme les trois
       // autres : lu sur `payload`, il valait `undefined`, et toute modification
-      // de la connexion courante forçait une reconnexion (G-108). Une
-      // connexion malformée, sans version, n'en déclenche pas, comme avant :
-      // la reconnexion depuis cet état fait planter le SDK sur une socket
-      // jamais ouverte.
+      // de la connexion courante forçait une reconnexion (G-108). Donner une
+      // version à une connexion malformée en déclenche une : c'est ce qui la
+      // rend utilisable (G-111).
       const currentVersion = this.currentEnvironment?.backendMajorVersion;
       if (
         payload.id === this.currentId &&
         (payload.environment.host !== this.currentEnvironment?.host ||
           payload.environment.port !== this.currentEnvironment?.port ||
           payload.environment.ssl !== this.currentEnvironment?.ssl ||
-          (currentVersion !== undefined &&
-            payload.environment.backendMajorVersion !== currentVersion))
+          payload.environment.backendMajorVersion !== currentVersion)
       ) {
         mustReconnect = true;
       }
@@ -176,7 +181,44 @@ export const useKuzzleStore = defineStore('kuzzle', {
 
       return payload.id;
     },
-    async connectToCurrentEnvironment() {
+    async connectToCurrentEnvironment(): Promise<boolean | undefined> {
+      // Deux appels se croisent quand on corrige une connexion malformée :
+      // `switchEnvironment`, et `ConnectionAwareContainer` remonté par la
+      // navigation. Le second fermait une socket encore en train de s'ouvrir ;
+      // le SDK oublie alors son client, et l'erreur que le navigateur émet
+      // ensuite sur cette socket plante dans son `onerror` (G-111). Une
+      // connexion en cours vers la même connexion est donc partagée, et une
+      // connexion vers une autre attend qu'elle aboutisse avant de fermer.
+      // La clé porte l'adresse et la version : une connexion modifiée pendant
+      // l'ouverture ne réutilise pas la socket vers l'ancienne adresse.
+      const env = this.currentEnvironment;
+      const key = JSON.stringify([
+        this.currentId,
+        env?.host,
+        env?.port,
+        env?.ssl,
+        env?.backendMajorVersion,
+      ]);
+      // En boucle : deux appels qui attendaient la même ouverture ne doivent
+      // pas repartir ensemble.
+      while (pendingConnection !== null) {
+        if (pendingConnection.key === key) {
+          return await pendingConnection.promise;
+        }
+        await pendingConnection.promise.catch(() => undefined);
+      }
+
+      const promise = this.openConnection();
+      pendingConnection = { key, promise };
+      try {
+        return await promise;
+      } finally {
+        if (pendingConnection?.promise === promise) {
+          pendingConnection = null;
+        }
+      }
+    },
+    async openConnection(): Promise<boolean | undefined> {
       if (!this.hasEnvironment) {
         return;
       }

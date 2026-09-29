@@ -215,8 +215,8 @@ function loginAsGuest(): void {
     .setSession('anonymous')
     .then(() => {
       // `go()` prend un nombre : l'objet que recevait `$router.go` valait 0,
-      // soit un rechargement de la page. Le comportement est gardé tel quel.
-      router.go(0);
+      // soit un rechargement qui laissait sur cette page (G-112).
+      router.push({ name: 'Data' });
     })
     .catch((err: unknown) => {
       error.value = caught(err).message;

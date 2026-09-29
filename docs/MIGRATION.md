@@ -3829,13 +3829,10 @@ Gabarit à copier :
   l'emporte). Avec reconnexion — hôte, port, SSL ou version changés —, rien ne
   change : la session ne vaut pas pour un autre serveur. `environments.spec`
   change la couleur de la connexion courante et vérifie que la session reste.
-- **Limite** : une connexion **malformée** (sans version) à laquelle on donne
-  une version ne se reconnecte toujours pas, comme avant. Comparer la version
-  dans ce cas déclenchait la reconnexion, et le SDK plantait —
-  « Cannot read properties of null (reading 'CLOSING') » dans l'`onerror` de
-  sa `WebSocket` — sur la spec « malformed » d'`environments.spec`, de façon
-  reproductible. La course est dans le chemin de connexion, pas ici : à
-  reprendre à part.
+- **Limite, levée par [G-111](#g-111)** : une connexion **malformée** (sans
+  version) à laquelle on donnait une version ne se reconnectait pas, comme
+  avant : la reconnexion faisait planter le SDK, à cause d'une course dans le
+  chemin de connexion.
 - **À retenir** : un store typé `payload: any` ne vérifie rien de ce qu'il
   lit. Le typer (`UpdateEnvironmentPayload` existe déjà) aurait refusé
   `payload.backendMajorVersion`.
@@ -3875,6 +3872,47 @@ Gabarit à copier :
 - **Solution** : après le retrait, les rangs supérieurs à celui supprimé
   reculent d'un cran, dans les onglets comme dans les requêtes.
   `api-actions.spec` rejoue le scénario.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+#### G-111 — Deux connexions se croisaient, et le SDK plantait sur une socket abandonnée
+
+- **Contexte** : la limite de [G-108](#g-108) ; reproduit avec des traces sur
+  la spec « malformed » d'`environments.spec`.
+- **Symptôme** : donner une version à une connexion malformée, puis
+  enregistrer : `Cannot read properties of null (reading 'CLOSING')`, levée
+  dans l'`onerror` de la `WebSocket` du SDK, et la spec échoue sur une
+  exception non rattrapée.
+- **Cause** : deux appels de `connectToCurrentEnvironment` se croisent.
+  `updateEnvironment` → `switchEnvironment` ouvre une socket ; la navigation
+  vers Login remonte `ConnectionAwareContainer`, dont l'observateur
+  `immediate` rappelle `connectToCurrentEnvironment`, qui commence par
+  `disconnect()`. La première socket est encore en train de s'ouvrir
+  (`readyState` 0) : `close()` du SDK (7.17.1, la dernière) met `client` à
+  `null`, puis le navigateur émet une erreur sur la socket abandonnée, et
+  l'`onerror` lit `this.client.CLOSING`.
+- **Solution** : le store sérialise les connexions. Une ouverture en cours
+  vers la même adresse (identifiant, hôte, port, SSL, version) est partagée ;
+  vers une autre, on attend qu'elle aboutisse avant de fermer, en boucle pour
+  que deux appels en attente ne repartent pas ensemble. La garde de G-108
+  tombe : la version se compare toujours.
+- **À retenir** : fermer une socket du SDK pendant son ouverture n'est pas
+  sûr. Le défaut est dans le SDK (le handler ne teste pas `this.client`) ;
+  il est contourné ici, sans toucher à ses membres privés, et vaut un
+  signalement en amont.
+- **Ref** : [G-108](#g-108).
+
+#### G-112 — « Login as Anonymous » sur la page de création d'admin rechargeait la page, depuis la v4
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Signup.vue` ; gardé tel quel à la conversion, corrigé ensuite.
+- **Symptôme** : sur `/signup` (instance sans administrateur), « Login as
+  Anonymous » recharge la page et laisse sur le formulaire de création : rien
+  ne semble se passer.
+- **Cause** : `this.$router.go({ name: 'Data' })`. `go()` prend un nombre de
+  pas dans l'historique ; l'objet valait 0, soit un rechargement. L'intention
+  était `push`. Même code sur `4-dev`. Aucune spec ne visitait `/signup`.
+- **Solution** : `router.push({ name: 'Data' })`. `login.spec` part de
+  `/signup`, se connecte en anonyme et vérifie qu'on arrive sur Data sans
+  rechargement (un marqueur posé sur `window` doit survivre).
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
