@@ -364,6 +364,25 @@ describe('Environments', function() {
     cy.get('#offline-toast').should('not.exist')
   })
 
+  it('Should keep the session when editing the current connection', () => {
+    cy.initLocalEnv(backendVersion)
+    cy.visit('/')
+    cy.get('[data-cy=App-loggedIn]').should('be.visible')
+
+    // Changer la couleur ne demande pas de se reconnecter : la session et
+    // son jeton restent (G-108).
+    cy.get('[data-cy="EnvironmentSwitch"]').first().click()
+    cy.get('[data-cy="EnvironmentSwitch-env_valid-edit"]').click()
+    cy.get('[data-cy="EnvColor--purple"]').click()
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+
+    cy.window()
+      .then(win => JSON.parse(win.localStorage.getItem('environments')).valid)
+      .should('include', { color: 'purple', token: 'anonymous' })
+    cy.get('[data-cy=App-loggedIn]').should('be.visible')
+    cy.url().should('not.contain', '/login')
+  })
+
   it('Should see an error when specifying the wrong backend version and should be able to fix it', () => {
     const wrongBackendVersion = backendVersion === 2 ? 1 : 2
     cy.initLocalEnv(wrongBackendVersion)
