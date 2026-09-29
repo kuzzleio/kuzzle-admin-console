@@ -45,177 +45,181 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import { pageTitle } from '../services/pageTitle';
 import { antiGlitchOverlayTimeout } from '../utils';
 import { Alert } from '@/components/ui/alert';
+import { caught } from '@/lib/errors';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import OfflineSpinner from './Common/Offline.vue';
 import ErrorPage from './Error/KuzzleErrorPage.vue';
 
-export default {
-  name: 'ConnectionAwareContainer',
-  components: {
-    Alert,
-    ErrorPage,
-    OfflineSpinner,
-  },
-  setup() {
-    return {
-      authStore: useAuthStore(),
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  data() {
-    return {
-      offlineVisible: false,
-      showOfflineSpinner: false,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle', 'currentEnvironment']),
-    currentEnvironmentId() {
-      return this.kuzzleStore.currentId;
-    },
-    kuzzleError() {
-      return this.kuzzleStore.errorFromKuzzle;
-    },
-    online() {
-      return this.kuzzleStore.online;
-    },
-    connecting() {
-      return this.kuzzleStore.connecting;
-    },
-  },
-  watch: {
-    '$route.path': {
-      immediate: false,
-      handler() {
-        this.authenticationGuard();
-      },
-    },
-    $kuzzle: {
-      immediate: true,
-      handler(instance) {
-        if (!instance) {
-          return;
-        }
-        this.removeListeners();
-        this.initListeners();
-      },
-    },
-    currentEnvironmentId: {
-      immediate: true,
-      async handler() {
-        try {
-          await this.onEnvironmentSwitch();
-        } catch (error) {
-          this.$log.error(`ConnectionAwareContainer:currentEnvironmentWatch: ${error.message}`);
-        }
-      },
-    },
-    online: {
-      immediate: true,
-      handler() {
-        this.checkConnection();
-      },
-    },
-    connecting: {
-      immediate: true,
-      handler(val) {
-        this.showOfflineSpinner = val;
-        setTimeout(() => {
-          this.showOfflineSpinner = true;
-        }, antiGlitchOverlayTimeout);
-      },
-    },
-  },
-  beforeUnmount() {
-    this.removeListeners();
-  },
-  methods: {
-    initListeners() {
-      if (!this.$kuzzle) {
-        return;
-      }
-      this.$kuzzle.on('networkError', (error) => {
-        this.$log.error(`ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`);
-      });
-      this.$kuzzle.addListener('connected', async () => {
-        this.kuzzleStore.connecting = false;
-        this.kuzzleStore.online = true;
+defineEmits<{
+  (e: 'environment::create', id: string): void;
+  (e: 'environment::delete', id: string): void;
+  (e: 'environment::importEnv'): void;
+}>();
 
-        this.$log.debug('ConnectionAwareContainer::initializing auth upon connection...');
-        try {
-          await this.authStore.init();
-        } catch (error) {
-          this.$log.error(
-            `ConnectionAwareContainer:initializing auth: "${error.message}" - code: ${error.code} - id: ${error.id}`,
-          );
-          if (error.id === 'api.process.incompatible_sdk_version') {
-            return this.kuzzleStore.onConnectionError(error);
-          }
-        }
-        this.authenticationGuard();
-      });
-      this.$kuzzle.addListener('reconnected', () => {
-        this.kuzzleStore.connecting = false;
-        this.kuzzleStore.online = true;
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const route = useRoute();
+const router = useRouter();
 
-        this.$log.debug('ConnectionAwareContainer::checking token after reconnection...');
-        this.authStore.checkToken();
-      });
-      this.$kuzzle.addListener('disconnected', () => {
-        this.$log.debug('ConnectionAwareContainer::backend went offline...');
-        this.kuzzleStore.online = false;
-      });
-    },
-    removeListeners() {
-      if (!this.$kuzzle) {
-        return;
-      }
-      this.$kuzzle.removeAllListeners('networkError');
-      this.$kuzzle.removeAllListeners('connected');
-      this.$kuzzle.removeAllListeners('reconnected');
-      this.$kuzzle.removeAllListeners('disconnected');
-    },
-    checkConnection() {
-      this.offlineVisible = this.online === false && this.connecting === false;
-    },
-    updatePageTitle() {
-      document.title = pageTitle(this.$route, this.currentEnvironment?.name);
-    },
-    async onEnvironmentSwitch() {
-      this.$log.debug('ConnectionAwareContainer::environmentSwitched');
-      this.authStore.tokenValid = false;
+const offlineVisible = ref(false);
+const showOfflineSpinner = ref(false);
 
-      this.updatePageTitle();
-      this.removeListeners();
-      this.initListeners();
-      try {
-        await this.kuzzleStore.connectToCurrentEnvironment();
-      } catch (error) {
-        this.$log.error(`ConnectionAwareContainer:onEnvironmentSwitch: ${error.message}`);
+const kuzzleError = computed(() => kuzzleStore.errorFromKuzzle);
+const connecting = computed(() => kuzzleStore.connecting);
+
+function initListeners(): void {
+  const kuzzle = kuzzleStore.$kuzzle;
+  if (!kuzzle) {
+    return;
+  }
+  kuzzle.on('networkError', (error) => {
+    logger.error(`ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`);
+  });
+  kuzzle.addListener('connected', async () => {
+    kuzzleStore.connecting = false;
+    kuzzleStore.online = true;
+
+    logger.debug('ConnectionAwareContainer::initializing auth upon connection...');
+    try {
+      await authStore.init();
+    } catch (error) {
+      const { code, id, message } = caught(error);
+      logger.error(
+        `ConnectionAwareContainer:initializing auth: "${message}" - code: ${code} - id: ${id}`,
+      );
+      if (id === 'api.process.incompatible_sdk_version' && error instanceof Error) {
+        return kuzzleStore.onConnectionError(error);
       }
-    },
-    async authenticationGuard() {
-      this.$log.debug('ConnectionAwareContainer::authentication guard');
-      if (this.$route.meta.skipLogin) {
-        return;
-      }
-      if (
-        this.$route.matched.some((record) => record.meta.requiresAuth) &&
-        !this.authStore.isAuthenticated
-      ) {
-        this.$log.debug('ConnectionAwareContainer::not authenticated');
-        this.$router.push({ name: 'Login', query: { to: this.$route.name } });
-      }
-    },
+    }
+    authenticationGuard();
+  });
+  kuzzle.addListener('reconnected', () => {
+    kuzzleStore.connecting = false;
+    kuzzleStore.online = true;
+
+    logger.debug('ConnectionAwareContainer::checking token after reconnection...');
+    authStore.checkToken();
+  });
+  kuzzle.addListener('disconnected', () => {
+    logger.debug('ConnectionAwareContainer::backend went offline...');
+    kuzzleStore.online = false;
+  });
+}
+
+function removeListeners(): void {
+  const kuzzle = kuzzleStore.$kuzzle;
+  if (!kuzzle) {
+    return;
+  }
+  kuzzle.removeAllListeners('networkError');
+  kuzzle.removeAllListeners('connected');
+  kuzzle.removeAllListeners('reconnected');
+  kuzzle.removeAllListeners('disconnected');
+}
+
+function checkConnection(): void {
+  offlineVisible.value = kuzzleStore.online === false && kuzzleStore.connecting === false;
+}
+
+function updatePageTitle(): void {
+  document.title = pageTitle(route, kuzzleStore.currentEnvironment?.name);
+}
+
+async function onEnvironmentSwitch(): Promise<void> {
+  logger.debug('ConnectionAwareContainer::environmentSwitched');
+  authStore.tokenValid = false;
+
+  updatePageTitle();
+  removeListeners();
+  initListeners();
+  try {
+    await kuzzleStore.connectToCurrentEnvironment();
+  } catch (error) {
+    logger.error(`ConnectionAwareContainer:onEnvironmentSwitch: ${caught(error).message}`);
+  }
+}
+
+async function authenticationGuard(): Promise<void> {
+  logger.debug('ConnectionAwareContainer::authentication guard');
+  if (route.meta.skipLogin) {
+    return;
+  }
+  if (route.matched.some((record) => record.meta.requiresAuth) && !authStore.isAuthenticated) {
+    logger.debug('ConnectionAwareContainer::not authenticated');
+    router.push({
+      name: 'Login',
+      query: { to: typeof route.name === 'string' ? route.name : undefined },
+    });
+  }
+}
+
+/*
+ * Les observateurs sont déclarés dans l'ordre de l'option `watch` d'origine :
+ * ceux qui sont `immediate` partent à la création, l'un après l'autre, et
+ * l'ordre décide de qui branche les écouteurs du SDK en premier.
+ */
+watch(
+  () => route.path,
+  () => {
+    authenticationGuard();
   },
-};
+);
+
+watch(
+  () => kuzzleStore.$kuzzle,
+  (instance) => {
+    if (!instance) {
+      return;
+    }
+    removeListeners();
+    initListeners();
+  },
+  { immediate: true },
+);
+
+watch(
+  () => kuzzleStore.currentId,
+  async () => {
+    try {
+      await onEnvironmentSwitch();
+    } catch (error) {
+      logger.error(`ConnectionAwareContainer:currentEnvironmentWatch: ${caught(error).message}`);
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => kuzzleStore.online,
+  () => {
+    checkConnection();
+  },
+  { immediate: true },
+);
+
+watch(
+  connecting,
+  (val) => {
+    showOfflineSpinner.value = val;
+    setTimeout(() => {
+      showOfflineSpinner.value = true;
+    }, antiGlitchOverlayTimeout);
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  removeListeners();
+});
 </script>
 
 <style>

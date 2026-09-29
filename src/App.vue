@@ -22,7 +22,9 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue';
+
 import '@/assets/tailwind.css';
 import '@/assets/style.scss';
 import { Toaster } from '@/components/ui/sonner';
@@ -32,37 +34,24 @@ import ModalDelete from '@/components/Common/Environments/ModalDelete.vue';
 import ModalImport from '@/components/Common/Environments/ModalImport.vue';
 import TelemetryBanner from '@/components/TelemetryBanner.vue';
 
-export default {
-  name: 'KuzzleAdminConsole',
-  components: {
-    ModalCreateOrUpdate,
-    ModalDelete,
-    ModalImport,
-    TelemetryBanner,
-    Toaster,
-  },
-  data() {
-    return {
-      createOrUpdateOpen: false,
-      importOpen: false,
-      deleteOpen: false,
-      environmentId: null,
-    };
-  },
-  methods: {
-    editEnvironment(id) {
-      this.environmentId = id;
-      this.createOrUpdateOpen = true;
-    },
-    deleteEnvironment(id) {
-      this.environmentId = id;
-      this.deleteOpen = true;
-    },
-    importEnvironment() {
-      this.importOpen = true;
-    },
-  },
-};
+const createOrUpdateOpen = ref(false);
+const importOpen = ref(false);
+const deleteOpen = ref(false);
+const environmentId = ref<string>();
+
+function editEnvironment(id: string): void {
+  environmentId.value = id;
+  createOrUpdateOpen.value = true;
+}
+
+function deleteEnvironment(id: string): void {
+  environmentId.value = id;
+  deleteOpen.value = true;
+}
+
+function importEnvironment(): void {
+  importOpen.value = true;
+}
 </script>
 
 <style lang="scss" scoped>

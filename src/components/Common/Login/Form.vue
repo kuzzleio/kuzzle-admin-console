@@ -80,9 +80,9 @@
   </form>
 </template>
 
-<script>
-import { markRaw } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -95,149 +95,136 @@ import {
 import { FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Focus from '@/directives/focus.directive';
+import vFocus from '@/directives/focus.directive';
+import { caught } from '@/lib/errors';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
-export default {
-  name: 'LoginForm',
-  components: {
-    Alert,
-    Button,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-    FormItem,
-    Input,
-    Label,
-  },
-  directives: {
-    Focus,
-  },
-  props: {
-    onLogin: { type: Function, default: () => {} },
-  },
-  setup() {
-    return {
-      authStore: useAuthStore(),
-    };
-  },
-  data() {
-    return {
-      /*
-       * `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom.
-       * `markRaw` et non `Object.freeze` : Vue met en cache le constructeur
-       * sur les options du composant, et un objet gelé le lui interdit
-       * (G-032).
-       */
-      Button: markRaw(Button),
-      username: null,
-      password: null,
-      error: '',
-      strategies: ['keycloak'],
-      availableStrategies: [],
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle']),
-  },
-  mounted() {
-    this.loadAvailableStrategies();
-  },
-  methods: {
-    dismissError() {
-      this.error = '';
-    },
-    async login() {
-      this.error = '';
+const props = withDefaults(
+  defineProps<{
+    onLogin?: () => void | Promise<void>;
+  }>(),
+  { onLogin: () => {} },
+);
+
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const router = useRouter();
+
+const username = ref('');
+const password = ref('');
+const error = ref('');
+const strategies = ['keycloak'];
+const availableStrategies = ref<string[]>([]);
+
+function dismissError(): void {
+  error.value = '';
+}
+
+async function login(): Promise<void> {
+  error.value = '';
+  try {
+    await authStore.doLogin({
+      username: username.value,
+      password: password.value,
+    });
+
+    props.onLogin(); // TODO change this to $emit
+  } catch (err) {
+    const { field, id, message } = caught(err);
+    if (
+      [
+        'plugin.kuzzle-plugin-auth-passport-local.expired_password',
+        'plugin.kuzzle-plugin-auth-passport-local.must_change_password',
+      ].includes(id ?? '')
+    ) {
+      // `showIntro` passe en query : vue-router 4 écarte un paramètre
+      // absent du chemin, et l'avertissement ne s'affichait plus (G-104).
+      router.push({
+        name: 'ResetPassword',
+        params: { token: String(field('resetToken')) },
+        query: { showIntro: 'true' },
+      });
+    } else {
+      error.value = message;
+    }
+  }
+}
+
+async function loginAsAnonymous(): Promise<void> {
+  error.value = '';
+  if (kuzzleStore.$kuzzle) {
+    kuzzleStore.$kuzzle.jwt = null;
+  }
+  try {
+    await authStore.setSession('anonymous');
+    await props.onLogin();
+  } catch (err) {
+    error.value = caught(err).message;
+  }
+}
+
+async function loadAvailableStrategies(): Promise<void> {
+  const available: string[] = [];
+
+  await Promise.all(
+    strategies.map(async (strategy) => {
       try {
-        await this.authStore.doLogin({
-          username: this.username,
-          password: this.password,
+        await kuzzleStore.$kuzzle?.query({
+          controller: strategy,
+          action: 'getVersion',
         });
 
-        this.onLogin(); // TODO change this to $emit
+        available.push(strategy);
       } catch (err) {
-        if (
-          [
-            'plugin.kuzzle-plugin-auth-passport-local.expired_password',
-            'plugin.kuzzle-plugin-auth-passport-local.must_change_password',
-          ].includes(err.id)
-        ) {
-          // `showIntro` passe en query : vue-router 4 écarte un paramètre
-          // absent du chemin, et l'avertissement ne s'affichait plus (G-104).
-          this.$router.push({
-            name: 'ResetPassword',
-            params: { token: err.resetToken },
-            query: { showIntro: 'true' },
-          });
-        } else {
-          this.error = err.message;
-        }
+        console.error('error in getversion', err);
+        console.error(
+          `You either miss the getVersion from the ${strategy} controller, or the strategy does not implement the "connect with" on this console, in that case, you should use the local strategy`,
+        );
+        // Ignore strategies whose plugin controller is not available.
+        available.push(strategy);
       }
-    },
-    async loginAsAnonymous() {
-      this.error = '';
-      this.$kuzzle.jwt = null;
-      try {
-        await this.authStore.setSession('anonymous');
-        await this.onLogin();
-      } catch (error) {
-        this.error = error.message;
-      }
-    },
+    }),
+  );
 
-    async loadAvailableStrategies() {
-      const availableStrategies = [];
+  availableStrategies.value = available;
+}
 
-      await Promise.all(
-        this.strategies.map(async (strategy) => {
-          try {
-            await this.$kuzzle.query({
-              controller: strategy,
-              action: 'getVersion',
-            });
+async function loginWithStrategy(strategy: string): Promise<void> {
+  if (!strategy) {
+    return;
+  }
 
-            availableStrategies.push(strategy);
-          } catch (error) {
-            console.error('error in getversion', error);
-            console.error(
-              `You either miss the getVersion from the ${strategy} controller, or the strategy does not implement the "connect with" on this console, in that case, you should use the local strategy`,
-            );
-            // Ignore strategies whose plugin controller is not available.
-            availableStrategies.push(strategy);
-          }
-        }),
-      );
+  error.value = '';
+  if (kuzzleStore.$kuzzle) {
+    kuzzleStore.$kuzzle.jwt = null;
+  }
 
-      this.availableStrategies = availableStrategies;
-    },
+  try {
+    const response = await kuzzleStore.$kuzzle?.query({
+      controller: 'auth',
+      action: 'login',
+      strategy,
+      body: {
+        redirectUri: globalThis.location.origin,
+      },
+    });
 
-    async loginWithStrategy(strategy) {
-      if (!strategy) {
-        return;
-      }
+    // Les en-têtes de la réponse d'une stratégie OpenID ne sont pas dans le
+    // type du SDK : ils sont lus tels quels, et un absent vaut `'undefined'`,
+    // comme avant.
+    const headers =
+      response && 'headers' in response && typeof response.headers === 'object'
+        ? (response.headers ?? {})
+        : {};
+    localStorage.setItem('openid-sessionId', String(Reflect.get(headers, strategy)));
+    globalThis.location.href = String(Reflect.get(headers, 'location'));
+  } catch (err) {
+    error.value = caught(err).message;
+    localStorage.removeItem('openid-sessionId');
+  }
+}
 
-      this.error = '';
-      this.$kuzzle.jwt = null;
-
-      try {
-        const response = await this.$kuzzle.query({
-          controller: 'auth',
-          action: 'login',
-          strategy,
-          body: {
-            redirectUri: globalThis.location.origin,
-          },
-        });
-
-        localStorage.setItem('openid-sessionId', response.headers[strategy]);
-        globalThis.location.href = response.headers.location;
-      } catch (error) {
-        this.error = error.message;
-        localStorage.removeItem('openid-sessionId');
-      }
-    },
-  },
-};
+onMounted(() => {
+  loadAvailableStrategies();
+});
 </script>

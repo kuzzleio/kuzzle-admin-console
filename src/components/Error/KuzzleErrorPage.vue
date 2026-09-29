@@ -30,47 +30,34 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwitch.vue';
 import KuzzleLogo from '@/components/Common/KuzzleLogo.vue';
 
-export default {
-  name: 'KuzzleErrorPage',
-  components: {
-    KuzzleLogo,
-    Card,
-    CardContent,
-    EnvironmentSwitch,
-  },
-  setup() {
-    return {
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  data() {
-    return {
-      host: null,
-      port: null,
-    };
-  },
-  computed: {
-    kuzzleError() {
-      return this.kuzzleStore.errorFromKuzzle;
-    },
-  },
-  methods: {
-    editEnvironment(id) {
-      this.$emit('environment::create', id);
-    },
-    deleteEnvironment(id) {
-      this.$emit('environment::delete', id);
-    },
-    importEnv() {
-      this.$emit('environment::importEnv');
-    },
-  },
-};
+const emit = defineEmits<{
+  (e: 'environment::create', id: string): void;
+  (e: 'environment::delete', id: string): void;
+  (e: 'environment::importEnv'): void;
+}>();
+
+const kuzzleStore = useKuzzleStore();
+
+const kuzzleError = computed(() => kuzzleStore.errorFromKuzzle);
+
+function editEnvironment(id: string): void {
+  emit('environment::create', id);
+}
+
+function deleteEnvironment(id: string): void {
+  emit('environment::delete', id);
+}
+
+function importEnv(): void {
+  emit('environment::importEnv');
+}
 </script>
