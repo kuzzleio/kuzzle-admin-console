@@ -1,17 +1,19 @@
 <template>
   <input
     :checked="modelValue"
-    :class="classes"
+    :class="cn(checkboxClasses, props.class)"
     type="checkbox"
     v-bind="$attrs"
     @change="handleChange"
   />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
+
+import { checkboxClasses } from '.';
 
 /*
  * Checkbox — API publique de shadcn-vue (ADR-0009).
@@ -23,46 +25,32 @@ import { classMerge } from '../class-merge';
  *   lignes de liste au clavier et à la souris, et les specs cliquent l'élément
  *   qui porte le `data-cy` : un input natif fait les deux sans qu'on ait à
  *   réimplémenter l'état indéterminé, le focus ni la touche Espace ;
- * - `v-model` passe par l'option `model` de Vue 2, comme `Input` (G-012).
+ * - `v-model` reste la paire `modelValue` / `update:modelValue`, sans
+ *   `defineModel` (ADR-0060).
  *
- * La méthode s'appelle `handleChange` et non `onChange` : un `@change` posé par
- * le site d'appel arrive ici comme une prop nommée `onChange`, qui masquerait
- * la méthode (G-047). `npm run check:listener-collisions` garde la règle.
+ * La fonction s'appelle `handleChange` et non `onChange` : c'était la parade à
+ * G-047, où un `@change` du site d'appel masquait la méthode du même nom. Un
+ * `<script setup>` n'y est plus exposé, le nom reste.
  *
  * La valeur est un booléen. `b-form-checkbox` permettait `value` /
  * `unchecked-value` pour stocker autre chose — la console s'en servait pour
  * ranger les chaînes `'true'` et `'false'`, ce qui ne servait rien.
- *
- * Le preflight n'étant pas chargé (ADR-0008), la taille et le curseur sont
- * posés explicitement plutôt que supposés.
  */
-export const checkboxClasses = [
-  'size-4 shrink-0 cursor-pointer align-middle',
-  'accent-primary',
-  'outline-none',
-  'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-  'disabled:cursor-not-allowed disabled:opacity-50',
-].join(' ');
+defineOptions({ inheritAttrs: false });
 
-export default defineComponent({
-  name: 'Checkbox',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  props: {
-    modelValue: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses(checkboxClasses);
-    },
-  },
-  methods: {
-    handleChange(event: Event): void {
-      this.$emit('update:modelValue', (event.target as HTMLInputElement).checked);
-    },
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    class?: HTMLAttributes['class'];
+    modelValue?: boolean;
+  }>(),
+  { modelValue: false },
+);
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', payload: boolean): void;
+}>();
+
+function handleChange(event: Event): void {
+  emit('update:modelValue', (event.target as HTMLInputElement).checked);
+}
 </script>

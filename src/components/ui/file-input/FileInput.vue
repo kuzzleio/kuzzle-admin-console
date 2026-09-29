@@ -14,7 +14,7 @@
       class="sr-only"
       :disabled="disabled"
       type="file"
-      v-bind="inputAttrs"
+      v-bind="$attrs"
       @change="onChange"
     />
     <span class="min-w-0 flex-1 truncate px-3" :class="fileName ? '' : 'text-muted-foreground'">
@@ -29,10 +29,10 @@
   </label>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed, type HTMLAttributes, ref, useTemplateRef } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /*
  * FileInput — champ fichier dont tout le texte est celui de la console.
@@ -47,59 +47,73 @@ import { classMerge } from '../class-merge';
  * shadcn-vue n'a pas de composant fichier : l'API reprend celle d'`Input`.
  * Les attributs du site d'appel (`data-cy`, `@change`…) vont sur l'input ;
  * seule la classe va sur le cadre. `reset()` vide la sélection, ce que
- * `b-form-file` exposait sous le même nom.
+ * `b-form-file` exposait sous le même nom ; `ModalImport` l'appelle par sa
+ * référence, d'où `defineExpose`.
  *
  * Le dépôt d'un fichier sur le cadre est conservé : il affecte les fichiers à
  * l'input et émet `change`, pour que le site d'appel n'ait qu'un chemin.
  */
-export default defineComponent({
-  name: 'FileInput',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  props: {
-    accept: { default: undefined, type: String },
-    browseText: { default: 'Browse', type: String },
-    disabled: { default: false, type: Boolean },
-    id: { default: undefined, type: String },
-    placeholder: { default: 'No file chosen', type: String },
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
+  defineProps<{
+    accept?: string;
+    browseText?: string;
+    class?: HTMLAttributes['class'];
+    disabled?: boolean;
+    id?: string;
+    placeholder?: string;
+  }>(),
+  {
+    accept: undefined,
+    browseText: 'Browse',
+    disabled: false,
+    id: undefined,
+    placeholder: 'No file chosen',
   },
-  data() {
-    return { dragging: false, fileName: '' };
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses(
-        'flex h-9 w-full min-w-0 cursor-pointer items-center overflow-hidden',
-        'rounded-sm border border-input bg-card font-sans text-sm text-foreground',
-        'transition-colors',
-        'focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/10',
-        'data-dragging:border-ring',
-        this.disabled ? 'cursor-not-allowed opacity-50' : '',
-      );
-    },
-    inputAttrs(): Record<string, unknown> {
-      const { class: _class, ...attrs } = this.$attrs;
-      return attrs;
-    },
-  },
-  methods: {
-    onChange(event: Event): void {
-      const files = (event.target as HTMLInputElement).files;
-      this.fileName = files && files.length > 0 ? files[0].name : '';
-    },
-    onDrop(event: DragEvent): void {
-      this.dragging = false;
-      const input = this.$refs.input as HTMLInputElement;
-      if (this.disabled || !event.dataTransfer || event.dataTransfer.files.length === 0) {
-        return;
-      }
-      input.files = event.dataTransfer.files;
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    },
-    reset(): void {
-      (this.$refs.input as HTMLInputElement).value = '';
-      this.fileName = '';
-    },
-  },
-});
+);
+
+const inputEl = useTemplateRef<HTMLInputElement>('input');
+const dragging = ref(false);
+const fileName = ref('');
+
+const classes = computed((): string =>
+  cn(
+    'flex h-9 w-full min-w-0 cursor-pointer items-center overflow-hidden',
+    'rounded-sm border border-input bg-card font-sans text-sm text-foreground',
+    'transition-colors',
+    'focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/10',
+    'data-dragging:border-ring',
+    props.disabled ? 'cursor-not-allowed opacity-50' : '',
+    props.class,
+  ),
+);
+
+function onChange(event: Event): void {
+  const files = (event.target as HTMLInputElement).files;
+  fileName.value = files && files.length > 0 ? files[0].name : '';
+}
+
+function onDrop(event: DragEvent): void {
+  dragging.value = false;
+  if (
+    props.disabled ||
+    !inputEl.value ||
+    !event.dataTransfer ||
+    event.dataTransfer.files.length === 0
+  ) {
+    return;
+  }
+  inputEl.value.files = event.dataTransfer.files;
+  inputEl.value.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+function reset(): void {
+  if (inputEl.value) {
+    inputEl.value.value = '';
+  }
+  fileName.value = '';
+}
+
+defineExpose({ reset });
 </script>

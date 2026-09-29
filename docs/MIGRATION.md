@@ -913,7 +913,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 8. `Resizable`
   - [x] 9. `Toast` — sur `vue-sonner`, l'état hors ligne en bandeau ([ADR-0058](adr/0058-toasts-sur-vue-sonner.md))
 - [ ] Composition API ([ADR-0060](adr/0060-composition-api-par-domaine.md)), un domaine par lot — 77 SFC sur 193 au départ :
-  - [ ] 1. `ui/` restants, retrait de `classMerge`
+  - [x] 1. `ui/` restants, retrait de `classMerge`
   - [ ] 2. Racine, `Common/Login`, `Error`, `Materialize`
   - [ ] 3. `Common/` hors `Filters` et `Environments`
   - [ ] 4. `Common/Environments`

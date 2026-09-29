@@ -1,14 +1,20 @@
 <template>
-  <p :class="classes" aria-live="assertive" data-slot="form-message" role="alert" v-bind="$attrs">
+  <p
+    :class="cn('font-sans text-sm text-destructive', props.class)"
+    aria-live="assertive"
+    data-slot="form-message"
+    role="alert"
+    v-bind="$attrs"
+  >
     <i aria-hidden="true" class="fas fa-exclamation-circle me-1" />
     <slot />
   </p>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /*
  * Message d'erreur d'un champ. Remplace `invalid-feedback` de `b-form-group`.
@@ -26,14 +32,9 @@ import { classMerge } from '../class-merge';
  * elle est ici dans le message, qui la porte pour tous les formulaires
  * (E-08 de la comparaison v4 / v5).
  */
-export default defineComponent({
-  name: 'FormMessage',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('font-sans text-sm text-destructive');
-    },
-  },
-});
+defineOptions({ inheritAttrs: false });
+
+const props = defineProps<{
+  class?: HTMLAttributes['class'];
+}>();
 </script>

@@ -1,23 +1,22 @@
 <template>
-  <p :class="classes" data-slot="form-description" v-bind="$attrs">
+  <p
+    :class="cn('font-sans text-sm text-muted-foreground', props.class)"
+    data-slot="form-description"
+    v-bind="$attrs"
+  >
     <slot />
   </p>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /* Texte d'aide d'un champ. Remplace la prop `description` de `b-form-group`. */
-export default defineComponent({
-  name: 'FormDescription',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('font-sans text-sm text-muted-foreground');
-    },
-  },
-});
+defineOptions({ inheritAttrs: false });
+
+const props = defineProps<{
+  class?: HTMLAttributes['class'];
+}>();
 </script>
