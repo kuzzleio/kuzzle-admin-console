@@ -3860,6 +3860,23 @@ Gabarit à copier :
   lots d'ADR-0060 font entrer dans son périmètre.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-110 — Après une suppression, modifier une requête sauvegardée plus bas levait une erreur, depuis la v4
+
+- **Contexte** : lot 5 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  en écrivant le test de [G-109](#g-109).
+- **Symptôme** : on ouvre la deuxième requête sauvegardée, on supprime la
+  première, on modifie la deuxième et on l'enregistre : l'ancienne version
+  reste dans le stockage, et la console affiche `Cannot read properties of
+  undefined (reading 'query')`.
+- **Cause** : chaque onglet retient le rang de sa requête (`savedIdx`).
+  `deleteSavedQuery` retirait l'entrée sans décaler les rangs suivants :
+  l'onglet désignait une entrée qui n'existait plus, et `onQueryChanged`
+  levait une erreur avant d'enregistrer la saisie. Même code sur `4-dev`.
+- **Solution** : après le retrait, les rangs supérieurs à celui supprimé
+  reculent d'un cran, dans les onglets comme dans les requêtes.
+  `api-actions.spec` rejoue le scénario.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
