@@ -54,10 +54,12 @@ describe('Treeview', () => {
 
   // Sous `md`, l'arbre passe au-dessus du contenu : côte à côte, il ne
   // laissait qu'une centaine de pixels au contenu d'un écran de 375 (G-081).
+  // La poignée quitte le DOM : cachée, elle captait encore les appuis (G-099).
   it('Should stack the LeftBar above the content on a narrow screen', () => {
     cy.viewport(375, 800)
     cy.visit(`/#/data/`)
-    cy.get('[data-cy=sidebarResizer]').should('not.be.visible')
+    cy.get('[data-cy=DataLayout-sidebarWrapper]').should('be.visible')
+    cy.get('[data-cy=sidebarResizer]').should('not.exist')
     cy.get('.DataLayout-contentWrapper')
       .invoke('outerWidth')
       .should('be.gte', 360)
@@ -66,16 +68,21 @@ describe('Treeview', () => {
       .should('be.gte', 360)
   })
 
+  // La largeur choisie à la poignée survit au rechargement (ADR-0021).
   it('Should be able to resize the LeftBar', () => {
     cy.visit(`/#/data/`)
-    cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should(
-      'not.have.attr',
-      'style'
-    )
-    movePiece(`[data-cy=sidebarResizer]`, 40, 200)
-    cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should(
-      'have.css',
-      'width'
-    )
+    cy.get('[data-cy=DataLayout-sidebarWrapper]')
+      .invoke('outerWidth')
+      .then(initialWidth => {
+        movePiece(`[data-cy=sidebarResizer]`, 40, 200)
+        cy.get('[data-cy=DataLayout-sidebarWrapper]')
+          .invoke('outerWidth')
+          .should('be.gt', initialWidth + 20)
+
+        cy.reload()
+        cy.get('[data-cy=DataLayout-sidebarWrapper]')
+          .invoke('outerWidth')
+          .should('be.gt', initialWidth + 20)
+      })
   })
 })

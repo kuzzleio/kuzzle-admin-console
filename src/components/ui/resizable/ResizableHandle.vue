@@ -1,75 +1,74 @@
 <template>
-  <button
-    :aria-label="label"
-    :aria-orientation="resizable.direction === 'vertical' ? 'horizontal' : 'vertical'"
-    :class="classes"
-    data-slot="resizable-handle"
-    role="separator"
-    tabindex="0"
-    type="button"
-    v-bind="$attrs"
-    @mousedown.prevent="resizable.startDrag($event)"
-    @touchstart.prevent="resizable.startDrag($event)"
-    @keydown.left.prevent="resizable.stepResize(-1)"
-    @keydown.up.prevent="resizable.stepResize(-1)"
-    @keydown.right.prevent="resizable.stepResize(1)"
-    @keydown.down.prevent="resizable.stepResize(1)"
-  >
-    <span aria-hidden="true" :class="gripClasses" />
-  </button>
-</template>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-import { classMerge } from '../class-merge';
-import { resizableContext } from './context';
-
-/*
- * ResizableHandle — API publique de shadcn-vue (ADR-0021).
- *
- * `role="separator"` avec `aria-orientation`, et un vrai `<button>` : la
- * poignée de `vue-multipane` était un `<div>` sans rôle ni focus, donc
- * invisible pour qui n'utilise pas la souris.
- *
- * Sans preflight (ADR-0008), un `<button>` garde la bordure et le fond du
- * navigateur : les deux sont retirés explicitement (G-021).
- */
-export default defineComponent({
-  name: 'ResizableHandle',
-  mixins: [classMerge, resizableContext],
-  inheritAttrs: false,
-  props: {
-    label: {
-      default: 'Resize the panels',
-      type: String,
-    },
-  },
-  computed: {
-    classes(): string {
-      return this.mergeClasses(
-        'appearance-none border-0 p-0',
+  <SplitterResizeHandle
+    :aria-orientation="group.direction.value === 'horizontal' ? 'vertical' : 'horizontal'"
+    :class="
+      cn(
         'relative z-2 flex shrink-0 items-center justify-center',
         'bg-border transition-colors hover:bg-muted-foreground',
+        'data-[state=drag]:bg-muted-foreground',
         'outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        this.resizable.direction === 'vertical'
-          ? 'h-1.5 w-full cursor-row-resize'
-          : 'h-full w-1.5 cursor-col-resize',
-        /* La poignée fait 6 px ; sa zone de saisie en fait 24 (WCAG 2.5.8),
-           par un pseudo-élément qui déborde sur les panneaux sans les
-           décaler. */
-        "before:absolute before:content-['']",
-        this.resizable.direction === 'vertical'
-          ? 'before:inset-x-0 before:-inset-y-2.5'
-          : 'before:inset-y-0 before:-inset-x-2.5',
-        this.resizable.dragging ? 'bg-muted-foreground' : '',
-      );
-    },
-    gripClasses(): string {
-      return this.resizable.direction === 'vertical'
-        ? 'h-0.5 w-8 rounded-full bg-background/70'
-        : 'h-8 w-0.5 rounded-full bg-background/70';
-    },
-  },
-});
+        'h-full w-1.5 cursor-col-resize',
+        'data-[orientation=vertical]:h-1.5 data-[orientation=vertical]:w-full data-[orientation=vertical]:cursor-row-resize',
+        props.class,
+      )
+    "
+    data-slot="resizable-handle"
+    v-bind="forwarded"
+  >
+    <div
+      v-if="props.withHandle"
+      class="h-8 w-0.5 rounded-full bg-background/70 [[data-orientation=vertical]>&]:h-0.5 [[data-orientation=vertical]>&]:w-8"
+    >
+      <slot />
+    </div>
+  </SplitterResizeHandle>
+</template>
+
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import {
+  injectSplitterGroupContext,
+  SplitterResizeHandle,
+  type SplitterResizeHandleEmits,
+  type SplitterResizeHandleProps,
+  useForwardPropsEmits,
+} from 'reka-ui';
+
+import { cn } from '@/lib/utils';
+
+/*
+ * ResizableHandle de shadcn-vue (ADR-0021, ADR-0054) : `role="separator"`,
+ * focusable, déplaçable aux flèches, posés par `reka-ui`. Le nom vient du site
+ * d'appel, en `aria-label`.
+ *
+ * Écarts, tous hérités de la primitive précédente :
+ *
+ * - **DA** : une barre de 6 px, et non le filet d'1 px de l'amont ; la
+ *   poignée (`with-handle`) est un trait, pas l'icône lucide `GripVertical`
+ *   (DESIGN.md) ;
+ * - **zone de saisie de 24 px** (WCAG 2.5.8). `reka-ui` ne regarde pas où le
+ *   pointeur tombe dans le DOM : il compare sa position au rectangle de la
+ *   poignée, élargi de `hit-area-margins`. 9 px de chaque côté d'une barre de
+ *   6 font les 24 ; au doigt, la marge de l'amont (15 px) les dépasse déjà ;
+ * - **`aria-orientation`** : `reka-ui` n'en pose pas, et un `separator` sans
+ *   elle est annoncé horizontal. Une poignée entre deux panneaux côte à côte
+ *   est verticale.
+ *
+ * Une poignée cachée par une classe (`hidden`) reste enregistrée, avec un
+ * rectangle nul en haut à gauche de la page : `reka-ui` y capte les appuis
+ * dans sa marge. Pour la retirer sous un point de rupture, un `v-if`
+ * (G-099).
+ */
+const props = withDefaults(
+  defineProps<
+    SplitterResizeHandleProps & { class?: HTMLAttributes['class']; withHandle?: boolean }
+  >(),
+  { hitAreaMargins: () => ({ coarse: 15, fine: 9 }), tabindex: 0 },
+);
+const emits = defineEmits<SplitterResizeHandleEmits>();
+
+const group = injectSplitterGroupContext();
+const delegatedProps = reactiveOmit(props, 'class', 'withHandle');
+const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>

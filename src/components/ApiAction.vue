@@ -1,10 +1,14 @@
 <template>
-  <!-- Sous `md`, la liste passe au-dessus des onglets, comme l'arbre de Data. -->
-  <ResizablePanelGroup class="ApiActionLayout flex-col md:flex-row" @resize="saveNewPaneSize">
+  <!--
+    Sous `md`, la liste passe au-dessus des onglets, comme l'arbre de Data ;
+    les `!` remplacent le style en ligne de `reka-ui` (G-099).
+  -->
+  <ResizablePanelGroup class="ApiActionLayout max-md:flex-col!" direction="horizontal">
     <ResizablePanel
-      class="DataLayout-sidebarWrapper max-h-[35vh] shrink-0 overflow-auto md:h-full md:max-h-none md:w-(--pane-size)"
-      :style="{ '--pane-size': paneSize || 'var(--sidebar-width)' }"
+      class="DataLayout-sidebarWrapper max-h-[35vh] overflow-auto! max-md:flex-none! md:max-h-none"
       data-cy="DataLayout-sidebarWrapper"
+      :default-size="sidebarWidth"
+      size-unit="px"
     >
       <QueryList
         :saved-queries="savedQueries"
@@ -15,95 +19,97 @@
     </ResizablePanel>
 
     <ResizableHandle
-      class="hidden md:flex"
+      v-if="sideBySide"
+      aria-label="Resize the saved queries list"
       data-cy="sidebarResizer"
-      label="Resize the saved queries list"
+      with-handle
     />
 
-    <ResizablePanel
-      class="DataLayout-contentWrapper min-h-0 flex-1 overflow-auto p-2 md:h-full md:p-4"
-    >
-      <Card v-if="!loading" class="md:h-full">
-        <Tabs v-model="currentTab" class="min-h-0 md:h-full" :unmount-on-hide="false">
-          <!--
-            `b-tabs` avait un slot `#tabs-end` pour le bouton « + ». La
-            primitive n'en a pas : la barre et le bouton sont composés ici,
-            là où l'on sait ce que ce bouton fait (ADR-0017).
+    <ResizablePanel class="DataLayout-contentWrapper min-h-0 overflow-auto!">
+      <!-- Le padding dans un enfant, comme dans Data (G-099). -->
+      <div class="box-border p-2 md:h-full md:p-4">
+        <Card v-if="!loading" class="md:h-full">
+          <Tabs v-model="currentTab" class="min-h-0 md:h-full" :unmount-on-hide="false">
+            <!--
+              `b-tabs` avait un slot `#tabs-end` pour le bouton « + ». La
+              primitive n'en a pas : la barre et le bouton sont composés ici,
+              là où l'on sait ce que ce bouton fait (ADR-0017).
 
-            `overflow-x-auto` force `overflow-y: auto`, et le repère de l'onglet
-            actif déborde d'1 px (`-mb-px`) : une barre de défilement verticale
-            apparaissait. `pb-px` loge ce pixel dans la barre, `overflow-y-hidden`
-            écarte toute autre cause (E-13 de la comparaison v4 / v5).
-          -->
-          <div class="flex items-center border-b border-border px-2">
-            <TabsList class="min-w-0 flex-1 overflow-x-auto overflow-y-hidden border-b-0 pb-px">
-              <TabsTrigger
-                v-for="(tabContent, tabIdx) of tabs"
-                :key="`query-${tabIdx}-${tabContent.name}`"
-                :data-cy="`api-actions-tab-${tabIdx}`"
-                aria-keyshortcuts="Delete"
-                :title="tabContent.name"
-                :value="String(tabIdx)"
-                @keydown.delete.prevent="closeTabFromKeyboard(tabIdx)"
-              >
-                <span class="max-w-40 truncate">{{ formatTabName(tabContent) }}</span>
-                <!--
-                  Un bouton de fermeture dans l'onglet serait un contrôle
-                  imbriqué dans un autre (`nested-interactive`), et un bouton à
-                  côté serait un enfant du `tablist` qui n'est pas un onglet.
-                  La croix est donc réservée à la souris ; au clavier, Suppr
-                  ferme l'onglet, comme le prévoit le motif ARIA du *tablist*,
-                  et `aria-keyshortcuts` l'annonce.
-                -->
-                <span
-                  aria-hidden="true"
-                  class="-mr-1 inline-flex size-6 items-center justify-center rounded-sm opacity-60 hover:bg-muted hover:opacity-100"
-                  :data-cy="`api-actions-tab-close-${tabIdx}`"
-                  @click.stop="closeTab(tabIdx)"
+              `overflow-x-auto` force `overflow-y: auto`, et le repère de l'onglet
+              actif déborde d'1 px (`-mb-px`) : une barre de défilement verticale
+              apparaissait. `pb-px` loge ce pixel dans la barre, `overflow-y-hidden`
+              écarte toute autre cause (E-13 de la comparaison v4 / v5).
+            -->
+            <div class="flex items-center border-b border-border px-2">
+              <TabsList class="min-w-0 flex-1 overflow-x-auto overflow-y-hidden border-b-0 pb-px">
+                <TabsTrigger
+                  v-for="(tabContent, tabIdx) of tabs"
+                  :key="`query-${tabIdx}-${tabContent.name}`"
+                  :data-cy="`api-actions-tab-${tabIdx}`"
+                  aria-keyshortcuts="Delete"
+                  :title="tabContent.name"
+                  :value="String(tabIdx)"
+                  @keydown.delete.prevent="closeTabFromKeyboard(tabIdx)"
                 >
-                  <i class="fas fa-times" />
-                </span>
-              </TabsTrigger>
-            </TabsList>
+                  <span class="max-w-40 truncate">{{ formatTabName(tabContent) }}</span>
+                  <!--
+                    Un bouton de fermeture dans l'onglet serait un contrôle
+                    imbriqué dans un autre (`nested-interactive`), et un bouton à
+                    côté serait un enfant du `tablist` qui n'est pas un onglet.
+                    La croix est donc réservée à la souris ; au clavier, Suppr
+                    ferme l'onglet, comme le prévoit le motif ARIA du *tablist*,
+                    et `aria-keyshortcuts` l'annonce.
+                  -->
+                  <span
+                    aria-hidden="true"
+                    class="-mr-1 inline-flex size-6 items-center justify-center rounded-sm opacity-60 hover:bg-muted hover:opacity-100"
+                    :data-cy="`api-actions-tab-close-${tabIdx}`"
+                    @click.stop="closeTab(tabIdx)"
+                  >
+                    <i class="fas fa-times" />
+                  </span>
+                </TabsTrigger>
+              </TabsList>
 
-            <Button
-              aria-label="Add a tab"
-              class="shrink-0"
-              data-cy="api-actions-tab-plus"
-              size="icon"
-              variant="ghost"
-              @click="addNewTab"
+              <Button
+                aria-label="Add a tab"
+                class="shrink-0"
+                data-cy="api-actions-tab-plus"
+                size="icon"
+                variant="ghost"
+                @click="addNewTab"
+              >
+                <b>+</b>
+              </Button>
+            </div>
+
+            <!--
+              `:unmount-on-hide="false"` sur `Tabs` : chaque onglet porte un
+              éditeur Ace dont la saisie n'est remontée au parent que lorsqu'elle
+              est un JSON valide. Un panneau démonté perdrait la saisie en cours
+              — ce que `b-tabs`, qui gardait tout monté, ne faisait pas
+              (ADR-0021).
+            -->
+            <TabsContent
+              v-for="(tabContent, tabIdx) of tabs"
+              :key="`query-content-${tabIdx}-${tabContent.name}`"
+              class="min-h-0 p-3"
+              :value="String(tabIdx)"
             >
-              <b>+</b>
-            </Button>
-          </div>
-
-          <!--
-            `:unmount-on-hide="false"` sur `Tabs` : chaque onglet porte un
-            éditeur Ace dont la saisie n'est remontée au parent que lorsqu'elle
-            est un JSON valide. Un panneau démonté perdrait la saisie en cours
-            — ce que `b-tabs`, qui gardait tout monté, ne faisait pas
-            (ADR-0021).
-          -->
-          <TabsContent
-            v-for="(tabContent, tabIdx) of tabs"
-            :key="`query-content-${tabIdx}-${tabContent.name}`"
-            class="min-h-0 p-3"
-            :value="String(tabIdx)"
-          >
-            <QueryCard
-              :api="api"
-              :openapi="openapi"
-              :query="tabContent.query"
-              :response="tabContent.response"
-              :tab-idx="tabIdx"
-              @saveQuery="saveQuery"
-              @queryChanged="onQueryChanged"
-              @performQuery="performQuery"
-            />
-          </TabsContent>
-        </Tabs>
-      </Card>
+              <QueryCard
+                :api="api"
+                :openapi="openapi"
+                :query="tabContent.query"
+                :response="tabContent.response"
+                :tab-idx="tabIdx"
+                @saveQuery="saveQuery"
+                @queryChanged="onQueryChanged"
+                @performQuery="performQuery"
+              />
+            </TabsContent>
+          </Tabs>
+        </Card>
+      </div>
     </ResizablePanel>
 
     <SaveQueryModal
@@ -122,8 +128,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useSideBySide } from '@/composables/useSideBySide';
 import { useAuthStore, useKuzzleStore } from '@/stores';
-import { truncateName } from '@/utils';
+import { cssPixels, truncateName } from '@/utils';
 
 import QueryCard from '@/components/ApiAction/QueryCard.vue';
 import QueryList from '@/components/ApiAction/QueryList.vue';
@@ -144,13 +151,16 @@ export default {
     SaveQueryModal,
     QueryList,
   },
+  setup() {
+    return { sideBySide: useSideBySide() };
+  },
   data() {
     return {
       saveQueryOpen: false,
       tabs: [],
       currentTabIdx: 0,
-      /* Largeur de la liste des requêtes sauvegardées, en pixels. */
-      paneSize: '',
+      /* Largeur initiale de la liste des requêtes sauvegardées, en pixels. */
+      sidebarWidth: cssPixels('--sidebar-width'),
       showAlert: true,
       api: null,
       openapi: null,
@@ -239,9 +249,6 @@ export default {
         this.tabs[tabIdx].saved = _.isEqual(this.savedQueries[savedIdx].query, query);
       }
       this.tabs[tabIdx].query = JSON.parse(JSON.stringify(query));
-    },
-    saveNewPaneSize(width) {
-      this.paneSize = `${width}px`;
     },
     setCurrentTab(tabIdx) {
       this.currentTabIdx = tabIdx;
