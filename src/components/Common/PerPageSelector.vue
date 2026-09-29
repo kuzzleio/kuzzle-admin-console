@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center gap-2 text-sm text-foreground">
     <span>Show</span>
-    <Select :model-value="pageSize" @update:modelValue="$emit('change-page-size', $event)">
+    <Select :model-value="pageSize" @update:modelValue="onSelect">
       <SelectTrigger aria-label="Items per page" class="w-auto min-w-20" data-cy="perPageSelector">
         <SelectValue />
       </SelectTrigger>
@@ -13,8 +13,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 
 import {
   Select,
@@ -32,28 +32,27 @@ import {
  * précède n'en tenait lieu que pour qui voit l'écran. Un `id` à pointer serait
  * dupliqué le jour où deux listes paginées partagent une page.
  */
-export default defineComponent({
-  name: 'PerPageSelector',
-  components: { Select, SelectContent, SelectItem, SelectTrigger, SelectValue },
-  props: {
-    currentPageSize: {
-      default: 25,
-      type: Number,
-    },
-    totalDocuments: {
-      default: 0,
-      type: Number,
-    },
-  },
-  data() {
-    return {
-      itemsPerPage: [10, 25, 50, 100, 500],
-    };
-  },
-  computed: {
-    pageSize(): number {
-      return this.currentPageSize || 25;
-    },
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    currentPageSize?: number;
+    totalDocuments?: number;
+  }>(),
+  { currentPageSize: 25, totalDocuments: 0 },
+);
+
+const emit = defineEmits<{
+  (e: 'change-page-size', size: number): void;
+}>();
+
+const itemsPerPage = [10, 25, 50, 100, 500];
+
+const pageSize = computed((): number => props.currentPageSize || 25);
+
+// Le `Select` rend une valeur de `reka-ui` (`AcceptableValue`) : ses options
+// sont les nombres de `itemsPerPage`, rien d'autre ne peut en sortir.
+function onSelect(value: unknown): void {
+  if (typeof value === 'number') {
+    emit('change-page-size', value);
+  }
+}
 </script>

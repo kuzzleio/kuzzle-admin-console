@@ -21,18 +21,6 @@
   </Card>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
+<script setup lang="ts">
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
-
-export default defineComponent({
-  name: 'ListNotAllowed',
-  components: {
-    Card,
-    CardContent,
-    CardDescription,
-    CardTitle,
-  },
-});
 </script>

@@ -22,18 +22,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
+<script setup lang="ts">
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
-
-export default defineComponent({
-  name: 'PageNotAllowed',
-  components: {
-    Card,
-    CardContent,
-    CardDescription,
-    CardTitle,
-  },
-});
 </script>

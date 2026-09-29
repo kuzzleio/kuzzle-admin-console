@@ -149,9 +149,9 @@
   </nav>
 </template>
 
-<script>
-import { markRaw } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -167,7 +167,15 @@ import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue';
 // État replié du rail, retenu par navigateur (ADR-0048).
 const COLLAPSED_KEY = 'kuz-ac-rail-collapsed';
 
-function readCollapsed() {
+interface Section {
+  icon: string;
+  label: string;
+  route: string;
+  segment: string;
+  visible?: boolean;
+}
+
+function readCollapsed(): boolean {
   try {
     return localStorage.getItem(COLLAPSED_KEY) === 'true';
   } catch {
@@ -175,119 +183,95 @@ function readCollapsed() {
   }
 }
 
-export default {
-  name: 'MainMenu',
-  components: {
-    Button,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-    EnvironmentSwitch,
+const emit = defineEmits<{
+  (e: 'environment::create', id: string): void;
+  (e: 'environment::delete', id: string): void;
+  (e: 'environment::importEnv'): void;
+}>();
+
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const route = useRoute();
+
+const collapsed = ref(readCollapsed());
+const expanded = ref(false);
+const feedbackOptions = [
+  {
+    text: 'Talk with our community',
+    url: 'http://join.discord.kuzzle.io/',
+    icon: 'fab fa-discord',
   },
-  setup() {
-    return {
-      kuzzleStore: useKuzzleStore(),
-    };
+  {
+    text: 'Ask a question',
+    url: 'https://stackoverflow.com/questions/ask?tags=kuzzle&title=[Admin%20Console]',
+    icon: 'fab fa-stack-overflow',
   },
-  data() {
-    return {
-      /*
-       * `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom.
-       * `markRaw` et non `Object.freeze` : Vue met en cache le constructeur
-       * sur les options du composant, et un objet gelé le lui interdit
-       * (G-032).
-       */
-      Button: markRaw(Button),
-      collapsed: readCollapsed(),
-      expanded: false,
-      feedbackOptions: [
-        {
-          text: 'Talk with our community',
-          url: 'http://join.discord.kuzzle.io/',
-          icon: 'fab fa-discord',
-        },
-        {
-          text: 'Ask a question',
-          url: 'https://stackoverflow.com/questions/ask?tags=kuzzle&title=[Admin%20Console]',
-          icon: 'fab fa-stack-overflow',
-        },
-        {
-          text: 'Fill an issue',
-          url: 'https://github.com/kuzzleio/kuzzle-admin-console/issues/new/choose',
-          icon: 'fab fa-github',
-        },
-      ],
-    };
+  {
+    text: 'Fill an issue',
+    url: 'https://github.com/kuzzleio/kuzzle-admin-console/issues/new/choose',
+    icon: 'fab fa-github',
   },
-  computed: {
-    ...mapState(useAuthStore, ['hasSecurityRights']),
-    sections() {
-      return [
-        { icon: 'fa-database', label: 'Data', route: 'Data', segment: '/data' },
-        {
-          icon: 'fa-shield-alt',
-          label: 'Security',
-          route: 'Security',
-          segment: '/security',
-          visible: this.hasSecurityRights,
-        },
-        { icon: 'fa-terminal', label: 'API Action', route: 'ApiAction', segment: '/api-action' },
-      ].filter((section) => section.visible !== false);
+];
+
+const sections = computed((): Section[] =>
+  [
+    { icon: 'fa-database', label: 'Data', route: 'Data', segment: '/data' },
+    {
+      icon: 'fa-shield-alt',
+      label: 'Security',
+      route: 'Security',
+      segment: '/security',
+      visible: authStore.hasSecurityRights,
     },
-    /*
-     * Éléments du rail (DESIGN.md, « Navigation ») : survol fuchsia à 20 % et
-     * filet de 3 px à gauche, élément actif en fuchsia plein. Sous `md`, la
-     * barre horizontale garde des éléments compacts.
-     */
-    itemClasses() {
-      return [
-        'flex items-center gap-3 px-3 py-2 font-sans text-ui font-medium text-white',
-        'transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset',
-        'md:px-5 md:py-2.5',
-        this.collapsed ? 'md:justify-center md:px-0' : '',
-      ].join(' ');
-    },
-    hoverItemClasses() {
-      return 'hover:bg-primary/20 hover:shadow-[inset_3px_0_0_var(--color-primary)]';
-    },
-    activeItemClasses() {
-      // Fuchsia profond (texte blanc à 5:1, le fuchsia clair n'atteint que 3,9)
-      // et un filet blanc : l'élément actif reste lisible sur un rail rouge ou
-      // magenta, où le fond seul se confondrait avec la couleur de connexion.
-      return 'bg-(--rail-active) font-bold shadow-[inset_3px_0_0_var(--rail-active-rule)]';
-    },
-    currentEnvironmentColor() {
-      return this.kuzzleStore.currentEnvironment?.color;
-    },
-    adminConsoleVersion() {
-      return __APP_VERSION__;
-    },
-    adminConsoleCommitHash() {
-      return __COMMIT_HASH__;
-    },
-  },
-  methods: {
-    toggleCollapsed() {
-      this.collapsed = !this.collapsed;
-      try {
-        localStorage.setItem(COLLAPSED_KEY, this.collapsed ? 'true' : 'false');
-      } catch {
-        // Stockage indisponible (navigation privée) : l'état vaut pour la session.
-      }
-    },
-    isCurrent(section) {
-      return this.$route.path.includes(section.segment);
-    },
-    editEnvironment(id) {
-      this.$emit('environment::create', id);
-    },
-    importEnv() {
-      this.$emit('environment::importEnv');
-    },
-    deleteEnvironment(id) {
-      this.$emit('environment::delete', id);
-    },
-  },
-};
+    { icon: 'fa-terminal', label: 'API Action', route: 'ApiAction', segment: '/api-action' },
+  ].filter((section: Section) => section.visible !== false),
+);
+
+/*
+ * Éléments du rail (DESIGN.md, « Navigation ») : survol fuchsia à 20 % et
+ * filet de 3 px à gauche, élément actif en fuchsia plein. Sous `md`, la
+ * barre horizontale garde des éléments compacts.
+ */
+const itemClasses = computed((): string =>
+  [
+    'flex items-center gap-3 px-3 py-2 font-sans text-ui font-medium text-white',
+    'transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset',
+    'md:px-5 md:py-2.5',
+    collapsed.value ? 'md:justify-center md:px-0' : '',
+  ].join(' '),
+);
+const hoverItemClasses = 'hover:bg-primary/20 hover:shadow-[inset_3px_0_0_var(--color-primary)]';
+// Fuchsia profond (texte blanc à 5:1, le fuchsia clair n'atteint que 3,9)
+// et un filet blanc : l'élément actif reste lisible sur un rail rouge ou
+// magenta, où le fond seul se confondrait avec la couleur de connexion.
+const activeItemClasses =
+  'bg-(--rail-active) font-bold shadow-[inset_3px_0_0_var(--rail-active-rule)]';
+const currentEnvironmentColor = computed(() => kuzzleStore.currentEnvironment?.color);
+const adminConsoleVersion = __APP_VERSION__;
+const adminConsoleCommitHash = __COMMIT_HASH__;
+
+function toggleCollapsed(): void {
+  collapsed.value = !collapsed.value;
+  try {
+    localStorage.setItem(COLLAPSED_KEY, collapsed.value ? 'true' : 'false');
+  } catch {
+    // Stockage indisponible (navigation privée) : l'état vaut pour la session.
+  }
+}
+
+function isCurrent(section: Section): boolean {
+  return route.path.includes(section.segment);
+}
+
+function editEnvironment(id: string): void {
+  emit('environment::create', id);
+}
+
+function importEnv(): void {
+  emit('environment::importEnv');
+}
+
+function deleteEnvironment(id: string): void {
+  emit('environment::delete', id);
+}
 </script>

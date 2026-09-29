@@ -1,5 +1,5 @@
 <template>
-  <div class="Autocomplete">
+  <div ref="root" class="Autocomplete">
     <Input
       v-model="inputValue"
       :class="inputClass"
@@ -37,115 +37,106 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+
 import { Input } from '@/components/ui/input';
 
-export default {
-  name: 'Autocomplete',
-  components: {
-    Input,
+const props = withDefaults(
+  defineProps<{
+    inputClass?: string;
+    item?: string;
+    items?: string[];
+    notifyChange?: boolean;
+    placeholder?: string;
+    value?: string;
+  }>(),
+  {
+    inputClass: '',
+    item: '',
+    items: () => [],
+    notifyChange: true,
+    placeholder: '',
+    value: '',
   },
-  props: {
-    item: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    items: {
-      type: Array,
-      required: false,
-      default: () => {
-        return [];
-      },
-    },
-    inputClass: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    placeholder: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    value: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    notifyChange: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
+);
+
+const emit = defineEmits<{
+  (e: 'autocomplete::change', value: string): void;
+}>();
+
+const root = useTemplateRef<HTMLDivElement>('root');
+const inputValue = ref('');
+const results = ref<string[]>([]);
+const isOpen = ref(false);
+const selectionCursor = ref(-1);
+
+watch(
+  () => props.value,
+  (newValue) => {
+    inputValue.value = newValue;
   },
-  data() {
-    return {
-      inputValue: '',
-      results: [],
-      isOpen: false,
-      selectionCursor: -1,
-    };
-  },
-  watch: {
-    value: {
-      immediate: true,
-      handler(newValue) {
-        this.inputValue = newValue;
-      },
-    },
-  },
-  mounted() {
-    document.addEventListener('click', this.handleClickOutside);
-  },
-  unmounted() {
-    document.removeEventListener('click', this.handleClickOutside);
-  },
-  methods: {
-    onChange(evt) {
-      if (this.notifyChange) {
-        return this.changeResult(evt.target.value);
-      }
-    },
-    onInput() {
-      this.isOpen = true;
-      this.filterResults();
-    },
-    filterResults() {
-      this.results = this.items.filter(
-        (item) => item.toLowerCase().indexOf(this.inputValue.toLowerCase()) > -1,
-      );
-    },
-    setResult(result) {
-      this.isOpen = false;
-      this.inputValue = result;
-      this.$emit('autocomplete::change', result);
-      this.inputValue = '';
-    },
-    changeResult(result) {
-      this.$emit('autocomplete::change', result);
-      this.inputValue = '';
-    },
-    onArrowDown() {
-      if (this.selectionCursor + 1 < this.results.length) {
-        this.selectionCursor = this.selectionCursor + 1;
-      }
-    },
-    onArrowUp() {
-      if (this.selectionCursor > 0) {
-        this.selectionCursor = this.selectionCursor - 1;
-      }
-    },
-    onEnter() {
-      this.setResult(this.results[this.selectionCursor]);
-      this.selectionCursor = -1;
-    },
-    handleClickOutside(evt) {
-      if (!this.$el.contains(evt.target)) {
-        this.isOpen = false;
-        this.selectionCursor = -1;
-      }
-    },
-  },
-};
+  { immediate: true },
+);
+
+function changeResult(result: string): void {
+  emit('autocomplete::change', result);
+  inputValue.value = '';
+}
+
+function onChange(evt: Event): void {
+  if (props.notifyChange) {
+    return changeResult((evt.target as HTMLInputElement).value);
+  }
+}
+
+function filterResults(): void {
+  results.value = props.items.filter(
+    (item) => item.toLowerCase().indexOf(inputValue.value.toLowerCase()) > -1,
+  );
+}
+
+function onInput(): void {
+  isOpen.value = true;
+  filterResults();
+}
+
+function setResult(result: string): void {
+  isOpen.value = false;
+  inputValue.value = result;
+  emit('autocomplete::change', result);
+  inputValue.value = '';
+}
+
+function onArrowDown(): void {
+  if (selectionCursor.value + 1 < results.value.length) {
+    selectionCursor.value = selectionCursor.value + 1;
+  }
+}
+
+function onArrowUp(): void {
+  if (selectionCursor.value > 0) {
+    selectionCursor.value = selectionCursor.value - 1;
+  }
+}
+
+function onEnter(): void {
+  setResult(results.value[selectionCursor.value]);
+  selectionCursor.value = -1;
+}
+
+function handleClickOutside(evt: MouseEvent): void {
+  if (!root.value?.contains(evt.target as Node)) {
+    isOpen.value = false;
+    selectionCursor.value = -1;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 </script>

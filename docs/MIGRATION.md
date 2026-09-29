@@ -915,7 +915,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
 - [ ] Composition API ([ADR-0060](adr/0060-composition-api-par-domaine.md)), un domaine par lot — 77 SFC sur 193 au départ :
   - [x] 1. `ui/` restants, retrait de `classMerge`
   - [x] 2. Racine, `Common/Login`, `Error`, `Materialize`
-  - [ ] 3. `Common/` hors `Filters` et `Environments`
+  - [x] 3. `Common/` hors `Filters` et `Environments`
   - [ ] 4. `Common/Environments`
   - [ ] 5. `ApiAction`
   - [ ] 6. `Security` : `Layout`, `Common`, `Roles`
@@ -3791,6 +3791,25 @@ Gabarit à copier :
   `vue-tsc` ne le signale pas sur `!fn` (vérifié). Ce qu'il refuse, c'est la
   suite : passer `this.index`, une fonction, là où `getOneCollection` attend un
   `Index`. Le typage attrape l'usage, pas le test.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-107 — `vue-tsc` passe, le build refuse `defineProps` qui lit une variable locale
+
+- **Contexte** : lot 3 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/JsonEditor.vue`.
+- **Symptôme** : `test:types` et `test:lint` passent, `npm run build` échoue :
+  « `defineProps()` in `<script setup>` cannot reference locally declared
+  variables because it will be hoisted outside of the setup() function ».
+- **Cause** : la valeur par défaut de `id`, calculée une fois au chargement du
+  module, était une `const` du `<script setup>`. Le compilateur hisse les
+  options de `defineProps` hors de `setup()` ; `vue-tsc` ne fait pas cette
+  vérification.
+- **Solution** : la constante passe dans un `<script lang="ts">` ordinaire, à
+  côté du `<script setup>` : c'est la portée du module, que `defineProps` peut
+  lire.
+- **À retenir** : `test:types` ne remplace pas le build. Un lot se valide par
+  le build d'abord — c'est de toute façon lui que servent les specs
+  ([ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)).
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain

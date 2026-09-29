@@ -4,15 +4,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
+<script setup lang="ts">
 import { Spinner } from '@/components/ui/spinner';
-
-export default defineComponent({
-  name: 'MainSpinner',
-  components: {
-    Spinner,
-  },
-});
 </script>
