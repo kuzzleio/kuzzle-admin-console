@@ -100,14 +100,19 @@ export default {
       password2: '',
     };
   },
-  validations: {
-    password: {
-      required: helpers.withMessage('Password must not be empty', required),
-    },
-    password2: {
-      required: helpers.withMessage('Password must not be empty', required),
-      sameAs: helpers.withMessage('Passwords do not match', sameAs('password')),
-    },
+  // Une fonction et non un objet : `sameAs` de Vuelidate 2 compare à une
+  // valeur, pas à un nom de champ. `sameAs('password')` comparait la
+  // confirmation à la chaîne « password » (G-102).
+  validations() {
+    return {
+      password: {
+        required: helpers.withMessage('Password must not be empty', required),
+      },
+      password2: {
+        required: helpers.withMessage('Password must not be empty', required),
+        sameAs: helpers.withMessage('Passwords do not match', sameAs(this.password)),
+      },
+    };
   },
   computed: {
     passwordFeedback() {

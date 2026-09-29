@@ -3693,6 +3693,28 @@ Gabarit à copier :
   qui est dessiné (`path.apexcharts-line`, son attribut `d`).
 - **Ref** : [ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md).
 
+#### G-102 — La confirmation du mot de passe était comparée à « password », depuis la v4
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/Login/ResetPasswordForm.vue`.
+- **Symptôme** : sur la page de réinitialisation, deux mots de passe
+  identiques affichent « Passwords do not match » — sauf si ce mot de passe est
+  `password`. L'envoi n'est pas bloqué (seul le `pattern` HTML l'est), mais
+  l'erreur reste affichée. `resetpassword.spec` passait : elle tape
+  précisément `password`.
+- **Cause** : `sameAs('password')` est la syntaxe de Vuelidate 0.x, où l'argument
+  nommait un champ. En 2.x, `sameAs(x)` compare à la **valeur** `x`
+  (`unref(value) === unref(equalTo)`) : la confirmation était comparée à la
+  chaîne littérale. Présent depuis #783, donc sur `4-dev` et `master`.
+- **Solution** : `validations` devient une fonction, et la règle compare à
+  `this.password` (en `<script setup>`, à un `computed`). Un test tape un autre
+  mot de passe, fait apparaître le message, puis vérifie qu'il disparaît.
+- **À retenir** : un test qui choisit une valeur « naturelle » (`password`,
+  `admin`, `test`) peut coïncider avec un littéral du code. Et `not.contain` seul
+  passe avant même que la validation ait tourné : faire d'abord apparaître le
+  message.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
