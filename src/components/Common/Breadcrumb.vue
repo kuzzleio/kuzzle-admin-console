@@ -97,39 +97,49 @@
   </nav>
 </template>
 
-<script>
+<script setup lang="ts">
+import { useRoute } from 'vue-router';
+
 import { useStorageIndexStore } from '@/stores';
 
-export default {
-  name: 'CommonBreadcrumb',
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  methods: {
-    index() {
-      return this.$route.params.indexName
-        ? this.storageIndexStore.getOneIndex(this.$route.params.indexName)
-        : undefined;
-    },
-    isCollectionRealtime() {
-      if (!this.index || this.$route.params.collectionName) {
-        return false;
-      }
+const route = useRoute();
+const storageIndexStore = useStorageIndexStore();
 
-      return this.storageIndexStore.getOneCollection(this.index, this.$route.params.collectionName)
-        .isRealtime;
-    },
-    isRouteActive(routeName) {
-      if (Array.isArray(routeName)) {
-        return routeName.includes(this.$route.name);
-      }
+function routeParam(name: string): string | undefined {
+  const value = route.params[name];
+  return typeof value === 'string' ? value : undefined;
+}
 
-      return this.$route.name === routeName;
-    },
-  },
-};
+function index() {
+  const indexName = routeParam('indexName');
+  return indexName ? storageIndexStore.getOneIndex(indexName) : undefined;
+}
+
+// `index` est une méthode et `isRealtime` aussi : les tester sans les
+// appeler donnait toujours vrai, et la condition inversée sur
+// `collectionName` renvoyait `false` dès qu'une collection était ouverte.
+// Le fil d'Ariane d'une collection temps réel menait à ses documents
+// (G-106).
+function isCollectionRealtime(): boolean {
+  const currentIndex = index();
+  const collectionName = routeParam('collectionName');
+  if (!currentIndex || !collectionName || currentIndex.collections == null) {
+    return false;
+  }
+
+  // Ce que fait le getter `getOneCollection` du store, appelé sur l'index
+  // lui-même : le store rend ses `Index` déballés, que le getter ne prend pas.
+  const collection = currentIndex.getOneCollection(collectionName);
+  return collection ? collection.isRealtime() : false;
+}
+
+function isRouteActive(routeName: string | string[]): boolean {
+  if (Array.isArray(routeName)) {
+    return typeof route.name === 'string' && routeName.includes(route.name);
+  }
+
+  return route.name === routeName;
+}
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

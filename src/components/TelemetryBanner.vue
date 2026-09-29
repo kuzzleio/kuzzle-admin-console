@@ -9,39 +9,42 @@
   <div class="TelemetryBanner" />
 </template>
 
-<script>
+<script setup lang="ts">
+import { onMounted } from 'vue';
+
+import { useToast } from '@/composables/useToast';
+
 import telemetryCookies from '../services/telemetryCookies';
 
-export default {
-  name: 'TelemtryBanner',
-  mounted() {
-    if (telemetryCookies.get() !== null) {
-      return;
-    }
+const toast = useToast();
 
-    this.$toast.show({
-      actions: [
-        { label: 'Disable telemetry', variant: 'outline', handler: this.disableTelemetry },
-        { label: 'Accept', handler: this.enableTelemetry },
-      ],
-      autoHideAfter: null,
-      // Pas de croix, comme `no-close-button` en v4 : le bandeau attend un
-      // choix, et le fermer sans répondre le ferait revenir au chargement
-      // suivant sans que rien n'ait été décidé (E-09).
-      dismissible: false,
-      message:
-        'We use an Open Source analytics to study the use of our products in order to improve them. We do not collect any personal data.',
-      title: 'Usage telemetry',
-      variant: 'info',
-    });
-  },
-  methods: {
-    enableTelemetry() {
-      telemetryCookies.set('true', 30);
-    },
-    disableTelemetry() {
-      telemetryCookies.set('false', 1);
-    },
-  },
-};
+function enableTelemetry(): void {
+  telemetryCookies.set('true', 30);
+}
+
+function disableTelemetry(): void {
+  telemetryCookies.set('false', 1);
+}
+
+onMounted(() => {
+  if (telemetryCookies.get() !== null) {
+    return;
+  }
+
+  toast.show({
+    actions: [
+      { label: 'Disable telemetry', variant: 'outline', handler: disableTelemetry },
+      { label: 'Accept', handler: enableTelemetry },
+    ],
+    autoHideAfter: null,
+    // Pas de croix, comme `no-close-button` en v4 : le bandeau attend un
+    // choix, et le fermer sans répondre le ferait revenir au chargement
+    // suivant sans que rien n'ait été décidé (E-09).
+    dismissible: false,
+    message:
+      'We use an Open Source analytics to study the use of our products in order to improve them. We do not collect any personal data.',
+    title: 'Usage telemetry',
+    variant: 'info',
+  });
+});
 </script>

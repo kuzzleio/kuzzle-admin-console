@@ -9,28 +9,20 @@
   </span>
 </template>
 
-<script>
-export default {
-  name: 'HighlightedSpan',
-  props: {
-    value: {
-      type: String,
-      required: true,
-    },
-    filter: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    highlightIndex() {
-      if (!this.value || this.value === '' || !this.filter || this.filter === '') {
-        return -1;
-      }
-      return this.value.toLowerCase().indexOf(this.filter.toLowerCase());
-    },
-  },
-};
+<script setup lang="ts">
+import { computed } from 'vue';
+
+const props = defineProps<{
+  filter: string;
+  value: string;
+}>();
+
+const highlightIndex = computed((): number => {
+  if (!props.value || props.value === '' || !props.filter || props.filter === '') {
+    return -1;
+  }
+  return props.value.toLowerCase().indexOf(props.filter.toLowerCase());
+});
 </script>
 
 <style></style>

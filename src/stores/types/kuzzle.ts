@@ -16,7 +16,9 @@ export interface Environment {
   ssl: boolean;
   backendMajorVersion: number;
   hideAdminWarning: boolean;
-  token: string;
+  // Absent tant qu'aucune session n'a été ouverte, `null` après une
+  // déconnexion (`updateTokenCurrentEnvironment(null)`).
+  token?: string | null;
 }
 
 export interface KuzzleState {

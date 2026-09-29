@@ -1,13 +1,13 @@
 <template>
-  <div :class="classes" data-slot="form-item" v-bind="$attrs">
+  <div :class="cn('flex flex-col gap-2', props.class)" data-slot="form-item" v-bind="$attrs">
     <slot />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /*
  * FormItem — API publique de shadcn-vue (ADR-0009).
@@ -25,14 +25,9 @@ import { classMerge } from '../class-merge';
  * bootstrap-vue) : c'est la disposition de l'amont, et celle que la console
  * utilise déjà sur ses autres formulaires.
  */
-export default defineComponent({
-  name: 'FormItem',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  computed: {
-    classes(): string {
-      return this.mergeClasses('flex flex-col gap-2');
-    },
-  },
-});
+defineOptions({ inheritAttrs: false });
+
+const props = defineProps<{
+  class?: HTMLAttributes['class'];
+}>();
 </script>

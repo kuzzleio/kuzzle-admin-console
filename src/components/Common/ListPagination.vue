@@ -25,8 +25,8 @@
   </Pagination>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 
 import {
   Pagination,
@@ -52,45 +52,29 @@ import {
  * ce qui est propre à la console vit à côté, dans `Common/`. En phase 4, c'est
  * ce fichier-là qui absorbe le changement d'import, pas les quatre écrans.
  */
-export default defineComponent({
-  name: 'ListPagination',
-  components: {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationFirst,
-    PaginationItem,
-    PaginationLast,
-    PaginationNext,
-    PaginationPrevious,
-  },
-  inheritAttrs: false,
-  props: {
-    itemsPerPage: {
-      required: true,
-      type: Number,
-    },
-    page: {
-      default: 1,
-      type: Number,
-    },
-    total: {
-      required: true,
-      type: Number,
-    },
-  },
-  emits: ['update:page'],
-  computed: {
-    /*
-     * La page affichée, bornée au nombre de pages : quand le nombre de
-     * résultats passe sous la page courante, la barre ne doit pas désigner une
-     * page qui n'existe plus. La primitive précédente le faisait elle-même ;
-     * `PaginationRoot` prend la page telle quelle.
-     */
-    currentPage(): number {
-      const pageCount = Math.max(1, Math.ceil(this.total / this.itemsPerPage));
-      return Math.min(Math.max(1, this.page), pageCount);
-    },
-  },
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
+  defineProps<{
+    itemsPerPage: number;
+    page?: number;
+    total: number;
+  }>(),
+  { page: 1 },
+);
+
+defineEmits<{
+  (e: 'update:page', page: number): void;
+}>();
+
+/*
+ * La page affichée, bornée au nombre de pages : quand le nombre de
+ * résultats passe sous la page courante, la barre ne doit pas désigner une
+ * page qui n'existe plus. La primitive précédente le faisait elle-même ;
+ * `PaginationRoot` prend la page telle quelle.
+ */
+const currentPage = computed((): number => {
+  const pageCount = Math.max(1, Math.ceil(props.total / props.itemsPerPage));
+  return Math.min(Math.max(1, props.page), pageCount);
 });
 </script>

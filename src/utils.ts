@@ -1,3 +1,5 @@
+import type { EnvironmentColor } from '@/stores/types/kuzzle';
+
 export const antiGlitchOverlayTimeout = 900;
 
 export const LS_ENVIRONMENTS = 'environments';
@@ -6,8 +8,8 @@ export const SS_CURRENT_ENV = 'currentEnv';
 
 export const NO_ADMIN_WARNING_HOSTS = ['localhost', '127.0.0.1'];
 
-export const DEFAULT_COLOR = 'darkblue';
-export const ENV_COLORS = [
+export const DEFAULT_COLOR: EnvironmentColor = 'darkblue';
+export const ENV_COLORS: EnvironmentColor[] = [
   DEFAULT_COLOR,
   'lightblue',
   'purple',
@@ -22,13 +24,8 @@ export const formatForDom = (word: string): string => {
   return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-');
 };
 
-export const sortObject = (object: object): object => {
-  return Object.keys(object)
-    .sort((a, b) => a.localeCompare(b))
-    .reduce((result, key) => {
-      result[key] = object[key];
-      return result;
-    }, {});
+export const sortObject = <V>(object: Record<string, V>): Record<string, V> => {
+  return Object.fromEntries(Object.entries(object).sort(([a], [b]) => a.localeCompare(b)));
 };
 
 export const truncateName = (name: string, maxLength = 50): string => {

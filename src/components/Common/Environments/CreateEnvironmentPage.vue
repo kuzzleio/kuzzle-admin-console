@@ -51,10 +51,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, useAttrs, useTemplateRef } from 'vue';
+import { useRouter } from 'vue-router';
 
+import KuzzleLogo from '../KuzzleLogo.vue';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -67,55 +68,41 @@ import {
 import { useKuzzleStore } from '@/stores';
 
 import CreateEnvironment from './CreateEnvironment.vue';
-import KuzzleLogo from '../KuzzleLogo.vue';
 
-export default defineComponent({
-  name: 'CreateEnvironmentPage',
-  components: {
-    KuzzleLogo,
-    Button,
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-    CreateEnvironment,
-  },
-  setup() {
-    return {
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['hasEnvironment', 'environments']),
-    // `id` n'est pas déclaré en prop : le déclarer le retirerait de `$attrs`,
-    // donc de l'attribut `id` posé sur le nœud racine.
-    environmentId(): string | undefined {
-      return this.$attrs.id as string | undefined;
-    },
-  },
-  methods: {
-    async submit() {
-      const id = await (
-        this.$refs.createEnvironmentComponent as {
-          submit: () => Promise<string | undefined>;
-        }
-      ).submit();
-      if (id === undefined) {
-        return;
-      }
+const emit = defineEmits<{
+  (e: 'environment::importEnv'): void;
+}>();
 
-      if (Object.keys(this.environments).length > 1) {
-        this.$router.push({ name: 'SelectEnvironment' });
-      } else {
-        await this.kuzzleStore.setCurrentEnvironment(id);
-        this.$router.push('/');
-      }
-    },
-    importEnv() {
-      this.$emit('environment::importEnv');
-    },
-  },
-});
+const attrs = useAttrs();
+const kuzzleStore = useKuzzleStore();
+const router = useRouter();
+
+const createEnvironmentComponent = useTemplateRef<InstanceType<typeof CreateEnvironment>>(
+  'createEnvironmentComponent',
+);
+
+const hasEnvironment = computed(() => kuzzleStore.hasEnvironment);
+// `id` n'est pas déclaré en prop : le déclarer le retirerait de `$attrs`,
+// donc de l'attribut `id` posé sur le nœud racine.
+const environmentId = computed((): string | undefined =>
+  typeof attrs.id === 'string' ? attrs.id : undefined,
+);
+
+async function submit(): Promise<void> {
+  const id = await createEnvironmentComponent.value?.submit();
+  if (id === undefined) {
+    return;
+  }
+
+  if (Object.keys(kuzzleStore.environments).length > 1) {
+    router.push({ name: 'SelectEnvironment' });
+  } else {
+    await kuzzleStore.setCurrentEnvironment(id);
+    router.push('/');
+  }
+}
+
+function importEnv(): void {
+  emit('environment::importEnv');
+}
 </script>

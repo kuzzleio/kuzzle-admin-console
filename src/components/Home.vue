@@ -55,10 +55,11 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useToast } from '@/composables/useToast';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import LoginForm from './Common/Login/Form.vue';
@@ -66,124 +67,113 @@ import MainMenu from './Common/MainMenu.vue';
 import MainSpinner from './Common/MainSpinner.vue';
 import SessionBar from './Common/SessionBar.vue';
 
-export default {
-  name: 'Home',
-  components: {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    LoginForm,
-    MainMenu,
-    MainSpinner,
-    SessionBar,
-  },
-  setup() {
-    return {
-      authStore: useAuthStore(),
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  data() {
-    return {
-      host: null,
-      port: null,
-      tokenExpiredIsOpen: false,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle', 'currentEnvironment']),
-    tokenValid() {
-      return this.authStore.tokenValid;
-    },
-    authInitializing() {
-      return this.authStore.initializing;
-    },
-  },
-  watch: {
-    tokenValid: {
-      handler(val) {
-        setTimeout(() => {
-          this.tokenExpiredIsOpen = !val;
-        }, 500);
-      },
-    },
-  },
-  mounted() {
-    this.$kuzzle.on('tokenExpired', () => this.onTokenExpired());
-    this.$kuzzle.on('queryError', (e) => {
-      if (this.currentEnvironment.backendMajorVersion === 1) {
-        switch (e.id) {
-          case 'security.token.invalid':
-            this.onTokenExpired();
-            break;
-          default:
-            break;
-        }
-      } else {
-        switch (e.id) {
-          case 'security.token.expired':
-            this.onTokenExpired();
-            break;
-          default:
-            break;
-        }
-      }
-    });
-    this.displayNoAdminWarning();
-  },
-  beforeUnmount() {
-    this.$kuzzle.removeListener('tokenExpired');
-    this.$kuzzle.removeListener('queryError');
-  },
-  methods: {
-    /*
-     * L'avertissement est un toast persistant avec une action, poussé dans la
-     * zone unique (ADR-0020). `b-toast` le gardait monté en permanence et
-     * l'affichait par son `id` ; ici il n'existe que s'il a lieu d'être.
-     */
-    hideNoAdminWarning() {
-      this.kuzzleStore.updateEnvironment({
-        id: this.kuzzleStore.currentId,
-        environment: {
-          ...this.currentEnvironment,
-          hideAdminWarning: true,
-        },
-      });
+defineEmits<{
+  (e: 'environment::create', id?: string): void;
+  (e: 'environment::delete', id: string): void;
+  (e: 'environment::importEnv'): void;
+}>();
 
-      /* Rien à masquer : l'action ferme le toast. */
-    },
-    skipToContent() {
-      document.getElementById('main')?.focus();
-    },
-    onTokenExpired() {
-      // Arrête aussi la surveillance du token : il n'y a plus rien à
-      // rafraîchir, et la popup de reconnexion prend le relais (ADR-0057).
-      this.authStore.loseSession();
-    },
-    noop() {},
-    displayNoAdminWarning() {
-      if (this.authStore.adminAlreadyExists) {
-        return;
-      }
-      if (this.currentEnvironment.hideAdminWarning) {
-        return;
-      }
-      this.$toast.show({
-        actions: [
-          {
-            label: 'Ok, got it',
-            handler: this.hideNoAdminWarning,
-            title: "Don't show this toast again for the current environment",
-          },
-        ],
-        autoHideAfter: null,
-        link: { href: '#/signup', label: 'that you create one.' },
-        message: 'Your Kuzzle has no administrator user. It is strongly recommended',
-        title: 'Warning!',
-        variant: 'info',
-      });
-    },
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const toast = useToast();
+
+const tokenExpiredIsOpen = ref(false);
+
+const authInitializing = computed(() => authStore.initializing);
+
+watch(
+  () => authStore.tokenValid,
+  (val) => {
+    setTimeout(() => {
+      tokenExpiredIsOpen.value = !val;
+    }, 500);
   },
-};
+);
+
+function onTokenExpired(): void {
+  // Arrête aussi la surveillance du token : il n'y a plus rien à
+  // rafraîchir, et la popup de reconnexion prend le relais (ADR-0057).
+  authStore.loseSession();
+}
+
+// Le SDK v6 (backend v1) émet `(error, request)`, le SDK v7 émet
+// `{ error, request }` (G-105). L'écouteur est enregistré sur l'un ou
+// l'autre : il lit les deux formes. La charge est facultative pour le type de
+// `removeListener`, qui déclare des écouteurs sans argument.
+function onQueryError(payload?: { error?: { id?: string }; id?: string }): void {
+  if (kuzzleStore.currentEnvironment?.backendMajorVersion === 1) {
+    switch (payload?.id) {
+      case 'security.token.invalid':
+        onTokenExpired();
+        break;
+      default:
+        break;
+    }
+  } else {
+    switch (payload?.error?.id) {
+      case 'security.token.expired':
+        onTokenExpired();
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+/*
+ * L'avertissement est un toast persistant avec une action, poussé dans la
+ * zone unique (ADR-0020). `b-toast` le gardait monté en permanence et
+ * l'affichait par son `id` ; ici il n'existe que s'il a lieu d'être.
+ */
+function hideNoAdminWarning(): void {
+  kuzzleStore.updateEnvironment({
+    id: kuzzleStore.currentId,
+    environment: {
+      ...kuzzleStore.currentEnvironment,
+      hideAdminWarning: true,
+    },
+  });
+
+  /* Rien à masquer : l'action ferme le toast. */
+}
+
+function skipToContent(): void {
+  document.getElementById('main')?.focus();
+}
+
+function displayNoAdminWarning(): void {
+  if (authStore.adminAlreadyExists) {
+    return;
+  }
+  if (kuzzleStore.currentEnvironment?.hideAdminWarning) {
+    return;
+  }
+  toast.show({
+    actions: [
+      {
+        label: 'Ok, got it',
+        handler: hideNoAdminWarning,
+        title: "Don't show this toast again for the current environment",
+      },
+    ],
+    autoHideAfter: null,
+    link: { href: '#/signup', label: 'that you create one.' },
+    message: 'Your Kuzzle has no administrator user. It is strongly recommended',
+    title: 'Warning!',
+    variant: 'info',
+  });
+}
+
+onMounted(() => {
+  kuzzleStore.$kuzzle?.on('tokenExpired', onTokenExpired);
+  kuzzleStore.$kuzzle?.on('queryError', onQueryError);
+  displayNoAdminWarning();
+});
+
+onBeforeUnmount(() => {
+  // `removeListener` retire la fonction qu'on lui passe, et rien sans elle
+  // (G-103).
+  kuzzleStore.$kuzzle?.removeListener('tokenExpired', onTokenExpired);
+  kuzzleStore.$kuzzle?.removeListener('queryError', onQueryError);
+});
 </script>

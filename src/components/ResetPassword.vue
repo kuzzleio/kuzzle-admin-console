@@ -24,7 +24,9 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+
 import { Alert } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { useRoutingStore } from '@/stores';
@@ -32,37 +34,24 @@ import { useRoutingStore } from '@/stores';
 import ResetPasswordForm from './Common/Login/ResetPasswordForm.vue';
 import KuzzleLogo from './Common/KuzzleLogo.vue';
 
-export default {
-  name: 'ResetPassword',
-  components: {
-    KuzzleLogo,
-    Alert,
-    Card,
-    CardContent,
-    ResetPasswordForm,
-  },
-  props: {
-    showIntro: Boolean,
-    token: String,
-  },
-  setup() {
-    return {
-      routingStore: useRoutingStore(),
-    };
-  },
-  methods: {
-    onReset() {
-      if (this.routingStore.routeBeforeRedirect) {
-        const route = this.routingStore.routeBeforeRedirect;
-        this.routingStore.routeBeforeRedirect = undefined;
+defineProps<{
+  showIntro?: boolean;
+  token?: string;
+}>();
 
-        this.$router.push({
-          name: route,
-        });
-      } else {
-        this.$router.push('/');
-      }
-    },
-  },
-};
+const router = useRouter();
+const routingStore = useRoutingStore();
+
+function onReset(): void {
+  if (routingStore.routeBeforeRedirect) {
+    const route = routingStore.routeBeforeRedirect;
+    routingStore.routeBeforeRedirect = undefined;
+
+    router.push({
+      name: route,
+    });
+  } else {
+    router.push('/');
+  }
+}
 </script>

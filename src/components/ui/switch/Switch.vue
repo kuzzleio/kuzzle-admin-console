@@ -1,5 +1,5 @@
 <template>
-  <label :class="wrapperClasses">
+  <label :class="cn('inline-flex cursor-pointer items-center gap-2', props.class)">
     <input
       :checked="modelValue"
       class="peer sr-only"
@@ -15,10 +15,10 @@
   </label>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 
-import { classMerge } from '../class-merge';
+import { cn } from '@/lib/utils';
 
 /*
  * Switch — API publique de shadcn-vue (ADR-0009).
@@ -37,51 +37,41 @@ import { classMerge } from '../class-merge';
  * il est **dans** le `<label>`, donc cliquable, sans que le site d'appel ait à
  * apparier un `for` et un `id`.
  *
- * `v-model` passe par l'option `model` de Vue 2 (G-012).
- *
- * Le composant s'appelle `Switch` — le nom de l'amont — mais s'enregistre sous
- * `UiSwitch` dans les templates : `switch` est une balise SVG et Vue 2 donne la
- * priorité aux tags réservés, en comparant en minuscules (G-020).
+ * Le composant s'appelle `Switch` — le nom de l'amont — mais le site d'appel
+ * l'importe sous `UiSwitch` : `switch` est une balise SVG (G-020).
  */
-export default defineComponent({
-  name: 'UiSwitch',
-  mixins: [classMerge],
-  inheritAttrs: false,
-  props: {
-    modelValue: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  computed: {
-    wrapperClasses(): string {
-      return this.mergeClasses('inline-flex cursor-pointer items-center gap-2');
-    },
-    trackClasses(): string {
-      return [
-        'inline-flex h-5 w-9 shrink-0 items-center rounded-full',
-        'border border-transparent bg-input p-0.5',
-        'transition-colors',
-        'peer-checked:bg-primary',
-        // La pastille est un **enfant** de la piste, pas un frère de l'input :
-        // `peer-checked:` seul ne l'atteindrait pas (le sélecteur généré est un
-        // combinateur de frères). `*:` vise l'enfant direct depuis la piste.
-        'peer-checked:*:translate-x-4',
-        'peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background',
-        'peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
-      ].join(' ');
-    },
-    thumbClasses(): string {
-      return [
-        'pointer-events-none block size-4 rounded-full bg-card shadow-sm',
-        'transition-transform',
-      ].join(' ');
-    },
-  },
-  methods: {
-    onChange(event: Event): void {
-      this.$emit('update:modelValue', (event.target as HTMLInputElement).checked);
-    },
-  },
-});
+defineOptions({ name: 'UiSwitch', inheritAttrs: false });
+
+const props = withDefaults(
+  defineProps<{
+    class?: HTMLAttributes['class'];
+    modelValue?: boolean;
+  }>(),
+  { modelValue: false },
+);
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', payload: boolean): void;
+}>();
+
+const trackClasses = [
+  'inline-flex h-5 w-9 shrink-0 items-center rounded-full',
+  'border border-transparent bg-input p-0.5',
+  'transition-colors',
+  'peer-checked:bg-primary',
+  // La pastille est un **enfant** de la piste, pas un frère de l'input :
+  // `peer-checked:` seul ne l'atteindrait pas (le sélecteur généré est un
+  // combinateur de frères). `*:` vise l'enfant direct depuis la piste.
+  'peer-checked:*:translate-x-4',
+  'peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background',
+  'peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
+].join(' ');
+const thumbClasses = [
+  'pointer-events-none block size-4 rounded-full bg-card shadow-sm',
+  'transition-transform',
+].join(' ');
+
+function onChange(event: Event): void {
+  emit('update:modelValue', (event.target as HTMLInputElement).checked);
+}
 </script>

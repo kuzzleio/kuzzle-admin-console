@@ -32,7 +32,9 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue';
+
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
 import { useKuzzleStore } from '@/stores';
@@ -40,47 +42,28 @@ import { useKuzzleStore } from '@/stores';
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue';
 import KuzzleLogo from './KuzzleLogo.vue';
 
-export default {
-  name: 'OfflinePage',
-  components: {
-    KuzzleLogo,
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-    EnvironmentSwitch,
-    Spinner,
-  },
-  setup() {
-    return {
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  computed: {
-    currentEnvironment() {
-      return this.kuzzleStore.currentEnvironment;
-    },
-    host() {
-      return this.currentEnvironment ? this.currentEnvironment.host : '';
-    },
-    port() {
-      return this.currentEnvironment ? this.currentEnvironment.port : '';
-    },
-    errorInternalMessage() {
-      return this.kuzzleStore.errorFromKuzzle;
-    },
-  },
-  methods: {
-    editEnvironment(id) {
-      this.$emit('environment::create', id);
-    },
-    deleteEnvironment(id) {
-      this.$emit('environment::delete', id);
-    },
-    importEnv() {
-      this.$emit('environment::importEnv');
-    },
-  },
-};
+const emit = defineEmits<{
+  (e: 'environment::create', id?: string): void;
+  (e: 'environment::delete', id: string): void;
+  (e: 'environment::importEnv'): void;
+}>();
+
+const kuzzleStore = useKuzzleStore();
+
+const currentEnvironment = computed(() => kuzzleStore.currentEnvironment);
+const host = computed(() => (currentEnvironment.value ? currentEnvironment.value.host : ''));
+const port = computed(() => (currentEnvironment.value ? currentEnvironment.value.port : ''));
+const errorInternalMessage = computed(() => kuzzleStore.errorFromKuzzle);
+
+function editEnvironment(id?: string): void {
+  emit('environment::create', id);
+}
+
+function deleteEnvironment(id: string): void {
+  emit('environment::delete', id);
+}
+
+function importEnv(): void {
+  emit('environment::importEnv');
+}
 </script>

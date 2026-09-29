@@ -19,8 +19,8 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { nextTick, useTemplateRef } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -33,46 +33,39 @@ import {
 
 import CreateEnvironment from './CreateEnvironment.vue';
 
-export default defineComponent({
-  name: 'EnvironmentsCreateModal',
-  components: {
-    Button,
-    CreateEnvironment,
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-  },
-  props: {
-    environmentId: {
-      default: null,
-      type: String,
-    },
-    open: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  methods: {
-    close(): void {
-      this.$emit('update:open', false);
-    },
-    importEnv(): void {
-      this.close();
-      this.$emit('environment::importEnv');
-    },
-    submit(): void {
-      const submitted = (
-        this.$refs.createEnvironmentComponent as { submit: () => boolean }
-      ).submit();
+withDefaults(
+  defineProps<{
+    environmentId?: string | null;
+    open?: boolean;
+  }>(),
+  { environmentId: null, open: false },
+);
 
-      this.$nextTick(() => {
-        if (submitted) {
-          this.close();
-        }
-      });
-    },
-  },
-});
+const emit = defineEmits<{
+  (e: 'environment::importEnv'): void;
+  (e: 'update:open', open: boolean): void;
+}>();
+
+const createEnvironmentComponent = useTemplateRef<InstanceType<typeof CreateEnvironment>>(
+  'createEnvironmentComponent',
+);
+
+function close(): void {
+  emit('update:open', false);
+}
+
+function importEnv(): void {
+  close();
+  emit('environment::importEnv');
+}
+
+function submit(): void {
+  const submitted = createEnvironmentComponent.value?.submit();
+
+  nextTick(() => {
+    if (submitted) {
+      close();
+    }
+  });
+}
 </script>

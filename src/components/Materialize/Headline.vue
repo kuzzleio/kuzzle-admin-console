@@ -13,16 +13,10 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Breadcrumb from '@/components/Common/Breadcrumb.vue';
 
-export default {
-  name: 'Headline',
-  components: {
-    Breadcrumb,
-  },
-  props: {
-    title: String,
-  },
-};
+defineProps<{
+  title?: string;
+}>();
 </script>

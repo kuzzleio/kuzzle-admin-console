@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-28 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
+**Dernière mise à jour** : 2026-09-29 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -912,7 +912,21 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 7. `TagsInput`
   - [x] 8. `Resizable`
   - [x] 9. `Toast` — sur `vue-sonner`, l'état hors ligne en bandeau ([ADR-0058](adr/0058-toasts-sur-vue-sonner.md))
-- [ ] Composition API
+- [ ] Composition API ([ADR-0060](adr/0060-composition-api-par-domaine.md)), un domaine par lot — 77 SFC sur 193 au départ :
+  - [x] 1. `ui/` restants, retrait de `classMerge`
+  - [x] 2. Racine, `Common/Login`, `Error`, `Materialize`
+  - [x] 3. `Common/` hors `Filters` et `Environments`
+  - [x] 4. `Common/Environments`
+  - [x] 5. `ApiAction`
+  - [ ] 6. `Security` : `Layout`, `Common`, `Roles`
+  - [ ] 7. `Security/Profiles`
+  - [ ] 8. `Security/Users`
+  - [ ] 9. `Data` : `Indexes`, `Leftnav`, racine
+  - [ ] 10. `Data` : `Collections`, `Realtime`
+  - [ ] 11. `Common/Filters`
+  - [ ] 12. `Data/Documents`, les vues
+  - [ ] 13. `Data/Documents`, le reste
+  - [ ] 14. Retrait des plugins `$toast` / `$log`, verrou ESLint
 
 ### 1.6 Critères de sortie — ADR-0051
 
@@ -3679,6 +3693,190 @@ Gabarit à copier :
   qui est dessiné (`path.apexcharts-line`, son attribut `d`).
 - **Ref** : [ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md).
 
+#### G-102 — La confirmation du mot de passe était comparée à « password », depuis la v4
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/Login/ResetPasswordForm.vue`.
+- **Symptôme** : sur la page de réinitialisation, deux mots de passe
+  identiques affichent « Passwords do not match » — sauf si ce mot de passe est
+  `password`. L'envoi n'est pas bloqué (seul le `pattern` HTML l'est), mais
+  l'erreur reste affichée. `resetpassword.spec` passait : elle tape
+  précisément `password`.
+- **Cause** : `sameAs('password')` est la syntaxe de Vuelidate 0.x, où l'argument
+  nommait un champ. En 2.x, `sameAs(x)` compare à la **valeur** `x`
+  (`unref(value) === unref(equalTo)`) : la confirmation était comparée à la
+  chaîne littérale. Présent depuis #783, donc sur `4-dev` et `master`.
+- **Solution** : `validations` devient une fonction, et la règle compare à
+  `this.password` (en `<script setup>`, à un `computed`). Un test tape un autre
+  mot de passe, fait apparaître le message, puis vérifie qu'il disparaît.
+- **À retenir** : un test qui choisit une valeur « naturelle » (`password`,
+  `admin`, `test`) peut coïncider avec un littéral du code. Et `not.contain` seul
+  passe avant même que la validation ait tourné : faire d'abord apparaître le
+  message.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-103 — `removeListener` sans la fonction ne retire rien
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  `Home.vue` typé.
+- **Symptôme** : aucun à l'écran. `vue-tsc` refuse
+  `$kuzzle.removeListener('tokenExpired')` : le second argument est requis.
+- **Cause** : le `KuzzleEventEmitter` du SDK retire l'écouteur **égal** à la
+  fonction passée ; sans elle, `findIndex` ne trouve rien et rien n'est retiré.
+  `Home` enregistrait deux fonctions fléchées au montage et ne les retirait
+  jamais : chaque retour à `Home` (déconnexion puis reconnexion) ajoutait un
+  jeu d'écouteurs `tokenExpired` / `queryError` sur la même instance.
+- **Solution** : les écouteurs sont des fonctions nommées, retirées par
+  référence au démontage.
+- **À retenir** : `removeListener(nom)` n'est pas `removeAllListeners(nom)`.
+  Le typage l'attrape ; le JavaScript non typé le laissait passer sans bruit.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-104 — Un paramètre de route absent du chemin est écarté en silence
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  `Common/Login/Form.vue` typé. Régression de la phase 3 (vue-router 3 → 4),
+  pas de la v4.
+- **Symptôme** : un compte dont le mot de passe a expiré, ou doit être changé,
+  arrive sur la page de réinitialisation **sans** l'avertissement « You must
+  update your password to continue ». `vue-tsc` refuse `showIntro: true` dans
+  `params` : un paramètre est une chaîne.
+- **Cause** : le formulaire poussait `params: { showIntro: true, token }` vers
+  `/reset-password/:token`. Depuis vue-router 4.1.4, `resolve` ne garde que les
+  paramètres du chemin (`pickParams` sur `matcher.keys`) ; les autres sont
+  écartés, avec un avertissement en développement seulement. vue-router 3 les
+  transmettait. Aucune spec ne passe par `must_change_password`.
+- **Solution** : l'indicateur passe en query (`?showIntro=true`), et la route
+  le lit par une fonction `props`. Un test visite la page avec et sans.
+- **À retenir** : `params` ne sert qu'aux segments du chemin. Un état à
+  transmettre à la page suivante va en `query` ou en `state`. Plusieurs sites
+  poussent encore des `params` dont le nom ne figure pas dans le chemin cible
+  (`index` / `collection` là où la route attend `indexName` /
+  `collectionName`) : ils ne marchent que parce que les paramètres courants
+  sont repris. À relire dans leur lot.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-105 — `queryError` n'a pas la même forme selon le SDK
+
+- **Contexte** : lot 2 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  `Home.vue` typé.
+- **Symptôme** : aucun à l'écran. `vue-tsc` refuse l'écouteur de `queryError`
+  : le SDK v7 le type `(data: { error: KuzzleError; request }) => void`.
+- **Cause** : le SDK v6 (backend v1) émet `emit('queryError', error, request)`,
+  le SDK v7 (backend v2) `emit('queryError', { error, request })`. `Home` lisait
+  `e.id` dans les deux cas : sur un backend v2, `e.id` vaut `undefined`, et la
+  perte de session sur `security.token.expired` ne passait jamais par là. Elle
+  passait par `tokenExpired`, que le SDK émet aussi — d'où l'absence de
+  symptôme.
+- **Solution** : la branche v2 lit `e.error.id`.
+- **À retenir** : la console parle à deux SDK (`kuzzle-sdk-v6`,
+  `kuzzle-sdk-v7`) ; une charge d'événement se vérifie dans les deux.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-106 — Le fil d'Ariane d'une collection temps réel menait à ses documents, depuis la v4
+
+- **Contexte** : lot 3 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/Breadcrumb.vue`.
+- **Symptôme** : sur une collection temps réel, le lien de la collection dans
+  le fil d'Ariane pointe vers `DocumentList` et non vers `WatchCollection`.
+- **Cause** : trois erreurs dans `isCollectionRealtime()`. `!this.index` teste
+  une **méthode**, toujours vraie ; la condition `this.$route.params.collectionName`
+  est inversée, et renvoie `false` dès qu'une collection est ouverte ; et
+  `.isRealtime` lit une méthode de `Collection` sans l'appeler. La fonction ne
+  pouvait rendre que `false`. Même code sur `4-dev`.
+- **Solution** : appeler `index()` et `isRealtime()`, et tester la présence de
+  la collection. **Pas de test automatisé** : une collection temps réel n'existe
+  côté Kuzzle que tant qu'un client y est abonné, et aucune spec n'en crée.
+- **À retenir** : une méthode lue sans parenthèses est toujours vraie, et
+  `vue-tsc` ne le signale pas sur `!fn` (vérifié). Ce qu'il refuse, c'est la
+  suite : passer `this.index`, une fonction, là où `getOneCollection` attend un
+  `Index`. Le typage attrape l'usage, pas le test.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-107 — `vue-tsc` passe, le build refuse `defineProps` qui lit une variable locale
+
+- **Contexte** : lot 3 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/JsonEditor.vue`.
+- **Symptôme** : `test:types` et `test:lint` passent, `npm run build` échoue :
+  « `defineProps()` in `<script setup>` cannot reference locally declared
+  variables because it will be hoisted outside of the setup() function ».
+- **Cause** : la valeur par défaut de `id`, calculée une fois au chargement du
+  module, était une `const` du `<script setup>`. Le compilateur hisse les
+  options de `defineProps` hors de `setup()` ; `vue-tsc` ne fait pas cette
+  vérification.
+- **Solution** : la constante passe dans un `<script lang="ts">` ordinaire, à
+  côté du `<script setup>` : c'est la portée du module, que `defineProps` peut
+  lire.
+- **À retenir** : `test:types` ne remplace pas le build. Un lot se valide par
+  le build d'abord — c'est de toute façon lui que servent les specs
+  ([ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)).
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-108 — Modifier la connexion courante déconnectait, depuis la v4
+
+- **Contexte** : lot 4 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/Environments/CreateEnvironment.vue`.
+- **Symptôme** : changer la couleur ou le nom de la connexion sur laquelle on
+  est connecté renvoie à la page de connexion.
+- **Cause** : deux erreurs dans `updateEnvironment` du store `kuzzle`. Il
+  comparait `payload.backendMajorVersion`, absent (la version est dans
+  `payload.environment`) : `undefined` différait toujours, et toute
+  modification de la connexion courante forçait une reconnexion. Et il
+  remplaçait la connexion par ce qu'envoie le formulaire, **sans le jeton** :
+  la reconnexion repartait sans session. Même code sur `4-dev`.
+- **Solution** : la version est lue dans `payload.environment` ; sans
+  reconnexion, le jeton existant est gardé (un jeton passé explicitement
+  l'emporte). Avec reconnexion — hôte, port, SSL ou version changés —, rien ne
+  change : la session ne vaut pas pour un autre serveur. `environments.spec`
+  change la couleur de la connexion courante et vérifie que la session reste.
+- **Limite** : une connexion **malformée** (sans version) à laquelle on donne
+  une version ne se reconnecte toujours pas, comme avant. Comparer la version
+  dans ce cas déclenchait la reconnexion, et le SDK plantait —
+  « Cannot read properties of null (reading 'CLOSING') » dans l'`onerror` de
+  sa `WebSocket` — sur la spec « malformed » d'`environments.spec`, de façon
+  reproductible. La course est dans le chemin de connexion, pas ici : à
+  reprendre à part.
+- **À retenir** : un store typé `payload: any` ne vérifie rien de ce qu'il
+  lit. Le typer (`UpdateEnvironmentPayload` existe déjà) aurait refusé
+  `payload.backendMajorVersion`.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-109 — Supprimer une requête d'API Action ne faisait rien, depuis le retrait de bootstrap-vue
+
+- **Contexte** : lot 5 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  lecture de `ApiAction/QueryList.vue` avant conversion.
+- **Symptôme** : la corbeille d'une requête sauvegardée ne demande rien et ne
+  supprime rien ; la console affiche `Cannot read properties of undefined
+  (reading 'msgBoxConfirm')`.
+- **Cause** : la confirmation passait par `this.$bvModal.msgBoxConfirm`, l'API
+  impérative de bootstrap-vue. Le recensement d'[ADR-0022](adr/0022-retrait-de-bootstrap-et-preflight.md)
+  (« `$bvModal` n'a plus un seul appel ») a manqué cet appel, et aucune spec ne
+  supprimait de requête. Régression de la phase 2 ; la v4 n'est pas touchée.
+- **Solution** : un `Dialog` dans `QueryList`, ouvert par l'état
+  `queryToDelete` (ADR-0010). `api-actions.spec` annule, puis confirme, et
+  vérifie la liste et le stockage.
+- **À retenir** : une API d'instance (`this.$bvModal`, `this.$toast`) ne se
+  recense pas par les balises. `vue-tsc` l'aurait refusée — c'est ce que les
+  lots d'ADR-0060 font entrer dans son périmètre.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-110 — Après une suppression, modifier une requête sauvegardée plus bas levait une erreur, depuis la v4
+
+- **Contexte** : lot 5 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  en écrivant le test de [G-109](#g-109).
+- **Symptôme** : on ouvre la deuxième requête sauvegardée, on supprime la
+  première, on modifie la deuxième et on l'enregistre : l'ancienne version
+  reste dans le stockage, et la console affiche `Cannot read properties of
+  undefined (reading 'query')`.
+- **Cause** : chaque onglet retient le rang de sa requête (`savedIdx`).
+  `deleteSavedQuery` retirait l'entrée sans décaler les rangs suivants :
+  l'onglet désignait une entrée qui n'existait plus, et `onQueryChanged`
+  levait une erreur avant d'enregistrer la saisie. Même code sur `4-dev`.
+- **Solution** : après le retrait, les rangs supérieurs à celui supprimé
+  reculent d'un cran, dans les onglets comme dans les requêtes.
+  `api-actions.spec` rejoue le scénario.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -3803,3 +4001,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-28 | Gestion de session : surveillance armée à chaque ouverture (identifiants compris), vérification au retour sur l'onglet, rafraîchissement unique entre onglets, session perdue sur place dans la popup | [ADR-0057](adr/0057-gestion-de-session.md) |
 | 2026-09-29 | Toasts sur `vue-sonner` derrière le store (API inchangée), actions et lien dans la description ; l'état hors ligne devient un bandeau, hors de la pile | [ADR-0058](adr/0058-toasts-sur-vue-sonner.md) |
 | 2026-09-29 | `apexcharts` 7.6.1 plutôt que 5 (dernière majeure), `vue3-apexcharts` remplacé par un composant local | [ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md) |
+| 2026-09-29 | Composition API en 14 lots, un domaine par lot, à comportement constant ; conventions communes, verrou ESLint au dernier lot | [ADR-0060](adr/0060-composition-api-par-domaine.md) |

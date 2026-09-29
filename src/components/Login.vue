@@ -41,72 +41,58 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { Alert } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
-import { useAuthStore, useKuzzleStore, useRoutingStore } from '@/stores';
+import { useAuthStore, useRoutingStore } from '@/stores';
 
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
-import LoginForm from './Common/Login/Form.vue';
 import KuzzleLogo from './Common/KuzzleLogo.vue';
+import LoginForm from './Common/Login/Form.vue';
 
-export default {
-  name: 'Login',
-  components: {
-    KuzzleLogo,
-    Alert,
-    Card,
-    CardContent,
-    EnvironmentSwitch,
-    LoginForm,
-  },
-  setup() {
-    return {
-      authStore: useAuthStore(),
-      routingStore: useRoutingStore(),
-    };
-  },
-  data() {
-    return {
-      environmentId: null,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['currentEnvironment']),
-    displayNoAdminWarning() {
-      return !this.authStore.adminAlreadyExists;
-    },
-  },
-  methods: {
-    onLogin() {
-      // Set the body overflow to visible because the login modal set it to 'hidden'.
-      // After login, the index route is pushed to view router and the body overflow is
-      // not set to his original state
-      // see src/components/Materialize/Modale.vue#62
-      window.document.body.style.overflow = 'visible';
+const emit = defineEmits<{
+  (e: 'environment::create', id?: string): void;
+  (e: 'environment::delete', id: string): void;
+  (e: 'environment::importEnv'): void;
+}>();
 
-      if (this.routingStore.routeBeforeRedirect) {
-        const route = this.routingStore.routeBeforeRedirect;
-        this.routingStore.routeBeforeRedirect = undefined;
+const authStore = useAuthStore();
+const routingStore = useRoutingStore();
+const router = useRouter();
 
-        this.$router.push({
-          name: route,
-        });
-      } else {
-        this.$router.push('/');
-      }
-    },
-    editEnvironment(id) {
-      this.$emit('environment::create', id);
-    },
-    deleteEnvironment(id) {
-      this.$emit('environment::delete', id);
-    },
-    importEnv() {
-      this.$emit('environment::importEnv');
-    },
-  },
-};
+const displayNoAdminWarning = computed(() => !authStore.adminAlreadyExists);
+
+function onLogin(): void {
+  // Set the body overflow to visible because the login modal set it to 'hidden'.
+  // After login, the index route is pushed to view router and the body overflow is
+  // not set to his original state
+  // see src/components/Materialize/Modale.vue#62
+  window.document.body.style.overflow = 'visible';
+
+  if (routingStore.routeBeforeRedirect) {
+    const route = routingStore.routeBeforeRedirect;
+    routingStore.routeBeforeRedirect = undefined;
+
+    router.push({
+      name: route,
+    });
+  } else {
+    router.push('/');
+  }
+}
+
+function editEnvironment(id?: string): void {
+  emit('environment::create', id);
+}
+
+function deleteEnvironment(id: string): void {
+  emit('environment::delete', id);
+}
+
+function importEnv(): void {
+  emit('environment::importEnv');
+}
 </script>

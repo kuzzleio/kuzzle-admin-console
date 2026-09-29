@@ -129,7 +129,10 @@ export default function createRoutes(log: Logger) {
             meta: {
               skipLogin: true,
             },
-            props: true,
+            props: (route) => ({
+              showIntro: route.query.showIntro === 'true',
+              token: route.params.token,
+            }),
           },
           {
             path: '/signup',

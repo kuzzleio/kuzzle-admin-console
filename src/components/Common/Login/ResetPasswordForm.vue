@@ -58,7 +58,8 @@
   </form>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, reactive, ref } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { sameAs, required, helpers } from '@vuelidate/validators';
 
@@ -67,85 +68,61 @@ import { Button } from '@/components/ui/button';
 import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Focus from '@/directives/focus.directive';
+import vFocus from '@/directives/focus.directive';
+import { caught } from '@/lib/errors';
 import { useAuthStore } from '@/stores';
 
-export default {
-  name: 'ResetPasswordForm',
-  components: {
-    Alert,
-    Button,
-    FormDescription,
-    FormItem,
-    FormMessage,
-    Input,
-    Label,
-  },
-  directives: {
-    Focus,
-  },
-  props: {
-    resetToken: String,
-  },
-  setup() {
-    return {
-      v$: useVuelidate(),
-      authStore: useAuthStore(),
-    };
-  },
-  data() {
-    return {
-      error: '',
-      password: '',
-      password2: '',
-    };
-  },
-  validations: {
-    password: {
-      required: helpers.withMessage('Password must not be empty', required),
-    },
-    password2: {
-      required: helpers.withMessage('Password must not be empty', required),
-      sameAs: helpers.withMessage('Passwords do not match', sameAs('password')),
-    },
-  },
-  computed: {
-    passwordFeedback() {
-      if (this.v$.password.$errors.length > 0) {
-        return this.v$.password.$errors[0].$message;
-      }
+const props = defineProps<{
+  resetToken?: string;
+}>();
 
-      return null;
-    },
-    password2Feedback() {
-      if (this.v$.password2.$errors.length > 0) {
-        return this.v$.password2.$errors[0].$message;
-      }
+const emit = defineEmits<{
+  (e: 'reset-password::after'): void;
+}>();
 
-      return null;
-    },
-    password2Pattern() {
-      // html validation pattern use regular expressions
-      // We need to escape special chars to match against the password field
-      // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Escaping
-      return this.password.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
-    },
+const authStore = useAuthStore();
+
+const error = ref('');
+const form = reactive({ password: '', password2: '' });
+
+// `sameAs` de Vuelidate 2 compare à une valeur, pas à un nom de champ : il
+// reçoit un `computed` pour suivre le mot de passe saisi (G-102).
+const rules = computed(() => ({
+  password: {
+    required: helpers.withMessage('Password must not be empty', required),
   },
-  methods: {
-    async resetPassword() {
-      this.error = '';
-
-      try {
-        await this.authStore.doResetPassword({
-          password: this.password,
-          token: this.resetToken,
-        });
-
-        this.$emit('reset-password::after');
-      } catch (error) {
-        this.error = error.message;
-      }
-    },
+  password2: {
+    required: helpers.withMessage('Password must not be empty', required),
+    sameAs: helpers.withMessage('Passwords do not match', sameAs(form.password)),
   },
-};
+}));
+
+const v$ = useVuelidate(rules, form);
+
+function firstError(field: 'password' | 'password2'): string | null {
+  const errors = v$.value[field].$errors;
+  return errors.length > 0 ? String(errors[0].$message) : null;
+}
+
+const passwordFeedback = computed(() => firstError('password'));
+const password2Feedback = computed(() => firstError('password2'));
+// html validation pattern use regular expressions
+// We need to escape special chars to match against the password field
+// taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Escaping
+const password2Pattern = computed(() => form.password.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'));
+
+async function resetPassword(): Promise<void> {
+  error.value = '';
+
+  try {
+    await authStore.doResetPassword({
+      password: form.password,
+      token: props.resetToken,
+    });
+
+    emit('reset-password::after');
+  } catch (err) {
+    error.value = caught(err).message;
+  }
+}
 </script>

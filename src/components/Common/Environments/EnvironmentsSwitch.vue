@@ -124,10 +124,9 @@
   </div>
 </template>
 
-<script>
-import { markRaw } from 'vue';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
 import { mapValues, omit } from 'lodash';
-import { mapState } from 'pinia';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -137,90 +136,60 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { caught } from '@/lib/errors';
+import { logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
 import { formatForDom, sortObject } from '@/utils';
 import { isValidEnvironment } from '@/validators';
 
-export default {
-  name: 'EnvironmentSwitch',
-  components: {
-    Button,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-  },
-  props: {
-    blendColor: {
-      type: Boolean,
-      default: false,
-    },
-    block: {
-      type: Boolean,
-      default: true,
-    },
-    iconOnly: {
-      type: Boolean,
-      default: false,
-    },
-    right: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  setup() {
-    return {
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  data() {
-    return {
-      /*
-       * `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom.
-       * `markRaw` et non `Object.freeze` : Vue met en cache le constructeur
-       * sur les options du composant, et un objet gelé le lui interdit
-       * (G-032).
-       */
-      Button: markRaw(Button),
-      menuOpen: false,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['currentEnvironment']),
-    exportUrl() {
-      const envWitoutToken = mapValues(this.kuzzleStore.environments, (e) => omit(e, 'token'));
+withDefaults(
+  defineProps<{
+    blendColor?: boolean;
+    block?: boolean;
+    iconOnly?: boolean;
+    right?: boolean;
+  }>(),
+  { blendColor: false, block: true, iconOnly: false, right: true },
+);
 
-      const blob = new Blob([JSON.stringify(envWitoutToken)], {
-        type: 'application/json',
-      });
+// Les noms des événements restent écrits en toutes lettres dans le template :
+// `check:dom-emits` ne sait pas suivre un nom calculé (ADR-0029).
+const emit = defineEmits<{
+  (e: 'environment::create', id?: string): void;
+  (e: 'environment::delete', id: string): void;
+  (e: 'environment::importEnv'): void;
+  (e: 'environmentSwitched'): void;
+}>();
 
-      return URL.createObjectURL(blob);
-    },
-    environments() {
-      return this.kuzzleStore.environments;
-    },
-  },
-  methods: {
-    isValidEnvironment,
-    // Le nom de l'événement reste écrit en toutes lettres dans le template :
-    // `check:dom-emits` ne sait pas suivre un nom calculé (ADR-0029).
-    closeMenu() {
-      this.menuOpen = false;
-    },
-    async switchEnv(id) {
-      try {
-        await this.kuzzleStore.setCurrentEnvironment(id);
-        this.$emit('environmentSwitched');
-      } catch (error) {
-        this.$log.error(error);
-        if (error.code) {
-          await this.kuzzleStore.onConnectionError(error);
-        }
-      }
-    },
-    sortObject,
-    formatForDom,
-  },
-};
+const kuzzleStore = useKuzzleStore();
+
+const menuOpen = ref(false);
+
+const currentEnvironment = computed(() => kuzzleStore.currentEnvironment);
+const exportUrl = computed((): string => {
+  const envWitoutToken = mapValues(kuzzleStore.environments, (e) => omit(e, 'token'));
+
+  const blob = new Blob([JSON.stringify(envWitoutToken)], {
+    type: 'application/json',
+  });
+
+  return URL.createObjectURL(blob);
+});
+const environments = computed(() => kuzzleStore.environments);
+
+function closeMenu(): void {
+  menuOpen.value = false;
+}
+
+async function switchEnv(id: string): Promise<void> {
+  try {
+    await kuzzleStore.setCurrentEnvironment(id);
+    emit('environmentSwitched');
+  } catch (error) {
+    logger.error(error);
+    if (caught(error).code && error instanceof Error) {
+      await kuzzleStore.onConnectionError(error);
+    }
+  }
+}
 </script>

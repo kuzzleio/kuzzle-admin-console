@@ -121,8 +121,9 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -131,116 +132,106 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { FormDescription, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/composables/useToast';
+import { caught } from '@/lib/errors';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
 import KuzzleLogo from './Common/KuzzleLogo.vue';
 
-export default {
-  name: 'Signup',
-  components: {
-    KuzzleLogo,
-    Alert,
-    Button,
-    Card,
-    CardContent,
-    CardFooter,
-    Checkbox,
-    EnvironmentSwitch,
-    FormDescription,
-    FormItem,
-    Input,
-    Label,
-  },
-  setup() {
-    return {
-      authStore: useAuthStore(),
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  data() {
-    return {
-      username: '',
-      password1: '',
-      password2: '',
-      reset: false,
-      error: null,
-      waiting: false,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle']),
-  },
-  methods: {
-    async signup() {
-      if (this.username === '' || this.password1 === '' || this.password2 === '') {
-        this.error = 'All fields are mandatory';
-        return;
-      }
+const emit = defineEmits<{
+  (e: 'environment::create', id?: string): void;
+  (e: 'environment::delete', id: string): void;
+  (e: 'environment::importEnv'): void;
+}>();
 
-      if (this.password1 !== this.password2) {
-        this.error = 'Confirmation does not match password';
-        return;
-      }
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const router = useRouter();
+const toast = useToast();
 
-      this.error = null;
-      this.waiting = true;
+const username = ref('');
+const password1 = ref('');
+const password2 = ref('');
+const reset = ref(false);
+const error = ref<string | null>(null);
+const waiting = ref(false);
 
-      try {
-        await this.$kuzzle.query({
-          controller: 'security',
-          action: 'createFirstAdmin',
-          _id: this.username,
-          reset: this.reset,
-          body: {
-            content: {},
-            credentials: {
-              local: {
-                username: this.username,
-                password: this.password1,
-              },
-            },
+async function signup(): Promise<void> {
+  if (username.value === '' || password1.value === '' || password2.value === '') {
+    error.value = 'All fields are mandatory';
+    return;
+  }
+
+  if (password1.value !== password2.value) {
+    error.value = 'Confirmation does not match password';
+    return;
+  }
+
+  error.value = null;
+  waiting.value = true;
+
+  try {
+    await kuzzleStore.$kuzzle?.query({
+      controller: 'security',
+      action: 'createFirstAdmin',
+      _id: username.value,
+      reset: reset.value,
+      body: {
+        content: {},
+        credentials: {
+          local: {
+            username: username.value,
+            password: password1.value,
           },
-        });
+        },
+      },
+    });
 
-        this.kuzzleStore.updateTokenCurrentEnvironment(null);
-        this.authStore.adminAlreadyExists = true;
-        this.$router.push({ name: 'Login' });
-      } catch (err) {
-        if (
-          [
-            'plugin.kuzzle-plugin-auth-passport-local.login_in_password',
-            'plugin.kuzzle-plugin-auth-passport-local.weak_password',
-          ].includes(err.id)
-        ) {
-          this.error = err.message;
-        } else {
-          this.$log.error(err);
-          this.$toast.danger(err.message, 'The complete error has been printed to the console.');
-        }
-      }
-      this.waiting = false;
-    },
-    loginAsGuest() {
-      this.error = null;
-      this.authStore
-        .setSession('anonymous')
-        .then(() => {
-          this.$router.go({ name: 'Data' });
-        })
-        .catch((err) => {
-          this.error = err.message;
-        });
-    },
-    editEnvironment(id) {
-      this.$emit('environment::create', id);
-    },
-    deleteEnvironment(id) {
-      this.$emit('environment::delete', id);
-    },
-    importEnv() {
-      this.$emit('environment::importEnv');
-    },
-  },
-};
+    kuzzleStore.updateTokenCurrentEnvironment(null);
+    authStore.adminAlreadyExists = true;
+    router.push({ name: 'Login' });
+  } catch (err) {
+    const { id, message } = caught(err);
+    if (
+      [
+        'plugin.kuzzle-plugin-auth-passport-local.login_in_password',
+        'plugin.kuzzle-plugin-auth-passport-local.weak_password',
+      ].includes(id ?? '')
+    ) {
+      error.value = message;
+    } else {
+      logger.error(err);
+      toast.danger(message, 'The complete error has been printed to the console.');
+    }
+  }
+  waiting.value = false;
+}
+
+function loginAsGuest(): void {
+  error.value = null;
+  authStore
+    .setSession('anonymous')
+    .then(() => {
+      // `go()` prend un nombre : l'objet que recevait `$router.go` valait 0,
+      // soit un rechargement de la page. Le comportement est gardé tel quel.
+      router.go(0);
+    })
+    .catch((err: unknown) => {
+      error.value = caught(err).message;
+    });
+}
+
+function editEnvironment(id?: string): void {
+  emit('environment::create', id);
+}
+
+function deleteEnvironment(id: string): void {
+  emit('environment::delete', id);
+}
+
+function importEnv(): void {
+  emit('environment::importEnv');
+}
 </script>
