@@ -3773,6 +3773,26 @@ Gabarit à copier :
   `kuzzle-sdk-v7`) ; une charge d'événement se vérifie dans les deux.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-106 — Le fil d'Ariane d'une collection temps réel menait à ses documents, depuis la v4
+
+- **Contexte** : lot 3 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/Breadcrumb.vue`.
+- **Symptôme** : sur une collection temps réel, le lien de la collection dans
+  le fil d'Ariane pointe vers `DocumentList` et non vers `WatchCollection`.
+- **Cause** : trois erreurs dans `isCollectionRealtime()`. `!this.index` teste
+  une **méthode**, toujours vraie ; la condition `this.$route.params.collectionName`
+  est inversée, et renvoie `false` dès qu'une collection est ouverte ; et
+  `.isRealtime` lit une méthode de `Collection` sans l'appeler. La fonction ne
+  pouvait rendre que `false`. Même code sur `4-dev`.
+- **Solution** : appeler `index()` et `isRealtime()`, et tester la présence de
+  la collection. **Pas de test automatisé** : une collection temps réel n'existe
+  côté Kuzzle que tant qu'un client y est abonné, et aucune spec n'en crée.
+- **À retenir** : une méthode lue sans parenthèses est toujours vraie, et
+  `vue-tsc` ne le signale pas sur `!fn` (vérifié). Ce qu'il refuse, c'est la
+  suite : passer `this.index`, une fonction, là où `getOneCollection` attend un
+  `Index`. Le typage attrape l'usage, pas le test.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
