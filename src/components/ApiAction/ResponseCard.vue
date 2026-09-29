@@ -9,9 +9,9 @@
         <p v-if="currentErrorMessage" class="mt-1">{{ currentErrorMessage }}</p>
       </Alert>
 
-      <json-editor
+      <JsonEditor
         :id="`responseEditorWrapper-${tabIdx}`"
-        :ref="`responseEditorWrapper-${tabIdx}`"
+        ref="responseEditor"
         class="responseJsonEditor min-h-0 flex-1"
         content="{}"
         :data-cy="`api-actions-response-JSONEditor-${tabIdx}`"
@@ -21,62 +21,44 @@
   </Card>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, useTemplateRef, watch } from 'vue';
 import _ from 'lodash';
 
+import type { QueryResponse } from '@/components/ApiAction/types';
 import { Alert } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import jsonEditor from '@/components/Common/JsonEditor.vue';
+import JsonEditor from '@/components/Common/JsonEditor.vue';
 
-export default {
-  components: {
-    Alert,
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    jsonEditor,
+const props = withDefaults(
+  defineProps<{
+    response?: QueryResponse;
+    tabIdx: number;
+  }>(),
+  { response: '' },
+);
+
+const responseEditor = useTemplateRef<InstanceType<typeof JsonEditor>>('responseEditor');
+
+const currentStatus = computed((): unknown =>
+  props.response ? _.get(props.response, 'status', 'undefined') : null,
+);
+const currentErrorMessage = computed((): unknown =>
+  typeof props.response === 'object' ? Reflect.get(props.response, 'message') : null,
+);
+const statusBarVariant = computed((): 'default' | 'destructive' | 'success' => {
+  if (currentStatus.value === null || currentStatus.value === 'undefined') return 'default';
+  if (String(currentStatus.value).match(/20[0-9]/) != null) return 'success';
+  return 'destructive';
+});
+
+watch(
+  () => props.response,
+  (value) => {
+    responseEditor.value?.setContent(JSON.stringify(value, null, ' '));
   },
-  props: {
-    response: {
-      default: '',
-    },
-    tabIdx: {},
-  },
-  data() {
-    return {
-      isFullScreen: false,
-    };
-  },
-  computed: {
-    currentStatus() {
-      return this.response ? _.get(this.response, 'status', 'undefined') : null;
-    },
-    currentErrorMessage() {
-      return this.response ? this.response.message : null;
-    },
-    statusBarVariant() {
-      if (this.currentStatus === null || this.currentStatus === 'undefined') return 'default';
-      if (this.currentStatus.toString().match(/20[0-9]/) != null) return 'success';
-      return 'destructive';
-    },
-  },
-  watch: {
-    response: {
-      handler(value) {
-        this.$refs[`responseEditorWrapper-${this.tabIdx}`].setContent(
-          JSON.stringify(value, null, ' '),
-        );
-      },
-    },
-  },
-  methods: {
-    toggleFullscreen() {
-      this.isFullScreen = !this.isFullScreen;
-    },
-  },
-};
+);
 </script>
 
 <style lang="scss" scoped>

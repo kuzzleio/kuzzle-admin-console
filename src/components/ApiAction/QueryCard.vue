@@ -29,13 +29,14 @@
         >
         <Input
           :id="`controller-input-${tabIdx}`"
-          v-model="editedQuery.controller"
+          :model-value="editedQuery.controller ?? undefined"
           class="rounded-none border-0"
           :data-cy="`api-actions-controller-input-${tabIdx}`"
           :disabled="!isQueryValid(jsonQuery)"
           list="controllersList"
           placeholder="Select or type your controller"
           :title="isQueryValid(jsonQuery) ? '' : 'The query is invalid.'"
+          @update:model-value="editedQuery.controller = String($event)"
         />
         <Button
           aria-label="Clear the controller"
@@ -63,13 +64,14 @@
         >
         <Input
           :id="`action-input-${tabIdx}`"
-          v-model="editedQuery.action"
+          :model-value="editedQuery.action ?? undefined"
           class="rounded-none border-0"
           :data-cy="`api-actions-action-input-${tabIdx}`"
           :disabled="!isQueryValid(jsonQuery)"
           list="actionsList"
           placeholder="Select or type your action"
           :title="isQueryValid(jsonQuery) ? '' : 'The query is invalid.'"
+          @update:model-value="editedQuery.action = String($event)"
         />
         <Button
           aria-label="Clear the action"
@@ -164,9 +166,9 @@
       >
         <Card class="h-full">
           <CardContent class="flex h-full min-h-0 flex-col">
-            <json-editor
+            <JsonEditor
               :id="`queryEditorWrapper-${tabIdx}`"
-              :ref="`queryEditorWrapper-${tabIdx}`"
+              ref="queryEditor"
               class="min-h-0 flex-1"
               :content="jsonQuery"
               :data-cy="`api-actions-query-JSONEditor-${tabIdx}`"
@@ -192,9 +194,15 @@
   </div>
 </template>
 
-<script>
-import _ from 'lodash';
+<script setup lang="ts">
+import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 
+import type {
+  ApiQuery,
+  OpenApiPaths,
+  PublicApi,
+  QueryResponse,
+} from '@/components/ApiAction/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -207,200 +215,187 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { useSideBySide } from '@/composables/useSideBySide';
 
 import ResponseCard from '@/components/ApiAction/ResponseCard.vue';
-import jsonEditor from '@/components/Common/JsonEditor.vue';
+import JsonEditor from '@/components/Common/JsonEditor.vue';
 
-export default {
-  name: 'QueryCard',
-  components: {
-    jsonEditor,
-    ResponseCard,
-    Button,
-    Card,
-    CardContent,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-    Input,
-    ResizableHandle,
-    ResizablePanel,
-    ResizablePanelGroup,
-  },
-  props: {
-    query: {},
-    tabIdx: {},
-    api: {},
-    openapi: {},
-    response: {},
-  },
-  setup() {
-    return { sideBySide: useSideBySide() };
-  },
-  data() {
-    return {
-      isFullScreen: false,
-      jsonQuery: '{}',
-      editedQuery: {
-        controller: null,
-        action: null,
-        body: {},
-      },
-    };
-  },
-  computed: {
-    /* Le modificateur que l'utilisateur a sous les doigts, pour le `title`. */
-    editorShortcuts() {
-      return {
-        run: { mac: 'Command-Enter', win: 'Ctrl-Enter' },
-        save: { mac: 'Command-S', win: 'Ctrl-S' },
-      };
-    },
-    shortcutModifier() {
-      return /Mac|iPhone|iPad/.test(navigator.userAgent) ? '⌘' : 'Ctrl';
-    },
-    controllers() {
-      return this.api ? Object.keys(this.api) : [];
-    },
-    actions() {
-      if (!this.api) {
-        return [];
-      }
-      const currentController = this.editedQuery.controller;
-      return currentController && this.api[currentController]
-        ? Object.keys(this.api[currentController])
-        : [];
-    },
-  },
-  watch: {
-    editedQuery: {
-      deep: true,
-      handler(value) {
-        this.$emit('queryChanged', { query: value, tabIdx: this.tabIdx });
-      },
-    },
-    'editedQuery.controller': {
-      deep: true,
-      handler(value) {
-        const tmp = JSON.parse(this.jsonQuery);
-        if (value !== tmp.controller) {
-          tmp.controller = value;
-          this.jsonQuery = JSON.stringify(tmp, null, 2);
-          this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery);
-        }
-      },
-    },
-    'editedQuery.action': {
-      deep: true,
-      handler(value) {
-        const tmp = JSON.parse(this.jsonQuery);
-        if (value !== tmp.action) {
-          tmp.action = value;
-          this.jsonQuery = JSON.stringify(tmp, null, 2);
-          this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery);
-          this.loadQueryParams();
-        }
-      },
-    },
-  },
-  mounted() {
-    this.editedQuery = JSON.parse(JSON.stringify(this.query));
-    this.jsonQuery = JSON.stringify(this.editedQuery, null, 2);
-  },
-  methods: {
-    toggleFullscreen() {
-      this.isFullScreen = !this.isFullScreen;
-    },
-    saveQuery() {
-      this.$emit('saveQuery', this.tabIdx);
-    },
-    onEditorShortcut(name) {
-      if (name === 'run') {
-        this.runFromKeyboard();
-      } else if (name === 'save') {
-        this.saveFromKeyboard();
-      }
-    },
-    runFromKeyboard() {
-      if (this.isQueryValid(this.jsonQuery)) {
-        this.performQuery();
-      }
-    },
-    saveFromKeyboard() {
-      if (this.isQueryValid(this.jsonQuery)) {
-        this.saveQuery();
-      }
-    },
-    performQuery() {
-      this.$emit('performQuery', this.tabIdx);
-    },
-    loadQueryParams() {
-      const query = JSON.parse(JSON.stringify(this.editedQuery));
-      const api = _.get(this.api, `${query.controller}.${query.action}`, null);
-      if (!api) {
-        const obj = {
-          controller: query.controller,
-          action: query.action,
-          body: {},
-        };
-        this.jsonQuery = JSON.stringify(obj, null, 2);
-        this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery);
-        return;
-      }
-      const path = api.http[0].url;
-      const verb = api.http[0].verb.toLowerCase();
-      const openApiPath = path.replaceAll(/:[^,/]+/g, (m) => `{${m.replace(':', '')}}`);
+const props = defineProps<{
+  api: PublicApi | null;
+  openapi: OpenApiPaths | null;
+  query: ApiQuery;
+  response: QueryResponse;
+  tabIdx: number;
+}>();
 
-      const params = _.get(this.openapi, `${openApiPath}.${verb}.parameters`, null);
-      if (params) {
-        for (const param of params) {
-          query[param.name] = '';
-        }
-      }
-      const body = _.get(this.openapi, `${openApiPath}.${verb}.requestBody`, null);
-      if (body && body.content['application/json']) {
-        const prefilledBody = body.content['application/json'].schema.properties;
-        for (const key of Object.keys(prefilledBody)) {
-          switch (prefilledBody[key].type) {
-            case 'string':
-              query.body[key] = '';
-              break;
-            case 'number':
-            case 'integer':
-              query.body[key] = 0;
-              break;
-            case 'boolean':
-              query.body[key] = false;
-              break;
-            case 'array':
-              query.body[key] = [];
-              break;
-            case 'object':
-              query.body[key] = {};
-              break;
-            default:
-              query.body[key] = '';
-          }
-        }
-      }
-      this.jsonQuery = JSON.stringify(query, null, 2);
-      this.$refs[`queryEditorWrapper-${this.tabIdx}`].setContent(this.jsonQuery);
-    },
-    queryBodyChange($event) {
-      this.jsonQuery = $event;
-      if (this.isQueryValid($event)) {
-        this.editedQuery = JSON.parse($event);
-      }
-    },
-    isQueryValid(query) {
-      if (!query) {
-        return false;
-      }
-      try {
-        JSON.parse(query);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
-  },
+const emit = defineEmits<{
+  (e: 'performQuery', tabIdx: number): void;
+  (e: 'queryChanged', payload: { query: ApiQuery; tabIdx: number }): void;
+  (e: 'saveQuery', tabIdx: number): void;
+}>();
+
+const sideBySide = useSideBySide();
+const queryEditor = useTemplateRef<InstanceType<typeof JsonEditor>>('queryEditor');
+
+const jsonQuery = ref('{}');
+const editedQuery = ref<ApiQuery>({
+  controller: null,
+  action: null,
+  body: {},
+});
+
+const editorShortcuts = {
+  run: { mac: 'Command-Enter', win: 'Ctrl-Enter' },
+  save: { mac: 'Command-S', win: 'Ctrl-S' },
 };
+/* Le modificateur que l'utilisateur a sous les doigts, pour le `title`. */
+const shortcutModifier = /Mac|iPhone|iPad/.test(navigator.userAgent) ? '⌘' : 'Ctrl';
+
+const controllers = computed(() => (props.api ? Object.keys(props.api) : []));
+const actions = computed(() => {
+  if (!props.api) {
+    return [];
+  }
+  const currentController = editedQuery.value.controller;
+  return currentController && props.api[currentController]
+    ? Object.keys(props.api[currentController])
+    : [];
+});
+
+function isQueryValid(query: string): boolean {
+  if (!query) {
+    return false;
+  }
+  try {
+    JSON.parse(query);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function setEditorContent(content: string): void {
+  jsonQuery.value = content;
+  queryEditor.value?.setContent(content);
+}
+
+function loadQueryParams(): void {
+  const query: ApiQuery = JSON.parse(JSON.stringify(editedQuery.value));
+  const api =
+    query.controller !== null && query.action !== null
+      ? props.api?.[query.controller]?.[query.action]
+      : undefined;
+  if (!api) {
+    setEditorContent(
+      JSON.stringify({ controller: query.controller, action: query.action, body: {} }, null, 2),
+    );
+    return;
+  }
+  // Une action sans route HTTP (`realtime:subscribe`…) n'a rien à préremplir.
+  const route = api.http?.[0];
+  if (!route) {
+    return;
+  }
+  const verb = route.verb.toLowerCase();
+  const openApiPath = route.url.replaceAll(/:[^,/]+/g, (m) => `{${m.replace(':', '')}}`);
+  const operation = props.openapi?.[openApiPath]?.[verb];
+
+  for (const param of operation?.parameters ?? []) {
+    query[param.name] = '';
+  }
+  const jsonBody = operation?.requestBody?.content['application/json'];
+  if (jsonBody) {
+    // Une requête saisie sans `body` ne se préremplit pas, comme avant.
+    const body = query.body;
+    if (!body) {
+      return;
+    }
+    const prefilledBody = jsonBody.schema.properties;
+    for (const key of Object.keys(prefilledBody)) {
+      switch (prefilledBody[key].type) {
+        case 'string':
+          body[key] = '';
+          break;
+        case 'number':
+        case 'integer':
+          body[key] = 0;
+          break;
+        case 'boolean':
+          body[key] = false;
+          break;
+        case 'array':
+          body[key] = [];
+          break;
+        case 'object':
+          body[key] = {};
+          break;
+        default:
+          body[key] = '';
+      }
+    }
+  }
+  setEditorContent(JSON.stringify(query, null, 2));
+}
+
+watch(
+  editedQuery,
+  (value) => {
+    emit('queryChanged', { query: value, tabIdx: props.tabIdx });
+  },
+  { deep: true },
+);
+watch(
+  () => editedQuery.value.controller,
+  (value) => {
+    const tmp = JSON.parse(jsonQuery.value);
+    if (value !== tmp.controller) {
+      tmp.controller = value;
+      setEditorContent(JSON.stringify(tmp, null, 2));
+    }
+  },
+);
+watch(
+  () => editedQuery.value.action,
+  (value) => {
+    const tmp = JSON.parse(jsonQuery.value);
+    if (value !== tmp.action) {
+      tmp.action = value;
+      setEditorContent(JSON.stringify(tmp, null, 2));
+      loadQueryParams();
+    }
+  },
+);
+
+onMounted(() => {
+  editedQuery.value = JSON.parse(JSON.stringify(props.query));
+  jsonQuery.value = JSON.stringify(editedQuery.value, null, 2);
+});
+
+function saveQuery(): void {
+  emit('saveQuery', props.tabIdx);
+}
+function performQuery(): void {
+  emit('performQuery', props.tabIdx);
+}
+function runFromKeyboard(): void {
+  if (isQueryValid(jsonQuery.value)) {
+    performQuery();
+  }
+}
+function saveFromKeyboard(): void {
+  if (isQueryValid(jsonQuery.value)) {
+    saveQuery();
+  }
+}
+function onEditorShortcut(name: string): void {
+  if (name === 'run') {
+    runFromKeyboard();
+  } else if (name === 'save') {
+    saveFromKeyboard();
+  }
+}
+
+function queryBodyChange(value: string): void {
+  jsonQuery.value = value;
+  if (isQueryValid(value)) {
+    editedQuery.value = JSON.parse(value);
+  }
+}
 </script>

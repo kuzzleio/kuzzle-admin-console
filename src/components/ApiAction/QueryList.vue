@@ -14,13 +14,12 @@
 
       <ul
         v-else
-        ref="leftNav-container"
+        ref="container"
         class="leftNav-container flex list-none flex-col overflow-auto pl-0"
       >
         <li
           v-for="query of paginatedQueries"
           :key="`saved-query-${query.idx}`"
-          :ref="`saved-query-${query.idx}`"
           class="flex items-center gap-2 border-b border-border px-3"
           :class="query.idx === currentQueryIndex ? 'bg-muted font-semibold' : ''"
           :data-cy="`api-actions-saved-query-${query.name}`"
@@ -35,7 +34,7 @@
             :aria-current="query.idx === currentQueryIndex ? 'true' : undefined"
             class="leftTab flex-1 cursor-pointer appearance-none truncate border-0 bg-transparent py-3 text-left font-sans text-sm text-foreground"
             type="button"
-            @click="loadSavedQuery(query.idx)"
+            @click="emit('loadSavedQuery', query.idx)"
           >
             {{ query.name }}
           </button>
@@ -79,7 +78,10 @@
   </Card>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, ref, useTemplateRef, watch } from 'vue';
+
+import type { ApiTab } from '@/components/ApiAction/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import {
@@ -91,67 +93,51 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-export default {
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CardTitle,
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-  },
-  props: {
-    currentQueryName: {},
-    savedQueries: {},
-  },
-  data() {
-    return { queryToDelete: null };
-  },
-  computed: {
-    currentQueryIndex() {
-      return this.savedQueries.findIndex((q) => q.name === this.currentQueryName);
-    },
-    paginatedQueries() {
-      return this.savedQueries.map((q, index) => {
-        q.idx = index;
-        return q;
-      });
-    },
-  },
-  watch: {
-    currentQueryIndex: {
-      handler(value) {
-        const ref = this.$refs[`saved-query-${value}`];
-        if (!ref) {
-          return;
-        }
-        const elem = ref[0];
-        if (!elem) {
-          return;
-        }
-        this.$refs['leftNav-container'].scrollTo(0, elem.offsetTop - elem.offsetHeight);
-      },
-    },
-  },
-  methods: {
-    deleteSavedQuery() {
-      this.$emit('deleteSavedQuery', this.queryToDelete.idx);
-      this.queryToDelete = null;
-    },
-    onDeleteDialogOpen(open) {
-      if (!open) {
-        this.queryToDelete = null;
-      }
-    },
-    loadSavedQuery(savedQueryIdx) {
-      this.$emit('loadSavedQuery', savedQueryIdx);
-    },
-  },
-};
+type ListedQuery = ApiTab & { idx: number };
+
+const props = defineProps<{
+  currentQueryName: string | null;
+  savedQueries: ApiTab[];
+}>();
+
+const emit = defineEmits<{
+  (e: 'deleteSavedQuery', savedQueryIdx: number): void;
+  (e: 'loadSavedQuery', savedQueryIdx: number): void;
+}>();
+
+const container = useTemplateRef<HTMLUListElement>('container');
+
+const queryToDelete = ref<ListedQuery | null>(null);
+
+const currentQueryIndex = computed(() =>
+  props.savedQueries.findIndex((q) => q.name === props.currentQueryName),
+);
+const paginatedQueries = computed((): ListedQuery[] =>
+  props.savedQueries.map((q, idx) => ({ ...q, idx })),
+);
+
+watch(currentQueryIndex, (value) => {
+  // Un `<li>` par requête, dans l'ordre : l'enfant de rang `value` est la courante.
+  const elem = container.value?.children[value];
+  if (!(elem instanceof HTMLElement)) {
+    return;
+  }
+  container.value?.scrollTo(0, elem.offsetTop - elem.offsetHeight);
+});
+
+function deleteSavedQuery(): void {
+  if (queryToDelete.value === null) {
+    return;
+  }
+  emit('deleteSavedQuery', queryToDelete.value.idx);
+  queryToDelete.value = null;
+}
+
+function onDeleteDialogOpen(open: boolean): void {
+  if (!open) {
+    queryToDelete.value = null;
+  }
+}
 </script>
 
 <style lang="scss" scoped>

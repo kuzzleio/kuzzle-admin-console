@@ -1,5 +1,5 @@
 <template>
-  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+  <Dialog :open="open" @update:open="emit('update:open', $event)">
     <DialogContent>
       <DialogHeader>
         <DialogTitle>Choose a name for this query</DialogTitle>
@@ -31,8 +31,8 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+<script setup lang="ts">
+import { ref, useTemplateRef, watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -45,71 +45,63 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default defineComponent({
-  name: 'SaveQueryModal',
-  components: {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    Input,
-    Label,
-  },
-  props: {
-    isQueryNameValid: {
-      default: null,
-      type: Function as PropType<((name: string) => boolean) | null>,
-    },
-    open: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  data(): { feedback: string; name: string; nameState: boolean | null } {
-    return {
-      feedback: '',
-      name: '',
-      nameState: null,
-    };
-  },
-  watch: {
-    open(open: boolean) {
-      if (!open) {
-        this.reset();
-      }
-    },
-  },
-  methods: {
-    checkFormValidity(): boolean {
-      const isPresent = (this.$refs.form as HTMLFormElement).checkValidity();
-      const isValid = this.isQueryNameValid ? this.isQueryNameValid(this.name) : true;
+const props = withDefaults(
+  defineProps<{
+    isQueryNameValid?: ((name: string) => boolean) | null;
+    open?: boolean;
+  }>(),
+  { isQueryNameValid: null, open: false },
+);
 
-      this.nameState = isPresent && isValid;
+const emit = defineEmits<{
+  (e: 'storeNewQuery', name: string): void;
+  (e: 'update:open', open: boolean): void;
+}>();
 
-      if (!this.nameState) {
-        this.feedback = isPresent ? 'Name already used' : 'Name is required';
-      }
+const formEl = useTemplateRef<HTMLFormElement>('form');
 
-      return this.nameState;
-    },
-    close(): void {
-      this.$emit('update:open', false);
-    },
-    handleOk(): void {
-      if (!this.checkFormValidity()) {
-        return;
-      }
+const feedback = ref('');
+const name = ref('');
+const nameState = ref<boolean | null>(null);
 
-      this.$emit('storeNewQuery', this.name);
-      this.close();
-    },
-    reset(): void {
-      this.feedback = '';
-      this.name = '';
-      this.nameState = null;
-    },
+function reset(): void {
+  feedback.value = '';
+  name.value = '';
+  nameState.value = null;
+}
+
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      reset();
+    }
   },
-});
+);
+
+function checkFormValidity(): boolean {
+  const isPresent = formEl.value?.checkValidity() ?? false;
+  const isValid = props.isQueryNameValid ? props.isQueryNameValid(name.value) : true;
+
+  nameState.value = isPresent && isValid;
+
+  if (!nameState.value) {
+    feedback.value = isPresent ? 'Name already used' : 'Name is required';
+  }
+
+  return nameState.value;
+}
+
+function close(): void {
+  emit('update:open', false);
+}
+
+function handleOk(): void {
+  if (!checkFormValidity()) {
+    return;
+  }
+
+  emit('storeNewQuery', name.value);
+  close();
+}
 </script>
