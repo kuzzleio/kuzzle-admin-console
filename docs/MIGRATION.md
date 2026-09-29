@@ -3812,6 +3812,35 @@ Gabarit à copier :
   ([ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)).
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-108 — Modifier la connexion courante déconnectait, depuis la v4
+
+- **Contexte** : lot 4 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/Environments/CreateEnvironment.vue`.
+- **Symptôme** : changer la couleur ou le nom de la connexion sur laquelle on
+  est connecté renvoie à la page de connexion.
+- **Cause** : deux erreurs dans `updateEnvironment` du store `kuzzle`. Il
+  comparait `payload.backendMajorVersion`, absent (la version est dans
+  `payload.environment`) : `undefined` différait toujours, et toute
+  modification de la connexion courante forçait une reconnexion. Et il
+  remplaçait la connexion par ce qu'envoie le formulaire, **sans le jeton** :
+  la reconnexion repartait sans session. Même code sur `4-dev`.
+- **Solution** : la version est lue dans `payload.environment` ; sans
+  reconnexion, le jeton existant est gardé (un jeton passé explicitement
+  l'emporte). Avec reconnexion — hôte, port, SSL ou version changés —, rien ne
+  change : la session ne vaut pas pour un autre serveur. `environments.spec`
+  change la couleur de la connexion courante et vérifie que la session reste.
+- **Limite** : une connexion **malformée** (sans version) à laquelle on donne
+  une version ne se reconnecte toujours pas, comme avant. Comparer la version
+  dans ce cas déclenchait la reconnexion, et le SDK plantait —
+  « Cannot read properties of null (reading 'CLOSING') » dans l'`onerror` de
+  sa `WebSocket` — sur la spec « malformed » d'`environments.spec`, de façon
+  reproductible. La course est dans le chemin de connexion, pas ici : à
+  reprendre à part.
+- **À retenir** : un store typé `payload: any` ne vérifie rien de ce qu'il
+  lit. Le typer (`UpdateEnvironmentPayload` existe déjà) aurait refusé
+  `payload.backendMajorVersion`.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
