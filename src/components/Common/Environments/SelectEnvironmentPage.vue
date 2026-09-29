@@ -32,9 +32,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
 
+import KuzzleLogo from '../KuzzleLogo.vue';
 import {
   Card,
   CardContent,
@@ -45,24 +46,16 @@ import {
 } from '@/components/ui/card';
 
 import EnvironmentSelector from './EnvironmentsSwitch.vue';
-import KuzzleLogo from '../KuzzleLogo.vue';
 
-export default defineComponent({
-  name: 'SelectEnvironmentPage',
-  components: {
-    KuzzleLogo,
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-    EnvironmentSelector,
-  },
-  methods: {
-    onEnvSwitched() {
-      this.$router.push({ path: '/' });
-    },
-  },
-});
+defineEmits<{
+  (e: 'environment::create', id?: string): void;
+  (e: 'environment::delete', id: string): void;
+  (e: 'environment::importEnv'): void;
+}>();
+
+const router = useRouter();
+
+function onEnvSwitched(): void {
+  router.push({ path: '/' });
+}
 </script>

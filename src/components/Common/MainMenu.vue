@@ -184,7 +184,7 @@ function readCollapsed(): boolean {
 }
 
 const emit = defineEmits<{
-  (e: 'environment::create', id: string): void;
+  (e: 'environment::create', id?: string): void;
   (e: 'environment::delete', id: string): void;
   (e: 'environment::importEnv'): void;
 }>();
@@ -263,7 +263,7 @@ function isCurrent(section: Section): boolean {
   return route.path.includes(section.segment);
 }
 
-function editEnvironment(id: string): void {
+function editEnvironment(id?: string): void {
   emit('environment::create', id);
 }
 

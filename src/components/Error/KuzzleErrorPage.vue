@@ -40,7 +40,7 @@ import EnvironmentSwitch from '@/components/Common/Environments/EnvironmentsSwit
 import KuzzleLogo from '@/components/Common/KuzzleLogo.vue';
 
 const emit = defineEmits<{
-  (e: 'environment::create', id: string): void;
+  (e: 'environment::create', id?: string): void;
   (e: 'environment::delete', id: string): void;
   (e: 'environment::importEnv'): void;
 }>();
@@ -49,7 +49,7 @@ const kuzzleStore = useKuzzleStore();
 
 const kuzzleError = computed(() => kuzzleStore.errorFromKuzzle);
 
-function editEnvironment(id: string): void {
+function editEnvironment(id?: string): void {
   emit('environment::create', id);
 }
 

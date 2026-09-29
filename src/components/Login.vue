@@ -50,11 +50,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useAuthStore, useRoutingStore } from '@/stores';
 
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
-import LoginForm from './Common/Login/Form.vue';
 import KuzzleLogo from './Common/KuzzleLogo.vue';
+import LoginForm from './Common/Login/Form.vue';
 
 const emit = defineEmits<{
-  (e: 'environment::create', id: string): void;
+  (e: 'environment::create', id?: string): void;
   (e: 'environment::delete', id: string): void;
   (e: 'environment::importEnv'): void;
 }>();
@@ -84,7 +84,7 @@ function onLogin(): void {
   }
 }
 
-function editEnvironment(id: string): void {
+function editEnvironment(id?: string): void {
   emit('environment::create', id);
 }
 

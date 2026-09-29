@@ -60,7 +60,7 @@ import OfflineSpinner from './Common/Offline.vue';
 import ErrorPage from './Error/KuzzleErrorPage.vue';
 
 defineEmits<{
-  (e: 'environment::create', id: string): void;
+  (e: 'environment::create', id?: string): void;
   (e: 'environment::delete', id: string): void;
   (e: 'environment::importEnv'): void;
 }>();

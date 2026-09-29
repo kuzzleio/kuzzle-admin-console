@@ -141,7 +141,7 @@ import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';
 import KuzzleLogo from './Common/KuzzleLogo.vue';
 
 const emit = defineEmits<{
-  (e: 'environment::create', id: string): void;
+  (e: 'environment::create', id?: string): void;
   (e: 'environment::delete', id: string): void;
   (e: 'environment::importEnv'): void;
 }>();
@@ -223,7 +223,7 @@ function loginAsGuest(): void {
     });
 }
 
-function editEnvironment(id: string): void {
+function editEnvironment(id?: string): void {
   emit('environment::create', id);
 }
 

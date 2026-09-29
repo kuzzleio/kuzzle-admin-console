@@ -65,8 +65,9 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed, ref, useTemplateRef, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -80,147 +81,130 @@ import {
 } from '@/components/ui/dialog';
 import { FileInput } from '@/components/ui/file-input';
 import { Label } from '@/components/ui/label';
+import { logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
 import type { Environment } from '@/stores/types/kuzzle';
 
-export default defineComponent({
-  name: 'ModalImport',
-  components: {
-    Alert,
-    Button,
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    FileInput,
-    Label,
-  },
-  props: {
-    open: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  setup() {
-    return {
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  data(): {
-    dismissedErrors: number[];
-    env: Record<string, Environment>;
-    errors: string[];
-    file: File | null;
-    loading: boolean;
-  } {
-    // Le contenu du fichier importé n'est pas validé — il ne l'était pas
-    // davantage avec `b-form-file`. Le typer en `Environment` dit ce qu'on en
-    // attend, pas ce qu'on a vérifié. À reprendre le jour où l'import sera
-    // validé pour de bon.
-    return {
-      dismissedErrors: [],
-      env: {},
-      errors: [],
-      file: null,
-      loading: false,
-    };
-  },
-  computed: {
-    envNames() {
-      return Object.keys(this.env);
-    },
-  },
-  watch: {
-    file: {
-      handler() {
-        this.$log.debug('File has changed');
-        this.upload();
-      },
-    },
-    // Remplace les trois écouteurs `@cancel` / `@close` / `@hide` de `b-modal`.
-    open(open) {
-      if (!open) {
-        this.reset();
-      }
-    },
-  },
-  methods: {
-    close() {
-      this.$emit('update:open', false);
-    },
-    clearFiles() {
-      (this.$refs['file-input'] as InstanceType<typeof FileInput> | undefined)?.reset();
-      this.file = null;
-    },
-    onFileChange(event: Event) {
-      const input = event.target as HTMLInputElement;
-      this.file = input.files && input.files.length > 0 ? input.files[0] : null;
-    },
-    reset() {
-      this.clearFiles();
-      this.errors = [];
-      this.dismissedErrors = [];
-      this.env = {};
-      this.loading = false;
-    },
-    async importEnv() {
-      let mustSwitch = false;
-      if (Object.keys(this.kuzzleStore.environments).length === 0) {
-        mustSwitch = true;
-      }
-      for (const name in this.env) {
-        try {
-          this.kuzzleStore.createEnvironment({
-            id: name,
-            environment: this.env[name],
-          });
-        } catch (e) {
-          this.$log.error(e);
-          this.errors.push(String(e));
-        }
-      }
-      if (!this.errors.length) {
-        this.$log.debug(`Finished import must switch: ${mustSwitch}, env:`);
-        this.$log.debug(this.kuzzleStore.environments);
-        this.$router.push({ name: 'SelectEnvironment' });
-        this.close();
-      }
-    },
-    upload() {
-      if (!this.file || this.loading) {
-        return;
-      }
-      this.$log.debug('Uploading!');
+const props = withDefaults(
+  defineProps<{
+    open?: boolean;
+  }>(),
+  { open: false },
+);
 
-      this.errors = [];
-      this.dismissedErrors = [];
-      this.env = {};
-      this.loading = true;
-      const reader = new FileReader();
+const emit = defineEmits<{
+  (e: 'update:open', open: boolean): void;
+}>();
 
-      if (this.file.type !== 'application/json') {
-        this.errors.push(
-          `⛔️ Uploaded file type (${this.file.type}) is not supported. Please import .json files only`,
-        );
-        this.loading = false;
-        return;
-      }
+const kuzzleStore = useKuzzleStore();
+const router = useRouter();
 
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        try {
-          this.env = JSON.parse(String(e.target?.result ?? ''));
-        } catch (error) {
-          this.$log.error(error);
-          this.$log.debug(e.target);
-          this.errors.push(String(error));
-        }
-        this.loading = false;
-      };
+const fileInput = useTemplateRef<InstanceType<typeof FileInput>>('file-input');
 
-      reader.readAsText(this.file);
-    },
-  },
+// Le contenu du fichier importé n'est pas validé — il ne l'était pas
+// davantage avec `b-form-file`. Le typer en `Environment` dit ce qu'on en
+// attend, pas ce qu'on a vérifié. À reprendre le jour où l'import sera
+// validé pour de bon.
+const dismissedErrors = ref<number[]>([]);
+const env = ref<Record<string, Environment>>({});
+const errors = ref<string[]>([]);
+const file = ref<File | null>(null);
+const loading = ref(false);
+
+const envNames = computed(() => Object.keys(env.value));
+
+function close(): void {
+  emit('update:open', false);
+}
+
+function clearFiles(): void {
+  fileInput.value?.reset();
+  file.value = null;
+}
+
+function onFileChange(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  file.value = input.files && input.files.length > 0 ? input.files[0] : null;
+}
+
+function reset(): void {
+  clearFiles();
+  errors.value = [];
+  dismissedErrors.value = [];
+  env.value = {};
+  loading.value = false;
+}
+
+async function importEnv(): Promise<void> {
+  let mustSwitch = false;
+  if (Object.keys(kuzzleStore.environments).length === 0) {
+    mustSwitch = true;
+  }
+  for (const name in env.value) {
+    try {
+      kuzzleStore.createEnvironment({
+        id: name,
+        environment: env.value[name],
+      });
+    } catch (e) {
+      logger.error(e);
+      errors.value.push(String(e));
+    }
+  }
+  if (!errors.value.length) {
+    logger.debug(`Finished import must switch: ${mustSwitch}, env:`);
+    logger.debug(kuzzleStore.environments);
+    router.push({ name: 'SelectEnvironment' });
+    close();
+  }
+}
+
+function upload(): void {
+  if (!file.value || loading.value) {
+    return;
+  }
+  logger.debug('Uploading!');
+
+  errors.value = [];
+  dismissedErrors.value = [];
+  env.value = {};
+  loading.value = true;
+  const reader = new FileReader();
+
+  if (file.value.type !== 'application/json') {
+    errors.value.push(
+      `⛔️ Uploaded file type (${file.value.type}) is not supported. Please import .json files only`,
+    );
+    loading.value = false;
+    return;
+  }
+
+  reader.onload = (e: ProgressEvent<FileReader>) => {
+    try {
+      env.value = JSON.parse(String(e.target?.result ?? ''));
+    } catch (error) {
+      logger.error(error);
+      logger.debug(e.target);
+      errors.value.push(String(error));
+    }
+    loading.value = false;
+  };
+
+  reader.readAsText(file.value);
+}
+
+watch(file, () => {
+  logger.debug('File has changed');
+  upload();
 });
+
+// Remplace les trois écouteurs `@cancel` / `@close` / `@hide` de `b-modal`.
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      reset();
+    }
+  },
+);
 </script>

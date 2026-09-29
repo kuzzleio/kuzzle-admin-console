@@ -916,7 +916,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 1. `ui/` restants, retrait de `classMerge`
   - [x] 2. Racine, `Common/Login`, `Error`, `Materialize`
   - [x] 3. `Common/` hors `Filters` et `Environments`
-  - [ ] 4. `Common/Environments`
+  - [x] 4. `Common/Environments`
   - [ ] 5. `ApiAction`
   - [ ] 6. `Security` : `Layout`, `Common`, `Roles`
   - [ ] 7. `Security/Profiles`

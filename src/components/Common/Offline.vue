@@ -43,7 +43,7 @@ import EnvironmentSwitch from './Environments/EnvironmentsSwitch.vue';
 import KuzzleLogo from './KuzzleLogo.vue';
 
 const emit = defineEmits<{
-  (e: 'environment::create', id: string): void;
+  (e: 'environment::create', id?: string): void;
   (e: 'environment::delete', id: string): void;
   (e: 'environment::importEnv'): void;
 }>();
@@ -55,7 +55,7 @@ const host = computed(() => (currentEnvironment.value ? currentEnvironment.value
 const port = computed(() => (currentEnvironment.value ? currentEnvironment.value.port : ''));
 const errorInternalMessage = computed(() => kuzzleStore.errorFromKuzzle);
 
-function editEnvironment(id: string): void {
+function editEnvironment(id?: string): void {
   emit('environment::create', id);
 }
 

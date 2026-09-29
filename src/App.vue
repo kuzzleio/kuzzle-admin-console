@@ -39,7 +39,7 @@ const importOpen = ref(false);
 const deleteOpen = ref(false);
 const environmentId = ref<string>();
 
-function editEnvironment(id: string): void {
+function editEnvironment(id?: string): void {
   environmentId.value = id;
   createOrUpdateOpen.value = true;
 }

@@ -68,7 +68,7 @@ import MainSpinner from './Common/MainSpinner.vue';
 import SessionBar from './Common/SessionBar.vue';
 
 defineEmits<{
-  (e: 'environment::create', id: string): void;
+  (e: 'environment::create', id?: string): void;
   (e: 'environment::delete', id: string): void;
   (e: 'environment::importEnv'): void;
 }>();

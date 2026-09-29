@@ -34,8 +34,9 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -49,88 +50,69 @@ import {
 import { Input } from '@/components/ui/input';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
-export default defineComponent({
-  name: 'EnvironmentDeleteModal',
-  components: {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    Input,
-  },
-  // `@interact-outside.prevent` sur le panneau : la suppression d'une connexion ne doit
-  // pas se fermer sur un clic à côté. Le geste est trop facile à faire par
-  // accident au milieu d'une saisie de confirmation.
-  props: {
-    environmentId: {
-      default: null,
-      type: String,
-    },
-    open: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  data() {
-    return {
-      envConfirmation: '',
-    };
-  },
-  computed: {
-    environments(): Record<string, { name: string }> {
-      return this.kuzzleStore.environments;
-    },
-    confirmationOk(): boolean {
-      return this.environmentName !== null && this.environmentName === this.envConfirmation;
-    },
-    environmentName(): string | null {
-      if (this.environmentId && this.environments[this.environmentId]) {
-        return this.environments[this.environmentId].name;
-      }
-      return null;
-    },
-  },
-  setup() {
-    return {
-      authStore: useAuthStore(),
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  watch: {
-    // Remplace les trois écouteurs `@cancel` / `@close` / `@hide` de `b-modal` :
-    // la fermeture est un seul état, quelle que soit la façon dont elle arrive.
-    open(open: boolean) {
-      if (!open) {
-        this.envConfirmation = '';
-      }
-    },
-  },
-  methods: {
-    close(): void {
-      this.$emit('update:open', false);
-    },
-    async confirmDeleteEnvironment(): Promise<void> {
-      if (!this.confirmationOk) {
-        return;
-      }
+// `@interact-outside.prevent` sur le panneau : la suppression d'une connexion ne doit
+// pas se fermer sur un clic à côté. Le geste est trop facile à faire par
+// accident au milieu d'une saisie de confirmation.
+const props = withDefaults(
+  defineProps<{
+    environmentId?: string | null;
+    open?: boolean;
+  }>(),
+  { environmentId: null, open: false },
+);
 
-      if (this.kuzzleStore.currentId === this.environmentId && this.kuzzleStore.online) {
-        await this.authStore.doLogout();
-      }
+const emit = defineEmits<{
+  (e: 'update:open', open: boolean): void;
+}>();
 
-      this.kuzzleStore.deleteEnvironment(this.environmentId);
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const router = useRouter();
 
-      if (this.kuzzleStore.hasEnvironment) {
-        this.$router.push({ name: 'SelectEnvironment' });
-      } else {
-        this.$router.push({ name: 'CreateEnvironment' });
-      }
+const envConfirmation = ref('');
 
-      this.close();
-    },
-  },
+const environmentName = computed((): string | null => {
+  if (props.environmentId && kuzzleStore.environments[props.environmentId]) {
+    return kuzzleStore.environments[props.environmentId].name;
+  }
+  return null;
 });
+const confirmationOk = computed(
+  (): boolean => environmentName.value !== null && environmentName.value === envConfirmation.value,
+);
+
+// Remplace les trois écouteurs `@cancel` / `@close` / `@hide` de `b-modal` :
+// la fermeture est un seul état, quelle que soit la façon dont elle arrive.
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      envConfirmation.value = '';
+    }
+  },
+);
+
+function close(): void {
+  emit('update:open', false);
+}
+
+async function confirmDeleteEnvironment(): Promise<void> {
+  if (!confirmationOk.value || !props.environmentId) {
+    return;
+  }
+
+  if (kuzzleStore.currentId === props.environmentId && kuzzleStore.online) {
+    await authStore.doLogout();
+  }
+
+  kuzzleStore.deleteEnvironment(props.environmentId);
+
+  if (kuzzleStore.hasEnvironment) {
+    router.push({ name: 'SelectEnvironment' });
+  } else {
+    router.push({ name: 'CreateEnvironment' });
+  }
+
+  close();
+}
 </script>
