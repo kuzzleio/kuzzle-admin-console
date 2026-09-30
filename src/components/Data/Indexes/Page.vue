@@ -187,10 +187,9 @@
   </div>
 </template>
 
-<script>
-import { markRaw } from 'vue';
-import { mapState } from 'pinia';
-import { RouterLink } from 'vue-router';
+<script setup lang="ts">
+import { computed, ref, useTemplateRef } from 'vue';
+import { RouterLink, useRouter } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -204,8 +203,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useTableFilterSort } from '@/composables/useTableFilterSort';
-import Focus from '@/directives/focus.directive';
+import { useToast } from '@/composables/useToast';
+import vFocus from '@/directives/focus.directive';
+import { caught } from '@/lib/errors';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
+import type { Index } from '@/stores/types/storage-index';
 
 import ListNotAllowed from '@/components/Common/ListNotAllowed.vue';
 import Headline from '@/components/Materialize/Headline.vue';
@@ -213,152 +216,138 @@ import BulkDeleteIndexesModal from './BulkDeleteIndexesModal.vue';
 import CreateIndexModal from './CreateIndexModal.vue';
 import DeleteIndexModal from './DeleteIndexModal.vue';
 
-export default {
-  name: 'IndexesPage',
-  components: {
-    Headline,
-    CreateIndexModal,
-    DeleteIndexModal,
-    BulkDeleteIndexesModal,
-    ListNotAllowed,
-    Button,
-    Checkbox,
-    Input,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  },
-  // `v-focus` plutôt que l'attribut `autofocus` : le navigateur ne l'honore
-  // qu'au chargement du document, pas quand Vue insère l'élément plus tard.
-  // `b-form-input` avait sa propre prop `autofocus`, qui appelait `focus()`
-  // au montage (G-023).
-  directives: {
-    Focus,
-  },
-  setup() {
-    const storageIndexStore = useStorageIndexStore();
+// `v-focus` plutôt que l'attribut `autofocus` : le navigateur ne l'honore
+// qu'au chargement du document, pas quand Vue insère l'élément plus tard.
+// `b-form-input` avait sa propre prop `autofocus`, qui appelait `focus()`
+// au montage (G-023).
 
-    // Le filtre ne porte que sur le nom. `b-table` sérialisait la ligne
-    // entière : un index remontait sur le nom de ses collections chargées, ou
-    // sur `loading` (ADR-0011).
-    const { filter, rows, filtering, toggleSort, ariaSort } = useTableFilterSort(
-      () => storageIndexStore.indexes,
-      {
-        filterOn: (index) => [index.name],
-        sorters: {
-          collections: (index) => index.collectionsCount,
-          name: (index) => index.name,
-        },
-      },
-    );
+const router = useRouter();
+const toast = useToast();
+const authStore = useAuthStore();
+const storageIndexStore = useStorageIndexStore();
 
-    return { storageIndexStore, filter, rows, filtering, toggleSort, ariaSort };
-  },
-  data() {
-    return {
-      RouterLink: markRaw(RouterLink),
-      bulkDeleteIndexesOpen: false,
-      createIndexOpen: false,
-      deleteIndexOpen: false,
-      indexToDelete: null,
-      selectedIndexes: [],
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canSearchIndex', 'canCreateIndex']),
-    ...mapState(useStorageIndexStore, ['indexes', 'loadingIndexes']),
-    bulkDeleteEnabled() {
-      return this.selectedIndexes.length > 0;
-    },
-    allChecked() {
-      return this.selectedIndexes.length === this.rows.length;
+// Le filtre ne porte que sur le nom. `b-table` sérialisait la ligne
+// entière : un index remontait sur le nom de ses collections chargées, ou
+// sur `loading` (ADR-0011).
+const { filter, rows, filtering, toggleSort, ariaSort } = useTableFilterSort(
+  () => storageIndexStore.indexes,
+  {
+    filterOn: (index) => [index.name],
+    sorters: {
+      collections: (index) => index.collectionsCount,
+      name: (index) => index.name,
     },
   },
-  methods: {
-    sortIcon(key) {
-      const sort = this.ariaSort(key);
+);
 
-      if (sort === 'none') {
-        return 'fa fa-sort opacity-50';
-      }
+const deleteIndexModal = useTemplateRef<InstanceType<typeof DeleteIndexModal>>('deleteIndexModal');
 
-      return sort === 'ascending' ? 'fa fa-sort-up' : 'fa fa-sort-down';
-    },
-    openCreateModal() {
-      this.createIndexOpen = true;
-    },
-    openDeleteModal(index) {
-      this.indexToDelete = index;
-      this.deleteIndexOpen = true;
-    },
-    openBulkDeleteModal() {
-      this.bulkDeleteIndexesOpen = true;
-    },
-    async onCancelDeleteModal() {
-      this.deleteIndexOpen = false;
-      await this.refreshIndexes();
-    },
-    async onConfirmDeleteModal() {
-      try {
-        await this.storageIndexStore.deleteIndex(this.indexToDelete);
-        this.deleteIndexOpen = false;
-        await this.refreshIndexes();
-      } catch (err) {
-        this.$refs.deleteIndexModal.setError(err.message);
-      }
-    },
-    async onDeleteModalSuccess() {
-      await this.refreshIndexes();
-    },
-    async onCreateModalSuccess() {
-      await this.refreshIndexes();
-    },
-    async refreshIndexes() {
-      try {
-        await this.storageIndexStore.fetchIndexList();
-      } catch (err) {
-        this.$log.error(err);
-        this.$toast.danger(err.message, 'The complete error has been printed to the console.');
-      }
-    },
-    onToggleAllClicked() {
-      if (this.allChecked) {
-        this.selectedIndexes = [];
-        return;
-      }
-      this.selectedIndexes = [];
-      this.selectedIndexes = this.rows;
-    },
-    isChecked(index) {
-      return !!this.selectedIndexes.find((el) => el.name === index.name);
-    },
-    onCheckboxClick(index) {
-      const indexAlreadySelected = this.selectedIndexes.find((el) => el.name === index.name);
+const bulkDeleteIndexesOpen = ref(false);
+const createIndexOpen = ref(false);
+const deleteIndexOpen = ref(false);
+const indexToDelete = ref<Index | null>(null);
+const selectedIndexes = ref<Index[]>([]);
 
-      if (!indexAlreadySelected) {
-        this.selectedIndexes.push(index);
-        return;
-      }
+const canSearchIndex = computed(() => authStore.canSearchIndex);
+const canCreateIndex = computed(() => authStore.canCreateIndex);
+const indexes = computed(() => storageIndexStore.indexes);
+const bulkDeleteEnabled = computed(() => selectedIndexes.value.length > 0);
+const allChecked = computed(() => selectedIndexes.value.length === rows.value.length);
 
-      this.selectedIndexes = this.selectedIndexes.filter((el) => el.name !== index.name);
-    },
-    navigateToIndex() {
-      const index = this.rows[0];
+function sortIcon(key: string): string {
+  const sort = ariaSort(key);
 
-      if (!index) {
-        return;
-      }
+  if (sort === 'none') {
+    return 'fa fa-sort opacity-50';
+  }
 
-      const route = {
-        name: 'Collections',
-        params: { indexName: index.name },
-      };
+  return sort === 'ascending' ? 'fa fa-sort-up' : 'fa fa-sort-down';
+}
 
-      this.$router.push(route);
-    },
-  },
-};
+function openCreateModal(): void {
+  createIndexOpen.value = true;
+}
+
+function openDeleteModal(index: Index): void {
+  indexToDelete.value = index;
+  deleteIndexOpen.value = true;
+}
+
+function openBulkDeleteModal(): void {
+  bulkDeleteIndexesOpen.value = true;
+}
+
+async function onCancelDeleteModal(): Promise<void> {
+  deleteIndexOpen.value = false;
+  await refreshIndexes();
+}
+
+async function onConfirmDeleteModal(): Promise<void> {
+  // La modale ne confirme que si un index lui a été passé.
+  if (indexToDelete.value === null) {
+    return;
+  }
+
+  try {
+    await storageIndexStore.deleteIndex(indexToDelete.value);
+    deleteIndexOpen.value = false;
+    await refreshIndexes();
+  } catch (err) {
+    deleteIndexModal.value?.setError(caught(err).message);
+  }
+}
+
+async function onDeleteModalSuccess(): Promise<void> {
+  await refreshIndexes();
+}
+
+async function onCreateModalSuccess(): Promise<void> {
+  await refreshIndexes();
+}
+
+async function refreshIndexes(): Promise<void> {
+  try {
+    await storageIndexStore.fetchIndexList();
+  } catch (err) {
+    logger.error(err);
+    toast.danger(caught(err).message, 'The complete error has been printed to the console.');
+  }
+}
+
+function onToggleAllClicked(): void {
+  if (allChecked.value) {
+    selectedIndexes.value = [];
+    return;
+  }
+  selectedIndexes.value = [];
+  selectedIndexes.value = rows.value;
+}
+
+function isChecked(index: Index): boolean {
+  return !!selectedIndexes.value.find((el) => el.name === index.name);
+}
+
+function onCheckboxClick(index: Index): void {
+  const indexAlreadySelected = selectedIndexes.value.find((el) => el.name === index.name);
+
+  if (!indexAlreadySelected) {
+    selectedIndexes.value.push(index);
+    return;
+  }
+
+  selectedIndexes.value = selectedIndexes.value.filter((el) => el.name !== index.name);
+}
+
+function navigateToIndex(): void {
+  const index = rows.value[0];
+
+  if (!index) {
+    return;
+  }
+
+  router.push({
+    name: 'Collections',
+    params: { indexName: index.name },
+  });
+}
 </script>

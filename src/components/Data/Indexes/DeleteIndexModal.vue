@@ -1,5 +1,5 @@
 <template>
-  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+  <Dialog :open="open" @update:open="emit('update:open', $event)">
     <DialogContent class="max-w-2xl" @interact-outside.prevent>
       <DialogHeader>
         <DialogTitle>
@@ -37,8 +37,8 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -55,68 +55,58 @@ import { Label } from '@/components/ui/label';
 import type { Index } from '@/stores/types/storage-index';
 import { truncateName } from '@/utils';
 
-export default defineComponent({
-  name: 'DeleteIndexModal',
-  components: {
-    Alert,
-    Button,
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    FormDescription,
-    FormItem,
-    Input,
-    Label,
+// `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
+const props = withDefaults(
+  defineProps<{
+    index?: Index | null;
+    open?: boolean;
+  }>(),
+  { index: null, open: false },
+);
+
+const emit = defineEmits<{
+  (e: 'cancel'): void;
+  (e: 'confirm-deletion'): void;
+  (e: 'update:open', open: boolean): void;
+}>();
+
+const confirmation = ref('');
+const error = ref('');
+
+const isConfirmationValid = computed(
+  (): boolean => Boolean(props.index) && confirmation.value === props.index?.name,
+);
+
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      resetForm();
+    }
   },
-  // `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
-  props: {
-    index: {
-      default: null,
-      type: Object as PropType<Index | null>,
-    },
-    open: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  data() {
-    return {
-      confirmation: '',
-      error: '',
-    };
-  },
-  computed: {
-    isConfirmationValid(): boolean {
-      return Boolean(this.index) && this.confirmation === this.index?.name;
-    },
-  },
-  watch: {
-    open(open: boolean) {
-      if (!open) {
-        this.resetForm();
-      }
-    },
-  },
-  methods: {
-    truncateName,
-    resetForm(): void {
-      this.confirmation = '';
-      this.error = '';
-    },
-    setError(error: string): void {
-      this.error = error;
-    },
-    handleCancel(): void {
-      this.$emit('cancel');
-    },
-    performDelete(): void {
-      if (!this.isConfirmationValid) {
-        return;
-      }
-      this.$emit('confirm-deletion');
-    },
-  },
-});
+);
+
+function resetForm(): void {
+  confirmation.value = '';
+  error.value = '';
+}
+
+function setError(message: string): void {
+  error.value = message;
+}
+
+function handleCancel(): void {
+  emit('cancel');
+}
+
+function performDelete(): void {
+  if (!isConfirmationValid.value) {
+    return;
+  }
+  emit('confirm-deletion');
+}
+
+// Appelée par `Indexes/Page` et `Collections/CollectionList` quand la
+// suppression échoue.
+defineExpose({ setError });
 </script>

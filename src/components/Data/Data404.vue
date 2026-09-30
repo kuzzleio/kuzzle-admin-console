@@ -17,27 +17,9 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, markRaw } from 'vue';
+<script setup lang="ts">
 import { RouterLink } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardTitle } from '@/components/ui/card';
-
-export default defineComponent({
-  name: 'NotFound',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardTitle,
-  },
-  data() {
-    return {
-      RouterLink: markRaw(RouterLink),
-    };
-  },
-});
 </script>

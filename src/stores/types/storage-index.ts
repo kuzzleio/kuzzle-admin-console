@@ -48,6 +48,20 @@ export class Index {
   }
 }
 
+/*
+ * Hors de la classe, et non en méthode privée : Pinia rend l'état déballé
+ * (`UnwrapRef`), dont le type perd les membres privés. Un `Collection`
+ * déballé cessait alors d'être assignable à `Collection`, et un `Index` du
+ * store à `Index` (G-115).
+ */
+function findType(name: string, type: CollectionType): CollectionType {
+  if (type !== 'stored' && type !== 'realtime') {
+    throw new Error(`Unknown collection type for "${name}" :  ${String(type)}`);
+  }
+
+  return type;
+}
+
 export class Collection {
   readonly name: string;
   readonly type: CollectionType;
@@ -55,20 +69,12 @@ export class Collection {
   dynamic?: string;
 
   constructor(name: string, type: CollectionType) {
-    this.type = this.findType(name, type);
+    this.type = findType(name, type);
     this.name = name;
   }
 
   public isRealtime(): boolean {
     return this.type === 'realtime';
-  }
-
-  private findType(name: string, type: CollectionType): CollectionType {
-    if (type !== 'stored' && type !== 'realtime') {
-      throw new Error(`Unknown collection type for "${name}" :  ${String(type)}`);
-    }
-
-    return type;
   }
 }
 

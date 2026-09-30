@@ -113,143 +113,119 @@
     </div>
   </div>
 </template>
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { useStorageIndexStore } from '@/stores';
-import { truncateName } from '@/utils';
+import type { Index } from '@/stores/types/storage-index';
 
 import HighlightedSpan from '@/components/Common/HighlightedSpan.vue';
 
-export default {
-  components: {
-    Button,
-    HighlightedSpan,
-    Spinner,
-  },
-  props: {
-    forceOpen: {
-      type: Boolean,
-      default: false,
-    },
-    index: Object,
-    browsedIndexName: String,
-    browsedCollectionName: String,
-    filter: String,
-    routeName: String,
-  },
-  data: function () {
-    return {
-      open: false,
-      showMoreCollections: false,
-      collectionsFetched: false,
-      isLoading: false,
-    };
-  },
-  computed: {
-    ...mapState(useStorageIndexStore, ['loadingCollections']),
-    showMoreCollectionsDisplay() {
-      if (
-        this.filter.length > 0 &&
-        this.index.collections &&
-        this.index.collections.filter((col) => col.name.indexOf(this.filter) !== -1).length !==
-          this.index.collections.length
-      ) {
-        return 1;
-      }
-      return 0;
-    },
-    orderedFilteredCollections() {
-      if (!this.index.collections) {
-        return [];
-      }
+const props = defineProps<{
+  index: Index;
+  browsedIndexName?: string;
+  browsedCollectionName?: string;
+  filter: string;
+}>();
 
-      return this.index.collections
-        .filter((col) => col.name.indexOf(this.filter) !== -1 || this.showMoreCollections)
-        .sort();
-    },
-  },
-  watch: {
-    browsedIndexName() {
-      this.testOpen();
-    },
-    browsedCollectionName() {
-      this.testOpen();
-    },
-    filter() {
-      if (
-        this.index.collections &&
-        this.index.collections.filter((col) => col.name.indexOf(this.filter) !== -1).length > 0
-      ) {
-        this.open = true;
-      }
+const toast = useToast();
+const storageIndexStore = useStorageIndexStore();
 
-      if (this.filter === '') {
-        this.open = false;
-      }
-    },
-  },
-  async mounted() {
-    if (this.index) {
-      await this.testOpen();
+const open = ref(false);
+const showMoreCollections = ref(false);
+const collectionsFetched = ref(false);
+const isLoading = ref(false);
+
+const showMoreCollectionsDisplay = computed((): boolean => {
+  const collections = props.index.collections;
+
+  return (
+    props.filter.length > 0 &&
+    collections != null &&
+    collections.filter((col) => col.name.indexOf(props.filter) !== -1).length !== collections.length
+  );
+});
+
+const orderedFilteredCollections = computed(() => {
+  if (!props.index.collections) {
+    return [];
+  }
+
+  return props.index.collections
+    .filter((col) => col.name.indexOf(props.filter) !== -1 || showMoreCollections.value)
+    .sort();
+});
+
+watch(() => props.browsedIndexName, testOpen);
+watch(() => props.browsedCollectionName, testOpen);
+watch(
+  () => props.filter,
+  () => {
+    if (
+      props.index.collections &&
+      props.index.collections.filter((col) => col.name.indexOf(props.filter) !== -1).length > 0
+    ) {
+      open.value = true;
+    }
+
+    if (props.filter === '') {
+      open.value = false;
     }
   },
-  methods: {
-    ...mapActions(useStorageIndexStore, ['fetchCollectionList']),
-    truncateName,
-    async onToggleBranchClicked() {
-      if (!this.open) {
-        await this.fetchCollections();
-      }
-      this.toggleBranch();
-    },
-    async fetchCollections() {
-      try {
-        this.isLoading = true;
-        await this.fetchCollectionList(this.index);
-        this.collectionsFetched = true;
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.danger(
-          'Ooops! Something went wrong while fetching the collections.',
-          'The complete error has been printed to the console.',
-        );
-      }
-      this.isLoading = false;
-    },
-    toggleBranch() {
-      // TODO This state should be one day persistent across page refreshes
-      // NJE edit: not today...
-      this.open = !this.open;
-    },
-    // TODO get rid of this ESTEBAAAAAAAAN
-    getRelativeLink(isRealtime) {
-      switch (this.routeName) {
-        case 'WatchCollection':
-          return this.routeName;
-        case 'DocumentList':
-          return isRealtime ? 'WatchCollection' : this.routeName;
-        default:
-          return 'DocumentList';
-      }
-    },
-    toggleShowMoreCollections() {
-      this.showMoreCollections = !this.showMoreCollections;
-    },
-    async testOpen() {
-      if (this.browsedIndexName === this.index.name) {
-        await this.fetchCollections();
-        this.open = true;
-      }
-    },
-    isIndexActive(indexName) {
-      return this.browsedIndexName === indexName && !this.browsedCollectionName;
-    },
-    isCollectionActive(indexName, collectionName) {
-      return this.browsedIndexName === indexName && this.browsedCollectionName === collectionName;
-    },
-  },
-};
+);
+
+onMounted(async () => {
+  await testOpen();
+});
+
+async function onToggleBranchClicked(): Promise<void> {
+  if (!open.value) {
+    await fetchCollections();
+  }
+  toggleBranch();
+}
+
+async function fetchCollections(): Promise<void> {
+  try {
+    isLoading.value = true;
+    await storageIndexStore.fetchCollectionList(props.index);
+    collectionsFetched.value = true;
+  } catch (error) {
+    logger.error(error);
+    toast.danger(
+      'Ooops! Something went wrong while fetching the collections.',
+      'The complete error has been printed to the console.',
+    );
+  }
+  isLoading.value = false;
+}
+
+function toggleBranch(): void {
+  // TODO This state should be one day persistent across page refreshes
+  // NJE edit: not today...
+  open.value = !open.value;
+}
+
+function toggleShowMoreCollections(): void {
+  showMoreCollections.value = !showMoreCollections.value;
+}
+
+async function testOpen(): Promise<void> {
+  if (props.browsedIndexName === props.index.name) {
+    await fetchCollections();
+    open.value = true;
+  }
+}
+
+function isIndexActive(indexName: string): boolean {
+  return props.browsedIndexName === indexName && !props.browsedCollectionName;
+}
+
+function isCollectionActive(indexName: string, collectionName: string): boolean {
+  return props.browsedIndexName === indexName && props.browsedCollectionName === collectionName;
+}
 </script>
