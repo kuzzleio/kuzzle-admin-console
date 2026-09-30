@@ -128,7 +128,7 @@ function isCollectionRealtime(): boolean {
   }
 
   // Ce que fait le getter `getOneCollection` du store, appelé sur l'index
-  // lui-même : le store rend ses `Index` déballés, que le getter ne prend pas.
+  // lui-même.
   const collection = currentIndex.getOneCollection(collectionName);
   return collection ? collection.isRealtime() : false;
 }

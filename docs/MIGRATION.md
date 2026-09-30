@@ -3953,6 +3953,28 @@ Gabarit à copier :
   `vue-tsc` ne le voit pas : `value` passe par les attributs.
 - **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
 
+#### G-115 — Un `Index` du store n'était pas un `Index` pour `vue-tsc`
+
+- **Contexte** : lot 9 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Data/Indexes/Page.vue` et `Data/Layout.vue`.
+- **Symptôme** : passer un index lu dans `storageIndexStore.indexes` à une
+  action ou à une prop typée `Index` casse `vue-tsc` : « `{ readonly name:
+  string; loading: boolean; … }` is not assignable to parameter of type
+  `Index` ». L'Options API ne le voyait pas, ses composants n'étaient pas
+  typés.
+- **Cause** : Pinia rend son état déballé (`UnwrapRef`), un type construit
+  sur `keyof`, qui ne voit pas les membres privés. `Collection` avait une
+  méthode privée, `findType` : le `Collection` déballé n'était plus
+  assignable à la classe, et par ricochet l'`Index` qui le contient.
+  `Common/Breadcrumb.vue` contournait déjà le getter `getOneCollection` pour
+  cette raison.
+- **Solution** : `findType` sort de la classe, en fonction du module. Le
+  comportement ne change pas ; le type déballé redevient celui de la classe.
+- **À retenir** : une classe rangée dans un store Pinia ne porte pas de
+  membre `private` ni `#privé`. Un `as Index` aurait fait taire l'erreur sans
+  rien corriger.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
