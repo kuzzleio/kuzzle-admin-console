@@ -370,6 +370,64 @@ describe('Collection management', function() {
   // clic extérieur, la touche Échap, la navigation aux flèches, et l'état de
   // l'élément courant. Réécrit en Vue 2 à la main (ADR-0012), donc couvert ici
   // avant de l'être par la confiance (ADR-0011, point 4).
+  // G-116 : le crayon vérifiait les droits sur l'index nommé comme la
+  // collection. Un compte limité à `testindex` le voyait toujours inactif.
+  describe('With rights restricted to one index', function() {
+    const username = 'kac-collection-editor'
+    const password = 'kac-collection-editor-pass'
+
+    function cleanSecurity() {
+      const options = { failOnStatusCode: false }
+      cy.request({ ...options, method: 'DELETE', url: `${kuzzleUrl}/users/${username}` })
+      cy.request({ ...options, method: 'DELETE', url: `${kuzzleUrl}/profiles/${username}` })
+      cy.request({ ...options, method: 'DELETE', url: `${kuzzleUrl}/roles/${username}-base` })
+      cy.request({ ...options, method: 'DELETE', url: `${kuzzleUrl}/roles/${username}-index` })
+    }
+
+    beforeEach(() => {
+      cleanSecurity()
+      cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+      cy.request('PUT', `${kuzzleUrl}/roles/${username}-base`, {
+        controllers: {
+          auth: { actions: { '*': true } },
+          server: { actions: { '*': true } },
+          index: { actions: { list: true } },
+          collection: { actions: { list: true } }
+        }
+      })
+      cy.request('PUT', `${kuzzleUrl}/roles/${username}-index`, {
+        controllers: { '*': { actions: { '*': true } } }
+      })
+      cy.request('PUT', `${kuzzleUrl}/profiles/${username}`, {
+        policies: [
+          { roleId: `${username}-base` },
+          { roleId: `${username}-index`, restrictedTo: [{ index: indexName }] }
+        ]
+      })
+      cy.request('POST', `${kuzzleUrl}/users/${username}/_create`, {
+        content: { profileIds: [username] },
+        credentials: { local: { username, password } }
+      })
+      cy.request('POST', `${kuzzleUrl}/_login/local`, { username, password }).then(
+        response => {
+          cy.initLocalEnv(2, response.body.result.jwt)
+        }
+      )
+    })
+
+    afterEach(() => {
+      cleanSecurity()
+    })
+
+    it('Should let the user edit a collection of that index from the list', function() {
+      cy.visit(`/#/data/${indexName}`)
+      cy.get(`[data-cy="CollectionList-edit--${collectionName}"]`)
+        .should('not.be.disabled')
+        .click()
+      cy.location('hash').should('eq', `#/data/${indexName}/${collectionName}/edit`)
+    })
+  })
+
   describe('View dropdown', function() {
     beforeEach(() => {
       cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)

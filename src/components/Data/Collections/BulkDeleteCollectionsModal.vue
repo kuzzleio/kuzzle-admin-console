@@ -1,5 +1,5 @@
 <template>
-  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+  <Dialog :open="open" @update:open="emit('update:open', $event)">
     <DialogContent class="max-w-2xl" @interact-outside.prevent>
       <DialogHeader>
         <DialogTitle> Are you sure you want to delete all the selected collections? </DialogTitle>
@@ -37,8 +37,8 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -52,93 +52,75 @@ import {
 import { FormDescription, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { caught } from '@/lib/errors';
 import { useStorageIndexStore } from '@/stores';
 import type { Collection, Index } from '@/stores/types/storage-index';
 
 const BULK_DELETE_CONFIRMATION = 'DELETE';
 
-export default defineComponent({
-  name: 'BulkDeleteCollectionsModal',
-  components: {
-    Alert,
-    Button,
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    FormDescription,
-    FormItem,
-    Input,
-    Label,
-  },
-  // `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
-  props: {
-    collections: {
-      default: () => [],
-      type: Array as PropType<Collection[]>,
-    },
-    index: {
-      default: null,
-      type: Object as PropType<Index | null>,
-    },
-    open: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  data() {
-    return {
-      confirmation: '',
-      error: '',
-    };
-  },
-  computed: {
-    isConfirmationValid(): boolean {
-      return this.confirmation === BULK_DELETE_CONFIRMATION;
-    },
-  },
-  watch: {
-    open(open: boolean) {
-      if (!open) {
-        this.resetForm();
-      }
-    },
-  },
-  methods: {
-    resetForm(): void {
-      this.confirmation = '';
-      this.error = '';
-    },
-    close(): void {
-      this.$emit('update:open', false);
-    },
-    onCancel(): void {
-      this.close();
-      this.$emit('cancel');
-    },
-    async performDelete(): Promise<void> {
-      if (!this.isConfirmationValid || !this.index) {
-        return;
-      }
+// `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
+const props = withDefaults(
+  defineProps<{
+    collections?: Collection[];
+    index?: Index | null;
+    open?: boolean;
+  }>(),
+  { collections: () => [], index: null, open: false },
+);
 
-      try {
-        await this.storageIndexStore.bulkDeleteCollections({
-          index: this.index,
-          collections: this.collections,
-        });
+const emit = defineEmits<{
+  (e: 'cancel'): void;
+  (e: 'delete-successful'): void;
+  (e: 'update:open', open: boolean): void;
+}>();
 
-        this.close();
-        this.$emit('delete-successful');
-      } catch (err) {
-        this.error = (err as Error).message;
-      }
-    },
+const storageIndexStore = useStorageIndexStore();
+
+const confirmation = ref('');
+const error = ref('');
+
+const isConfirmationValid = computed(
+  (): boolean => confirmation.value === BULK_DELETE_CONFIRMATION,
+);
+
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      resetForm();
+    }
   },
-});
+);
+
+function resetForm(): void {
+  confirmation.value = '';
+  error.value = '';
+}
+
+function close(): void {
+  emit('update:open', false);
+}
+
+function onCancel(): void {
+  close();
+  emit('cancel');
+}
+
+async function performDelete(): Promise<void> {
+  if (!isConfirmationValid.value || !props.index) {
+    return;
+  }
+
+  try {
+    await storageIndexStore.bulkDeleteCollections({
+      index: props.index,
+      collections: props.collections,
+    });
+
+    close();
+    emit('delete-successful');
+  } catch (err) {
+    error.value = caught(err).message;
+  }
+}
 </script>

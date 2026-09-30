@@ -89,7 +89,7 @@
               id="collection"
               ref="jsoneditor"
               class="grow"
-              :content="rawMapping"
+              :content="state.rawMapping"
               tabindex="4"
               @change="onMappingChanged"
             />
@@ -139,200 +139,185 @@
   </div>
 </template>
 
-<script>
-import { markRaw } from 'vue';
+<script setup lang="ts">
+import { computed, reactive, useTemplateRef, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { requiredUnless } from '@vuelidate/validators';
-import { mapState } from 'pinia';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 
-import JsonEditor from '../../Common/JsonEditor.vue';
-import Headline from '../../Materialize/Headline.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { FileInput } from '@/components/ui/file-input';
 import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Focus from '@/directives/focus.directive';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
 
-function isValidCollectionName(value) {
+import JsonEditor from '@/components/Common/JsonEditor.vue';
+import Headline from '@/components/Materialize/Headline.vue';
+
+function isValidCollectionName(value: string): boolean {
   const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(value);
   const containsUpperCase = /[A-Z]/.test(value);
   const isTooLong = new TextEncoder().encode(value).length > 128;
   return !containsDisallowed && !containsUpperCase && !isTooLong;
 }
 
-export default {
-  name: 'CollectionCreateOrUpdate',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CardFooter,
-    FormDescription,
-    FormItem,
-    FormMessage,
-    Headline,
-    FileInput,
-    Input,
-    JsonEditor,
-    Label,
-  },
-  directives: {
-    Focus,
-  },
-  props: {
-    index: { type: String, required: true },
-    collection: String,
-    headline: String,
-    submitLabel: { type: String, default: 'OK' },
-    mapping: {
-      type: Object,
-      default: () => ({
-        properties: {},
-      }),
-    },
-  },
-  emits: ['submit'],
-  setup() {
-    return {
-      v$: useVuelidate(),
-    };
-  },
-  data() {
-    return {
-      RouterLink: markRaw(RouterLink),
-      name: this.collection || '',
-      rawMapping: '{}',
-    };
-  },
-  validations() {
-    return {
-      name: {
-        required: requiredUnless(() => !!this.collection),
-        isValidCollectionName,
-      },
-      rawMapping: {
-        syntaxOK: function (value) {
-          try {
-            JSON.parse(value);
-          } catch (e) {
-            return false;
-          }
-          return true;
-        },
-      },
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['currentEnvironment']),
-    indexName() {
-      return this.$route.params.indexName;
-    },
-    collectionName() {
-      return this.$route.params.collectionName;
-    },
-    mappingFileName() {
-      return `${this.currentEnvironment.name}-${this.indexName}-${this.name}-mapping.json`;
-    },
-    // `b-form-group` n'affichait ses messages que si `state` valait `false` ;
-    // le champ n'est donc en erreur qu'une fois touché. `Input` n'a pas de prop
-    // `state` : l'information passe par `aria-invalid`, et c'est le site
-    // d'appel qui met le message sous `v-if` (FormMessage).
-    isNameInvalid() {
-      const { $dirty, $error } = this.v$.name;
-      return $dirty && $error;
-    },
-    mappingState() {
-      try {
-        return JSON.parse(this.rawMapping);
-      } catch (error) {
-        return {};
-      }
-    },
-    isMappingValid() {
-      try {
-        JSON.parse(this.rawMapping);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
-    downloadMappingValue() {
-      if (this.isMappingValid) {
-        const blob = new Blob([JSON.stringify(JSON.parse(this.rawMapping))], {
-          type: 'application/json',
-        });
-        return window.URL.createObjectURL(blob);
-      }
-      return null;
-    },
-  },
-  watch: {
-    mapping: {
-      immediate: true,
-      handler(val) {
-        try {
-          this.rawMapping = JSON.stringify(val, null, 2);
-        } catch (error) {
-          this.$log.error(error);
-        }
-      },
-    },
-    collection: {
-      immediate: true,
-      handler(v) {
-        this.name = v;
-      },
-    },
-  },
-  methods: {
-    loadMappingValue(event) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        this.rawMapping = e.target.result;
-        this.$refs.jsoneditor.setContent(this.rawMapping);
-        this.$toast.success(
-          'Import successfully',
-          'The file has been written in the json editor. You can still edit it before saving if necessary.',
-        );
-      };
-      reader.readAsText(file);
-    },
-    onMappingChanged(value) {
-      this.rawMapping = value;
-    },
-    cancel() {
-      if (this.$router._prevTransition && this.$router._prevTransition.to) {
-        this.$router.push(this.$router._prevTransition.to);
-      } else {
-        this.$router.push({
-          name: 'Indexes',
-          params: { index: this.index },
-        });
-      }
-    },
-    handleSubmit() {
-      this.v$.$touch();
-      if (this.v$.$errors.length > 0) {
-        return;
-      }
+function isJson(value: string): boolean {
+  try {
+    JSON.parse(value);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
 
-      if (!this.isMappingValid) {
-        this.$toast.info(
-          'You cannot proceed',
-          'The JSON specification of the mapping contains syntax errors',
-        );
-      }
+const props = withDefaults(
+  defineProps<{
+    collection?: string;
+    headline?: string;
+    index: string;
+    mapping?: Record<string, unknown>;
+    submitLabel?: string;
+  }>(),
+  {
+    collection: undefined,
+    headline: undefined,
+    mapping: () => ({
+      properties: {},
+    }),
+    submitLabel: 'OK',
+  },
+);
 
-      this.$emit('submit', {
-        name: this.name,
-        mapping: this.mappingState,
-      });
-    },
+const emit = defineEmits<{
+  (e: 'submit', payload: { name: string; mapping: object }): void;
+}>();
+
+const route = useRoute();
+const toast = useToast();
+const kuzzleStore = useKuzzleStore();
+
+const jsoneditor = useTemplateRef<InstanceType<typeof JsonEditor>>('jsoneditor');
+
+// Un objet réactif et non des `ref` : `$model` a alors le type du champ.
+const state = reactive({
+  name: props.collection || '',
+  rawMapping: '{}',
+});
+
+const rules = {
+  name: {
+    required: requiredUnless(() => !!props.collection),
+    isValidCollectionName,
+  },
+  rawMapping: {
+    syntaxOK: isJson,
   },
 };
+
+const v$ = useVuelidate(rules, state);
+
+function routeParam(name: string): string | undefined {
+  const value = route.params[name];
+  return typeof value === 'string' ? value : undefined;
+}
+
+const mappingFileName = computed(
+  (): string =>
+    `${kuzzleStore.currentEnvironment?.name}-${routeParam('indexName')}-${state.name}-mapping.json`,
+);
+
+// `b-form-group` n'affichait ses messages que si `state` valait `false` ;
+// le champ n'est donc en erreur qu'une fois touché. `Input` n'a pas de prop
+// `state` : l'information passe par `aria-invalid`, et c'est le site
+// d'appel qui met le message sous `v-if` (FormMessage).
+const isNameInvalid = computed((): boolean => {
+  const { $dirty, $error } = v$.value.name;
+  return $dirty && $error;
+});
+
+const mappingState = computed((): object => {
+  try {
+    return JSON.parse(state.rawMapping);
+  } catch (error) {
+    return {};
+  }
+});
+
+const isMappingValid = computed((): boolean => isJson(state.rawMapping));
+
+const downloadMappingValue = computed((): string | null => {
+  if (isMappingValid.value) {
+    const blob = new Blob([JSON.stringify(JSON.parse(state.rawMapping))], {
+      type: 'application/json',
+    });
+    return window.URL.createObjectURL(blob);
+  }
+  return null;
+});
+
+watch(
+  () => props.mapping,
+  (val) => {
+    try {
+      state.rawMapping = JSON.stringify(val, null, 2);
+    } catch (error) {
+      logger.error(error);
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.collection,
+  (v) => {
+    state.name = v ?? '';
+  },
+  { immediate: true },
+);
+
+function loadMappingValue(event: Event): void {
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement) || !target.files) {
+    return;
+  }
+
+  const file = target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    state.rawMapping = typeof reader.result === 'string' ? reader.result : '';
+    jsoneditor.value?.setContent(state.rawMapping);
+    toast.success(
+      'Import successfully',
+      'The file has been written in the json editor. You can still edit it before saving if necessary.',
+    );
+  };
+  reader.readAsText(file);
+}
+
+function onMappingChanged(value: string): void {
+  state.rawMapping = value;
+}
+
+function handleSubmit(): void {
+  v$.value.$touch();
+  if (v$.value.$errors.length > 0) {
+    return;
+  }
+
+  if (!isMappingValid.value) {
+    toast.info(
+      'You cannot proceed',
+      'The JSON specification of the mapping contains syntax errors',
+    );
+  }
+
+  emit('submit', {
+    name: state.name,
+    mapping: mappingState.value,
+  });
+}
 </script>

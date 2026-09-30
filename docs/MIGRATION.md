@@ -922,7 +922,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 7. `Security/Profiles`
   - [x] 8. `Security/Users`
   - [x] 9. `Data` : `Indexes`, `Leftnav`, racine
-  - [ ] 10. `Data` : `Collections`, `Realtime`
+  - [x] 10. `Data` : `Collections`, `Realtime`
   - [ ] 11. `Common/Filters`
   - [ ] 12. `Data/Documents`, les vues
   - [ ] 13. `Data/Documents`, le reste
@@ -3973,6 +3973,61 @@ Gabarit à copier :
 - **À retenir** : une classe rangée dans un store Pinia ne porte pas de
   membre `private` ni `#privé`. Un `as Index` aurait fait taire l'erreur sans
   rien corriger.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-116 — Le crayon d'une collection vérifiait les droits sur le mauvais index, depuis 2020
+
+- **Contexte** : lot 10 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  lecture de `Data/Collections/CollectionList.vue` avant conversion.
+- **Symptôme** : un compte dont les droits sont limités à un index voit le
+  bouton « Edit collection » de la liste inactif, alors qu'il peut modifier le
+  mapping. Un compte aux droits `*` ne voit rien.
+- **Cause** : le getter `canEditCollection(index, collection)` était appelé
+  avec un seul argument, `collection.name`. Les droits étaient donc vérifiés
+  sur un index du nom de la collection, et sur la collection `*`. En Options
+  API, `mapState` ne typait pas l'appel. Présent depuis `508f6f86` (2020),
+  même code sur `4-dev`.
+- **Solution** : l'appel passe `indexName`. `collections.spec` crée un compte
+  limité à `testindex` et vérifie que le crayon est actif et mène à l'édition ;
+  le test échoue sans le correctif.
+- **À retenir** : un getter à plusieurs arguments lu par `mapState` n'est
+  vérifié nulle part. La conversion le type, et c'est là que l'erreur sort.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-117 — « Realtime view » ne tenait que par les paramètres de la page courante
+
+- **Contexte** : lot 10 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  lecture de `Data/Collections/DropdownView.vue` avant conversion.
+- **Symptôme** : aucun à l'écran. Le lien « Realtime view » du menu des vues
+  menait bien au temps réel de la collection ouverte, et vue-router
+  signalait en développement des paramètres ignorés, `collection` et `index`.
+- **Cause** : le lien passait `{ collection, index }` à `WatchCollection`,
+  dont les paramètres sont `indexName` et `collectionName`. vue-router
+  écarte les paramètres inconnus et reprend ceux de la route courante : le
+  lien ne marchait que parce que le menu n'est affiché que sur une page de la
+  même collection. Présent depuis la v4 (`params: { collection, index }`),
+  même code sur `4-dev`.
+- **Solution** : le lien passe `indexName` et `collectionName`, et ne dépend
+  plus de la page qui l'affiche.
+- **À retenir** : `RouteLocationRaw` ne vérifie pas les noms des paramètres
+  d'une route nommée ; seul un lien affiché hors de sa page le révèle.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-118 — Les payloads de collection exigeaient un `isRealtime` que personne ne passe
+
+- **Contexte** : lot 10 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Data/Collections/Create.vue` et `Update.vue`.
+- **Symptôme** : `vue-tsc` refuse les appels à `createCollection` et
+  `updateCollection` : « Property `isRealtime` is missing in type … ».
+- **Cause** : `CreateCollectionPayload` et `UpdateCollectionPayload`
+  déclarent `isRealtime: boolean` depuis `508f6f86` (2020). Les deux actions
+  ne le lisent pas — une collection créée ou mise à jour est toujours
+  stockée — et aucun site d'appel ne le passe. En JavaScript, l'écart ne se
+  voyait pas.
+- **Solution** : le champ sort des deux types. Le comportement ne change pas.
+- **À retenir** : un type de payload écrit pour un store appelé depuis du
+  JavaScript n'a jamais été vérifié ; à la conversion, on le corrige sur ce
+  que l'action lit, pas en ajoutant au site d'appel un champ inutile.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain

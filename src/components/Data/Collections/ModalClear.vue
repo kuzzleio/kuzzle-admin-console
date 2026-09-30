@@ -1,5 +1,5 @@
 <template>
-  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+  <Dialog :open="open" @update:open="emit('update:open', $event)">
     <DialogContent data-cy="CollectionClearModal" @interact-outside.prevent>
       <DialogHeader>
         <DialogTitle>
@@ -32,9 +32,8 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -47,88 +46,75 @@ import {
 import { FormDescription, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
 
-export default defineComponent({
-  name: 'ClearCollectionModal',
-  components: {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    FormDescription,
-    FormItem,
-    Input,
-    Label,
-  },
-  // `@interact-outside.prevent` : vider une collection n'est pas annulable, la modale
-  // ne se ferme pas sur un clic à côté.
-  props: {
-    collection: {
-      default: '',
-      type: String,
-    },
-    index: {
-      default: '',
-      type: String,
-    },
-    open: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  data() {
-    return {
-      confirmation: '',
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle']),
-    confirmationOk(): boolean {
-      return this.collection !== null && this.collection === this.confirmation;
-    },
-  },
-  watch: {
-    open(open: boolean) {
-      if (!open) {
-        this.confirmation = '';
-      }
-    },
-  },
-  methods: {
-    close(): void {
-      this.$emit('update:open', false);
-    },
-    async clearCollection(): Promise<void> {
-      if (
-        !this.$kuzzle ||
-        this.index.trim() === '' ||
-        this.collection.trim() === '' ||
-        !this.confirmationOk
-      ) {
-        return;
-      }
+// `@interact-outside.prevent` : vider une collection n'est pas annulable, la modale
+// ne se ferme pas sur un clic à côté.
+const props = withDefaults(
+  defineProps<{
+    collection?: string;
+    index?: string;
+    open?: boolean;
+  }>(),
+  { collection: '', index: '', open: false },
+);
 
-      try {
-        await this.$kuzzle.query({
-          controller: 'collection',
-          action: 'truncate',
-          index: this.index,
-          collection: this.collection,
-          refresh: 'wait_for',
-        });
-        this.$emit('clear');
-        this.close();
-      } catch (err) {
-        this.$log.error(err);
-        this.$toast.danger(
-          'Ooops! Something went wrong while clearing the collection.',
-          'The complete error has been printed to the console.',
-        );
-      }
-    },
+const emit = defineEmits<{
+  (e: 'clear'): void;
+  (e: 'update:open', open: boolean): void;
+}>();
+
+const kuzzleStore = useKuzzleStore();
+const toast = useToast();
+
+const confirmation = ref('');
+
+const confirmationOk = computed(
+  (): boolean => props.collection !== null && props.collection === confirmation.value,
+);
+
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      confirmation.value = '';
+    }
   },
-});
+);
+
+function close(): void {
+  emit('update:open', false);
+}
+
+async function clearCollection(): Promise<void> {
+  const kuzzle = kuzzleStore.$kuzzle;
+  if (
+    !kuzzle ||
+    props.index.trim() === '' ||
+    props.collection.trim() === '' ||
+    !confirmationOk.value
+  ) {
+    return;
+  }
+
+  try {
+    await kuzzle.query({
+      controller: 'collection',
+      action: 'truncate',
+      index: props.index,
+      collection: props.collection,
+      refresh: 'wait_for',
+    });
+    emit('clear');
+    close();
+  } catch (err) {
+    logger.error(err);
+    toast.danger(
+      'Ooops! Something went wrong while clearing the collection.',
+      'The complete error has been printed to the console.',
+    );
+  }
+}
 </script>
