@@ -7,8 +7,9 @@
           <Label for="profile-id">Profile ID</Label>
           <Input
             id="profile-id"
-            v-model="v$.idValue.$model"
             :aria-invalid="idFeedback ? 'true' : undefined"
+            :model-value="v$.idValue.$model ?? undefined"
+            @update:model-value="v$.idValue.$model = String($event)"
           />
           <FormMessage v-if="idFeedback">{{ idFeedback }}</FormMessage>
           <FormDescription v-else>This field is mandatory</FormDescription>
@@ -28,8 +29,7 @@
         >
           Invalid JSON. Fix the syntax before submitting.
         </FormMessage>
-        <json-editor
-          ref="jsoneditor"
+        <JsonEditor
           class="ProfileCreateOrUpdate-jsonEditor"
           :content="profile"
           data-cy="ProfileCreateOrUpdate-jsonEditor"
@@ -71,7 +71,7 @@
     </CardContent>
 
     <CardFooter class="justify-end gap-2">
-      <Button variant="outline" @click="$emit('cancel')">Cancel</Button>
+      <Button variant="outline" @click="emit('cancel')">Cancel</Button>
       <Button
         v-if="!id"
         data-cy="ProfileCreateOrUpdate-createBtn"
@@ -94,109 +94,90 @@
   </Card>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, reactive, ref } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
-import { not, requiredUnless, helpers } from '@vuelidate/validators';
+import { helpers, not, requiredUnless } from '@vuelidate/validators';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { startsWithSpace, isWhitespace } from '@/validators';
+import { isWhitespace, startsWithSpace } from '@/validators';
+import type { ProfileSubmission } from './types';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
 
-export default {
-  name: 'ProfileCreateOrUpdate',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CardFooter,
-    FormDescription,
-    FormItem,
-    FormMessage,
-    Input,
-    JsonEditor,
-    Label,
-  },
-  props: {
-    id: {
-      type: String,
-    },
-    profile: {
-      type: String,
-      default: '{}',
-    },
-  },
-  emits: ['cancel', 'submit'],
-  setup() {
-    return { v$: useVuelidate() };
-  },
-  data() {
-    return {
-      profileValue: this.profile || '{}',
-      idValue: null,
-      submitting: false,
-    };
-  },
-  validations() {
-    return {
-      idValue: {
-        isNotWhitespace: helpers.withMessage(
-          'This field cannot contain just whitespaces',
-          not(isWhitespace),
-        ),
-        required: helpers.withMessage(
-          'This field cannot be empty',
-          requiredUnless(() => !!this.id),
-        ),
-        startsWithLetter: helpers.withMessage(
-          'This field cannot start with a whitespace',
-          not(startsWithSpace),
-        ),
-      },
-      profileValue: {
-        syntaxOK: function (value) {
-          try {
-            JSON.parse(value);
-          } catch (e) {
-            return false;
-          }
-          return true;
-        },
-      },
-    };
-  },
-  computed: {
-    idFeedback() {
-      if (this.v$.idValue.$errors.length > 0) {
-        return this.v$.idValue.$errors[0].$message;
-      }
+const props = withDefaults(
+  defineProps<{
+    id?: string;
+    profile?: string;
+  }>(),
+  { id: undefined, profile: '{}' },
+);
 
-      return null;
-    },
+const emit = defineEmits<{
+  (e: 'cancel'): void;
+  (e: 'submit', submission: ProfileSubmission): void;
+}>();
+
+const form = reactive<{ idValue: string | null; profileValue: string }>({
+  idValue: null,
+  profileValue: props.profile || '{}',
+});
+const submitting = ref(false);
+
+const rules = computed(() => ({
+  idValue: {
+    isNotWhitespace: helpers.withMessage(
+      'This field cannot contain just whitespaces',
+      not(isWhitespace),
+    ),
+    required: helpers.withMessage(
+      'This field cannot be empty',
+      requiredUnless(() => !!props.id),
+    ),
+    startsWithLetter: helpers.withMessage(
+      'This field cannot start with a whitespace',
+      not(startsWithSpace),
+    ),
   },
-  methods: {
-    onContentChange(value) {
-      this.profileValue = value;
-    },
-    submit() {
-      this.v$.$touch();
-      if (this.v$.$errors.length > 0) {
-        return;
+  profileValue: {
+    syntaxOK: (value: string) => {
+      try {
+        JSON.parse(value);
+      } catch {
+        return false;
       }
-      this.$emit('submit', {
-        profile: JSON.parse(this.profileValue),
-        id: this.idValue,
-      });
-    },
-    cancel() {
-      this.$router.push({ name: 'SecurityProfilesList' });
+      return true;
     },
   },
-};
+}));
+const v$ = useVuelidate(rules, form);
+
+const idFeedback = computed(() => {
+  if (v$.value.idValue.$errors.length > 0) {
+    return v$.value.idValue.$errors[0].$message;
+  }
+
+  return null;
+});
+
+function onContentChange(value: string): void {
+  form.profileValue = value;
+}
+
+function submit(): void {
+  v$.value.$touch();
+  if (v$.value.$errors.length > 0) {
+    return;
+  }
+  emit('submit', {
+    profile: JSON.parse(form.profileValue),
+    id: form.idValue,
+  });
+}
 </script>
 
 <style lang="scss" scoped>
