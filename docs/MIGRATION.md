@@ -4013,6 +4013,23 @@ Gabarit à copier :
   d'une route nommée ; seul un lien affiché hors de sa page le révèle.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-118 — Les payloads de collection exigeaient un `isRealtime` que personne ne passe
+
+- **Contexte** : lot 10 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Data/Collections/Create.vue` et `Update.vue`.
+- **Symptôme** : `vue-tsc` refuse les appels à `createCollection` et
+  `updateCollection` : « Property `isRealtime` is missing in type … ».
+- **Cause** : `CreateCollectionPayload` et `UpdateCollectionPayload`
+  déclarent `isRealtime: boolean` depuis `508f6f86` (2020). Les deux actions
+  ne le lisent pas — une collection créée ou mise à jour est toujours
+  stockée — et aucun site d'appel ne le passe. En JavaScript, l'écart ne se
+  voyait pas.
+- **Solution** : le champ sort des deux types. Le comportement ne change pas.
+- **À retenir** : un type de payload écrit pour un store appelé depuis du
+  JavaScript n'a jamais été vérifié ; à la conversion, on le corrige sur ce
+  que l'action lit, pas en ajoutant au site d'appel un champ inutile.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

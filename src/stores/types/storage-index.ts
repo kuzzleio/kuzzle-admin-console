@@ -103,13 +103,11 @@ export interface IndexLoadingCollectionsPayload {
 export interface CreateCollectionPayload {
   index: Index;
   name: string;
-  isRealtime: boolean;
   mapping: object;
 }
 
 export interface UpdateCollectionPayload {
   index: Index;
   name: string;
-  isRealtime: boolean;
   mapping: object;
 }
