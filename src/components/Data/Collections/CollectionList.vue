@@ -161,13 +161,13 @@
                   `router-link` ignore `disabled` et resterait cliquable (G-016).
                 -->
                 <Button
-                  :as="canEditCollection(collection.name) ? RouterLink : 'button'"
+                  :as="canEditCollection(indexName, collection.name) ? RouterLink : 'button'"
                   :data-cy="`CollectionList-edit--${collection.name}`"
-                  :disabled="collection.type !== 'stored' || !canEditCollection(collection.name)"
+                  :disabled="collection.type !== 'stored' || !canEditCollection(indexName, collection.name)"
                   size="icon"
                   title="Edit collection"
                   :to="
-                    canEditCollection(collection.name)
+                    canEditCollection(indexName, collection.name)
                       ? {
                           name: 'EditCollection',
                           params: {

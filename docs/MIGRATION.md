@@ -3975,6 +3975,25 @@ Gabarit à copier :
   rien corriger.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-116 — Le crayon d'une collection vérifiait les droits sur le mauvais index, depuis 2020
+
+- **Contexte** : lot 10 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  lecture de `Data/Collections/CollectionList.vue` avant conversion.
+- **Symptôme** : un compte dont les droits sont limités à un index voit le
+  bouton « Edit collection » de la liste inactif, alors qu'il peut modifier le
+  mapping. Un compte aux droits `*` ne voit rien.
+- **Cause** : le getter `canEditCollection(index, collection)` était appelé
+  avec un seul argument, `collection.name`. Les droits étaient donc vérifiés
+  sur un index du nom de la collection, et sur la collection `*`. En Options
+  API, `mapState` ne typait pas l'appel. Présent depuis `508f6f86` (2020),
+  même code sur `4-dev`.
+- **Solution** : l'appel passe `indexName`. `collections.spec` crée un compte
+  limité à `testindex` et vérifie que le crayon est actif et mène à l'édition ;
+  le test échoue sans le correctif.
+- **À retenir** : un getter à plusieurs arguments lu par `mapState` n'est
+  vérifié nulle part. La conversion le type, et c'est là que l'erreur sort.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
