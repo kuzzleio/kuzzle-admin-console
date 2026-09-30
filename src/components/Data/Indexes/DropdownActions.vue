@@ -17,12 +17,14 @@
 
           <DropdownMenuItem
             data-cy="IndexDropdown-delete"
-            :disabled="!canDeleteIndex(indexName)"
+            :disabled="!authStore.canDeleteIndex(indexName)"
             :title="
-              !canDeleteIndex(indexName) ? 'Your rights do not allow you to delete this index' : ''
+              !authStore.canDeleteIndex(indexName)
+                ? 'Your rights do not allow you to delete this index'
+                : ''
             "
             variant="destructive"
-            @select="$emit('delete-index-clicked')"
+            @select="emit('delete-index-clicked')"
           >
             Delete index
           </DropdownMenuItem>
@@ -32,9 +34,8 @@
   </span>
 </template>
 
-<script lang="ts">
-import { defineComponent, markRaw } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -58,37 +59,14 @@ import { useAuthStore, useKuzzleStore } from '@/stores';
  *   bouton — la même que le menu des collections, pour que deux menus
  *   identiques se ressemblent enfin.
  */
-export default defineComponent({
-  name: 'IndexDropdownAction',
-  components: {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-  },
-  props: {
-    indexName: {
-      required: true,
-      type: String,
-    },
-  },
-  setup() {
-    return {
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  data() {
-    return {
-      Button: markRaw(Button),
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canDeleteIndex']),
-    backendMajorVersion(): number | undefined {
-      return this.kuzzleStore.currentEnvironment?.backendMajorVersion;
-    },
-  },
-});
+defineProps<{ indexName: string }>();
+
+const emit = defineEmits<{ (e: 'delete-index-clicked'): void }>();
+
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+
+const backendMajorVersion = computed(
+  (): number | undefined => kuzzleStore.currentEnvironment?.backendMajorVersion,
+);
 </script>

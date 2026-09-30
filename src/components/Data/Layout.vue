@@ -18,10 +18,7 @@
       :min-size="sidebarWidth"
       size-unit="px"
     >
-      <treeview
-        :index-name="$route.params.indexName"
-        :collection-name="$route.params.collectionName"
-      />
+      <treeview :index-name="indexName" :collection-name="collectionName" />
     </ResizablePanel>
     <ResizableHandle
       v-if="sideBySide"
@@ -58,12 +55,15 @@
     </ResizablePanel>
   </ResizablePanelGroup>
 </template>
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Spinner } from '@/components/ui/spinner';
 import { useSideBySide } from '@/composables/useSideBySide';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
 import { cssPixels } from '@/utils';
 import { setPersistedItem, getPersistedItem } from './itemsStorage';
@@ -71,165 +71,147 @@ import { setPersistedItem, getPersistedItem } from './itemsStorage';
 import Treeview from '@/components/Data/Leftnav/Treeview.vue';
 import DataNotFound from './Data404.vue';
 
-export default {
-  name: 'DataLayout',
-  components: {
-    DataNotFound,
-    ResizableHandle,
-    ResizablePanel,
-    ResizablePanelGroup,
-    Spinner,
-    Treeview,
-  },
-  setup() {
-    return {
-      sideBySide: useSideBySide(),
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  data() {
-    return {
-      isFetching: true,
-      dataNotFound: false,
-      viewIsInitializing: false,
-      /*
-       * Lues avant le montage : `reka-ui` ne prend `default-size` qu'à
-       * l'enregistrement du panneau.
-       */
-      paneSize: Number(getPersistedItem('paneSize')) || cssPixels('--sidebar-width'),
-      sidebarWidth: cssPixels('--sidebar-width'),
-    };
-  },
-  computed: {
-    ...mapState(useStorageIndexStore, ['loadingIndexes', 'loadingCollections']),
-    ...mapState(useAuthStore, ['isAuthenticated']),
-    indexName() {
-      return this.$route.params.indexName;
-    },
-    collectionName() {
-      return this.$route.params.collectionName;
-    },
-    loading() {
-      if (this.isFetching) {
-        return true;
-      }
+const route = useRoute();
+const toast = useToast();
+const sideBySide = useSideBySide();
+const authStore = useAuthStore();
+const storageIndexStore = useStorageIndexStore();
 
-      if (this.loadingIndexes) {
-        return true;
-      }
+const isFetching = ref(true);
+const dataNotFound = ref(false);
+const viewIsInitializing = ref(false);
+/*
+ * Lues avant le montage : `reka-ui` ne prend `default-size` qu'à
+ * l'enregistrement du panneau.
+ */
+const paneSize = Number(getPersistedItem('paneSize')) || cssPixels('--sidebar-width');
+const sidebarWidth = cssPixels('--sidebar-width');
 
-      if (this.indexName && this.loadingCollections(this.indexName)) {
-        return true;
-      }
+function routeParam(name: string): string | undefined {
+  const value = route.params[name];
+  return typeof value === 'string' ? value : undefined;
+}
 
-      return false;
-    },
-  },
-  watch: {
-    '$route.params.indexName': {
-      handler() {
-        this.lazyLoadingSequence();
-      },
-    },
-    '$route.params.collectionName': {
-      handler() {
-        this.lazyLoadingSequence();
-      },
-    },
-  },
-  async mounted() {
-    await this.lazyLoadingSequence();
-  },
-  methods: {
-    /*
-     * Le groupe émet les tailles dans l'unité de chaque panneau : celle de
-     * l'arbre en pixels, comme la valeur déjà persistée (ADR-0021). Empilés,
-     * les panneaux n'ont pas de largeur choisie : rien à retenir.
-     */
-    saveNewPaneSize([width]) {
-      if (this.sideBySide) {
-        setPersistedItem('paneSize', String(Math.round(width)));
-      }
-    },
-    async fetchIndexList() {
-      try {
-        await this.storageIndexStore.fetchIndexList();
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while fetching the indexes list.',
-          'The complete error has been printed to the console.',
-        );
-      }
-    },
-    async fetchCollectionList() {
-      try {
-        const index = this.storageIndexStore.getOneIndex(this.indexName);
+const indexName = computed(() => routeParam('indexName'));
+const collectionName = computed(() => routeParam('collectionName'));
 
-        if (!index) {
-          this.handleDataNotFound();
-          return;
-        }
+const loading = computed((): boolean => {
+  if (isFetching.value) {
+    return true;
+  }
 
-        await this.storageIndexStore.fetchCollectionList(index);
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while fetching the collection list.',
-          'The complete error has been printed to the console.',
-        );
-      }
-    },
-    async fetchCollectionMapping() {
-      try {
-        const index = this.storageIndexStore.getOneIndex(this.indexName);
+  if (storageIndexStore.loadingIndexes) {
+    return true;
+  }
 
-        if (!index) {
-          this.handleDataNotFound();
-          return;
-        }
+  if (indexName.value && storageIndexStore.loadingCollections(indexName.value)) {
+    return true;
+  }
 
-        const collection = this.storageIndexStore.getOneCollection(index, this.collectionName);
+  return false;
+});
 
-        if (!collection) {
-          this.handleDataNotFound();
-          return;
-        }
+watch(() => route.params.indexName, lazyLoadingSequence);
+watch(() => route.params.collectionName, lazyLoadingSequence);
 
-        await this.storageIndexStore.fetchCollectionMapping({ index, collection });
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while fetching the collection mapping.',
-          'The complete error has been printed to the console.',
-        );
-      }
-    },
-    handleDataNotFound() {
-      this.dataNotFound = true;
-    },
-    // @todo : handle lazy loading sequence only on the authenticated routes
-    async lazyLoadingSequence() {
-      if (!this.isAuthenticated) {
-        this.$log.warn('Lazy loading sequence started with a non-authenticated user.');
-        return;
-      }
+onMounted(async () => {
+  await lazyLoadingSequence();
+});
 
-      this.isFetching = true;
-      this.dataNotFound = false;
+/*
+ * Le groupe émet les tailles dans l'unité de chaque panneau : celle de
+ * l'arbre en pixels, comme la valeur déjà persistée (ADR-0021). Empilés,
+ * les panneaux n'ont pas de largeur choisie : rien à retenir.
+ */
+function saveNewPaneSize([width]: number[]): void {
+  if (sideBySide.value) {
+    setPersistedItem('paneSize', String(Math.round(width)));
+  }
+}
 
-      await this.fetchIndexList();
+async function fetchIndexList(): Promise<void> {
+  try {
+    await storageIndexStore.fetchIndexList();
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while fetching the indexes list.',
+      'The complete error has been printed to the console.',
+    );
+  }
+}
 
-      if (this.$route.params.indexName) {
-        await this.fetchCollectionList();
-      }
+async function fetchCollectionList(): Promise<void> {
+  try {
+    const index = indexName.value ? storageIndexStore.getOneIndex(indexName.value) : undefined;
 
-      if (this.$route.params.indexName && this.$route.params.collectionName) {
-        await this.fetchCollectionMapping();
-      }
+    if (!index) {
+      handleDataNotFound();
+      return;
+    }
 
-      this.isFetching = false;
-    },
-  },
-};
+    await storageIndexStore.fetchCollectionList(index);
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while fetching the collection list.',
+      'The complete error has been printed to the console.',
+    );
+  }
+}
+
+async function fetchCollectionMapping(): Promise<void> {
+  try {
+    const index = indexName.value ? storageIndexStore.getOneIndex(indexName.value) : undefined;
+
+    if (!index) {
+      handleDataNotFound();
+      return;
+    }
+
+    const collection = collectionName.value
+      ? storageIndexStore.getOneCollection(index, collectionName.value)
+      : undefined;
+
+    if (!collection) {
+      handleDataNotFound();
+      return;
+    }
+
+    await storageIndexStore.fetchCollectionMapping({ index, collection });
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while fetching the collection mapping.',
+      'The complete error has been printed to the console.',
+    );
+  }
+}
+
+function handleDataNotFound(): void {
+  dataNotFound.value = true;
+}
+
+// @todo : handle lazy loading sequence only on the authenticated routes
+async function lazyLoadingSequence(): Promise<void> {
+  if (!authStore.isAuthenticated) {
+    logger.warn('Lazy loading sequence started with a non-authenticated user.');
+    return;
+  }
+
+  isFetching.value = true;
+  dataNotFound.value = false;
+
+  await fetchIndexList();
+
+  if (route.params.indexName) {
+    await fetchCollectionList();
+  }
+
+  if (route.params.indexName && route.params.collectionName) {
+    await fetchCollectionMapping();
+  }
+
+  isFetching.value = false;
+}
 </script>

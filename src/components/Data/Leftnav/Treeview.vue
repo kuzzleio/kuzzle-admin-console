@@ -35,8 +35,8 @@
     </template>
   </aside>
 </template>
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
 
 import { Alert } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
@@ -46,41 +46,21 @@ import { useAuthStore, useStorageIndexStore } from '@/stores';
 
 import IndexBranch from './IndexBranch.vue';
 
-export default {
-  name: 'Treeview',
-  components: {
-    Alert,
-    IndexBranch,
-    Input,
-    Spinner,
-  },
-  props: {
-    indexName: String,
-    collectionName: String,
-  },
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  data() {
-    return {
-      filter: '',
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canSearchIndex']),
-    orderedFilteredIndexes() {
-      return [...filterIndexesByKeyword(this.indexes, this.filter)].sort((a, b) =>
-        a.name.localeCompare(b.name),
-      );
-    },
-    isLoading() {
-      return this.storageIndexStore.loadingIndexes;
-    },
-    indexes() {
-      return this.storageIndexStore.indexes;
-    },
-  },
-};
+defineProps<{
+  indexName?: string;
+  collectionName?: string;
+}>();
+
+const authStore = useAuthStore();
+const storageIndexStore = useStorageIndexStore();
+
+const filter = ref('');
+
+const canSearchIndex = computed(() => authStore.canSearchIndex);
+const isLoading = computed(() => storageIndexStore.loadingIndexes);
+const orderedFilteredIndexes = computed(() =>
+  [...filterIndexesByKeyword(storageIndexStore.indexes, filter.value)].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  ),
+);
 </script>
