@@ -4065,6 +4065,23 @@ Gabarit à copier :
   `$root` ; chaque appel est un événement que le parent devra relayer.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-121 — `fitBounds(bounds, 14)` : Leaflet ignore un zoom passé en nombre
+
+- **Contexte** : lot 12 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Views/Map.vue`. Le typage de Leaflet refuse l'appel.
+- **Symptôme** : un clic sur un cercle de la vue carte zoome jusqu'au niveau
+  maximal de la carte quand le cercle est petit, là où points et polygones
+  s'arrêtent à 14. Depuis #949, en v4 comme en v5.
+- **Cause** : le second argument de `fitBounds` est un objet d'options.
+  `_getBoundsCenterZoom` n'applique `options.maxZoom` que si c'est un nombre ;
+  lu sur `14`, il vaut `undefined`, et aucun plafond ne joue.
+- **Solution** : `fitBounds(bounds, { maxZoom: 14 })`, la forme qu'emploient
+  déjà les polygones.
+- **À retenir** : une signature de bibliothèque tierce s'appelle comme son
+  typage la déclare ; en JavaScript, un argument du mauvais type n'échoue pas,
+  il est ignoré.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
