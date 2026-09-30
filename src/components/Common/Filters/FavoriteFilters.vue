@@ -10,6 +10,10 @@
         :collection="collection"
         :favorite="favori"
         @favoris-delete="onFavoriteDelete"
+        @filter-basic-submitted="
+          (filter, sorting) => emit('filter-basic-submitted', filter, sorting)
+        "
+        @filter-raw-submitted="emit('filter-raw-submitted', $event)"
       />
     </template>
     <template v-else>
@@ -23,45 +27,53 @@
   </ul>
 </template>
 
-<script>
+<script setup lang="ts">
+import { onMounted, ref, watch } from 'vue';
+
 import * as filterManager from '@/services/filterManager';
+import type { BasicFilterGroups, FilterSorting, SavedFilter } from './types';
 
 import FavoriteFilterItem from './FavoriteFilterItem.vue';
 
-export default {
-  name: 'FavoriteFilters',
-  components: {
-    FavoriteFilterItem,
+const props = defineProps<{
+  collection?: string;
+  index?: string;
+}>();
+
+/*
+ * `FavoriteFilterItem` émettait ces deux événements sur son parent
+ * (`this.$parent.$emit`), que `<script setup>` n'expose pas : il les émet sur
+ * lui-même, et la liste les relaie.
+ */
+const emit = defineEmits<{
+  (
+    e: 'filter-basic-submitted',
+    filter: BasicFilterGroups | null | undefined,
+    sorting: FilterSorting | null | undefined,
+  ): void;
+  (e: 'filter-raw-submitted', filter: Record<string, unknown> | null | undefined): void;
+}>();
+
+const favorites = ref<SavedFilter[]>([]);
+
+watch(
+  favorites,
+  () => {
+    filterManager.saveFavoritesToLocalStorage(favorites.value, props.index, props.collection);
   },
-  props: {
-    index: String,
-    collection: String,
-  },
-  data() {
-    return {
-      favorites: [],
-    };
-  },
-  watch: {
-    favorites: {
-      handler() {
-        filterManager.saveFavoritesToLocalStorage(this.favorites, this.index, this.collection);
-      },
-      deep: true,
-    },
-  },
-  mounted() {
-    this.favorites = filterManager.loadFavoritesFromLocalStorage(this.index, this.collection);
-  },
-  methods: {
-    onFavoriteDelete(id) {
-      const idIndex = this.favorites
-        .map((favori) => {
-          return favori.id;
-        })
-        .indexOf(id);
-      this.favorites.splice(idIndex, 1);
-    },
-  },
-};
+  { deep: true },
+);
+
+onMounted(() => {
+  favorites.value = filterManager.loadFavoritesFromLocalStorage(props.index, props.collection);
+});
+
+function onFavoriteDelete(id: number): void {
+  const idIndex = favorites.value
+    .map((favori) => {
+      return favori.id;
+    })
+    .indexOf(id);
+  favorites.value.splice(idIndex, 1);
+}
 </script>

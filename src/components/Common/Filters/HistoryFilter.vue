@@ -13,6 +13,7 @@
         @filters-delete="onFiltersDelete"
         @toggle-favorite="toggleFavorite(filter, $event)"
         @change="onFilterChange"
+        @submit="emit('submit', $event)"
       />
     </template>
     <template v-else>
@@ -26,66 +27,63 @@
   </ul>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
+
 import * as filterManager from '@/services/filterManager';
+import type { SavedFilter } from './types';
 
 import FilterHistoryItem from './FilterHistoryItem.vue';
 
-export default {
-  name: 'FilterHistory',
-  components: {
-    FilterHistoryItem,
-  },
-  props: {
-    index: String,
-    collection: String,
-  },
-  /*
-   * `submit` n'est pas émis ici : `FilterHistoryItem` l'émet sur son parent
-   * (`this.$parent.$emit`). Il doit tout de même être déclaré, sans quoi le
-   * `@submit` du site d'appel retombe en écouteur DOM natif sur la racine
-   * (G-049).
-   */
-  emits: ['submit'],
-  data() {
-    return {
-      filters: [],
-      favorite: [],
-    };
-  },
-  computed: {
-    sortedHistory() {
-      return [...this.filters].sort((a, b) => (a.id < b.id ? 1 : -1));
-    },
-  },
-  mounted() {
-    this.filters = filterManager.loadHistoyFromLocalStorage(this.index, this.collection);
-    this.favorite = filterManager.loadFavoritesFromLocalStorage(this.index, this.collection);
-  },
-  methods: {
-    onFilterChange() {
-      filterManager.saveHistoyToLocalStorage(this.filters, this.index, this.collection);
-    },
-    onFiltersDelete(id) {
-      const idIndex = this.filters
-        .map((filter) => {
-          return filter.id;
-        })
-        .indexOf(id);
-      this.filters.splice(idIndex, 1);
-      filterManager.saveHistoyToLocalStorage(this.filters, this.index, this.collection);
-    },
-    toggleFavorite(filter, favorite) {
-      if (favorite) {
-        this.favorite.push(filter);
-      } else {
-        this.favorite.splice(
-          this.favorite.findIndex((e) => e.id === filter.id),
-          1,
-        );
-      }
-      filterManager.saveFavoritesToLocalStorage(this.favorite, this.index, this.collection);
-    },
-  },
-};
+const props = defineProps<{
+  collection?: string;
+  index?: string;
+}>();
+
+/*
+ * `FilterHistoryItem` émettait `submit` sur son parent (`this.$parent.$emit`),
+ * que `<script setup>` n'expose pas : il l'émet sur lui-même, et la liste le
+ * relaie.
+ */
+const emit = defineEmits<{
+  (e: 'submit', filter: SavedFilter): void;
+}>();
+
+const filters = ref<SavedFilter[]>([]);
+const favorite = ref<SavedFilter[]>([]);
+
+const sortedHistory = computed((): SavedFilter[] =>
+  [...filters.value].sort((a, b) => (a.id < b.id ? 1 : -1)),
+);
+
+onMounted(() => {
+  filters.value = filterManager.loadHistoyFromLocalStorage(props.index, props.collection);
+  favorite.value = filterManager.loadFavoritesFromLocalStorage(props.index, props.collection);
+});
+
+function onFilterChange(): void {
+  filterManager.saveHistoyToLocalStorage(filters.value, props.index, props.collection);
+}
+
+function onFiltersDelete(id: number): void {
+  const idIndex = filters.value
+    .map((filter) => {
+      return filter.id;
+    })
+    .indexOf(id);
+  filters.value.splice(idIndex, 1);
+  filterManager.saveHistoyToLocalStorage(filters.value, props.index, props.collection);
+}
+
+function toggleFavorite(filter: SavedFilter, isFavorite: boolean): void {
+  if (isFavorite) {
+    favorite.value.push(filter);
+  } else {
+    favorite.value.splice(
+      favorite.value.findIndex((e) => e.id === filter.id),
+      1,
+    );
+  }
+  filterManager.saveFavoritesToLocalStorage(favorite.value, props.index, props.collection);
+}
 </script>

@@ -78,13 +78,18 @@
                   class="flex min-w-40 flex-1 flex-col gap-1"
                 >
                   <template v-if="andBlock.operator !== 'range'">
+                    <!--
+                      Une condition vide vaut `null` — c'est ce que l'historique
+                      et l'URL enregistrent — et `Input` n'accepte pas `null`.
+                    -->
                     <Input
-                      v-model="andBlock.value"
+                      :model-value="andBlock.value ?? undefined"
                       aria-label="Value"
                       class="BasicFilter--value"
                       :data-cy="`BasicFilter-valueInput--${groupIndex}.${filterIndex}`"
                       placeholder="Value"
                       type="text"
+                      @update:model-value="andBlock.value = $event"
                     />
                   </template>
                   <template v-else>
@@ -221,8 +226,8 @@
   </form>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, reactive, watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -234,221 +239,229 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { logger } from '@/plugins/logger';
+import type { MappingAttributes } from '@/services/mappingHelpers';
 import { useKuzzleStore } from '@/stores';
+import type { BasicFilterGroups, BasicFilterStatement, FilterSorting } from './types';
 
-const emptyBasicFilter = { attribute: null, operator: 'contains', value: null };
-const emptySorting = { attribute: null, order: 'asc' };
-
-export default {
-  name: 'BasicFilter',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CardFooter,
-    Input,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  },
-  props: {
-    basicFilter: Array,
-    sorting: Object,
-    availableOperands: {
-      type: Object,
-      required: true,
-    },
-    submitButtonLabel: {
-      type: String,
-      required: false,
-      default: 'Search',
-    },
-    actionButtonsVisible: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    sortingEnabled: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    mappingAttributes: {
-      type: Object,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      filters: {
-        active: 'basic',
-        basic: null,
-        sorting: { ...emptySorting },
-      },
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper']),
-    selectAttributesValues() {
-      return [
-        { text: '_id', value: '_id' },
-        ...Object.keys(this.mappingAttributes).map((a) => ({
-          text: a,
-          value: a,
-        })),
-      ];
-    },
-    sortAttributesValues() {
-      return Object.keys(this.mappingAttributes)
-        .filter((a) => this.mappingAttributes[a].type !== 'text')
-        .map((a) => ({
-          text: a,
-          value: a,
-        }));
-    },
-    availableOperandsFormatted() {
-      return Object.keys(this.availableOperands).map((e) => ({
-        value: e,
-        text: this.availableOperands[e],
-      }));
-    },
-    isFilterValid: function () {
-      // For each andBlocks in orBlocks, check if attribute and value field are filled
-      for (const orBlock of this.filters.basic) {
-        for (const andBlock of orBlock) {
-          if (
-            (andBlock.operator === 'exists' || andBlock.operator === 'not_exists') &&
-            andBlock.attribute
-          ) {
-            return true;
-          }
-          if (
-            (!andBlock.attribute && andBlock.value) ||
-            (andBlock.attribute && !andBlock.value && !andBlock.lt_value && !andBlock.gt_value)
-          ) {
-            return false;
-          }
-        }
-      }
-
-      return true;
-    },
-  },
-  watch: {
-    basicFilter: {
-      immediate: true,
-      handler(value) {
-        if (value) {
-          this.filters.basic = value;
-        } else {
-          this.filters.basic = [[{ ...emptyBasicFilter }]];
-        }
-      },
-    },
-    sorting: {
-      immediate: true,
-      handler(value) {
-        if (value) {
-          this.filters.sorting = value;
-        } else {
-          this.filters.sorting = { ...emptySorting };
-        }
-      },
-    },
-  },
-  methods: {
-    isInvalidBlock(orBlock) {
-      return this.isInvalidStatement(orBlock.length - 1, orBlock);
-    },
-    isInvalidStatement(filterIndex, orBlock) {
-      const statement = orBlock[filterIndex];
-      const operator = statement.operator;
-
-      switch (operator) {
-        case 'contains':
-        case 'not_contains':
-        case 'equal':
-        case 'not_equal':
-          return Boolean(!statement.attribute || !statement.value);
-        case 'exists':
-        case 'not_exists':
-          return Boolean(!statement.attribute);
-        case 'range':
-          return Boolean(!statement.attribute || (!statement.gt_value && !statement.lt_value));
-      }
-    },
-    setSortAttr(attribute) {
-      this.filters.sorting.attribute = attribute;
-    },
-    selectAttribute(attribute, groupIndex, filterIndex) {
-      this.filters.basic[groupIndex][filterIndex].attribute = attribute;
-    },
-    generateRawFilter() {
-      const raw = this.wrapper.basicSearchToESQuery(this.filters.basic, this.mappingAttributes);
-      this.$log.debug(JSON.stringify(raw, null, 2));
-      this.$emit('generate-raw-filter', raw);
-    },
-    submitSearch() {
-      if (!this.isFilterValid) {
-        return;
-      }
-
-      let filters = this.filters.basic;
-
-      if (
-        this.filters.basic.length === 1 &&
-        this.filters.basic[0].length === 1 &&
-        !this.filters.basic[0][0].attribute
-      ) {
-        filters = null;
-      }
-
-      if (this.sortingEnabled) {
-        let sorting = this.filters.sorting;
-
-        if (!this.filters.sorting.attribute) {
-          sorting = null;
-        }
-
-        this.$emit('filter-submitted', filters, sorting);
-      } else {
-        this.$emit('filter-submitted', filters);
-      }
-    },
-    resetSearch() {
-      this.filters.basic = [[{ ...emptyBasicFilter }]];
-      this.filters.sorting = { ...emptySorting };
-      this.submitSearch();
-    },
-    addOrCondition() {
-      this.filters.basic.push([{ ...emptyBasicFilter }]);
-    },
-    addAndCondition(groupIndex) {
-      if (!this.filters.basic[groupIndex]) {
-        return false;
-      }
-
-      this.filters.basic[groupIndex].push({ ...emptyBasicFilter });
-    },
-    removeAndCondition(groupIndex, filterIndex) {
-      if (!this.filters.basic[groupIndex] || !this.filters.basic[groupIndex][filterIndex]) {
-        return false;
-      }
-
-      if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1) {
-        this.filters.basic[0][0] = { ...emptyBasicFilter };
-        return;
-      }
-
-      if (this.filters.basic[groupIndex].length === 1 && this.filters.basic.length > 1) {
-        this.filters.basic.splice(groupIndex, 1);
-        return;
-      }
-
-      this.filters.basic[groupIndex].splice(filterIndex, 1);
-    },
-  },
+const emptyBasicFilter: BasicFilterStatement = {
+  attribute: null,
+  operator: 'contains',
+  value: null,
 };
+const emptySorting: FilterSorting = { attribute: null, order: 'asc' };
+
+const props = withDefaults(
+  defineProps<{
+    actionButtonsVisible?: boolean;
+    availableOperands: Record<string, string>;
+    basicFilter?: BasicFilterGroups | null;
+    mappingAttributes: MappingAttributes;
+    sorting?: FilterSorting | null;
+    sortingEnabled?: boolean;
+    submitButtonLabel?: string;
+  }>(),
+  {
+    actionButtonsVisible: true,
+    basicFilter: undefined,
+    sorting: undefined,
+    sortingEnabled: true,
+    submitButtonLabel: 'Search',
+  },
+);
+
+const emit = defineEmits<{
+  (e: 'filter-submitted', filter: BasicFilterGroups | null, sorting?: FilterSorting | null): void;
+  (e: 'generate-raw-filter', raw: object): void;
+}>();
+
+const kuzzleStore = useKuzzleStore();
+
+// Les deux `watch` immédiats ci-dessous remplacent ces valeurs avant le rendu.
+const filters = reactive<{ basic: BasicFilterGroups; sorting: FilterSorting }>({
+  basic: [[{ ...emptyBasicFilter }]],
+  sorting: { ...emptySorting },
+});
+
+const selectAttributesValues = computed((): { text: string; value: string }[] => [
+  { text: '_id', value: '_id' },
+  ...Object.keys(props.mappingAttributes).map((a) => ({
+    text: a,
+    value: a,
+  })),
+]);
+
+const sortAttributesValues = computed((): { text: string; value: string }[] =>
+  Object.keys(props.mappingAttributes)
+    .filter((a) => props.mappingAttributes[a].type !== 'text')
+    .map((a) => ({
+      text: a,
+      value: a,
+    })),
+);
+
+const availableOperandsFormatted = computed((): { text: string; value: string }[] =>
+  Object.keys(props.availableOperands).map((e) => ({
+    value: e,
+    text: props.availableOperands[e],
+  })),
+);
+
+const isFilterValid = computed((): boolean => {
+  // For each andBlocks in orBlocks, check if attribute and value field are filled
+  for (const orBlock of filters.basic) {
+    for (const andBlock of orBlock) {
+      if (
+        (andBlock.operator === 'exists' || andBlock.operator === 'not_exists') &&
+        andBlock.attribute
+      ) {
+        return true;
+      }
+      if (
+        (!andBlock.attribute && andBlock.value) ||
+        (andBlock.attribute && !andBlock.value && !andBlock.lt_value && !andBlock.gt_value)
+      ) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+});
+
+watch(
+  () => props.basicFilter,
+  (value) => {
+    if (value) {
+      filters.basic = value;
+    } else {
+      filters.basic = [[{ ...emptyBasicFilter }]];
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.sorting,
+  (value) => {
+    if (value) {
+      filters.sorting = value;
+    } else {
+      filters.sorting = { ...emptySorting };
+    }
+  },
+  { immediate: true },
+);
+
+function isInvalidBlock(orBlock: BasicFilterStatement[]): boolean {
+  return isInvalidStatement(orBlock.length - 1, orBlock);
+}
+
+// Un opérateur hors de cette liste (ceux du temps réel) n'invalide rien.
+function isInvalidStatement(filterIndex: number, orBlock: BasicFilterStatement[]): boolean {
+  const statement = orBlock[filterIndex];
+  const operator = statement.operator;
+
+  switch (operator) {
+    case 'contains':
+    case 'not_contains':
+    case 'equal':
+    case 'not_equal':
+      return Boolean(!statement.attribute || !statement.value);
+    case 'exists':
+    case 'not_exists':
+      return Boolean(!statement.attribute);
+    case 'range':
+      return Boolean(!statement.attribute || (!statement.gt_value && !statement.lt_value));
+  }
+  return false;
+}
+
+// Le `Select` rend une valeur de `reka-ui` (`AcceptableValue`) : ses options
+// sont des noms d'attributs, rien d'autre ne peut en sortir.
+function setSortAttr(attribute: unknown): void {
+  if (typeof attribute === 'string') {
+    filters.sorting.attribute = attribute;
+  }
+}
+
+function selectAttribute(attribute: unknown, groupIndex: number, filterIndex: number): void {
+  if (typeof attribute === 'string') {
+    filters.basic[groupIndex][filterIndex].attribute = attribute;
+  }
+}
+
+function generateRawFilter(): void {
+  const wrapper = kuzzleStore.wrapper;
+  if (!wrapper) {
+    throw new Error('No Kuzzle wrapper set for the current environment');
+  }
+  const raw = wrapper.basicSearchToESQuery(filters.basic, props.mappingAttributes);
+  logger.debug(JSON.stringify(raw, null, 2));
+  emit('generate-raw-filter', raw);
+}
+
+function submitSearch(): void {
+  if (!isFilterValid.value) {
+    return;
+  }
+
+  let basic: BasicFilterGroups | null = filters.basic;
+
+  if (
+    filters.basic.length === 1 &&
+    filters.basic[0].length === 1 &&
+    !filters.basic[0][0].attribute
+  ) {
+    basic = null;
+  }
+
+  if (props.sortingEnabled) {
+    let sorting: FilterSorting | null = filters.sorting;
+
+    if (!filters.sorting.attribute) {
+      sorting = null;
+    }
+
+    emit('filter-submitted', basic, sorting);
+  } else {
+    emit('filter-submitted', basic);
+  }
+}
+
+function resetSearch(): void {
+  filters.basic = [[{ ...emptyBasicFilter }]];
+  filters.sorting = { ...emptySorting };
+  submitSearch();
+}
+
+function addOrCondition(): void {
+  filters.basic.push([{ ...emptyBasicFilter }]);
+}
+
+function addAndCondition(groupIndex: number): void {
+  if (!filters.basic[groupIndex]) {
+    return;
+  }
+
+  filters.basic[groupIndex].push({ ...emptyBasicFilter });
+}
+
+function removeAndCondition(groupIndex: number, filterIndex: number): void {
+  if (!filters.basic[groupIndex] || !filters.basic[groupIndex][filterIndex]) {
+    return;
+  }
+
+  if (filters.basic.length === 1 && filters.basic[0].length === 1) {
+    filters.basic[0][0] = { ...emptyBasicFilter };
+    return;
+  }
+
+  if (filters.basic[groupIndex].length === 1 && filters.basic.length > 1) {
+    filters.basic.splice(groupIndex, 1);
+    return;
+  }
+
+  filters.basic[groupIndex].splice(filterIndex, 1);
+}
 </script>

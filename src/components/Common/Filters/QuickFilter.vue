@@ -73,13 +73,14 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { onBeforeUnmount } from 'vue';
 import { debounce } from 'lodash';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import Focus from '@/directives/focus.directive';
+import vFocus from '@/directives/focus.directive';
 
 /*
  * `b-form-input` avait une prop `debounce="600"` : la saisie n'était propagée
@@ -89,79 +90,70 @@ import Focus from '@/directives/focus.directive';
  */
 const SEARCH_DEBOUNCE_MS = 600;
 
-export default {
-  name: 'QuickFilter',
-  components: {
-    Badge,
-    Button,
-    Input,
+const props = withDefaults(
+  defineProps<{
+    actionButtonsVisible?: boolean;
+    advancedFiltersVisible?: boolean;
+    advancedQueryLabel?: string;
+    complexFilterActive?: boolean;
+    placeholder?: string;
+    submitButtonLabel?: string;
+    submitOnType?: boolean;
+    value?: string;
+  }>(),
+  {
+    actionButtonsVisible: true,
+    advancedQueryLabel: 'Advanced query...',
+    placeholder: 'Search everywhere...',
+    submitButtonLabel: 'Search',
+    submitOnType: true,
+    value: undefined,
   },
-  directives: {
-    Focus,
-  },
-  props: {
-    advancedFiltersVisible: Boolean,
-    advancedQueryLabel: {
-      type: String,
-      required: false,
-      default: 'Advanced query...',
-    },
-    complexFilterActive: Boolean,
-    enabled: Boolean,
-    submitButtonLabel: {
-      type: String,
-      required: false,
-      default: 'Search',
-    },
-    actionButtonsVisible: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    placeholder: {
-      type: String,
-      default: 'Search everywhere...',
-    },
-    submitOnType: {
-      type: Boolean,
-      default: true,
-    },
-    value: {
-      type: String,
-    },
-  },
-  /*
-   * `input` est émis par un nom calculé dans `emitTerm` — il doit être
-   * déclaré comme les autres, sans quoi il retombe en écouteur DOM natif
-   * sur la racine et reçoit les `input` du champ de recherche (G-049).
-   */
-  emits: ['display-advanced-filters', 'input', 'reset', 'submit'],
-  created() {
-    this.emitTerm = debounce((term) => {
-      this.$emit(this.submitOnType ? 'submit' : 'input', term);
-    }, SEARCH_DEBOUNCE_MS);
-  },
-  beforeUnmount() {
-    this.emitTerm.cancel();
-  },
-  methods: {
-    submit() {
-      this.$emit('submit', this.value);
-    },
-    /* `Entrée` ne se fait pas attendre : la frappe en cours part tout de suite. */
-    submitNow() {
-      this.emitTerm.flush();
-      this.submit();
-    },
-    resetSearch() {
-      this.$emit('reset');
-    },
-    displayAdvancedFilters() {
-      this.$emit('display-advanced-filters');
-    },
-    handleInput(term) {
-      this.emitTerm(term);
-    },
-  },
-};
+);
+
+/*
+ * `input` est émis selon `submitOnType` — il doit être déclaré comme les
+ * autres, sans quoi il retombe en écouteur DOM natif sur la racine et reçoit
+ * les `input` du champ de recherche (G-049).
+ */
+const emit = defineEmits<{
+  (e: 'display-advanced-filters'): void;
+  (e: 'input', term: string | number): void;
+  (e: 'reset'): void;
+  (e: 'submit', term: string | number | undefined): void;
+}>();
+
+const emitTerm = debounce((term: string | number): void => {
+  if (props.submitOnType) {
+    emit('submit', term);
+  } else {
+    emit('input', term);
+  }
+}, SEARCH_DEBOUNCE_MS);
+
+onBeforeUnmount(() => {
+  emitTerm.cancel();
+});
+
+function submit(): void {
+  emit('submit', props.value);
+}
+
+/* `Entrée` ne se fait pas attendre : la frappe en cours part tout de suite. */
+function submitNow(): void {
+  emitTerm.flush();
+  submit();
+}
+
+function resetSearch(): void {
+  emit('reset');
+}
+
+function displayAdvancedFilters(): void {
+  emit('display-advanced-filters');
+}
+
+function handleInput(term: string | number): void {
+  emitTerm(term);
+}
 </script>

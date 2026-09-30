@@ -97,6 +97,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import Filters from '../../Common/Filters/Filters.vue';
+import type { SearchFilter } from '../../Common/Filters/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
@@ -112,13 +113,6 @@ import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import NoSearchResult from '@/components/Security/Common/NoSearchResult.vue';
 import DeleteModal from './DeleteModal.vue';
 import UserItem from './UserItem.vue';
-
-/* Le filtre de `filterManager`, pour ce que la liste en lit. */
-interface ListFilter {
-  [key: string]: unknown;
-  active: string | null;
-  from?: unknown;
-}
 
 const props = withDefaults(
   defineProps<{
@@ -151,7 +145,7 @@ const router = useRouter();
 const toast = useToast();
 
 const deleteModalOpen = ref(false);
-const currentFilter = ref<ListFilter>(new filterManager.Filter());
+const currentFilter = ref<SearchFilter>(new filterManager.Filter());
 const currentPage = ref(1);
 const deleteModalIsLoading = ref(false);
 const documents = ref<UserDocument[]>([]);
@@ -162,11 +156,11 @@ const totalDocuments = ref(0);
 const candidatesForDeletion = ref<string[]>([]);
 const paginationSize = ref(25);
 
-const isDocumentListFiltered = computed(
+const isDocumentSearchFiltered = computed(
   () => currentFilter.value.active !== filterManager.NO_ACTIVE,
 );
 const isCollectionEmpty = computed(
-  () => !isDocumentListFiltered.value && totalDocuments.value === 0,
+  () => !isDocumentSearchFiltered.value && totalDocuments.value === 0,
 );
 const displayBulkDelete = computed(() => selectedDocuments.value.length > 0);
 const allChecked = computed(() => selectedDocuments.value.length === documents.value.length);
@@ -187,7 +181,7 @@ function loadAndSaveFilter(): void {
   filterManager.save(currentFilter.value, router, props.index, props.collection);
 }
 
-function onFiltersUpdated(newFilters: ListFilter, loadedFromHistory?: boolean): void {
+function onFiltersUpdated(newFilters: SearchFilter, loadedFromHistory?: boolean): void {
   currentFilter.value = newFilters;
   try {
     filterManager.save(newFilters, router, props.index, props.collection);

@@ -923,7 +923,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 8. `Security/Users`
   - [x] 9. `Data` : `Indexes`, `Leftnav`, racine
   - [x] 10. `Data` : `Collections`, `Realtime`
-  - [ ] 11. `Common/Filters`
+  - [x] 11. `Common/Filters`
   - [ ] 12. `Data/Documents`, les vues
   - [ ] 13. `Data/Documents`, le reste
   - [ ] 14. Retrait des plugins `$toast` / `$log`, verrou ESLint
@@ -4046,6 +4046,23 @@ Gabarit à copier :
 - **À retenir** : une valeur par défaut vide (`[]`, `[[]]`, `{}`) sans
   annotation fige un type inutilisable ; il ne se révèle qu'au premier
   appelant typé.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-120 — Un événement émis sur `$parent` saute un niveau que `<script setup>` n'a plus
+
+- **Contexte** : lot 11 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `FilterHistoryItem.vue` et `FavoriteFilterItem.vue`.
+- **Symptôme** : aucun à la compilation. Sans relais, « Use Filter » dans
+  l'historique ou les favoris ne ferait plus rien.
+- **Cause** : les deux items appelaient `this.$parent.$emit(…)` : l'événement
+  partait de la liste (`HistoryFilter`, `FavoriteFilters`) et atteignait
+  `Filters` sans que la liste le déclare ni l'émette. `<script setup>` n'a pas
+  de `this`, et `defineEmits` ne vaut que pour le composant lui-même.
+- **Solution** : chaque item émet l'événement sur lui-même, et la liste le
+  déclare et le relaie à `Filters`. L'argument `true` que les favoris
+  ajoutaient en fin d'appel sort : aucun gestionnaire ne le lisait.
+- **À retenir** : avant de convertir un composant, chercher `$parent` et
+  `$root` ; chaque appel est un événement que le parent devra relayer.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
