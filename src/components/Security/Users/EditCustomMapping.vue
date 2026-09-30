@@ -4,11 +4,10 @@
     data-cy="EditUserMapping"
   >
     <div class="flex flex-wrap items-start justify-between gap-4">
-      <headline>Edit User Custom Data Mapping</headline>
+      <Headline>Edit User Custom Data Mapping</Headline>
       <div class="flex flex-wrap items-center gap-3">
         <FileInput
           id="user-mapping-import"
-          ref="file-input"
           accept=".json"
           aria-label="Import mapping"
           class="w-72"
@@ -23,7 +22,9 @@
           :as="isMappingValid ? 'a' : 'button'"
           data-cy="export-user-mapping"
           :disabled="!isMappingValid"
-          :download="isMappingValid ? `${currentEnvironment.name}-user-mapping.json` : undefined"
+          :download="
+            isMappingValid ? `${kuzzleStore.currentEnvironment?.name}-user-mapping.json` : undefined
+          "
           :href="isMappingValid ? downloadMappingValue : undefined"
           variant="outline"
         >
@@ -40,7 +41,7 @@
       <Card class="grow">
         <CardContent class="flex h-full flex-col gap-6 lg:flex-row">
           <div class="lg:w-8/12">
-            <json-editor
+            <JsonEditor
               id="user-custom-data-mapping-editor"
               ref="jsoneditor"
               :content="mappingValue"
@@ -87,12 +88,13 @@
   </div>
 </template>
 
-<script type="text/javascript">
+<script setup lang="ts">
 /**
  * This feature is currently freezed.
  */
+import { computed, onMounted, ref, useTemplateRef } from 'vue';
 import omit from 'lodash/omit';
-import { mapState } from 'pinia';
+import { useRouter } from 'vue-router';
 
 import JsonEditor from '../../Common/JsonEditor.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -100,85 +102,92 @@ import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { FileInput } from '@/components/ui/file-input';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
 
-export default {
-  name: 'UsersCustomMappingWizard',
-  components: {
-    Alert,
-    Button,
-    Card,
-    CardContent,
-    CardFooter,
-    FileInput,
-    Headline,
-    JsonEditor,
-  },
-  data() {
-    return {
-      mappingValue: '{}',
-      loading: false,
-      error: '',
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper', 'currentEnvironment']),
-    isMappingValid() {
-      try {
-        JSON.parse(this.mappingValue);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
-    downloadMappingValue() {
-      if (this.isMappingValid) {
-        const blob = new Blob([JSON.stringify(JSON.parse(this.mappingValue))], {
-          type: 'application/json',
-        });
-        return window.URL.createObjectURL(blob);
-      }
-      return null;
-    },
-  },
-  async mounted() {
-    this.loading = true;
-    const result = await this.wrapper.getMappingUsers();
-    this.mappingValue = JSON.stringify(omit(result.mapping, 'profileIds') || {}, null, 2);
-    this.loading = false;
-  },
-  methods: {
-    loadMappingValue(event) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        this.mappingValue = e.target.result;
-        this.$refs.jsoneditor.setContent(this.mappingValue);
-        this.$toast.success(
-          'Import successfully',
-          'The file has been written in the json editor. You can still edit it before saving if necessary.',
-        );
-      };
-      reader.readAsText(file);
-    },
-    onMappingChange(value) {
-      this.mappingValue = value;
-    },
-    onCancel() {
-      this.$router.push({ name: 'SecurityUsersList' });
-    },
-    async onSubmit() {
-      try {
-        await this.wrapper.updateMappingUsers(JSON.parse(this.mappingValue));
-        this.$router.push({ name: 'SecurityUsersList' });
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while updating the mapping',
-          'The complete error has been printed to console',
-        );
-      }
-    },
-  },
-};
+const kuzzleStore = useKuzzleStore();
+const router = useRouter();
+const toast = useToast();
+
+const jsoneditor = useTemplateRef<InstanceType<typeof JsonEditor>>('jsoneditor');
+
+const mappingValue = ref('{}');
+const loading = ref(false);
+
+const isMappingValid = computed(() => {
+  try {
+    JSON.parse(mappingValue.value);
+    return true;
+  } catch {
+    return false;
+  }
+});
+const downloadMappingValue = computed(() => {
+  if (isMappingValid.value) {
+    const blob = new Blob([JSON.stringify(JSON.parse(mappingValue.value))], {
+      type: 'application/json',
+    });
+    return window.URL.createObjectURL(blob);
+  }
+  return undefined;
+});
+
+/* Le wrapper de la connexion courante. Appelé dans un `try` ou un hook : son
+   absence y est une erreur comme une autre. */
+function wrapper() {
+  const kuzzleWrapper = kuzzleStore.wrapper;
+  if (!kuzzleWrapper) {
+    throw new Error('No Kuzzle wrapper set for the current environment');
+  }
+  return kuzzleWrapper;
+}
+
+onMounted(async () => {
+  loading.value = true;
+  const result = await wrapper().getMappingUsers();
+  mappingValue.value = JSON.stringify(omit(result.mapping, 'profileIds') || {}, null, 2);
+  loading.value = false;
+});
+
+function loadMappingValue(event: Event): void {
+  if (!(event.target instanceof HTMLInputElement) || !event.target.files) {
+    return;
+  }
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (typeof reader.result !== 'string') {
+      return;
+    }
+    mappingValue.value = reader.result;
+    jsoneditor.value?.setContent(mappingValue.value);
+    toast.success(
+      'Import successfully',
+      'The file has been written in the json editor. You can still edit it before saving if necessary.',
+    );
+  };
+  reader.readAsText(file);
+}
+
+function onMappingChange(value: string): void {
+  mappingValue.value = value;
+}
+
+function onCancel(): void {
+  router.push({ name: 'SecurityUsersList' });
+}
+
+async function onSubmit(): Promise<void> {
+  try {
+    await wrapper().updateMappingUsers(JSON.parse(mappingValue.value));
+    router.push({ name: 'SecurityUsersList' });
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while updating the mapping',
+      'The complete error has been printed to console',
+    );
+  }
+}
 </script>

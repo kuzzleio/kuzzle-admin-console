@@ -43,7 +43,7 @@
                 :model-value="getValue(strategy, fieldName) || ''"
                 :name="fieldName"
                 :type="fieldType(fieldName)"
-                @update:modelValue="onFieldChange(strategy, fieldName, $event)"
+                @update:model-value="onFieldChange(strategy, fieldName, $event)"
               />
             </FormItem>
           </TabsContent>
@@ -53,75 +53,52 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import type { Credentials } from '../types';
 import { Card, CardContent } from '@/components/ui/card';
 import { FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export default {
-  name: 'CredentialsSelector',
-  components: {
-    Card,
-    CardContent,
-    FormItem,
-    Input,
-    Label,
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-  },
-  props: {
-    strategies: {
-      type: Array,
-      default: () => [],
-    },
-    credentials: {
-      type: Object,
-      default: () => ({}),
-    },
-    credentialsMapping: {
-      type: Object,
-      default: () => ({}),
-    },
-  },
-  emits: ['input'],
-  data() {
-    return {
-      error: '',
-      document: null,
-      id: null,
-    };
-  },
-  computed: {},
-  methods: {
-    getValue(strategy, fieldName) {
-      if (!this.credentials[strategy]) {
-        return null;
-      }
-      return this.credentials[strategy][fieldName];
-    },
-    getFieldHelp(fieldName) {
-      return fieldName.replace(/^\w/, (c) => c.toUpperCase());
-    },
-    fieldType(fieldName) {
-      if (fieldName === 'password') {
-        return 'password';
-      }
+const props = withDefaults(
+  defineProps<{
+    credentials?: Credentials;
+    credentialsMapping?: Record<string, string[]>;
+    strategies?: string[];
+  }>(),
+  { credentials: () => ({}), credentialsMapping: () => ({}), strategies: () => [] },
+);
 
-      return 'text';
+const emit = defineEmits<{
+  (e: 'input', payload: { credentials: Record<string, string | number>; strategy: string }): void;
+}>();
+
+function getValue(strategy: string, fieldName: string): string | number | null {
+  if (!props.credentials[strategy]) {
+    return null;
+  }
+  return props.credentials[strategy][fieldName];
+}
+
+function getFieldHelp(fieldName: string): string {
+  return fieldName.replace(/^\w/, (c) => c.toUpperCase());
+}
+
+function fieldType(fieldName: string): string {
+  if (fieldName === 'password') {
+    return 'password';
+  }
+  return 'text';
+}
+
+function onFieldChange(strategy: string, fieldName: string, value: string | number): void {
+  emit('input', {
+    strategy,
+    credentials: {
+      ...props.credentials[strategy],
+      [fieldName]: value,
     },
-    onFieldChange(strategy, fieldName, value) {
-      this.$emit('input', {
-        strategy,
-        credentials: {
-          ...this.credentials[strategy],
-          [fieldName]: value,
-        },
-      });
-    },
-  },
-};
+  });
+}
 </script>

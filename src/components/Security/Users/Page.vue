@@ -1,17 +1,17 @@
 <template>
   <div class="UsersManagement mx-auto w-full max-w-6xl px-4 pb-12">
     <div class="flex flex-wrap items-start justify-between gap-4">
-      <headline>Users</headline>
+      <Headline>Users</Headline>
       <div class="flex flex-wrap items-center gap-2">
         <!--
           `as` bascule sur `button` quand l'action est interdite : un
           `router-link` ignore `disabled` et resterait cliquable (G-016).
         -->
         <Button
-          :as="canCreateUser ? RouterLink : 'button'"
+          :as="authStore.canCreateUser ? RouterLink : 'button'"
           data-cy="UsersManagement-createBtn"
-          :disabled="!canCreateUser"
-          :to="canCreateUser ? { name: 'SecurityUsersCreate' } : undefined"
+          :disabled="!authStore.canCreateUser"
+          :to="authStore.canCreateUser ? { name: 'SecurityUsersCreate' } : undefined"
           >Create User</Button
         >
 
@@ -40,10 +40,10 @@
     </div>
 
     <!-- Not allowed -->
-    <list-not-allowed v-if="!canSearchUser" />
+    <ListNotAllowed v-if="!authStore.canSearchUser" />
 
-    <list
-      v-if="canSearchUser"
+    <UserList
+      v-if="authStore.canSearchUser"
       item-name="UserItem"
       collection="users"
       index="%kuzzle"
@@ -58,19 +58,18 @@
             <CardTitle class="font-heading text-headline font-extrabold text-muted-foreground"
               >No user is defined</CardTitle
             >
-            <CardDescription v-if="canCreateUser" class="mt-2 text-muted-foreground">
+            <CardDescription v-if="authStore.canCreateUser" class="mt-2 text-muted-foreground">
               You can create a new user by hitting the button above
             </CardDescription>
           </CardContent>
         </Card>
       </template>
-    </list>
+    </UserList>
   </div>
 </template>
 
-<script>
-import { markRaw } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 
 import ListNotAllowed from '../../Common/ListNotAllowed.vue';
@@ -86,54 +85,21 @@ import {
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
-import List from './List.vue';
+import UserList from './List.vue';
 
-export default {
-  name: 'UsersManagement',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CardDescription,
-    CardTitle,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-    Headline,
-    List,
-    ListNotAllowed,
-  },
-  data() {
-    return {
-      RouterLink: markRaw(RouterLink),
-      /*
-       * `DropdownMenuTrigger` prend le composant lui-même en prop `as`, pas
-       * son nom : c'est l'API de l'amont, et `Button` doit donc être une
-       * valeur lisible depuis le template. `markRaw` et non `Object.freeze` :
-       * Vue met en cache le constructeur sur les options du composant, et un
-       * objet gelé le lui interdit (G-032).
-       */
-      Button: markRaw(Button),
-      userMapping: {},
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper']),
-    ...mapState(useAuthStore, ['canSearchUser', 'canCreateUser']),
-    mappingAttributes() {
-      return this.extractAttributesFromMapping(this.userMapping);
-    },
-  },
-  async mounted() {
-    const mapping = await this.wrapper.getMappingUsers();
-    this.userMapping = mapping.mapping;
-  },
-  methods: {
-    extractAttributesFromMapping,
-    createUser() {
-      this.$router.push({ name: 'SecurityUsersCreate' });
-    },
-  },
-};
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+
+const userMapping = ref({});
+
+const mappingAttributes = computed(() => extractAttributesFromMapping(userMapping.value));
+
+onMounted(async () => {
+  const wrapper = kuzzleStore.wrapper;
+  if (!wrapper) {
+    throw new Error('No Kuzzle wrapper set for the current environment');
+  }
+  const mapping = await wrapper.getMappingUsers();
+  userMapping.value = mapping.mapping;
+});
 </script>

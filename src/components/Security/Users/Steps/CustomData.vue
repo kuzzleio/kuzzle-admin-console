@@ -1,6 +1,6 @@
 <template>
   <div class="document-create-update">
-    <form class="wrapper" @submit.prevent="submit">
+    <form class="wrapper" @submit.prevent>
       Here, you can define the custom content of your users. The fields you define here will appear
       in the <code>content</code> field of your user object, along with <code>profileIds</code> and
       <code>_kuzzle_info</code>.
@@ -8,8 +8,7 @@
         <!-- Json view -->
         <div class="lg:w-8/12">
           <h3 class="text-title font-bold text-foreground">Custom content</h3>
-          <json-editor
-            ref="jsoneditor"
+          <JsonEditor
             class="document-json"
             :content="value"
             data-cy="UserCustomContent-jsonEditor"
@@ -28,49 +27,23 @@
   </div>
 </template>
 
-<script>
-import { mergeSchemaMapping } from '@/services/collectionHelper';
-
+<script setup lang="ts">
 import JsonEditor from '@/components/Common/JsonEditor.vue';
 import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 
-export default {
-  name: 'CustomData',
-  components: {
-    JsonTree,
-    JsonEditor,
-  },
-  props: {
-    value: {
-      type: String,
-      default: '',
-    },
-    mapping: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-  },
-  emits: ['input'],
-  data() {
-    return {
-      viewType: 'form',
-      newContent: {},
-    };
-  },
-  computed: {
-    isFormView() {
-      return this.viewType === 'form';
-    },
-    schema() {
-      return mergeSchemaMapping({}, this.mapping);
-    },
-  },
-  methods: {
-    jsonChanged(value) {
-      this.$emit('input', value);
-    },
-  },
-};
+withDefaults(
+  defineProps<{
+    mapping?: Record<string, unknown>;
+    value?: string;
+  }>(),
+  { mapping: () => ({}), value: '' },
+);
+
+const emit = defineEmits<{
+  (e: 'input', value: string): void;
+}>();
+
+function jsonChanged(value: string): void {
+  emit('input', value);
+}
 </script>
