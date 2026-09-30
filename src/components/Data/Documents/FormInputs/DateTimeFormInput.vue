@@ -27,11 +27,14 @@
   </Card>
 </template>
 
-<script>
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { fromDateTimeInputs, toDateInputValue, toTimeInputValue } from '@/lib/date';
+import type { FormField } from '@/services/formSchema';
 
 /*
  * Le champ date est le seul de la console (ADR-0015). Il s'appuie sur les
@@ -44,55 +47,59 @@ import { fromDateTimeInputs, toDateInputValue, toTimeInputValue } from '@/lib/da
  * saisie en cours, pas un état du document — c'est leur composition qui fait
  * la valeur.
  */
-export default {
-  components: {
-    Card,
-    CardContent,
-    Input,
-    Label,
-  },
-  props: {
-    schema: { type: Object, required: true },
-    value: { type: [String, Number], default: null },
-  },
-  emits: ['input'],
-  data() {
-    return {
-      date: null,
-      time: null,
-    };
-  },
-  mounted() {
-    if (!this.value) {
-      return;
-    }
+const props = withDefaults(
+  defineProps<{
+    schema: FormField;
+    value?: string | number | null;
+  }>(),
+  { value: null },
+);
 
-    // if no date format specified, ES save date in ms timestamp
-    const dateTime = this.schema.mapping.format
-      ? new Date(this.value)
-      : new Date(parseInt(this.value));
+const emit = defineEmits<{
+  (e: 'input', value: string): void;
+}>();
 
-    this.date = toDateInputValue(dateTime);
-    this.time = toTimeInputValue(dateTime);
-  },
-  methods: {
-    /*
-     * Les deux champs lisent l'événement natif plutôt que la valeur émise par
-     * `Input` : `v-model` et un `@input` posé par le site d'appel visent le
-     * même événement, et rien ne garantit lequel des deux est appliqué en
-     * premier. `event.target.value` est vrai dans les deux cas.
-     */
-    onDateChange(event) {
-      this.date = event.target.value;
-      this.emitValue();
-    },
-    onTimeChange(event) {
-      this.time = event.target.value;
-      this.emitValue();
-    },
-    emitValue() {
-      this.$emit('input', fromDateTimeInputs(this.date, this.time));
-    },
-  },
-};
+// Chaînes vides et non `null` : `Input` n'accepte pas `null`, et la valeur
+// d'un champ natif vide est la chaîne vide.
+const date = ref('');
+const time = ref('');
+
+onMounted(() => {
+  if (!props.value) {
+    return;
+  }
+
+  // if no date format specified, ES save date in ms timestamp
+  const dateTime =
+    'format' in props.schema.mapping && props.schema.mapping.format
+      ? new Date(props.value)
+      : new Date(parseInt(String(props.value)));
+
+  date.value = toDateInputValue(dateTime);
+  time.value = toTimeInputValue(dateTime);
+});
+
+/*
+ * Les deux champs lisent l'événement natif plutôt que la valeur émise par
+ * `Input` : `v-model` et un `@input` posé par le site d'appel visent le
+ * même événement, et rien ne garantit lequel des deux est appliqué en
+ * premier. `event.target.value` est vrai dans les deux cas.
+ */
+function inputValue(event: Event): string {
+  return event.target instanceof HTMLInputElement ? event.target.value : '';
+}
+
+function onDateChange(event: Event): void {
+  date.value = inputValue(event);
+  emitValue();
+}
+
+function onTimeChange(event: Event): void {
+  time.value = inputValue(event);
+  emitValue();
+}
+
+function emitValue(): void {
+  emit('input', fromDateTimeInputs(date.value, time.value));
+}
 </script>

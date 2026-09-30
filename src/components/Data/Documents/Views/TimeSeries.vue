@@ -95,9 +95,12 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onMounted, reactive, ref, useTemplateRef, watch } from 'vue';
 import _ from 'lodash';
+import { useRouter } from 'vue-router';
 
+import type { KuzzleDocument } from '../types';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
@@ -125,268 +128,296 @@ const ES_NUMBER_DATA_TYPE = [
   'byte',
 ];
 
-export default {
-  name: 'TimeSeries',
-  components: {
-    ApexChart,
-    Card,
-    CardContent,
-    PerPageSelector,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-    TimeSeriesItem,
-  },
-  props: {
-    mapping: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    index: {
-      type: String,
-      required: true,
-    },
-    collection: {
-      type: String,
-      required: true,
-    },
-    documents: {
-      type: Array,
-      required: true,
-    },
-    currentPageSize: {
-      type: Number,
-      default: 25,
-    },
-    totalDocuments: {
-      type: Number,
-    },
-  },
-  setup() {
-    return { isDark: useTheme().isDark };
-  },
-  data() {
-    return {
-      customDateField: null,
-      customNumberFields: [],
-      mappingDateArray: [],
-      mappingNumberArray: [],
-      newCustomDateField: null,
-      newCustomNumberField: null,
-      chartOptions: {
-        // Axes, grille et info-bulles suivent le thème (ADR-0056) ; le fond
-        // reste celui de la carte, les séries gardent leurs couleurs.
-        chart: {
-          background: 'transparent',
-          type: 'line',
-        },
-        colors: [],
-        theme: {
-          mode: this.isDark ? 'dark' : 'light',
-        },
-        xaxis: {
-          categories: [],
-        },
-      },
-      series: [],
-    };
-  },
-  computed: {
-    isChartViewAvailable() {
-      return Boolean(
-        (this.mappingDateArray.length || this.customDateField) &&
-        (this.mappingNumberArray.length || this.customNumberFields.length),
-      );
-    },
-  },
-  watch: {
-    isDark(value) {
-      this.chartOptions.theme = { mode: value ? 'dark' : 'light' };
-      this.$refs.Chart?.updateOptions({ theme: this.chartOptions.theme });
-    },
-    $route() {
-      const columnsConfig = JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}');
+/* Une série du graphique : un champ numérique et sa couleur, retenus dans le localStorage. */
+interface NumberField {
+  name: string;
+  color: string;
+}
 
-      this.customDateField = null;
-      if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
-        this.customDateField = columnsConfig[this.index][this.collection].date;
-      } else {
-        this.customDateField = null;
-      }
+/* Les options du graphique que la vue écrit ; `ApexChart` les passe au moteur. */
+interface ChartOptions {
+  chart: { background: string; type: 'line' };
+  colors: string[];
+  theme: { mode: 'dark' | 'light' };
+  xaxis: { categories: string[] };
+}
 
-      this.customNumberFields = [];
-      if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
-        this.customNumberFields = columnsConfig[this.index][this.collection].numbers || [];
-      } else {
-        this.customNumberFields = [];
-      }
-    },
-    mapping() {
-      this.mappingNumberArray = this.buildAttributeList(this.mapping, (type) =>
-        ES_NUMBER_DATA_TYPE.includes(type),
-      );
-      if (this.customNumberFields) {
-        for (const attr of this.customNumberFields) {
-          this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr.name), 1);
-        }
-        this.mappingNumberArray.sort();
-      }
-    },
-    customNumberFields: {
-      /* `addNumberField` et `removeItem` mutent le tableau sur place — voir G-058. */
-      deep: true,
-      handler(value) {
-        if (value.length) {
-          this.$emit('changeDisplayPagination', true);
-          this.updateChart();
-        } else {
-          this.$emit('changeDisplayPagination', false);
-        }
-      },
-    },
-    documents() {
-      this.updateChart();
-    },
-    isChartViewAvailable(value) {
-      if (!value) {
-        this.$emit('changeDisplayPagination', false);
-        return;
-      }
-      if (!this.customNumberFields.length) {
-        this.$emit('changeDisplayPagination', false);
-        return;
-      }
-      this.$emit('changeDisplayPagination', true);
-    },
+/*
+ * La valeur d'un point, telle qu'ApexCharts la lit d'une série de nombres :
+ * `Utils.parseNumber` garde un nombre et `null`, et passe le reste à
+ * `parseFloat`. La conversion a lieu ici plutôt que dans le moteur, pour que
+ * la série ait le type qu'il déclare.
+ */
+function toChartValue(value: unknown): number | null {
+  if (typeof value === 'number' || value === null) {
+    return value;
+  }
+  return parseFloat(String(value));
+}
+
+const props = withDefaults(
+  defineProps<{
+    collection: string;
+    currentPageSize?: number;
+    documents: KuzzleDocument[];
+    index: string;
+    mapping?: object;
+    totalDocuments?: number;
+  }>(),
+  {
+    currentPageSize: 25,
+    mapping: () => ({}),
+    totalDocuments: undefined,
   },
-  mounted() {
-    const columnsConfig = JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}');
+);
 
-    if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
-      this.customDateField = columnsConfig[this.index][this.collection].date;
-    }
-    this.mappingDateArray = this.buildAttributeList(this.mapping, (type) => type === 'date');
+const emit = defineEmits<{
+  (e: 'change-page-size', size: number): void;
+  (e: 'changeDisplayPagination', display: boolean): void;
+}>();
 
-    if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
-      this.customNumberFields = columnsConfig[this.index][this.collection].numbers || [];
-    }
-    this.mappingNumberArray = this.buildAttributeList(this.mapping, (type) =>
+const { isDark } = useTheme();
+const router = useRouter();
+
+const chart = useTemplateRef<InstanceType<typeof ApexChart>>('Chart');
+
+const customDateField = ref<string | null>(null);
+const customNumberFields = ref<NumberField[]>([]);
+const mappingDateArray = ref<string[]>([]);
+const mappingNumberArray = ref<string[]>([]);
+const newCustomDateField = ref<string | null>(null);
+const newCustomNumberField = ref<string | null>(null);
+const chartOptions = reactive<ChartOptions>({
+  // Axes, grille et info-bulles suivent le thème (ADR-0056) ; le fond
+  // reste celui de la carte, les séries gardent leurs couleurs.
+  chart: {
+    background: 'transparent',
+    type: 'line',
+  },
+  colors: [],
+  theme: {
+    mode: isDark.value ? 'dark' : 'light',
+  },
+  xaxis: {
+    categories: [],
+  },
+});
+const series = ref<{ name: string; data: (number | null)[] }[]>([]);
+
+const isChartViewAvailable = computed((): boolean =>
+  Boolean(
+    (mappingDateArray.value.length || customDateField.value) &&
+    (mappingNumberArray.value.length || customNumberFields.value.length),
+  ),
+);
+
+function readConfig(): Record<
+  string,
+  Record<string, { date?: string | null; numbers?: NumberField[] }>
+> {
+  return JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}');
+}
+
+watch(isDark, (value) => {
+  chartOptions.theme = { mode: value ? 'dark' : 'light' };
+  chart.value?.updateOptions({ theme: chartOptions.theme });
+});
+
+// `currentRoute` est ce que lisait le watcher `$route` : il change à chaque navigation.
+watch(router.currentRoute, () => {
+  const columnsConfig = readConfig();
+
+  customDateField.value = null;
+  if (columnsConfig[props.index] && columnsConfig[props.index][props.collection]) {
+    customDateField.value = columnsConfig[props.index][props.collection].date ?? null;
+  } else {
+    customDateField.value = null;
+  }
+
+  customNumberFields.value = [];
+  if (columnsConfig[props.index] && columnsConfig[props.index][props.collection]) {
+    customNumberFields.value = columnsConfig[props.index][props.collection].numbers || [];
+  } else {
+    customNumberFields.value = [];
+  }
+});
+
+watch(
+  () => props.mapping,
+  () => {
+    mappingNumberArray.value = buildAttributeList(props.mapping, (type) =>
       ES_NUMBER_DATA_TYPE.includes(type),
     );
-
-    if (this.customNumberFields.length) {
-      for (const attr of this.customNumberFields) {
-        this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr.name), 1);
+    if (customNumberFields.value) {
+      for (const attr of customNumberFields.value) {
+        mappingNumberArray.value.splice(mappingNumberArray.value.indexOf(attr.name), 1);
       }
-      this.mappingNumberArray.sort();
-    } else {
-      this.$emit('changeDisplayPagination', false);
+      mappingNumberArray.value.sort();
     }
   },
-  methods: {
-    updateChart() {
-      if (!this.customNumberFields.length) {
-        return;
-      }
+);
 
-      /*
-       * Une recherche renvoie des `{ _id, _source }` : les champs sont sous
-       * `_source`. Lus sur le document lui-même, ils valaient tous `null`, et
-       * aucun point n'était tracé — depuis la v4 (G-101).
-       *
-       * Les abscisses sont construites une fois, pour toutes les séries : elles
-       * s'ajoutaient auparavant à chaque série et à chaque mise à jour.
-       */
-      const points = [];
-      for (const doc of this.documents) {
-        const date = dateFromTimestamp(_.get(doc._source, this.customDateField, null));
-
-        if (date !== null) {
-          points.push({ date, source: doc._source });
-        }
-      }
-
-      this.chartOptions.colors = this.customNumberFields.map((field) => field.color);
-      this.chartOptions.xaxis.categories = points.map(({ date }) => date.toLocaleString('en-GB'));
-
-      if (this.$refs.Chart) {
-        this.$refs.Chart.updateOptions(this.chartOptions);
-      }
-      this.series = this.customNumberFields.map((field) => ({
-        name: field.name,
-        data: points.map(({ source }) => _.get(source, field.name, null)),
-      }));
-    },
-    saveToLocalStorage() {
-      if (this.index && this.collection) {
-        const config = JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}');
-        if (!config[this.index]) {
-          config[this.index] = {};
-        }
-        if (!config[this.index][this.collection]) {
-          config[this.index][this.collection] = {};
-        }
-        config[this.index][this.collection].date = this.customDateField;
-        config[this.index][this.collection].numbers = this.customNumberFields;
-        localStorage.setItem('timeSeriesViewConfig', JSON.stringify(config));
-      }
-    },
-    buildAttributeList(mapping, condition = () => true, path = []) {
-      let attributes = [];
-
-      for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (Object.prototype.hasOwnProperty.call(attributeValue, 'properties')) {
-          attributes = attributes.concat(
-            this.buildAttributeList(
-              attributeValue.properties,
-              condition,
-              path.concat(attributeName),
-            ),
-          );
-        } else if (
-          Object.prototype.hasOwnProperty.call(attributeValue, 'type') &&
-          condition(attributeValue.type)
-        ) {
-          attributes = attributes.concat(path.concat(attributeName).join('.'));
-        }
-      }
-
-      return attributes;
-    },
-    updateColor(data) {
-      this.customNumberFields[data.index].color = data.color;
-      this.saveToLocalStorage();
-      this.updateChart();
-    },
-    addDateField(attr) {
-      this.newCustomDateField = attr;
-      if (this.newCustomDateField) {
-        this.customDateField = this.newCustomDateField;
-        this.newCustomDateField = null;
-        this.saveToLocalStorage();
-        this.updateChart();
-      }
-    },
-    addNumberField(item) {
-      if (item.name) {
-        this.customNumberFields.push({ name: item.name, color: item.color });
-        this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(item.name), 1);
-        this.saveToLocalStorage();
-        this.updateChart();
-      }
-    },
-    removeItem(index) {
-      this.mappingNumberArray.push(this.customNumberFields[index].name);
-      this.customNumberFields.splice(index, 1);
-      this.saveToLocalStorage();
-      if (this.customNumberFields.length) {
-        this.updateChart();
-      }
-    },
+watch(
+  customNumberFields,
+  (value) => {
+    if (value.length) {
+      emit('changeDisplayPagination', true);
+      updateChart();
+    } else {
+      emit('changeDisplayPagination', false);
+    }
   },
-};
+  /* `addNumberField` et `removeItem` mutent le tableau sur place — voir G-058. */
+  { deep: true },
+);
+
+watch(
+  () => props.documents,
+  () => {
+    updateChart();
+  },
+);
+
+watch(isChartViewAvailable, (value) => {
+  if (!value) {
+    emit('changeDisplayPagination', false);
+    return;
+  }
+  if (!customNumberFields.value.length) {
+    emit('changeDisplayPagination', false);
+    return;
+  }
+  emit('changeDisplayPagination', true);
+});
+
+onMounted(() => {
+  const columnsConfig = readConfig();
+
+  if (columnsConfig[props.index] && columnsConfig[props.index][props.collection]) {
+    customDateField.value = columnsConfig[props.index][props.collection].date ?? null;
+  }
+  mappingDateArray.value = buildAttributeList(props.mapping, (type) => type === 'date');
+
+  if (columnsConfig[props.index] && columnsConfig[props.index][props.collection]) {
+    customNumberFields.value = columnsConfig[props.index][props.collection].numbers || [];
+  }
+  mappingNumberArray.value = buildAttributeList(props.mapping, (type) =>
+    ES_NUMBER_DATA_TYPE.includes(type),
+  );
+
+  if (customNumberFields.value.length) {
+    for (const attr of customNumberFields.value) {
+      mappingNumberArray.value.splice(mappingNumberArray.value.indexOf(attr.name), 1);
+    }
+    mappingNumberArray.value.sort();
+  } else {
+    emit('changeDisplayPagination', false);
+  }
+});
+
+function updateChart(): void {
+  if (!customNumberFields.value.length) {
+    return;
+  }
+
+  /*
+   * Une recherche renvoie des `{ _id, _source }` : les champs sont sous
+   * `_source`. Lus sur le document lui-même, ils valaient tous `null`, et
+   * aucun point n'était tracé — depuis la v4 (G-101).
+   *
+   * Les abscisses sont construites une fois, pour toutes les séries : elles
+   * s'ajoutaient auparavant à chaque série et à chaque mise à jour.
+   */
+  const points: { date: Date; source: Record<string, unknown> }[] = [];
+  for (const doc of props.documents) {
+    const date = dateFromTimestamp(_.get(doc._source, customDateField.value ?? '', null));
+
+    if (date !== null) {
+      points.push({ date, source: doc._source });
+    }
+  }
+
+  chartOptions.colors = customNumberFields.value.map((field) => field.color);
+  chartOptions.xaxis.categories = points.map(({ date }) => date.toLocaleString('en-GB'));
+
+  if (chart.value) {
+    chart.value.updateOptions(chartOptions);
+  }
+  series.value = customNumberFields.value.map((field) => ({
+    name: field.name,
+    data: points.map(({ source }) => toChartValue(_.get(source, field.name, null))),
+  }));
+}
+
+function saveToLocalStorage(): void {
+  if (props.index && props.collection) {
+    const config = readConfig();
+    if (!config[props.index]) {
+      config[props.index] = {};
+    }
+    if (!config[props.index][props.collection]) {
+      config[props.index][props.collection] = {};
+    }
+    config[props.index][props.collection].date = customDateField.value;
+    config[props.index][props.collection].numbers = customNumberFields.value;
+    localStorage.setItem('timeSeriesViewConfig', JSON.stringify(config));
+  }
+}
+
+function buildAttributeList(
+  mapping: object,
+  condition: (type: string) => boolean = () => true,
+  path: string[] = [],
+): string[] {
+  let attributes: string[] = [];
+
+  for (const [attributeName, attributeValue] of Object.entries(mapping)) {
+    if (Object.prototype.hasOwnProperty.call(attributeValue, 'properties')) {
+      attributes = attributes.concat(
+        buildAttributeList(attributeValue.properties, condition, path.concat(attributeName)),
+      );
+    } else if (
+      Object.prototype.hasOwnProperty.call(attributeValue, 'type') &&
+      condition(attributeValue.type)
+    ) {
+      attributes = attributes.concat(path.concat(attributeName).join('.'));
+    }
+  }
+
+  return attributes;
+}
+
+function updateColor(data: { color: string; index: number }): void {
+  customNumberFields.value[data.index].color = data.color;
+  saveToLocalStorage();
+  updateChart();
+}
+
+function addDateField(attr: unknown): void {
+  newCustomDateField.value = typeof attr === 'string' ? attr : null;
+  if (newCustomDateField.value) {
+    customDateField.value = newCustomDateField.value;
+    newCustomDateField.value = null;
+    saveToLocalStorage();
+    updateChart();
+  }
+}
+
+function addNumberField(item: NumberField): void {
+  if (item.name) {
+    customNumberFields.value.push({ name: item.name, color: item.color });
+    mappingNumberArray.value.splice(mappingNumberArray.value.indexOf(item.name), 1);
+    saveToLocalStorage();
+    updateChart();
+  }
+}
+
+function removeItem(index: number): void {
+  mappingNumberArray.value.push(customNumberFields.value[index].name);
+  customNumberFields.value.splice(index, 1);
+  saveToLocalStorage();
+  if (customNumberFields.value.length) {
+    updateChart();
+  }
+}
 </script>

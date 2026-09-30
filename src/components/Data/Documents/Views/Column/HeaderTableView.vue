@@ -17,26 +17,19 @@
   </TableHead>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
+<script setup lang="ts">
 import { TableHead } from '@/components/ui/table';
 
-export default defineComponent({
-  name: 'HeaderTableView',
-  components: {
-    TableHead,
-  },
-  props: {
-    displayDragIcon: {
-      default: false,
-      type: Boolean,
-    },
-    field: {
-      default: '',
-      type: String,
-    },
-  },
-  emits: ['mouseenter', 'mouseleave'],
-});
+withDefaults(
+  defineProps<{
+    displayDragIcon?: boolean;
+    field?: string;
+  }>(),
+  { displayDragIcon: false, field: '' },
+);
+
+defineEmits<{
+  (e: 'mouseenter'): void;
+  (e: 'mouseleave'): void;
+}>();
 </script>

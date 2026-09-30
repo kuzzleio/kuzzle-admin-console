@@ -924,7 +924,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 9. `Data` : `Indexes`, `Leftnav`, racine
   - [x] 10. `Data` : `Collections`, `Realtime`
   - [x] 11. `Common/Filters`
-  - [ ] 12. `Data/Documents`, les vues
+  - [x] 12. `Data/Documents`, les vues
   - [ ] 13. `Data/Documents`, le reste
   - [ ] 14. Retrait des plugins `$toast` / `$log`, verrou ESLint
 
@@ -4116,6 +4116,24 @@ Gabarit à copier :
   la forme change ; un faux positif est le signe qu'il ne lit plus ce qu'il
   croit lire.
 - **Ref** : [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md), [G-049](#g-049).
+
+#### G-124 — `<component :is>` ne résout plus une chaîne vers un import local
+
+- **Contexte** : lot 12 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/DocumentForm.vue`.
+- **Symptôme** : aucun à la compilation. Converti tel quel, le formulaire
+  rendrait `<datetimeforminput>` et `<jsonforminput>`, des balises inconnues et
+  vides, au lieu des champs date et JSON : la spec `formView` ne trouverait
+  plus `datePickerInput`.
+- **Cause** : `formSchema.ts` nomme ces champs par une chaîne
+  (`'DateTimeFormInput'`), que `:is` résolvait parmi les `components` de
+  l'Options API. En `<script setup>`, un import n'est pas enregistré sous un
+  nom : `:is` ne résout une chaîne que parmi les composants globaux.
+- **Solution** : une table `customFields` associe le nom au composant importé,
+  et `:is` reçoit le composant.
+- **À retenir** : chercher `:is=` à chaque conversion ; une valeur qui est une
+  chaîne passe par une table.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

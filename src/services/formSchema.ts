@@ -124,7 +124,7 @@ class FormSchemaService {
   }
 }
 
-interface FormField {
+export interface FormField {
   type: string;
   inputType: string;
   label: string;
@@ -135,7 +135,7 @@ interface FormField {
   };
 }
 
-interface Schema {
+export interface Schema {
   fields: FormField[];
   unavailable: string[];
 }

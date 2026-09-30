@@ -1,5 +1,9 @@
 <template>
-  <TableCell :id="`col-${rowId}-${fieldName}`" class="ColumnViewTableCell cell realtime-highlight">
+  <TableCell
+    :id="`col-${rowId}-${fieldName}`"
+    ref="cell"
+    class="ColumnViewTableCell cell realtime-highlight"
+  >
     <template v-if="data === null">
       <code>null</code>
     </template>
@@ -26,64 +30,52 @@
   </TableCell>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, useTemplateRef, watch } from 'vue';
 import isObject from 'lodash/isObject';
 
 import { Badge } from '@/components/ui/badge';
 import { TableCell } from '@/components/ui/table';
 import { dateFromTimestamp } from '@/utils';
 
-export default {
-  name: 'ColumnViewTableCell',
-  components: {
-    Badge,
-    TableCell,
+const props = withDefaults(
+  defineProps<{
+    autoSync?: boolean;
+    data: unknown;
+    fieldName: string;
+    fieldType?: string;
+    rowId: string;
+  }>(),
+  { fieldType: undefined },
+);
+
+// `$el` du composant : la cellule `<td>` que rend `TableCell`.
+const cell = useTemplateRef<InstanceType<typeof TableCell>>('cell');
+
+const formattedData = computed((): unknown => {
+  const { data } = props;
+  if (
+    data &&
+    props.fieldType === 'date' &&
+    (typeof data === 'string' || typeof data === 'number')
+  ) {
+    const dateObj = dateFromTimestamp(data);
+    if (dateObj != null) {
+      return dateObj.toLocaleString('en-GB');
+    }
+  }
+  return data;
+});
+
+watch(
+  () => props.data,
+  () => {
+    const el = cell.value?.$el;
+    if (!props.autoSync || !(el instanceof HTMLElement)) {
+      return;
+    }
+    el.classList.add('changed');
+    setTimeout(() => el.classList.remove('changed'), 200);
   },
-  props: {
-    autoSync: Boolean,
-    data: {
-      required: true,
-    },
-    fieldName: {
-      type: String,
-      required: true,
-    },
-    rowId: {
-      type: String,
-      required: true,
-    },
-    fieldType: {
-      type: String,
-    },
-    notification: Object,
-  },
-  computed: {
-    formattedData() {
-      if (
-        this.data &&
-        this.fieldType === 'date' &&
-        !Array.isArray(this.data) &&
-        !isObject(this.data)
-      ) {
-        const dateObj = dateFromTimestamp(this.data);
-        if (dateObj != null) {
-          return dateObj.toLocaleString('en-GB');
-        }
-      }
-      return this.data;
-    },
-  },
-  watch: {
-    data() {
-      if (!this.autoSync) {
-        return;
-      }
-      this.$el.classList.add('changed');
-      setTimeout(() => this.$el.classList.remove('changed'), 200);
-    },
-  },
-  methods: {
-    isObject,
-  },
-};
+);
 </script>

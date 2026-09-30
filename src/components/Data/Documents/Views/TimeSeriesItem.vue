@@ -13,7 +13,7 @@
         type="color"
         :value="newColor"
         @change="commitColor"
-        @input="newColor = $event.target.value"
+        @input="onColorInput"
       />
     </div>
     <div class="flex-1">
@@ -42,13 +42,8 @@
     </div>
   </div>
 </template>
-<script>
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-
-import Autocomplete from '@/components/Common/Autocomplete.vue';
-
-const getRandomColor = () => {
+<script lang="ts">
+function getRandomColor(): string {
   const letters = '0123456789ABCDEF';
   let color = '#';
 
@@ -56,67 +51,75 @@ const getRandomColor = () => {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
-};
+}
 
-export default {
-  name: 'TimeSeriesItem',
-  components: {
-    Autocomplete,
-    Button,
-    Input,
+// Tirée une fois au chargement du module, comme le `default` de l'Options API :
+// tous les éléments sans `color` partent de la même teinte. Hors du
+// `<script setup>`, car `withDefaults` ne peut pas lire ses variables (G-107).
+const DEFAULT_COLOR = getRandomColor();
+</script>
+
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
+import Autocomplete from '@/components/Common/Autocomplete.vue';
+
+const props = withDefaults(
+  defineProps<{
+    color?: string;
+    index?: number;
+    isUpdatable?: boolean;
+    items?: string[];
+    newValue?: string;
+    value?: string;
+  }>(),
+  {
+    color: DEFAULT_COLOR,
+    index: 0,
+    isUpdatable: false,
+    items: () => [],
+    newValue: '',
+    value: '',
   },
-  props: {
-    value: {
-      type: String,
-      default: '',
-    },
-    color: {
-      type: String,
-      default: getRandomColor(),
-    },
-    isUpdatable: {
-      type: Boolean,
-      default: false,
-    },
-    items: {
-      type: Array,
-      default: () => {
-        return [];
-      },
-    },
-    newValue: {
-      type: String,
-      default: '',
-    },
-    index: {
-      type: Number,
-      default: 0,
-    },
-  },
-  data() {
-    return {
-      newColor: this.color,
-    };
-  },
-  mounted() {
-    this.newColor = this.color;
-  },
-  methods: {
-    /*
-     * `input` suit le curseur pendant qu'on cherche la teinte et ne met à jour
-     * que la pastille ; `change` n'arrive qu'à la fermeture du sélecteur, et
-     * c'est lui seul qui redessine le graphique et écrit dans le localStorage.
-     */
-    commitColor(evt) {
-      this.newColor = evt.target.value;
-      if (this.isUpdatable) {
-        this.$emit('update-color', { color: this.newColor, index: this.index });
-      }
-    },
-    addItem(attr) {
-      this.$emit('autocomplete::change', { name: attr, color: this.newColor });
-      this.newColor = getRandomColor();
-    },
-  },
-};
+);
+
+const emit = defineEmits<{
+  (e: 'autocomplete::change', item: { name: string; color: string }): void;
+  (e: 'timeseriesitem::remove', index: number): void;
+  (e: 'update-color', payload: { color: string; index: number }): void;
+}>();
+
+const newColor = ref(props.color);
+
+onMounted(() => {
+  newColor.value = props.color;
+});
+
+function colorValue(evt: Event): string {
+  return evt.target instanceof HTMLInputElement ? evt.target.value : newColor.value;
+}
+
+function onColorInput(evt: Event): void {
+  newColor.value = colorValue(evt);
+}
+
+/*
+ * `input` suit le curseur pendant qu'on cherche la teinte et ne met à jour
+ * que la pastille ; `change` n'arrive qu'à la fermeture du sélecteur, et
+ * c'est lui seul qui redessine le graphique et écrit dans le localStorage.
+ */
+function commitColor(evt: Event): void {
+  newColor.value = colorValue(evt);
+  if (props.isUpdatable) {
+    emit('update-color', { color: newColor.value, index: props.index });
+  }
+}
+
+function addItem(attr: string): void {
+  emit('autocomplete::change', { name: attr, color: newColor.value });
+  newColor.value = getRandomColor();
+}
 </script>
