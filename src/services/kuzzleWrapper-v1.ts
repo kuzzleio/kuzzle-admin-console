@@ -210,7 +210,7 @@ export class KuzzleWrapperV1 {
     };
   }
 
-  basicSearchToESQuery(groups = [[]], mappingAttrs: MappingAttributes): object {
+  basicSearchToESQuery(groups: object[][] = [[]], mappingAttrs: MappingAttributes): object {
     const bool: any = {};
 
     bool.should = groups.map((filters) => {

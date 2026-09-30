@@ -66,8 +66,8 @@
   </li>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { ref } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -79,76 +79,70 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import * as filterManager from '@/services/filterManager';
-import { useKuzzleStore } from '@/stores';
+import type { BasicFilterGroups, FilterSorting, SavedFilter } from './types';
 
-export default {
-  name: 'FavoriteFilterItem',
-  components: {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    Input,
-  },
-  props: {
-    index: String,
-    collection: String,
-    favorite: Object,
-    id: Number,
-  },
-  data() {
-    return {
-      editOpen: false,
-      expanded: false,
-      oldName: this.favorite.name,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper']),
-  },
-  methods: {
-    cancelChange() {
-      this.favorite.name = this.oldName;
-    },
-    openModal() {
-      this.editOpen = true;
-    },
-    onDialogToggle(open) {
-      if (!open) {
-        this.cancelChange();
-      }
-      this.editOpen = open;
-    },
-    cancelAndClose() {
-      this.cancelChange();
-      this.editOpen = false;
-    },
-    deleteFavorite() {
-      this.$emit('favoris-delete', this.favorite.id);
-    },
-    useFilter() {
-      if (this.favorite.active === 'raw') {
-        this.$parent.$emit('filter-raw-submitted', this.favorite.raw, true);
-      }
-      if (this.favorite.active === 'basic') {
-        this.$parent.$emit(
-          'filter-basic-submitted',
-          this.favorite.basic,
-          this.favorite.sorting,
-          true,
-        );
-      }
-    },
-    getFilter() {
-      const loadedFilter = Object.assign(new filterManager.Filter(), this.favorite);
-      if (loadedFilter.active === 'basic') return loadedFilter.basic;
-      if (loadedFilter.active === 'raw') return loadedFilter.raw;
-    },
-    toggleCollapse() {
-      this.expanded = !this.expanded;
-    },
-  },
-};
+const props = defineProps<{
+  collection?: string;
+  favorite: SavedFilter;
+  id: number;
+  index?: string;
+}>();
+
+const emit = defineEmits<{
+  (e: 'favoris-delete', id: number): void;
+  (
+    e: 'filter-basic-submitted',
+    filter: BasicFilterGroups | null | undefined,
+    sorting: FilterSorting | null | undefined,
+  ): void;
+  (e: 'filter-raw-submitted', filter: Record<string, unknown> | null | undefined): void;
+}>();
+
+const editOpen = ref(false);
+const expanded = ref(false);
+const oldName = props.favorite.name;
+
+function cancelChange(): void {
+  props.favorite.name = oldName;
+}
+
+function openModal(): void {
+  editOpen.value = true;
+}
+
+function onDialogToggle(open: boolean): void {
+  if (!open) {
+    cancelChange();
+  }
+  editOpen.value = open;
+}
+
+function cancelAndClose(): void {
+  cancelChange();
+  editOpen.value = false;
+}
+
+function deleteFavorite(): void {
+  emit('favoris-delete', props.favorite.id);
+}
+
+function useFilter(): void {
+  if (props.favorite.active === 'raw') {
+    emit('filter-raw-submitted', props.favorite.raw);
+  }
+  if (props.favorite.active === 'basic') {
+    emit('filter-basic-submitted', props.favorite.basic, props.favorite.sorting);
+  }
+}
+
+function getFilter(): SavedFilter['basic'] | SavedFilter['raw'] | undefined {
+  const loadedFilter: SavedFilter = Object.assign(new filterManager.Filter(), props.favorite);
+  if (loadedFilter.active === 'basic') return loadedFilter.basic;
+  if (loadedFilter.active === 'raw') return loadedFilter.raw;
+  return undefined;
+}
+
+function toggleCollapse(): void {
+  expanded.value = !expanded.value;
+}
 </script>

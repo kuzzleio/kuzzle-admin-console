@@ -28,7 +28,6 @@
           :advanced-filters-visible="advancedFiltersVisible"
           :advanced-query-label="advancedQueryLabel"
           :complex-filter-active="complexFilterActive"
-          :enabled="quickFilterEnabled"
           :placeholder="quickFilterPlaceholder"
           :submit-on-type="quickFilterSubmitOnType"
           :value="quickFilter"
@@ -112,7 +111,6 @@
           <raw-filter
             :action-buttons-visible="actionButtonsVisible"
             :current-filter="currentFilter"
-            :sorting-enabled="sortingEnabled"
             @filter-submitted="onRawFilterSubmitted"
             @reset="handleReset"
           />
@@ -148,17 +146,21 @@
   </Card>
 </template>
 
-<script>
-import {
-  NO_ACTIVE,
-  ACTIVE_QUICK,
-  ACTIVE_BASIC,
-  ACTIVE_RAW,
-  Filter,
-} from '../../../services/filterManager';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  ACTIVE_BASIC,
+  ACTIVE_QUICK,
+  ACTIVE_RAW,
+  Filter,
+  NO_ACTIVE,
+} from '@/services/filterManager';
+import type { MappingAttributes } from '@/services/mappingHelpers';
+import type { BasicFilterGroups, FilterSorting, SavedFilter, SearchFilter } from './types';
 
 import BasicFilter from './BasicFilter.vue';
 import FavoriteFilters from './FavoriteFilters.vue';
@@ -166,200 +168,134 @@ import HistoryFilter from './HistoryFilter.vue';
 import QuickFilter from './QuickFilter.vue';
 import RawFilter from './RawFilter.vue';
 
-export default {
-  name: 'Filters',
-  components: {
-    BasicFilter,
-    Button,
-    Card,
-    FavoriteFilters,
-    HistoryFilter,
-    QuickFilter,
-    RawFilter,
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
+const props = withDefaults(
+  defineProps<{
+    actionButtonsVisible?: boolean;
+    advancedQueryLabel?: string;
+    availableOperands: Record<string, string>;
+    collection?: string;
+    currentFilter: SearchFilter;
+    index?: string;
+    mappingAttributes: MappingAttributes;
+    quickFilterPlaceholder?: string;
+    quickFilterSubmitOnType?: boolean;
+    sortingEnabled?: boolean;
+  }>(),
+  {
+    actionButtonsVisible: true,
+    advancedQueryLabel: 'Advanced query...',
+    collection: undefined,
+    index: undefined,
+    quickFilterPlaceholder: undefined,
+    quickFilterSubmitOnType: true,
+    sortingEnabled: true,
   },
-  props: {
-    index: {
-      type: String,
-      required: true,
-    },
-    collection: {
-      type: String,
-      required: true,
-    },
-    actionButtonsVisible: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    advancedQueryLabel: {
-      type: String,
-      required: false,
-      default: 'Advanced query...',
-    },
-    availableOperands: {
-      type: Object,
-      required: true,
-    },
-    mappingAttributes: {
-      type: Object,
-      required: true,
-    },
-    currentFilter: Object,
-    formatFromBasicSearch: Function,
-    quickFilterEnabled: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    quickFilterPlaceholder: {
-      type: String,
-    },
-    quickFilterSubmitOnType: {
-      type: Boolean,
-      default: true,
-    },
-    sortingEnabled: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    submitButtonLabel: {
-      type: String,
-      required: false,
-      default: 'Search',
-    },
-    toggleAutoComplete: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  emits: ['enter-pressed', 'filters-updated', 'submit'],
-  data() {
-    return {
-      advancedFiltersVisible: false,
-      complexFiltersSelectedTab: ACTIVE_BASIC,
-      isFullscreen: false,
-      jsonInvalid: false,
-      objectTabActive: null,
-      refreshace: false,
-    };
-  },
-  computed: {
-    complexFilterActive() {
-      return (
-        (this.currentFilter.active === ACTIVE_BASIC && this.currentFilter.basic !== null) ||
-        (this.currentFilter.active === ACTIVE_RAW && this.currentFilter.raw !== null)
-      );
-    },
-    quickFilter: {
-      get() {
-        if (!this.currentFilter) {
-          return null;
-        }
+);
 
-        return this.currentFilter.quick;
-      },
-    },
-    basicFilter() {
-      if (!this.currentFilter) {
-        return null;
-      }
-      return this.currentFilter.basic;
-    },
-    rawFilter() {
-      if (!this.currentFilter) {
-        return null;
-      }
-      return this.currentFilter.raw;
-    },
-    sorting() {
-      return this.currentFilter.sorting;
-    },
-  },
-  methods: {
-    setObjectTabActive(tab) {
-      this.objectTabActive = tab;
-      this.refreshace = !this.refreshace;
-    },
-    onQuickFilterUpdated(term) {
-      this.handleFiltersUpdated({
-        ...this.currentFilter,
-        quick: term,
-      });
-    },
-    onQuickFilterSubmitted(term) {
-      this.handleSubmit({
-        ...this.currentFilter,
-        active: ACTIVE_QUICK,
-        quick: term,
-      });
-    },
-    onBasicFilterSubmitted(filter, sorting) {
-      const newFilter = new Filter();
-      newFilter.basic = filter;
-      newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE;
-      newFilter.sorting = sorting;
-      this.handleSubmit(newFilter);
-    },
+/*
+ * `enter-pressed` n'est plus émis depuis #922, qui a retiré le champ qui le
+ * déclenchait ; il reste déclaré tant que `Documents/Page.vue` l'écoute, sans
+ * quoi l'écouteur retomberait sur la racine (G-049). Il part avec lui au lot 12.
+ */
+const emit = defineEmits<{
+  (e: 'enter-pressed'): void;
+  (e: 'filters-updated', filter: SearchFilter): void;
+  (e: 'submit', saveToHistory: boolean): void;
+}>();
 
-    onRawFilterSubmitted(filter) {
-      this.advancedFiltersVisible = false;
-      this.handleSubmit(
-        Object.assign(this.currentFilter, {
-          active: filter ? ACTIVE_RAW : NO_ACTIVE,
-          raw: filter,
-        }),
-      );
-    },
-    onSubmitFromHistory(filter) {
-      this.advancedFiltersVisible = false;
-      this.handleSubmit(Object.assign(this.currentFilter, filter), false);
-    },
-    onGenerateRawFilter(filter) {
-      this.handleFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          active: filter ? ACTIVE_RAW : NO_ACTIVE,
-          raw: filter,
-        }),
-      );
-      this.complexFiltersSelectedTab = 'raw';
-    },
-    onRefresh() {
-      this.submit(
-        Object.assign(this.currentFilter, {
-          from: 0,
-        }),
-      );
-    },
-    handleReset() {
-      this.handleSubmit(new Filter());
-    },
-    handleFiltersUpdated(newFilters) {
-      this.$emit('filters-updated', newFilters);
-    },
-    handleSubmit(filter, saveToHistory = true) {
-      this.handleFiltersUpdated(
-        Object.assign(filter, {
-          from: 0,
-        }),
-      );
-      this.$emit('submit', saveToHistory);
-      this.close();
-    },
-    handleEnterPressed() {
-      this.$emit('enter-pressed');
-    },
-    toggleFullscreen() {
-      this.isFullscreen = !this.isFullscreen;
-    },
-    close() {
-      this.advancedFiltersVisible = false;
-      this.isFullscreen = false;
-    },
-  },
-};
+const advancedFiltersVisible = ref(false);
+const complexFiltersSelectedTab = ref<string | number>(ACTIVE_BASIC);
+const isFullscreen = ref(false);
+
+const complexFilterActive = computed(
+  (): boolean =>
+    (props.currentFilter.active === ACTIVE_BASIC && props.currentFilter.basic !== null) ||
+    (props.currentFilter.active === ACTIVE_RAW && props.currentFilter.raw !== null),
+);
+
+const quickFilter = computed((): string | undefined => props.currentFilter?.quick);
+
+const basicFilter = computed(
+  (): BasicFilterGroups | null | undefined => props.currentFilter?.basic,
+);
+
+const sorting = computed((): FilterSorting | null | undefined => props.currentFilter.sorting);
+
+function onQuickFilterUpdated(term: string | number): void {
+  handleFiltersUpdated({
+    ...props.currentFilter,
+    quick: String(term),
+  });
+}
+
+function onQuickFilterSubmitted(term: string | number | undefined): void {
+  handleSubmit({
+    ...props.currentFilter,
+    active: ACTIVE_QUICK,
+    quick: term === undefined ? undefined : String(term),
+  });
+}
+
+function onBasicFilterSubmitted(
+  filter: BasicFilterGroups | null | undefined,
+  sorting?: FilterSorting | null,
+): void {
+  const newFilter: SearchFilter = new Filter();
+  newFilter.basic = filter;
+  newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE;
+  newFilter.sorting = sorting;
+  handleSubmit(newFilter);
+}
+
+function onRawFilterSubmitted(filter: Record<string, unknown> | null | undefined): void {
+  advancedFiltersVisible.value = false;
+  handleSubmit(
+    Object.assign(props.currentFilter, {
+      active: filter ? ACTIVE_RAW : NO_ACTIVE,
+      raw: filter,
+    }),
+  );
+}
+
+function onSubmitFromHistory(filter: SavedFilter): void {
+  advancedFiltersVisible.value = false;
+  handleSubmit(Object.assign(props.currentFilter, filter), false);
+}
+
+function onGenerateRawFilter(filter: object): void {
+  handleFiltersUpdated(
+    Object.assign(props.currentFilter, {
+      active: filter ? ACTIVE_RAW : NO_ACTIVE,
+      raw: filter,
+    }),
+  );
+  complexFiltersSelectedTab.value = 'raw';
+}
+
+function handleReset(): void {
+  handleSubmit(new Filter());
+}
+
+function handleFiltersUpdated(newFilters: SearchFilter): void {
+  emit('filters-updated', newFilters);
+}
+
+function handleSubmit(filter: SearchFilter, saveToHistory = true): void {
+  handleFiltersUpdated(
+    Object.assign(filter, {
+      from: 0,
+    }),
+  );
+  emit('submit', saveToHistory);
+  close();
+}
+
+function toggleFullscreen(): void {
+  isFullscreen.value = !isFullscreen.value;
+}
+
+function close(): void {
+  advancedFiltersVisible.value = false;
+  isFullscreen.value = false;
+}
 </script>
