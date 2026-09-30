@@ -381,7 +381,9 @@ export default {
       } else if (type === 'circle') {
         const radiusInMeter = this.getRadiusInMeter(radius);
         const bounds = L.latLng(latlng).toBounds(radiusInMeter * 2);
-        this.map.fitBounds(bounds, 14);
+        // Le zoom maximal passe par les options : un nombre en second argument
+        // était ignoré, et un petit cercle zoomait au maximum.
+        this.map.fitBounds(bounds, { maxZoom: 14 });
       }
     },
     closeDocument() {
