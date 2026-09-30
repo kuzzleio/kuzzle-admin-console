@@ -15,58 +15,54 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 
-import PageNotAllowed from '../../Common/PageNotAllowed.vue';
+import { useToast } from '@/composables/useToast';
+import { caught } from '@/lib/errors';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
 
+import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';
 import CreateOrUpdate from './CreateOrUpdate.vue';
 
-export default {
-  name: 'CollectionCreate',
-  components: {
-    CreateOrUpdate,
-    PageNotAllowed,
-  },
-  props: {
-    indexName: String,
-  },
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canCreateCollection']),
-    hasRights() {
-      return this.canCreateCollection(this.index.name);
-    },
-    index() {
-      return this.storageIndexStore.getOneIndex(this.indexName);
-    },
-  },
-  methods: {
-    async create(payload) {
-      try {
-        await this.storageIndexStore.createCollection({
-          index: this.index,
-          name: payload.name,
-          mapping: payload.mapping,
-        });
+const props = defineProps<{ indexName: string }>();
 
-        this.$router.push({
-          name: 'Collections',
-          params: { indexName: this.index.name },
-        });
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while creating the collection.',
-          error.message,
-        );
-      }
-    },
-  },
-};
+const router = useRouter();
+const toast = useToast();
+const authStore = useAuthStore();
+const storageIndexStore = useStorageIndexStore();
+
+const index = computed(() => storageIndexStore.getOneIndex(props.indexName));
+
+// Lue seulement sous `v-if="index"`.
+const hasRights = computed((): boolean =>
+  index.value ? authStore.canCreateCollection(index.value.name) : false,
+);
+
+async function create(payload: { name: string; mapping: object }): Promise<void> {
+  if (!index.value) {
+    return;
+  }
+
+  try {
+    await storageIndexStore.createCollection({
+      index: index.value,
+      name: payload.name,
+      mapping: payload.mapping,
+    });
+
+    router.push({
+      name: 'Collections',
+      params: { indexName: index.value.name },
+    });
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while creating the collection.',
+      caught(error).message,
+    );
+  }
+}
 </script>

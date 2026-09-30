@@ -922,7 +922,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 7. `Security/Profiles`
   - [x] 8. `Security/Users`
   - [x] 9. `Data` : `Indexes`, `Leftnav`, racine
-  - [ ] 10. `Data` : `Collections`, `Realtime`
+  - [x] 10. `Data` : `Collections`, `Realtime`
   - [ ] 11. `Common/Filters`
   - [ ] 12. `Data/Documents`, les vues
   - [ ] 13. `Data/Documents`, le reste

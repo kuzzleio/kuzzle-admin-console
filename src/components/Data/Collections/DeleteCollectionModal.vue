@@ -1,5 +1,5 @@
 <template>
-  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+  <Dialog :open="open" @update:open="emit('update:open', $event)">
     <DialogContent class="max-w-2xl" @interact-outside.prevent>
       <DialogHeader>
         <DialogTitle>
@@ -41,8 +41,8 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -56,94 +56,76 @@ import {
 import { FormDescription, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { caught } from '@/lib/errors';
+import { logger } from '@/plugins/logger';
 import { useStorageIndexStore } from '@/stores';
 import type { Collection, Index } from '@/stores/types/storage-index';
 import { truncateName } from '@/utils';
 
-export default defineComponent({
-  name: 'DeleteCollectionModal',
-  components: {
-    Alert,
-    Button,
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    FormDescription,
-    FormItem,
-    Input,
-    Label,
-  },
-  // `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
-  props: {
-    collection: {
-      default: null,
-      type: Object as PropType<Collection | null>,
-    },
-    index: {
-      default: null,
-      type: Object as PropType<Index | null>,
-    },
-    open: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  data() {
-    return {
-      confirmation: '',
-      error: '',
-    };
-  },
-  computed: {
-    isConfirmationValid(): boolean {
-      return this.collection ? this.confirmation === this.collection.name : false;
-    },
-  },
-  watch: {
-    open(open: boolean) {
-      if (!open) {
-        this.resetForm();
-      }
-    },
-  },
-  methods: {
-    truncateName,
-    resetForm(): void {
-      this.confirmation = '';
-      this.error = '';
-    },
-    close(): void {
-      this.$emit('update:open', false);
-    },
-    onCancel(): void {
-      this.close();
-      this.$emit('cancel');
-    },
-    async performDelete(): Promise<void> {
-      if (!this.isConfirmationValid || !this.index || !this.collection) {
-        return;
-      }
+// `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
+const props = withDefaults(
+  defineProps<{
+    collection?: Collection | null;
+    index?: Index | null;
+    open?: boolean;
+  }>(),
+  { collection: null, index: null, open: false },
+);
 
-      try {
-        await this.storageIndexStore.deleteCollection({
-          index: this.index,
-          collection: this.collection,
-        });
+const emit = defineEmits<{
+  (e: 'cancel'): void;
+  (e: 'delete-successful'): void;
+  (e: 'update:open', open: boolean): void;
+}>();
 
-        this.close();
-        this.$emit('delete-successful');
-      } catch (err) {
-        this.$log.error(err);
-        this.error = (err as Error).message;
-      }
-    },
+const storageIndexStore = useStorageIndexStore();
+
+const confirmation = ref('');
+const error = ref('');
+
+const isConfirmationValid = computed((): boolean =>
+  props.collection ? confirmation.value === props.collection.name : false,
+);
+
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      resetForm();
+    }
   },
-});
+);
+
+function resetForm(): void {
+  confirmation.value = '';
+  error.value = '';
+}
+
+function close(): void {
+  emit('update:open', false);
+}
+
+function onCancel(): void {
+  close();
+  emit('cancel');
+}
+
+async function performDelete(): Promise<void> {
+  if (!isConfirmationValid.value || !props.index || !props.collection) {
+    return;
+  }
+
+  try {
+    await storageIndexStore.deleteCollection({
+      index: props.index,
+      collection: props.collection,
+    });
+
+    close();
+    emit('delete-successful');
+  } catch (err) {
+    logger.error(err);
+    error.value = caught(err).message;
+  }
+}
 </script>

@@ -17,14 +17,14 @@
           <DropdownMenuRadioItem
             data-cy="CollectionDropdown-list"
             value="list"
-            @select="$emit('list')"
+            @select="emit('list')"
           >
             List view
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem
             data-cy="CollectionDropdown-column"
             value="column"
-            @select="$emit('column')"
+            @select="emit('column')"
           >
             Column view
           </DropdownMenuRadioItem>
@@ -33,7 +33,7 @@
             :disabled="!mappingHasIntegerField"
             :title="mappingHasIntegerField ? '' : 'This collection has no numeric field to chart'"
             value="time-series"
-            @select="$emit('time-series')"
+            @select="emit('time-series')"
           >
             Chart view
           </DropdownMenuRadioItem>
@@ -42,7 +42,7 @@
             :disabled="!mappingHasGeoField"
             :title="mappingHasGeoField ? '' : 'This collection has no geographic field to map'"
             value="map"
-            @select="$emit('map')"
+            @select="emit('map')"
           >
             Map view
           </DropdownMenuRadioItem>
@@ -64,9 +64,8 @@
   </DropdownMenu>
 </template>
 
-<script lang="ts">
-import { defineComponent, markRaw, type PropType } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
 
@@ -84,67 +83,45 @@ import { useAuthStore } from '@/stores';
 
 type MappingAttributes = Record<string, { type?: string }>;
 
-export default defineComponent({
-  name: 'CollectionDropdownView',
-  components: {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuLabel,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuTrigger,
-  },
-  props: {
-    activeView: {
-      default: '',
-      type: String,
-    },
-    collection: {
-      default: '',
-      type: String,
-    },
-    index: {
-      default: '',
-      type: String,
-    },
-    mappingAttributes: {
-      default: null,
-      type: Object as PropType<MappingAttributes | null>,
-    },
-  },
-  data() {
-    return {
-      RouterLink: markRaw(RouterLink),
-      // Le composant passé à `as` n'a pas à être réactif. `markRaw` — que
-      // Vue 2.7 fournit — et non `Object.freeze` : Vue met en cache le
-      // constructeur sur les options du composant, et un objet gelé le lui
-      // interdit (G-032).
-      Button: markRaw(Button),
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canSubscribe']),
-    attributes(): MappingAttributes {
-      return this.mappingAttributes ?? {};
-    },
-    canSubscribeHere(): boolean {
-      return this.canSubscribe(this.index, this.collection);
-    },
-    mappingHasGeoField(): boolean {
-      return Object.values(this.attributes).some((attribute) =>
-        ['geo_point', 'geo_shape'].includes(attribute?.type ?? ''),
-      );
-    },
-    mappingHasIntegerField(): boolean {
-      return Object.values(this.attributes).some((attribute) => attribute?.type === 'integer');
-    },
-    watchRoute(): RouteLocationRaw {
-      return {
-        name: 'WatchCollection',
-        params: { collectionName: this.collection, indexName: this.index },
-      };
-    },
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    activeView?: string;
+    collection?: string;
+    index?: string;
+    mappingAttributes?: MappingAttributes | null;
+  }>(),
+  { activeView: '', collection: '', index: '', mappingAttributes: null },
+);
+
+const emit = defineEmits<{
+  (e: 'column'): void;
+  (e: 'list'): void;
+  (e: 'map'): void;
+  (e: 'time-series'): void;
+}>();
+
+const authStore = useAuthStore();
+
+const attributes = computed((): MappingAttributes => props.mappingAttributes ?? {});
+
+const canSubscribeHere = computed((): boolean =>
+  authStore.canSubscribe(props.index, props.collection),
+);
+
+const mappingHasGeoField = computed((): boolean =>
+  Object.values(attributes.value).some((attribute) =>
+    ['geo_point', 'geo_shape'].includes(attribute?.type ?? ''),
+  ),
+);
+
+const mappingHasIntegerField = computed((): boolean =>
+  Object.values(attributes.value).some((attribute) => attribute?.type === 'integer'),
+);
+
+const watchRoute = computed(
+  (): RouteLocationRaw => ({
+    name: 'WatchCollection',
+    params: { collectionName: props.collection, indexName: props.index },
+  }),
+);
 </script>

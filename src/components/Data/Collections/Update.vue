@@ -17,84 +17,64 @@
     </div>
   </div>
 </template>
-<script>
+<script setup lang="ts">
+import { computed } from 'vue';
 import { omit } from 'lodash';
-import { mapState } from 'pinia';
+import { useRouter } from 'vue-router';
 
-import PageNotAllowed from '../../Common/PageNotAllowed.vue';
+import { useToast } from '@/composables/useToast';
+import { caught } from '@/lib/errors';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
 
+import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';
 import CreateOrUpdate from './CreateOrUpdate.vue';
 
-export default {
-  name: 'CollectionUpdate',
-  components: {
-    CreateOrUpdate,
-    PageNotAllowed,
-  },
-  props: {
-    indexName: { type: String, required: true },
-    collectionName: { type: String, required: true },
-  },
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  data() {
-    return {
-      mapping: {},
-      realtimeOnly: false,
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canEditCollection']),
-    hasRights() {
-      return this.canEditCollection(this.indexName, this.collectionName);
-    },
-    index() {
-      return this.storageIndexStore.getOneIndex(this.indexName);
-    },
-    collection() {
-      return this.storageIndexStore.getOneCollection(this.index, this.collectionName);
-    },
-    fullMappings() {
-      const mappings = {
-        dynamic: this.collection.dynamic,
-        properties: omit(this.collection.mapping, '_kuzzle_info'),
-      };
+const props = defineProps<{
+  collectionName: string;
+  indexName: string;
+}>();
 
-      return mappings;
-    },
-    loading() {
-      return this.storageIndexStore.loadingCollections(this.index.name);
-    },
-  },
-  methods: {
-    async update(payload) {
-      this.error = '';
-      try {
-        await this.storageIndexStore.updateCollection({
-          index: this.index,
-          name: payload.name,
-          mapping: payload.mapping,
-        });
+const router = useRouter();
+const toast = useToast();
+const authStore = useAuthStore();
+const storageIndexStore = useStorageIndexStore();
 
-        this.$router.push({
-          name: 'Collections',
-          params: { indexName: this.index.name },
-        });
-      } catch (e) {
-        this.$log.error(e);
-        this.$toast.warning(
-          'Ooops! Something went wrong while updating the collection.',
-          e.message,
-        );
-      }
-    },
-    setError(payload) {
-      this.error = payload;
-    },
-  },
-};
+const hasRights = computed((): boolean =>
+  authStore.canEditCollection(props.indexName, props.collectionName),
+);
+
+const index = computed(() => storageIndexStore.getOneIndex(props.indexName));
+
+const collection = computed(() =>
+  index.value ? storageIndexStore.getOneCollection(index.value, props.collectionName) : undefined,
+);
+
+// Lue seulement sous `v-if="index && collection"`.
+const fullMappings = computed(() => ({
+  dynamic: collection.value?.dynamic,
+  properties: omit(collection.value?.mapping, '_kuzzle_info'),
+}));
+
+async function update(payload: { name: string; mapping: object }): Promise<void> {
+  if (!index.value) {
+    return;
+  }
+
+  try {
+    await storageIndexStore.updateCollection({
+      index: index.value,
+      name: payload.name,
+      mapping: payload.mapping,
+    });
+
+    router.push({
+      name: 'Collections',
+      params: { indexName: index.value.name },
+    });
+  } catch (e) {
+    logger.error(e);
+    toast.warning('Ooops! Something went wrong while updating the collection.', caught(e).message);
+  }
+}
 </script>

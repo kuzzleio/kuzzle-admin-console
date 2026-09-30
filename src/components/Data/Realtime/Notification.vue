@@ -21,21 +21,15 @@
   </Card>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import type { Notification } from 'kuzzle-sdk-v7';
 
 import { Card } from '@/components/ui/card';
 import { formatClockTime } from '@/lib/date';
 import { truncateName } from '@/utils';
 
 import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
-
-interface RealtimeNotification {
-  action?: string;
-  result?: { _id?: string };
-  timestamp?: number;
-  type?: string;
-}
 
 /*
  * Une notification du flux temps réel, repliable.
@@ -56,110 +50,96 @@ const HEADER_BACKGROUNDS: Record<string, string> = {
   subscribe: 'bg-notification-subscribe',
 };
 
-export default defineComponent({
-  name: 'Notification',
-  components: {
-    JsonTree,
-    Card,
-  },
-  props: {
-    notification: {
-      required: true,
-      type: Object as PropType<RealtimeNotification>,
-    },
-  },
-  data() {
-    return {
-      expanded: false,
-    };
-  },
-  computed: {
-    family(): string {
-      switch (this.notification.action) {
-        case 'publish':
-          return 'publish';
-        case 'create':
-        case 'createOrReplace':
-        case 'replace':
-          return 'document';
-        case 'subscribe':
-        case 'unsubscribe':
-          return 'subscribe';
-        case 'delete':
-          return 'delete';
-      }
-      return '';
-    },
-    headerClasses(): string[] {
-      return [
-        'flex w-full cursor-pointer items-center gap-2',
-        'border-0 px-3 py-2 text-left',
-        // Sans cette règle, le navigateur dessinait son propre contour (orange
-        // en Electron) au clic, et rien de cohérent au clavier.
-        'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
-        'font-sans text-sm text-card-foreground',
-        HEADER_BACKGROUNDS[this.family] ?? 'bg-muted',
-      ];
-    },
-    notificationId(): string {
-      return this.notification.type === 'document' && this.notification.result?._id
-        ? truncateName(this.notification.result._id)
-        : '';
-    },
-    icon(): string {
-      switch (this.notification.action) {
-        case 'publish':
-          return 'paper-plane';
-        case 'subscribe':
-        case 'unsubscribe':
-          return 'user';
-        case 'delete':
-          return 'remove';
-      }
-      return 'file';
-    },
-    time(): string {
-      return formatClockTime(this.notification.timestamp);
-    },
-    text(): string {
-      switch (this.notification.action) {
-        case 'publish':
-          return 'Volatile notification';
+// Le type du SDK, celui que `Watch` reçoit de `realtime.subscribe`.
+const props = defineProps<{ notification: Notification }>();
 
-        case 'mWrite':
-        case 'mCreate':
-        case 'mCreateOrReplace':
-          return `New documents created (${this.notificationId})`;
-        case 'write':
-        case 'create':
-        case 'createOrReplace':
-          return `New document created (${this.notificationId})`;
+const expanded = ref(false);
 
-        case 'mReplace':
-          return `Documents replaced (${this.notificationId})`;
-        case 'replace':
-          return `Document replaced (${this.notificationId})`;
+const family = computed((): string => {
+  switch (props.notification.action) {
+    case 'publish':
+      return 'publish';
+    case 'create':
+    case 'createOrReplace':
+    case 'replace':
+      return 'document';
+    case 'subscribe':
+    case 'unsubscribe':
+      return 'subscribe';
+    case 'delete':
+      return 'delete';
+  }
+  return '';
+});
 
-        case 'updateByQuery':
-        case 'mUpdate':
-          return `Documents updated (${this.notificationId})`;
-        case 'update':
-          return `Document updated (${this.notificationId})`;
+const headerClasses = computed((): string[] => [
+  'flex w-full cursor-pointer items-center gap-2',
+  'border-0 px-3 py-2 text-left',
+  // Sans cette règle, le navigateur dessinait son propre contour (orange
+  // en Electron) au clic, et rien de cohérent au clavier.
+  'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
+  'font-sans text-sm text-card-foreground',
+  HEADER_BACKGROUNDS[family.value] ?? 'bg-muted',
+]);
 
-        case 'deleteByQuery':
-        case 'mDelete':
-          return `Documents deleted (${this.notificationId})`;
-        case 'delete':
-          return `Document deleted (${this.notificationId})`;
+const notificationId = computed((): string =>
+  props.notification.type === 'document' && props.notification.result._id
+    ? truncateName(props.notification.result._id)
+    : '',
+);
 
-        case 'subscribe':
-          return 'A new user is listening to this room';
+const icon = computed((): string => {
+  switch (props.notification.action) {
+    case 'publish':
+      return 'paper-plane';
+    case 'subscribe':
+    case 'unsubscribe':
+      return 'user';
+    case 'delete':
+      return 'remove';
+  }
+  return 'file';
+});
 
-        case 'unsubscribe':
-          return 'A user exited this room';
-      }
-      return 'New notification';
-    },
-  },
+const time = computed((): string => formatClockTime(props.notification.timestamp));
+
+const text = computed((): string => {
+  switch (props.notification.action) {
+    case 'publish':
+      return 'Volatile notification';
+
+    case 'mWrite':
+    case 'mCreate':
+    case 'mCreateOrReplace':
+      return `New documents created (${notificationId.value})`;
+    case 'write':
+    case 'create':
+    case 'createOrReplace':
+      return `New document created (${notificationId.value})`;
+
+    case 'mReplace':
+      return `Documents replaced (${notificationId.value})`;
+    case 'replace':
+      return `Document replaced (${notificationId.value})`;
+
+    case 'updateByQuery':
+    case 'mUpdate':
+      return `Documents updated (${notificationId.value})`;
+    case 'update':
+      return `Document updated (${notificationId.value})`;
+
+    case 'deleteByQuery':
+    case 'mDelete':
+      return `Documents deleted (${notificationId.value})`;
+    case 'delete':
+      return `Document deleted (${notificationId.value})`;
+
+    case 'subscribe':
+      return 'A new user is listening to this room';
+
+    case 'unsubscribe':
+      return 'A user exited this room';
+  }
+  return 'New notification';
 });
 </script>

@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <Card v-if="!canSubscribe(indexName, collectionName)">
+    <Card v-if="!authStore.canSubscribe(indexName, collectionName)">
       <CardContent class="flex flex-wrap items-center gap-6">
         <i class="fa fa-6x fa-lock text-muted-foreground" aria-hidden="true" />
         <div class="flex-1">
@@ -107,7 +107,7 @@
           </div>
         </CardHeader>
         <CardContent v-if="advancedFiltersVisible">
-          <json-editor ref="filter" :content="rawFilter" @change="onFilterChanged" />
+          <json-editor ref="filterEditor" :content="rawFilter" @change="onFilterChanged" />
         </CardContent>
       </Card>
 
@@ -184,9 +184,9 @@
                 </CardHeader>
                 <CardContent class="overflow-auto px-3 py-3">
                   <Badge title="controller : action" variant="info">
-                    {{ lastNotification.controller }} : {{ lastNotification.action }}
+                    {{ lastNotification?.controller }} : {{ lastNotification?.action }}
                   </Badge>
-                  <JsonTree class="mt-3" :value="lastNotification.result" />
+                  <JsonTree class="mt-3" :value="lastNotificationResult" />
                 </CardContent>
               </Card>
             </div>
@@ -204,242 +204,269 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onUnmounted, reactive, ref, useTemplateRef, watch } from 'vue';
+import {
+  type ArgsRealtimeControllerSubscribe,
+  type Notification as RealtimeNotification,
+  ScopeOption,
+  UserOption,
+} from 'kuzzle-sdk-v7';
 import { isEqual } from 'lodash';
-import { mapState } from 'pinia';
+import { useRoute, useRouter } from 'vue-router';
 
-import JsonEditor from '../../Common/JsonEditor.vue';
-import Headline from '../../Materialize/Headline.vue';
 import Notification from '../Realtime/Notification.vue';
 import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/composables/useToast';
 import { formatClockTime } from '@/lib/date';
-import * as filterManager from '@/services/filterManager';
+import { caught } from '@/lib/errors';
+import { logger } from '@/plugins/logger';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
 
+import JsonEditor from '@/components/Common/JsonEditor.vue';
 import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
+import Headline from '@/components/Materialize/Headline.vue';
 import DeleteCollectionModal from './DeleteCollectionModal.vue';
 import CollectionDropdownAction from './DropdownAction.vue';
 import CollectionDropdownView from './DropdownView.vue';
 
-export default {
-  name: 'CollectionWatch',
-  components: {
-    JsonTree,
-    Alert,
-    Badge,
-    Button,
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CollectionDropdownAction,
-    CollectionDropdownView,
-    DeleteCollectionModal,
-    Headline,
-    JsonEditor,
-    Notification,
-  },
-  props: {
-    indexName: String,
-    collectionName: String,
-  },
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  data() {
-    return {
-      advancedFiltersVisible: false,
-      deleteCollectionOpen: false,
-      rawFilter: '{}',
-      room: null,
-      notifications: [],
-      notificationsLengthLimit: 50,
-      subscribed: false,
-      subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
-      warning: { message: '', count: 0, lastTime: null, info: false },
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle']),
-    ...mapState(useAuthStore, ['canSubscribe']),
-    index() {
-      return this.storageIndexStore.getOneIndex(this.indexName);
-    },
-    collection() {
-      return this.index
-        ? this.storageIndexStore.getOneCollection(this.index, this.collectionName)
-        : null;
-    },
-    collectionMapping() {
-      return this.collection ? this.collection.mapping : null;
-    },
-    mappingAttributes() {
-      return this.collectionMapping
-        ? this.extractAttributesFromMapping(this.collectionMapping)
-        : null;
-    },
-    hasFilter() {
-      return !!this.realtimeQuery && !isEqual(this.realtimeQuery, {}) && this.isFilterValid;
-    },
-    lastNotification() {
-      if (this.notifications.length) {
-        return this.notifications[0];
-      }
-      return {};
-    },
-    lastNotificationTime() {
-      if (!this.notifications.length) {
-        return null;
-      }
-      return formatClockTime(this.lastNotification.timestamp);
-    },
-    realtimeQuery() {
-      try {
-        return JSON.parse(this.rawFilter);
-      } catch (error) {
-        return {};
-      }
-    },
-    isFilterValid() {
-      if (!this.rawFilter) {
-        return true;
-      }
-      try {
-        JSON.parse(this.rawFilter);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
-    isRealtimeCollection() {
-      return this.collection ? this.collection.isRealtime() : false;
-    },
-  },
-  watch: {
-    index() {
-      this.reset();
-    },
-    collection() {
-      this.reset();
-    },
-    $route() {
-      this.reset();
-      this.currentFilter = filterManager.loadFromRoute(this.$route);
-    },
-  },
-  async unmounted() {
-    this.reset();
-    if (this.room) {
-      await this.$kuzzle.realtime.unsubscribe(this.room);
-    }
-  },
-  methods: {
-    truncateName,
-    extractAttributesFromMapping,
-    goToDocumentList(listViewType) {
-      this.$router.push({ name: 'DocumentList', query: { listViewType } });
-    },
-    afterDeleteCollection() {
-      this.$router.push({
-        name: 'Collections',
-        params: { indexName: this.indexName },
-      });
-    },
-    onFilterChanged(value) {
-      this.rawFilter = value;
-    },
-    async toggleSubscription() {
-      if (!this.subscribed) {
-        await this.subscribe();
-      } else {
-        await this.unsubscribe(this.room);
-      }
-    },
-    handleNotification(result) {
-      if (this.notifications.length > this.notificationsLengthLimit) {
-        if (this.warning.message === '') {
-          this.warning.info = true;
-          this.warning.message =
-            'Older notifications are discarded due to the amount of items displayed';
-        }
-
-        if (Date.now() - this.warning.lastTime < 50) {
-          this.warning.count++;
-        }
-
-        this.warning.lastTime = Date.now();
-
-        if (this.warning.count >= 100) {
-          this.warning.info = false;
-          this.warning.message =
-            'You are receiving too many messages, try to add more filters to reduce the amount of messages';
-        }
-
-        // two shift instead of one to have a visual effect on items in the view
-        this.notifications.shift();
-        this.notifications.shift();
-      }
-
-      this.notifications.unshift(result);
-    },
-    async subscribe() {
-      try {
-        if (!this.isFilterValid) {
-          throw new Error('Realtime filter seems to be invalid');
-        }
-        const room = await this.$kuzzle.realtime.subscribe(
-          this.indexName,
-          this.collectionName,
-          this.realtimeQuery,
-          this.handleNotification,
-          this.subscribeOptions,
-        );
-        this.subscribed = true;
-        this.room = room;
-      } catch (err) {
-        this.room = null;
-        this.subscribed = false;
-        this.$log.error(err);
-        this.$toast.warning(
-          'Ooops! Something went wrong while subscribing to the collection.',
-          err.message,
-        );
-      }
-    },
-    async unsubscribe(room) {
-      this.warning.message = '';
-      this.warning.count = 0;
-
-      await this.$kuzzle.realtime.unsubscribe(room);
-      this.subscribed = false;
-      this.room = null;
-    },
-    resetFilters() {
-      if (this.subscribed) {
-        this.subscribed = false;
-        this.unsubscribe(this.room);
-      }
-      if (this.$refs.filter) {
-        this.$refs.filter.setContent('{}');
-      }
-    },
-    resetNotifications() {
-      this.notifications = [];
-      this.warning.message = '';
-      this.warning.count = 0;
-    },
-    reset() {
-      // trigged when user changed the collection of watch data page
-      this.resetFilters();
-      this.resetNotifications();
-    },
-  },
+const NOTIFICATIONS_LENGTH_LIMIT = 50;
+const SUBSCRIBE_OPTIONS: ArgsRealtimeControllerSubscribe = {
+  scope: ScopeOption.all,
+  users: UserOption.all,
+  state: 'all',
 };
+
+const props = defineProps<{
+  collectionName: string;
+  indexName: string;
+}>();
+
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const storageIndexStore = useStorageIndexStore();
+
+// `ref="filter"` devient `filterEditor` : en `<script setup>`, la référence
+// se lie à la variable du même nom.
+const filterEditor = useTemplateRef<InstanceType<typeof JsonEditor>>('filterEditor');
+
+const advancedFiltersVisible = ref(false);
+const deleteCollectionOpen = ref(false);
+const rawFilter = ref('{}');
+const room = ref<string | null>(null);
+const notifications = ref<RealtimeNotification[]>([]);
+const subscribed = ref(false);
+interface Warning {
+  message: string;
+  count: number;
+  lastTime: number | null;
+  info: boolean;
+}
+
+const warning = reactive<Warning>({ message: '', count: 0, lastTime: null, info: false });
+
+function kuzzle() {
+  const instance = kuzzleStore.$kuzzle;
+  if (instance === null) {
+    throw new Error('Kuzzle is not initialized');
+  }
+  return instance;
+}
+
+const index = computed(() => storageIndexStore.getOneIndex(props.indexName));
+
+const collection = computed(() =>
+  index.value ? storageIndexStore.getOneCollection(index.value, props.collectionName) : null,
+);
+
+const collectionMapping = computed(() => (collection.value ? collection.value.mapping : null));
+
+const mappingAttributes = computed(() =>
+  collectionMapping.value ? extractAttributesFromMapping(collectionMapping.value) : null,
+);
+
+const realtimeQuery = computed(() => {
+  try {
+    return JSON.parse(rawFilter.value);
+  } catch (error) {
+    return {};
+  }
+});
+
+const isFilterValid = computed((): boolean => {
+  if (!rawFilter.value) {
+    return true;
+  }
+  try {
+    JSON.parse(rawFilter.value);
+    return true;
+  } catch (error) {
+    return false;
+  }
+});
+
+const hasFilter = computed(
+  (): boolean => !!realtimeQuery.value && !isEqual(realtimeQuery.value, {}) && isFilterValid.value,
+);
+
+// Lue seulement quand la liste n'est pas vide.
+const lastNotification = computed((): RealtimeNotification | undefined => notifications.value[0]);
+
+const lastNotificationResult = computed(() => {
+  const notification = lastNotification.value;
+  return notification && 'result' in notification ? notification.result : undefined;
+});
+
+const lastNotificationTime = computed((): string | null => {
+  if (!notifications.value.length) {
+    return null;
+  }
+  return formatClockTime(lastNotification.value?.timestamp);
+});
+
+const isRealtimeCollection = computed((): boolean =>
+  collection.value ? collection.value.isRealtime() : false,
+);
+
+watch(index, () => {
+  reset();
+});
+
+watch(collection, () => {
+  reset();
+});
+
+watch(
+  () => route.fullPath,
+  () => {
+    reset();
+  },
+);
+
+onUnmounted(async () => {
+  reset();
+  if (room.value) {
+    await kuzzle().realtime.unsubscribe(room.value);
+  }
+});
+
+function goToDocumentList(listViewType: string): void {
+  router.push({ name: 'DocumentList', query: { listViewType } });
+}
+
+function afterDeleteCollection(): void {
+  router.push({
+    name: 'Collections',
+    params: { indexName: props.indexName },
+  });
+}
+
+function onFilterChanged(value: string): void {
+  rawFilter.value = value;
+}
+
+async function toggleSubscription(): Promise<void> {
+  if (!subscribed.value) {
+    await subscribe();
+  } else {
+    await unsubscribe(room.value);
+  }
+}
+
+function handleNotification(result: RealtimeNotification): void {
+  if (notifications.value.length > NOTIFICATIONS_LENGTH_LIMIT) {
+    if (warning.message === '') {
+      warning.info = true;
+      warning.message = 'Older notifications are discarded due to the amount of items displayed';
+    }
+
+    // `lastTime` vaut `null` avant le premier dépassement : `Date.now() - null`
+    // donnait `Date.now()`, jamais sous 50.
+    if (Date.now() - (warning.lastTime ?? 0) < 50) {
+      warning.count++;
+    }
+
+    warning.lastTime = Date.now();
+
+    if (warning.count >= 100) {
+      warning.info = false;
+      warning.message =
+        'You are receiving too many messages, try to add more filters to reduce the amount of messages';
+    }
+
+    // two shift instead of one to have a visual effect on items in the view
+    notifications.value.shift();
+    notifications.value.shift();
+  }
+
+  notifications.value.unshift(result);
+}
+
+async function subscribe(): Promise<void> {
+  try {
+    if (!isFilterValid.value) {
+      throw new Error('Realtime filter seems to be invalid');
+    }
+    const newRoom = await kuzzle().realtime.subscribe(
+      props.indexName,
+      props.collectionName,
+      realtimeQuery.value,
+      handleNotification,
+      SUBSCRIBE_OPTIONS,
+    );
+    subscribed.value = true;
+    room.value = newRoom;
+  } catch (err) {
+    room.value = null;
+    subscribed.value = false;
+    logger.error(err);
+    toast.warning(
+      'Ooops! Something went wrong while subscribing to the collection.',
+      caught(err).message,
+    );
+  }
+}
+
+async function unsubscribe(currentRoom: string | null): Promise<void> {
+  warning.message = '';
+  warning.count = 0;
+
+  // `room` n'est `null` que hors souscription, et on ne se désabonne
+  // qu'abonné.
+  if (currentRoom !== null) {
+    await kuzzle().realtime.unsubscribe(currentRoom);
+  }
+  subscribed.value = false;
+  room.value = null;
+}
+
+function resetFilters(): void {
+  if (subscribed.value) {
+    subscribed.value = false;
+    unsubscribe(room.value);
+  }
+  if (filterEditor.value) {
+    filterEditor.value.setContent('{}');
+  }
+}
+
+function resetNotifications(): void {
+  notifications.value = [];
+  warning.message = '';
+  warning.count = 0;
+}
+
+function reset(): void {
+  // trigged when user changed the collection of watch data page
+  resetFilters();
+  resetNotifications();
+}
 </script>

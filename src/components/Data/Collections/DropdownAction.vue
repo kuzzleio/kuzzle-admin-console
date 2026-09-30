@@ -29,7 +29,7 @@
             v-if="backendMajorVersion !== 1"
             data-cy="CollectionDropdown-delete"
             variant="destructive"
-            @select="$emit('delete-collection-clicked')"
+            @select="emit('delete-collection-clicked')"
           >
             Delete collection
           </DropdownMenuItem>
@@ -50,14 +50,13 @@
       v-model:open="clearOpen"
       :index="indexName"
       :collection="collectionName"
-      @clear="$emit('clear')"
+      @clear="emit('clear')"
     />
   </span>
 </template>
 
-<script lang="ts">
-import { defineComponent, markRaw } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
 
@@ -74,56 +73,37 @@ import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import ModalClear from './ModalClear.vue';
 
-export default defineComponent({
-  name: 'CollectionDropdownAction',
-  components: {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-    ModalClear,
-  },
-  props: {
-    collectionName: {
-      required: true,
-      type: String,
-    },
-    indexName: {
-      required: true,
-      type: String,
-    },
-  },
-  setup() {
-    return {
-      kuzzleStore: useKuzzleStore(),
-    };
-  },
-  data() {
-    return {
-      RouterLink: markRaw(RouterLink),
-      Button: markRaw(Button),
-      clearOpen: false,
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canEditCollection', 'canTruncateCollection']),
-    backendMajorVersion(): number | undefined {
-      return this.kuzzleStore.currentEnvironment?.backendMajorVersion;
-    },
-    canEdit(): boolean {
-      return this.canEditCollection(this.indexName, this.collectionName);
-    },
-    canTruncate(): boolean {
-      return this.canTruncateCollection(this.indexName, this.collectionName);
-    },
-    editRoute(): RouteLocationRaw {
-      return {
-        name: 'EditCollection',
-        params: { collectionName: this.collectionName, indexName: this.indexName },
-      };
-    },
-  },
-});
+const props = defineProps<{
+  collectionName: string;
+  indexName: string;
+}>();
+
+const emit = defineEmits<{
+  (e: 'clear'): void;
+  (e: 'delete-collection-clicked'): void;
+}>();
+
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+
+const clearOpen = ref(false);
+
+const backendMajorVersion = computed(
+  (): number | undefined => kuzzleStore.currentEnvironment?.backendMajorVersion,
+);
+
+const canEdit = computed((): boolean =>
+  authStore.canEditCollection(props.indexName, props.collectionName),
+);
+
+const canTruncate = computed((): boolean =>
+  authStore.canTruncateCollection(props.indexName, props.collectionName),
+);
+
+const editRoute = computed(
+  (): RouteLocationRaw => ({
+    name: 'EditCollection',
+    params: { collectionName: props.collectionName, indexName: props.indexName },
+  }),
+);
 </script>
