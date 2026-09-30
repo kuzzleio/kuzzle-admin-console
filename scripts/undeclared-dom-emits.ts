@@ -97,15 +97,24 @@ function pascal(name: string): string {
 const files = vueFiles(SRC);
 const sources = new Map(files.map((f) => [f, readFileSync(f, 'utf8')]));
 
-/* Le contenu du tableau `emits: [ … ]`, qui est la seule forme utilisée ici. */
+/*
+ * Les événements déclarés : le tableau `emits: [ … ]` de l'Options API, ou
+ * les signatures `(e: '…', …)` de `defineEmits<{ … }>()` en `<script setup>`.
+ */
 function declaredEmits(source: string): Set<string> {
-  const m = /\n {2}emits:\s*\[([^\]]*)\]/.exec(source);
+  const options = /\n {2}emits:\s*\[([^\]]*)\]/.exec(source);
 
-  if (m === null) {
-    return new Set();
+  if (options !== null) {
+    return new Set([...options[1].matchAll(/['"]([^'"]+)['"]/g)].map((e) => e[1]));
   }
 
-  return new Set([...m[1].matchAll(/['"]([^'"]+)['"]/g)].map((e) => e[1]));
+  const setup = /defineEmits<\{([\s\S]*?)\}>\(\)/.exec(source);
+
+  if (setup !== null) {
+    return new Set([...setup[1].matchAll(/\(\s*e:\s*['"]([^'"]+)['"]/g)].map((e) => e[1]));
+  }
+
+  return new Set();
 }
 
 /* Les noms littéraux passés à `this.$emit('…')`, hors `$parent.$emit`. */

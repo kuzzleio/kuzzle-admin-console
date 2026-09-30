@@ -4100,6 +4100,23 @@ Gabarit à copier :
   `=== ` sur un objet de `data` à chaque conversion.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-123 — `check:dom-emits` ne lisait pas `defineEmits`
+
+- **Contexte** : lot 12 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Views/Column/HeaderTableView.vue`.
+- **Symptôme** : `check:dom-emits` signale `mouseenter` et `mouseleave` comme
+  non déclarés, alors que `defineEmits` les déclare.
+- **Cause** : le script ne cherchait que le tableau `emits: [ … ]` de l'Options
+  API. Aucun des composants déjà convertis n'émettait de nom d'événement du
+  DOM depuis son template : le trou ne s'était jamais vu.
+- **Solution** : le script lit aussi les signatures `(e: '…')` de
+  `defineEmits<{ … }>()`. Il signale toujours un événement retiré de la
+  déclaration.
+- **À retenir** : un contrôle écrit pour une forme de code se revérifie quand
+  la forme change ; un faux positif est le signe qu'il ne lit plus ce qu'il
+  croit lire.
+- **Ref** : [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md), [G-049](#g-049).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
