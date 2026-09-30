@@ -199,6 +199,8 @@ describe('Profiles', () => {
     cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line').should(
       'be.visible'
     )
+    // Le champ « Profile ID », inactif, affiche le profil édité (G-114).
+    cy.get('#profile-id').should('have.value', profileId)
 
     cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line')
       .contains('{')

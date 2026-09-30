@@ -1,83 +1,70 @@
 <template>
   <div class="ProfileList">
-    <slot v-if="currentFilter.basic && totalDocuments === 0" name="emptySet" />
-    <template v-else>
-      <filters
-        :current-filter="currentFilter"
-        :index="index"
-        :collection="collection"
-        @filters-updated="onFiltersUpdated"
-      />
-      <Card key="list" class="mt-3 shadow-signature">
-        <CardContent>
-          <div v-if="loading" class="flex justify-center py-8">
-            <Spinner size="lg" />
-          </div>
+    <Filters :current-filter="currentFilter" @filters-updated="onFiltersUpdated" />
+    <Card key="list" class="mt-3 shadow-signature">
+      <CardContent>
+        <div v-if="loading" class="flex justify-center py-8">
+          <Spinner size="lg" />
+        </div>
 
-          <NoSearchResult v-show="!documents.length" />
+        <NoSearchResult v-show="!documents.length" />
 
-          <div v-if="documents.length" class="mb-3 flex flex-wrap items-center gap-2">
-            <Button data-cy="ProfileList-toggleAllBtn" variant="outline" @click="toggleAll">
-              <i
-                :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`"
-                aria-hidden="true"
-              />
-              Toggle all
-            </Button>
+        <div v-if="documents.length" class="mb-3 flex flex-wrap items-center gap-2">
+          <Button data-cy="ProfileList-toggleAllBtn" variant="outline" @click="toggleAll">
+            <i :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'}`" aria-hidden="true" />
+            Toggle all
+          </Button>
 
-            <Button
-              data-cy="ProfileList-bulkDeleteBtn"
-              :disabled="!displayBulkDelete"
-              variant="destructive"
-              @click="deleteBulk"
-            >
-              <i class="fa fa-minus-circle" aria-hidden="true" />
-              Delete selected
-            </Button>
-
-            <PerPageSelector
-              class="ml-auto"
-              :current-page-size="paginationSize"
-              :total-documents="totalDocuments"
-              @change-page-size="changePaginationSize($event)"
-            />
-          </div>
-
-          <ul
-            v-show="documents.length"
-            class="ProfileList-list flex list-none flex-col gap-2 pl-0"
-            data-cy="ProfileList-items"
+          <Button
+            data-cy="ProfileList-bulkDeleteBtn"
+            :disabled="!displayBulkDelete"
+            variant="destructive"
+            @click="deleteBulk"
           >
-            <li
-              v-for="document in documents"
-              :key="document._id"
-              class="rounded-md border border-border p-2"
-              data-cy="ProfileList-item"
-            >
-              <ProfileItem
-                :document="document"
-                :is-checked="isChecked(document._id)"
-                :index="index"
-                :collection="collection"
-                @checkbox-click="toggleSelectDocuments"
-                @edit="editProfile(document._id)"
-                @delete="deleteProfile"
-              />
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+            <i class="fa fa-minus-circle" aria-hidden="true" />
+            Delete selected
+          </Button>
 
-      <ListPagination
-        v-show="totalDocuments > paginationSize"
-        v-model:page="currentPage"
-        class="mt-4"
-        data-cy="ProfileManagement-pagination"
-        :items-per-page="paginationSize"
-        :total="totalDocuments"
-      />
-    </template>
-    <delete-modal
+          <PerPageSelector
+            class="ml-auto"
+            :current-page-size="paginationSize"
+            :total-documents="totalDocuments"
+            @change-page-size="changePaginationSize($event)"
+          />
+        </div>
+
+        <ul
+          v-show="documents.length"
+          class="ProfileList-list flex list-none flex-col gap-2 pl-0"
+          data-cy="ProfileList-items"
+        >
+          <li
+            v-for="document in documents"
+            :key="document._id"
+            class="rounded-md border border-border p-2"
+            data-cy="ProfileList-item"
+          >
+            <ProfileItem
+              :document="document"
+              :is-checked="isChecked(document._id)"
+              @checkbox-click="toggleSelectDocuments"
+              @edit="editProfile(document._id)"
+              @delete="deleteProfile"
+            />
+          </li>
+        </ul>
+      </CardContent>
+    </Card>
+
+    <ListPagination
+      v-show="totalDocuments > paginationSize"
+      v-model:page="currentPage"
+      class="mt-4"
+      data-cy="ProfileManagement-pagination"
+      :items-per-page="paginationSize"
+      :total="totalDocuments"
+    />
+    <DeleteModal
       v-model:open="deleteModalOpen"
       :candidates-for-deletion="candidatesForDeletion"
       :is-loading="deleteModalIsLoading"
@@ -87,210 +74,196 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-import ProfileItem from '../Profiles/ProfileItem.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
+import type { ProfileDocument } from './types';
 
 import ListPagination from '@/components/Common/ListPagination.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import NoSearchResult from '@/components/Security/Common/NoSearchResult.vue';
 import DeleteModal from './DeleteModal.vue';
 import Filters from './Filters.vue';
+import ProfileItem from './ProfileItem.vue';
 
-export default {
-  name: 'ProfileList',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    DeleteModal,
-    Filters,
-    ListPagination,
-    NoSearchResult,
-    PerPageSelector,
-    ProfileItem,
-    Spinner,
+const props = withDefaults(
+  defineProps<{
+    collection?: string;
+    displayCreate?: boolean;
+    index?: string;
+    itemName?: string;
+    routeCreate?: string;
+    routeUpdate?: string;
+  }>(),
+  {
+    collection: undefined,
+    displayCreate: false,
+    index: undefined,
+    itemName: undefined,
+    routeCreate: undefined,
+    routeUpdate: undefined,
   },
-  props: {
-    index: String,
-    collection: String,
-    itemName: String,
-    displayCreate: {
-      type: Boolean,
-      default: false,
-    },
-    routeCreate: String,
-    routeUpdate: String,
-  },
-  data() {
-    return {
-      deleteModalOpen: false,
-      candidatesForDeletion: [],
-      currentFilter: [],
-      currentPage: 1,
-      deleteModalIsLoading: false,
-      documents: [],
-      loading: true,
-      selectedDocuments: [],
-      totalDocuments: 0,
-      paginationSize: 25,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper']),
-    displayBulkDelete() {
-      return this.selectedDocuments.length > 0;
-    },
-    allChecked() {
-      if (!this.selectedDocuments || !this.documents) {
-        return false;
-      }
+);
 
-      return this.selectedDocuments.length === this.documents.length;
-    },
-    paginationFrom() {
-      return (this.currentPage - 1) * this.paginationSize || 0;
-    },
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      handler() {
-        this.loadFilterFromRoute();
-      },
-    },
-    currentFilter: {
-      immediate: true,
-      handler() {
-        this.fetchProfiles();
-      },
-    },
-    currentPage() {
-      this.$router.push({ query: { from: this.paginationFrom } });
-      this.fetchProfiles();
-    },
-  },
-  methods: {
-    changePaginationSize(e) {
-      this.paginationSize = e;
-      this.fetchProfiles();
-    },
-    isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1;
-    },
-    toggleAll() {
-      if (this.allChecked) {
-        this.selectedDocuments = [];
-        return;
-      }
-      this.selectedDocuments = [];
-      this.selectedDocuments = this.documents.map((document) => document._id);
-    },
-    toggleSelectDocuments(id) {
-      const index = this.selectedDocuments.indexOf(id);
+const kuzzleStore = useKuzzleStore();
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
 
-      if (index === -1) {
-        this.selectedDocuments.push(id);
-        return;
-      }
+const deleteModalOpen = ref(false);
+const candidatesForDeletion = ref<string[]>([]);
+/* Les rôles cherchés. */
+const currentFilter = ref<string[]>([]);
+const currentPage = ref(1);
+const deleteModalIsLoading = ref(false);
+const documents = ref<ProfileDocument[]>([]);
+const loading = ref(true);
+const selectedDocuments = ref<string[]>([]);
+const totalDocuments = ref(0);
+const paginationSize = ref(25);
 
-      this.selectedDocuments.splice(index, 1);
-    },
-    onFiltersUpdated(newFilters) {
-      try {
-        this.saveFilterToRoute(newFilters);
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while updating filters',
-          'The complete error has been printed to console',
-        );
-      }
-    },
-    async fetchProfiles() {
-      this.loading = true;
-      const pagination = {
-        from: this.paginationFrom,
-        size: this.paginationSize,
-      };
+const displayBulkDelete = computed(() => selectedDocuments.value.length > 0);
+const allChecked = computed(() => selectedDocuments.value.length === documents.value.length);
+const paginationFrom = computed(() => (currentPage.value - 1) * paginationSize.value || 0);
 
-      try {
-        const res = await this.wrapper.performSearchProfiles(
-          { roles: this.currentFilter },
-          pagination,
-        );
-        this.documents = res.documents;
-        this.totalDocuments = res.total;
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while fetching the profiles',
-          'The complete error has been printed to console',
-        );
-      }
-      this.loading = false;
-    },
-    editProfile(id) {
-      this.$router.push({
-        name: 'SecurityProfilesUpdate',
-        params: { id },
-      });
-    },
+function wrapper() {
+  const kuzzleWrapper = kuzzleStore.wrapper;
+  if (!kuzzleWrapper) {
+    throw new Error('No Kuzzle wrapper set for the current environment');
+  }
+  return kuzzleWrapper;
+}
 
-    // DELETE
-    // =========================================================================
-    async onDeleteConfirmed() {
-      this.deleteModalIsLoading = true;
-      try {
-        await this.wrapper.performDeleteProfiles(
-          this.index,
-          this.collection,
-          this.candidatesForDeletion,
-        );
+function loadFilterFromRoute(): void {
+  const filter = route.query.filter;
+  if (filter && Array.isArray(filter)) {
+    currentFilter.value = filter.filter((role): role is string => role !== null);
+  }
+}
 
-        this.selectedDocuments = [];
-        this.fetchProfiles();
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while deleting the profiles',
-          'The complete error has been printed to console',
-        );
-      }
-      this.deleteModalOpen = false;
-      this.deleteModalIsLoading = false;
-    },
-    deleteBulk() {
-      this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
-      this.deleteModalOpen = true;
-    },
-    deleteProfile(id) {
-      this.candidatesForDeletion.push(id);
-      this.deleteModalOpen = true;
-    },
-    resetCandidatesForDeletion() {
-      this.candidatesForDeletion = [];
-    },
+async function fetchProfiles(): Promise<void> {
+  loading.value = true;
+  const pagination = {
+    from: paginationFrom.value,
+    size: paginationSize.value,
+  };
 
-    create() {
-      this.$router.push({ name: this.routeCreate });
-    },
-    loadFilterFromRoute() {
-      const filter = this.$route.query.filter;
-      if (filter && Array.isArray(filter)) {
-        this.currentFilter = filter;
-      }
-    },
-    saveFilterToRoute(newFilter) {
-      this.$router.push({
-        query: { filter: newFilter, from: this.paginationFrom },
-      });
-    },
-  },
-};
+  try {
+    const res = await wrapper().performSearchProfiles({ roles: currentFilter.value }, pagination);
+    documents.value = res.documents;
+    totalDocuments.value = res.total;
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while fetching the profiles',
+      'The complete error has been printed to console',
+    );
+  }
+  loading.value = false;
+}
+
+watch(() => route.fullPath, loadFilterFromRoute, { immediate: true });
+watch(currentFilter, fetchProfiles, { immediate: true });
+watch(currentPage, () => {
+  router.push({ query: { from: paginationFrom.value } });
+  fetchProfiles();
+});
+
+function changePaginationSize(size: number): void {
+  paginationSize.value = size;
+  fetchProfiles();
+}
+
+function isChecked(id: string): boolean {
+  return selectedDocuments.value.indexOf(id) > -1;
+}
+
+function toggleAll(): void {
+  if (allChecked.value) {
+    selectedDocuments.value = [];
+    return;
+  }
+  selectedDocuments.value = documents.value.map((document) => document._id);
+}
+
+function toggleSelectDocuments(id: string): void {
+  const index = selectedDocuments.value.indexOf(id);
+
+  if (index === -1) {
+    selectedDocuments.value.push(id);
+    return;
+  }
+
+  selectedDocuments.value.splice(index, 1);
+}
+
+function saveFilterToRoute(newFilter: string[]): void {
+  router.push({
+    query: { filter: newFilter, from: paginationFrom.value },
+  });
+}
+
+function onFiltersUpdated(newFilters: string[]): void {
+  try {
+    saveFilterToRoute(newFilters);
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while updating filters',
+      'The complete error has been printed to console',
+    );
+  }
+}
+
+function editProfile(id: string): void {
+  router.push({
+    name: 'SecurityProfilesUpdate',
+    params: { id },
+  });
+}
+
+// DELETE
+// =========================================================================
+async function onDeleteConfirmed(): Promise<void> {
+  deleteModalIsLoading.value = true;
+  try {
+    await wrapper().performDeleteProfiles(
+      props.index,
+      props.collection,
+      candidatesForDeletion.value,
+    );
+
+    selectedDocuments.value = [];
+    fetchProfiles();
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while deleting the profiles',
+      'The complete error has been printed to console',
+    );
+  }
+  deleteModalOpen.value = false;
+  deleteModalIsLoading.value = false;
+}
+
+function deleteBulk(): void {
+  candidatesForDeletion.value = candidatesForDeletion.value.concat(selectedDocuments.value);
+  deleteModalOpen.value = true;
+}
+
+function deleteProfile(id: string): void {
+  candidatesForDeletion.value.push(id);
+  deleteModalOpen.value = true;
+}
+
+function resetCandidatesForDeletion(): void {
+  candidatesForDeletion.value = [];
+}
 </script>

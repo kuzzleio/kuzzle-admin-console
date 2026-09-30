@@ -2,7 +2,7 @@
   <div class="RoleList">
     <slot v-if="!currentFilter.basic && totalDocuments === 0" name="emptySet" />
     <template v-else>
-      <filters
+      <Filters
         class="mb-3"
         :current-filter="currentFilter.basic"
         @filters-updated="onFiltersUpdated"
@@ -44,13 +44,13 @@
           <ul class="RoleList-list flex list-none flex-col gap-2 pl-0">
             <li
               v-for="document in documents"
-              :key="document.id"
+              :key="document._id"
               class="rounded-md border border-border p-2"
               data-cy="RoleList-list"
             >
               <RoleItem
                 :document="document"
-                :is-checked="isChecked(document.id)"
+                :is-checked="isChecked(document._id)"
                 @checkbox-click="toggleSelectDocuments"
                 @common-list::edit-document="editDocument"
                 @delete-document="deleteRole"
@@ -69,7 +69,7 @@
         :total="totalDocuments"
       />
     </template>
-    <delete-modal
+    <DeleteModal
       v-model:open="deleteModalOpen"
       :candidates-for-deletion="candidatesForDeletion"
       :is-loading="deleteModalIsLoading"
@@ -79,201 +79,196 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-import RoleItem from '../Roles/RoleItem.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import * as filterManager from '@/services/filterManager';
 import { useKuzzleStore } from '@/stores';
+import type { RoleDocument, RoleFilter } from './types';
 
 import ListPagination from '@/components/Common/ListPagination.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import NoSearchResult from '@/components/Security/Common/NoSearchResult.vue';
 import DeleteModal from './DeleteModal.vue';
 import Filters from './Filters.vue';
+import RoleItem from './RoleItem.vue';
 
-export default {
-  name: 'RoleList',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    DeleteModal,
-    Filters,
-    ListPagination,
-    NoSearchResult,
-    PerPageSelector,
-    RoleItem,
-    Spinner,
-  },
-  props: {
-    displayCreate: {
-      type: Boolean,
-      default: false,
-    },
-    routeCreate: String,
-    routeUpdate: String,
-  },
-  data() {
-    return {
-      deleteModalOpen: false,
-      candidatesForDeletion: [],
-      currentFilter: new filterManager.Filter(),
-      currentPage: 1,
-      deleteModalIsLoading: false,
-      documentToDelete: null,
-      documents: [],
-      loading: false,
-      selectedDocuments: [],
-      totalDocuments: 0,
-      paginationSize: 25,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper']),
-    displayBulkDelete() {
-      return this.selectedDocuments.length > 0;
-    },
-    paginationFrom() {
-      return (this.currentPage - 1) * this.paginationSize || 0;
-    },
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      handler() {
-        this.currentFilter = Object.assign(
-          new filterManager.Filter(),
-          filterManager.loadFromRoute(this.$route),
-        );
-      },
-    },
-    currentFilter() {
-      this.fetchRoles();
-    },
-    currentPage() {
-      this.fetchRoles();
-    },
-  },
-  mounted() {
-    this.currentFilter = Object.assign(
-      new filterManager.Filter(),
-      filterManager.loadFromRoute(this.$route),
+/* Le filtre de `filterManager`, pour ce que la liste en lit. */
+interface ListFilter {
+  [key: string]: unknown;
+  active: string | null;
+  basic: RoleFilter | null;
+}
+
+const props = withDefaults(
+  defineProps<{
+    displayCreate?: boolean;
+    routeCreate?: string;
+    routeUpdate?: string;
+  }>(),
+  { displayCreate: false, routeCreate: undefined, routeUpdate: undefined },
+);
+
+const kuzzleStore = useKuzzleStore();
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
+
+const deleteModalOpen = ref(false);
+const candidatesForDeletion = ref<string[]>([]);
+const currentFilter = ref<ListFilter>(new filterManager.Filter());
+const currentPage = ref(1);
+const deleteModalIsLoading = ref(false);
+const documents = ref<RoleDocument[]>([]);
+const loading = ref(false);
+const selectedDocuments = ref<string[]>([]);
+const totalDocuments = ref(0);
+const paginationSize = ref(25);
+
+const displayBulkDelete = computed(() => selectedDocuments.value.length > 0);
+const paginationFrom = computed(() => (currentPage.value - 1) * paginationSize.value || 0);
+
+function loadFilterFromRoute(): void {
+  currentFilter.value = Object.assign(
+    new filterManager.Filter(),
+    filterManager.loadFromRoute(route),
+  );
+}
+
+function fetchRoles(): void {
+  const pagination = {
+    from: paginationFrom.value,
+    size: paginationSize.value,
+  };
+  const filter: RoleFilter = {};
+  if (
+    currentFilter.value.active === filterManager.ACTIVE_BASIC &&
+    currentFilter.value.basic?.controllers &&
+    currentFilter.value.basic.controllers.length
+  ) {
+    filter.controllers = currentFilter.value.basic.controllers;
+  }
+  const wrapper = kuzzleStore.wrapper;
+  if (!wrapper) {
+    return;
+  }
+  wrapper
+    .performSearchRoles(filter, pagination)
+    .then((res: { documents: RoleDocument[]; total: number }) => {
+      documents.value = res.documents;
+      totalDocuments.value = res.total;
+    })
+    .catch((e: unknown) => {
+      logger.error(e);
+      toast.warning(
+        'Ooops! Something went wrong while fetching the role list',
+        'The complete error has been printed to console',
+      );
+    });
+}
+
+watch(() => route.fullPath, loadFilterFromRoute, { immediate: true });
+watch(currentFilter, fetchRoles);
+watch(currentPage, fetchRoles);
+
+onMounted(loadFilterFromRoute);
+
+function changePaginationSize(size: number): void {
+  paginationSize.value = size;
+  fetchRoles();
+}
+
+// DELETE
+// =========================================================================
+async function onDeleteConfirmed(): Promise<void> {
+  deleteModalIsLoading.value = true;
+  try {
+    const wrapper = kuzzleStore.wrapper;
+    if (!wrapper) {
+      throw new Error('No Kuzzle wrapper set for the current environment');
+    }
+    await wrapper.performDeleteRoles(candidatesForDeletion.value);
+    // Un rôle supprimé sort de la sélection (G-113).
+    selectedDocuments.value = selectedDocuments.value.filter(
+      (id) => !candidatesForDeletion.value.includes(id),
     );
-  },
-  methods: {
-    changePaginationSize(e) {
-      this.paginationSize = e;
-      this.fetchRoles();
-    },
-    // DELETE
-    // =========================================================================
-    async onDeleteConfirmed() {
-      this.deleteModalIsLoading = true;
-      try {
-        await this.wrapper.performDeleteRoles(this.candidatesForDeletion);
-        this.deleteModalOpen = false;
-        this.deleteModalIsLoading = false;
-        this.fetchRoles();
-      } catch (e) {
-        this.$log.error(e);
-        this.$toast.danger(
-          'Ooops! Something went wrong while deleting the document(s).',
-          'The complete error has been printed to the console.',
-        );
-      }
-    },
-    deleteRole(id) {
-      this.candidatesForDeletion.push(id);
-      this.deleteModalOpen = true;
-    },
-    deleteBulk() {
-      this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
-      this.deleteModalOpen = true;
-    },
-    resetCandidatesForDeletion() {
-      this.candidatesForDeletion = [];
-    },
-    isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1;
-    },
-    toggleSelectDocuments(id) {
-      const index = this.selectedDocuments.indexOf(id);
+    deleteModalOpen.value = false;
+    deleteModalIsLoading.value = false;
+    fetchRoles();
+  } catch (e) {
+    logger.error(e);
+    toast.danger(
+      'Ooops! Something went wrong while deleting the document(s).',
+      'The complete error has been printed to the console.',
+    );
+  }
+}
 
-      if (index === -1) {
-        this.selectedDocuments.push(id);
-        return;
-      }
+function deleteRole(id: string): void {
+  candidatesForDeletion.value.push(id);
+  deleteModalOpen.value = true;
+}
 
-      this.selectedDocuments.splice(index, 1);
-    },
-    onFiltersUpdated(filter) {
-      let newFilters;
-      if (filter.controllers && filter.controllers.length) {
-        newFilters = Object.assign(this.currentFilter, {
-          active: filterManager.ACTIVE_BASIC,
-          basic: filter,
-          from: 0,
-        });
-      } else {
-        newFilters = Object.assign(this.currentFilter, {
-          active: filterManager.NO_ACTIVE,
-          basic: null,
-          from: 0,
-        });
-      }
-      try {
-        filterManager.saveToRouter(
-          filterManager.stripDefaultValuesFromFilter(newFilters),
-          this.$router,
-        );
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while updating the search filters',
-          'The complete error has been printed to console',
-        );
-      }
-    },
-    fetchRoles() {
-      const pagination = {
-        from: this.paginationFrom,
-        size: this.paginationSize,
-      };
-      const filter = {};
-      if (
-        this.currentFilter.active === filterManager.ACTIVE_BASIC &&
-        this.currentFilter.basic.controllers &&
-        this.currentFilter.basic.controllers.length
-      ) {
-        filter.controllers = this.currentFilter.basic.controllers;
-      }
-      this.wrapper
-        .performSearchRoles(filter, pagination)
-        .then((res) => {
-          this.documents = res.documents;
-          this.totalDocuments = res.total;
-        })
-        .catch((e) => {
-          this.$log.error(e);
-          this.$toast.warning(
-            'Ooops! Something went wrong while fetching the role list',
-            'The complete error has been printed to console',
-          );
-        });
-    },
-    editDocument(route, id) {
-      this.$router.push({
-        name: this.routeUpdate,
-        params: { id },
-      });
-    },
-    create() {
-      this.$router.push({ name: this.routeCreate });
-    },
-  },
-};
+function deleteBulk(): void {
+  candidatesForDeletion.value = candidatesForDeletion.value.concat(selectedDocuments.value);
+  deleteModalOpen.value = true;
+}
+
+function resetCandidatesForDeletion(): void {
+  candidatesForDeletion.value = [];
+}
+
+function isChecked(id: string): boolean {
+  return selectedDocuments.value.indexOf(id) > -1;
+}
+
+function toggleSelectDocuments(id: string): void {
+  const index = selectedDocuments.value.indexOf(id);
+
+  if (index === -1) {
+    selectedDocuments.value.push(id);
+    return;
+  }
+
+  selectedDocuments.value.splice(index, 1);
+}
+
+function onFiltersUpdated(filter: RoleFilter): void {
+  let newFilters;
+  if (filter.controllers && filter.controllers.length) {
+    newFilters = Object.assign(currentFilter.value, {
+      active: filterManager.ACTIVE_BASIC,
+      basic: filter,
+      from: 0,
+    });
+  } else {
+    newFilters = Object.assign(currentFilter.value, {
+      active: filterManager.NO_ACTIVE,
+      basic: null,
+      from: 0,
+    });
+  }
+  try {
+    filterManager.saveToRouter(filterManager.stripDefaultValuesFromFilter(newFilters), router);
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while updating the search filters',
+      'The complete error has been printed to console',
+    );
+  }
+}
+
+function editDocument(_route: string, id: string): void {
+  router.push({
+    name: props.routeUpdate,
+    params: { id },
+  });
+}
 </script>

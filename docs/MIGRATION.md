@@ -918,8 +918,8 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 3. `Common/` hors `Filters` et `Environments`
   - [x] 4. `Common/Environments`
   - [x] 5. `ApiAction`
-  - [ ] 6. `Security` : `Layout`, `Common`, `Roles`
-  - [ ] 7. `Security/Profiles`
+  - [x] 6. `Security` : `Layout`, `Common`, `Roles`
+  - [x] 7. `Security/Profiles`
   - [ ] 8. `Security/Users`
   - [ ] 9. `Data` : `Indexes`, `Leftnav`, racine
   - [ ] 10. `Data` : `Collections`, `Realtime`
@@ -3914,6 +3914,44 @@ Gabarit à copier :
   `/signup`, se connecte en anonyme et vérifie qu'on arrive sur Data sans
   rechargement (un marqueur posé sur `window` doit survivre).
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-113 — Supprimer un rôle coché laissait la ligne suivante cochée, depuis 2016
+
+- **Contexte** : lot 6 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  lecture de `Security/Roles/List.vue` avant conversion.
+- **Symptôme** : on coche un rôle, on le supprime par sa corbeille : le rôle
+  qui prend sa place dans la liste apparaît coché, sans être sélectionné, et
+  « Delete selected » reste actif sur un rôle qui n'existe plus.
+- **Cause** : la liste indexait ses lignes par `document.id` (`:key`,
+  `isChecked`). Un rôle du SDK v7 n'a que `_id` : toutes les lignes avaient la
+  clé `undefined`, et Vue les réutilisait par position, avec l'état local de
+  leur case. La sélection, elle, ne perdait jamais le rôle supprimé. Présent
+  depuis `e8265916` (2016), même code sur `4-dev`.
+- **Solution** : les lignes sont indexées par `_id`, et un rôle supprimé sort
+  de la sélection. `roles.spec` coche un rôle, le supprime, et vérifie qu'aucune
+  case ne reste cochée et que le bouton de suppression groupée est inactif.
+- **À retenir** : `Users/List.vue` a le même `document.id` ; à vérifier au lot
+  8 contre la forme de ses documents.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-114 — L'identifiant d'un rôle ou d'un profil édité s'affichait vide
+
+- **Contexte** : lot 6 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Security/Roles/CreateOrUpdate.vue`.
+- **Symptôme** : sur l'édition d'un rôle ou d'un profil, le champ inactif
+  « Role ID » / « Profile ID » est vide ; l'identifiant n'apparaît que dans le
+  titre.
+- **Cause** : les deux sites écrivent `<Input disabled :value="id" />`.
+  L'`Input` écrit à la main laissait l'attribut `value` passer après
+  `:value="modelValue"`, et il gagnait. Celui de shadcn-vue
+  ([ADR-0054](adr/0054-vrai-shadcn-vue.md), `6faf5fb3`) pilote le champ par
+  `v-model` : la directive écrit `modelValue`, absent, à chaque rendu, et
+  efface l'attribut. Régression d'ADR-0054.
+- **Solution** : `:model-value="id"` aux deux sites. `roles.spec` et
+  `profiles.spec` vérifient la valeur du champ à l'édition.
+- **À retenir** : sur une primitive à `v-model`, `:value` n'est pas la valeur.
+  `vue-tsc` ne le voit pas : `value` passe par les attributs.
+- **Ref** : [ADR-0054](adr/0054-vrai-shadcn-vue.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

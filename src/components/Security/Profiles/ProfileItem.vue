@@ -27,9 +27,11 @@
         <Button
           class="ProfileListItem-update"
           :data-cy="`ProfileListItem-update--${document._id}`"
-          :disabled="!canEditProfile"
+          :disabled="!authStore.canEditProfile"
           size="icon"
-          :title="canEditProfile ? 'Edit Profile' : 'You are not allowed to edit this profile'"
+          :title="
+            authStore.canEditProfile ? 'Edit Profile' : 'You are not allowed to edit this profile'
+          "
           variant="ghost"
           @click.prevent="update"
         >
@@ -38,13 +40,15 @@
         <Button
           class="ProfileListItem-delete"
           :data-cy="`ProfileListItem-delete--${document._id}`"
-          :disabled="!canDeleteProfile"
+          :disabled="!authStore.canDeleteProfile"
           size="icon"
           :title="
-            canDeleteProfile ? 'Delete profile' : 'You are not allowed to delete this profile'
+            authStore.canDeleteProfile
+              ? 'Delete profile'
+              : 'You are not allowed to delete this profile'
           "
           variant="ghost"
-          @click.prevent="deleteDocument(document._id)"
+          @click.prevent="deleteDocument"
         >
           <i class="fa fa-trash" aria-hidden="true" />
         </Button>
@@ -62,62 +66,55 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuthStore } from '@/stores';
+import type { ProfileDocument } from './types';
 
 import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 
-export default {
-  name: 'ProfileItem',
-  components: {
-    JsonTree,
-    Button,
-    Checkbox,
+const props = defineProps<{
+  document: ProfileDocument;
+  isChecked: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: 'checkbox-click', id: string): void;
+  (e: 'delete', id: string): void;
+  (e: 'edit', id: string): void;
+}>();
+
+const authStore = useAuthStore();
+
+const expanded = ref(false);
+const checked = ref(false);
+
+const checkboxId = computed(() => `checkbox-${props.document._id}`);
+
+watch(
+  () => props.isChecked,
+  (value) => {
+    checked.value = value;
   },
-  props: {
-    document: Object,
-    isChecked: Boolean,
-  },
-  data() {
-    return {
-      expanded: false,
-      checked: false,
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canEditProfile', 'canDeleteProfile']),
-    checkboxId() {
-      return `checkbox-${this.document._id}`;
-    },
-  },
-  watch: {
-    isChecked: {
-      handler(value) {
-        this.checked = value;
-      },
-    },
-  },
-  methods: {
-    toggleCollapse() {
-      this.expanded = !this.expanded;
-    },
-    notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document._id);
-    },
-    deleteDocument() {
-      if (this.canDeleteProfile) {
-        this.$emit('delete', this.document._id);
-      }
-    },
-    update() {
-      if (this.canEditProfile) {
-        this.$emit('edit', this.document._id);
-      }
-    },
-  },
-};
+);
+
+function toggleCollapse(): void {
+  expanded.value = !expanded.value;
+}
+function notifyCheckboxClick(): void {
+  emit('checkbox-click', props.document._id);
+}
+function deleteDocument(): void {
+  if (authStore.canDeleteProfile) {
+    emit('delete', props.document._id);
+  }
+}
+function update(): void {
+  if (authStore.canEditProfile) {
+    emit('edit', props.document._id);
+  }
+}
 </script>

@@ -20,15 +20,16 @@
               <Label for="role-id">Role ID</Label>
               <Input
                 id="role-id"
-                v-model="v$.idValue.$model"
                 :aria-invalid="idFeedback ? 'true' : undefined"
+                :model-value="v$.idValue.$model ?? undefined"
+                @update:model-value="v$.idValue.$model = String($event)"
               />
               <FormMessage v-if="idFeedback">{{ idFeedback }}</FormMessage>
               <FormDescription v-else>This field is mandatory</FormDescription>
             </FormItem>
             <FormItem v-else>
               <Label for="role-id">Role ID</Label>
-              <Input id="role-id" disabled :value="id" />
+              <Input id="role-id" disabled :model-value="id" />
             </FormItem>
             <!--
               La validation refusait déjà un JSON invalide, mais rien ne le disait :
@@ -40,10 +41,9 @@
             >
               Invalid JSON. Fix the syntax before submitting.
             </FormMessage>
-            <json-editor
-              ref="jsoneditor"
+            <JsonEditor
               class="CreateOrUpdateRole-jsonEditor"
-              :content="documentValue"
+              :content="form.documentValue"
               data-cy="RoleCreateOrUpdate-jsonEditor"
               @change="onContentChange"
             />
@@ -97,11 +97,12 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
-import { not, requiredUnless, helpers } from '@vuelidate/validators';
-import { omit, intersection } from 'lodash';
-import { mapState } from 'pinia';
+import { helpers, not, requiredUnless } from '@vuelidate/validators';
+import { intersection, omit } from 'lodash';
+import { useRouter } from 'vue-router';
 
 import JsonEditor from '../../Common/JsonEditor.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -112,154 +113,145 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { FormDescription, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
-import { startsWithSpace, isWhitespace } from '@/validators';
+import { isWhitespace, startsWithSpace } from '@/validators';
 
-export default {
-  name: 'CreateOrUpdateRole',
-  components: {
-    Alert,
-    Button,
-    Card,
-    CardContent,
-    CardFooter,
-    FormDescription,
-    FormItem,
-    FormMessage,
-    Headline,
-    Input,
-    JsonEditor,
-    Label,
-    Notice,
-  },
-  props: {
-    id: {
-      type: String,
-    },
-  },
-  setup() {
-    return { v$: useVuelidate() };
-  },
-  data() {
-    return {
-      documentValue: '{}',
-      idValue: null,
-      loading: false,
-      submitting: false,
-      attachedProfiles: [],
-    };
-  },
-  validations() {
-    return {
-      idValue: {
-        isNotWhitespace: helpers.withMessage(
-          'This field cannot contain just whitespaces',
-          not(isWhitespace),
-        ),
-        required: helpers.withMessage(
-          'This field cannot be empty',
-          requiredUnless(() => !!this.id),
-        ),
-        startsWithLetter: helpers.withMessage(
-          'This field cannot start with a whitespace',
-          not(startsWithSpace),
-        ),
-      },
-      documentValue: {
-        syntaxOK: function (value) {
-          try {
-            JSON.parse(value);
-          } catch (e) {
-            return false;
-          }
-          return true;
-        },
-      },
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle']),
-    ...mapState(useAuthStore, ['userProfiles']),
-    displayWarningAlert() {
-      return intersection(this.attachedProfiles, this.userProfiles).length !== 0;
-    },
-    idFeedback() {
-      if (this.v$.idValue.$errors.length > 0) {
-        return this.v$.idValue.$errors[0].$message;
-      }
+const props = defineProps<{
+  id?: string;
+}>();
 
-      return null;
-    },
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const router = useRouter();
+const toast = useToast();
+
+const form = reactive<{ documentValue: string; idValue: string | null }>({
+  documentValue: '{}',
+  idValue: null,
+});
+const loading = ref(false);
+const submitting = ref(false);
+const attachedProfiles = ref<string[]>([]);
+
+const rules = computed(() => ({
+  idValue: {
+    isNotWhitespace: helpers.withMessage(
+      'This field cannot contain just whitespaces',
+      not(isWhitespace),
+    ),
+    required: helpers.withMessage(
+      'This field cannot be empty',
+      requiredUnless(() => !!props.id),
+    ),
+    startsWithLetter: helpers.withMessage(
+      'This field cannot start with a whitespace',
+      not(startsWithSpace),
+    ),
   },
-  async mounted() {
-    if (!this.id) {
-      return;
-    }
-    try {
-      this.loading = true;
-      this.searchAttachedProfiles();
-      const fetchedRole = await this.$kuzzle.security.getRole(this.id);
-      this.idValue = fetchedRole._id;
-      const role = omit(fetchedRole, ['_id', '_kuzzle']);
-      this.documentValue = JSON.stringify(role, null, 2);
-    } catch (e) {
-      this.$log.error(e);
-      this.$toast.warning(
-        'Ooops! Something went wrong while fetching the role',
-        'The complete error has been printed to console',
-      );
-    }
-    this.loading = false;
-  },
-  methods: {
-    async searchAttachedProfiles() {
+  documentValue: {
+    syntaxOK: (value: string) => {
       try {
-        const res = await this.$kuzzle.security.searchProfiles({
-          roles: [this.id],
-        });
-        this.attachedProfiles = res.hits.map((p) => p._id);
-      } catch (error) {
-        this.$log.error(error);
+        JSON.parse(value);
+      } catch {
+        return false;
       }
-    },
-    onContentChange(value) {
-      this.v$.documentValue.$model = value;
-    },
-    async submit() {
-      this.v$.$touch();
-      if (this.v$.$errors.length > 0) {
-        return;
-      }
-
-      this.submitting = true;
-
-      try {
-        await this.$kuzzle.security.createOrReplaceRole(
-          this.idValue,
-          JSON.parse(this.documentValue),
-          {
-            refresh: 'wait_for',
-          },
-        );
-        this.$router.push({ name: 'SecurityRolesList' });
-      } catch (e) {
-        this.$log.error(e);
-        this.$toast.warning(
-          'Ooops! Something went wrong while submitting the role',
-          'The complete error has been printed to console',
-        );
-        this.submitting = false;
-      }
-    },
-    cancel() {
-      if (this.$router._prevTransition && this.$router._prevTransition.to) {
-        this.$router.push(this.$router._prevTransition.to);
-      } else {
-        this.$router.push({ name: 'SecurityRolesList' });
-      }
+      return true;
     },
   },
-};
+}));
+const v$ = useVuelidate(rules, form);
+
+const displayWarningAlert = computed(
+  () => intersection(attachedProfiles.value, authStore.userProfiles).length !== 0,
+);
+const idFeedback = computed(() => {
+  if (v$.value.idValue.$errors.length > 0) {
+    return v$.value.idValue.$errors[0].$message;
+  }
+
+  return null;
+});
+
+/* Le SDK de la connexion courante. Appelé dans un `try` : son absence y est
+   une erreur comme une autre. */
+function sdk() {
+  const kuzzle = kuzzleStore.$kuzzle;
+  if (!kuzzle) {
+    throw new Error('No Kuzzle SDK for the current environment');
+  }
+  return kuzzle;
+}
+
+async function searchAttachedProfiles(): Promise<void> {
+  if (!props.id) {
+    return;
+  }
+  try {
+    const res = await sdk().security.searchProfiles({
+      roles: [props.id],
+    });
+    attachedProfiles.value = res.hits.map((p) => p._id);
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
+onMounted(async () => {
+  if (!props.id) {
+    return;
+  }
+  try {
+    loading.value = true;
+    searchAttachedProfiles();
+    const fetchedRole = await sdk().security.getRole(props.id);
+    form.idValue = fetchedRole._id;
+    const role = omit(fetchedRole, ['_id', '_kuzzle']);
+    form.documentValue = JSON.stringify(role, null, 2);
+  } catch (e) {
+    logger.error(e);
+    toast.warning(
+      'Ooops! Something went wrong while fetching the role',
+      'The complete error has been printed to console',
+    );
+  }
+  loading.value = false;
+});
+
+function onContentChange(value: string): void {
+  v$.value.documentValue.$model = value;
+}
+
+async function submit(): Promise<void> {
+  v$.value.$touch();
+  if (v$.value.$errors.length > 0) {
+    return;
+  }
+
+  submitting.value = true;
+
+  try {
+    await sdk().security.createOrReplaceRole(form.idValue, JSON.parse(form.documentValue), {
+      refresh: 'wait_for',
+    });
+    router.push({ name: 'SecurityRolesList' });
+  } catch (e) {
+    logger.error(e);
+    toast.warning(
+      'Ooops! Something went wrong while submitting the role',
+      'The complete error has been printed to console',
+    );
+    submitting.value = false;
+  }
+}
+
+/* Le retour à la page précédente lisait `$router._prevTransition`, un
+   interne de vue-router 3 qui n'existe plus : l'annulation menait déjà
+   toujours à la liste. */
+function cancel(): void {
+  router.push({ name: 'SecurityRolesList' });
+}
 </script>
 
 <style lang="scss" scoped>

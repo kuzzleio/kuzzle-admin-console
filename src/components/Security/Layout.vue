@@ -32,51 +32,56 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 
 import { useAuthStore } from '@/stores';
 
-export default {
-  name: 'SecurityLayout',
-  computed: {
-    ...mapState(useAuthStore, ['canManageUsers', 'canManageRoles', 'canManageProfiles']),
-    visibleSections() {
-      return [
-        {
-          icon: 'fa-user',
-          label: 'Users',
-          route: 'SecurityUsersList',
-          segment: 'users',
-          visible: this.canManageUsers,
-        },
-        {
-          icon: 'fa-id-badge',
-          label: 'Profiles',
-          route: 'SecurityProfilesList',
-          segment: 'profiles',
-          visible: this.canManageProfiles,
-        },
-        {
-          icon: 'fa-unlock-alt',
-          label: 'Roles',
-          route: 'SecurityRolesList',
-          segment: 'roles',
-          visible: this.canManageRoles,
-        },
-      ].filter((section) => section.visible);
+interface Section {
+  icon: string;
+  label: string;
+  route: string;
+  segment: string;
+  visible: boolean;
+}
+
+const authStore = useAuthStore();
+const route = useRoute();
+
+const visibleSections = computed((): Section[] =>
+  [
+    {
+      icon: 'fa-user',
+      label: 'Users',
+      route: 'SecurityUsersList',
+      segment: 'users',
+      visible: authStore.canManageUsers,
     },
-  },
-  methods: {
-    /*
-     * Le test porte sur le segment d'URL et non sur le nom de route : une
-     * section reste la section courante quand on est sur la création ou
-     * l'édition d'un de ses éléments. C'est ce que faisait déjà le `:class`
-     * du `<b-nav-item>`.
-     */
-    isCurrent(section) {
-      return this.$route.path.includes(section.segment);
+    {
+      icon: 'fa-id-badge',
+      label: 'Profiles',
+      route: 'SecurityProfilesList',
+      segment: 'profiles',
+      visible: authStore.canManageProfiles,
     },
-  },
-};
+    {
+      icon: 'fa-unlock-alt',
+      label: 'Roles',
+      route: 'SecurityRolesList',
+      segment: 'roles',
+      visible: authStore.canManageRoles,
+    },
+  ].filter((section) => section.visible),
+);
+
+/*
+ * Le test porte sur le segment d'URL et non sur le nom de route : une
+ * section reste la section courante quand on est sur la création ou
+ * l'édition d'un de ses éléments. C'est ce que faisait déjà le `:class`
+ * du `<b-nav-item>`.
+ */
+function isCurrent(section: Section): boolean {
+  return route.path.includes(section.segment);
+}
 </script>

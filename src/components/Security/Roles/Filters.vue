@@ -44,9 +44,8 @@
   </Card>
 </template>
 
-<script>
-import { markRaw } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { onMounted, ref, watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -63,75 +62,63 @@ import {
   TagsInputItemDelete,
   TagsInputItemText,
 } from '@/components/ui/tags-input';
+import { logger } from '@/plugins/logger';
 import { useKuzzleStore } from '@/stores';
+import type { RoleFilter } from './types';
 
-export default {
-  name: 'RolesFilters',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-    TagsInput,
-    TagsInputInput,
-    TagsInputItem,
-    TagsInputItemDelete,
-    TagsInputItemText,
+const props = defineProps<{
+  currentFilter?: RoleFilter | null;
+}>();
+
+const emit = defineEmits<{
+  (e: 'filters-updated', filter: { controllers: string[] }): void;
+}>();
+
+const kuzzleStore = useKuzzleStore();
+
+const controllers = ref<string[]>([]);
+const availableControllers = ref<string[]>([]);
+const disableDropdown = ref(false);
+
+/* `addController` mute le tableau sur place — voir G-058. */
+watch(
+  controllers,
+  (value) => {
+    emit('filters-updated', { controllers: value });
   },
-  props: {
-    currentFilter: Object,
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle']),
-  },
-  data() {
-    return {
-      /* `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom. */
-      Button: markRaw(Button),
-      controllers: [],
-      availableControllers: [],
-      disableDropdown: false,
-    };
-  },
-  watch: {
-    controllers: {
-      /* `addController` mute le tableau sur place — voir G-058. */
-      deep: true,
-      handler(value) {
-        this.$emit('filters-updated', { controllers: value });
-      },
-    },
-  },
-  mounted() {
-    this.controllers =
-      this.currentFilter && this.currentFilter.controllers ? this.currentFilter.controllers : [];
-    this.getKuzzlePublicApi();
-  },
-  methods: {
-    resetSearch() {
-      this.controllers = [];
-    },
-    addControllerTag(controller) {
-      if (this.controllers.includes(controller)) {
-        return;
-      }
-      this.controllers.push(controller);
-    },
-    async getKuzzlePublicApi() {
-      try {
-        const publicApi = await this.$kuzzle.query({
-          controller: 'server',
-          action: 'publicApi',
-        });
-        this.availableControllers = Object.keys(publicApi.result);
-      } catch (error) {
-        this.disableDropdown = true;
-        this.$log.error(error);
-      }
-    },
-  },
-};
+  { deep: true },
+);
+
+function resetSearch(): void {
+  controllers.value = [];
+}
+
+function addControllerTag(controller: string): void {
+  if (controllers.value.includes(controller)) {
+    return;
+  }
+  controllers.value.push(controller);
+}
+
+async function getKuzzlePublicApi(): Promise<void> {
+  try {
+    const kuzzle = kuzzleStore.$kuzzle;
+    if (!kuzzle) {
+      throw new Error('No Kuzzle SDK for the current environment');
+    }
+    const publicApi = await kuzzle.query({
+      controller: 'server',
+      action: 'publicApi',
+    });
+    availableControllers.value = Object.keys(publicApi.result);
+  } catch (error) {
+    disableDropdown.value = true;
+    logger.error(error);
+  }
+}
+
+onMounted(() => {
+  controllers.value = props.currentFilter?.controllers ? props.currentFilter.controllers : [];
+  getKuzzlePublicApi();
+});
 </script>

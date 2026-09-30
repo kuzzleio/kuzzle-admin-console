@@ -20,9 +20,9 @@
         <Button
           class="RoleItem-update"
           :data-cy="`RoleItem-update--${document._id}`"
-          :disabled="!canEditRole"
+          :disabled="!authStore.canEditRole"
           size="icon"
-          :title="canEditRole ? 'Edit Role' : 'You are not allowed to edit this role'"
+          :title="authStore.canEditRole ? 'Edit Role' : 'You are not allowed to edit this role'"
           variant="ghost"
           @click.prevent="update"
         >
@@ -31,11 +31,13 @@
         <Button
           class="RoleItem-delete"
           :data-cy="`RoleItem-delete--${document._id}`"
-          :disabled="!canDeleteRole"
+          :disabled="!authStore.canDeleteRole"
           size="icon"
-          :title="canDeleteRole ? 'Delete role' : 'You are not allowed to delete this role'"
+          :title="
+            authStore.canDeleteRole ? 'Delete role' : 'You are not allowed to delete this role'
+          "
           variant="ghost"
-          @click.prevent="deleteDocument(document._id)"
+          @click.prevent="deleteDocument"
         >
           <i class="fa fa-trash" aria-hidden="true" />
         </Button>
@@ -48,59 +50,53 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { ref, watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuthStore } from '@/stores';
+import type { RoleDocument } from './types';
 
 import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 
-export default {
-  name: 'RoleItem',
-  components: {
-    JsonTree,
-    Button,
-    Checkbox,
+const props = defineProps<{
+  document: RoleDocument;
+  isChecked: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: 'checkbox-click', id: string): void;
+  (e: 'common-list::edit-document', route: string, id: string): void;
+  (e: 'delete-document', id: string): void;
+}>();
+
+const authStore = useAuthStore();
+
+const expanded = ref(false);
+const checked = ref(false);
+
+watch(
+  () => props.isChecked,
+  (value) => {
+    checked.value = value;
   },
-  props: {
-    document: Object,
-    isChecked: Boolean,
-  },
-  data() {
-    return {
-      expanded: false,
-      checked: false,
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canEditRole', 'canDeleteRole']),
-  },
-  watch: {
-    isChecked: {
-      handler(value) {
-        this.checked = value;
-      },
-    },
-  },
-  methods: {
-    toggleCollapse() {
-      this.expanded = !this.expanded;
-    },
-    notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document._id);
-    },
-    deleteDocument() {
-      if (this.canDeleteRole) {
-        this.$emit('delete-document', this.document._id);
-      }
-    },
-    update() {
-      if (this.canEditRole) {
-        this.$emit('common-list::edit-document', 'SecurityRolesUpdate', this.document._id);
-      }
-    },
-  },
-};
+);
+
+function toggleCollapse(): void {
+  expanded.value = !expanded.value;
+}
+function notifyCheckboxClick(): void {
+  emit('checkbox-click', props.document._id);
+}
+function deleteDocument(): void {
+  if (authStore.canDeleteRole) {
+    emit('delete-document', props.document._id);
+  }
+}
+function update(): void {
+  if (authStore.canEditRole) {
+    emit('common-list::edit-document', 'SecurityRolesUpdate', props.document._id);
+  }
+}
 </script>
