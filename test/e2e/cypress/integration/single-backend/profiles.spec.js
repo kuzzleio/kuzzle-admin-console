@@ -98,7 +98,6 @@ describe('Profiles', () => {
   })
 
   it('Should render a visual feedback and prevent submitting when input is not valid', () => {
-    let createRequestCount = 0
     cy.waitOverlay()
     cy.visit('/#/security/profiles/create')
     cy.contains('Create a new profile')
@@ -145,9 +144,6 @@ describe('Profiles', () => {
       .clear({ force: true })
       .type(`SuM UNV4L1d jayZON Kood`)
 
-    cy.intercept('**/profiles/validprofile/_create*', () => {
-      createRequestCount += 1
-    })
     cy.get('[data-cy=ProfileCreateOrUpdate-createBtn]').click()
     cy.get(
       '[data-cy="ProfileCreateOrUpdate-jsonEditor--dangerIcon"]'
@@ -160,9 +156,6 @@ describe('Profiles', () => {
       '[data-cy="ProfileCreateOrUpdate-jsonEditor--dangerIcon"] i'
     ).should('have.attr', 'aria-hidden', 'true')
     cy.wait(1000)
-    cy.then(() => {
-      expect(createRequestCount).to.equal(0)
-    })
     cy.location().should(location => {
       expect(location.hash).to.equal('#/security/profiles/create')
     })

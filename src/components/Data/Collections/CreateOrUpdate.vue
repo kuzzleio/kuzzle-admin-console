@@ -113,7 +113,8 @@
     "name": { "type": "keyword" }
   }
 }
-              </pre>
+              </pre
+                >
               </div>
             </div>
           </b-col>

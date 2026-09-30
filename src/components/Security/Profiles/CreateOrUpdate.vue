@@ -58,7 +58,8 @@
       "roleId": "roleId"
     }]
 }
-        </pre>
+        </pre
+          >
           You can also restrict your policy to a set of indexes and collections, so that your roles
           will be valid to a specific subset of your data, like the example below:
           <pre class="my-3 ml-3">
@@ -74,7 +75,8 @@
       }
     }]
 }
-        </pre>
+        </pre
+          >
         </div>
       </b-col>
     </b-row>
