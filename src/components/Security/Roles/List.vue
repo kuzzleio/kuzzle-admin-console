@@ -66,13 +66,13 @@
           <b-list-group class="RoleList-list collection">
             <b-list-group-item
               v-for="document in documents"
-              :key="document.id"
+              :key="document._id"
               data-cy="RoleList-list"
               class="p-2"
             >
               <RoleItem
                 :document="document"
-                :is-checked="isChecked(document.id)"
+                :is-checked="isChecked(document._id)"
                 @checkbox-click="toggleSelectDocuments"
                 @common-list::edit-document="editDocument"
                 @delete-document="deleteRole"
@@ -186,6 +186,10 @@ export default {
       this.deleteModalIsLoading = true;
       try {
         await this.wrapper.performDeleteRoles(this.candidatesForDeletion);
+        // Un rôle supprimé sort de la sélection (G-113).
+        this.selectedDocuments = this.selectedDocuments.filter(
+          (id) => !this.candidatesForDeletion.includes(id),
+        );
         this.$bvModal.hide('modal-delete-roles');
         this.deleteModalIsLoading = false;
         this.fetchRoles();
