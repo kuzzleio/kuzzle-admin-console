@@ -46,9 +46,8 @@
   </Card>
 </template>
 
-<script>
-import { markRaw } from 'vue';
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -61,80 +60,66 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useKuzzleStore } from '@/stores';
 
-export default {
-  name: 'Filters',
-  components: {
-    Badge,
-    Button,
-    Card,
-    CardContent,
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
+const props = withDefaults(
+  defineProps<{
+    currentFilter?: string[];
+  }>(),
+  { currentFilter: () => [] },
+);
+
+const emit = defineEmits<{
+  (e: 'filters-updated', roles: string[]): void;
+  (e: 'reset'): void;
+}>();
+
+const kuzzleStore = useKuzzleStore();
+
+const roleList = ref<string[]>([]);
+const selectedRoles = ref<string[]>([]);
+
+const hasFilter = computed(() => selectedRoles.value.length > 0);
+
+/*
+ * `toggleRole` mute le tableau sur place (`push` / `splice`). En Vue 2,
+ * un watcher non `deep` se déclenchait sur ces mutations ; en Vue 3 il ne
+ * voit que le changement de référence (G-058).
+ */
+watch(
+  selectedRoles,
+  () => {
+    emit('filters-updated', selectedRoles.value);
   },
-  props: {
-    labelSearchButton: {
-      type: String,
-      required: false,
-      default: 'search',
-    },
-    currentFilter: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  emits: ['filters-updated', 'reset'],
-  data() {
-    return {
-      /* `DropdownMenuTrigger` prend le composant en prop `as`, pas son nom. */
-      Button: markRaw(Button),
-      roleList: [],
-      selectedRoles: [],
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper']),
-    hasFilter() {
-      return this.selectedRoles.length > 0;
-    },
-  },
-  watch: {
-    selectedRoles: {
-      /*
-       * `toggleRole` mute le tableau sur place (`push` / `splice`). En Vue 2,
-       * un watcher non `deep` se déclenchait sur ces mutations ; en Vue 3 il ne
-       * voit que le changement de référence (G-058).
-       */
-      deep: true,
-      handler() {
-        this.$emit('filters-updated', this.selectedRoles);
-      },
-    },
-  },
-  mounted() {
-    this.fetchRoleList();
-    this.selectedRoles = this.currentFilter.map((role) => role);
-  },
-  methods: {
-    async fetchRoleList() {
-      const res = await this.wrapper.performSearchRoles();
-      this.roleList = res.documents.map((role) => role._id);
-    },
-    roleIsSelected(role) {
-      return this.selectedRoles.includes(role);
-    },
-    toggleRole(role, value) {
-      if (!value) {
-        this.selectedRoles.splice(this.selectedRoles.indexOf(role), 1);
-      } else {
-        this.selectedRoles.push(role);
-      }
-    },
-    reset() {
-      this.selectedRoles = [];
-      this.$emit('reset');
-    },
-  },
-};
+  { deep: true },
+);
+
+async function fetchRoleList(): Promise<void> {
+  const wrapper = kuzzleStore.wrapper;
+  if (!wrapper) {
+    return;
+  }
+  const res = await wrapper.performSearchRoles();
+  roleList.value = res.documents.map((role: { _id: string }) => role._id);
+}
+
+function roleIsSelected(role: string): boolean {
+  return selectedRoles.value.includes(role);
+}
+
+function toggleRole(role: string, value: boolean): void {
+  if (!value) {
+    selectedRoles.value.splice(selectedRoles.value.indexOf(role), 1);
+  } else {
+    selectedRoles.value.push(role);
+  }
+}
+
+function reset(): void {
+  selectedRoles.value = [];
+  emit('reset');
+}
+
+onMounted(() => {
+  fetchRoleList();
+  selectedRoles.value = props.currentFilter.map((role) => role);
+});
 </script>

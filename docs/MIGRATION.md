@@ -919,7 +919,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 4. `Common/Environments`
   - [x] 5. `ApiAction`
   - [x] 6. `Security` : `Layout`, `Common`, `Roles`
-  - [ ] 7. `Security/Profiles`
+  - [x] 7. `Security/Profiles`
   - [ ] 8. `Security/Users`
   - [ ] 9. `Data` : `Indexes`, `Leftnav`, racine
   - [ ] 10. `Data` : `Collections`, `Realtime`
