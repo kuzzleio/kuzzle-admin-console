@@ -2,7 +2,7 @@
   <div class="UserList">
     <slot v-if="isCollectionEmpty && !loading" name="emptySet" />
     <template v-else>
-      <filters
+      <Filters
         class="mb-3"
         :available-operands="searchFilterOperands"
         :current-filter="currentFilter"
@@ -62,8 +62,6 @@
                 <UserItem
                   :document="document"
                   :is-checked="isChecked(document.id)"
-                  :index="index"
-                  :collection="collection"
                   @checkbox-click="toggleSelectDocuments"
                   @edit="editUser"
                   @delete="deleteUser"
@@ -83,7 +81,7 @@
         />
       </template>
 
-      <delete-modal
+      <DeleteModal
         v-model:open="deleteModalOpen"
         :candidates-for-deletion="candidatesForDeletion"
         :is-loading="deleteModalIsLoading"
@@ -94,15 +92,20 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import Filters from '../../Common/Filters/Filters.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import * as filterManager from '@/services/filterManager';
+import type { MappingAttributes } from '@/services/mappingHelpers';
 import { useAuthStore, useKuzzleStore } from '@/stores';
+import type { UserDocument } from './types';
 
 import ListPagination from '@/components/Common/ListPagination.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
@@ -110,250 +113,236 @@ import NoSearchResult from '@/components/Security/Common/NoSearchResult.vue';
 import DeleteModal from './DeleteModal.vue';
 import UserItem from './UserItem.vue';
 
-export default {
-  name: 'UserList',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    DeleteModal,
-    Filters,
-    ListPagination,
-    NoSearchResult,
-    PerPageSelector,
-    Spinner,
-    UserItem,
-  },
-  props: {
-    index: String,
-    collection: String,
-    itemName: String,
-    displayCreate: {
-      type: Boolean,
-      default: false,
-    },
-    mappingAttributes: {
-      type: Object,
-      required: true,
-    },
-    performSearch: Function,
-    performDelete: Function,
-    routeCreate: String,
-    routeUpdate: String,
-  },
-  setup() {
-    return {
-      authStore: useAuthStore(),
-    };
-  },
-  data() {
-    return {
-      deleteModalOpen: false,
-      currentFilter: new filterManager.Filter(),
-      currentPage: 1,
-      deleteModalIsLoading: false,
-      documents: [],
-      loading: true,
-      searchFilterOperands: filterManager.searchFilterOperands,
-      selectedDocuments: [],
-      totalDocuments: 0,
-      candidatesForDeletion: [],
-      paginationSize: 25,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper']),
-    isDocumentListFiltered() {
-      return this.currentFilter.active !== filterManager.NO_ACTIVE;
-    },
-    isCollectionEmpty() {
-      return !this.isDocumentListFiltered && this.totalDocuments === 0;
-    },
-    displayBulkDelete() {
-      return this.selectedDocuments.length > 0;
-    },
-    allChecked() {
-      if (!this.selectedDocuments || !this.documents) {
-        return false;
-      }
+/* Le filtre de `filterManager`, pour ce que la liste en lit. */
+interface ListFilter {
+  [key: string]: unknown;
+  active: string | null;
+  from?: unknown;
+}
 
-      return this.selectedDocuments.length === this.documents.length;
-    },
-    paginationFrom() {
-      return parseInt(this.currentFilter.from) || 0;
-    },
+const props = withDefaults(
+  defineProps<{
+    collection?: string;
+    displayCreate?: boolean;
+    index?: string;
+    itemName?: string;
+    mappingAttributes: MappingAttributes;
+    performDelete?: (...args: unknown[]) => unknown;
+    performSearch?: (...args: unknown[]) => unknown;
+    routeCreate?: string;
+    routeUpdate?: string;
+  }>(),
+  {
+    collection: undefined,
+    displayCreate: false,
+    index: undefined,
+    itemName: undefined,
+    performDelete: undefined,
+    performSearch: undefined,
+    routeCreate: undefined,
+    routeUpdate: undefined,
   },
-  watch: {
-    $route: {
-      immediate: false,
-      handler(newValue) {
-        this.currentFilter = filterManager.load(this.index, this.collection, newValue);
-        filterManager.save(this.currentFilter, this.$router, this.index, this.collection);
-      },
-    },
-    currentFilter() {
-      this.fetchDocuments();
-    },
-    currentPage: {
-      handler(value) {
-        const from = (value - 1) * this.paginationSize;
-        this.onFiltersUpdated(
-          Object.assign(this.currentFilter, {
-            from,
-          }),
-        );
-      },
-    },
-  },
-  mounted() {
-    this.currentFilter = filterManager.load(this.index, this.collection, this.$route);
-    filterManager.save(this.currentFilter, this.$router, this.index, this.collection);
-  },
-  methods: {
-    changePaginationSize(e) {
-      this.paginationSize = e;
-      this.fetchDocuments();
-    },
-    isChecked(id) {
-      return this.selectedDocuments.includes(id);
-    },
-    toggleAll() {
-      if (this.allChecked) {
-        this.selectedDocuments = [];
-        return;
-      }
-      this.selectedDocuments = this.documents.map((document) => document.id);
-    },
-    toggleSelectDocuments(id) {
-      const index = this.selectedDocuments.indexOf(id);
+);
 
-      if (index === -1) {
-        this.selectedDocuments.push(id);
-        return;
-      }
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
 
-      this.selectedDocuments.splice(index, 1);
-    },
-    onFiltersUpdated(newFilters, loadedFromHistory) {
-      this.currentFilter = newFilters;
-      try {
-        filterManager.save(newFilters, this.$router, this.index, this.collection);
-        if (!loadedFromHistory) {
-          filterManager.addNewHistoryItemAndSave(newFilters, this.index, this.collection);
-        }
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while updating the filters',
-          'The complete error has been printed to console',
-        );
-      }
-    },
-    async fetchDocuments() {
-      this.loading = true;
-      this.$forceUpdate();
+const deleteModalOpen = ref(false);
+const currentFilter = ref<ListFilter>(new filterManager.Filter());
+const currentPage = ref(1);
+const deleteModalIsLoading = ref(false);
+const documents = ref<UserDocument[]>([]);
+const loading = ref(true);
+const searchFilterOperands = filterManager.searchFilterOperands;
+const selectedDocuments = ref<string[]>([]);
+const totalDocuments = ref(0);
+const candidatesForDeletion = ref<string[]>([]);
+const paginationSize = ref(25);
 
-      this.selectedDocuments = [];
+const isDocumentListFiltered = computed(
+  () => currentFilter.value.active !== filterManager.NO_ACTIVE,
+);
+const isCollectionEmpty = computed(
+  () => !isDocumentListFiltered.value && totalDocuments.value === 0,
+);
+const displayBulkDelete = computed(() => selectedDocuments.value.length > 0);
+const allChecked = computed(() => selectedDocuments.value.length === documents.value.length);
+const paginationFrom = computed(() => Number.parseInt(String(currentFilter.value.from)) || 0);
 
-      const pagination = {
-        from: this.paginationFrom,
-        size: this.paginationSize,
-      };
+/* Le wrapper de la connexion courante. Appelé dans un `try` : son absence y
+   est une erreur comme une autre. */
+function wrapper() {
+  const kuzzleWrapper = kuzzleStore.wrapper;
+  if (!kuzzleWrapper) {
+    throw new Error('No Kuzzle wrapper set for the current environment');
+  }
+  return kuzzleWrapper;
+}
 
-      let searchQuery = filterManager.toSearchQuery(
-        this.currentFilter,
-        this.mappingAttributes,
-        this.wrapper,
+function loadAndSaveFilter(): void {
+  currentFilter.value = filterManager.load(props.index, props.collection, route);
+  filterManager.save(currentFilter.value, router, props.index, props.collection);
+}
+
+function onFiltersUpdated(newFilters: ListFilter, loadedFromHistory?: boolean): void {
+  currentFilter.value = newFilters;
+  try {
+    filterManager.save(newFilters, router, props.index, props.collection);
+    if (!loadedFromHistory) {
+      filterManager.addNewHistoryItemAndSave(newFilters, props.index, props.collection);
+    }
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while updating the filters',
+      'The complete error has been printed to console',
+    );
+  }
+}
+
+/* `$forceUpdate()` précédait le chargement : il ne servait à rien, le
+   passage de `loading` à `true` suffit à rendre le spinner. */
+async function fetchDocuments(): Promise<void> {
+  loading.value = true;
+
+  selectedDocuments.value = [];
+
+  const pagination = {
+    from: paginationFrom.value,
+    size: paginationSize.value,
+  };
+
+  let searchQuery = filterManager.toSearchQuery(
+    currentFilter.value,
+    props.mappingAttributes,
+    kuzzleStore.wrapper,
+  );
+  if (!searchQuery) {
+    searchQuery = {};
+  }
+
+  const sorting = filterManager.toSort(currentFilter.value);
+
+  // TODO: refactor how search is done
+  // Execute search with corresponding searchQuery
+  try {
+    const res = await wrapper().performSearchUsers(
+      props.collection,
+      props.index,
+      searchQuery,
+      pagination,
+      sorting,
+    );
+    documents.value = res.documents;
+    totalDocuments.value = res.total;
+    if (res.documents.length === 0 && res.total !== 0) {
+      onFiltersUpdated(
+        Object.assign(currentFilter.value, {
+          from: 0,
+        }),
       );
-      if (!searchQuery) {
-        searchQuery = {};
-      }
+      return;
+    }
+  } catch (error) {
+    logger.error(error);
+    logger.debug(error instanceof Error ? error.stack : undefined);
+    toast.warning(
+      'Ooops! Something went wrong while fetching users.',
+      'The complete error has been printed to console',
+    );
+  }
+  loading.value = false;
+}
 
-      const sorting = filterManager.toSort(this.currentFilter);
+watch(() => route.fullPath, loadAndSaveFilter);
+watch(currentFilter, fetchDocuments);
+watch(currentPage, (value) => {
+  const from = (value - 1) * paginationSize.value;
+  onFiltersUpdated(
+    Object.assign(currentFilter.value, {
+      from,
+    }),
+  );
+});
 
-      // TODO: refactor how search is done
-      // Execute search with corresponding searchQuery
-      try {
-        const res = await this.wrapper.performSearchUsers(
-          this.collection,
-          this.index,
-          searchQuery,
-          pagination,
-          sorting,
-        );
-        this.documents = res.documents;
-        this.totalDocuments = res.total;
-        if (res.documents.length === 0 && res.total !== 0) {
-          this.onFiltersUpdated(
-            Object.assign(this.currentFilter, {
-              from: 0,
-            }),
-          );
-          return;
-        }
-      } catch (error) {
-        this.$log.error(error);
-        this.$log.debug(error.stack);
-        this.$toast.warning(
-          'Ooops! Something went wrong while fetching users.',
-          'The complete error has been printed to console',
-        );
-      }
-      this.loading = false;
-    },
-    editUser(id) {
-      this.$router.push({
-        name: 'SecurityUsersUpdate',
-        params: { id },
-      });
-    },
+onMounted(loadAndSaveFilter);
 
-    // DELETE
-    // =========================================================================
-    async onDeleteConfirmed() {
-      this.deleteModalIsLoading = true;
-      this.loading = true;
-      try {
-        await this.wrapper.performDeleteUsers(
-          this.index,
-          this.collection,
-          this.candidatesForDeletion,
-        );
-        this.deleteModalIsLoading = false;
-        this.deleteModalOpen = false;
-        await this.fetchDocuments();
-        if (this.authStore.adminAlreadyExists) {
-          try {
-            await this.authStore.checkFirstAdmin();
-          } catch (err) {
-            this.$log.error(err);
-            this.setError(err.message);
-          }
-        }
-      } catch (e) {
-        this.$log.error(e);
-        this.deleteModalIsLoading = false;
-        this.$toast.danger(
-          'Ooops! Something went wrong while deleting the document(s).',
-          'The complete error has been printed to the console.',
-        );
-      }
-      this.loading = false;
-    },
-    deleteUser(id) {
-      this.candidatesForDeletion.push(id);
-      this.deleteModalOpen = true;
-    },
-    deleteBulk() {
-      this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
-      this.deleteModalOpen = true;
-    },
-    resetCandidatesForDeletion() {
-      this.candidatesForDeletion = [];
-    },
-    create() {
-      this.$router.push({ name: this.routeCreate });
-    },
-  },
-};
+function changePaginationSize(size: number): void {
+  paginationSize.value = size;
+  fetchDocuments();
+}
+
+function isChecked(id: string): boolean {
+  return selectedDocuments.value.includes(id);
+}
+
+function toggleAll(): void {
+  if (allChecked.value) {
+    selectedDocuments.value = [];
+    return;
+  }
+  selectedDocuments.value = documents.value.map((document) => document.id);
+}
+
+function toggleSelectDocuments(id: string): void {
+  const index = selectedDocuments.value.indexOf(id);
+
+  if (index === -1) {
+    selectedDocuments.value.push(id);
+    return;
+  }
+
+  selectedDocuments.value.splice(index, 1);
+}
+
+function editUser(id: string): void {
+  router.push({
+    name: 'SecurityUsersUpdate',
+    params: { id },
+  });
+}
+
+// DELETE
+// =========================================================================
+async function onDeleteConfirmed(): Promise<void> {
+  deleteModalIsLoading.value = true;
+  loading.value = true;
+  try {
+    await wrapper().performDeleteUsers(props.index, props.collection, candidatesForDeletion.value);
+    deleteModalIsLoading.value = false;
+    deleteModalOpen.value = false;
+    await fetchDocuments();
+    if (authStore.adminAlreadyExists) {
+      /* L'échec de `checkFirstAdmin` était rattrapé ici, puis passé à un
+         `setError` qui n'existait pas : l'appel levait, et c'est le `catch`
+         ci-dessous qui prenait la main. Il la prend désormais directement. */
+      await authStore.checkFirstAdmin();
+    }
+  } catch (e) {
+    logger.error(e);
+    deleteModalIsLoading.value = false;
+    toast.danger(
+      'Ooops! Something went wrong while deleting the document(s).',
+      'The complete error has been printed to the console.',
+    );
+  }
+  loading.value = false;
+}
+
+function deleteUser(id: string): void {
+  candidatesForDeletion.value.push(id);
+  deleteModalOpen.value = true;
+}
+
+function deleteBulk(): void {
+  candidatesForDeletion.value = candidatesForDeletion.value.concat(selectedDocuments.value);
+  deleteModalOpen.value = true;
+}
+
+function resetCandidatesForDeletion(): void {
+  candidatesForDeletion.value = [];
+}
 </script>

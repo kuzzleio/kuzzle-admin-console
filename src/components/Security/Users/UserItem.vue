@@ -47,9 +47,9 @@
         <Button
           class="UserListItem-update"
           :data-cy="`UserListItem-update--${document.id}`"
-          :disabled="!canEditUser"
+          :disabled="!authStore.canEditUser"
           size="icon"
-          :title="canEditUser ? 'Edit User' : 'You are not allowed to edit this user'"
+          :title="authStore.canEditUser ? 'Edit User' : 'You are not allowed to edit this user'"
           variant="ghost"
           @click.prevent="update"
         >
@@ -58,11 +58,13 @@
         <Button
           class="UserListItem-delete"
           :data-cy="`UserListItem-delete--${document.id}`"
-          :disabled="!canDeleteUser"
+          :disabled="!authStore.canDeleteUser"
           size="icon"
-          :title="canDeleteUser ? 'Delete user' : 'You are not allowed to delete this user'"
+          :title="
+            authStore.canDeleteUser ? 'Delete user' : 'You are not allowed to delete this user'
+          "
           variant="ghost"
-          @click.prevent="deleteDocument(document.id)"
+          @click.prevent="deleteDocument"
         >
           <i class="fa fa-trash" aria-hidden="true" />
         </Button>
@@ -75,84 +77,69 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuthStore } from '@/stores';
+import type { UserDocument } from './types';
 
 import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 
-const MAX_PROFILES = 5;
+const props = defineProps<{
+  document: UserDocument;
+  isChecked: boolean;
+}>();
 
-export default {
-  name: 'UserItem',
-  components: {
-    JsonTree,
-    Badge,
-    Button,
-    Checkbox,
+const emit = defineEmits<{
+  (e: 'checkbox-click', id: string): void;
+  (e: 'delete', id: string): void;
+  (e: 'edit', id: string): void;
+}>();
+
+const authStore = useAuthStore();
+
+const expanded = ref(false);
+const checked = ref(false);
+
+const profileList = computed(() => {
+  if (!props.document.profileIds) {
+    return [];
+  }
+  return [...props.document.profileIds].sort();
+});
+const checkboxId = computed(() => `checkbox-${props.document.id}`);
+const localStrategyUsername = computed(() => {
+  const local = props.document.credentials?.local;
+  return local ? local.username : null;
+});
+
+watch(
+  () => props.isChecked,
+  (value) => {
+    checked.value = value;
   },
-  props: {
-    document: Object,
-    isChecked: Boolean,
-  },
-  data() {
-    return {
-      expanded: false,
-      checked: false,
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canEditUser', 'canDeleteUser']),
-    profileList() {
-      if (!this.document.profileIds) {
-        return [];
-      }
-      const sorted = [...this.document.profileIds].sort();
-      return sorted;
-    },
-    showAllProfiles() {
-      return this.document.profileIds > MAX_PROFILES;
-    },
-    checkboxId() {
-      return `checkbox-${this.document.id}`;
-    },
-    localStrategyUsername() {
-      return this.document.credentials && this.document.credentials.local
-        ? this.document.credentials.local.username
-        : null;
-    },
-  },
-  watch: {
-    isChecked: {
-      handler(value) {
-        this.checked = value;
-      },
-    },
-  },
-  methods: {
-    profileRoute(profile) {
-      return { name: 'SecurityProfilesUpdate', params: { id: profile } };
-    },
-    toggleCollapse() {
-      this.expanded = !this.expanded;
-    },
-    notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document.id);
-    },
-    deleteDocument() {
-      if (this.canDeleteUser) {
-        this.$emit('delete', this.document.id);
-      }
-    },
-    update() {
-      if (this.canEditUser) {
-        this.$emit('edit', this.document.id);
-      }
-    },
-  },
-};
+);
+
+function profileRoute(profile: string) {
+  return { name: 'SecurityProfilesUpdate', params: { id: profile } };
+}
+function toggleCollapse(): void {
+  expanded.value = !expanded.value;
+}
+function notifyCheckboxClick(): void {
+  emit('checkbox-click', props.document.id);
+}
+function deleteDocument(): void {
+  if (authStore.canDeleteUser) {
+    emit('delete', props.document.id);
+  }
+}
+function update(): void {
+  if (authStore.canEditUser) {
+    emit('edit', props.document.id);
+  }
+}
 </script>

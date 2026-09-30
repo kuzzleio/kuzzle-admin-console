@@ -2,7 +2,7 @@
   <div class="UserProfileList flex flex-wrap items-center gap-4">
     <div class="min-w-0 flex-1">
       <div v-if="profileList.length">
-        <Select :model-value="selectedProfiled" @update:modelValue="onProfileSelected">
+        <Select :model-value="selectedProfiled" @update:model-value="onProfileSelected">
           <SelectTrigger aria-label="Add a profile" data-cy="UserProfileList-select">
             <SelectValue placeholder="Select a Profile to add" />
           </SelectTrigger>
@@ -66,8 +66,8 @@
   </div>
 </template>
 
-<script type="text/javascript">
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -79,65 +79,55 @@ import {
 } from '@/components/ui/select';
 import { useKuzzleStore } from '@/stores';
 
-export default {
-  name: 'UserProfileList',
-  components: {
-    Badge,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  },
-  props: {
-    addedProfiles: {
-      type: Array,
-    },
-  },
-  data() {
-    return {
-      profileList: [],
-      /*
-       * `null` et non `0` : le champ n'a pas de valeur tant qu'aucun profil
-       * n'est choisi, et c'est le `placeholder` du `SelectValue` qui porte le
-       * « Select a Profile to add ». L'ancien `0` était une option à part
-       * entière dans la liste.
-       */
-      selectedProfiled: null,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper']),
-    availableProfiles() {
-      return this.profileList
-        .filter((profile) => {
-          return !this.addedProfiles.includes(profile._id);
-        })
-        .map((profile) => profile._id)
-        .sort();
-    },
-  },
-  mounted() {
-    return this.fetchProfileList();
-  },
-  methods: {
-    fetchProfileList() {
-      return this.wrapper.performSearchProfiles().then((result) => {
-        result.documents.forEach((profile) => {
-          this.profileList.push(profile);
-        });
-      });
-    },
-    onProfileSelected(profile) {
-      if (!profile) {
-        return;
-      }
-      this.$emit('selected-profile', profile);
-      this.selectedProfiled = null;
-    },
-    removeProfile(profile) {
-      this.$emit('remove-profile', profile);
-    },
-  },
-};
+const props = defineProps<{
+  addedProfiles: string[];
+}>();
+
+const emit = defineEmits<{
+  (e: 'remove-profile', profile: string): void;
+  (e: 'selected-profile', profile: string): void;
+}>();
+
+const kuzzleStore = useKuzzleStore();
+
+const profileList = ref<{ _id: string }[]>([]);
+/*
+ * `null` et non `0` : le champ n'a pas de valeur tant qu'aucun profil
+ * n'est choisi, et c'est le `placeholder` du `SelectValue` qui porte le
+ * « Select a Profile to add ». L'ancien `0` était une option à part
+ * entière dans la liste.
+ */
+const selectedProfiled = ref<string | null>(null);
+
+const availableProfiles = computed(() =>
+  profileList.value
+    .filter((profile) => !props.addedProfiles.includes(profile._id))
+    .map((profile) => profile._id)
+    .sort(),
+);
+
+async function fetchProfileList(): Promise<void> {
+  const wrapper = kuzzleStore.wrapper;
+  if (!wrapper) {
+    return;
+  }
+  const result = await wrapper.performSearchProfiles();
+  result.documents.forEach((profile: { _id: string }) => {
+    profileList.value.push(profile);
+  });
+}
+
+onMounted(fetchProfileList);
+
+function onProfileSelected(profile: unknown): void {
+  if (!profile) {
+    return;
+  }
+  emit('selected-profile', String(profile));
+  selectedProfiled.value = null;
+}
+
+function removeProfile(profile: string): void {
+  emit('remove-profile', profile);
+}
 </script>
