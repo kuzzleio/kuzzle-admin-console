@@ -142,7 +142,7 @@ export default defineComponent({
     watchRoute(): RouteLocationRaw {
       return {
         name: 'WatchCollection',
-        params: { collection: this.collection, index: this.index },
+        params: { collectionName: this.collection, indexName: this.index },
       };
     },
   },

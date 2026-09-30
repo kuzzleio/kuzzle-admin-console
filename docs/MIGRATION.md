@@ -3994,6 +3994,25 @@ Gabarit à copier :
   vérifié nulle part. La conversion le type, et c'est là que l'erreur sort.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-117 — « Realtime view » ne tenait que par les paramètres de la page courante
+
+- **Contexte** : lot 10 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  lecture de `Data/Collections/DropdownView.vue` avant conversion.
+- **Symptôme** : aucun à l'écran. Le lien « Realtime view » du menu des vues
+  menait bien au temps réel de la collection ouverte, et vue-router
+  signalait en développement des paramètres ignorés, `collection` et `index`.
+- **Cause** : le lien passait `{ collection, index }` à `WatchCollection`,
+  dont les paramètres sont `indexName` et `collectionName`. vue-router
+  écarte les paramètres inconnus et reprend ceux de la route courante : le
+  lien ne marchait que parce que le menu n'est affiché que sur une page de la
+  même collection. Présent depuis la v4 (`params: { collection, index }`),
+  même code sur `4-dev`.
+- **Solution** : le lien passe `indexName` et `collectionName`, et ne dépend
+  plus de la page qui l'affiche.
+- **À retenir** : `RouteLocationRaw` ne vérifie pas les noms des paramètres
+  d'une route nommée ; seul un lien affiché hors de sa page le révèle.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
