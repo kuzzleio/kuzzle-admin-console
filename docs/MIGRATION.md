@@ -4030,6 +4030,24 @@ Gabarit à copier :
   que l'action lit, pas en ajoutant au site d'appel un champ inutile.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-119 — `basicSearchToESQuery` n'acceptait aucun filtre, faute de type
+
+- **Contexte** : lot 11 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/Filters/BasicFilter.vue`.
+- **Symptôme** : `vue-tsc` refuse l'appel de « Generate Raw JSON » :
+  « Argument of type `BasicFilterStatement[][]` is not assignable to
+  parameter of type `never[][]` ».
+- **Cause** : `basicSearchToESQuery(groups = [[]], …)` n'a pas d'annotation ;
+  TypeScript type le paramètre d'après sa valeur par défaut, un tableau vide
+  de tableaux vides, soit `never[][]`. Aucun argument non vide ne passe. Tant
+  que l'appelant était en JavaScript, rien ne le vérifiait.
+- **Solution** : le paramètre est annoté `object[][]` ; le corps lisait déjà
+  chaque condition en `any`. Le comportement ne change pas.
+- **À retenir** : une valeur par défaut vide (`[]`, `[[]]`, `{}`) sans
+  annotation fige un type inutilisable ; il ne se révèle qu'au premier
+  appelant typé.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
