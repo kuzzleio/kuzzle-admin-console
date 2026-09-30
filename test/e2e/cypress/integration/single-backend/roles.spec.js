@@ -285,6 +285,30 @@ describe('Roles', () => {
     cy.get('[data-cy="RoleList-list"]').should('not.contain', roleIds[1])
   })
 
+  it('Should not leave another role checked after deleting a checked one', () => {
+    const roleIds = ['dummy', 'trippy']
+    for (const roleId of roleIds) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/roles/${roleId}/_create?refresh=wait_for`,
+        { controllers: { document: { actions: { get: true } } } }
+      )
+    }
+    cy.visit('#/security/roles')
+    cy.contains(roleIds[0])
+    cy.contains(roleIds[1])
+    cy.get(`[data-cy=RoleItem-checkbox--${roleIds[0]}]`).click({ force: true })
+    cy.get(`[data-cy=RoleItem-delete--${roleIds[0]}]`).click()
+    cy.get('[data-cy=ModalDeleteRoles-submitBtn]').click()
+    cy.get('[data-cy="RoleList-list"]').should('not.contain', roleIds[0])
+
+    // Les lignes étaient indexées par `document.id`, absent : toutes avaient
+    // la même clé, et la ligne suivante héritait de la case cochée de la
+    // ligne supprimée (G-113). La sélection oublie aussi le rôle supprimé.
+    cy.get('[data-cy^=RoleItem-checkbox--]').should('not.be.checked')
+    cy.get('[data-cy=UserList-bulkDeleteBtn]').should('be.disabled')
+  })
+
   it('Should be able to paginate the roles', () => {
     const rolePrefix = 'dummy'
     for (let i = 0; i < 14; i++) {
