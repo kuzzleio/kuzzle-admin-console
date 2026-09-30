@@ -14,9 +14,7 @@
   >
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
+<script setup lang="ts">
 import { Badge } from '@/components/ui/badge';
 
 /*
@@ -24,16 +22,10 @@ import { Badge } from '@/components/ui/badge';
  * pas de texte et c'est sa seule forme visible — une pastille. Le rayon de
  * `Badge` (20 px) ne suffit pas à garantir un cercle si la taille change.
  */
-export default defineComponent({
-  name: 'NewDocumentsBadge',
-  components: {
-    Badge,
-  },
-  props: {
-    hasNewDocuments: {
-      default: false,
-      type: Boolean,
-    },
-  },
-});
+withDefaults(defineProps<{ hasNewDocuments?: boolean }>(), { hasNewDocuments: false });
+
+defineEmits<{
+  (e: 'noop'): void;
+  (e: 'refresh'): void;
+}>();
 </script>

@@ -924,7 +924,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 9. `Data` : `Indexes`, `Leftnav`, racine
   - [x] 10. `Data` : `Collections`, `Realtime`
   - [x] 11. `Common/Filters`
-  - [ ] 12. `Data/Documents`, les vues
+  - [x] 12. `Data/Documents`, les vues
   - [ ] 13. `Data/Documents`, le reste
   - [ ] 14. Retrait des plugins `$toast` / `$log`, verrou ESLint
 
@@ -4063,6 +4063,76 @@ Gabarit à copier :
   ajoutaient en fin d'appel sort : aucun gestionnaire ne le lisait.
 - **À retenir** : avant de convertir un composant, chercher `$parent` et
   `$root` ; chaque appel est un événement que le parent devra relayer.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-121 — `fitBounds(bounds, 14)` : Leaflet ignore un zoom passé en nombre
+
+- **Contexte** : lot 12 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Views/Map.vue`. Le typage de Leaflet refuse l'appel.
+- **Symptôme** : un clic sur un cercle de la vue carte zoome jusqu'au niveau
+  maximal de la carte quand le cercle est petit, là où points et polygones
+  s'arrêtent à 14. Depuis #949, en v4 comme en v5.
+- **Cause** : le second argument de `fitBounds` est un objet d'options.
+  `_getBoundsCenterZoom` n'applique `options.maxZoom` que si c'est un nombre ;
+  lu sur `14`, il vaut `undefined`, et aucun plafond ne joue.
+- **Solution** : `fitBounds(bounds, { maxZoom: 14 })`, la forme qu'emploient
+  déjà les polygones.
+- **À retenir** : une signature de bibliothèque tierce s'appelle comme son
+  typage la déclare ; en JavaScript, un argument du mauvais type n'échoue pas,
+  il est ignoré.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-122 — Un objet relu depuis `data` n'est plus l'objet qu'on y a rangé
+
+- **Contexte** : lot 12 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Views/Map.vue`.
+- **Symptôme** : dans la vue carte, recliquer sur le marqueur ou la forme du
+  document affiché ne referme plus sa fiche : elle reste ouverte. En v4, le
+  second clic la refermait.
+- **Cause** : `onItemClicked` compare `this.currentDocument === document`. Vue 3
+  rend l'objet rangé dans `data` à travers un proxy `reactive`, alors que
+  `document` arrive brut des props (`shallowReactive` ne descend pas dans le
+  tableau). Le proxy n'est jamais égal à sa cible. Vue 2 rendait l'objet même,
+  observé sur place : la comparaison tenait.
+- **Solution** : `toRaw(this.currentDocument) === document`.
+- **À retenir** : une comparaison d'identité entre un état réactif et une
+  valeur venue d'ailleurs passe par `toRaw`, ou par un identifiant. Chercher
+  `=== ` sur un objet de `data` à chaque conversion.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-123 — `check:dom-emits` ne lisait pas `defineEmits`
+
+- **Contexte** : lot 12 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Views/Column/HeaderTableView.vue`.
+- **Symptôme** : `check:dom-emits` signale `mouseenter` et `mouseleave` comme
+  non déclarés, alors que `defineEmits` les déclare.
+- **Cause** : le script ne cherchait que le tableau `emits: [ … ]` de l'Options
+  API. Aucun des composants déjà convertis n'émettait de nom d'événement du
+  DOM depuis son template : le trou ne s'était jamais vu.
+- **Solution** : le script lit aussi les signatures `(e: '…')` de
+  `defineEmits<{ … }>()`. Il signale toujours un événement retiré de la
+  déclaration.
+- **À retenir** : un contrôle écrit pour une forme de code se revérifie quand
+  la forme change ; un faux positif est le signe qu'il ne lit plus ce qu'il
+  croit lire.
+- **Ref** : [ADR-0029](adr/0029-declarer-emits-sur-les-evenements-du-dom.md), [G-049](#g-049).
+
+#### G-124 — `<component :is>` ne résout plus une chaîne vers un import local
+
+- **Contexte** : lot 12 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Common/DocumentForm.vue`.
+- **Symptôme** : aucun à la compilation. Converti tel quel, le formulaire
+  rendrait `<datetimeforminput>` et `<jsonforminput>`, des balises inconnues et
+  vides, au lieu des champs date et JSON : la spec `formView` ne trouverait
+  plus `datePickerInput`.
+- **Cause** : `formSchema.ts` nomme ces champs par une chaîne
+  (`'DateTimeFormInput'`), que `:is` résolvait parmi les `components` de
+  l'Options API. En `<script setup>`, un import n'est pas enregistré sous un
+  nom : `:is` ne résout une chaîne que parmi les composants globaux.
+- **Solution** : une table `customFields` associe le nom au composant importé,
+  et `:is` reçoit le composant.
+- **À retenir** : chercher `:is=` à chaque conversion ; une valeur qui est une
+  chaîne passe par une table.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain

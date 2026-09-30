@@ -14,7 +14,7 @@
             data-cy="ColumnView-fieldSelector"
             :close-on-select="false"
             :multiple="true"
-            :options="dropdownFields.map((field) => field.text)"
+            :options="fieldList"
             placeholder="Select fields"
             tag-placeholder="Add custom field"
             :taggable="true"
@@ -117,11 +117,11 @@
                     </Button>
                     <Badge
                       v-if="
-                        getItemBadge(item) && !autoSync && getItemBadge(item).label !== 'created'
+                        getItemBadge(item) && !autoSync && getItemBadge(item)?.label !== 'created'
                       "
                       class="mx-2"
-                      :variant="getItemBadge(item).variant"
-                      >{{ getItemBadge(item).label }}
+                      :variant="getItemBadge(item)?.variant"
+                      >{{ getItemBadge(item)?.label }}
                     </Badge>
                   </div>
                 </template>
@@ -204,14 +204,16 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
 import defaultsDeep from 'lodash/defaultsDeep';
 import get from 'lodash/get';
-import { mapState } from 'pinia';
 import { VueDraggable } from 'vue-draggable-plus';
 import Multiselect from 'vue-multiselect';
+import { useRouter } from 'vue-router';
 
-import { Badge } from '@/components/ui/badge';
+import type { DocumentNotification, KuzzleDocument } from '../../types';
+import { Badge, type BadgeVariant } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -232,8 +234,8 @@ import {
 } from '@/components/ui/table';
 import { flattenObjectMapping } from '@/services/collectionHelper';
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
+import type { CollectionSettings } from '@/services/localSettings';
 import { useAuthStore, useKuzzleStore } from '@/stores';
-import { truncateName } from '@/utils';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 import NewDocumentsBadge from '@/components/Data/Documents/Common/NewDocumentsBadge.vue';
@@ -242,245 +244,231 @@ import HighlightableRow from './HighlightableRow.vue';
 import ColumnCell from './TableCell.vue';
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css';
 
-export default {
-  name: 'Column',
-  components: {
-    Badge,
-    Button,
-    Checkbox,
-    ColumnCell,
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    HeaderTableView,
-    HighlightableRow,
-    Multiselect,
-    NewDocumentsBadge,
-    PerPageSelector,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-    VueDraggable,
-  },
-  props: {
-    searchQuery: Object,
-    autoSync: Boolean,
-    allChecked: Boolean,
-    currentPageSize: Number,
-    collectionSettings: Object,
-    totalDocuments: Number,
-    documents: Array,
-    index: String,
-    collection: String,
-    mapping: Object,
-    selectedDocuments: Array,
-    notifications: Object,
-    hasNewDocuments: Boolean,
-  },
-  setup() {
-    return {
-      authStore: useAuthStore(),
-    };
-  },
-  data() {
-    return {
-      itemsPerPage: [10, 25, 50, 100, 500],
-      selectedFields: [],
-      tableDefaultHeaders: [
-        {
-          key: 'acColumnTableActions',
-          label: '',
-        },
-        {
-          key: 'acColumnTableId',
-          label: 'Id',
-        },
-      ],
-      displayDragIcon: false,
-      exportCsvOpen: false,
-      tabResizing: null,
-      startOffset: null,
-      singleUseToken: null,
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canEditDocument', 'canDeleteDocument', 'user']),
-    ...mapState(useKuzzleStore, ['wrapper', 'currentEnvironment']),
-    exportUrl() {
-      const protocol = this.currentEnvironment.ssl ? 'https' : 'http';
-      const baseUrl = `${protocol}://${this.currentEnvironment.host}:${this.currentEnvironment.port}`;
-      const query = JSON.stringify(this.searchQuery);
-      const fields = JSON.stringify(this.selectedFields);
+/* Une ligne du tableau : l'identifiant, puis un attribut par champ affiché. */
+type ColumnItem = Record<string, unknown> & { _id: string };
 
-      const exportUrl = `${baseUrl}/${this.index}/${this.collection}/_export?format=csv&query=${query}&fields=${fields}`;
+const props = withDefaults(
+  defineProps<{
+    allChecked?: boolean;
+    autoSync?: boolean;
+    collection: string;
+    collectionSettings?: CollectionSettings;
+    currentPageSize?: number;
+    documents: KuzzleDocument[];
+    hasNewDocuments?: boolean;
+    index: string;
+    mapping?: object;
+    notifications: Record<string, DocumentNotification | undefined>;
+    searchQuery?: object | null;
+    selectedDocuments: string[];
+    totalDocuments?: number;
+  }>(),
+  {
+    collectionSettings: undefined,
+    currentPageSize: undefined,
+    mapping: undefined,
+    searchQuery: undefined,
+    totalDocuments: undefined,
+  },
+);
 
-      if (this.singleUseToken) {
-        return `${exportUrl}&jwt=${this.singleUseToken}`;
-      }
+const emit = defineEmits<{
+  (e: 'bulk-delete'): void;
+  (e: 'change-page-size', size: number): void;
+  (e: 'checkbox-click', id: string): void;
+  (e: 'delete', id: string): void;
+  (e: 'edit', id: string): void;
+  (e: 'refresh'): void;
+  (e: 'settings-updated', settings: CollectionSettings): void;
+  (e: 'toggle-all'): void;
+}>();
 
-      return exportUrl;
-    },
-    hasSelectedDocuments() {
-      return this.selectedDocuments.length > 0;
-    },
-    bulkDeleteEnabled() {
-      return this.canDeleteDocument(this.index, this.collection) && this.hasSelectedDocuments;
-    },
-    dropdownFields() {
-      return this.fieldList.map((field) => ({
-        text: field,
-        displayed: this.selectedFields.includes(field),
-      }));
-    },
-    formattedItems() {
-      return this.documents.map((d) => {
-        const doc = {};
-        doc._id = d._id;
-        for (const key of this.selectedFields) {
-          const value = get(d._source, key);
-          doc[key] = value;
-        }
-        return doc;
-      });
-    },
-    canEdit() {
-      if (!this.index || !this.collection) {
-        return false;
-      }
-      return this.canEditDocument(this.index, this.collection);
-    },
-    canDelete() {
-      if (!this.index || !this.collection) {
-        return false;
-      }
-      return this.canDeleteDocument(this.index, this.collection);
-    },
-    checkboxId() {
-      return `checkbox-${this.document._id}`;
-    },
-    flatMapping() {
-      if (!this.mapping) {
-        return {};
-      }
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const router = useRouter();
 
-      return flattenObjectMapping(this.mapping);
-    },
-    fieldList() {
-      return Object.keys(this.flatMapping);
-    },
-    selectedFieldsComputed: {
-      get() {
-        return this.selectedFields;
-      },
-      set(value) {
-        this.selectedFields.splice(0, this.selectedFields.length, ...value);
-      },
-    },
+const tableDefaultHeaders = [
+  {
+    key: 'acColumnTableActions',
+    label: '',
   },
-  watch: {
-    // Remplace `@shown` et `@hide` de `b-modal` : le jeton à usage unique est
-    // demandé à l'ouverture et jeté à la fermeture, quelle qu'en soit la cause.
-    exportCsvOpen(open) {
-      if (open) {
-        this.fetchSingleUseToken();
-      } else {
-        this.singleUseToken = null;
-      }
-    },
-    $route: {
-      immediate: false,
-      handler() {
-        this.initFields();
-      },
-    },
-    mapping: {
-      immediate: false,
-      handler() {
-        this.initFields();
-      },
-    },
-    selectedFields: {
-      /* `initFields` et `addField` mutent le tableau sur place — voir G-058. */
-      deep: true,
-      handler(value) {
-        this.$emit(
-          'settings-updated',
-          defaultsDeep({ columnView: { fields: value } }, this.collectionSettings),
-        );
-      },
-    },
+  {
+    key: 'acColumnTableId',
+    label: 'Id',
   },
-  mounted() {
-    this.initFields();
+];
+
+const selectedFields = ref<string[]>([]);
+const displayDragIcon = ref(false);
+const exportCsvOpen = ref(false);
+const singleUseToken = ref<string | null>(null);
+
+const exportUrl = computed((): string => {
+  const environment = kuzzleStore.currentEnvironment;
+  if (!environment) {
+    throw new Error('No current environment set');
+  }
+
+  const protocol = environment.ssl ? 'https' : 'http';
+  const baseUrl = `${protocol}://${environment.host}:${environment.port}`;
+  const query = JSON.stringify(props.searchQuery);
+  const fields = JSON.stringify(selectedFields.value);
+
+  const url = `${baseUrl}/${props.index}/${props.collection}/_export?format=csv&query=${query}&fields=${fields}`;
+
+  if (singleUseToken.value) {
+    return `${url}&jwt=${singleUseToken.value}`;
+  }
+
+  return url;
+});
+
+const hasSelectedDocuments = computed((): boolean => props.selectedDocuments.length > 0);
+
+const bulkDeleteEnabled = computed(
+  (): boolean =>
+    authStore.canDeleteDocument(props.index, props.collection) && hasSelectedDocuments.value,
+);
+
+const formattedItems = computed((): ColumnItem[] =>
+  props.documents.map((d) => {
+    const doc: ColumnItem = { _id: d._id };
+    for (const key of selectedFields.value) {
+      doc[key] = get(d._source, key);
+    }
+    return doc;
+  }),
+);
+
+const canEdit = computed((): boolean => {
+  if (!props.index || !props.collection) {
+    return false;
+  }
+  return authStore.canEditDocument(props.index, props.collection);
+});
+
+const canDelete = computed((): boolean => {
+  if (!props.index || !props.collection) {
+    return false;
+  }
+  return authStore.canDeleteDocument(props.index, props.collection);
+});
+
+const flatMapping = computed((): Record<string, string> => {
+  if (!props.mapping) {
+    return {};
+  }
+
+  return flattenObjectMapping(props.mapping);
+});
+
+const fieldList = computed((): string[] => Object.keys(flatMapping.value));
+
+// Le sélecteur remplace le contenu du tableau plutôt que le tableau : le
+// watcher profond de `selectedFields` suit alors la même instance (G-058).
+const selectedFieldsComputed = computed({
+  get: (): string[] => selectedFields.value,
+  set: (value: string[]) => {
+    selectedFields.value.splice(0, selectedFields.value.length, ...value);
   },
-  methods: {
-    async fetchSingleUseToken() {
-      this.singleUseToken = await this.authStore.createSingleUseToken();
-    },
-    clearSingleUseToken() {
-      this.singleUseToken = null;
-      this.exportCsvOpen = false;
-    },
-    displayModalExportCSV() {
-      this.exportCsvOpen = true;
-    },
-    getItemBadge(item) {
-      const n = this.notifications[item._id];
-      if (!n) {
-        return null;
-      }
-      return {
-        label: getBadgeText(n.action),
-        variant: getBadgeVariant(n.action),
-      };
-    },
-    resetColumns() {
-      this.selectedFields.splice(0, this.selectedFields.length);
-    },
-    truncateName,
-    isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1;
-    },
-    getLastKeyPath(label) {
-      const splittedLabel = label.split('.');
-      return `${splittedLabel.length > 1 ? '...' : ''}${splittedLabel[splittedLabel.length - 1]}`;
-    },
-    toggleSelectDocument(id) {
-      this.$emit('checkbox-click', id);
-    },
-    initSelectedFields() {
-      this.selectedFields = get(this.collectionSettings, 'columnView.fields', []);
-    },
-    addCustomField(newField) {
-      const trimmedField = newField.trim();
-      if (trimmedField && !this.selectedFields.includes(trimmedField)) {
-        this.selectedFields.push(trimmedField);
-      }
-    },
-    getNestedField(doc, customField) {
-      return get(doc, customField, null);
-    },
-    deleteDocument(id) {
-      if (this.canDelete) {
-        this.$emit('delete', id);
-      }
-    },
-    editDocument(id) {
-      if (this.canEdit) {
-        this.$emit('edit', id);
-      }
-    },
-    initFields() {
-      this.initSelectedFields();
-    },
+});
+
+// Remplace `@shown` et `@hide` de `b-modal` : le jeton à usage unique est
+// demandé à l'ouverture et jeté à la fermeture, quelle qu'en soit la cause.
+watch(exportCsvOpen, (open) => {
+  if (open) {
+    fetchSingleUseToken();
+  } else {
+    singleUseToken.value = null;
+  }
+});
+
+// `currentRoute` est ce que lisait le watcher `$route` : il change à chaque navigation.
+watch(router.currentRoute, () => {
+  initSelectedFields();
+});
+
+watch(
+  () => props.mapping,
+  () => {
+    initSelectedFields();
   },
-};
+);
+
+watch(
+  selectedFields,
+  (value) => {
+    emit(
+      'settings-updated',
+      defaultsDeep({ columnView: { fields: value } }, props.collectionSettings),
+    );
+  },
+  /* `initSelectedFields` et `addCustomField` mutent le tableau sur place — voir G-058. */
+  { deep: true },
+);
+
+async function fetchSingleUseToken(): Promise<void> {
+  singleUseToken.value = await authStore.createSingleUseToken();
+}
+
+function clearSingleUseToken(): void {
+  singleUseToken.value = null;
+  exportCsvOpen.value = false;
+}
+
+function displayModalExportCSV(): void {
+  exportCsvOpen.value = true;
+}
+
+function getItemBadge(item: ColumnItem): { label: string; variant: BadgeVariant } | null {
+  const n = props.notifications[item._id];
+  if (!n) {
+    return null;
+  }
+  return {
+    label: getBadgeText(n.action),
+    variant: getBadgeVariant(n.action),
+  };
+}
+
+function resetColumns(): void {
+  selectedFields.value.splice(0, selectedFields.value.length);
+}
+
+function isChecked(id: string): boolean {
+  return props.selectedDocuments.indexOf(id) > -1;
+}
+
+function toggleSelectDocument(id: string): void {
+  emit('checkbox-click', id);
+}
+
+function initSelectedFields(): void {
+  selectedFields.value = get(props.collectionSettings, 'columnView.fields', []);
+}
+
+function addCustomField(newField: string): void {
+  const trimmedField = newField.trim();
+  if (trimmedField && !selectedFields.value.includes(trimmedField)) {
+    selectedFields.value.push(trimmedField);
+  }
+}
+
+function deleteDocument(id: string): void {
+  if (canDelete.value) {
+    emit('delete', id);
+  }
+}
+
+function editDocument(id: string): void {
+  if (canEdit.value) {
+    emit('edit', id);
+  }
+}
+
+onMounted(() => {
+  initSelectedFields();
+});
 </script>
 
 <style lang="scss">

@@ -4,10 +4,7 @@
       <div class="flex grow flex-row items-center gap-6">
         <div v-if="mappingGeopoints.length" class="flex items-center gap-2 text-sm">
           <span id="mapView-geopointLabel">GeoPoint field</span>
-          <Select
-            :model-value="selectedGeopoint || ''"
-            @update:modelValue="$emit('on-select-geopoint', $event)"
-          >
+          <Select :model-value="selectedGeopoint || ''" @update:modelValue="onSelectGeopoint">
             <SelectTrigger
               aria-labelledby="mapView-geopointLabel"
               class="w-auto min-w-40"
@@ -24,10 +21,7 @@
         </div>
         <div v-if="mappingGeoshapes.length" class="flex items-center gap-2 text-sm">
           <span id="mapView-geoshapeLabel">GeoShape field</span>
-          <Select
-            :model-value="selectedGeoshape || ''"
-            @update:modelValue="$emit('on-select-geoshape', $event)"
-          >
+          <Select :model-value="selectedGeoshape || ''" @update:modelValue="onSelectGeoshape">
             <SelectTrigger
               aria-labelledby="mapView-geoshapeLabel"
               class="w-auto min-w-40"
@@ -51,14 +45,14 @@
     </div>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12 h-96 md:col-span-8 md:h-150">
-        <l-map ref="map" data-cy="mapView-map" @ready="onMapReady">
+        <l-map data-cy="mapView-map" @ready="onMapReady">
           <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
             v-for="document in geoDocuments"
             :key="document._id"
             :lat-lng="document.coordinates"
             :icon="getIcon(document)"
-            @click="onItemClicked(document, document.coordinates, 'point')"
+            @click="onPointClicked(document)"
           />
           <!--
             La classe de sélection passe par `class-name`, l'option Leaflet, et
@@ -70,32 +64,29 @@
           -->
           <l-circle
             v-for="shape of circleShapes"
-            :ref="`circle-${shape._id}`"
             :key="`${shape._id}-${getShapeCyClasse(shape)}`"
             :lat-lng="shape.content.coordinates"
-            :radius="getRadiusInMeter(shape.content.radius)"
+            :radius="getRadiusInMeter(shape.content.radius) ?? undefined"
             :color="getShapeColor(shape._id)"
             :class-name="shapeClassName(shape)"
-            @click="onItemClicked(shape, shape.content.coordinates, 'circle', shape.content.radius)"
+            @click="onCircleClicked(shape)"
           />
           <l-polygon
             v-for="shape of polygonShapes"
-            :ref="`polygon-${shape._id}`"
             :key="`${shape._id}-${getShapeCyClasse(shape)}`"
             :lat-lngs="shape.content.coordinates"
             :color="getShapeColor(shape._id)"
             :class-name="shapeClassName(shape)"
-            @click="onItemClicked(shape, shape.content.coordinates, 'array')"
+            @click="onShapeClicked(shape, shape.content.coordinates)"
           />
           <div v-for="shape of multiPolygonShapes" :key="shape._id">
             <l-polygon
-              v-for="(polygon, index) in shape.content.coordinates"
-              :ref="`polygon-${shape._id}-${index}`"
-              :key="`${shape._id}-${index}-${getShapeCyClasse(shape)}`"
+              v-for="(polygon, polygonIndex) in shape.content.coordinates"
+              :key="`${shape._id}-${polygonIndex}-${getShapeCyClasse(shape)}`"
               :lat-lngs="polygon"
               :color="getShapeColor(shape._id)"
               :class-name="shapeClassName(shape)"
-              @click="onItemClicked(shape, polygon, 'array')"
+              @click="onShapeClicked(shape, polygon)"
             />
           </div>
         </l-map>
@@ -164,13 +155,13 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, ref, toRaw, watch } from 'vue';
 import { LCircle, LMap, LMarker, LPolygon, LTileLayer } from '@vue-leaflet/vue-leaflet';
-import L from 'leaflet';
-import get from 'lodash/get';
-import { mapState } from 'pinia';
+import L, { type LatLngExpression } from 'leaflet';
 
 import '@/assets/leaflet.css';
+import type { GeoDocument, GeoShape, ShapeDocument } from '../types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -185,261 +176,271 @@ import { useAuthStore } from '@/stores';
 import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 
-export default {
-  name: 'ViewMap',
-  components: {
-    JsonTree,
-    Button,
-    Card,
-    CardContent,
-    CardHeader,
-    LMap,
-    LTileLayer,
-    LMarker,
-    LCircle,
-    LPolygon,
-    PerPageSelector,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  },
-  props: {
-    currentPageSize: {
-      type: Number,
-      default: 25,
-    },
-    selectedGeopoint: {
-      type: String,
-      required: true,
-    },
-    selectedGeoshape: {
-      type: String,
-      required: true,
-    },
-    mappingGeopoints: {
-      type: Array,
-      required: true,
-    },
-    mappingGeoshapes: {
-      type: Array,
-      required: true,
-    },
-    geoDocuments: {
-      type: Array,
-      required: true,
-    },
-    shapesDocuments: {
-      type: Array,
-      require: true,
-    },
-    index: String,
-    collection: String,
-  },
-  data() {
-    return {
-      latField: null,
-      lngField: null,
-      map: null,
-      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      currentDocument: null,
-      LeafDefaultIcon: L.Icon.extend({
-        options: {
-          iconUrl: '/images/marker-icon-2x-blue.png',
-          shadowUrl: '/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-        },
-      }),
-      defaultIcon: new L.Icon({
-        iconUrl: '/images/marker-icon-2x-blue.png',
-        shadowUrl: '/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
-        className: 'mapView-marker-default',
-      }),
-      LeafSelectedIcon: L.Icon.extend({
-        options: {
-          iconUrl: '/images/marker-icon-2x-green.png',
-          shadowUrl: '/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-        },
-      }),
-      selectedIcon: new L.Icon({
-        iconUrl: '/images/marker-icon-2x-green.png',
-        shadowUrl: '/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
-        className: 'mapView-marker-selected',
-      }),
-    };
-  },
-  computed: {
-    totalDocuments() {
-      return this.geoDocuments.length;
-    },
-    ...mapState(useAuthStore, ['canEditDocument', 'canDeleteDocument']),
-    coordinates() {
-      const coordinates = [
-        ...this.geoDocuments.map((d) => d.coordinates),
-        ...this.getShapesCoordinates(),
-      ];
-      return coordinates;
-    },
-    canEdit() {
-      if (!this.index || !this.collection) {
-        return false;
-      }
-      return this.canEditDocument(this.index, this.collection);
-    },
-    canDelete() {
-      if (!this.index || !this.collection) {
-        return false;
-      }
-      return this.canDeleteDocument(this.index, this.collection);
-    },
-    circleShapes() {
-      return this.shapesDocuments.filter((shape) => get(shape, 'content.type') === 'circle');
-    },
-    polygonShapes() {
-      return this.shapesDocuments.filter((shape) => get(shape, 'content.type') === 'polygon');
-    },
-    multiPolygonShapes() {
-      return this.shapesDocuments.filter((shape) => get(shape, 'content.type') === 'multipolygon');
-    },
-  },
-  watch: {
-    selectedGeopoint: {
-      handler(value) {
-        if (value) {
-          this.map.fitBounds(this.coordinates, { maxZoom: 12 });
-        }
-      },
-    },
-    selectedGeoshape: {
-      handler(value) {
-        if (value) {
-          this.map.fitBounds(this.coordinates, { maxZoom: 12 });
-        }
-      },
-    },
-  },
-  methods: {
-    /*
-     * `@vue-leaflet/vue-leaflet` crée son objet Leaflet de façon asynchrone et
-     * le signale par `ready` — il n'existe pas au `mounted` du parent, ni au
-     * `$nextTick` qui suffisait à `vue2-leaflet`. C'est l'événement qui donne
-     * la carte, pas le cycle de vie (ADR-0027).
-     */
-    onMapReady(map) {
-      this.map = map;
+type CircleShape = Extract<GeoShape, { type: 'circle' }>;
+type PolygonShape = Extract<GeoShape, { type: 'polygon' }>;
+type MultiPolygonShape = Extract<GeoShape, { type: 'multipolygon' }>;
 
-      if (L.latLngBounds(this.coordinates).isValid()) {
-        this.map.fitBounds(this.coordinates, { maxZoom: 12 });
-      }
-    },
-    shapeClassName(shape) {
-      return `data-cy-shape data-cy-shape-${shape._id} ${this.getShapeCyClasse(shape)}`.trim();
-    },
-    getShapeCyClasse(shape) {
-      return this.currentDocument && this.currentDocument._id === shape._id
-        ? 'data-cy-shape-selected'
-        : '';
-    },
-    getShapeColor(id) {
-      return this.currentDocument && this.currentDocument._id === id ? '#26AD23' : '#2981CA';
-    },
-    getRadiusInMeter(radius) {
-      if (typeof radius === 'number') {
-        return radius;
-      }
-      if (typeof radius !== 'string') {
-        return null;
-      }
-      const value = parseInt(radius);
-      const unit = radius.replace(value.toString(), '');
-      let multiplicator;
-      switch (unit) {
-        case 'km':
-          multiplicator = 1000;
-          break;
-        default:
-          multiplicator = 1;
-      }
-      return value * multiplicator;
-    },
-    flattenShapes(arr) {
-      return arr.reduce((a, b) => {
-        return a.concat(Array.isArray(b) && typeof b[0] !== 'number' ? this.flattenShapes(b) : [b]);
-      }, []);
-    },
-    getShapesCoordinates() {
-      const circlePoints = this.circleShapes.map((circle) => circle.content.coordinates);
+/* Des coordonnées imbriquées sur un nombre de niveaux quelconque. */
+type NestedLatLngs = (LatLngExpression | NestedLatLngs)[];
 
-      const polygonArrays = this.polygonShapes.map((polygon) => polygon.content.coordinates);
-
-      const multipolygonArrays = [
-        ...this.multiPolygonShapes.map((multipolygon) => multipolygon.content.coordinates),
-      ];
-
-      const points = [
-        ...circlePoints,
-        ...this.flattenShapes(polygonArrays),
-        ...this.flattenShapes(multipolygonArrays),
-      ];
-      return points;
-    },
-    onItemClicked(document, latlng, type, radius) {
-      if (this.currentDocument === document) {
-        this.currentDocument = null;
-        return;
-      }
-      this.currentDocument = document;
-      if (type === 'array') {
-        this.map.fitBounds(latlng, { maxZoom: 14 });
-      } else if (type === 'point') {
-        this.map.setView(latlng, 14);
-      } else if (type === 'circle') {
-        const radiusInMeter = this.getRadiusInMeter(radius);
-        const bounds = L.latLng(latlng).toBounds(radiusInMeter * 2);
-        this.map.fitBounds(bounds, 14);
-      }
-    },
-    closeDocument() {
-      this.currentDocument = null;
-    },
-    getIcon(document) {
-      if (get(this.currentDocument, '_id') === document._id) {
-        return new this.LeafSelectedIcon({
-          className: `mapView-marker-selected documentId-${document._id}`,
-        });
-      }
-
-      return new this.LeafDefaultIcon({
-        className: `mapView-marker-default documentId-${document._id}`,
-      });
-    },
-    deleteCurrentDocument() {
-      if (this.canDelete) {
-        this.$emit('delete', this.currentDocument._id);
-      }
-    },
-    editCurrentDocument() {
-      if (this.canEdit) {
-        this.$emit('edit', this.currentDocument._id);
-      }
-    },
+const props = withDefaults(
+  defineProps<{
+    collection?: string;
+    currentPageSize?: number;
+    geoDocuments: GeoDocument[];
+    index?: string;
+    mappingGeopoints: string[];
+    mappingGeoshapes: string[];
+    selectedGeopoint: string;
+    selectedGeoshape: string;
+    shapesDocuments?: ShapeDocument[];
+  }>(),
+  {
+    collection: undefined,
+    currentPageSize: 25,
+    index: undefined,
+    shapesDocuments: () => [],
   },
+);
+
+const emit = defineEmits<{
+  (e: 'change-page-size', size: number): void;
+  (e: 'delete', id: string): void;
+  (e: 'edit', id: string): void;
+  (e: 'on-select-geopoint', field: string): void;
+  (e: 'on-select-geoshape', field: string): void;
+}>();
+
+const authStore = useAuthStore();
+
+const url = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+const attribution = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+
+/*
+ * Les options d'une icône de marqueur. `L.Icon.extend` en faisait deux
+ * classes, instanciées avec la seule `className` : une icône construite avec
+ * toutes ses options a les mêmes, et le typage de Leaflet ne donne pas de
+ * constructeur à une classe étendue.
+ */
+const ICON_OPTIONS: Omit<L.IconOptions, 'iconUrl'> = {
+  shadowUrl: '/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
 };
+
+// La carte n'est pas un état : le template ne la lit pas, seules les méthodes
+// l'appellent. Elle reste donc hors de la réactivité, sans proxy.
+let map: L.Map | null = null;
+const currentDocument = ref<GeoDocument | ShapeDocument | null>(null);
+
+const totalDocuments = computed((): number => props.geoDocuments.length);
+
+const circleShapes = computed(() =>
+  props.shapesDocuments.filter(
+    (shape): shape is ShapeDocument<CircleShape> => shape.content?.type === 'circle',
+  ),
+);
+
+const polygonShapes = computed(() =>
+  props.shapesDocuments.filter(
+    (shape): shape is ShapeDocument<PolygonShape> => shape.content?.type === 'polygon',
+  ),
+);
+
+const multiPolygonShapes = computed(() =>
+  props.shapesDocuments.filter(
+    (shape): shape is ShapeDocument<MultiPolygonShape> => shape.content?.type === 'multipolygon',
+  ),
+);
+
+const coordinates = computed((): LatLngExpression[] => [
+  ...props.geoDocuments.map((d) => d.coordinates),
+  ...getShapesCoordinates(),
+]);
+
+const canEdit = computed((): boolean => {
+  if (!props.index || !props.collection) {
+    return false;
+  }
+  return authStore.canEditDocument(props.index, props.collection);
+});
+
+const canDelete = computed((): boolean => {
+  if (!props.index || !props.collection) {
+    return false;
+  }
+  return authStore.canDeleteDocument(props.index, props.collection);
+});
+
+watch(
+  () => props.selectedGeopoint,
+  (value) => {
+    if (value) {
+      map?.fitBounds(L.latLngBounds(coordinates.value), { maxZoom: 12 });
+    }
+  },
+);
+
+watch(
+  () => props.selectedGeoshape,
+  (value) => {
+    if (value) {
+      map?.fitBounds(L.latLngBounds(coordinates.value), { maxZoom: 12 });
+    }
+  },
+);
+
+function onSelectGeopoint(value: unknown): void {
+  if (typeof value === 'string') {
+    emit('on-select-geopoint', value);
+  }
+}
+
+function onSelectGeoshape(value: unknown): void {
+  if (typeof value === 'string') {
+    emit('on-select-geoshape', value);
+  }
+}
+
+/*
+ * `@vue-leaflet/vue-leaflet` crée son objet Leaflet de façon asynchrone et
+ * le signale par `ready` — il n'existe pas au `mounted` du parent, ni au
+ * `$nextTick` qui suffisait à `vue2-leaflet`. C'est l'événement qui donne
+ * la carte, pas le cycle de vie (ADR-0027).
+ */
+function onMapReady(leafletMap: L.Map): void {
+  map = leafletMap;
+
+  const bounds = L.latLngBounds(coordinates.value);
+  if (bounds.isValid()) {
+    map.fitBounds(bounds, { maxZoom: 12 });
+  }
+}
+
+function shapeClassName(shape: ShapeDocument): string {
+  return `data-cy-shape data-cy-shape-${shape._id} ${getShapeCyClasse(shape)}`.trim();
+}
+
+function getShapeCyClasse(shape: ShapeDocument): string {
+  return currentDocument.value && currentDocument.value._id === shape._id
+    ? 'data-cy-shape-selected'
+    : '';
+}
+
+function getShapeColor(id: string): string {
+  return currentDocument.value && currentDocument.value._id === id ? '#26AD23' : '#2981CA';
+}
+
+function getRadiusInMeter(radius: unknown): number | null {
+  if (typeof radius === 'number') {
+    return radius;
+  }
+  if (typeof radius !== 'string') {
+    return null;
+  }
+  const value = parseInt(radius);
+  const unit = radius.replace(value.toString(), '');
+  let multiplicator: number;
+  switch (unit) {
+    case 'km':
+      multiplicator = 1000;
+      break;
+    default:
+      multiplicator = 1;
+  }
+  return value * multiplicator;
+}
+
+function isNested(value: LatLngExpression | NestedLatLngs): value is NestedLatLngs {
+  return Array.isArray(value) && typeof value[0] !== 'number';
+}
+
+function flattenShapes(arr: NestedLatLngs): LatLngExpression[] {
+  return arr.reduce<LatLngExpression[]>(
+    (a, b) => (isNested(b) ? a.concat(flattenShapes(b)) : a.concat([b])),
+    [],
+  );
+}
+
+function getShapesCoordinates(): LatLngExpression[] {
+  const circlePoints = circleShapes.value.map((circle) => circle.content.coordinates);
+
+  const polygonArrays = polygonShapes.value.map((polygon) => polygon.content.coordinates);
+
+  const multipolygonArrays = [
+    ...multiPolygonShapes.value.map((multipolygon) => multipolygon.content.coordinates),
+  ];
+
+  return [...circlePoints, ...flattenShapes(polygonArrays), ...flattenShapes(multipolygonArrays)];
+}
+
+/*
+ * Affiche le document cliqué, ou referme sa fiche s'il l'était déjà.
+ * `currentDocument` se relit à travers un proxy réactif, `document` vient
+ * brut des props : sans `toRaw`, les deux ne sont jamais égaux (G-122).
+ */
+function toggleDocument(document: GeoDocument | ShapeDocument): boolean {
+  if (toRaw(currentDocument.value) === document) {
+    currentDocument.value = null;
+    return false;
+  }
+  currentDocument.value = document;
+  return true;
+}
+
+function onPointClicked(document: GeoDocument): void {
+  if (toggleDocument(document)) {
+    map?.setView(document.coordinates, 14);
+  }
+}
+
+function onShapeClicked(shape: ShapeDocument, latlngs: LatLngExpression[]): void {
+  if (toggleDocument(shape)) {
+    map?.fitBounds(L.latLngBounds(latlngs), { maxZoom: 14 });
+  }
+}
+
+function onCircleClicked(shape: ShapeDocument<CircleShape>): void {
+  if (toggleDocument(shape)) {
+    const radiusInMeter = getRadiusInMeter(shape.content.radius);
+    const bounds = L.latLng(shape.content.coordinates).toBounds((radiusInMeter ?? 0) * 2);
+    // Le zoom maximal passe par les options : un nombre en second argument
+    // était ignoré, et un petit cercle zoomait au maximum (G-121).
+    map?.fitBounds(bounds, { maxZoom: 14 });
+  }
+}
+
+function closeDocument(): void {
+  currentDocument.value = null;
+}
+
+function getIcon(document: GeoDocument): L.Icon {
+  if (currentDocument.value?._id === document._id) {
+    return new L.Icon({
+      ...ICON_OPTIONS,
+      iconUrl: '/images/marker-icon-2x-green.png',
+      className: `mapView-marker-selected documentId-${document._id}`,
+    });
+  }
+
+  return new L.Icon({
+    ...ICON_OPTIONS,
+    iconUrl: '/images/marker-icon-2x-blue.png',
+    className: `mapView-marker-default documentId-${document._id}`,
+  });
+}
+
+function deleteCurrentDocument(): void {
+  if (canDelete.value && currentDocument.value) {
+    emit('delete', currentDocument.value._id);
+  }
+}
+
+function editCurrentDocument(): void {
+  if (canEdit.value && currentDocument.value) {
+    emit('edit', currentDocument.value._id);
+  }
+}
 </script>

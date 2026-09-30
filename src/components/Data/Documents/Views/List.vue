@@ -52,81 +52,59 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup lang="ts">
+import { computed } from 'vue';
 
 import NewDocumentsBadge from '../Common/NewDocumentsBadge.vue';
 import DocumentListItem from '../DocumentListItem.vue';
+import type { DocumentNotification, KuzzleDocument } from '../types';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore } from '@/stores';
 
 import PerPageSelector from '@/components/Common/PerPageSelector.vue';
 
-export default {
-  name: 'DocumentsListView',
-  components: {
-    Button,
-    DocumentListItem,
-    NewDocumentsBadge,
-    PerPageSelector,
-    Spinner,
+const props = withDefaults(
+  defineProps<{
+    allChecked: boolean;
+    autoSync?: boolean;
+    collection: string;
+    currentPageSize?: number;
+    dateFields: string[];
+    documents: KuzzleDocument[];
+    hasNewDocuments?: boolean;
+    index: string;
+    isFetching?: boolean;
+    notifications?: Record<string, DocumentNotification | undefined>;
+    selectedDocuments: string[];
+    totalDocuments?: number;
+  }>(),
+  {
+    currentPageSize: 25,
+    notifications: () => ({}),
+    totalDocuments: undefined,
   },
-  props: {
-    allChecked: {
-      type: Boolean,
-      required: true,
-    },
-    collection: {
-      type: String,
-      required: true,
-    },
-    currentPageSize: {
-      type: Number,
-      default: 25,
-    },
-    documents: {
-      type: Array,
-      required: true,
-    },
-    dateFields: {
-      type: Array,
-      required: true,
-    },
-    index: {
-      type: String,
-      required: true,
-    },
-    isFetching: {
-      type: Boolean,
-    },
-    selectedDocuments: {
-      type: Array,
-      required: true,
-    },
-    totalDocuments: {
-      type: Number,
-    },
-    notifications: {
-      type: Object,
-      default: () => ({}),
-    },
-    hasNewDocuments: Boolean,
-    autoSync: Boolean,
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canDeleteDocument']),
-    hasSelectedDocuments() {
-      return this.selectedDocuments.length > 0;
-    },
-    bulkDeleteEnabled() {
-      return this.canDeleteDocument(this.index, this.collection) && this.hasSelectedDocuments;
-    },
-  },
-  methods: {
-    isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1;
-    },
-  },
-};
+);
+
+defineEmits<{
+  (e: 'bulk-delete'): void;
+  (e: 'change-page-size', size: number): void;
+  (e: 'checkbox-click', id: string): void;
+  (e: 'delete', id: string): void;
+  (e: 'refresh'): void;
+  (e: 'toggle-all'): void;
+}>();
+
+const authStore = useAuthStore();
+
+const hasSelectedDocuments = computed((): boolean => props.selectedDocuments.length > 0);
+
+const bulkDeleteEnabled = computed(
+  (): boolean =>
+    authStore.canDeleteDocument(props.index, props.collection) && hasSelectedDocuments.value,
+);
+
+function isChecked(id: string): boolean {
+  return props.selectedDocuments.indexOf(id) > -1;
+}
 </script>

@@ -6,13 +6,13 @@
         date — et n'a donc pas d'élément unique à désigner : son libellé nomme
         le champ du mapping sans `for`, plutôt que de pointer un conteneur.
       -->
-      <Label :for="isCustomField(field) ? null : `FormField-${field.model}`">
+      <Label :for="customFields[field.type] ? undefined : `FormField-${field.model}`">
         {{ field.label }}
       </Label>
 
       <component
-        :is="field.type"
-        v-if="isCustomField(field)"
+        :is="customFields[field.type]"
+        v-if="customFields[field.type]"
         :schema="field"
         :value="model[field.model]"
         @input="handleFieldChange(field, $event)"
@@ -46,12 +46,15 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import type { Component } from 'vue';
+
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import type { FormField, Schema } from '@/services/formSchema';
 
 import DateTimeFormInput from '@/components/Data/Documents/FormInputs/DateTimeFormInput.vue';
 import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.vue';
@@ -74,54 +77,54 @@ import JsonFormInput from '@/components/Data/Documents/FormInputs/JsonFormInput.
  * `attributes.input` reste lu tel quel : c'est `formSchema.ts` qui décide des
  * attributs du contrôle — l'ancrage `data-cy="FormField-<champ>"` des specs
  * vient de là, et il n'y a toujours qu'un endroit qui le nomme.
+ *
+ * Les champs personnalisés sont nommés par `formSchema.ts` et résolus ici :
+ * en `<script setup>`, `<component :is>` ne résout une chaîne que parmi les
+ * composants globaux, et ces deux-là ne le sont pas.
  */
-const CUSTOM_FIELD_TYPES = ['DateTimeFormInput', 'JsonFormInput'];
-
-export default {
-  name: 'DocumentForm',
-  components: {
-    Checkbox,
-    DateTimeFormInput,
-    FormItem,
-    Input,
-    JsonFormInput,
-    Label,
-    Textarea,
-  },
-  props: {
-    schema: { type: Object, required: true },
-    model: { type: Object, required: true },
-  },
-  methods: {
-    isCustomField(field) {
-      return CUSTOM_FIELD_TYPES.includes(field.type);
-    },
-    toFieldValue(field) {
-      const value = this.model[field.model];
-      return value === null || value === undefined ? '' : value;
-    },
-    /*
-     * Un mapping numérique doit revenir numérique au backend : la spec
-     * `formView` relit `age` et attend `43`, pas `'43'`. Une saisie vide donne
-     * `null` plutôt que le `NaN` que produisait `vue-form-generator`, qui
-     * ressortait en `null` après `JSON.stringify` — même résultat, sans passer
-     * par une valeur que rien n'attendait dans le modèle.
-     */
-    toModelValue(field, raw) {
-      if (field.inputType !== 'number') {
-        return raw;
-      }
-
-      if (raw === '') {
-        return null;
-      }
-
-      const parsed = Number.parseFloat(raw);
-      return Number.isNaN(parsed) ? raw : parsed;
-    },
-    handleFieldChange(field, value) {
-      this.$emit('field-change', field.model, value);
-    },
-  },
+const customFields: Record<string, Component | undefined> = {
+  DateTimeFormInput,
+  JsonFormInput,
 };
+
+const props = defineProps<{
+  model: Record<string, unknown>;
+  schema: Schema;
+}>();
+
+const emit = defineEmits<{
+  (e: 'field-change', field: string, value: unknown): void;
+}>();
+
+function toFieldValue(field: FormField): string | number {
+  const value = props.model[field.model];
+  if (value === null || value === undefined) {
+    return '';
+  }
+  return typeof value === 'number' ? value : String(value);
+}
+
+/*
+ * Un mapping numérique doit revenir numérique au backend : la spec
+ * `formView` relit `age` et attend `43`, pas `'43'`. Une saisie vide donne
+ * `null` plutôt que le `NaN` que produisait `vue-form-generator`, qui
+ * ressortait en `null` après `JSON.stringify` — même résultat, sans passer
+ * par une valeur que rien n'attendait dans le modèle.
+ */
+function toModelValue(field: FormField, raw: string | number): string | number | null {
+  if (field.inputType !== 'number') {
+    return raw;
+  }
+
+  if (raw === '') {
+    return null;
+  }
+
+  const parsed = Number.parseFloat(String(raw));
+  return Number.isNaN(parsed) ? raw : parsed;
+}
+
+function handleFieldChange(field: FormField, value: unknown): void {
+  emit('field-change', field.model, value);
+}
 </script>

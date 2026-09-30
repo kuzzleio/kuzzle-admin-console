@@ -99,7 +99,6 @@
           :current-filter="currentFilter"
           :index="indexName"
           :mapping-attributes="mappingAttributes"
-          @enter-pressed="navigateToDocument"
           @filters-updated="onFiltersUpdated"
           @submit="onFilterSubmit"
         />
@@ -786,18 +785,6 @@ export default {
         );
         this.$emit('end-init');
       }
-    },
-    navigateToDocument() {
-      const document = this.documents[0];
-
-      if (!document) {
-        return;
-      }
-
-      this.$router.push({
-        name: 'UpdateDocument',
-        params: { id: document._id },
-      });
     },
     async onRefresh() {
       await this.fetchDocuments();

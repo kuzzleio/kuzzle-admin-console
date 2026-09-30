@@ -192,13 +192,7 @@ const props = withDefaults(
   },
 );
 
-/*
- * `enter-pressed` n'est plus émis depuis #922, qui a retiré le champ qui le
- * déclenchait ; il reste déclaré tant que `Documents/Page.vue` l'écoute, sans
- * quoi l'écouteur retomberait sur la racine (G-049). Il part avec lui au lot 12.
- */
 const emit = defineEmits<{
-  (e: 'enter-pressed'): void;
   (e: 'filters-updated', filter: SearchFilter): void;
   (e: 'submit', saveToHistory: boolean): void;
 }>();

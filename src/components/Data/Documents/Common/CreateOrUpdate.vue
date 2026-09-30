@@ -40,13 +40,7 @@
         <!-- Json view -->
         <div v-else class="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
           <div class="flex min-h-0 flex-col lg:w-7/12">
-            <json-editor
-              id="document"
-              ref="jsoneditor"
-              class="grow"
-              :content="rawDocument"
-              @change="onJsonChange"
-            />
+            <json-editor id="document" class="grow" :content="rawDocument" @change="onJsonChange" />
           </div>
 
           <!-- Mapping -->
@@ -92,7 +86,9 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -100,123 +96,125 @@ import { FormDescription, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch as UiSwitch } from '@/components/ui/switch';
-import Focus from '@/directives/focus.directive';
+import { useToast } from '@/composables/useToast';
 import { formSchemaService, typesCorrespondance } from '@/services/formSchema';
 
 import JsonEditor from '@/components/Common/JsonEditor.vue';
 import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
 import DocumentForm from './DocumentForm.vue';
 
-export default {
-  name: 'DocumentCreateOrUpdate',
-  components: {
-    JsonTree,
-    Alert,
-    Button,
-    Card,
-    CardContent,
-    CardFooter,
-    DocumentForm,
-    FormDescription,
-    FormItem,
-    Input,
-    JsonEditor,
-    Label,
-    UiSwitch,
+/*
+ * `index` et `collection` ne sont pas lus, mais les sites d'appel les passent :
+ * déclarés, ils ne retombent pas en attributs sur la racine.
+ */
+const props = withDefaults(
+  defineProps<{
+    collection?: string;
+    document?: object;
+    id?: string;
+    index?: string;
+    mapping?: object;
+  }>(),
+  {
+    collection: undefined,
+    document: undefined,
+    id: undefined,
+    index: undefined,
+    mapping: undefined,
   },
-  directives: {
-    Focus,
-  },
-  props: {
-    index: String,
-    collection: String,
-    id: String,
-    document: { type: Object },
-    mapping: Object,
-  },
-  emits: ['cancel', 'document-change', 'submit'],
-  data() {
-    return {
-      idValue: null,
-      submitting: false,
-      rawDocument: '{}',
-      formViewEnabled: false,
-    };
-  },
-  computed: {
-    formSchema() {
-      return formSchemaService.generate(this.mapping, this.documentState);
-    },
-    supportedTypes() {
-      return Object.keys(typesCorrespondance);
-    },
-    documentState() {
-      try {
-        return JSON.parse(this.rawDocument);
-      } catch (error) {
-        return {};
-      }
-    },
-    isDocumentValid() {
-      try {
-        JSON.parse(this.rawDocument);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
-  },
-  watch: {
-    id: {
-      immediate: true,
-      handler(val) {
-        this.idValue = val;
-      },
-    },
-    document: {
-      immediate: true,
-      handler(val) {
-        this.rawDocument = JSON.stringify(val, null, 2);
-      },
-    },
-  },
-  methods: {
-    onJsonChange(val) {
-      this.rawDocument = val;
-      try {
-        const parsed = JSON.parse(val);
-        this.$emit('document-change', parsed);
-      } catch (error) {
-        // Fail silently
-      }
-    },
-    /*
-     * Les deux vues lisent et écrivent `rawDocument` : c'est la seule source
-     * de vérité du composant. `vue-form-generator` écrivait, lui, directement
-     * dans l'objet reçu en prop, et la vue JSON ne se resynchronisait qu'en
-     * repassant par le parent.
-     */
-    onFieldChange(field, value) {
-      const document = { ...this.documentState, [field]: value };
-      this.rawDocument = JSON.stringify(document, null, 2);
-      this.$emit('document-change', document);
-    },
-    submit(replace = false) {
-      if (this.submitting) {
-        return;
-      }
+);
 
-      if (this.isDocumentValid) {
-        this.submitting = true;
-        this.$emit('submit', { ...this.documentState }, this.idValue, replace);
-        this.submitting = false;
-      } else {
-        this.$toast.info(
-          'You cannot proceed',
-          'The JSON specification of the document contains errors',
-        );
-      }
-    },
+const emit = defineEmits<{
+  (e: 'cancel'): void;
+  (e: 'document-change', document: Record<string, unknown>): void;
+  (
+    e: 'submit',
+    document: Record<string, unknown>,
+    id: string | number | undefined,
+    replace: boolean,
+  ): void;
+}>();
+
+const toast = useToast();
+
+const idValue = ref<string | number | undefined>();
+const submitting = ref(false);
+const rawDocument = ref('{}');
+const formViewEnabled = ref(false);
+
+const documentState = computed((): Record<string, unknown> => {
+  try {
+    return JSON.parse(rawDocument.value);
+  } catch (error) {
+    return {};
+  }
+});
+
+// `cleanMapping` rendait déjà `{}` d'un mapping absent (`_.omit(undefined)`).
+const formSchema = computed(() =>
+  formSchemaService.generate(props.mapping ?? {}, documentState.value),
+);
+
+const supportedTypes = computed((): string[] => Object.keys(typesCorrespondance));
+
+const isDocumentValid = computed((): boolean => {
+  try {
+    JSON.parse(rawDocument.value);
+    return true;
+  } catch (error) {
+    return false;
+  }
+});
+
+watch(
+  () => props.id,
+  (val) => {
+    idValue.value = val;
   },
-};
+  { immediate: true },
+);
+
+watch(
+  () => props.document,
+  (val) => {
+    rawDocument.value = JSON.stringify(val, null, 2);
+  },
+  { immediate: true },
+);
+
+function onJsonChange(val: string): void {
+  rawDocument.value = val;
+  try {
+    const parsed = JSON.parse(val);
+    emit('document-change', parsed);
+  } catch (error) {
+    // Fail silently
+  }
+}
+
+/*
+ * Les deux vues lisent et écrivent `rawDocument` : c'est la seule source
+ * de vérité du composant. `vue-form-generator` écrivait, lui, directement
+ * dans l'objet reçu en prop, et la vue JSON ne se resynchronisait qu'en
+ * repassant par le parent.
+ */
+function onFieldChange(field: string, value: unknown): void {
+  const document = { ...documentState.value, [field]: value };
+  rawDocument.value = JSON.stringify(document, null, 2);
+  emit('document-change', document);
+}
+
+function submit(replace = false): void {
+  if (submitting.value) {
+    return;
+  }
+
+  if (isDocumentValid.value) {
+    submitting.value = true;
+    emit('submit', { ...documentState.value }, idValue.value, replace);
+    submitting.value = false;
+  } else {
+    toast.info('You cannot proceed', 'The JSON specification of the document contains errors');
+  }
+}
 </script>
