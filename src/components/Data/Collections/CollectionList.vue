@@ -180,9 +180,11 @@
                 variant="link"
                 title="Edit collection"
                 :data-cy="`CollectionList-edit--${row.item.name}`"
-                :disabled="row.item.type !== 'stored' || !canEditCollection(row.item.name)"
+                :disabled="
+                  row.item.type !== 'stored' || !canEditCollection(indexName, row.item.name)
+                "
                 :to="
-                  canEditCollection(row.item.name)
+                  canEditCollection(indexName, row.item.name)
                     ? {
                         name: 'EditCollection',
                         params: {
