@@ -4082,6 +4082,24 @@ Gabarit à copier :
   il est ignoré.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-122 — Un objet relu depuis `data` n'est plus l'objet qu'on y a rangé
+
+- **Contexte** : lot 12 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Views/Map.vue`.
+- **Symptôme** : dans la vue carte, recliquer sur le marqueur ou la forme du
+  document affiché ne referme plus sa fiche : elle reste ouverte. En v4, le
+  second clic la refermait.
+- **Cause** : `onItemClicked` compare `this.currentDocument === document`. Vue 3
+  rend l'objet rangé dans `data` à travers un proxy `reactive`, alors que
+  `document` arrive brut des props (`shallowReactive` ne descend pas dans le
+  tableau). Le proxy n'est jamais égal à sa cible. Vue 2 rendait l'objet même,
+  observé sur place : la comparaison tenait.
+- **Solution** : `toRaw(this.currentDocument) === document`.
+- **À retenir** : une comparaison d'identité entre un état réactif et une
+  valeur venue d'ailleurs passe par `toRaw`, ou par un identifiant. Chercher
+  `=== ` sur un objet de `data` à chaque conversion.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

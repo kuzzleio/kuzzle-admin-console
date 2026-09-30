@@ -165,6 +165,7 @@
 </template>
 
 <script>
+import { toRaw } from 'vue';
 import { LCircle, LMap, LMarker, LPolygon, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import L from 'leaflet';
 import get from 'lodash/get';
@@ -401,7 +402,9 @@ export default {
       return points;
     },
     onItemClicked(document, latlng, type, radius) {
-      if (this.currentDocument === document) {
+      // `currentDocument` se relit à travers un proxy réactif, `document` vient
+      // brut des props : sans `toRaw`, les deux ne sont jamais égaux (G-122).
+      if (toRaw(this.currentDocument) === document) {
         this.currentDocument = null;
         return;
       }
