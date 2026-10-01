@@ -143,12 +143,12 @@ export const useStorageIndexStore = defineStore('storageIndex', {
       } else {
         // remove deleted collections
         _.differenceBy(index.collections, collections, 'name').forEach((el) => {
-          this.removeCollection(el);
+          this.removeCollection({ index, collection: el });
         });
 
         // add new collections
         _.differenceBy(collections, index.collections, 'name').forEach((el) => {
-          this.addCollection(el);
+          this.addCollection({ index, collection: el });
         });
       }
 
