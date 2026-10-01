@@ -4189,6 +4189,31 @@ Gabarit à copier :
   dépendance, c'est relire ses appels comme du code neuf.
 - **Ref** : [ADR-0061](adr/0061-noimplicitany-reste-a-false.md).
 
+#### G-127 — Au-delà de 4 096 octets, Kuzzle refuse de supprimer des index, `_resetDatabase` compris
+
+- **Contexte** : [#965](https://github.com/kuzzleio/kuzzle-admin-console/issues/965),
+  suppression en masse des index (`index:mDelete`), Kuzzle 2.56.
+- **Symptôme** : `An HTTP line is larger than 4096 bytes`
+  (`services.storage.unexpected_bad_request`), et rien n'est supprimé. Le seuil
+  ne tient pas qu'aux noms : 60 index de 48 caractères passent, 70 échouent ;
+  avec deux collections chacun, 40 échouent déjà. Dans les specs, un test qui
+  laisse trop d'index derrière lui fait échouer `admin:_resetDatabase`, qui
+  bute sur la même limite : toutes les specs suivantes tombent dans leur
+  `beforeEach`, loin de la cause.
+- **Cause** : Kuzzle transmet à Elasticsearch une seule ligne HTTP qui nomme
+  chaque index et chaque collection supprimés.
+- **Solution** : le store coupe la requête en deux à ce refus précis, jusqu'à
+  ce qu'elle passe (`bulkDeleteIndexes`) : la liste des index ne connaît pas
+  toujours les collections, une estimation de taille serait fausse. Spec
+  `indexes` — « Should be able to bulk delete more indexes than one request
+  allows ». Si elle échoue, purger les index `bulk*` par paquets de 10 avant
+  de rejouer.
+- **À retenir** : `_resetDatabase` n'est pas un filet inconditionnel : une
+  spec qui crée beaucoup d'index doit les supprimer elle-même en cas de
+  succès, et un échec en cascade dans les `beforeEach` se lit d'abord comme
+  un backend saturé.
+- **Ref** : [#965](https://github.com/kuzzleio/kuzzle-admin-console/issues/965).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
