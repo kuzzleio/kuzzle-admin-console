@@ -110,6 +110,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useTheme } from '@/composables/useTheme';
+import { formatDateTime } from '@/lib/date';
 import { dateFromTimestamp } from '@/utils';
 
 import ApexChart from '@/components/Common/ApexChart.vue';
@@ -338,7 +339,7 @@ function updateChart(): void {
   }
 
   chartOptions.colors = customNumberFields.value.map((field) => field.color);
-  chartOptions.xaxis.categories = points.map(({ date }) => date.toLocaleString('en-GB'));
+  chartOptions.xaxis.categories = points.map(({ date }) => formatDateTime(date));
 
   if (chart.value) {
     chart.value.updateOptions(chartOptions);

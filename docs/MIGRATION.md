@@ -4340,3 +4340,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-29 | `apexcharts` 7.6.1 plutôt que 5 (dernière majeure), `vue3-apexcharts` remplacé par un composant local | [ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md) |
 | 2026-09-29 | Composition API en 14 lots, un domaine par lot, à comportement constant ; conventions communes, verrou ESLint au dernier lot | [ADR-0060](adr/0060-composition-api-par-domaine.md) |
 | 2026-10-01 | `noImplicitAny` reste à `false` : `@types/lodash` et composants sans `any` implicite ; services, stores et routes gardent les leurs | [ADR-0061](adr/0061-noimplicitany-reste-a-false.md) |
+| 2026-10-01 | Dates des documents en heure locale suivie de leur décalage (`GMT+2`), plutôt qu'en UTC (#1001) | [ADR-0062](adr/0062-dates-locales-avec-decalage.md) |

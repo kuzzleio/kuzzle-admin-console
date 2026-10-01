@@ -76,6 +76,7 @@ import { useRouter } from 'vue-router';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { formatDateTime } from '@/lib/date';
 import { getBadgeVariant, getBadgeText } from '@/services/documentNotifications';
 import { useAuthStore } from '@/stores';
 import { dateFromTimestamp } from '@/utils';
@@ -169,7 +170,7 @@ const formattedDocument = computed(() => {
   props.dateFields.forEach((fieldPath) => {
     const dateObj = dateFromTimestamp(get(formatted, fieldPath));
     if (dateObj != null) {
-      set(formatted, fieldPath, dateObj.toLocaleString('en-GB'));
+      set(formatted, fieldPath, formatDateTime(dateObj));
     }
   });
   return formatted;
