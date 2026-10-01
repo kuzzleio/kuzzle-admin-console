@@ -206,7 +206,7 @@ import { useTableFilterSort } from '@/composables/useTableFilterSort';
 import { useToast } from '@/composables/useToast';
 import vFocus from '@/directives/focus.directive';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
 import type { Index } from '@/stores/types/storage-index';
 

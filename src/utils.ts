@@ -38,7 +38,7 @@ export const truncateName = (name: string, maxLength = 50): string => {
   return `${name.substring(0, maxLength)}...`;
 };
 
-export const dateFromTimestamp = (value: string | number): Date | null => {
+export const dateFromTimestamp = (value: unknown): Date | null => {
   let timestamp: number;
 
   if (typeof value === 'string') {
@@ -51,7 +51,7 @@ export const dateFromTimestamp = (value: string | number): Date | null => {
     if (isNaN(timestamp)) {
       return null;
     }
-  } else if (Number.isInteger(value)) {
+  } else if (typeof value === 'number' && Number.isInteger(value)) {
     timestamp = value;
   } else {
     return null;
@@ -70,13 +70,6 @@ export const dateFromTimestamp = (value: string | number): Date | null => {
 
   return date;
 };
-
-export const wait = async (ms: number): Promise<void> =>
-  await new Promise<void>((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  });
 
 /*
  * Valeur en pixels d'un token de `tokens.css` (`--sidebar-width`…), pour les

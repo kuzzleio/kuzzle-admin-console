@@ -942,6 +942,9 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
 - [x] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes — avancé avant les lots 5 à 9 du critère 4 ([ADR-0056](adr/0056-theme-sombre-avance.md))
 - [x] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5), verrouillé par ESLint
 - [ ] 8. Revue de sortie : technique, sécurité, livraison (`Dockerfile`, `infra/`, workflows)
+  - [x] Technique, lot 1 : code mort et restes de Vue 2, à comportement constant — 18 exports morts de `collectionHelper` et `filterManager`, `config/schemaMapping.ts`, `utils.wait`, `LIST_VIEW_BOXES`, les shims `*.vue` et JSX de Vue 2, cinq options de `tsconfig` sans objet (`allowJs`, `jsx`, `importHelpers`, `experimentalDecorators`, `scripthost`), `file-loader` et `ts-mock-imports` ; `noImplicitAny` passe de 208 à 165 erreurs
+  - [x] Technique, lot 2 : `@types/lodash`, composants sans `any` implicite ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md)) — `Filter` devient une classe générique, `pushQuery` et `dateFromTimestamp` sont typés ; la liste des collections se resynchronise de nouveau ([G-126](#g-126)) ; `noImplicitAny: true` donnerait 113 erreurs, aucune dans un composant : `filterManager.ts` 37, `kuzzleWrapper-v1.ts` 31, `stores/auth.ts` 11, `kuzzleWrapper-v2.ts` 8, routes 13, `validators.ts` 6, autres services 7
+  - [x] Technique, lot 3 : restes relevés au lot 1 — `manifest.json` retiré avec son `<link>` (resté à la racine, jamais copié dans le build : une 404 en production ; ses icônes visaient un `static/favicon/` disparu), le type de `Page.vue` importé de `kuzzle-sdk-v7` et non de `kuzzle-sdk` (non déclaré, présent par `kepler-companion`), `plugins/logger.ts` déplacé en `lib/logger.ts`
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
 ---
@@ -4161,6 +4164,31 @@ Gabarit à copier :
   syntaxe : lire ce que l'enfant fait de la valeur avant de choisir.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
+#### G-126 — `@types/lodash` révèle une liste de collections qui ne se resynchronise pas
+
+- **Contexte** : lot 2 de la revue technique
+  ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md)), ajout de
+  `@types/lodash`, avec `noImplicitAny` toujours à `false`.
+- **Symptôme** : `vue-tsc` refuse `this.removeCollection(el)` et
+  `this.addCollection(el)` dans `fetchCollectionList` (`stores/storage-index.ts`).
+  À l'usage : une collection créée ou supprimée hors de la console (autre
+  onglet, API) n'apparaît ni ne disparaît quand on revient sur l'index ; le
+  rechargement lève une `TypeError` (`index` vaut `undefined`), le toast
+  « Something went wrong while fetching the collection list » s'affiche et la
+  page reste sur un spinner : `loading` n'est jamais remis à `false`.
+  Présent sur `4-dev` aussi.
+- **Cause** : `_.differenceBy` rendait `any` sans les types de `lodash`, donc
+  les `Collection` passées seules aux actions, qui attendent
+  `{ index, collection }`, n'étaient pas vérifiées. Aucune spec ne modifiait
+  les collections d'un index déjà chargé.
+- **Solution** : `{ index, collection: el }`, et une spec
+  (`collections` — « Should sync the collection list with collections changed
+  elsewhere ») qui échoue sans le correctif.
+- **À retenir** : une dépendance sans types n'est pas un détail de confort :
+  chaque appel qui la traverse sort du contrôle de `strict`. Typer une
+  dépendance, c'est relire ses appels comme du code neuf.
+- **Ref** : [ADR-0061](adr/0061-noimplicitany-reste-a-false.md).
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -4286,3 +4314,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-29 | Toasts sur `vue-sonner` derrière le store (API inchangée), actions et lien dans la description ; l'état hors ligne devient un bandeau, hors de la pile | [ADR-0058](adr/0058-toasts-sur-vue-sonner.md) |
 | 2026-09-29 | `apexcharts` 7.6.1 plutôt que 5 (dernière majeure), `vue3-apexcharts` remplacé par un composant local | [ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md) |
 | 2026-09-29 | Composition API en 14 lots, un domaine par lot, à comportement constant ; conventions communes, verrou ESLint au dernier lot | [ADR-0060](adr/0060-composition-api-par-domaine.md) |
+| 2026-10-01 | `noImplicitAny` reste à `false` : `@types/lodash` et composants sans `any` implicite ; services, stores et routes gardent les leurs | [ADR-0061](adr/0061-noimplicitany-reste-a-false.md) |

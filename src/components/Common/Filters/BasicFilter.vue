@@ -239,7 +239,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import type { MappingAttributes } from '@/services/mappingHelpers';
 import { useKuzzleStore } from '@/stores';
 import type { BasicFilterGroups, BasicFilterStatement, FilterSorting } from './types';

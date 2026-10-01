@@ -167,7 +167,7 @@ const formattedDocument = computed(() => {
   // way that each field can be rendered via a custom renderer function.
   const formatted = cloneDeep(props.document._source);
   props.dateFields.forEach((fieldPath) => {
-    const dateObj = dateFromTimestamp(get(formatted, fieldPath) as string | number);
+    const dateObj = dateFromTimestamp(get(formatted, fieldPath));
     if (dateObj != null) {
       set(formatted, fieldPath, dateObj.toLocaleString('en-GB'));
     }

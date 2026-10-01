@@ -62,7 +62,7 @@ import {
   TagsInputItemDelete,
   TagsInputItemText,
 } from '@/components/ui/tags-input';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useKuzzleStore } from '@/stores';
 import type { RoleFilter } from './types';
 

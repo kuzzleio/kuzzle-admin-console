@@ -21,7 +21,7 @@ import { useRouter } from 'vue-router';
 
 import { useToast } from '@/composables/useToast';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
 
 import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';

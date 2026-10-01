@@ -103,7 +103,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { FileInput } from '@/components/ui/file-input';
 import { useToast } from '@/composables/useToast';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useKuzzleStore } from '@/stores';
 
 const kuzzleStore = useKuzzleStore();

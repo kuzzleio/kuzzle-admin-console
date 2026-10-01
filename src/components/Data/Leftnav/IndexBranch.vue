@@ -119,7 +119,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useToast } from '@/composables/useToast';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useStorageIndexStore } from '@/stores';
 import type { Index } from '@/stores/types/storage-index';
 

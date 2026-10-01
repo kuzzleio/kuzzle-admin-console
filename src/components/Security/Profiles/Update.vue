@@ -26,7 +26,7 @@ import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
 import { Alert } from '@/components/ui/alert';
 import { useToast } from '@/composables/useToast';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 import type { ProfileSubmission } from './types';
 

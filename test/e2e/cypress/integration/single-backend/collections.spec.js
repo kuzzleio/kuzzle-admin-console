@@ -231,6 +231,33 @@ describe('Collection management', function() {
     cy.get('[data-cy="CollectionList-table"]').contains('foo')
   })
 
+  // La liste d'un index déjà chargé se resynchronise au retour sur l'index.
+  // Une collection créée ou supprimée hors de la console y faisait lever une
+  // TypeError : le store passait la collection seule à `addCollection` et
+  // `removeCollection`, qui attendent `{ index, collection }`.
+  it('Should sync the collection list with collections changed elsewhere', function() {
+    cy.skipOnBackendVersion(1)
+
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+    cy.request('POST', `${kuzzleUrl}/anotherindex/_create`)
+
+    cy.visit(`/#/data/`)
+    cy.visit(`/#/data/${indexName}/`)
+    cy.get('[data-cy="CollectionList-table"]').should('contain', collectionName)
+
+    cy.request('DELETE', `${kuzzleUrl}/${indexName}/${collectionName}`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/newcollection`)
+
+    cy.get('[data-cy="Treeview-item-index-link--anotherindex"]').click()
+    cy.url().should('contain', 'anotherindex')
+    cy.get(`[data-cy="Treeview-item-index-link--${indexName}"]`).click()
+    cy.url().should('contain', indexName)
+
+    cy.get('[data-cy="CollectionList-table"]')
+      .should('contain', 'newcollection')
+      .and('not.contain', collectionName)
+  })
+
   it('Should be able to autofocus collection search', () => {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/foobar`)

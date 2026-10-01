@@ -1,5 +1,7 @@
 import _ from 'lodash';
+import type { LocationQuery, LocationQueryRaw, Router } from 'vue-router';
 
+import type { FilterSorting } from '@/components/Common/Filters/types';
 import { formatHistoryName } from '@/lib/date';
 import type { MappingAttributes } from './mappingHelpers';
 
@@ -7,22 +9,24 @@ export const NO_ACTIVE = null;
 export const ACTIVE_QUICK = 'quick';
 export const ACTIVE_BASIC = 'basic';
 export const ACTIVE_RAW = 'raw';
-export const SORT_ASC = 'asc';
-export const SORT_DESC = 'desc';
 export const DEFAULT_QUICK = '';
 
 const DEFAULT_FILTER = {
   '_kuzzle_info.createdAt': 'desc',
 };
 
-export function Filter(this: any) {
-  this.active = NO_ACTIVE;
-  this.quick = DEFAULT_QUICK;
-  this.basic = null;
-  this.raw = null;
-  this.sorting = null;
-  this.from = 0;
-  this.size = 25;
+/*
+ * Le filtre vide. `basic` dépend de la liste : des groupes de conditions pour
+ * les documents et les utilisateurs, un filtre de contrôleurs pour les rôles.
+ */
+export class Filter<Basic = unknown> {
+  active: string | null = NO_ACTIVE;
+  quick: string = DEFAULT_QUICK;
+  basic: Basic | null = null;
+  raw: Record<string, unknown> | null = null;
+  sorting: FilterSorting | null = null;
+  from = 0;
+  size = 25;
 }
 
 const LOCALSTORAGE_PREFIX = 'search-filter-current';
@@ -106,7 +110,10 @@ export const save = (filter, router, index, collection) => {
  */
 let pendingRouteWrite: Promise<unknown> = Promise.resolve();
 
-export const pushQuery = async (router, build) => {
+export const pushQuery = async (
+  router: Router,
+  build: (query: LocationQuery) => LocationQueryRaw,
+) => {
   pendingRouteWrite = pendingRouteWrite
     .then(async () => {
       const current = router.currentRoute.value.query;
@@ -236,23 +243,6 @@ export const toSearchQuery = (filter, mappingAttributes: MappingAttributes, kuzz
   }
 };
 
-export const toRealtimeQuery = (filter) => {
-  if (!filter) {
-    throw new Error('No filter specified');
-  }
-
-  switch (filter.active) {
-    case ACTIVE_BASIC:
-      return filter.basic ? basicFilterToRealtimeQuery(filter.basic) : {};
-    case ACTIVE_RAW:
-      return filter.raw || {};
-    case ACTIVE_QUICK:
-    case NO_ACTIVE:
-    default:
-      return {};
-  }
-};
-
 export const stripDefaultValuesFromFilter = (filter) => {
   const defaultFilter = new Filter();
   const strippedFilter = {};
@@ -273,47 +263,6 @@ export const searchFilterOperands = {
   range: 'Range',
   exists: 'Exists',
   not_exists: 'Not exists',
-};
-
-export const realtimeFilterOperands = {
-  contains: 'contains',
-  not_contains: 'Not Contains',
-  regexp: 'Regexp',
-  exists: 'Exists',
-  missing: 'Missing',
-};
-
-export const basicFilterToRealtimeQuery = (groups = [[]]) => {
-  const or: any = [];
-
-  groups.forEach(function (filters) {
-    const and = filters
-      .filter((filter: any) => {
-        return filter.attribute !== null;
-      })
-      .map(function (filter: any) {
-        switch (filter.operator) {
-          case 'contains':
-            return { equals: { [filter.attribute]: filter.value } };
-          case 'not_contains':
-            return { not: { equals: { [filter.attribute]: filter.value } } };
-          case 'regexp':
-            return { regexp: { [filter.attribute]: filter.value } };
-          case 'exists':
-            return { exists: { field: filter.attribute } };
-          case 'missing':
-            return { missing: { field: filter.attribute } };
-        }
-      });
-
-    or.push({ and });
-  });
-
-  if (or.length === 0) {
-    return {};
-  }
-
-  return { or };
 };
 
 export const rawFilterToSearchQuery = (rawFilter) => {
@@ -350,15 +299,4 @@ export const formatSort = (sorting) => {
     return DEFAULT_FILTER;
   }
   return [{ [sorting.attribute]: { order: sorting.order } }];
-};
-
-export const formatPagination = (currentPage, limit) => {
-  if (currentPage === undefined || limit === undefined) {
-    return {};
-  }
-
-  return {
-    from: limit * (currentPage - 1),
-    size: limit,
-  };
 };

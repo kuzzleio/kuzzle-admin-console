@@ -134,7 +134,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/composables/useToast';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch.vue';

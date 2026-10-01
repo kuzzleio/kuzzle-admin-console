@@ -139,7 +139,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSideBySide } from '@/composables/useSideBySide';
 import { useToast } from '@/composables/useToast';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 import { cssPixels, truncateName } from '@/utils';
 

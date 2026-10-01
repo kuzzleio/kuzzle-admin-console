@@ -223,7 +223,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/composables/useToast';
 import { formatClockTime } from '@/lib/date';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { extractAttributesFromMapping } from '@/services/mappingHelpers';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';

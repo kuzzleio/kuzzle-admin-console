@@ -126,7 +126,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/composables/useToast';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useKuzzleStore } from '@/stores';
 import type { EnvironmentColor } from '@/stores/types/kuzzle';
 import { DEFAULT_COLOR, ENV_COLORS, NO_ADMIN_WARNING_HOSTS } from '@/utils';

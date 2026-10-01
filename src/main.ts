@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import { logger } from './plugins/logger';
+import { logger } from './lib/logger';
 import 'leaflet/dist/leaflet.css';
 
 import { initTheme } from './composables/useTheme';

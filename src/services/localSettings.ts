@@ -1,6 +1,5 @@
 export const LOCALSTORAGE_PREFIX = 'kuz-ac-settings';
 export const LIST_VIEW_LIST = 'list';
-export const LIST_VIEW_BOXES = 'boxes';
 export const LIST_VIEW_MAP = 'map';
 export const LIST_VIEW_COLUMN = 'column';
 export const LIST_VIEW_TIME_SERIES = 'time-series';

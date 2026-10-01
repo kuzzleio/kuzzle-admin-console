@@ -102,7 +102,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
 import { useToast } from '@/composables/useToast';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import * as filterManager from '@/services/filterManager';
 import type { MappingAttributes } from '@/services/mappingHelpers';
 import { useAuthStore, useKuzzleStore } from '@/stores';

@@ -137,7 +137,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useKuzzleStore } from '@/stores';
 import { formatForDom, sortObject } from '@/utils';
 import { isValidEnvironment } from '@/validators';

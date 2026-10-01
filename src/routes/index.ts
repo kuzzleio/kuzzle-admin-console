@@ -14,7 +14,7 @@ import SecurityLayout from '../components/Security/Layout.vue';
 import Signup from '../components/Signup.vue';
 import { pageTitle } from '../services/pageTitle';
 import telemetryCookies from '../services/telemetryCookies';
-import type { Logger } from '@/plugins/logger';
+import type { Logger } from '@/lib/logger';
 import { useKuzzleStore } from '@/stores';
 import DataSubRoutes from './children/data';
 import SecuritySubRoutes from './children/security';

@@ -36,7 +36,7 @@ import { useRouter } from 'vue-router';
 import { Alert } from '@/components/ui/alert';
 import { Spinner } from '@/components/ui/spinner';
 import { useToast } from '@/composables/useToast';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 
 import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';
