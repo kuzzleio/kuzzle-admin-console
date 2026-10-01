@@ -7,8 +7,6 @@ export const NO_ACTIVE = null;
 export const ACTIVE_QUICK = 'quick';
 export const ACTIVE_BASIC = 'basic';
 export const ACTIVE_RAW = 'raw';
-export const SORT_ASC = 'asc';
-export const SORT_DESC = 'desc';
 export const DEFAULT_QUICK = '';
 
 const DEFAULT_FILTER = {
@@ -236,23 +234,6 @@ export const toSearchQuery = (filter, mappingAttributes: MappingAttributes, kuzz
   }
 };
 
-export const toRealtimeQuery = (filter) => {
-  if (!filter) {
-    throw new Error('No filter specified');
-  }
-
-  switch (filter.active) {
-    case ACTIVE_BASIC:
-      return filter.basic ? basicFilterToRealtimeQuery(filter.basic) : {};
-    case ACTIVE_RAW:
-      return filter.raw || {};
-    case ACTIVE_QUICK:
-    case NO_ACTIVE:
-    default:
-      return {};
-  }
-};
-
 export const stripDefaultValuesFromFilter = (filter) => {
   const defaultFilter = new Filter();
   const strippedFilter = {};
@@ -273,47 +254,6 @@ export const searchFilterOperands = {
   range: 'Range',
   exists: 'Exists',
   not_exists: 'Not exists',
-};
-
-export const realtimeFilterOperands = {
-  contains: 'contains',
-  not_contains: 'Not Contains',
-  regexp: 'Regexp',
-  exists: 'Exists',
-  missing: 'Missing',
-};
-
-export const basicFilterToRealtimeQuery = (groups = [[]]) => {
-  const or: any = [];
-
-  groups.forEach(function (filters) {
-    const and = filters
-      .filter((filter: any) => {
-        return filter.attribute !== null;
-      })
-      .map(function (filter: any) {
-        switch (filter.operator) {
-          case 'contains':
-            return { equals: { [filter.attribute]: filter.value } };
-          case 'not_contains':
-            return { not: { equals: { [filter.attribute]: filter.value } } };
-          case 'regexp':
-            return { regexp: { [filter.attribute]: filter.value } };
-          case 'exists':
-            return { exists: { field: filter.attribute } };
-          case 'missing':
-            return { missing: { field: filter.attribute } };
-        }
-      });
-
-    or.push({ and });
-  });
-
-  if (or.length === 0) {
-    return {};
-  }
-
-  return { or };
 };
 
 export const rawFilterToSearchQuery = (rawFilter) => {
@@ -350,15 +290,4 @@ export const formatSort = (sorting) => {
     return DEFAULT_FILTER;
   }
   return [{ [sorting.attribute]: { order: sorting.order } }];
-};
-
-export const formatPagination = (currentPage, limit) => {
-  if (currentPage === undefined || limit === undefined) {
-    return {};
-  }
-
-  return {
-    from: limit * (currentPage - 1),
-    size: limit,
-  };
 };

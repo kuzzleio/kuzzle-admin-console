@@ -71,13 +71,6 @@ export const dateFromTimestamp = (value: string | number): Date | null => {
   return date;
 };
 
-export const wait = async (ms: number): Promise<void> =>
-  await new Promise<void>((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  });
-
 /*
  * Valeur en pixels d'un token de `tokens.css` (`--sidebar-width`…), pour les
  * API qui prennent un nombre et non une classe — `default-size` de `reka-ui`.

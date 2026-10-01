@@ -4,11 +4,7 @@
     "module": "esnext",
     "strict": true,
     "skipLibCheck": true,
-    "jsx": "preserve",
-    "allowJs": true,
-    "importHelpers": true,
     "moduleResolution": "bundler",
-    "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": false,
@@ -24,13 +20,11 @@
     "lib": [
       "esnext",
       "dom",
-      "dom.iterable",
-      "scripthost"
+      "dom.iterable"
     ]
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx",
     "src/**/*.vue"
   ],
   "exclude": [
