@@ -89,7 +89,10 @@ export default {
   z-index: 1;
 }
 
+// `relative` : l'ancêtre positionné du `.full-screen` des filtres, sans quoi
+// leur plein écran recouvre la barre de navigation et le menu de la sécurité.
 .SecurityLayout-contentWrapper {
+  position: relative;
   flex-grow: 1;
   height: 100%;
   overflow: auto;
