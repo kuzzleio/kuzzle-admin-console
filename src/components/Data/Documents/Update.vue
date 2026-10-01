@@ -17,7 +17,7 @@
         :collection="collectionName"
         :document="document"
         :mapping="mappingAttributes"
-        @cancel="onCancel"
+        @cancel="goToList"
         @submit="onSubmit"
         @document-change="onDocumentChange"
       />
@@ -28,135 +28,127 @@
   </div>
 </template>
 
-<script>
-import get from 'lodash/get';
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import omit from 'lodash/omit';
-import { mapState } from 'pinia';
+import { useRouter } from 'vue-router';
 
 import { Alert } from '@/components/ui/alert';
 import { Spinner } from '@/components/ui/spinner';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 
 import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';
 import Headline from '@/components/Materialize/Headline.vue';
 import CreateOrUpdate from './Common/CreateOrUpdate.vue';
 
-export default {
-  name: 'DocumentUpdate',
-  components: {
-    Alert,
-    Headline,
-    CreateOrUpdate,
-    PageNotAllowed,
-    Spinner,
-  },
-  props: {
-    id: { type: String, required: true },
-    indexName: { type: String, required: true },
-    collectionName: { type: String, required: true },
-  },
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  data() {
-    return {
-      document: {},
-      loading: false,
-      showAlert: false,
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle', 'wrapper']),
-    ...mapState(useAuthStore, ['canEditDocument']),
-    mappingAttributes() {
-      return get(this, 'collection.mapping', null)
-        ? omit(this.collection.mapping, '_kuzzle_info')
-        : null;
+const props = defineProps<{
+  collectionName: string;
+  id: string;
+  indexName: string;
+}>();
+
+const router = useRouter();
+const toast = useToast();
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const storageIndexStore = useStorageIndexStore();
+
+const document = ref<Record<string, unknown>>({});
+const loading = ref(false);
+const showAlert = ref(false);
+
+// L'identifiant de la souscription n'est pas affiché : il n'a pas à être réactif.
+let room: string | undefined;
+
+const index = computed(() => storageIndexStore.getOneIndex(props.indexName));
+
+const collection = computed(() =>
+  index.value ? storageIndexStore.getOneCollection(index.value, props.collectionName) : undefined,
+);
+
+const mappingAttributes = computed(() =>
+  collection.value?.mapping ? omit(collection.value.mapping, '_kuzzle_info') : null,
+);
+
+const hasRights = computed((): boolean =>
+  authStore.canEditDocument(props.indexName, props.collectionName),
+);
+
+/* Le SDK de la connexion courante. Appelé dans un `try` : son absence y est
+   une erreur comme une autre. */
+function sdk() {
+  const kuzzle = kuzzleStore.$kuzzle;
+  if (!kuzzle) {
+    throw new Error('No Kuzzle SDK for the current environment');
+  }
+  return kuzzle;
+}
+
+onMounted(async () => {
+  fetch();
+  room = await sdk().realtime.subscribe(
+    props.indexName,
+    props.collectionName,
+    { ids: { values: [props.id] } },
+    () => {
+      showAlert.value = true;
     },
-    index() {
-      return this.storageIndexStore.getOneIndex(this.indexName);
-    },
-    collection() {
-      return this.storageIndexStore.getOneCollection(this.index, this.collectionName);
-    },
-    hasRights() {
-      return this.canEditDocument(this.indexName, this.collectionName);
-    },
-  },
-  async mounted() {
-    this.fetch();
-    this.room = await this.$kuzzle.realtime.subscribe(
-      this.indexName,
-      this.collectionName,
-      { ids: { values: [this.$route.params.id] } },
-      () => {
-        this.showAlert = true;
-      },
+  );
+});
+
+onUnmounted(async () => {
+  if (room) {
+    await sdk().realtime.unsubscribe(room);
+  }
+});
+
+function goToList(): void {
+  router.push({
+    name: 'DocumentList',
+    params: { indexName: props.indexName, collectionName: props.collectionName },
+  });
+}
+
+async function onSubmit(
+  submitted: Record<string, unknown>,
+  _id: string | number | undefined,
+  replace = false,
+): Promise<void> {
+  try {
+    delete submitted._id;
+    const action = replace ? 'replace' : 'update';
+    await sdk().document[action](props.indexName, props.collectionName, props.id, submitted, {
+      refresh: 'wait_for',
+    });
+    goToList();
+  } catch (err) {
+    logger.error(err);
+    toast.warning(
+      'Ooops! Something went wrong while persisting the document.',
+      (err as Error).message,
     );
-  },
-  async unmounted() {
-    if (this.room) {
-      await this.$kuzzle.realtime.unsubscribe(this.room);
-    }
-  },
-  methods: {
-    async onSubmit(document, id, replace = false) {
-      this.submitted = true;
-      this.error = '';
+  }
+}
 
-      if (!document) {
-        this.error = 'The document is invalid, please review it';
-        return;
-      }
+function onDocumentChange(changed: Record<string, unknown>): void {
+  document.value = changed;
+}
 
-      try {
-        delete document._id;
-        let action = 'update';
-        if (replace) {
-          action = 'replace';
-        }
-        await this.$kuzzle.document[action](
-          this.indexName,
-          this.collectionName,
-          this.id,
-          document,
-          { refresh: 'wait_for' },
-        );
-        this.$router.push({
-          name: 'DocumentList',
-          params: { index: this.indexName, collection: this.collectionName },
-        });
-      } catch (err) {
-        this.$log.error(err);
-        this.$toast.warning(
-          'Ooops! Something went wrong while persisting the document.',
-          err.message,
-        );
-      }
-    },
-    onCancel() {
-      this.$router.push({
-        name: 'DocumentList',
-        params: { index: this.indexName, collection: this.collectionName },
-      });
-    },
-    onDocumentChange(document) {
-      this.document = document;
-    },
-    async fetch() {
-      this.showAlert = false;
-      this.loading = true;
-      try {
-        const res = await this.$kuzzle.document.get(this.indexName, this.collectionName, this.id);
-        this.document = omit(res._source, '_kuzzle_info');
-        this.loading = false;
-      } catch (err) {
-        this.$log.error(err);
-        this.$toast.warning('Ooops! Something went wrong while loading the document.', err.message);
-      }
-    },
-  },
-};
+async function fetch(): Promise<void> {
+  showAlert.value = false;
+  loading.value = true;
+  try {
+    const res = await sdk().document.get(props.indexName, props.collectionName, props.id);
+    document.value = omit(res._source, '_kuzzle_info');
+    loading.value = false;
+  } catch (err) {
+    logger.error(err);
+    toast.warning(
+      'Ooops! Something went wrong while loading the document.',
+      (err as Error).message,
+    );
+  }
+}
 </script>

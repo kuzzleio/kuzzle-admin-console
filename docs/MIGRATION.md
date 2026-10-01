@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-09-29 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
+**Dernière mise à jour** : 2026-10-01 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -925,7 +925,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 10. `Data` : `Collections`, `Realtime`
   - [x] 11. `Common/Filters`
   - [x] 12. `Data/Documents`, les vues
-  - [ ] 13. `Data/Documents`, le reste
+  - [x] 13. `Data/Documents`, le reste
   - [ ] 14. Retrait des plugins `$toast` / `$log`, verrou ESLint
 
 ### 1.6 Critères de sortie — ADR-0051
@@ -4133,6 +4133,32 @@ Gabarit à copier :
   et `:is` reçoit le composant.
 - **À retenir** : chercher `:is=` à chaque conversion ; une valeur qui est une
   chaîne passe par une table.
+- **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-125 — Le parent typé en dernier passe des valeurs que ses enfants refusent
+
+- **Contexte** : lot 13 d'[ADR-0060](adr/0060-composition-api-par-domaine.md),
+  conversion de `Data/Documents/Page.vue`, dont les vues étaient typées depuis
+  le lot 12.
+- **Symptôme** : `vue-tsc` refuse des valeurs que `Page.vue` passait depuis
+  toujours : `dateFields` vaut `{}` sans mapping (les vues attendent
+  `string[]`), `mappingAttributes` vaut `null` (`Filters` attend un objet), les
+  notifications remises à zéro valent `null`, et `listViewType` est typé par
+  un `enum` numérique alors que ses valeurs sont `'list'`, `'map'`…
+- **Cause** : en Options API sans types, rien ne confrontait ce que le parent
+  envoie à ce que l'enfant déclare. Certains écarts étaient des défauts
+  latents : `DocumentListItem` fait un `forEach` sur `dateFields`, qu'un objet
+  n'a pas ; `BasicFilter` fait un `Object.keys` sur `mappingAttributes`, qui
+  lève sur `null`.
+- **Solution** : trancher cas par cas, sans cast pour faire taire : `[]` et
+  `{}` là où l'enfant itère, `undefined` là où il ne teste que la présence,
+  `ListViewType` redéfini comme l'union des constantes. Garder la valeur
+  d'origine quand l'enfant la distingue : `Create` et `Update` passent encore
+  `null` à `CreateOrUpdate`, parce que `JsonTree` affiche `null` et
+  `undefined` différemment.
+- **À retenir** : quand un parent est converti après ses enfants, chaque
+  erreur de `vue-tsc` sur une prop est une question de comportement, pas de
+  syntaxe : lire ce que l'enfant fait de la valeur avant de choisir.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain

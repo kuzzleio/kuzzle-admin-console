@@ -34,8 +34,8 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+<script setup lang="ts">
+import { watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -49,47 +49,38 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { truncateName } from '@/utils';
 
-export default defineComponent({
-  name: 'DeleteModal',
-  components: {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    Spinner,
+// `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
+const props = withDefaults(
+  defineProps<{
+    candidatesForDeletion?: string[];
+    isLoading?: boolean;
+    open?: boolean;
+  }>(),
+  {
+    candidatesForDeletion: () => [],
+    isLoading: false,
+    open: false,
   },
-  // `@interact-outside.prevent` : une suppression ne se ferme pas sur un clic à côté.
-  props: {
-    candidatesForDeletion: {
-      default: () => [],
-      type: Array as PropType<string[]>,
-    },
-    isLoading: {
-      default: false,
-      type: Boolean,
-    },
-    open: {
-      default: false,
-      type: Boolean,
-    },
+);
+
+const emit = defineEmits<{
+  (e: 'confirm', ids: string[]): void;
+  (e: 'hide'): void;
+  (e: 'update:open', open: boolean): void;
+}>();
+
+// `b-modal` émettait `hide` quelle que soit la façon de fermer. Ici la
+// fermeture est un seul état, et l'événement en découle.
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      emit('hide');
+    }
   },
-  watch: {
-    // `b-modal` émettait `hide` quelle que soit la façon de fermer. Ici la
-    // fermeture est un seul état, et l'événement en découle.
-    open(open: boolean) {
-      if (!open) {
-        this.$emit('hide');
-      }
-    },
-  },
-  methods: {
-    close(): void {
-      this.$emit('update:open', false);
-    },
-    truncateName,
-  },
-});
+);
+
+function close(): void {
+  emit('update:open', false);
+}
 </script>

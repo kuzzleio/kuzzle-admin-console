@@ -16,7 +16,7 @@
       <CardDescription v-if="hasNewDocuments">
         You can refresh the collection by hitting the "Refresh" button on top of the page
       </CardDescription>
-      <CardDescription v-else-if="canCreateDocument(index, collection)">
+      <CardDescription v-else-if="authStore.canCreateDocument(index, collection)">
         You can try changing your filters or create a new document by hitting the "Create New
         Document" button on top of the page.
       </CardDescription>
@@ -24,37 +24,22 @@
   </Card>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { mapState } from 'pinia';
-
+<script setup lang="ts">
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { useAuthStore } from '@/stores';
 
-export default defineComponent({
-  name: 'DocumentsEmptyState',
-  components: {
-    Card,
-    CardContent,
-    CardDescription,
-    CardTitle,
+withDefaults(
+  defineProps<{
+    collection?: string;
+    hasNewDocuments?: boolean;
+    index?: string;
+  }>(),
+  {
+    collection: '',
+    hasNewDocuments: false,
+    index: '',
   },
-  props: {
-    collection: {
-      default: '',
-      type: String,
-    },
-    hasNewDocuments: {
-      default: false,
-      type: Boolean,
-    },
-    index: {
-      default: '',
-      type: String,
-    },
-  },
-  computed: {
-    ...mapState(useAuthStore, ['canCreateDocument']),
-  },
-});
+);
+
+const authStore = useAuthStore();
 </script>

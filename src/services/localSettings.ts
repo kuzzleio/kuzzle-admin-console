@@ -5,12 +5,15 @@ export const LIST_VIEW_MAP = 'map';
 export const LIST_VIEW_COLUMN = 'column';
 export const LIST_VIEW_TIME_SERIES = 'time-series';
 
-enum ListViewType {
-  LIST_VIEW_LIST,
-  LIST_VIEW_MAP,
-  LIST_VIEW_TIME_SERIES,
-  LIST_VIEW_COLUMN,
-}
+/*
+ * Les valeurs réelles : des chaînes, lues et écrites telles quelles dans le
+ * `localStorage` et la query. L'ancien `enum` numérique ne typait rien de vrai.
+ */
+export type ListViewType =
+  | typeof LIST_VIEW_LIST
+  | typeof LIST_VIEW_MAP
+  | typeof LIST_VIEW_TIME_SERIES
+  | typeof LIST_VIEW_COLUMN;
 
 export interface CollectionSettings {
   listViewType?: ListViewType;
