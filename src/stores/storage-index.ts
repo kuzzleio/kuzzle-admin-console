@@ -14,6 +14,10 @@ import {
   type UpdateCollectionPayload,
 } from './types/storage-index';
 
+function isHttpLineTooLong(error: unknown): boolean {
+  return error instanceof Error && /HTTP line is larger than/.test(error.message);
+}
+
 export const useStorageIndexStore = defineStore('storageIndex', {
   state: (): IndexState => ({
     indexes: [],
@@ -76,10 +80,30 @@ export const useStorageIndexStore = defineStore('storageIndex', {
       if (kuzzle === null) {
         throw new Error('Kuzzle is not initialized');
       }
-      const indexesNames = indexes.map((el) => el.name);
 
-      await kuzzle.index.mDelete(indexesNames);
-      this.removeIndexes(indexes);
+      /*
+       * Kuzzle transmet à Elasticsearch une seule ligne HTTP qui nomme chaque
+       * index et chaque collection supprimés ; au-delà de 4 096 octets, la
+       * requête entière est refusée et rien n'est supprimé (#965). La taille
+       * dépend des collections, que la liste des index ne connaît pas
+       * toujours : on coupe en deux au refus plutôt que d'estimer.
+       */
+      const deleteChunk = async (chunk: Index[]): Promise<void> => {
+        try {
+          await kuzzle.index.mDelete(chunk.map((el) => el.name));
+        } catch (error) {
+          if (chunk.length < 2 || !isHttpLineTooLong(error)) {
+            throw error;
+          }
+          const half = Math.ceil(chunk.length / 2);
+          await deleteChunk(chunk.slice(0, half));
+          await deleteChunk(chunk.slice(half));
+          return;
+        }
+        this.removeIndexes(chunk);
+      };
+
+      await deleteChunk(indexes);
     },
     async fetchIndexList() {
       const kuzzleStore = useKuzzleStore();

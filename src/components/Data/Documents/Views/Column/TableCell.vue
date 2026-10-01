@@ -36,6 +36,7 @@ import isObject from 'lodash/isObject';
 
 import { Badge } from '@/components/ui/badge';
 import { TableCell } from '@/components/ui/table';
+import { formatDateTime } from '@/lib/date';
 import { dateFromTimestamp } from '@/utils';
 
 const props = withDefaults(
@@ -61,7 +62,7 @@ const formattedData = computed((): unknown => {
   ) {
     const dateObj = dateFromTimestamp(data);
     if (dateObj != null) {
-      return dateObj.toLocaleString('en-GB');
+      return formatDateTime(dateObj);
     }
   }
   return data;

@@ -158,6 +158,39 @@ describe('Indexes', () => {
     cy.get('[data-cy=IndexesPage]').should('not.contain', `${indexName}2`)
   })
 
+  it('Should be able to bulk delete more indexes than one request allows', () => {
+    // Kuzzle transmet à Elasticsearch une ligne HTTP qui nomme chaque index :
+    // au-delà de 4 096 octets, il refuse l'ensemble (#965). 40 noms de 100
+    // caractères la dépassent.
+    const names = Array.from({ length: 40 }, (_, i) =>
+      `bulk${String(i).padStart(2, '0')}`.padEnd(100, 'x')
+    )
+    names.forEach(name => {
+      cy.request('POST', `http://localhost:7512/${name}/_create`)
+    })
+
+    cy.visit('/')
+    cy.waitOverlay()
+
+    names.forEach(name => {
+      cy.get(`[data-cy=IndexesPage-checkbox--${name}]`).click({ force: true })
+    })
+    cy.get(`[data-cy=IndexesPage-bulkDelete--btn]`).click()
+    cy.get('[data-cy="BulkDeleteIndexModal-input-confirmation"]').type(
+      'DELETE',
+      { force: true }
+    )
+    cy.get('[data-cy="BulkDeleteIndexModal-deleteBtn"]').click()
+
+    cy.get('[data-cy=IndexesPage]').should('not.contain', 'bulk00')
+    cy.get('[data-cy=IndexesPage]').should('not.contain', 'bulk39')
+    cy.request('GET', 'http://localhost:7512/_list')
+      .its('body.result.indexes')
+      .should(indexes => {
+        expect(indexes.filter(index => index.startsWith('bulk'))).to.be.empty
+      })
+  })
+
   // Le tri des colonnes n'a jamais eu de spec : il est couvert ici AVANT d'être
   // réécrit sans `b-table` (ADR-0011, décision 4).
   it('Should be able to sort the indexes by name', () => {

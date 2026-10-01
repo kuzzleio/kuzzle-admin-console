@@ -70,6 +70,38 @@ describe('Document List', function() {
       .and('contain', 'Luca')
   })
 
+  // Une date s'affiche en heure locale suivie de son décalage (ADR-0062,
+  // #1001) : l'heure lue moins le décalage lu redonne l'UTC, quel que soit le
+  // fuseau de la machine.
+  it('Should display a date field with its UTC offset', function() {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/dated/_create?refresh=wait_for`,
+      { date: 1684195200000 } // 2023-05-16T00:00:00Z
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('[data-cy="DocumentListItem--dated"]')
+      .find('[data-cy=DocumentListItem-toggleCollapse]')
+      .click()
+
+    cy.get('[data-cy="DocumentListItem--dated"]')
+      .find('[data-cy=JsonTree]')
+      .invoke('text')
+      .should(text => {
+        const match = text.match(
+          /(\d\d)\/05\/2023, (\d\d):(\d\d):00 GMT(?:([+-])(\d+)(?::(\d\d))?)?/
+        )
+        expect(match, text).to.not.equal(null)
+        const [, day, hours, minutes, sign, offsetH = '0', offsetM = '0'] = match
+        const offset =
+          (sign === '-' ? -1 : 1) * (Number(offsetH) * 60 + Number(offsetM))
+        const localMinutes =
+          (Number(day) * 24 + Number(hours)) * 60 + Number(minutes)
+        expect(localMinutes - offset).to.equal(16 * 24 * 60)
+      })
+  })
+
   it('Should select every document with Toggle all, then bulk delete them (List view)', function() {
     cy.request(
       'POST',

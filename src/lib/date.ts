@@ -1,10 +1,20 @@
 /*
- * Dates de la console, sans `moment` (ADR-0052). Cinq usages seulement,
- * tous en heure locale : quatre formats fixes et une lecture de valeur
- * Elasticsearch. `Date` suffit, sans bibliothèque ni table de locales.
+ * Dates de la console, sans `moment` (ADR-0052). Tout est en heure locale :
+ * des formats fixes et une lecture de valeur Elasticsearch. `Date` et `Intl`
+ * suffisent, sans bibliothèque ni table de locales.
  */
 
 const pad = (value: number): string => String(value).padStart(2, '0');
+
+/**
+ * `16/05/2023, 02:00:00 GMT+2` — une valeur datée d'un document, en heure
+ * locale suivie de son décalage : sans lui, deux personnes dans deux fuseaux
+ * lisaient deux heures différentes pour la même valeur, sans le savoir
+ * (ADR-0062, #1001).
+ */
+export function formatDateTime(date: Date): string {
+  return date.toLocaleString('en-GB', { timeZoneName: 'shortOffset' });
+}
 
 /**
  * `H:mm:ss` — heure d'une notification temps réel, sans zéro devant l'heure.

@@ -45,8 +45,14 @@
           <Spinner size="lg" />
         </div>
         <div v-else class="relative h-full">
+          <!--
+            La page enfant ne se rend pas sous le 404 : celle des documents
+            n'attend pas que sa collection existe, et s'affichait sous le
+            message, requêtes en échec comprises (#964).
+          -->
           <data-not-found v-if="dataNotFound" class="mt-3" />
           <router-view
+            v-else
             @start-init="viewIsInitializing = true"
             @end-init="viewIsInitializing = false"
           />
@@ -175,6 +181,14 @@ async function fetchCollectionMapping(): Promise<void> {
 
     if (!collection) {
       handleDataNotFound();
+      return;
+    }
+
+    /*
+     * Une collection temps réel n'a pas de mapping : `getMapping` échoue, et
+     * l'ouvrir pendant qu'on y est abonné affichait un toast d'erreur (#998).
+     */
+    if (collection.isRealtime()) {
       return;
     }
 
