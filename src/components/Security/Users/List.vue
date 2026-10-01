@@ -15,7 +15,7 @@
       <template v-if="loading">
         <b-row class="text-center">
           <b-col>
-            <b-spinner v-if="loading" variant="primary" class="mt-5" />
+            <b-spinner v-if="loading" variant="primary" class="mt-5" data-cy="UserList-loading" />
           </b-col>
         </b-row>
       </template>
@@ -287,21 +287,17 @@ export default {
         size: this.paginationSize,
       };
 
-      let searchQuery = null;
-      searchQuery = filterManager.toSearchQuery(
-        this.currentFilter,
-        this.mappingAttributes,
-        this.wrapper,
-      );
-      if (!searchQuery) {
-        searchQuery = {};
-      }
-
-      const sorting = filterManager.toSort(this.currentFilter);
-
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
       try {
+        // Dans le `try` : un filtre bien formé mais périmé (un attribut absent
+        // du mapping) fait lever la traduction en requête, et la liste restait
+        // sur son spinner (#867).
+        const searchQuery =
+          filterManager.toSearchQuery(this.currentFilter, this.mappingAttributes, this.wrapper) ||
+          {};
+        const sorting = filterManager.toSort(this.currentFilter);
+
         const res = await this.wrapper.performSearchUsers(
           this.collection,
           this.index,
@@ -317,7 +313,6 @@ export default {
               from: 0,
             }),
           );
-          return;
         }
       } catch (error) {
         this.$log.error(error);
@@ -330,8 +325,9 @@ export default {
           dismissible: true,
           noAutoHide: true,
         });
+      } finally {
+        this.loading = false;
       }
-      this.loading = false;
     },
     editUser(id) {
       this.$router.push({
