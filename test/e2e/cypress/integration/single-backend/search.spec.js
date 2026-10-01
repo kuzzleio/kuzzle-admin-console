@@ -788,6 +788,16 @@ describe('Search', function() {
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-fullscreen]').click()
     cy.get('[data-cy="Filters"]').should('have.class', 'full-screen')
+    // Le plein écran couvre la zone de contenu, pas l'arbre ni la barre de
+    // navigation (E-02).
+    cy.get('.DataLayout-contentWrapper').then($wrapper => {
+      const wrapper = $wrapper[0].getBoundingClientRect()
+      cy.get('[data-cy="Filters"]').should($filters => {
+        const filters = $filters[0].getBoundingClientRect()
+        expect(filters.top).to.be.at.least(wrapper.top)
+        expect(filters.left).to.be.at.least(wrapper.left)
+      })
+    })
     cy.get('[data-cy=BasicFilter-predicates]').should('be.visible')
     cy.get('[data-cy=Filters-rawTab]').click()
     cy.get('[data-cy=RawFilter]').should('be.visible')

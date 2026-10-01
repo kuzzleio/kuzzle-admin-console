@@ -128,6 +128,27 @@ describe('Users', function() {
     cy.get('[data-cy="UserList-items"]').should('not.contain', kuids[0])
   })
 
+  it('Should keep the fullscreen filters inside the content area', () => {
+    cy.request('POST', `${kuzzleUrl}/users/dummy/_create?refresh=wait_for`, {
+      content: { profileIds: ['default'], name: 'Dummy User' },
+      credentials: { local: { username: 'dummy', password: 'test' } }
+    })
+    cy.visit('/#/security/users')
+    cy.get('[data-cy=UserItem]').should('have.length', 1)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-fullscreen]').click()
+    cy.get('[data-cy="Filters"]').should('have.class', 'full-screen')
+    // Ni la barre de navigation ni le menu de la sécurité ne sont recouverts.
+    cy.get('.SecurityLayout-contentWrapper').then($wrapper => {
+      const wrapper = $wrapper[0].getBoundingClientRect()
+      cy.get('[data-cy="Filters"]').should($filters => {
+        const filters = $filters[0].getBoundingClientRect()
+        expect(filters.top).to.be.at.least(wrapper.top)
+        expect(filters.left).to.be.at.least(wrapper.left)
+      })
+    })
+  })
+
   it('Should be able to delete a user', function() {
     const kuid = 'dummy'
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {

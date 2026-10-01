@@ -26,7 +26,14 @@
         </ul>
       </nav>
     </div>
-    <div class="SecurityLayout-contentWrapper min-h-0 flex-1 overflow-auto p-4 md:h-full md:p-6">
+    <!--
+      `relative` : l'ancêtre positionné du `.full-screen` des filtres, sans
+      quoi leur plein écran recouvre la barre de navigation et ce menu, comme
+      E-02 côté données.
+    -->
+    <div
+      class="SecurityLayout-contentWrapper relative min-h-0 flex-1 overflow-auto p-4 md:h-full md:p-6"
+    >
       <router-view />
     </div>
   </div>
