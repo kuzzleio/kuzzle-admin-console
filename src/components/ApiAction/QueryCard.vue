@@ -300,6 +300,13 @@ function loadQueryParams(): void {
   for (const param of operation?.parameters ?? []) {
     query[param.name] = '';
   }
+  /*
+   * Seules les actions d'une app ou d'un plugin peuvent décrire leur corps :
+   * Kuzzle sert leur définition en OpenAPI 3 (`scope=app`), copiée de la
+   * route telle quelle. Celle du cœur (`scope=kuzzle`) est en Swagger 2.0 et
+   * ne décrit aucun corps, ni `requestBody` ni paramètre `in: body` : pour ses
+   * actions, le corps reste vide (#1110).
+   */
   const jsonBody = operation?.requestBody?.content['application/json'];
   if (jsonBody) {
     // Une requête saisie sans `body` ne se préremplit pas, comme avant.
