@@ -1,8 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import loggerPlugin, { logger } from './plugins/logger';
-import toastPlugin from './plugins/toast';
+import { logger } from './plugins/logger';
 import 'leaflet/dist/leaflet.css';
 
 import { initTheme } from './composables/useTheme';
@@ -24,8 +23,6 @@ initTheme();
 const app = createApp(App);
 
 app.use(createPinia());
-app.use(loggerPlugin);
-app.use(toastPlugin);
 app.use(createRoutes(logger));
 
 app.mount('#app');

@@ -912,7 +912,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 7. `TagsInput`
   - [x] 8. `Resizable`
   - [x] 9. `Toast` — sur `vue-sonner`, l'état hors ligne en bandeau ([ADR-0058](adr/0058-toasts-sur-vue-sonner.md))
-- [ ] Composition API ([ADR-0060](adr/0060-composition-api-par-domaine.md)), un domaine par lot — 77 SFC sur 193 au départ :
+- [x] Composition API ([ADR-0060](adr/0060-composition-api-par-domaine.md)), un domaine par lot — 77 SFC sur 193 au départ :
   - [x] 1. `ui/` restants, retrait de `classMerge`
   - [x] 2. Racine, `Common/Login`, `Error`, `Materialize`
   - [x] 3. `Common/` hors `Filters` et `Environments`
@@ -926,7 +926,7 @@ directives, que `CUSTOM_DIR` traduisait quel que soit le mode
   - [x] 11. `Common/Filters`
   - [x] 12. `Data/Documents`, les vues
   - [x] 13. `Data/Documents`, le reste
-  - [ ] 14. Retrait des plugins `$toast` / `$log`, verrou ESLint
+  - [x] 14. Retrait des plugins `$toast` / `$log`, verrou ESLint (`vue/component-api-style`, `vue/block-lang`)
 
 ### 1.6 Critères de sortie — ADR-0051
 
@@ -940,7 +940,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
 - [x] 4. Vrai shadcn-vue à la place des primitives écrites à la main (§1.5)
 - [x] 5. `apexcharts` 5, `vue3-apexcharts` remplacé (§3.3) — `apexcharts` 7.6.1, composant local `ApexChart` ([ADR-0059](adr/0059-apexcharts-7-sans-wrapper.md))
 - [x] 6. Thème sombre branché, contraste AA vérifié dans les deux thèmes — avancé avant les lots 5 à 9 du critère 4 ([ADR-0056](adr/0056-theme-sombre-avance.md))
-- [ ] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5)
+- [x] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5), verrouillé par ESLint
 - [ ] 8. Revue de sortie : technique, sécurité, livraison (`Dockerfile`, `infra/`, workflows)
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
