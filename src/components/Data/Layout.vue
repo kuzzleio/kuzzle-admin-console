@@ -184,6 +184,14 @@ async function fetchCollectionMapping(): Promise<void> {
       return;
     }
 
+    /*
+     * Une collection temps réel n'a pas de mapping : `getMapping` échoue, et
+     * l'ouvrir pendant qu'on y est abonné affichait un toast d'erreur (#998).
+     */
+    if (collection.isRealtime()) {
+      return;
+    }
+
     await storageIndexStore.fetchCollectionMapping({ index, collection });
   } catch (error) {
     logger.error(error);
