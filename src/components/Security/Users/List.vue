@@ -12,7 +12,7 @@
         @filters-updated="onFiltersUpdated"
       />
 
-      <div v-if="loading" class="flex justify-center py-8">
+      <div v-if="loading" class="flex justify-center py-8" data-cy="UserList-loading">
         <Spinner size="lg" />
       </div>
 
@@ -209,20 +209,22 @@ async function fetchDocuments(): Promise<void> {
     size: paginationSize.value,
   };
 
-  let searchQuery = filterManager.toSearchQuery(
-    currentFilter.value,
-    props.mappingAttributes,
-    kuzzleStore.wrapper,
-  );
-  if (!searchQuery) {
-    searchQuery = {};
-  }
-
-  const sorting = filterManager.toSort(currentFilter.value);
-
   // TODO: refactor how search is done
   // Execute search with corresponding searchQuery
   try {
+    /*
+     * Dans le `try` : un filtre bien formé mais périmé (un attribut absent
+     * du mapping) fait lever la traduction en requête, et la liste restait
+     * sur son spinner (#867).
+     */
+    const searchQuery =
+      filterManager.toSearchQuery(
+        currentFilter.value,
+        props.mappingAttributes,
+        kuzzleStore.wrapper,
+      ) || {};
+    const sorting = filterManager.toSort(currentFilter.value);
+
     const res = await wrapper().performSearchUsers(
       props.collection,
       props.index,
@@ -247,8 +249,9 @@ async function fetchDocuments(): Promise<void> {
       'Ooops! Something went wrong while fetching users.',
       'The complete error has been printed to console',
     );
+  } finally {
+    loading.value = false;
   }
-  loading.value = false;
 }
 
 watch(() => route.fullPath, loadAndSaveFilter);

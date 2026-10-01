@@ -358,6 +358,28 @@ describe('Users', function() {
     cy.get('[data-cy=UserItem]').should('have.length', 5)
   })
 
+  it('Should not stay loading when the filter from the url is invalid', () => {
+    cy.skipOnBackendVersion(1)
+    cy.request('POST', `${kuzzleUrl}/users/dummy/_create?refresh=wait_for`, {
+      content: { profileIds: ['default'], name: 'Dummy User' },
+      credentials: { local: { username: 'dummy', password: 'test' } }
+    })
+
+    // Un JSON illisible vaut l'absence de filtre (#867).
+    cy.visit('/#/security/users?active=basic&basic=garbage')
+    cy.get('[data-cy=UserItem]').should('have.length', 1)
+
+    // Un filtre bien formé mais périmé : un attribut absent du mapping.
+    const basic = JSON.stringify([
+      [{ attribute: 'nope', operator: 'contains', value: 'x' }]
+    ])
+    cy.visit(
+      `/#/security/users?active=basic&basic=${encodeURIComponent(basic)}`
+    )
+    cy.contains('Something went wrong while fetching users')
+    cy.get('[data-cy=UserList-loading]').should('not.exist')
+  })
+
   it('Should be able to create a new user with custom KUID', () => {
     const kuid = 'trippy'
     const credentials = {

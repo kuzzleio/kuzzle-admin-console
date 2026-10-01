@@ -33,6 +33,22 @@ const LOCALSTORAGE_PREFIX = 'search-filter-current';
 const HISTORY_LOCALSTORAGE_PREFIX = 'history-filter';
 const FAVORIS_LOCALSTORAGE_PREFIX = 'favoris-filter';
 
+/*
+ * Les filtres se relisent depuis l'URL et le localStorage, que l'utilisateur
+ * peut éditer ou qu'une ancienne version a pu écrire : un JSON illisible y
+ * vaut l'absence de valeur, au lieu de bloquer la liste sur son
+ * chargement (#867).
+ */
+/* Le type de retour reste celui de `JSON.parse` : les filtres relus ne sont
+   pas typés, comme le reste de ce service (ADR-0061). */
+function parseOr(value: string, fallback: unknown): ReturnType<typeof JSON.parse> {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
 export const load = (index, collection, route) => {
   if (!index || !collection) {
     throw new Error('Cannot load filters if no index or collection are specified');
@@ -57,14 +73,13 @@ export const loadFromRoute = (route) => {
 
   const filter = _.pick(route.query, Object.keys(emptyFilter)); // Object.assign({}, route.query)
 
-  if (filter.raw && typeof filter.raw === 'string') {
-    filter.raw = JSON.parse(filter.raw);
-  }
-  if (filter.sorting && typeof filter.sorting === 'string') {
-    filter.sorting = JSON.parse(filter.sorting);
-  }
-  if (filter.basic && typeof filter.basic === 'string') {
-    filter.basic = JSON.parse(filter.basic);
+  for (const key of ['raw', 'sorting', 'basic']) {
+    if (filter[key] && typeof filter[key] === 'string') {
+      filter[key] = parseOr(filter[key], undefined);
+      if (filter[key] === undefined) {
+        delete filter[key];
+      }
+    }
   }
 
   return filter;
@@ -78,7 +93,7 @@ export const loadFromLocalStorage = (index, collection) => {
   }
   const filterStr = localStorage.getItem(`${LOCALSTORAGE_PREFIX}:${index}/${collection}`);
   if (filterStr) {
-    return JSON.parse(filterStr);
+    return parseOr(filterStr, {});
   }
 
   return {};
@@ -176,7 +191,7 @@ export const loadFavoritesFromLocalStorage = (index, collection) => {
   }
   const filterStr = localStorage.getItem(`${FAVORIS_LOCALSTORAGE_PREFIX}:${index}/${collection}`);
   if (filterStr) {
-    return JSON.parse(filterStr);
+    return parseOr(filterStr, []);
   }
   return [];
 };
@@ -213,7 +228,7 @@ export const loadHistoyFromLocalStorage = (index, collection) => {
   }
   const filterStr = localStorage.getItem(`${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`);
   if (filterStr) {
-    return JSON.parse(filterStr);
+    return parseOr(filterStr, []);
   }
 
   return [];
