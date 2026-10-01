@@ -65,6 +65,51 @@ describe('Watch', () => {
     cy.get('[data-cy="Notification"]').should('have.length', 2)
   })
 
+  it('Should watch a realtime collection without fetching its mapping', () => {
+    const realtimeCollection = 'realtimecollection'
+
+    // Une collection temps réel n'existe que tant qu'on y est abonné : un
+    // second client la fait apparaître, comme un autre service le ferait.
+    cy.wrap(
+      new Cypress.Promise((resolve, reject) => {
+        const socket = new WebSocket('ws://localhost:7512')
+        socket.onerror = reject
+        socket.onopen = () =>
+          socket.send(
+            JSON.stringify({
+              requestId: 'issue-998',
+              controller: 'realtime',
+              action: 'subscribe',
+              index: indexName,
+              collection: realtimeCollection,
+              body: {}
+            })
+          )
+        socket.onmessage = ({ data }) => {
+          if (JSON.parse(data).requestId === 'issue-998') {
+            resolve(socket)
+          }
+        }
+      })
+    ).as('subscriber')
+
+    cy.visit(`/#/data/${indexName}/${realtimeCollection}/watch`)
+    cy.get('[data-cy="Watch-subscribeBtn"]')
+      .click()
+      .should('contain', 'Unsubscribe')
+
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${realtimeCollection}/_publish`,
+      { message: 'This is a notification' }
+    )
+    cy.get('[data-cy="Notification"]').should('have.length', 1)
+
+    // Pas de `getMapping` sur une collection temps réel (#998).
+    cy.contains('fetching the collection mapping').should('not.exist')
+    cy.get('@subscriber').invoke('close')
+  })
+
   it('Should display last notification', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
     cy.get('[data-cy="Watch-subscribeBtn"]').click()
