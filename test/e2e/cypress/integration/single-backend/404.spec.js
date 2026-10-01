@@ -15,5 +15,7 @@ describe('404 page', function() {
     cy.contains('404 not found')
 
     cy.get('.404BackToHome-link')
+    // La page des documents ne se rend pas sous le 404 (#964).
+    cy.get('.DocumentList').should('not.exist')
   })
 })

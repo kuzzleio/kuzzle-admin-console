@@ -18,8 +18,13 @@
     <div class="DataLayout-contentWrapper">
       <b-overlay :show="loading" opacity="0" class="h-100">
         <data-not-found v-if="!loading && dataNotFound" class="mt-3" />
+        <!--
+          La page enfant ne se rend pas sous le 404 : celle des documents
+          n'attend pas que sa collection existe, et s'affichait sous le
+          message, requêtes en échec comprises (#964).
+        -->
         <router-view
-          v-if="!loading"
+          v-if="!loading && !dataNotFound"
           @start-init="viewIsInitializing = true"
           @end-init="viewIsInitializing = false"
         />
