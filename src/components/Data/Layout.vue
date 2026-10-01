@@ -158,6 +158,12 @@ export default {
           return;
         }
 
+        // Une collection temps réel n'a pas de mapping : `getMapping` échoue,
+        // et l'ouvrir pendant qu'on y est abonné affichait un toast (#998).
+        if (collection.isRealtime()) {
+          return;
+        }
+
         await this.storageIndexStore.fetchCollectionMapping({ index, collection });
       } catch (error) {
         this.$log.error(error);
