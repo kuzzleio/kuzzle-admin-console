@@ -28,6 +28,15 @@
           <b-input :disabled="true" :value="id" />
         </b-form-group>
 
+        <span
+          v-if="v$.profileValue.$errors.length > 0"
+          role="alert"
+          aria-live="assertive"
+          data-cy="ProfileCreateOrUpdate-jsonEditor--dangerIcon"
+        >
+          <span class="sr-only">Invalid JSON</span>
+          <i class="fas fa-exclamation-circle text-danger" aria-hidden="true" />
+        </span>
         <json-editor
           ref="jsoneditor"
           class="ProfileCreateOrUpdate-jsonEditor"
