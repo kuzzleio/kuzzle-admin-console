@@ -99,13 +99,6 @@ import DeleteModal from './DeleteModal.vue';
 import Filters from './Filters.vue';
 import RoleItem from './RoleItem.vue';
 
-/* Le filtre de `filterManager`, pour ce que la liste en lit. */
-interface ListFilter {
-  [key: string]: unknown;
-  active: string | null;
-  basic: RoleFilter | null;
-}
-
 const props = withDefaults(
   defineProps<{
     displayCreate?: boolean;
@@ -122,7 +115,7 @@ const toast = useToast();
 
 const deleteModalOpen = ref(false);
 const candidatesForDeletion = ref<string[]>([]);
-const currentFilter = ref<ListFilter>(new filterManager.Filter());
+const currentFilter = ref<filterManager.Filter<RoleFilter>>(new filterManager.Filter());
 const currentPage = ref(1);
 const deleteModalIsLoading = ref(false);
 const documents = ref<RoleDocument[]>([]);
@@ -136,7 +129,7 @@ const paginationFrom = computed(() => (currentPage.value - 1) * paginationSize.v
 
 function loadFilterFromRoute(): void {
   currentFilter.value = Object.assign(
-    new filterManager.Filter(),
+    new filterManager.Filter<RoleFilter>(),
     filterManager.loadFromRoute(route),
   );
 }

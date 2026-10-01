@@ -943,7 +943,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
 - [x] 7. Composition API : tous les SFC en `<script setup lang="ts">` (§1.5), verrouillé par ESLint
 - [ ] 8. Revue de sortie : technique, sécurité, livraison (`Dockerfile`, `infra/`, workflows)
   - [x] Technique, lot 1 : code mort et restes de Vue 2, à comportement constant — 18 exports morts de `collectionHelper` et `filterManager`, `config/schemaMapping.ts`, `utils.wait`, `LIST_VIEW_BOXES`, les shims `*.vue` et JSX de Vue 2, cinq options de `tsconfig` sans objet (`allowJs`, `jsx`, `importHelpers`, `experimentalDecorators`, `scripthost`), `file-loader` et `ts-mock-imports` ; `noImplicitAny` passe de 208 à 165 erreurs
-  - [ ] Technique, lot 2 : `@types/lodash`, composants sans `any` implicite ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md))
+  - [x] Technique, lot 2 : `@types/lodash`, composants sans `any` implicite ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md)) — `Filter` devient une classe générique, `pushQuery` et `dateFromTimestamp` sont typés ; la liste des collections se resynchronise de nouveau ([G-126](#g-126)) ; `noImplicitAny: true` donnerait 113 erreurs, aucune dans un composant : `filterManager.ts` 37, `kuzzleWrapper-v1.ts` 31, `stores/auth.ts` 11, `kuzzleWrapper-v2.ts` 8, routes 13, `validators.ts` 6, autres services 7
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
 ---
@@ -4162,6 +4162,31 @@ Gabarit à copier :
   erreur de `vue-tsc` sur une prop est une question de comportement, pas de
   syntaxe : lire ce que l'enfant fait de la valeur avant de choisir.
 - **Ref** : [ADR-0060](adr/0060-composition-api-par-domaine.md).
+
+#### G-126 — `@types/lodash` révèle une liste de collections qui ne se resynchronise pas
+
+- **Contexte** : lot 2 de la revue technique
+  ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md)), ajout de
+  `@types/lodash`, avec `noImplicitAny` toujours à `false`.
+- **Symptôme** : `vue-tsc` refuse `this.removeCollection(el)` et
+  `this.addCollection(el)` dans `fetchCollectionList` (`stores/storage-index.ts`).
+  À l'usage : une collection créée ou supprimée hors de la console (autre
+  onglet, API) n'apparaît ni ne disparaît quand on revient sur l'index ; le
+  rechargement lève une `TypeError` (`index` vaut `undefined`), le toast
+  « Something went wrong while fetching the collection list » s'affiche et la
+  page reste sur un spinner : `loading` n'est jamais remis à `false`.
+  Présent sur `4-dev` aussi.
+- **Cause** : `_.differenceBy` rendait `any` sans les types de `lodash`, donc
+  les `Collection` passées seules aux actions, qui attendent
+  `{ index, collection }`, n'étaient pas vérifiées. Aucune spec ne modifiait
+  les collections d'un index déjà chargé.
+- **Solution** : `{ index, collection: el }`, et une spec
+  (`collections` — « Should sync the collection list with collections changed
+  elsewhere ») qui échoue sans le correctif.
+- **À retenir** : une dépendance sans types n'est pas un détail de confort :
+  chaque appel qui la traverse sort du contrôle de `strict`. Typer une
+  dépendance, c'est relire ses appels comme du code neuf.
+- **Ref** : [ADR-0061](adr/0061-noimplicitany-reste-a-false.md).
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

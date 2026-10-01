@@ -1,5 +1,7 @@
 import _ from 'lodash';
+import type { LocationQuery, LocationQueryRaw, Router } from 'vue-router';
 
+import type { FilterSorting } from '@/components/Common/Filters/types';
 import { formatHistoryName } from '@/lib/date';
 import type { MappingAttributes } from './mappingHelpers';
 
@@ -13,14 +15,18 @@ const DEFAULT_FILTER = {
   '_kuzzle_info.createdAt': 'desc',
 };
 
-export function Filter(this: any) {
-  this.active = NO_ACTIVE;
-  this.quick = DEFAULT_QUICK;
-  this.basic = null;
-  this.raw = null;
-  this.sorting = null;
-  this.from = 0;
-  this.size = 25;
+/*
+ * Le filtre vide. `basic` dépend de la liste : des groupes de conditions pour
+ * les documents et les utilisateurs, un filtre de contrôleurs pour les rôles.
+ */
+export class Filter<Basic = unknown> {
+  active: string | null = NO_ACTIVE;
+  quick: string = DEFAULT_QUICK;
+  basic: Basic | null = null;
+  raw: Record<string, unknown> | null = null;
+  sorting: FilterSorting | null = null;
+  from = 0;
+  size = 25;
 }
 
 const LOCALSTORAGE_PREFIX = 'search-filter-current';
@@ -104,7 +110,10 @@ export const save = (filter, router, index, collection) => {
  */
 let pendingRouteWrite: Promise<unknown> = Promise.resolve();
 
-export const pushQuery = async (router, build) => {
+export const pushQuery = async (
+  router: Router,
+  build: (query: LocationQuery) => LocationQueryRaw,
+) => {
   pendingRouteWrite = pendingRouteWrite
     .then(async () => {
       const current = router.currentRoute.value.query;
