@@ -1,7 +1,8 @@
-import type { App } from 'vue';
-
 /**
- * `this.$log` — les traces de la console (ADR-0026).
+ * `logger` — les traces de la console (ADR-0026).
+ *
+ * Il était installé en `this.$log` sur `globalProperties` ; le plugin est parti
+ * avec le dernier composant en Options API (ADR-0060, lot 14). On l'importe.
  *
  * Remplace `vuejs-logger`, qui ne s'installe que sur un `Vue` 2 et n'a pas de
  * version Vue 3. Le wrapper reprend la seule chose que la bibliothèque faisait
@@ -52,7 +53,7 @@ function traceAt(level: Level): (...args: unknown[]) => void {
 
   /*
    * Le seul endroit de la console qui écrit dans celle du navigateur :
-   * `no-console` est là pour que tout le reste passe par `$log`.
+   * `no-console` est là pour que tout le reste passe par `logger`.
    */
   // eslint-disable-next-line no-console
   return (...args: unknown[]) => console[method](...args);
@@ -64,15 +65,4 @@ export const logger: Logger = {
   fatal: traceAt('fatal'),
   info: traceAt('info'),
   warn: traceAt('warn'),
-};
-
-/*
- * `globalProperties` remplace `Vue.prototype`, qui était un état global au
- * paquet `vue` et non à l'application. `logger` reste exporté à part : le
- * routeur le reçoit en argument, sans passer par l'instance.
- */
-export default {
-  install(app: App): void {
-    app.config.globalProperties.$log = logger;
-  },
 };

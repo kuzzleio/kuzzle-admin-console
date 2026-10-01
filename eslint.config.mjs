@@ -33,7 +33,6 @@ export default [
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-wrapper-object-types': 'off',
       'vue/multi-word-component-names': 'off',
-      'vue/block-lang': 'off',
       'vue/no-mutating-props': 'off',
       'vue/require-default-prop': 'off',
       'vue/order-in-components': 'off',
@@ -56,6 +55,12 @@ export default [
       // revenir. La règle ne couvre pas les `v-model` nus posés sur un composant
       // tiers Vue 2 — c'est un angle mort, documenté en G-053.
       'vue/no-deprecated-model-definition': 'error',
+      // ADR-0060, lot 14 : tous les SFC sont en `<script setup lang="ts">`. Un
+      // composant en Options API, ou un script non typé, ne revient plus sans
+      // que la CI le refuse. `block-lang` ne vise que le script : les styles
+      // en SCSS restent permis.
+      'vue/component-api-style': ['error', ['script-setup']],
+      'vue/block-lang': ['error', { script: { lang: 'ts' } }],
       'default-case-last': 'warn',
       // Était `import/order: warn` ; le niveau seul est surchargé, les options
       // de la config Kuzzle sont conservées.
