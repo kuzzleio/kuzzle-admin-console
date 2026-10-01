@@ -92,7 +92,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/composables/useToast';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 import { isWhitespace, startsWithSpace } from '@/validators';
 import type { Credentials } from './types';

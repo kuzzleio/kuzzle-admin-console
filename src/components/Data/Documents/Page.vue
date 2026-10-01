@@ -235,7 +235,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import type { DocumentNotification as SdkDocumentNotification } from 'kuzzle-sdk';
+import type { DocumentNotification as SdkDocumentNotification } from 'kuzzle-sdk-v7';
 import type { LatLngTuple } from 'leaflet';
 import debounce from 'lodash/debounce';
 import defaults from 'lodash/defaults';
@@ -258,7 +258,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Spinner } from '@/components/ui/spinner';
 import { useToast } from '@/composables/useToast';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { flattenObjectMapping } from '@/services/collectionHelper';
 import * as filterManager from '@/services/filterManager';
 import {

@@ -57,7 +57,7 @@ import { FormDescription, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useStorageIndexStore } from '@/stores';
 import type { Collection, Index } from '@/stores/types/storage-index';
 import { truncateName } from '@/utils';

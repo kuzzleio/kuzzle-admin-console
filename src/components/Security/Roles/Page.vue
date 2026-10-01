@@ -90,7 +90,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/composables/useToast';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import RoleList from './List.vue';

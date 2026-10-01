@@ -13,7 +13,7 @@ import Headline from '../../Materialize/Headline.vue';
 import Notice from '../Common/Notice.vue';
 import { useToast } from '@/composables/useToast';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useKuzzleStore } from '@/stores';
 import type { ProfileSubmission } from './types';
 

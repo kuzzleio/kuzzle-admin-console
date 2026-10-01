@@ -53,7 +53,7 @@ import { pageTitle } from '../services/pageTitle';
 import { antiGlitchOverlayTimeout } from '../utils';
 import { Alert } from '@/components/ui/alert';
 import { caught } from '@/lib/errors';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
 import OfflineSpinner from './Common/Offline.vue';

@@ -63,7 +63,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { Spinner } from '@/components/ui/spinner';
 import { useSideBySide } from '@/composables/useSideBySide';
 import { useToast } from '@/composables/useToast';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useStorageIndexStore } from '@/stores';
 import { cssPixels } from '@/utils';
 import { setPersistedItem, getPersistedItem } from './itemsStorage';

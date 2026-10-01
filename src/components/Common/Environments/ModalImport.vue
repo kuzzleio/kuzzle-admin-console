@@ -81,7 +81,7 @@ import {
 } from '@/components/ui/dialog';
 import { FileInput } from '@/components/ui/file-input';
 import { Label } from '@/components/ui/label';
-import { logger } from '@/plugins/logger';
+import { logger } from '@/lib/logger';
 import { useKuzzleStore } from '@/stores';
 import type { Environment } from '@/stores/types/kuzzle';
 
