@@ -89,7 +89,7 @@
       </div>
 
       <list-not-allowed
-        v-if="!canSearchDocument(indexName, collectionName) && index && collection"
+        v-if="!authStore.canSearchDocument(indexName, collectionName) && index && collection"
       />
       <template v-else>
         <filters
@@ -178,7 +178,7 @@
               @changeDisplayPagination="changeDisplayPagination"
             />
 
-            <Map
+            <MapView
               v-if="listViewType === LIST_VIEW_MAP"
               :selected-geopoint="selectedGeopoint"
               :selected-geoshape="selectedGeoshape"
@@ -233,19 +233,21 @@
   </div>
 </template>
 
-<script>
-import { markRaw } from 'vue';
+<script setup lang="ts">
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import type { DocumentNotification as SdkDocumentNotification } from 'kuzzle-sdk';
+import type { LatLngTuple } from 'leaflet';
 import debounce from 'lodash/debounce';
 import defaults from 'lodash/defaults';
 import get from 'lodash/get';
 import isUndefined from 'lodash/isUndefined';
 import mapValues from 'lodash/mapValues';
 import pickBy from 'lodash/pickBy';
-import { mapState } from 'pinia';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 
 import DeleteCollectionModal from '../Collections/DeleteCollectionModal.vue';
 import CollectionDropdownAction from '../Collections/DropdownAction.vue';
+import type { SearchFilter } from '@/components/Common/Filters/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -255,19 +257,30 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Spinner } from '@/components/ui/spinner';
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { flattenObjectMapping } from '@/services/collectionHelper';
 import * as filterManager from '@/services/filterManager';
 import {
+  type CollectionSettings,
+  type ListViewType,
   LIST_VIEW_COLUMN,
   LIST_VIEW_LIST,
   LIST_VIEW_TIME_SERIES,
   LIST_VIEW_MAP,
-  loadSettingsForCollection,
-  saveSettingsForCollection,
+  loadSettingsForCollection as loadStoredSettings,
+  saveSettingsForCollection as saveStoredSettings,
 } from '@/services/localSettings';
-import { extractAttributesFromMapping } from '@/services/mappingHelpers';
+import { extractAttributesFromMapping, type MappingAttributes } from '@/services/mappingHelpers';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 import { truncateName } from '@/utils';
+import type {
+  DocumentNotification,
+  GeoDocument,
+  GeoShape,
+  KuzzleDocument,
+  ShapeDocument,
+} from './types';
 
 import Filters from '@/components/Common/Filters/Filters.vue';
 import ListNotAllowed from '@/components/Common/ListNotAllowed.vue';
@@ -279,7 +292,7 @@ import EmptyState from './EmptyState.vue';
 import NoGeopointFieldState from './NoGeopointFieldState.vue';
 import Column from './Views/Column/Column.vue';
 import List from './Views/List.vue';
-import Map from './Views/Map.vue';
+import MapView from './Views/Map.vue';
 import TimeSeries from './Views/TimeSeries.vue';
 
 /*
@@ -292,670 +305,667 @@ import TimeSeries from './Views/TimeSeries.vue';
  */
 const ES_RESULT_WINDOW_LIMIT = 10000;
 
-export default {
-  name: 'DocumentsPage',
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CollectionDropdownView,
-    CollectionDropdownAction,
-    DeleteCollectionModal,
-    DeleteModal,
-    Column,
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-    Map,
-    List,
-    ListPagination,
-    Spinner,
-    TimeSeries,
-    EmptyState,
-    Headline,
-    Filters,
-    ListNotAllowed,
-    NoGeopointFieldState,
-  },
-  props: {
-    indexName: String,
-    collectionName: String,
-  },
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  data() {
-    return {
-      RouterLink: markRaw(RouterLink),
-      ES_RESULT_WINDOW_LIMIT,
-      // Le composant passé à `as` n'a pas à être réactif. `markRaw` — que
-      // Vue 2.7 fournit — et non `Object.freeze` : Vue met en cache le
-      // constructeur sur les options du composant, et un objet gelé le lui
-      // interdit (G-032).
-      Button: markRaw(Button),
-      searchQuery: null,
-      subscribeRoomId: null,
-      isFetching: false,
-      loading: false,
-      searchFilterOperands: filterManager.searchFilterOperands,
-      selectedDocuments: [],
-      documents: [],
-      totalDocuments: 0,
-      documentToDelete: null,
-      currentFilter: new filterManager.Filter(),
-      collectionSettings: {},
-      deleteModalIsOpen: false,
-      deleteModalIsLoading: false,
-      candidatesForDeletion: [],
-      mappingGeopoints: [],
-      selectedGeopoint: '',
-      currentPage: 1,
-      deleteCollectionOpen: false,
-      displayPagination: true,
-      notificationsById: {},
-      newDocumentNotifications: [],
-      hasNewDocuments: false,
-      mappingGeoshapes: [],
-      selectedGeoshape: '',
-      handledGeoShapesTypes: ['circle', 'polygon', 'multipolygon'],
-      handledNotificationActions: ['create', 'update', 'replace', 'delete'],
-      displayRealtimeButton: [
-        LIST_VIEW_LIST,
-        LIST_VIEW_COLUMN,
-        LIST_VIEW_TIME_SERIES,
-        LIST_VIEW_MAP,
-      ],
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['wrapper', '$kuzzle']),
-    ...mapState(useAuthStore, [
-      'canSearchDocument',
-      'canCreateDocument',
-      'canDeleteDocument',
-      'canEditDocument',
-    ]),
-    documentsIdxById() {
-      if (!this.documents) {
-        return {};
-      }
-      const r = {};
-      this.documents.forEach((d, idx) => {
-        r[d._id] = idx;
-      });
-      return r;
-    },
-    listViewType: {
-      get: function () {
-        if (!this.collectionSettings.listViewType) {
-          return LIST_VIEW_LIST;
-        }
-        return this.collectionSettings.listViewType;
-      },
-      set: function (value) {
-        this.$log.debug(`Setting listViewType to ${value}`);
-        this.collectionSettings.listViewType = value;
-      },
-    },
-    autoSync: {
-      get: function () {
-        if (!this.collectionSettings.autoSync) {
-          return false;
-        }
-        return this.collectionSettings.autoSync;
-      },
-      set: function (value) {
-        this.collectionSettings.autoSync = value;
-      },
-    },
-    hasGeopoints() {
-      return this.listViewType === LIST_VIEW_MAP && this.mappingGeopoints.length === 0;
-    },
-    hasGeoshapes() {
-      return this.listViewType === LIST_VIEW_MAP && this.mappingGeoshapes.length === 0;
-    },
-    shapesDocuments() {
-      return this.documents
-        .filter((document) => {
-          const shape = get(document._source, this.selectedGeoshape);
-          return shape ? this.handledGeoShapesTypes.includes(shape.type) : false;
-        })
-        .map((d) => ({
-          _id: d._id,
-          content: get(d._source, this.selectedGeoshape),
-          source: d._source,
-        }));
-    },
-    geoDocuments() {
-      return this.documents
-        .filter((document) => {
-          const [lat, lng] = this.getCoordinates(document._source);
-          const latFloat = parseFloat(lat);
-          const lngFloat = parseFloat(lng);
+/* Un champ du mapping, pour ce que la recherche des champs géographiques en lit. */
+interface MappingField {
+  properties?: Record<string, MappingField> & { lat?: unknown; lon?: unknown };
+  type?: string;
+}
 
-          return !isNaN(latFloat) && !isNaN(lngFloat);
-        })
-        .map((d) => ({
-          coordinates: [get(d._source, this.latFieldPath), get(d._source, this.lngFieldPath)],
-          _id: d._id,
-          source: d._source,
-        }));
-    },
-    index() {
-      return this.storageIndexStore.getOneIndex(this.indexName);
-    },
-    collection() {
-      return this.index
-        ? this.storageIndexStore.getOneCollection(this.index, this.collectionName)
-        : null;
-    },
-    collectionMapping() {
-      return this.collection ? this.collection.mapping : null;
-    },
-    indexOrCollectionNotFound() {
-      return !!(!this.index || !this.collection);
-    },
-    cannotCreateDocument() {
-      return (
-        this.indexOrCollectionNotFound ||
-        !this.canCreateDocument(this.indexName, this.collectionName)
-      );
-    },
-    mappingAttributes() {
-      return this.collectionMapping
-        ? this.extractAttributesFromMapping(this.collectionMapping)
-        : null;
-    },
-    dateFields() {
-      if (!this.collectionMapping) {
-        return {};
-      }
-      return Object.keys(
-        pickBy(flattenObjectMapping(this.collectionMapping), (value) => value === 'date'),
-      );
-    },
-    latFieldPath() {
-      return `${this.selectedGeopoint}.lat`;
-    },
-    lngFieldPath() {
-      return `${this.selectedGeopoint}.lon`;
-    },
-    isCollectionGeo() {
-      return this.mappingGeopoints.length > 0 || this.mappingGeoshapes > 0;
-    },
-    isDocumentListFiltered() {
-      return this.currentFilter.active !== filterManager.NO_ACTIVE;
-    },
-    isCollectionEmpty() {
-      return !this.isDocumentListFiltered && this.totalDocuments === 0;
-    },
-    allChecked() {
-      if (!this.selectedDocuments || !this.documents) {
-        return false;
-      }
+const handledGeoShapesTypes = ['circle', 'polygon', 'multipolygon'];
+const handledNotificationActions = ['create', 'update', 'replace', 'delete'];
+const displayRealtimeButton: string[] = [
+  LIST_VIEW_LIST,
+  LIST_VIEW_COLUMN,
+  LIST_VIEW_TIME_SERIES,
+  LIST_VIEW_MAP,
+];
+const searchFilterOperands = filterManager.searchFilterOperands;
 
-      return this.selectedDocuments.length === this.documents.length;
-    },
-    paginationFrom() {
-      return parseInt(this.currentFilter.from) || 0;
-    },
-    paginationSize() {
-      return parseInt(this.currentFilter.size) || 25;
-    },
-    isRealtimeCollection() {
-      return this.collection ? this.collection.isRealtime() : false;
-    },
-  },
-  watch: {
-    async autoSync(newValue) {
-      if (newValue === true) {
-        await this.fetchDocuments();
-      } else {
-        this.resetNotifications();
-      }
-    },
-    currentPage: {
-      handler(value) {
-        const from = (value - 1) * this.paginationSize;
-        this.onFiltersUpdated(
-          Object.assign(this.currentFilter, {
-            from,
-          }),
-        );
-        this.fetchDocuments();
-      },
-    },
-    collectionName: {
-      handler() {
-        this.loadAllTheThings();
-      },
-    },
-    indexName: {
-      handler() {
-        this.loadAllTheThings();
-      },
-    },
-    collectionSettings: {
-      deep: true,
-      handler() {
-        this.saveSettingsForCollection();
-        this.setListViewTypeInRoute(this.listViewType);
-      },
-    },
-  },
-  async beforeUnmount() {
-    await this.unsubscribeFromCurrentDocs();
-  },
-  created() {
-    // Make constants available in the template
-    this.LIST_VIEW_COLUMN = LIST_VIEW_COLUMN;
-    this.LIST_VIEW_MAP = LIST_VIEW_MAP;
-    this.LIST_VIEW_TIME_SERIES = LIST_VIEW_TIME_SERIES;
-    this.LIST_VIEW_LIST = LIST_VIEW_LIST;
+const props = defineProps<{
+  collectionName: string;
+  indexName: string;
+}>();
 
-    this.debouncedFetchDocuments = debounce(this.fetchDocuments, 1000, {
-      maxWait: 2500,
-    });
-  },
-  async mounted() {
-    await this.loadAllTheThings();
-    await this.subscribeToCurrentDocs();
+// `Data/Layout.vue` affiche son chargement entre les deux.
+const emit = defineEmits<{
+  (e: 'end-init'): void;
+  (e: 'start-init'): void;
+}>();
 
-    if (this.paginationFrom) {
-      this.setCurrentPage();
+const router = useRouter();
+const toast = useToast();
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const storageIndexStore = useStorageIndexStore();
+
+const searchQuery = ref<Record<string, unknown> | null>(null);
+const isFetching = ref(false);
+const selectedDocuments = ref<string[]>([]);
+const documents = ref<KuzzleDocument[]>([]);
+const totalDocuments = ref(0);
+const currentFilter = ref<SearchFilter>(new filterManager.Filter());
+const collectionSettings = ref<CollectionSettings>({});
+const deleteModalIsOpen = ref(false);
+const deleteModalIsLoading = ref(false);
+const candidatesForDeletion = ref<string[]>([]);
+const mappingGeopoints = ref<string[]>([]);
+const selectedGeopoint = ref('');
+const currentPage = ref(1);
+const deleteCollectionOpen = ref(false);
+const displayPagination = ref(true);
+const notificationsById = ref<Record<string, DocumentNotification | undefined>>({});
+const newDocumentNotifications: SdkDocumentNotification[] = [];
+const hasNewDocuments = ref(false);
+const mappingGeoshapes = ref<string[]>([]);
+const selectedGeoshape = ref('');
+
+// L'identifiant de la souscription n'est pas affiché : il n'a pas à être réactif.
+let subscribeRoomId: string | null = null;
+
+const documentsIdxById = computed((): Record<string, number> => {
+  const r: Record<string, number> = {};
+  documents.value.forEach((d, idx) => {
+    r[d._id] = idx;
+  });
+  return r;
+});
+
+const listViewType = computed({
+  get(): string {
+    if (!collectionSettings.value.listViewType) {
+      return LIST_VIEW_LIST;
     }
+    return collectionSettings.value.listViewType;
   },
-  methods: {
-    formatMeta(_kuzzle_info) {
-      return {
-        author: _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
-        updater: _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
-        createdAt: _kuzzle_info.createdAt,
-        updatedAt: _kuzzle_info.updatedAt,
-      };
-    },
-    extractAttributesFromMapping,
-    truncateName,
-    // NOTIFICATIONS
-    // =========================================================================
-    async unsubscribeFromCurrentDocs() {
-      if (this.subscribeRoomId) {
-        await this.$kuzzle.realtime.unsubscribe(this.subscribeRoomId);
-        this.subscribeRoomId = null;
-      }
-    },
-    async subscribeToCurrentDocs() {
-      try {
-        await this.unsubscribeFromCurrentDocs();
-        const roomId = await this.$kuzzle.realtime.subscribe(
-          this.indexName,
-          this.collectionName,
-          // TODO -- The aim here is to use a Koncorde filter generated by
-          // the user. Currently, the filters are all generated to ES DSL so,
-          // we'll have a whole tech-story to migrate everything to Koncorde.
-          {},
-          this.handleNotification,
-        );
-        this.subscribeRoomId = roomId;
-      } catch (error) {
-        this.$log.error(error);
-      }
-    },
-    handleNotification(notification) {
-      if (!this.handledNotificationActions.includes(notification.action)) {
-        return;
-      }
-      this.addNotification(notification);
-      if (this.autoSync) {
-        this.applyNotification(notification);
-      }
-    },
-    applyNotification(notification) {
-      if (notification.action === 'create') {
-        this.newDocumentNotifications.push(notification);
-        this.debouncedFetchDocuments();
-        return;
-      }
-      if (isUndefined(this.documentsIdxById[notification.result._id])) {
-        return;
-      }
-      const docIdx = this.documentsIdxById[notification.result._id];
-      if (['update', 'replace'].includes(notification.action)) {
-        this.documents[docIdx]._source = notification.result._source;
-      }
-      if (notification.action === 'delete') {
-        /*
-         * `splice` et non `$delete` : le `$delete` de `@vue/compat` est un
-         * `delete target[key]` brut, là où celui de Vue 2 faisait un `splice`
-         * sur un tableau. Sur un tableau, `delete` laisse un **trou** —
-         * `undefined` à l'index — et le `v-for` rendait ensuite `doc._id` sur
-         * cet `undefined` (G-046).
-         */
-        setTimeout(() => this.documents.splice(docIdx, 1), 500);
-
-        this.debouncedFetchDocuments();
-      }
-    },
-    addNotification(notification) {
-      if (notification.action === 'create' && !this.autoSync) {
-        this.hasNewDocuments = true;
-        return;
-      }
-      if (isUndefined(this.documentsIdxById[notification.result._id])) {
-        return;
-      }
-      this.notificationsById[notification.result._id] = notification;
-    },
-    addNewDocumentNotifications() {
-      let notification = this.newDocumentNotifications.pop();
-      while (notification) {
-        this.addNotification(notification);
-        notification = this.newDocumentNotifications.pop();
-      }
-    },
-    resetNotifications() {
-      this.notificationsById = mapValues(this.documentsIdxById, () => null);
-      this.hasNewDocuments = false;
-    },
-    // VIEW MAP - GEOPOINTS
-    // =========================================================================
-    getCoordinates(document) {
-      return [get(document, this.latFieldPath), get(document, this.lngFieldPath)];
-    },
-    onSelectGeopoint(selectedGeopoint) {
-      this.selectedGeopoint = selectedGeopoint;
-    },
-    onSelectGeoshape(selectedGeoshape) {
-      this.selectedGeoshape = selectedGeoshape;
-    },
-    listMappingGeopoints(mapping, path = []) {
-      let attributes = [];
-      for (const [attributeName, { type, properties }] of Object.entries(mapping)) {
-        if (properties) {
-          if (properties.lat && properties.lon) {
-            attributes = attributes.concat(path.concat(attributeName).join('.'));
-          }
-
-          attributes = attributes.concat(
-            this.listMappingGeopoints(properties, path.concat(attributeName)),
-          );
-        } else if (type === 'geo_point') {
-          attributes = attributes.concat(path.concat(attributeName).join('.'));
-        }
-      }
-
-      return attributes;
-    },
-    listMappingGeoshapes(mapping, path = []) {
-      let attributes = [];
-      for (const [attributeName, { type, properties }] of Object.entries(mapping)) {
-        if (properties) {
-          attributes = attributes.concat(
-            this.listMappingGeoshapes(properties, path.concat(attributeName)),
-          );
-        } else if (type === 'geo_shape') {
-          attributes = attributes.concat(path.concat(attributeName).join('.'));
-        }
-      }
-
-      return attributes;
-    },
-
-    // CREATE
-    // =========================================================================
-    onCreateClicked() {
-      this.$router.push({ name: 'CreateDocument' });
-    },
-
-    // DELETE
-    // =========================================================================
-    async onDeleteConfirmed(documentsToDelete) {
-      this.deleteModalIsLoading = true;
-      try {
-        await this.wrapper.performDeleteDocuments(
-          this.indexName,
-          this.collectionName,
-          documentsToDelete,
-        );
-        if (!this.autoSync) {
-          this.fetchDocuments();
-        }
-        this.deleteModalIsOpen = false;
-        this.resetCandidatesForDeletion();
-      } catch (e) {
-        this.$log.error(e);
-        this.$toast.danger(
-          'Ooops! Something went wrong while deleting the document(s).',
-          'The complete error has been printed to the console.',
-        );
-      }
-      this.deleteModalIsLoading = false;
-    },
-    resetCandidatesForDeletion() {
-      this.candidatesForDeletion.splice(0, this.candidatesForDeletion.length);
-    },
-    onBulkDeleteClicked() {
-      this.candidatesForDeletion = this.candidatesForDeletion.concat(this.selectedDocuments);
-      this.deleteModalIsOpen = true;
-    },
-    onDeleteClicked(id) {
-      this.candidatesForDeletion.push(id);
-      this.deleteModalIsOpen = true;
-    },
-    onEditClicked(id) {
-      this.$router.push({
-        name: 'UpdateDocument',
-        params: { id },
-      });
-    },
-
-    // DELETE COLLECTION
-    // =========================================================================
-    showDeleteCollectionModal() {
-      this.deleteCollectionOpen = true;
-    },
-    afterDeleteCollection() {
-      this.$router.push({
-        name: 'Collections',
-        params: { indexName: this.indexName },
-      });
-    },
-    // LIST (FETCH & SEARCH)
-    // =========================================================================
-    async loadAllTheThings() {
-      try {
-        this.$emit('start-init');
-        this.loadSettingsForCollection();
-        this.saveSettingsForCollection();
-        this.loadMappingInfo();
-
-        this.currentFilter = filterManager.load(this.indexName, this.collectionName, this.$route);
-        filterManager.save(this.currentFilter, this.$router, this.indexName, this.collectionName);
-        this.displayPagination = true;
-        this.$emit('end-init');
-        await this.fetchDocuments();
-      } catch (err) {
-        this.$log.error(err);
-        this.$toast.warning(
-          'Ooops! Something went wrong.',
-          'The complete error has been printed to console.',
-        );
-        this.$emit('end-init');
-      }
-    },
-    async onRefresh() {
-      await this.fetchDocuments();
-    },
-    async onFiltersUpdated(newFilters) {
-      this.currentFilter = newFilters;
-    },
-    onFilterSubmit(saveToHistory = true) {
-      if (saveToHistory) {
-        filterManager.addNewHistoryItemAndSave(
-          this.currentFilter,
-          this.indexName,
-          this.collectionName,
-        );
-      }
-      this.fetchDocuments();
-    },
-    afterCollectionClear() {
-      this.documents = [];
-      this.totalDocuments = 0;
-      this.currentFilter = new filterManager.Filter();
-    },
-    async fetchDocuments() {
-      this.isFetching = true;
-      this.$forceUpdate();
-      this.selectedDocuments = [];
-      this.notifications = [];
-
-      const pagination = {
-        from: this.paginationFrom,
-        size: this.paginationSize,
-      };
-
-      filterManager.save(this.currentFilter, this.$router, this.indexName, this.collectionName);
-
-      try {
-        this.searchQuery = filterManager.toSearchQuery(
-          this.currentFilter,
-          this.mappingAttributes,
-          this.wrapper,
-        );
-
-        if (!this.searchQuery) {
-          this.searchQuery = {};
-        }
-
-        const sorting = filterManager.toSort(this.currentFilter);
-
-        if (this.searchQuery.query) {
-          this.searchQuery = this.searchQuery.query;
-        }
-
-        this.resetNotifications();
-
-        const res = await this.$kuzzle.document.search(
-          this.indexName,
-          this.collectionName,
-          {
-            query: this.searchQuery,
-            sort: sorting,
-          },
-          pagination,
-        );
-
-        this.documents = res.hits;
-        this.totalDocuments = res.total;
-
-        this.$nextTick(() => this.addNewDocumentNotifications());
-      } catch (e) {
-        this.$log.error(e);
-        if (e.message.includes('failed to create query')) {
-          this.$toast.warning(
-            'Ooops! Something went wrong while fetching the documents.',
-            'Your query is ill-formed. The complete error has been dumped to the console.',
-          );
-        } else {
-          this.$toast.warning(
-            'Ooops! Something went wrong while fetching the documents.',
-            e.message,
-          );
-        }
-      }
-      this.isFetching = false;
-    },
-
-    // PAGINATION
-    // =========================================================================
-    changePaginationSize(size) {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          size,
-          currentPage: 0,
-          from: 0,
-        }),
-      );
-      this.fetchDocuments();
-    },
-    setCurrentPage() {
-      this.currentPage = parseInt(this.paginationFrom / this.paginationSize + 1);
-    },
-
-    // SELECT ITEMS
-    // =========================================================================
-    onToggleAllClicked() {
-      if (this.allChecked) {
-        this.selectedDocuments = [];
-        return;
-      }
-      this.selectedDocuments = [];
-      this.selectedDocuments = this.documents.map((document) => document._id);
-    },
-    toggleSelectDocuments(id) {
-      const index = this.selectedDocuments.indexOf(id);
-
-      if (index === -1) {
-        this.selectedDocuments.push(id);
-        return;
-      }
-
-      this.selectedDocuments.splice(index, 1);
-    },
-
-    // LIST VIEW TYPES
-    // =========================================================================
-    switchListView(listViewType) {
-      this.listViewType = listViewType;
-    },
-    setListViewTypeInRoute(listViewType) {
-      /*
-       * Passe par `pushQuery` pour ne pas écraser le filtre : les deux
-       * écritures reconstruisent la query entière, et `vue-router` 4 les
-       * applique de façon asynchrone (G-042).
-       */
-      filterManager.pushQuery(this.$router, (query) =>
-        query.listViewType === listViewType ? query : { ...query, listViewType },
-      );
-    },
-    // Collection Metadata management
-    // =========================================================================
-    loadSettingsForCollection() {
-      this.collectionSettings = defaults(
-        {
-          listViewType: this.$route.query.listViewType,
-        },
-        loadSettingsForCollection(this.indexName, this.collectionName),
-      );
-    },
-    saveSettingsForCollection() {
-      this.$log.debug('saveSettingsForCollection');
-      return saveSettingsForCollection(
-        this.indexName,
-        this.collectionName,
-        this.collectionSettings,
-      );
-    },
-    onSettingsUpdated(newSettings) {
-      this.collectionSettings = newSettings;
-    },
-    loadMappingInfo() {
-      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping);
-      this.mappingGeoshapes = this.listMappingGeoshapes(this.collectionMapping);
-      if (this.mappingGeopoints.length) {
-        this.selectedGeopoint = this.mappingGeopoints[0];
-      }
-      if (this.mappingGeoshapes.length) {
-        this.selectedGeoshape = this.mappingGeoshapes[0];
-      }
-    },
-    changeDisplayPagination(value) {
-      this.displayPagination = value;
-    },
+  set(value: string) {
+    logger.debug(`Setting listViewType to ${value}`);
+    collectionSettings.value.listViewType = value as ListViewType;
   },
-};
+});
+
+const autoSync = computed({
+  get(): boolean {
+    if (!collectionSettings.value.autoSync) {
+      return false;
+    }
+    return collectionSettings.value.autoSync;
+  },
+  set(value: boolean) {
+    collectionSettings.value.autoSync = value;
+  },
+});
+
+const hasGeopoints = computed(
+  (): boolean => listViewType.value === LIST_VIEW_MAP && mappingGeopoints.value.length === 0,
+);
+
+const shapesDocuments = computed((): ShapeDocument[] =>
+  documents.value
+    .filter((document) => {
+      const shape = get(document._source, selectedGeoshape.value) as { type?: string } | undefined;
+      return shape ? handledGeoShapesTypes.includes(shape.type as string) : false;
+    })
+    .map((d) => ({
+      _id: d._id,
+      content: get(d._source, selectedGeoshape.value) as GeoShape,
+      source: d._source,
+    })),
+);
+
+const latFieldPath = computed((): string => `${selectedGeopoint.value}.lat`);
+
+const lngFieldPath = computed((): string => `${selectedGeopoint.value}.lon`);
+
+const geoDocuments = computed((): GeoDocument[] =>
+  documents.value
+    .filter((document) => {
+      const [lat, lng] = getCoordinates(document._source);
+      const latFloat = parseFloat(lat as string);
+      const lngFloat = parseFloat(lng as string);
+
+      return !isNaN(latFloat) && !isNaN(lngFloat);
+    })
+    .map((d) => ({
+      // Les valeurs du document, telles quelles : `parseFloat` n'a servi qu'au filtre.
+      coordinates: getCoordinates(d._source) as LatLngTuple,
+      _id: d._id,
+      source: d._source,
+    })),
+);
+
+const index = computed(() => storageIndexStore.getOneIndex(props.indexName));
+
+const collection = computed(() =>
+  index.value ? storageIndexStore.getOneCollection(index.value, props.collectionName) : null,
+);
+
+/*
+ * `undefined` et non plus `null` sans collection : les vues ne sont rendues
+ * qu'avec des documents, donc avec une collection, et les autres lecteurs
+ * testent seulement la présence du mapping.
+ */
+const collectionMapping = computed(() => collection.value?.mapping);
+
+const indexOrCollectionNotFound = computed((): boolean => !index.value || !collection.value);
+
+const cannotCreateDocument = computed(
+  (): boolean =>
+    indexOrCollectionNotFound.value ||
+    !authStore.canCreateDocument(props.indexName, props.collectionName),
+);
+
+/*
+ * `{}` sans mapping, et non plus `null` : `BasicFilter` fait un `Object.keys`
+ * dessus, et `DropdownView` le ramenait déjà à `{}`.
+ */
+const mappingAttributes = computed(
+  (): MappingAttributes => extractAttributesFromMapping(collectionMapping.value),
+);
+
+/*
+ * Un tableau vide sans mapping, et non plus `{}` : `DocumentListItem` fait un
+ * `forEach` dessus, qu'un objet n'a pas.
+ */
+const dateFields = computed((): string[] => {
+  if (!collectionMapping.value) {
+    return [];
+  }
+  return Object.keys(
+    pickBy(flattenObjectMapping(collectionMapping.value), (value) => value === 'date'),
+  );
+});
+
+const allChecked = computed(
+  (): boolean => selectedDocuments.value.length === documents.value.length,
+);
+
+const paginationFrom = computed((): number => parseInt(String(currentFilter.value.from)) || 0);
+
+const paginationSize = computed((): number => parseInt(String(currentFilter.value.size)) || 25);
+
+const debouncedFetchDocuments = debounce(() => fetchDocuments(), 1000, {
+  maxWait: 2500,
+});
+
+watch(autoSync, async (newValue) => {
+  if (newValue === true) {
+    await fetchDocuments();
+  } else {
+    resetNotifications();
+  }
+});
+
+watch(currentPage, (value) => {
+  const from = (value - 1) * paginationSize.value;
+  onFiltersUpdated(
+    Object.assign(currentFilter.value, {
+      from,
+    }),
+  );
+  fetchDocuments();
+});
+
+// Deux watchers, comme avant : changer l'index et la collection recharge deux fois.
+watch(
+  () => props.collectionName,
+  () => {
+    loadAllTheThings();
+  },
+);
+
+watch(
+  () => props.indexName,
+  () => {
+    loadAllTheThings();
+  },
+);
+
+watch(
+  collectionSettings,
+  () => {
+    saveSettingsForCollection();
+    setListViewTypeInRoute(listViewType.value);
+  },
+  { deep: true },
+);
+
+onBeforeUnmount(async () => {
+  await unsubscribeFromCurrentDocs();
+});
+
+onMounted(async () => {
+  await loadAllTheThings();
+  await subscribeToCurrentDocs();
+
+  if (paginationFrom.value) {
+    setCurrentPage();
+  }
+});
+
+/* Le SDK de la connexion courante. Appelé dans un `try` : son absence y est
+   une erreur comme une autre. */
+function sdk() {
+  const kuzzle = kuzzleStore.$kuzzle;
+  if (!kuzzle) {
+    throw new Error('No Kuzzle SDK for the current environment');
+  }
+  return kuzzle;
+}
+
+/*
+ * L'index d'un document notifié dans la page. Un message temps réel n'a pas
+ * d'`_id` : il n'en désigne aucun.
+ */
+function notifiedDocumentIdx(notification: SdkDocumentNotification): number | undefined {
+  const id = notification.result._id;
+  return id === null ? undefined : documentsIdxById.value[id];
+}
+
+// NOTIFICATIONS
+// =========================================================================
+async function unsubscribeFromCurrentDocs(): Promise<void> {
+  if (subscribeRoomId) {
+    await sdk().realtime.unsubscribe(subscribeRoomId);
+    subscribeRoomId = null;
+  }
+}
+
+async function subscribeToCurrentDocs(): Promise<void> {
+  try {
+    await unsubscribeFromCurrentDocs();
+    const roomId = await sdk().realtime.subscribe(
+      props.indexName,
+      props.collectionName,
+      // TODO -- The aim here is to use a Koncorde filter generated by
+      // the user. Currently, the filters are all generated to ES DSL so,
+      // we'll have a whole tech-story to migrate everything to Koncorde.
+      {},
+      (notification) => handleNotification(notification as SdkDocumentNotification),
+    );
+    subscribeRoomId = roomId;
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
+function handleNotification(notification: SdkDocumentNotification): void {
+  if (!handledNotificationActions.includes(notification.action)) {
+    return;
+  }
+  addNotification(notification);
+  if (autoSync.value) {
+    applyNotification(notification);
+  }
+}
+
+function applyNotification(notification: SdkDocumentNotification): void {
+  if (notification.action === 'create') {
+    newDocumentNotifications.push(notification);
+    debouncedFetchDocuments();
+    return;
+  }
+  const docIdx = notifiedDocumentIdx(notification);
+  if (docIdx === undefined) {
+    return;
+  }
+  if (['update', 'replace'].includes(notification.action)) {
+    documents.value[docIdx]._source = notification.result._source;
+  }
+  if (notification.action === 'delete') {
+    /*
+     * `splice` et non `$delete` : le `$delete` de `@vue/compat` est un
+     * `delete target[key]` brut, là où celui de Vue 2 faisait un `splice`
+     * sur un tableau. Sur un tableau, `delete` laisse un **trou** —
+     * `undefined` à l'index — et le `v-for` rendait ensuite `doc._id` sur
+     * cet `undefined` (G-046).
+     */
+    setTimeout(() => documents.value.splice(docIdx, 1), 500);
+
+    debouncedFetchDocuments();
+  }
+}
+
+function addNotification(notification: SdkDocumentNotification): void {
+  if (notification.action === 'create' && !autoSync.value) {
+    hasNewDocuments.value = true;
+    return;
+  }
+  const id = notification.result._id;
+  if (id === null || isUndefined(documentsIdxById.value[id])) {
+    return;
+  }
+  notificationsById.value[id] = notification;
+}
+
+function addNewDocumentNotifications(): void {
+  let notification = newDocumentNotifications.pop();
+  while (notification) {
+    addNotification(notification);
+    notification = newDocumentNotifications.pop();
+  }
+}
+
+// `undefined` et non plus `null` : les vues ne testent que la présence.
+function resetNotifications(): void {
+  notificationsById.value = mapValues(documentsIdxById.value, () => undefined);
+  hasNewDocuments.value = false;
+}
+
+// VIEW MAP - GEOPOINTS
+// =========================================================================
+function getCoordinates(document: Record<string, unknown>): [unknown, unknown] {
+  return [get(document, latFieldPath.value), get(document, lngFieldPath.value)];
+}
+
+function onSelectGeopoint(geopoint: string): void {
+  selectedGeopoint.value = geopoint;
+}
+
+function onSelectGeoshape(geoshape: string): void {
+  selectedGeoshape.value = geoshape;
+}
+
+function listMappingGeopoints(
+  mapping: Record<string, MappingField>,
+  path: string[] = [],
+): string[] {
+  let attributes: string[] = [];
+  for (const [attributeName, { type, properties }] of Object.entries(mapping)) {
+    if (properties) {
+      if (properties.lat && properties.lon) {
+        attributes = attributes.concat(path.concat(attributeName).join('.'));
+      }
+
+      attributes = attributes.concat(listMappingGeopoints(properties, path.concat(attributeName)));
+    } else if (type === 'geo_point') {
+      attributes = attributes.concat(path.concat(attributeName).join('.'));
+    }
+  }
+
+  return attributes;
+}
+
+function listMappingGeoshapes(
+  mapping: Record<string, MappingField>,
+  path: string[] = [],
+): string[] {
+  let attributes: string[] = [];
+  for (const [attributeName, { type, properties }] of Object.entries(mapping)) {
+    if (properties) {
+      attributes = attributes.concat(listMappingGeoshapes(properties, path.concat(attributeName)));
+    } else if (type === 'geo_shape') {
+      attributes = attributes.concat(path.concat(attributeName).join('.'));
+    }
+  }
+
+  return attributes;
+}
+
+// DELETE
+// =========================================================================
+async function onDeleteConfirmed(documentsToDelete: string[]): Promise<void> {
+  deleteModalIsLoading.value = true;
+  try {
+    const wrapper = kuzzleStore.wrapper;
+    if (!wrapper) {
+      throw new Error('No Kuzzle wrapper for the current environment');
+    }
+    await wrapper.performDeleteDocuments(props.indexName, props.collectionName, documentsToDelete);
+    if (!autoSync.value) {
+      fetchDocuments();
+    }
+    deleteModalIsOpen.value = false;
+    resetCandidatesForDeletion();
+  } catch (e) {
+    logger.error(e);
+    toast.danger(
+      'Ooops! Something went wrong while deleting the document(s).',
+      'The complete error has been printed to the console.',
+    );
+  }
+  deleteModalIsLoading.value = false;
+}
+
+function resetCandidatesForDeletion(): void {
+  candidatesForDeletion.value.splice(0, candidatesForDeletion.value.length);
+}
+
+function onBulkDeleteClicked(): void {
+  candidatesForDeletion.value = candidatesForDeletion.value.concat(selectedDocuments.value);
+  deleteModalIsOpen.value = true;
+}
+
+function onDeleteClicked(id: string): void {
+  candidatesForDeletion.value.push(id);
+  deleteModalIsOpen.value = true;
+}
+
+function onEditClicked(id: string): void {
+  router.push({
+    name: 'UpdateDocument',
+    params: { id },
+  });
+}
+
+// DELETE COLLECTION
+// =========================================================================
+function showDeleteCollectionModal(): void {
+  deleteCollectionOpen.value = true;
+}
+
+function afterDeleteCollection(): void {
+  router.push({
+    name: 'Collections',
+    params: { indexName: props.indexName },
+  });
+}
+
+// LIST (FETCH & SEARCH)
+// =========================================================================
+async function loadAllTheThings(): Promise<void> {
+  try {
+    emit('start-init');
+    loadSettingsForCollection();
+    saveSettingsForCollection();
+    loadMappingInfo();
+
+    currentFilter.value = filterManager.load(
+      props.indexName,
+      props.collectionName,
+      router.currentRoute.value,
+    );
+    filterManager.save(currentFilter.value, router, props.indexName, props.collectionName);
+    displayPagination.value = true;
+    emit('end-init');
+    await fetchDocuments();
+  } catch (err) {
+    logger.error(err);
+    toast.warning(
+      'Ooops! Something went wrong.',
+      'The complete error has been printed to console.',
+    );
+    emit('end-init');
+  }
+}
+
+async function onRefresh(): Promise<void> {
+  await fetchDocuments();
+}
+
+function onFiltersUpdated(newFilters: SearchFilter): void {
+  currentFilter.value = newFilters;
+}
+
+function onFilterSubmit(saveToHistory = true): void {
+  if (saveToHistory) {
+    filterManager.addNewHistoryItemAndSave(
+      currentFilter.value,
+      props.indexName,
+      props.collectionName,
+    );
+  }
+  fetchDocuments();
+}
+
+function afterCollectionClear(): void {
+  documents.value = [];
+  totalDocuments.value = 0;
+  currentFilter.value = new filterManager.Filter();
+}
+
+/*
+ * L'ancien `$forceUpdate()` en tête ne servait à rien : `isFetching` est
+ * réactif, et le rendu suit.
+ */
+async function fetchDocuments(): Promise<void> {
+  isFetching.value = true;
+  selectedDocuments.value = [];
+
+  const pagination = {
+    from: paginationFrom.value,
+    size: paginationSize.value,
+  };
+
+  filterManager.save(currentFilter.value, router, props.indexName, props.collectionName);
+
+  try {
+    searchQuery.value = filterManager.toSearchQuery(
+      currentFilter.value,
+      mappingAttributes.value,
+      kuzzleStore.wrapper,
+    );
+
+    if (!searchQuery.value) {
+      searchQuery.value = {};
+    }
+
+    const sorting = filterManager.toSort(currentFilter.value);
+
+    if (searchQuery.value.query) {
+      searchQuery.value = searchQuery.value.query as Record<string, unknown>;
+    }
+
+    resetNotifications();
+
+    const res = await sdk().document.search(
+      props.indexName,
+      props.collectionName,
+      {
+        query: searchQuery.value,
+        sort: sorting,
+      },
+      pagination,
+    );
+
+    documents.value = res.hits as KuzzleDocument[];
+    totalDocuments.value = res.total;
+
+    nextTick(() => addNewDocumentNotifications());
+  } catch (e) {
+    logger.error(e);
+    if ((e as Error).message.includes('failed to create query')) {
+      toast.warning(
+        'Ooops! Something went wrong while fetching the documents.',
+        'Your query is ill-formed. The complete error has been dumped to the console.',
+      );
+    } else {
+      toast.warning(
+        'Ooops! Something went wrong while fetching the documents.',
+        (e as Error).message,
+      );
+    }
+  }
+  isFetching.value = false;
+}
+
+// PAGINATION
+// =========================================================================
+function changePaginationSize(size: number): void {
+  onFiltersUpdated(
+    Object.assign(currentFilter.value, {
+      size,
+      currentPage: 0,
+      from: 0,
+    }),
+  );
+  fetchDocuments();
+}
+
+function setCurrentPage(): void {
+  currentPage.value = Math.floor(paginationFrom.value / paginationSize.value + 1);
+}
+
+// SELECT ITEMS
+// =========================================================================
+function onToggleAllClicked(): void {
+  if (allChecked.value) {
+    selectedDocuments.value = [];
+    return;
+  }
+  selectedDocuments.value = documents.value.map((document) => document._id);
+}
+
+function toggleSelectDocuments(id: string): void {
+  const idx = selectedDocuments.value.indexOf(id);
+
+  if (idx === -1) {
+    selectedDocuments.value.push(id);
+    return;
+  }
+
+  selectedDocuments.value.splice(idx, 1);
+}
+
+// LIST VIEW TYPES
+// =========================================================================
+function switchListView(type: string): void {
+  listViewType.value = type;
+}
+
+function setListViewTypeInRoute(type: string): void {
+  /*
+   * Passe par `pushQuery` pour ne pas écraser le filtre : les deux
+   * écritures reconstruisent la query entière, et `vue-router` 4 les
+   * applique de façon asynchrone (G-042).
+   */
+  filterManager.pushQuery(router, (query) =>
+    query.listViewType === type ? query : { ...query, listViewType: type },
+  );
+}
+
+// Collection Metadata management
+// =========================================================================
+function loadSettingsForCollection(): void {
+  collectionSettings.value = defaults(
+    {
+      listViewType: router.currentRoute.value.query.listViewType as ListViewType | undefined,
+    },
+    loadStoredSettings(props.indexName, props.collectionName),
+  );
+}
+
+function saveSettingsForCollection(): void {
+  logger.debug('saveSettingsForCollection');
+  saveStoredSettings(props.indexName, props.collectionName, collectionSettings.value);
+}
+
+function onSettingsUpdated(newSettings: CollectionSettings): void {
+  collectionSettings.value = newSettings;
+}
+
+function loadMappingInfo(): void {
+  const mapping = collectionMapping.value as Record<string, MappingField>;
+  mappingGeopoints.value = listMappingGeopoints(mapping);
+  mappingGeoshapes.value = listMappingGeoshapes(mapping);
+  if (mappingGeopoints.value.length) {
+    selectedGeopoint.value = mappingGeopoints.value[0];
+  }
+  if (mappingGeoshapes.value.length) {
+    selectedGeoshape.value = mappingGeoshapes.value[0];
+  }
+}
+
+function changeDisplayPagination(value: boolean): void {
+  displayPagination.value = value;
+}
 </script>

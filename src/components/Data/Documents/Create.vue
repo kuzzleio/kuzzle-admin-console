@@ -9,7 +9,7 @@
         :collection="collectionName"
         :mapping="mappingAttributes"
         :document="newDocument"
-        @cancel="onCancel"
+        @cancel="goToList"
         @submit="onSubmit"
         @document-change="onDocumentChange"
       />
@@ -20,111 +20,107 @@
   </div>
 </template>
 
-<script>
-import get from 'lodash/get';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
 import omit from 'lodash/omit';
-import { mapState } from 'pinia';
+import { useRouter } from 'vue-router';
 
+import { useToast } from '@/composables/useToast';
+import { logger } from '@/plugins/logger';
 import { useAuthStore, useKuzzleStore, useStorageIndexStore } from '@/stores';
 
 import PageNotAllowed from '@/components/Common/PageNotAllowed.vue';
 import Headline from '@/components/Materialize/Headline.vue';
 import CreateOrUpdate from './Common/CreateOrUpdate.vue';
 
-export default {
-  name: 'DocumentCreate',
-  components: {
-    Headline,
-    CreateOrUpdate,
-    PageNotAllowed,
-  },
-  props: {
-    indexName: String,
-    collectionName: String,
-  },
-  setup() {
-    return {
-      storageIndexStore: useStorageIndexStore(),
-    };
-  },
-  data() {
-    return {
-      submitting: false,
-      newDocument: {},
-    };
-  },
-  computed: {
-    ...mapState(useKuzzleStore, ['$kuzzle']),
-    ...mapState(useAuthStore, ['canCreateDocument']),
-    index() {
-      return this.storageIndexStore.getOneIndex(this.indexName);
-    },
-    collection() {
-      return this.storageIndexStore.getOneCollection(this.index, this.collectionName);
-    },
-    mappingAttributes() {
-      return get(this, 'collection.mapping', null)
-        ? omit(this.collection.mapping, '_kuzzle_info')
-        : null;
-    },
-    hasRights() {
-      return this.canCreateDocument(this.indexName, this.collectionName);
-    },
-  },
-  methods: {
-    async onSubmit(document, id) {
-      if (!document) {
-        this.error = 'The document is invalid, please review it';
-        return;
-      }
+const props = defineProps<{
+  collectionName: string;
+  indexName: string;
+}>();
 
-      this.submitting = true;
+const router = useRouter();
+const toast = useToast();
+const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
+const storageIndexStore = useStorageIndexStore();
 
-      try {
-        await this.$kuzzle.document.create(this.indexName, this.collectionName, document, id, {
-          refresh: 'wait_for',
-        });
+const newDocument = ref<Record<string, unknown>>({});
 
-        await this.fetchCollectionMapping();
+const index = computed(() => storageIndexStore.getOneIndex(props.indexName));
 
-        this.$router.push({
-          name: 'DocumentList',
-          params: {
-            indexName: this.indexName,
-            collectionName: this.collectionName,
-          },
-        });
-      } catch (err) {
-        this.$log.error(err);
-        this.$toast.warning(
-          'Ooops! Something went wrong while persisting the document.',
-          err.message,
-        );
-      }
-    },
-    onCancel() {
-      this.$router.push({
-        name: 'DocumentList',
-        params: { index: this.index, collection: this.collection },
-      });
-    },
-    onDocumentChange(document) {
-      this.newDocument = document;
-    },
-    async fetchCollectionMapping() {
-      try {
-        await this.storageIndexStore.fetchCollectionMapping({
-          index: this.index,
-          collection: this.collection,
-        });
-      } catch (error) {
-        this.$log.error(error);
-        this.$toast.warning(
-          'Ooops! Something went wrong while counting documents in collections.',
-          'The complete error has been printed to the console.',
-        );
-      }
-    },
-  },
-};
+const collection = computed(() =>
+  index.value ? storageIndexStore.getOneCollection(index.value, props.collectionName) : undefined,
+);
+
+const mappingAttributes = computed(() =>
+  collection.value?.mapping ? omit(collection.value.mapping, '_kuzzle_info') : null,
+);
+
+const hasRights = computed((): boolean =>
+  authStore.canCreateDocument(props.indexName, props.collectionName),
+);
+
+/* Le SDK de la connexion courante. Appelé dans un `try` : son absence y est
+   une erreur comme une autre. */
+function sdk() {
+  const kuzzle = kuzzleStore.$kuzzle;
+  if (!kuzzle) {
+    throw new Error('No Kuzzle SDK for the current environment');
+  }
+  return kuzzle;
+}
+
+function goToList(): void {
+  router.push({
+    name: 'DocumentList',
+    params: { indexName: props.indexName, collectionName: props.collectionName },
+  });
+}
+
+async function onSubmit(
+  document: Record<string, unknown>,
+  id: string | number | undefined,
+): Promise<void> {
+  try {
+    await sdk().document.create(
+      props.indexName,
+      props.collectionName,
+      document,
+      id === undefined ? undefined : String(id),
+      { refresh: 'wait_for' },
+    );
+
+    await fetchCollectionMapping();
+
+    goToList();
+  } catch (err) {
+    logger.error(err);
+    toast.warning(
+      'Ooops! Something went wrong while persisting the document.',
+      (err as Error).message,
+    );
+  }
+}
+
+function onDocumentChange(document: Record<string, unknown>): void {
+  newDocument.value = document;
+}
+
+async function fetchCollectionMapping(): Promise<void> {
+  try {
+    if (!index.value || !collection.value) {
+      throw new Error(`Collection "${props.collectionName}" not found`);
+    }
+    await storageIndexStore.fetchCollectionMapping({
+      index: index.value,
+      collection: collection.value,
+    });
+  } catch (error) {
+    logger.error(error);
+    toast.warning(
+      'Ooops! Something went wrong while counting documents in collections.',
+      'The complete error has been printed to the console.',
+    );
+  }
+}
 </script>

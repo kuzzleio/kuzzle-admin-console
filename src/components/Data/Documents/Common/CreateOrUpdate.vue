@@ -113,7 +113,7 @@ const props = withDefaults(
     document?: object;
     id?: string;
     index?: string;
-    mapping?: object;
+    mapping?: object | null;
   }>(),
   {
     collection: undefined,

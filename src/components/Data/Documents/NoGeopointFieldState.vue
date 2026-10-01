@@ -9,17 +9,6 @@
   </Card>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
+<script setup lang="ts">
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
-
-export default defineComponent({
-  name: 'NoGeopointFieldState',
-  components: {
-    Card,
-    CardContent,
-    CardTitle,
-  },
-});
 </script>
