@@ -1,0 +1,15 @@
+# Tient à jour les actions épinglées par SHA (ADR-0067).
+#
+# Dependabot ne lit ce fichier que sur la branche par défaut, `master` : il
+# n'a aucun effet tant que `5-dev` n'y est pas versée (critère 9 d'ADR-0051).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ['*']
+    commit-message:
+      prefix: chore(ci)
