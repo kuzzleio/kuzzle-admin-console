@@ -2,7 +2,7 @@
 
 - **Statut** : Acceptée pour la v1 de la fonctionnalité (Ricky, 2026-10-02) ; l'atelier demandé par #665 (`need-workshop`) pourra la remplacer
 - **Date** : 2026-10-02
-- **Décideurs** : Ricky, l'équipe à l'atelier
+- **Décideurs** : Ricky
 - **Précise** : #665 (« Add the API key section on the Security page »), la
   seule demande, en une phrase
 
