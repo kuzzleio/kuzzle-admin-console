@@ -69,10 +69,12 @@ contrôles passés sur staging après application : HTTP → 301, HTTPS → 200,
 de cache. Sur production c'est le seul `prod-` de la famille qui soit exact, il
 n'y a de toute façon rien à corriger.
 
-**Une réserve héritée de staging** : `enable_accept_encoding_brotli` est activé
-dans la politique de cache, mais le brotli n'est pas servi — un navigateur
-reçoit du gzip. Ce n'est pas une régression (`forwarded_values` ne permettait pas
-de brotli du tout) et la cause reste à trouver.
+Le brotli, relevé comme non servi sur staging juste après la migration de la
+politique de cache, l'est sur les deux environnements le 2026-10-02.
+
+**À la bascule**, cet environnement reçoit la politique d'en-têtes de
+console-v5, après la v5 et après next-console (étape 4 d'[ADR-0069](../../docs/adr/0069-next-console-redevient-le-staging-de-la-v5.md)).
+La poser avant casserait la v4 servie ici, qui ne respecte pas la CSP.
 
 ## Ce qui n'est plus vrai
 

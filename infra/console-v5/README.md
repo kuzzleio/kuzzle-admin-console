@@ -78,16 +78,19 @@ emplacement dans `main.tf` :
 | 4 | Méthodes limitées à `GET`, `HEAD`, `OPTIONS` | Staging autorise `PUT`, `POST`, `DELETE`, `PATCH` sur un site statique. Elles ne mènent nulle part. |
 | 5 | TLS minimum `TLSv1.2_2021` | Staging est resté en `TLSv1.2_2019`. Rien n'oblige à reconduire une politique de 2019 sur un domaine créé aujourd'hui. |
 
-Les écarts 3, 4 et 5 sont des corrections que staging et production mériteraient
-aussi. Elles ne sont pas faites ici : ces deux environnements ne sont pas gérés
-par Terraform, et les toucher à la main depuis ce module serait pire que le mal.
+Les écarts 3, 4 et 5 ont depuis été appliqués à staging puis à la production,
+une fois ces deux environnements importés dans Terraform (voir
+[`../next-console/README.md`](../next-console/README.md)). Les écarts 1 et 2
+restent propres à console-v5.
 
 ## Portée
 
-**Ce module ne couvre que console-v5.** `console.kuzzle.io` et
-`next-console.kuzzle.io` ont été créés à la main et restent hors IaC. Les
-importer est un chantier à part entière — utile, mais qui n'a pas à retarder
-l'ouverture de l'environnement de revue.
+Ce module ne couvre que console-v5. Les deux autres environnements ont leur
+propre module, voir [`../README.md`](../README.md).
+
+**console-v5 est temporaire** : il sera détruit après la bascule, une fois que
+next-console servira la v5
+([ADR-0069](../../docs/adr/0069-next-console-redevient-le-staging-de-la-v5.md)).
 
 ## Si un `apply` est interrompu
 
