@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-10-01 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
+**Dernière mise à jour** : 2026-10-02 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -945,6 +945,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
   - [x] Technique, lot 1 : code mort et restes de Vue 2, à comportement constant — 18 exports morts de `collectionHelper` et `filterManager`, `config/schemaMapping.ts`, `utils.wait`, `LIST_VIEW_BOXES`, les shims `*.vue` et JSX de Vue 2, cinq options de `tsconfig` sans objet (`allowJs`, `jsx`, `importHelpers`, `experimentalDecorators`, `scripthost`), `file-loader` et `ts-mock-imports` ; `noImplicitAny` passe de 208 à 165 erreurs
   - [x] Technique, lot 2 : `@types/lodash`, composants sans `any` implicite ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md)) — `Filter` devient une classe générique, `pushQuery` et `dateFromTimestamp` sont typés ; la liste des collections se resynchronise de nouveau ([G-126](#g-126)) ; `noImplicitAny: true` donnerait 113 erreurs, aucune dans un composant : `filterManager.ts` 37, `kuzzleWrapper-v1.ts` 31, `stores/auth.ts` 11, `kuzzleWrapper-v2.ts` 8, routes 13, `validators.ts` 6, autres services 7
   - [x] Technique, lot 3 : restes relevés au lot 1 — `manifest.json` retiré avec son `<link>` (resté à la racine, jamais copié dans le build : une 404 en production ; ses icônes visaient un `static/favicon/` disparu), le type de `Page.vue` importé de `kuzzle-sdk-v7` et non de `kuzzle-sdk` (non déclaré, présent par `kepler-companion`), `plugins/logger.ts` déplacé en `lib/logger.ts`
+  - [x] Technique, lot 4 : les six `TODO` de `src/` — `Login/Form.vue` émet `login` au lieu d'appeler une prop `onLogin` ; `Login.vue` ne force plus `body.style.overflow` après connexion (contournement de #426 pour une modale Materialize disparue, le verrou de défilement de reka-ui se rétablit seul au démontage) ; les quatre autres, des souhaits sans suite, deviennent des constats. `noImplicitAny` reste à `false` ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md))
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
 ---

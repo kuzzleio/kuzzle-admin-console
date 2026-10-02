@@ -129,7 +129,8 @@ const credentialsMapping = ref<Record<string, string[]>>({});
 const customContent = ref('{}');
 const customContentMapping = ref<Record<string, unknown>>({});
 
-// TODO One day we should be able to validate credentials (big deal)
+// Les identifiants ne sont pas validés ici : leur forme dépend de la stratégie
+// d'authentification, et c'est Kuzzle qui les refuse à l'enregistrement.
 const rules = computed(() => ({
   kuid: {
     notEmpty: helpers.withMessage('The KUID cannot contain just whitespaces', not(isWhitespace)),
