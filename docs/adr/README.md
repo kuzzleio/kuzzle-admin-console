@@ -87,6 +87,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0063](0063-npm-audit-chaine-webpack-du-sdk-v6-acceptee.md) | `npm audit` : corriger ce qui atteint le bundle, accepter la chaîne webpack 4 du SDK v6 | Acceptée |
 | [0064](0064-jetons-dans-le-localstorage.md) | Le JWT reste dans le `localStorage`, le `sessionId` OpenID passe par environnement | Acceptée |
 | [0065](0065-csp-et-en-tetes-de-securite.md) | Une CSP et des en-têtes de sécurité servis par CloudFront, validés par les specs | Acceptée |
+| [0066](0066-deploiement-du-build-teste-sans-interruption.md) | Déployer le build que les specs ont testé, sans interruption de service | Acceptée |
 
 ## Gabarit
 
