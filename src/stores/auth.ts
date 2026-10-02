@@ -272,7 +272,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         await this.checkFirstAdmin();
 
-        const sessionId = localStorage.getItem('openid-sessionId');
+        const sessionId = kuzzleStore.currentEnvironment?.openidSessionId;
 
         if (sessionId) {
           this.strategy = 'keycloak';
@@ -382,7 +382,7 @@ export const useAuthStore = defineStore('auth', {
       }
 
       // checkToken() logged out an expired session: its sessionId is closed.
-      if (localStorage.getItem('openid-sessionId') === null) {
+      if (!kuzzleStore.currentEnvironment?.openidSessionId) {
         return await this.setSession(null);
       }
 
@@ -528,12 +528,12 @@ export const useAuthStore = defineStore('auth', {
             controller: 'keycloak',
             action: 'closeSession',
             kuid,
-            sessionId: localStorage.getItem('openid-sessionId'),
+            sessionId: kuzzleStore.currentEnvironment?.openidSessionId,
           });
         } catch (error) {
           console.error('Error while closing the OpenID session:', error);
         } finally {
-          localStorage.removeItem('openid-sessionId');
+          kuzzleStore.updateOpenidSessionIdCurrentEnvironment(null);
         }
       }
 
@@ -599,7 +599,7 @@ export const useAuthStore = defineStore('auth', {
         let response: any;
         if (this.strategy === 'keycloak') {
           response = await kuzzle.auth.refreshToken({
-            sessionId: localStorage.getItem('openid-sessionId'),
+            sessionId: kuzzleStore.currentEnvironment?.openidSessionId,
             strategy: 'keycloak',
           });
         } else {

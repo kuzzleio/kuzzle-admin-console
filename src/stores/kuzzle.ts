@@ -4,7 +4,13 @@ import { defineStore } from 'pinia';
 
 import * as kuzzleV1 from '@/services/kuzzleWrapper-v1';
 import * as kuzzleV2 from '@/services/kuzzleWrapper-v2';
-import { LS_ENVIRONMENTS, LS_LAST_ENV, NO_ADMIN_WARNING_HOSTS, SS_CURRENT_ENV } from '@/utils';
+import {
+  LS_ENVIRONMENTS,
+  LS_LAST_ENV,
+  LS_LEGACY_OPENID_SESSION_ID,
+  NO_ADMIN_WARNING_HOSTS,
+  SS_CURRENT_ENV,
+} from '@/utils';
 import { isValidEnvironment } from '@/validators';
 import type { CreateEnvironmentPayload, KuzzleState } from './types/kuzzle';
 
@@ -128,6 +134,23 @@ export const useKuzzleStore = defineStore('kuzzle', {
 
       localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(this.environments));
     },
+    // Le `sessionId` OpenID suit son environnement, comme le token : une
+    // connexion Keycloak n'impose plus sa stratégie aux autres.
+    updateOpenidSessionIdCurrentEnvironment(sessionId: string | null) {
+      if (!this.currentId || this.currentEnvironment == null) {
+        throw new Error('No current environment selected');
+      }
+
+      this.environments = {
+        ...this.environments,
+        [this.currentId]: {
+          ...this.currentEnvironment,
+          openidSessionId: sessionId,
+        },
+      };
+
+      localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(this.environments));
+    },
     updateEnvironment(payload: any) {
       let mustReconnect = false;
 
@@ -154,14 +177,16 @@ export const useKuzzleStore = defineStore('kuzzle', {
           environment.`);
       }
 
-      // Le formulaire d'édition n'envoie pas le jeton : sans reconnexion, la
-      // session continue, et elle doit le garder. Un jeton passé
-      // explicitement (`Home` masque l'avertissement d'admin) l'emporte.
+      // Le formulaire d'édition n'envoie ni le jeton ni le `sessionId`
+      // OpenID : sans reconnexion, la session continue, et elle doit les
+      // garder. Un jeton passé explicitement (`Home` masque l'avertissement
+      // d'admin) l'emporte.
+      const { token, openidSessionId } = this.environments[payload.id];
       this.environments = {
         ...this.environments,
         [payload.id]: mustReconnect
           ? payload.environment
-          : { token: this.environments[payload.id].token, ...payload.environment },
+          : { token, openidSessionId, ...payload.environment },
       };
 
       localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(this.environments));
@@ -219,6 +244,11 @@ export const useKuzzleStore = defineStore('kuzzle', {
       this.errorFromKuzzle = error.message;
     },
     loadEnvironments() {
+      // On ne sait pas à quel environnement elle appartenait : la reprendre
+      // pour l'environnement courant pourrait lui donner la session Keycloak
+      // d'un autre. Une session Keycloak se rouvre une fois.
+      localStorage.removeItem(LS_LEGACY_OPENID_SESSION_ID);
+
       const loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) ?? '{}');
 
       Object.keys(loadedEnv).forEach((envId) => {

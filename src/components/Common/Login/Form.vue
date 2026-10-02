@@ -90,6 +90,7 @@ export default {
   setup() {
     return {
       authStore: useAuthStore(),
+      kuzzleStore: useKuzzleStore(),
     };
   },
   data() {
@@ -194,11 +195,24 @@ export default {
           },
         });
 
-        localStorage.setItem('openid-sessionId', response.headers[strategy]);
-        globalThis.location.href = response.headers.location;
+        // Sans l'un ou l'autre en-tête, on n'écrit pas `'undefined'` comme
+        // `sessionId` et on ne redirige pas vers `undefined`.
+        const sessionId = response.headers?.[strategy];
+        const location = response.headers?.location;
+        if (
+          typeof sessionId !== 'string' ||
+          !sessionId ||
+          typeof location !== 'string' ||
+          !location
+        ) {
+          throw new Error(`the ${strategy} strategy did not return a session to open`);
+        }
+
+        this.kuzzleStore.updateOpenidSessionIdCurrentEnvironment(sessionId);
+        globalThis.location.href = location;
       } catch (error) {
         this.error = error.message;
-        localStorage.removeItem('openid-sessionId');
+        this.kuzzleStore.updateOpenidSessionIdCurrentEnvironment(null);
       }
     },
   },

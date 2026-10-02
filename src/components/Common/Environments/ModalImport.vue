@@ -53,7 +53,10 @@
 </template>
 
 <script>
+import { omit } from 'lodash';
+
 import { useKuzzleStore } from '@/stores';
+import { ENVIRONMENT_SESSION_FIELDS } from '@/utils';
 
 export default {
   name: 'ModalImport',
@@ -102,9 +105,11 @@ export default {
       }
       for (const name in this.env) {
         try {
+          // Un fichier d'environnements ne transporte pas de session : un
+          // token importé l'ouvrirait sans identifiants.
           this.kuzzleStore.createEnvironment({
             id: name,
-            environment: this.env[name],
+            environment: omit(this.env[name], ENVIRONMENT_SESSION_FIELDS),
           });
         } catch (e) {
           this.$log.error(e);
