@@ -29,7 +29,7 @@
     "kuzzle-sdk-v6": "npm:kuzzle-sdk@6.2.8",
     "kuzzle-sdk-v7": "npm:kuzzle-sdk@^7.15.0",
     "leaflet": "1.9.4",
-    "lodash": "4.17.21",
+    "lodash": "4.18.1",
     "moment": "2.30.1",
     "pinia": "2.2.4",
     "velocity-animate": "1.5.2",
