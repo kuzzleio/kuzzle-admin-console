@@ -15,6 +15,18 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+// Une violation de la CSP fait échouer le test qui la déclenche (ADR-0065) :
+// sans ça, un style ou un worker bloqué ne se voit que si une assertion tombe
+// dessus. L'erreur levée dans l'écouteur remonte comme une exception non
+// interceptée de l'application.
+Cypress.on('window:before:load', (win) => {
+  win.addEventListener('securitypolicyviolation', (event) => {
+    throw new Error(
+      `CSP: ${event.violatedDirective} blocked ${event.blockedURI || 'inline content'}`,
+    )
+  })
+})
 // import Kuzzle from 'kuzzle-sdk'
 // Kuzzle.prototype.bluebird = require('bluebird')
 

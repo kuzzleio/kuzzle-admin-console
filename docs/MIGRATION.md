@@ -949,6 +949,8 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
   - [x] Sécurité, lot 1 : `npm audit` ([ADR-0063](adr/0063-npm-audit-chaine-webpack-du-sdk-v6-acceptee.md)) — de 29 vulnérabilités à 16, toutes dans la chaîne `webpack` 4 que `kuzzle-sdk-v6` déclare sans l'utiliser ; `lodash` 4.18.1 (le seul paquet vulnérable empaqueté), `npm audit fix` sans `--force` (`kuzzle-sdk-v7` 7.18.0), `override` de `ws` 8 en ^8.22.0
   - [x] Sécurité, lot 2 : surfaces d'injection — aucun `v-html` ni `innerHTML` dans `src/` ; `JsonTree` ne fait un lien que d'une valeur `http(s)://` ; Ace, `vue-sonner` et les marqueurs Leaflet rendent du texte ; les requêtes d'API Action, la configuration des vues et les environnements relus du `localStorage` ne passent que par `JSON.parse` et l'interpolation de Vue ; les filtres de l'URL sont réduits aux clés connues (`_.pick`). Un défaut trouvé et corrigé : ApexCharts écrivait le nom des séries — un nom de champ du mapping — en `innerHTML` ([G-129](#g-129)), échappé dans `ApexChart`, spec ajoutée à `chartView`
   - [x] Sécurité, lot 3 : stockage des jetons ([ADR-0064](adr/0064-jetons-dans-le-localstorage.md)) — le JWT reste dans le `localStorage` (le SDK le garde lisible dans `kuzzle.jwt` : le ranger ailleurs ne change pas son exposition à une XSS) ; trois défauts corrigés, présents en v4 : le `sessionId` OpenID passe de la clé commune `openid-sessionId` (une connexion Keycloak imposait sa stratégie aux autres environnements) à `environments[<id>].openidSessionId`, l'ancienne clé supprimée sans reprise ; l'import ignore `token` et `openidSessionId` comme l'export ; sans en-tête de stratégie ou `location`, une erreur au lieu d'écrire `'undefined'` et d'y rediriger. Specs ajoutées à `login` (WebSocket relevé, Keycloak simulé) et `environments`
+  - [x] Sécurité, lot 4 : en-têtes et CSP ([ADR-0065](adr/0065-csp-et-en-tetes-de-securite.md)) — aucun en-tête n'était servi ; politique d'en-têtes de réponse CloudFront sur console-v5 (CSP, HSTS, `nosniff`, `X-Frame-Options`, `Referrer-Policy`), la CSP lue dans `infra/csp.json`, que `vite preview` sert aussi : les specs la valident, une violation fait échouer le test ([G-130](#g-130)). Le worker JSON d'Ace, chargé depuis `cdn.jsdelivr.net`, est servi avec le build ; les tuiles OSM passent de `http://{s}.tile.osm.org` à `https://tile.openstreetmap.org`. La production la recevra à la bascule
+  - [ ] Livraison : déploiement (build testé, ordre de la copie, `Cache-Control`), `permissions` et actions des workflows, `Dockerfile`, docs d'`infra/`
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
 ---
@@ -4280,6 +4282,24 @@ Gabarit à copier :
   bibliothèque qui reçoit une chaîne venue des données (graphiques, cartes,
   info-bulles) se lit avec `grep innerHTML` dans ses sources.
 
+#### G-130 — `experimentalCspAllowList: true` garde la CSP mais en retire `script-src`
+
+- **Contexte** : critère 8, lot sécurité 4 (CSP, [ADR-0065](adr/0065-csp-et-en-tetes-de-securite.md)).
+- **Symptôme** : la CSP servie par `vite preview` arrive dans le navigateur
+  piloté par Cypress, une image d'une origine non autorisée est bien bloquée…
+  mais `eval` s'exécute dans l'application, malgré `script-src 'self'`.
+- **Cause** : `true` ne veut pas dire « tout garder ». Cypress garde la
+  politique moins les directives qui gêneraient ses propres scripts injectés :
+  `default-src`, `script-src`, `script-src-elem`, `child-src`, `frame-src`,
+  `form-action`. La directive qui compte le plus est justement retirée, sans
+  rien signaler. Par défaut (`false`), Cypress retire tout l'en-tête.
+- **Solution** : passer la liste explicite de ces six directives. Cypress les
+  garde et ajoute un nonce à ses propres scripts ; `eval` est alors refusé dans
+  l'application. Une violation lève une erreur dans le support (`securitypolicyviolation`).
+- **À retenir** : une option de sécurité se vérifie par ce qu'elle bloque, pas
+  par la présence de l'en-tête : une sonde (une image d'ailleurs, un `eval`)
+  dit en deux tests ce que la politique fait vraiment.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -4409,3 +4429,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-10-01 | Dates des documents en heure locale suivie de leur décalage (`GMT+2`), plutôt qu'en UTC (#1001) | [ADR-0062](adr/0062-dates-locales-avec-decalage.md) |
 | 2026-10-02 | `npm audit` : `lodash` 4.18.1, correctifs non cassants, `override` de `ws` 8 ; la chaîne `webpack` 4 de `kuzzle-sdk-v6`, jamais exécutée, est acceptée | [ADR-0063](adr/0063-npm-audit-chaine-webpack-du-sdk-v6-acceptee.md) |
 | 2026-10-02 | Le JWT reste dans le `localStorage` ; le `sessionId` OpenID passe par environnement (ancienne clé supprimée sans reprise), l'import ignore la session comme l'export, pas de redirection sans en-tête | [ADR-0064](adr/0064-jetons-dans-le-localstorage.md) |
+| 2026-10-02 | CSP et en-têtes de sécurité servis par CloudFront sur console-v5, la CSP dans `infra/csp.json` servie aussi par `vite preview` et validée par les specs ; le worker d'Ace et les tuiles OSM ne viennent plus d'une origine tierce ou en clair | [ADR-0065](adr/0065-csp-et-en-tetes-de-securite.md) |

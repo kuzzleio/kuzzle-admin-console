@@ -24,6 +24,7 @@ import ace from 'ace-builds';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/theme-tomorrow_night';
 import 'ace-builds/src-noconflict/mode-json';
+import jsonWorkerUrl from 'ace-builds/src-noconflict/worker-json?url';
 
 import { useTheme } from '@/composables/useTheme';
 
@@ -64,10 +65,12 @@ const emit = defineEmits<{
 }>();
 
 const { isDark } = useTheme();
-ace.config.setModuleUrl(
-  'ace/mode/json_worker',
-  `https://cdn.jsdelivr.net/npm/ace-builds@${ace.version}/src-min-noconflict/worker-json.js`,
-);
+// Le worker de validation du JSON est servi par la console, comme le reste
+// d'Ace : il venait de cdn.jsdelivr.net, un script tiers que la CSP aurait dû
+// autoriser (ADR-0065). Chargé directement et non par un `Blob` qui
+// l'importerait, il n'a besoin que de `worker-src 'self'`.
+ace.config.set('loadWorkerFromBlob', false);
+ace.config.setModuleUrl('ace/mode/json_worker', jsonWorkerUrl);
 
 const editorEl = useTemplateRef<HTMLDivElement>('editorEl');
 // `shallowRef` : l'éditeur d'Ace est un objet tiers, que Vue n'a pas à rendre

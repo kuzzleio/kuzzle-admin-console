@@ -1,4 +1,5 @@
 import childProcess from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import tailwindcss from '@tailwindcss/vite';
@@ -65,6 +66,21 @@ try {
   console.warn(`Could not get the commit hash: ${error}`);
 }
 
+/*
+ * La CSP que CloudFront sert en ligne (`infra/console-v5/main.tf`), lue dans
+ * le même fichier : `vite preview` la sert aussi, et les specs, qui tournent
+ * contre un build (ADR-0028), la valident à chaque PR (ADR-0065). Le serveur
+ * de dev ne la sert pas : il injecte ses propres scripts.
+ */
+const contentSecurityPolicy = Object.entries(
+  JSON.parse(readFileSync(new URL('./infra/csp.json', import.meta.url), 'utf8')) as Record<
+    string,
+    string[]
+  >,
+)
+  .map(([directive, sources]) => [directive, ...sources].join(' '))
+  .join('; ');
+
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
@@ -80,6 +96,7 @@ export default defineConfig({
   },
   plugins: [tailwindcss(), vue(), visualizer()],
   preview: {
+    headers: { 'Content-Security-Policy': contentSecurityPolicy },
     port: 8080,
   },
   resolve: {
