@@ -4227,6 +4227,37 @@ Gabarit à copier :
   un backend saturé.
 - **Ref** : [#965](https://github.com/kuzzleio/kuzzle-admin-console/issues/965).
 
+#### G-128 — Le découpage du bundle dépendait du chemin du checkout
+
+- **Contexte** : critère 8, report de `lodash` 4.18.1 sur `4-dev` dans un
+  worktree nommé `kac-4dev-lodash`.
+- **Symptôme** : 17/17 specs en échec, chacune sur
+  `Cannot read properties of undefined (reading 'startsWith')`, levé par le
+  chunk `bootstrap` (`Vue.version.startsWith`, dans bootstrap-vue). Le même
+  commit passe en CI, et passe aussi en local une fois le worktree renommé.
+- **Cause** : `manualChunks` classait chaque module avec
+  `id.includes('ace')`, `includes('lodash')`, `includes('vue')`… sur son
+  **chemin absolu**. Sous `…/kac-4dev-lodash/`, tous les modules, Vue compris,
+  partaient dans le chunk `lodash`, et `bootstrap` lisait Vue avant que ce
+  chunk l'ait défini. N'importe quel chemin qui contient `ace` (`~/workspace/…`,
+  `/home/grace/…`) déclenche la même chose. Même sans ça, `includes('vue')`
+  attrapait chaque `.vue` de `src/` : sur `5-dev`, le chunk `vue` contenait
+  449 modules de la console, et le cœur de Vue était dans `vendor`.
+- **Solution** : `vite.config.ts` déduit le paquet du dernier segment
+  `node_modules/` d'un module (`packageOf`) et passe par
+  `output.codeSplitting.groups` de rolldown, avec des priorités. Le
+  `manualChunks` de compatibilité emporte les dépendances de chaque groupe
+  dans l'ordre de déclaration, et l'adaptateur Leaflet y entraînait le cœur de
+  Vue dans `charts-maps`. Le code de la console n'est plus capturé par aucun
+  groupe. Sur `4-dev`, seul l'ancrage sur le nom de paquet est porté.
+  Vérifié depuis un worktree `…/kac-workspace-lodash-vue/` : l'ancienne
+  configuration y produit un seul chunk, la nouvelle des fichiers aux mêmes
+  empreintes que depuis le dépôt principal.
+- **À retenir** : un échec total, en local seulement, sur une erreur
+  d'initialisation de bibliothèque se lit d'abord comme un problème de
+  **chemin**, pas de code. Rejouer depuis un autre répertoire avant d'ouvrir
+  le diff.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
