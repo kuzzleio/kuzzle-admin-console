@@ -1,5 +1,10 @@
 # next-console.kuzzle.io — infrastructure (importée)
 
+> Après la bascule, cet environnement redevient le staging, **en v5**, alimenté
+> par la branche de développement de la v5
+> ([ADR-0069](../../docs/adr/0069-next-console-redevient-le-staging-de-la-v5.md)).
+> Retirer le déploiement de `4-dev` **avant**.
+
 Environnement de **staging de la v4**, alimenté par un push sur `4-dev`
 (`.github/workflows/push_dev.workflow.yml`, job `deploy-staging`).
 
@@ -64,11 +69,9 @@ en-tête. Seule différence : `enable_accept_encoding_gzip` et `…_brotli` mett
 `Accept-Encoding` dans la clé sous forme normalisée, là où l'ancienne API ne l'y
 mettait pas.
 
-**Le brotli n'est pourtant pas servi** : un client `Accept-Encoding: br` reçoit
-du non compressé, un navigateur reçoit du gzip. Ce n'est pas une régression —
-`forwarded_values` ne permettait pas de brotli du tout — mais l'optimisation
-attendue n'est pas là, et la cause reste à trouver. Le gzip, lui, est confirmé :
-6116 → 2739 octets, avec `vary: Accept-Encoding`.
+Le gzip est confirmé : 6116 → 2739 octets, avec `vary: Accept-Encoding`. Le
+brotli, relevé comme non servi juste après ce changement, l'est désormais
+(`content-encoding: br` sur `index.html` et les assets, relevé le 2026-10-02).
 
 ### Les trois autres, groupés
 
