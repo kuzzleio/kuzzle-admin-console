@@ -1,6 +1,6 @@
 # ADR-0070 : Clés d'API — cadrage de la fonctionnalité
 
-- **Statut** : Proposée — support de l'atelier demandé par #665 (`need-workshop`)
+- **Statut** : Acceptée pour la v1 de la fonctionnalité (Ricky, 2026-10-02) ; l'atelier demandé par #665 (`need-workshop`) pourra la remplacer
 - **Date** : 2026-10-02
 - **Décideurs** : Ricky, l'équipe à l'atelier
 - **Précise** : #665 (« Add the API key section on the Security page »), la
@@ -20,7 +20,7 @@ Relevé le 2026-10-02 sur Kuzzle 2.56, la stack de `docker-compose.yml` :
 | Les backends v1 (`kuzzle-sdk-v6`) n'ont pas de clés d'API | La fonctionnalité ne s'affiche que sur un environnement v2. |
 | Les droits de la console passent par `isActionAllowed` (`src/stores/auth.ts`), un getter par action | Trois getters de plus par contrôleur suffisent à cacher ce qu'on ne peut pas faire. |
 
-## Décision proposée
+## Décision
 
 ### Où
 
@@ -92,16 +92,18 @@ Les deux écrans sont le même composant, paramétré par le contrôleur.
 - Cette ADR, qui n'est que de la documentation, peut se fusionner tout de
   suite.
 
-## Questions pour l'atelier
+## Points tranchés pour la v1
 
-1. Le défaut d'expiration : 90 jours, ou celui de Kuzzle (aucune) ?
-2. Faut-il interdire « sans expiration » dans la console, ou le garder avec un
-   avertissement ?
-3. « My API keys » dans le menu de l'utilisateur : utile, ou la section de la
-   page utilisateur suffit-elle ?
-4. Une vue de toutes les clés (une requête par utilisateur) vaut-elle son coût
-   sur une base de quelques centaines d'utilisateurs ?
-5. Faut-il la révocation en lot dès la première version ?
+Les recommandations ci-dessus sont retenues telles quelles. L'atelier peut
+revenir sur chacune par une nouvelle ADR :
+
+1. L'expiration par défaut est de **90 jours**, et non l'absence d'expiration,
+   défaut de Kuzzle.
+2. **« Sans expiration » reste proposé**, avec un avertissement.
+3. **« My API keys » est dans la v1.**
+4. **Pas de vue de toutes les clés** : elle coûterait une requête par
+   utilisateur.
+5. **Pas de révocation en lot** dans la v1.
 
 ## Conséquences
 
@@ -126,8 +128,7 @@ Les deux écrans sont le même composant, paramétré par le contrôleur.
 ## Alternatives écartées
 
 - **Une section « API keys » dans la barre latérale de Sécurité, listant toutes
-  les clés** : l'API ne le permet pas sans une requête par utilisateur (voir la
-  question 4).
+  les clés** : l'API ne le permet pas sans une requête par utilisateur.
 - **Garder le jeton dans la session pour le réafficher** : c'est exactement ce
   que Kuzzle évite en ne le renvoyant qu'une fois.
 - **Laisser le défaut de Kuzzle (clé éternelle)** : une clé créée vite et
