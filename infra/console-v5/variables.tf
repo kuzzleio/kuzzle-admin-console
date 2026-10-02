@@ -33,9 +33,10 @@ variable "price_class" {
 
 variable "default_ttl" {
   description = <<-EOT
-    TTL par défaut, en secondes. 300 comme en staging : sur un environnement de
-    revue, on veut voir son déploiement vite. Le déploiement invalide `/*` de
-    toute façon, ce TTL n'est qu'un filet.
+    TTL par défaut, en secondes. 300 comme en staging. Il ne s'applique qu'aux
+    objets sans `Cache-Control` : depuis ADR-0066, le déploiement en pose un
+    sur chaque objet (`immutable` sur `assets/`, `no-cache` ailleurs) et
+    invalide `/*`. Ce TTL n'est qu'un filet.
   EOT
   type        = number
   default     = 300

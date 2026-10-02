@@ -34,9 +34,42 @@ jobs:
       - name: Run linter
         uses: ./.github/actions/lint
 
+  # Un seul build par run : les specs le valident, le déploiement copie
+  # celui-là (ADR-0066). Chaque job de spec reconstruisait le sien, et le
+  # déploiement un dernier, que rien n'avait testé.
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        # Un `npm ci` a déjà pendu 1 h 30 après avoir fini d'installer (G-073).
+        timeout-minutes: 10
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 5
+
   e2e-tests:
     name: E2E Test - ${{ matrix.spec }}
-    needs: ['lint']
+    needs: [lint, build]
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     strategy:
@@ -88,8 +121,11 @@ jobs:
           docker ps
           curl -v http://localhost:7512/_healthcheck
 
-      - name: Build
-        run: npm run build
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
 
       - name: Start preview server
         run: |
@@ -183,7 +219,8 @@ jobs:
 
   deploy-v5:
     name: Deploy Admin Console v5 - console-v5.kuzzle.io
-    needs: ['e2e-tests']
+    # Lint compris : un lint rouge laissait partir le déploiement.
+    needs: [lint, e2e-tests]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     # Le bucket et la distribution CloudFront de console-v5.kuzzle.io n'existent
@@ -195,11 +232,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Download build
+        uses: actions/download-artifact@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          name: dist
+          path: dist
 
       - name: Deploy to S3
         uses: ./.github/actions/deploy-to-s3

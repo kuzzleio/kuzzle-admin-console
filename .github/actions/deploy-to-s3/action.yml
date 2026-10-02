@@ -1,5 +1,9 @@
 name: Deploy to AWS S3
-description: Build admin console, upload it to S3 and invalidate Cloudfront cache
+description: Upload a tested admin console build to S3 and invalidate the Cloudfront cache
+
+# Le build n'est pas fait ici : le job appelant télécharge celui que les specs
+# ont validé (ADR-0066). Reconstruire au déploiement mettait en ligne un build
+# que rien n'avait testé.
 
 inputs:
   AWS_ACCESS_KEY_ID:
@@ -26,18 +30,22 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Build
-      run: |
-        npm ci
-        npm run build
+    - name: Upload to S3
+      run: ${{ github.action_path }}/deploy.sh
+      env:
+        S3_BUCKET: ${{ inputs.S3_BUCKET }}
+        TARGET_DIST: ${{ inputs.TARGET_DIST }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ inputs.REGION }}
       shell: bash
 
-    - name: Deploy
-      run: |
-        aws s3 rm s3://${{ inputs.S3_BUCKET }} --recursive
-        aws s3 sync ${{ inputs.TARGET_DIST }} s3://${{ inputs.S3_BUCKET }}
-        aws cloudfront create-invalidation --distribution-id ${{ inputs.CLOUDFRONT_ID }} --paths "/*"
+    # `/*` et non `/index.html` seul : les favicons et `images/` n'ont pas de
+    # hash, et les objets copiés avant ADR-0066 n'avaient pas de Cache-Control.
+    - name: Invalidate Cloudfront cache
+      run: aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_ID" --paths '/*'
       env:
+        CLOUDFRONT_ID: ${{ inputs.CLOUDFRONT_ID }}
         AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: ${{ inputs.REGION }}
