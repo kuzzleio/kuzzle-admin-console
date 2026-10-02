@@ -5,7 +5,31 @@ import vue from '@vitejs/plugin-vue2';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 
-const manualChunks = (id: string) => {
+/*
+ * Le paquet qui fournit un module, d'après son dernier segment
+ * `node_modules/`. Tester le chemin entier classait aussi le code de la
+ * console (tous les `.vue` partaient dans `vue`), et un checkout dont le
+ * chemin contient `bootstrap`, `ace`, `lodash` ou `vue` rangeait toute
+ * l'application dans un même chunk, qui ne démarrait plus.
+ */
+const packageOf = (id: string): string | undefined => {
+  const marker = '/node_modules/';
+  const path = id.replaceAll('\\', '/');
+  const index = path.lastIndexOf(marker);
+  if (index === -1) {
+    return undefined;
+  }
+  const [scope, name] = path.slice(index + marker.length).split('/');
+  return scope.startsWith('@') ? `${scope}/${name}` : scope;
+};
+
+const manualChunks = (moduleId: string) => {
+  const id = packageOf(moduleId);
+  // Le code de la console suit le découpage par défaut.
+  if (id === undefined) {
+    return undefined;
+  }
+
   // Bootstrap
   if (id.includes('bootstrap')) {
     return 'bootstrap';
@@ -32,9 +56,7 @@ const manualChunks = (id: string) => {
   }
 
   // Other dependencies
-  if (id.includes('node_modules')) {
-    return 'vendor';
-  }
+  return 'vendor';
 };
 
 let commitHash = 'unknown commit';
