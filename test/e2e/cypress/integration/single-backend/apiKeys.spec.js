@@ -97,9 +97,11 @@ describe('API keys', function() {
 
   it('Should list expired keys, and filter by description', () => {
     createUser('dummy')
-    createApiKey('dummy', 'short-lived', '1s')
+    createApiKey('dummy', 'short-lived', '1h')
     createApiKey('dummy', 'long-lived', '30d')
-    cy.wait(1500)
+    // La page lit l'échéance avec `Date.now()` : deux heures plus tard, la
+    // première clé est expirée, sans attendre qu'elle le soit vraiment.
+    cy.clock(Date.now() + 2 * 3600 * 1000, ['Date'])
     cy.visit('/#/security/users/dummy/api-keys')
     cy.contains('[data-cy="ApiKeyList-table"] tr', 'short-lived').should('contain', 'Expired')
     cy.contains('[data-cy="ApiKeyList-table"] tr', 'long-lived').should('not.contain', 'Expired')
