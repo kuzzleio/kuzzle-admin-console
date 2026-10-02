@@ -952,7 +952,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
   - [x] Sécurité, lot 4 : en-têtes et CSP ([ADR-0065](adr/0065-csp-et-en-tetes-de-securite.md)) — aucun en-tête n'était servi ; politique d'en-têtes de réponse CloudFront sur console-v5 (CSP, HSTS, `nosniff`, `X-Frame-Options`, `Referrer-Policy`), la CSP lue dans `infra/csp.json`, que `vite preview` sert aussi : les specs la valident, une violation fait échouer le test ([G-130](#g-130)). Le worker JSON d'Ace, chargé depuis `cdn.jsdelivr.net`, est servi avec le build ; les tuiles OSM passent de `http://{s}.tile.osm.org` à `https://tile.openstreetmap.org`. La production la recevra à la bascule
   - [x] Livraison, lot 1 : déploiement ([ADR-0066](adr/0066-deploiement-du-build-teste-sans-interruption.md)) — un job `build` par run, dont l'artefact sert aux 17 specs et au déploiement (l'action reconstruisait un build que rien n'avait testé) ; le déploiement attend aussi `lint` ; plus de `aws s3 rm --recursive` (bucket vide pendant la copie, 404 mises en cache cinq minutes) : `assets/` d'abord en `immutable`, puis `index.html` et les fichiers sans hash en `no-cache`, enfin le ménage, les assets retirés du build gardés 7 jours pour les onglets ouverts ; un build vide est refusé. Validé contre un S3 local (LocalStack)
   - [x] Livraison, lot 2 : workflows ([ADR-0067](adr/0067-workflows-jeton-en-lecture-actions-epinglees.md)) — `permissions: contents: read` (le dépôt donne `write` par défaut, aucun job n'écrit), `persist-credentials: false` ; actions en dernière majeure, épinglées par SHA (`checkout` v7, `setup-node` v7, `cache` v6, `upload-artifact` v7, `download-artifact` v8 : plus d'avertissement Node 20), Dependabot pour les tenir à jour, inerte jusqu'à la bascule ; lint, build et specs dans un seul `checks.yml` appelé par les trois workflows au lieu de trois copies ; `Tests Summary` rouge dès qu'un job n'a pas réussi (un build cassé le laissait vert) ; Node lu dans `.nvmrc` ; actionlint de 34 avertissements à 0. Reste hors dépôt : passer le jeton à `read` par défaut dans les réglages
-  - [ ] Livraison, lot 3 : `Dockerfile`
+  - [x] Livraison, lot 3 : `Dockerfile` ([ADR-0068](adr/0068-image-docker-nginx-stable-sans-root.md)) — `.dockerignore` en liste blanche (`COPY . .` envoyait 2,3 Go de providers Terraform et remplissait la VM Docker, [G-131](#g-131)), dépendances avant le code et sans binaire Cypress ; `nginx:1.27` (mainline sans correctifs, en root) remplacé par `nginx-unprivileged:1.30-alpine`, port 8080 ; configuration nginx avec la CSP générée depuis `infra/csp.json`, les en-têtes et le `Cache-Control` de S3 ; hash du commit en argument de build ; images épinglées par digest, Dependabot ; job `Docker image` avec test de fumée dans `checks.yml`. Les 17 specs passent contre l'image. La publication sur Docker Hub (un `latest` v4 de 2024) relève de la bascule
   - [ ] Livraison, lot 4 : `infra/` — docs, distribution de production hors Terraform, sort de next-console.kuzzle.io
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
@@ -4303,6 +4303,27 @@ Gabarit à copier :
   par la présence de l'en-tête : une sonde (une image d'ailleurs, un `eval`)
   dit en deux tests ce que la politique fait vraiment.
 
+#### G-131 — Un `docker build` depuis le checkout remplit la VM Docker
+
+- **Contexte** : critère 8, lot livraison 3 (`Dockerfile`, [ADR-0068](adr/0068-image-docker-nginx-stable-sans-root.md)).
+- **Symptôme** : `docker build .` échoue en 40 s sur `ResourceExhausted: failed
+  to copy files: … no space left on device`, en copiant un
+  `terraform-provider-aws`. Juste après, `docker compose up --wait` échoue :
+  Kuzzle s'arrête sur une `ExternalServiceError` d'Elasticsearch au démarrage.
+- **Cause** : `COPY . .` et un `.dockerignore` qui ne listait que
+  `node_modules`, `.git` et `dist`. Le contexte comprenait les dossiers ignorés
+  par git, mais présents sur le poste : `infra/*/.terraform` (768 Mo par module)
+  et `test/e2e/captures` (346 Mo). La VM est passée à 91 %, au-delà du *high
+  watermark* d'Elasticsearch (90 %) : il n'alloue plus les shards d'un index
+  neuf, et Kuzzle ne peut pas créer son index interne. C'est la même famille que
+  [G-060](#g-060), sans le blocage en lecture seule : la stack était neuve.
+- **Solution** : `.dockerignore` en liste blanche. Puis libérer de la place
+  (`docker builder prune -f`, les images tirées pour un essai) jusqu'à passer
+  sous **85 %** (*low watermark*), et recréer la stack.
+- **À retenir** : `.gitignore` ne dit rien du contexte Docker. Un dossier ignoré
+  par git reste copié par `COPY . .`, et en CI, où le checkout est propre, rien
+  ne le montre.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -4435,3 +4456,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-10-02 | CSP et en-têtes de sécurité servis par CloudFront sur console-v5, la CSP dans `infra/csp.json` servie aussi par `vite preview` et validée par les specs ; le worker d'Ace et les tuiles OSM ne viennent plus d'une origine tierce ou en clair | [ADR-0065](adr/0065-csp-et-en-tetes-de-securite.md) |
 | 2026-10-02 | Le déploiement copie le build que les specs ont testé, attend le lint, et ne vide plus le bucket : assets d'abord en `immutable`, `index.html` ensuite en `no-cache`, anciens assets gardés 7 jours | [ADR-0066](adr/0066-deploiement-du-build-teste-sans-interruption.md) |
 | 2026-10-02 | Workflows : jeton en lecture seule, actions épinglées par SHA et tenues par Dependabot, lint/build/specs dans un seul workflow réutilisable, résumé rouge sur tout job non réussi | [ADR-0067](adr/0067-workflows-jeton-en-lecture-actions-epinglees.md) |
+| 2026-10-02 | Image Docker : contexte en liste blanche, nginx stable sans root sur 8080, CSP et cache identiques à la console hébergée, construite et vérifiée par la CI ; sa publication est renvoyée à la bascule | [ADR-0068](adr/0068-image-docker-nginx-stable-sans-root.md) |

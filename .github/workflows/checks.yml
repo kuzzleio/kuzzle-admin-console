@@ -1,6 +1,6 @@
 name: Checks
 
-# Lint, build et specs, appelés par les trois workflows (ADR-0067) : les
+# Lint, build, image Docker et specs, appelés par les trois workflows (ADR-0067) : les
 # pull requests, et les pushes sur 5-dev et master, qui déploient ensuite
 # l'artefact `dist` de ce run (ADR-0066). Ces jobs existaient en trois
 # copies identiques ; une spec ajoutée devait l'être trois fois.
@@ -64,6 +64,29 @@ jobs:
           path: dist
           if-no-files-found: error
           retention-days: 5
+
+  # L'image n'était construite par rien : elle a servi nginx 1.27 sans un
+  # en-tête pendant que la CSP partait sur CloudFront (ADR-0068).
+  docker-image:
+    name: Docker image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build image
+        run: docker build --build-arg COMMIT_HASH="${GITHUB_SHA::8}" -t admin-console .
+
+      - name: Start container
+        run: |
+          docker run -d --name console -p 8080:8080 admin-console
+          timeout 30 sh -c 'until curl -fs http://localhost:8080/ > /dev/null; do sleep 1; done'
+
+      - name: Smoke test
+        run: docker/smoke-test.sh http://localhost:8080 console
 
   e2e-tests:
     name: E2E Test - ${{ matrix.spec }}
@@ -183,7 +206,7 @@ jobs:
   # build en échec saute les specs, et le résumé passait au vert.
   test-summary:
     name: Tests Summary
-    needs: [lint, build, e2e-tests]
+    needs: [lint, build, docker-image, e2e-tests]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -195,10 +218,11 @@ jobs:
             echo "## Details"
             echo "- Lint: $LINT"
             echo "- Build: $BUILD"
+            echo "- Docker image: $DOCKER"
             echo "- E2E Tests: $E2E"
           } >> "$GITHUB_STEP_SUMMARY"
 
-          if [ "$LINT" = success ] && [ "$BUILD" = success ] && [ "$E2E" = success ]; then
+          if [ "$LINT" = success ] && [ "$BUILD" = success ] && [ "$DOCKER" = success ] && [ "$E2E" = success ]; then
             echo "✅ All tests passed!" | tee -a "$GITHUB_STEP_SUMMARY"
           else
             echo "❌ Some checks did not succeed" | tee -a "$GITHUB_STEP_SUMMARY"
@@ -207,4 +231,5 @@ jobs:
         env:
           LINT: ${{ needs.lint.result }}
           BUILD: ${{ needs.build.result }}
+          DOCKER: ${{ needs.docker-image.result }}
           E2E: ${{ needs.e2e-tests.result }}

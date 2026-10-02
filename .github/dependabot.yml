@@ -13,3 +13,11 @@ updates:
         patterns: ['*']
     commit-message:
       prefix: chore(ci)
+
+  # Les images de base du `Dockerfile`, épinglées par digest (ADR-0068).
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore(docker)

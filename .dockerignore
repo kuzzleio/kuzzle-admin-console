@@ -1,5 +1,13 @@
-node_modules
-bower_components
-.idea
-.git
-dist
+# Liste blanche (ADR-0068) : seul ce que le build lit entre dans le contexte.
+# `COPY . .` envoyait tout le checkout, providers Terraform (`infra/*/.terraform`,
+# 768 Mo chacun) et captures Cypress compris, et remplissait la VM Docker.
+*
+!package.json
+!package-lock.json
+!index.html
+!vite.config.ts
+!tsconfig.json
+!src/
+!public/
+!infra/csp.json
+!docker/

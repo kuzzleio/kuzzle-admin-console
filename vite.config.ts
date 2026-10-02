@@ -58,12 +58,18 @@ const chunkGroups = [
   },
 }));
 
-let commitHash = 'unknown commit';
+/*
+ * `COMMIT_HASH` d'abord : l'image Docker se construit sans `.git` et reçoit
+ * le hash en argument de build (ADR-0068).
+ */
+let commitHash = process.env.COMMIT_HASH || 'unknown commit';
 
-try {
-  commitHash = childProcess.execSync('git rev-parse --short HEAD').toString().trim();
-} catch (error) {
-  console.warn(`Could not get the commit hash: ${error}`);
+if (!process.env.COMMIT_HASH) {
+  try {
+    commitHash = childProcess.execSync('git rev-parse --short HEAD').toString().trim();
+  } catch (error) {
+    console.warn(`Could not get the commit hash: ${error}`);
+  }
 }
 
 /*
