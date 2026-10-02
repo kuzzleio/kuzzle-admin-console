@@ -91,6 +91,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0067](0067-workflows-jeton-en-lecture-actions-epinglees.md) | Workflows : un jeton en lecture, des actions épinglées, une seule définition des checks | Acceptée |
 | [0068](0068-image-docker-nginx-stable-sans-root.md) | Une image Docker construite et vérifiée par la CI, nginx stable sans root | Acceptée |
 | [0069](0069-next-console-redevient-le-staging-de-la-v5.md) | À la bascule, next-console redevient le staging (en v5) et console-v5 est supprimé | Acceptée |
+| [0070](0070-cles-d-api-cadrage.md) | Clés d'API — cadrage de la fonctionnalité | Acceptée |
 
 ## Gabarit
 

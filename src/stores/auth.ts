@@ -282,6 +282,27 @@ export const useAuthStore = defineStore('auth', {
         this.canDeleteUser
       );
     },
+
+    // Clés d'API (ADR-0070) : celles d'un utilisateur, par `security`, et les
+    // siennes, par `auth`. Une session anonyme n'a pas de clés à elle.
+    canSearchApiKeys(state): boolean {
+      return isActionAllowed(state.user, 'security', 'searchApiKeys');
+    },
+    canCreateApiKey(state): boolean {
+      return isActionAllowed(state.user, 'security', 'createApiKey');
+    },
+    canDeleteApiKey(state): boolean {
+      return isActionAllowed(state.user, 'security', 'deleteApiKey');
+    },
+    canSearchOwnApiKeys(state): boolean {
+      return state.user?.id !== -1 && isActionAllowed(state.user, 'auth', 'searchApiKeys');
+    },
+    canCreateOwnApiKey(state): boolean {
+      return state.user?.id !== -1 && isActionAllowed(state.user, 'auth', 'createApiKey');
+    },
+    canDeleteOwnApiKey(state): boolean {
+      return state.user?.id !== -1 && isActionAllowed(state.user, 'auth', 'deleteApiKey');
+    },
     hasSecurityRights(): boolean {
       return this.canManageRoles || this.canManageProfiles || this.canManageUsers;
     },

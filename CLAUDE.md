@@ -46,7 +46,7 @@ proposer de migrer Vue en premier : `bootstrap-vue` 2 ne tourne pas sous
 
 ## Garde-fou
 
-Les 17 specs Cypress (`test/e2e/cypress/integration/single-backend/`) sont le
+Les 18 specs Cypress (`test/e2e/cypress/integration/single-backend/`) sont le
 seul filet de sécurité du chantier — il n'y a pas de tests unitaires. Toute PR de
 migration doit passer les specs du domaine touché. Ne jamais désactiver une spec
 pour faire passer une migration : c'est le signal que la migration est fausse.

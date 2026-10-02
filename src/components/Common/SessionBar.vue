@@ -66,6 +66,16 @@
           </div>
         </DropdownMenuGroup>
         <DropdownMenuSeparator v-if="profiles.length" />
+        <template v-if="showMyApiKeys">
+          <DropdownMenuItem
+            data-cy="SessionBar-myApiKeys"
+            @select="router.push({ name: 'MyApiKeys' })"
+          >
+            <i aria-hidden="true" class="fas fa-key w-4 text-center" />
+            My API keys
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+        </template>
         <DropdownMenuItem data-cy="SessionBar-logoutBtn" @select="logout">
           <i aria-hidden="true" class="fas fa-power-off w-4 text-center" />
           Log out
@@ -93,9 +103,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { type ThemePreference, useTheme } from '@/composables/useTheme';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
 const router = useRouter();
 const { preference, setPreference } = useTheme();
 
@@ -132,6 +143,12 @@ const profiles = computed((): string[] => {
   const profileIds: unknown = user.params?.profileIds;
   return Array.isArray(profileIds) ? profileIds.filter((id) => typeof id === 'string') : [];
 });
+
+// Une session anonyme n'a pas de clés à elle, ni un backend v1 (ADR-0070).
+const showMyApiKeys = computed(
+  () =>
+    authStore.canSearchOwnApiKeys && (kuzzleStore.currentEnvironment?.backendMajorVersion ?? 0) > 1,
+);
 
 async function logout(): Promise<void> {
   try {

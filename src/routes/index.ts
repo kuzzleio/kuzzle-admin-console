@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 
 import PageNotFound from '../components/404.vue';
 import ApiAction from '../components/ApiAction.vue';
+import MyApiKeys from '../components/ApiKeys/MyApiKeys.vue';
 import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage.vue';
 import SelectEnvironmentPage from '../components/Common/Environments/SelectEnvironmentPage.vue';
 import ConnectionAwareContainer from '../components/ConnectionAwareContainer.vue';
@@ -167,6 +168,11 @@ export default function createRoutes(log: Logger) {
                 path: '/api-action',
                 name: 'ApiAction',
                 component: ApiAction,
+              },
+              {
+                path: '/api-keys',
+                name: 'MyApiKeys',
+                component: MyApiKeys,
               },
             ],
           },

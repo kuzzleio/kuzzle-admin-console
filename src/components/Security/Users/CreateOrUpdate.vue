@@ -1,9 +1,21 @@
 <template>
   <div class="UserUpdate mx-auto w-full max-w-6xl px-4 pb-12">
     <div class="UserUpdate--container">
-      <Headline v-if="!!id">
-        Edit user - <span class="code">{{ route.params.id }}</span>
-      </Headline>
+      <div v-if="!!id" class="flex flex-wrap items-start justify-between gap-4">
+        <Headline>
+          Edit user - <span class="code">{{ route.params.id }}</span>
+        </Headline>
+        <Button
+          v-if="showApiKeys"
+          :as="RouterLink"
+          data-cy="UserUpdate-apiKeys"
+          :to="{ name: 'SecurityUsersApiKeys', params: { id } }"
+          variant="outline"
+        >
+          <i class="fa fa-key" aria-hidden="true" />
+          API keys
+        </Button>
+      </div>
       <Headline v-else> Create a new user </Headline>
 
       <Notice />
@@ -82,7 +94,7 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { helpers, not } from '@vuelidate/validators';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 import MainSpinner from '../../Common/MainSpinner.vue';
 import Headline from '../../Materialize/Headline.vue';
@@ -128,6 +140,11 @@ const strategies = ref<string[]>([]);
 const credentialsMapping = ref<Record<string, string[]>>({});
 const customContent = ref('{}');
 const customContentMapping = ref<Record<string, unknown>>({});
+// Les clés d'API n'existent qu'à partir de Kuzzle 2 (ADR-0070).
+const showApiKeys = computed(
+  () =>
+    authStore.canSearchApiKeys && (kuzzleStore.currentEnvironment?.backendMajorVersion ?? 0) > 1,
+);
 
 // Les identifiants ne sont pas validés ici : leur forme dépend de la stratégie
 // d'authentification, et c'est Kuzzle qui les refuse à l'enregistrement.

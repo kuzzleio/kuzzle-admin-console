@@ -3,6 +3,7 @@ import ProfilesPage from '@/components/Security/Profiles/Page.vue';
 import ProfilesUpdate from '@/components/Security/Profiles/Update.vue';
 import RolesCreateOrUpdate from '@/components/Security/Roles/CreateOrUpdate.vue';
 import RolesPage from '@/components/Security/Roles/Page.vue';
+import UsersApiKeys from '@/components/Security/Users/ApiKeys.vue';
 import UsersCreateOrUpdate from '@/components/Security/Users/CreateOrUpdate.vue';
 import UsersEditCustomMapping from '@/components/Security/Users/EditCustomMapping.vue';
 import UsersPage from '@/components/Security/Users/Page.vue';
@@ -39,6 +40,15 @@ export default [
       section: 'users',
     },
     component: UsersCreateOrUpdate,
+    props: (route) => ({ id: route.params.id }),
+  },
+  {
+    path: '/security/users/:id/api-keys',
+    name: 'SecurityUsersApiKeys',
+    meta: {
+      section: 'users',
+    },
+    component: UsersApiKeys,
     props: (route) => ({ id: route.params.id }),
   },
   {
