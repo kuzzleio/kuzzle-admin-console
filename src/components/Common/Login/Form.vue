@@ -207,17 +207,23 @@ async function loginWithStrategy(strategy: string): Promise<void> {
     });
 
     // Les en-têtes de la réponse d'une stratégie OpenID ne sont pas dans le
-    // type du SDK : ils sont lus tels quels, et un absent vaut `'undefined'`,
-    // comme avant.
+    // type du SDK. Sans l'un ou l'autre, on n'écrit pas `'undefined'` comme
+    // `sessionId` et on ne redirige pas vers `undefined` (ADR-0064).
     const headers =
       response && 'headers' in response && typeof response.headers === 'object'
         ? (response.headers ?? {})
         : {};
-    localStorage.setItem('openid-sessionId', String(Reflect.get(headers, strategy)));
-    globalThis.location.href = String(Reflect.get(headers, 'location'));
+    const sessionId: unknown = Reflect.get(headers, strategy);
+    const location: unknown = Reflect.get(headers, 'location');
+    if (typeof sessionId !== 'string' || !sessionId || typeof location !== 'string' || !location) {
+      throw new Error(`the ${strategy} strategy did not return a session to open`);
+    }
+
+    kuzzleStore.updateOpenidSessionIdCurrentEnvironment(sessionId);
+    globalThis.location.href = location;
   } catch (err) {
     error.value = caught(err).message;
-    localStorage.removeItem('openid-sessionId');
+    kuzzleStore.updateOpenidSessionIdCurrentEnvironment(null);
   }
 }
 

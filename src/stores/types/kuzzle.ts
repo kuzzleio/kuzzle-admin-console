@@ -19,6 +19,9 @@ export interface Environment {
   // Absent tant qu'aucune session n'a été ouverte, `null` après une
   // déconnexion (`updateTokenCurrentEnvironment(null)`).
   token?: string | null;
+  // `sessionId` OpenID (Keycloak) de la session, absent pour une session
+  // locale : il rouvre la session et rafraîchit le token (ADR-0064).
+  openidSessionId?: string | null;
 }
 
 export interface KuzzleState {

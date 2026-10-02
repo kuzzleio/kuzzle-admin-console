@@ -5,6 +5,11 @@ export const antiGlitchOverlayTimeout = 900;
 export const LS_ENVIRONMENTS = 'environments';
 export const LS_LAST_ENV = 'lastEnv';
 export const SS_CURRENT_ENV = 'currentEnv';
+// Ancienne clé du `sessionId` OpenID, commune à tous les environnements :
+// supprimée au chargement, sans reprise (ADR-0064).
+export const LS_LEGACY_OPENID_SESSION_ID = 'openid-sessionId';
+// Les champs de session d'un environnement : ni exportés, ni importés.
+export const ENVIRONMENT_SESSION_FIELDS = ['token', 'openidSessionId'] as const;
 
 export const NO_ADMIN_WARNING_HOSTS = ['localhost', '127.0.0.1'];
 

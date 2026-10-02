@@ -67,6 +67,7 @@
 
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch } from 'vue';
+import { omit } from 'lodash';
 import { useRouter } from 'vue-router';
 
 import { Alert } from '@/components/ui/alert';
@@ -84,6 +85,7 @@ import { Label } from '@/components/ui/label';
 import { logger } from '@/lib/logger';
 import { useKuzzleStore } from '@/stores';
 import type { Environment } from '@/stores/types/kuzzle';
+import { ENVIRONMENT_SESSION_FIELDS } from '@/utils';
 
 const props = withDefaults(
   defineProps<{
@@ -142,9 +144,11 @@ async function importEnv(): Promise<void> {
   }
   for (const name in env.value) {
     try {
+      // Un fichier d'environnements ne transporte pas de session : un token
+      // importé l'ouvrirait sans identifiants (ADR-0064).
       kuzzleStore.createEnvironment({
         id: name,
-        environment: env.value[name],
+        environment: omit(env.value[name], ENVIRONMENT_SESSION_FIELDS),
       });
     } catch (e) {
       logger.error(e);
