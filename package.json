@@ -34,7 +34,7 @@
     "kuzzle-sdk-v6": "npm:kuzzle-sdk@6.2.8",
     "kuzzle-sdk-v7": "npm:kuzzle-sdk@^7.15.0",
     "leaflet": "1.9.4",
-    "lodash": "4.17.21",
+    "lodash": "4.18.1",
     "pinia": "3.0.4",
     "reka-ui": "^2.10.5",
     "tailwind-merge": "^3.7.0",
@@ -80,5 +80,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/kuzzleio/kuzzle-admin-console.git"
+  },
+  "overrides": {
+    "ws@^8.0.0": "^8.22.0"
   }
 }

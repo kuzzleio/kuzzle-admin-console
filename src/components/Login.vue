@@ -35,7 +35,7 @@
           />
         </div>
 
-        <login-form :on-login="onLogin" />
+        <login-form @login="onLogin" />
       </CardContent>
     </Card>
   </div>
@@ -66,12 +66,6 @@ const router = useRouter();
 const displayNoAdminWarning = computed(() => !authStore.adminAlreadyExists);
 
 function onLogin(): void {
-  // Set the body overflow to visible because the login modal set it to 'hidden'.
-  // After login, the index route is pushed to view router and the body overflow is
-  // not set to his original state
-  // see src/components/Materialize/Modale.vue#62
-  window.document.body.style.overflow = 'visible';
-
   if (routingStore.routeBeforeRedirect) {
     const route = routingStore.routeBeforeRedirect;
     routingStore.routeBeforeRedirect = undefined;

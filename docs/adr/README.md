@@ -84,6 +84,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0060](0060-composition-api-par-domaine.md) | La Composition API, un domaine par lot, à comportement constant : conventions communes, `useToast()`, `defineExpose`, verrou ESLint au dernier lot | Acceptée |
 | [0061](0061-noimplicitany-reste-a-false.md) | `noImplicitAny` reste à `false` : `@types/lodash` et composants sans `any` implicite, services et stores laissés en l'état | Acceptée |
 | [0062](0062-dates-locales-avec-decalage.md) | Dates des documents en heure locale, avec leur décalage | Acceptée |
+| [0063](0063-npm-audit-chaine-webpack-du-sdk-v6-acceptee.md) | `npm audit` : corriger ce qui atteint le bundle, accepter la chaîne webpack 4 du SDK v6 | Acceptée |
 
 ## Gabarit
 

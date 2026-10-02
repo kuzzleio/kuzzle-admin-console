@@ -99,12 +99,9 @@ import vFocus from '@/directives/focus.directive';
 import { caught } from '@/lib/errors';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 
-const props = withDefaults(
-  defineProps<{
-    onLogin?: () => void | Promise<void>;
-  }>(),
-  { onLogin: () => {} },
-);
+const emit = defineEmits<{
+  login: [];
+}>();
 
 const authStore = useAuthStore();
 const kuzzleStore = useKuzzleStore();
@@ -128,7 +125,7 @@ async function login(): Promise<void> {
       password: password.value,
     });
 
-    props.onLogin(); // TODO change this to $emit
+    emit('login');
   } catch (err) {
     const { field, id, message } = caught(err);
     if (
@@ -157,7 +154,7 @@ async function loginAsAnonymous(): Promise<void> {
   }
   try {
     await authStore.setSession('anonymous');
-    await props.onLogin();
+    emit('login');
   } catch (err) {
     error.value = caught(err).message;
   }

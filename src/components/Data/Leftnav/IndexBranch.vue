@@ -205,8 +205,7 @@ async function fetchCollections(): Promise<void> {
 }
 
 function toggleBranch(): void {
-  // TODO This state should be one day persistent across page refreshes
-  // NJE edit: not today...
+  // L'état ouvert ou fermé ne survit pas à un rechargement de la page.
   open.value = !open.value;
 }
 

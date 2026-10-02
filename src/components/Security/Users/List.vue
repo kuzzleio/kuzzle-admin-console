@@ -209,7 +209,6 @@ async function fetchDocuments(): Promise<void> {
     size: paginationSize.value,
   };
 
-  // TODO: refactor how search is done
   // Execute search with corresponding searchQuery
   try {
     /*

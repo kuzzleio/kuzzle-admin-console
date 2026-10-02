@@ -6,7 +6,7 @@
 > Mettre à jour ce fichier fait partie de la definition of done de **chaque** PR
 > de migration. Un tableau de bord faux est pire que pas de tableau de bord.
 
-**Dernière mise à jour** : 2026-10-01 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
+**Dernière mise à jour** : 2026-10-02 · **Phase courante** : 4 — nettoyage : shadcn-vue, Composition API
 >
 > **Branche du chantier** : `5-dev`, déployée sur console-v5.kuzzle.io
 > ([ADR-0030](adr/0030-branche-5-dev-et-deploiement-console-v5.md)). `4-dev` est
@@ -945,6 +945,9 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
   - [x] Technique, lot 1 : code mort et restes de Vue 2, à comportement constant — 18 exports morts de `collectionHelper` et `filterManager`, `config/schemaMapping.ts`, `utils.wait`, `LIST_VIEW_BOXES`, les shims `*.vue` et JSX de Vue 2, cinq options de `tsconfig` sans objet (`allowJs`, `jsx`, `importHelpers`, `experimentalDecorators`, `scripthost`), `file-loader` et `ts-mock-imports` ; `noImplicitAny` passe de 208 à 165 erreurs
   - [x] Technique, lot 2 : `@types/lodash`, composants sans `any` implicite ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md)) — `Filter` devient une classe générique, `pushQuery` et `dateFromTimestamp` sont typés ; la liste des collections se resynchronise de nouveau ([G-126](#g-126)) ; `noImplicitAny: true` donnerait 113 erreurs, aucune dans un composant : `filterManager.ts` 37, `kuzzleWrapper-v1.ts` 31, `stores/auth.ts` 11, `kuzzleWrapper-v2.ts` 8, routes 13, `validators.ts` 6, autres services 7
   - [x] Technique, lot 3 : restes relevés au lot 1 — `manifest.json` retiré avec son `<link>` (resté à la racine, jamais copié dans le build : une 404 en production ; ses icônes visaient un `static/favicon/` disparu), le type de `Page.vue` importé de `kuzzle-sdk-v7` et non de `kuzzle-sdk` (non déclaré, présent par `kepler-companion`), `plugins/logger.ts` déplacé en `lib/logger.ts`
+  - [x] Technique, lot 4 : les six `TODO` de `src/` — `Login/Form.vue` émet `login` au lieu d'appeler une prop `onLogin` ; `Login.vue` ne force plus `body.style.overflow` après connexion (contournement de #426 pour une modale Materialize disparue, le verrou de défilement de reka-ui se rétablit seul au démontage) ; les quatre autres, des souhaits sans suite, deviennent des constats. `noImplicitAny` reste à `false` ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md))
+  - [x] Sécurité, lot 1 : `npm audit` ([ADR-0063](adr/0063-npm-audit-chaine-webpack-du-sdk-v6-acceptee.md)) — de 29 vulnérabilités à 16, toutes dans la chaîne `webpack` 4 que `kuzzle-sdk-v6` déclare sans l'utiliser ; `lodash` 4.18.1 (le seul paquet vulnérable empaqueté), `npm audit fix` sans `--force` (`kuzzle-sdk-v7` 7.18.0), `override` de `ws` 8 en ^8.22.0
+  - [x] Sécurité, lot 2 : surfaces d'injection — aucun `v-html` ni `innerHTML` dans `src/` ; `JsonTree` ne fait un lien que d'une valeur `http(s)://` ; Ace, `vue-sonner` et les marqueurs Leaflet rendent du texte ; les requêtes d'API Action, la configuration des vues et les environnements relus du `localStorage` ne passent que par `JSON.parse` et l'interpolation de Vue ; les filtres de l'URL sont réduits aux clés connues (`_.pick`). Un défaut trouvé et corrigé : ApexCharts écrivait le nom des séries — un nom de champ du mapping — en `innerHTML` ([G-129](#g-129)), échappé dans `ApexChart`, spec ajoutée à `chartView`
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
 ---
@@ -2864,6 +2867,17 @@ Gabarit à copier :
 
   Le réglage vit dans le conteneur ES et disparaît au `down -v` suivant : il
   faut le remettre après chaque recréation de la stack.
+- **Variante en fin de suite (2026-10-02)** : la stack est neuve et démarre,
+  mais le disque monte pendant la suite jusqu'à 90 %. Cette fois, seules les
+  **trois dernières** specs échouent (`search`, `treeview`, `watch`), dans leur
+  `beforeEach`, sur `POST /testindex/_create` → `412 index_already_exists`,
+  juste après un `_resetDatabase` qui a répondu 200. Trois specs ne collent pas
+  à la signature « beaucoup de specs » : c'est la place disque qui tranche
+  (`_cat/allocation`). Les stacks d'autres projets qui tournent dans la même VM
+  Docker la remplissent sans que rien ne le signale. `docker builder prune -f`
+  a rendu 1,5 Go (de 90 % à 82 %), assez pour repasser sous le *low watermark*
+  (85 %). La place des images inutilisées (`docker image prune -a`) appartient
+  aussi aux autres projets : demander avant de la récupérer.
 - **Ref** : [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)
 
 #### G-061 — Le drag de `sortablejs` ne se pilote pas depuis Cypress
@@ -4214,6 +4228,57 @@ Gabarit à copier :
   un backend saturé.
 - **Ref** : [#965](https://github.com/kuzzleio/kuzzle-admin-console/issues/965).
 
+#### G-128 — Le découpage du bundle dépendait du chemin du checkout
+
+- **Contexte** : critère 8, report de `lodash` 4.18.1 sur `4-dev` dans un
+  worktree nommé `kac-4dev-lodash`.
+- **Symptôme** : 17/17 specs en échec, chacune sur
+  `Cannot read properties of undefined (reading 'startsWith')`, levé par le
+  chunk `bootstrap` (`Vue.version.startsWith`, dans bootstrap-vue). Le même
+  commit passe en CI, et passe aussi en local une fois le worktree renommé.
+- **Cause** : `manualChunks` classait chaque module avec
+  `id.includes('ace')`, `includes('lodash')`, `includes('vue')`… sur son
+  **chemin absolu**. Sous `…/kac-4dev-lodash/`, tous les modules, Vue compris,
+  partaient dans le chunk `lodash`, et `bootstrap` lisait Vue avant que ce
+  chunk l'ait défini. N'importe quel chemin qui contient `ace` (`~/workspace/…`,
+  `/home/grace/…`) déclenche la même chose. Même sans ça, `includes('vue')`
+  attrapait chaque `.vue` de `src/` : sur `5-dev`, le chunk `vue` contenait
+  449 modules de la console, et le cœur de Vue était dans `vendor`.
+- **Solution** : `vite.config.ts` déduit le paquet du dernier segment
+  `node_modules/` d'un module (`packageOf`) et passe par
+  `output.codeSplitting.groups` de rolldown, avec des priorités. Le
+  `manualChunks` de compatibilité emporte les dépendances de chaque groupe
+  dans l'ordre de déclaration, et l'adaptateur Leaflet y entraînait le cœur de
+  Vue dans `charts-maps`. Le code de la console n'est plus capturé par aucun
+  groupe. Sur `4-dev`, seul l'ancrage sur le nom de paquet est porté.
+  Vérifié depuis un worktree `…/kac-workspace-lodash-vue/` : l'ancienne
+  configuration y produit un seul chunk, la nouvelle des fichiers aux mêmes
+  empreintes que depuis le dépôt principal.
+- **À retenir** : un échec total, en local seulement, sur une erreur
+  d'initialisation de bibliothèque se lit d'abord comme un problème de
+  **chemin**, pas de code. Rejouer depuis un autre répertoire avant d'ouvrir
+  le diff.
+
+#### G-129 — ApexCharts exécutait un nom de champ du mapping
+
+- **Contexte** : critère 8, revue des surfaces d'injection.
+- **Symptôme** : un champ nommé `<img src=x onerror=…>` (Kuzzle et
+  Elasticsearch l'acceptent) s'exécute chez quiconque l'ajoute à la vue
+  *Time series* : la légende reste vide, une `<img>` apparaît dans le
+  graphique. Le nom du champ est affiché correctement partout ailleurs.
+- **Cause** : ApexCharts écrit le nom des séries en `innerHTML`, dans la
+  légende (`Legend.js`) et dans l'info-bulle (`tooltip/Labels.js`). La vue
+  passait le nom du champ tel quel. Le défaut existe aussi en v4
+  (`vue-apexcharts`, `apexcharts` 3.53).
+- **Solution** : `Common/ApexChart.vue` pose par défaut un `legend.formatter`
+  et un `tooltip.y.title.formatter` qui échappent le nom (`lodash/escape`),
+  aussi sur `updateOptions()`. Un appelant qui fournit son propre `formatter`
+  en reprend la charge. La spec `chartView` vérifie le texte de la légende et
+  l'absence d'exécution.
+- **À retenir** : l'interpolation de Vue ne protège que ce que Vue rend. Une
+  bibliothèque qui reçoit une chaîne venue des données (graphiques, cartes,
+  info-bulles) se lit avec `grep innerHTML` dans ses sources.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce
@@ -4341,3 +4406,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-29 | Composition API en 14 lots, un domaine par lot, à comportement constant ; conventions communes, verrou ESLint au dernier lot | [ADR-0060](adr/0060-composition-api-par-domaine.md) |
 | 2026-10-01 | `noImplicitAny` reste à `false` : `@types/lodash` et composants sans `any` implicite ; services, stores et routes gardent les leurs | [ADR-0061](adr/0061-noimplicitany-reste-a-false.md) |
 | 2026-10-01 | Dates des documents en heure locale suivie de leur décalage (`GMT+2`), plutôt qu'en UTC (#1001) | [ADR-0062](adr/0062-dates-locales-avec-decalage.md) |
+| 2026-10-02 | `npm audit` : `lodash` 4.18.1, correctifs non cassants, `override` de `ws` 8 ; la chaîne `webpack` 4 de `kuzzle-sdk-v6`, jamais exécutée, est acceptée | [ADR-0063](adr/0063-npm-audit-chaine-webpack-du-sdk-v6-acceptee.md) |
