@@ -17,6 +17,9 @@ export interface Environment {
   backendMajorVersion: number;
   hideAdminWarning: boolean;
   token: string;
+  // `sessionId` OpenID (Keycloak) de la session, absent pour une session
+  // locale : il rouvre la session et rafraîchit le token.
+  openidSessionId?: string | null;
 }
 
 export interface KuzzleState {
