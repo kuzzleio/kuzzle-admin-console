@@ -154,6 +154,18 @@ export default {
           type: 'line',
         },
         colors: [],
+        // ApexCharts écrit le nom des séries en `innerHTML` (légende,
+        // info-bulle) : c'est un nom de champ du mapping, il est échappé.
+        legend: {
+          formatter: (seriesName) => _.escape(seriesName),
+        },
+        tooltip: {
+          y: {
+            title: {
+              formatter: (seriesName) => _.escape(seriesName),
+            },
+          },
+        },
         xaxis: {
           categories: [],
         },
