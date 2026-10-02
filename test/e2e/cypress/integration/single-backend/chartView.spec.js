@@ -147,6 +147,33 @@ describe('Chart view', function() {
     })
   })
 
+  // ApexCharts écrit le nom des séries en `innerHTML` (légende, info-bulle) :
+  // un nom de champ du mapping s'exécutait chez qui ouvrait le graphique.
+  it('should render a field name as text, not as HTML', function() {
+    const htmlField = '<img src=x onerror=window.__xss=1>'
+
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
+      properties: { [htmlField]: { type: 'integer' } }
+    })
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/second/_create?refresh=wait_for`,
+      { battery: 40, [htmlField]: 3, payloadDate: 1607350151070 }
+    )
+    openChartView()
+
+    cy.selectOption('[data-cy="timeseriesView-dateSelector"]', 'payloadDate')
+    addValue('battery')
+    addValue(htmlField)
+
+    cy.get('[data-cy="timeSeries-chart"] .apexcharts-legend-text')
+      .should('have.length', 2)
+      .last()
+      .should('have.text', htmlField)
+    cy.get('[data-cy="timeSeries-chart"] img').should('not.exist')
+    cy.window().its('__xss').should('be.undefined')
+  })
+
   it('should not offer the chart view on a collection without any integer field', function() {
     const textOnlyCollection = 'textonlycollection'
 

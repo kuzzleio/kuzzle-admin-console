@@ -947,6 +947,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
   - [x] Technique, lot 3 : restes relevés au lot 1 — `manifest.json` retiré avec son `<link>` (resté à la racine, jamais copié dans le build : une 404 en production ; ses icônes visaient un `static/favicon/` disparu), le type de `Page.vue` importé de `kuzzle-sdk-v7` et non de `kuzzle-sdk` (non déclaré, présent par `kepler-companion`), `plugins/logger.ts` déplacé en `lib/logger.ts`
   - [x] Technique, lot 4 : les six `TODO` de `src/` — `Login/Form.vue` émet `login` au lieu d'appeler une prop `onLogin` ; `Login.vue` ne force plus `body.style.overflow` après connexion (contournement de #426 pour une modale Materialize disparue, le verrou de défilement de reka-ui se rétablit seul au démontage) ; les quatre autres, des souhaits sans suite, deviennent des constats. `noImplicitAny` reste à `false` ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md))
   - [x] Sécurité, lot 1 : `npm audit` ([ADR-0063](adr/0063-npm-audit-chaine-webpack-du-sdk-v6-acceptee.md)) — de 29 vulnérabilités à 16, toutes dans la chaîne `webpack` 4 que `kuzzle-sdk-v6` déclare sans l'utiliser ; `lodash` 4.18.1 (le seul paquet vulnérable empaqueté), `npm audit fix` sans `--force` (`kuzzle-sdk-v7` 7.18.0), `override` de `ws` 8 en ^8.22.0
+  - [x] Sécurité, lot 2 : surfaces d'injection — aucun `v-html` ni `innerHTML` dans `src/` ; `JsonTree` ne fait un lien que d'une valeur `http(s)://` ; Ace, `vue-sonner` et les marqueurs Leaflet rendent du texte ; les requêtes d'API Action, la configuration des vues et les environnements relus du `localStorage` ne passent que par `JSON.parse` et l'interpolation de Vue ; les filtres de l'URL sont réduits aux clés connues (`_.pick`). Un défaut trouvé et corrigé : ApexCharts écrivait le nom des séries — un nom de champ du mapping — en `innerHTML` ([G-129](#g-129)), échappé dans `ApexChart`, spec ajoutée à `chartView`
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
 ---
@@ -4257,6 +4258,26 @@ Gabarit à copier :
   d'initialisation de bibliothèque se lit d'abord comme un problème de
   **chemin**, pas de code. Rejouer depuis un autre répertoire avant d'ouvrir
   le diff.
+
+#### G-129 — ApexCharts exécutait un nom de champ du mapping
+
+- **Contexte** : critère 8, revue des surfaces d'injection.
+- **Symptôme** : un champ nommé `<img src=x onerror=…>` (Kuzzle et
+  Elasticsearch l'acceptent) s'exécute chez quiconque l'ajoute à la vue
+  *Time series* : la légende reste vide, une `<img>` apparaît dans le
+  graphique. Le nom du champ est affiché correctement partout ailleurs.
+- **Cause** : ApexCharts écrit le nom des séries en `innerHTML`, dans la
+  légende (`Legend.js`) et dans l'info-bulle (`tooltip/Labels.js`). La vue
+  passait le nom du champ tel quel. Le défaut existe aussi en v4
+  (`vue-apexcharts`, `apexcharts` 3.53).
+- **Solution** : `Common/ApexChart.vue` pose par défaut un `legend.formatter`
+  et un `tooltip.y.title.formatter` qui échappent le nom (`lodash/escape`),
+  aussi sur `updateOptions()`. Un appelant qui fournit son propre `formatter`
+  en reprend la charge. La spec `chartView` vérifie le texte de la légende et
+  l'absence d'exécution.
+- **À retenir** : l'interpolation de Vue ne protège que ce que Vue rend. Une
+  bibliothèque qui reçoit une chaîne venue des données (graphiques, cartes,
+  info-bulles) se lit avec `grep innerHTML` dans ses sources.
 
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 

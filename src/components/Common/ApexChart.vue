@@ -6,6 +6,7 @@
 import { onBeforeUnmount, onMounted, ref, toRaw, watch } from 'vue';
 import ApexCharts, { type ApexOptions } from 'apexcharts';
 import cloneDeep from 'lodash/cloneDeep';
+import escape from 'lodash/escape';
 
 /*
  * ApexChart — le graphique d'ApexCharts, sans wrapper (ADR-0059).
@@ -20,6 +21,10 @@ import cloneDeep from 'lodash/cloneDeep';
  * l'objet brut (`toRaw`), sans quoi le moteur déclencherait lui-même les
  * observateurs de Vue. `cloneDeep` et non `structuredClone`, qui refuse les
  * fonctions (`formatter`, `events`).
+ *
+ * Le moteur écrit le nom des séries en `innerHTML`, dans la légende et dans
+ * l'info-bulle. Ce nom vient des données (un nom de champ du mapping) : il
+ * est échappé ici, sauf si l'appelant fournit son propre `formatter`.
  */
 type Series = NonNullable<ApexOptions['series']>;
 type ChartType = NonNullable<NonNullable<ApexOptions['chart']>['type']>;
@@ -33,8 +38,30 @@ const props = defineProps<{
 const container = ref<HTMLElement | null>(null);
 let chart: ApexCharts | null = null;
 
+const seriesNameAsText = (seriesName: string): string => escape(seriesName);
+
+type TooltipY = NonNullable<NonNullable<ApexOptions['tooltip']>['y']>;
+type SeriesTooltipY = Exclude<TooltipY, unknown[]>;
+
+const escapedSeriesTooltipY = (y: SeriesTooltipY | undefined): SeriesTooltipY => ({
+  ...y,
+  title: { formatter: seriesNameAsText, ...y?.title },
+});
+
+/* `tooltip.y` est un objet, ou un tableau d'objets, un par série. */
+const escapedTooltipY = (y: TooltipY | undefined): TooltipY =>
+  Array.isArray(y) ? y.map(escapedSeriesTooltipY) : escapedSeriesTooltipY(y);
+
+function withEscapedSeriesNames(options: ApexOptions): ApexOptions {
+  return {
+    ...options,
+    legend: { formatter: seriesNameAsText, ...options.legend },
+    tooltip: { ...options.tooltip, y: escapedTooltipY(options.tooltip?.y) },
+  };
+}
+
 function config(): ApexOptions {
-  const options = cloneDeep(toRaw(props.options));
+  const options = withEscapedSeriesNames(cloneDeep(toRaw(props.options)));
 
   return {
     ...options,
@@ -69,6 +96,7 @@ onBeforeUnmount(() => {
 });
 
 defineExpose({
-  updateOptions: (options: ApexOptions) => chart?.updateOptions(cloneDeep(toRaw(options))),
+  updateOptions: (options: ApexOptions) =>
+    chart?.updateOptions(withEscapedSeriesNames(cloneDeep(toRaw(options)))),
 });
 </script>
