@@ -89,6 +89,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0065](0065-csp-et-en-tetes-de-securite.md) | Une CSP et des en-têtes de sécurité servis par CloudFront, validés par les specs | Acceptée |
 | [0066](0066-deploiement-du-build-teste-sans-interruption.md) | Déployer le build que les specs ont testé, sans interruption de service | Acceptée |
 | [0067](0067-workflows-jeton-en-lecture-actions-epinglees.md) | Workflows : un jeton en lecture, des actions épinglées, une seule définition des checks | Acceptée |
+| [0068](0068-image-docker-nginx-stable-sans-root.md) | Une image Docker construite et vérifiée par la CI, nginx stable sans root | Acceptée |
 
 ## Gabarit
 

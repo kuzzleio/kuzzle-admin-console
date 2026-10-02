@@ -18,13 +18,14 @@ We host a running Admin Console [here](http://console.kuzzle.io) (or if you're u
 
 ## Docker image
 
-An official Docker image is available on Dockerhub, to use it locally run:
+To build the image from this repository and run it:
 
 ```sh
-docker run -it -p 8080:80 kuzzleio/admin-console
+docker build --build-arg COMMIT_HASH="$(git rev-parse --short HEAD)" -t kuzzleio/admin-console .
+docker run --rm -p 8080:8080 kuzzleio/admin-console
 ```
 
-This will expose the Admin Console on [http://localhost:8080](http://localhost:8080), you're free to adapt the exposed port to your needs.
+This will expose the Admin Console on [http://localhost:8080](http://localhost:8080), you're free to adapt the exposed port to your needs. The image runs nginx as a non-root user and listens on port **8080** inside the container. It sends the same Content-Security-Policy and caching headers as the hosted console, but no HSTS: put it behind your own TLS reverse proxy and decide there.
 
 ## Local build
 
