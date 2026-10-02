@@ -45,6 +45,18 @@
 
       <div class="flex flex-nowrap items-center">
         <Button
+          v-if="showApiKeys"
+          :as="RouterLink"
+          :aria-label="`API keys of ${document.id}`"
+          :data-cy="`UserListItem-apiKeys--${document.id}`"
+          size="icon"
+          title="API keys"
+          :to="{ name: 'SecurityUsersApiKeys', params: { id: document.id } }"
+          variant="ghost"
+        >
+          <i class="fa fa-key" aria-hidden="true" />
+        </Button>
+        <Button
           class="UserListItem-update"
           :data-cy="`UserListItem-update--${document.id}`"
           :disabled="!authStore.canEditUser"
@@ -79,11 +91,12 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { RouterLink } from 'vue-router';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 import type { UserDocument } from './types';
 
 import JsonTree from '@/components/Common/JsonTree/JsonTree.vue';
@@ -100,6 +113,7 @@ const emit = defineEmits<{
 }>();
 
 const authStore = useAuthStore();
+const kuzzleStore = useKuzzleStore();
 
 const expanded = ref(false);
 const checked = ref(false);
@@ -110,6 +124,11 @@ const profileList = computed(() => {
   }
   return [...props.document.profileIds].sort();
 });
+// Les clés d'API n'existent qu'à partir de Kuzzle 2 (ADR-0070).
+const showApiKeys = computed(
+  () =>
+    authStore.canSearchApiKeys && (kuzzleStore.currentEnvironment?.backendMajorVersion ?? 0) > 1,
+);
 const checkboxId = computed(() => `checkbox-${props.document.id}`);
 const localStrategyUsername = computed(() => {
   const local = props.document.credentials?.local;

@@ -99,6 +99,7 @@ jobs:
         spec:
           - login
           - users
+          - apiKeys
           - roles
           - profiles
           - resetpassword
