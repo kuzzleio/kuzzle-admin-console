@@ -213,8 +213,12 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 
-const url = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-const attribution = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+// L'adresse que recommande OpenStreetMap, en HTTPS et sans sous-domaines
+// `{s}` : `http://{s}.tile.osm.org` chargeait des tuiles en clair dans une
+// page servie en HTTPS. C'est l'origine qu'autorise `img-src` (ADR-0065).
+const url = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const attribution =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 /*
  * Les options d'une icône de marqueur. `L.Icon.extend` en faisait deux

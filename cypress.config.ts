@@ -1,4 +1,4 @@
-import { defineConfig } from 'cypress'
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
   fixturesFolder: 'test/e2e/cypress/fixtures',
@@ -24,6 +24,20 @@ export default defineConfig({
   // frappes sous charge (G-001), et la montée de version ne doit pas changer
   // ce que les specs font.
   keystrokeDelay: 10,
+  // Par défaut, Cypress retire l'en-tête CSP de l'application : les specs ne
+  // verraient pas la politique que `vite preview` sert (ADR-0065). `true` ne
+  // suffit pas : il garde la politique mais en retire `script-src`, la
+  // directive qui compte. La liste complète la garde entière, Cypress ajoutant
+  // un nonce à ses propres scripts. Le support fait échouer tout test qui
+  // déclenche une violation.
+  experimentalCspAllowList: [
+    'default-src',
+    'script-src',
+    'script-src-elem',
+    'form-action',
+    'child-src',
+    'frame-src',
+  ],
   retries: {
     runMode: 2,
     openMode: 0,
@@ -35,4 +49,4 @@ export default defineConfig({
     supportFile: 'test/e2e/cypress/support/index.js',
     experimentalRunAllSpecs: true,
   },
-})
+});

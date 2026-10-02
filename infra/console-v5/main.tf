@@ -127,6 +127,52 @@ resource "aws_cloudfront_cache_policy" "site" {
   }
 }
 
+# En-têtes de sécurité (ADR-0065). La CSP est lue dans `infra/csp.json`, le
+# fichier que `vite preview` sert aussi : les specs Cypress valident la même
+# politique que celle qui part en ligne. `override = true` partout : S3 n'en
+# envoie aucun, et l'origine n'a pas à pouvoir les assouplir.
+locals {
+  content_security_policy = join("; ", [
+    for directive, sources in jsondecode(file("${path.module}/../csp.json")) :
+    join(" ", concat([directive], sources))
+  ])
+}
+
+resource "aws_cloudfront_response_headers_policy" "security" {
+  name    = "${replace(var.domain_name, ".", "-")}-security"
+  comment = "En-têtes de sécurité de l'Admin Console (ADR-0065)"
+
+  security_headers_config {
+    content_security_policy {
+      content_security_policy = local.content_security_policy
+      override                = true
+    }
+
+    content_type_options {
+      override = true
+    }
+
+    # Doublon de `frame-ancestors 'none'` pour les navigateurs qui ne lisent
+    # pas la CSP.
+    frame_options {
+      frame_option = "DENY"
+      override     = true
+    }
+
+    referrer_policy {
+      referrer_policy = "strict-origin-when-cross-origin"
+      override        = true
+    }
+
+    # Pas de `includeSubdomains` ni de `preload` : ils engageraient d'autres
+    # domaines que celui-ci.
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      override                   = true
+    }
+  }
+}
+
 resource "aws_cloudfront_distribution" "site" {
   enabled             = true
   is_ipv6_enabled     = true
@@ -158,6 +204,8 @@ resource "aws_cloudfront_distribution" "site" {
     target_origin_id = "s3-website-${var.bucket_name}"
     compress         = true
     cache_policy_id  = aws_cloudfront_cache_policy.site.id
+
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
 
     # ÉCART 3 — staging est en `allow-all`, donc joignable en HTTP en clair.
     # Ouvrir un domaine neuf dans cet état serait une régression gratuite : la

@@ -38,14 +38,18 @@ sans modification de workflow.
 
 ## Ce que ça crée
 
-Huit ressources, calquées sur next-console.kuzzle.io relevé le 2026-09-23 :
+Neuf ressources, calquées sur next-console.kuzzle.io relevé le 2026-09-23 :
 
 - un bucket S3 en **mode site statique**, exposé publiquement par une politique
   de bucket ;
 - une distribution CloudFront dont l'**origine est l'endpoint site statique** de
   S3 (pas l'endpoint REST, pas d'OAC) ;
 - une politique de cache reproduisant les TTL de staging (0 / 300 / 31536000) ;
-- un enregistrement A d'alias dans la zone `kuzzle.io`.
+- un enregistrement A d'alias dans la zone `kuzzle.io` ;
+- une politique d'en-têtes de réponse : CSP, HSTS, `nosniff`, `X-Frame-Options`,
+  `Referrer-Policy` ([ADR-0065](../../docs/adr/0065-csp-et-en-tetes-de-securite.md)).
+  La CSP est lue dans [`../csp.json`](../csp.json), que `vite preview` sert
+  aussi pour que les specs la valident : **la modifier là, jamais ici**.
 
 Rien à faire côté certificat : `kuzzle.io` porte `*.kuzzle.io` en SAN et couvre
 déjà ce sous-domaine. Rien à faire côté IAM non plus : le principal utilisé par
