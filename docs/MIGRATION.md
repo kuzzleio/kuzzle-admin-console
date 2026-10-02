@@ -946,6 +946,7 @@ par PR, validé par les 17 specs contre un build et une stack neuve.
   - [x] Technique, lot 2 : `@types/lodash`, composants sans `any` implicite ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md)) — `Filter` devient une classe générique, `pushQuery` et `dateFromTimestamp` sont typés ; la liste des collections se resynchronise de nouveau ([G-126](#g-126)) ; `noImplicitAny: true` donnerait 113 erreurs, aucune dans un composant : `filterManager.ts` 37, `kuzzleWrapper-v1.ts` 31, `stores/auth.ts` 11, `kuzzleWrapper-v2.ts` 8, routes 13, `validators.ts` 6, autres services 7
   - [x] Technique, lot 3 : restes relevés au lot 1 — `manifest.json` retiré avec son `<link>` (resté à la racine, jamais copié dans le build : une 404 en production ; ses icônes visaient un `static/favicon/` disparu), le type de `Page.vue` importé de `kuzzle-sdk-v7` et non de `kuzzle-sdk` (non déclaré, présent par `kepler-companion`), `plugins/logger.ts` déplacé en `lib/logger.ts`
   - [x] Technique, lot 4 : les six `TODO` de `src/` — `Login/Form.vue` émet `login` au lieu d'appeler une prop `onLogin` ; `Login.vue` ne force plus `body.style.overflow` après connexion (contournement de #426 pour une modale Materialize disparue, le verrou de défilement de reka-ui se rétablit seul au démontage) ; les quatre autres, des souhaits sans suite, deviennent des constats. `noImplicitAny` reste à `false` ([ADR-0061](adr/0061-noimplicitany-reste-a-false.md))
+  - [x] Sécurité, lot 1 : `npm audit` ([ADR-0063](adr/0063-npm-audit-chaine-webpack-du-sdk-v6-acceptee.md)) — de 29 vulnérabilités à 16, toutes dans la chaîne `webpack` 4 que `kuzzle-sdk-v6` déclare sans l'utiliser ; `lodash` 4.18.1 (le seul paquet vulnérable empaqueté), `npm audit fix` sans `--force` (`kuzzle-sdk-v7` 7.18.0), `override` de `ws` 8 en ^8.22.0
 - [ ] 9. Bascule : `master` → `4-stable` sans hébergement, `5-dev` → `master`, console.kuzzle.io en v5
 
 ---
@@ -2865,6 +2866,17 @@ Gabarit à copier :
 
   Le réglage vit dans le conteneur ES et disparaît au `down -v` suivant : il
   faut le remettre après chaque recréation de la stack.
+- **Variante en fin de suite (2026-10-02)** : la stack est neuve et démarre,
+  mais le disque monte pendant la suite jusqu'à 90 %. Cette fois, seules les
+  **trois dernières** specs échouent (`search`, `treeview`, `watch`), dans leur
+  `beforeEach`, sur `POST /testindex/_create` → `412 index_already_exists`,
+  juste après un `_resetDatabase` qui a répondu 200. Trois specs ne collent pas
+  à la signature « beaucoup de specs » : c'est la place disque qui tranche
+  (`_cat/allocation`). Les stacks d'autres projets qui tournent dans la même VM
+  Docker la remplissent sans que rien ne le signale. `docker builder prune -f`
+  a rendu 1,5 Go (de 90 % à 82 %), assez pour repasser sous le *low watermark*
+  (85 %). La place des images inutilisées (`docker image prune -a`) appartient
+  aussi aux autres projets : demander avant de la récupérer.
 - **Ref** : [ADR-0028](adr/0028-valider-les-specs-contre-un-build.md)
 
 #### G-061 — Le drag de `sortablejs` ne se pilote pas depuis Cypress
@@ -4342,3 +4354,4 @@ codebase précis. **Ce ne sont pas des faits constatés** : ils sont à déplace
 | 2026-09-29 | Composition API en 14 lots, un domaine par lot, à comportement constant ; conventions communes, verrou ESLint au dernier lot | [ADR-0060](adr/0060-composition-api-par-domaine.md) |
 | 2026-10-01 | `noImplicitAny` reste à `false` : `@types/lodash` et composants sans `any` implicite ; services, stores et routes gardent les leurs | [ADR-0061](adr/0061-noimplicitany-reste-a-false.md) |
 | 2026-10-01 | Dates des documents en heure locale suivie de leur décalage (`GMT+2`), plutôt qu'en UTC (#1001) | [ADR-0062](adr/0062-dates-locales-avec-decalage.md) |
+| 2026-10-02 | `npm audit` : `lodash` 4.18.1, correctifs non cassants, `override` de `ws` 8 ; la chaîne `webpack` 4 de `kuzzle-sdk-v6`, jamais exécutée, est acceptée | [ADR-0063](adr/0063-npm-audit-chaine-webpack-du-sdk-v6-acceptee.md) |
