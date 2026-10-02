@@ -1,6 +1,6 @@
 # ADR-0064 : Le JWT reste dans le `localStorage`, le `sessionId` OpenID passe par environnement
 
-- **Statut** : Proposée
+- **Statut** : Acceptée
 - **Date** : 2026-10-02
 - **Décideurs** : Ricky
 - **Précise** : le volet *sécurité* du critère 8 d'[ADR-0051](0051-criteres-de-sortie-de-la-v5.md)
@@ -43,8 +43,8 @@ Ce que la relecture a établi :
   l'environnement B : B passe en stratégie `keycloak`, rafraîchit avec le
   `sessionId` de A, et appelle `keycloak:closeSession` à la déconnexion.
 - **Une réponse sans en-tête de stratégie écrit `'undefined'`** dans
-  `openid-sessionId` et redirige vers `undefined` (`String(undefined)`,
-  conservé « comme avant » à la migration).
+  `openid-sessionId`, et sans en-tête `location` redirige vers `undefined`
+  (`String(undefined)`, conservé « comme avant » à la migration).
 - La v4 (`4-dev`) a les mêmes stockages et les mêmes trois défauts.
 
 Le jeton à usage unique de l'export CSV (`Column.vue`, `&jwt=` dans l'URL) est
@@ -58,13 +58,18 @@ hors de cause : il ne sert qu'une fois.
 2. **Le `sessionId` OpenID est rangé dans son environnement**
    (`environments[<id>].openidSessionId`), à côté du token, avec le même cycle
    de vie : effacé à la déconnexion et avec l'environnement. L'ancienne clé
-   `openid-sessionId` est reprise une fois pour l'environnement courant, puis
-   supprimée.
+   `openid-sessionId` est **supprimée au chargement, sans reprise** : rien ne
+   dit à quel environnement elle appartenait, et l'attribuer au courant
+   pourrait lui donner la session Keycloak d'un autre — le défaut même
+   qu'on corrige.
 3. **L'export et l'import ignorent `token` et `openidSessionId`.**
-4. **Pas d'en-tête de stratégie, pas de redirection** : `Login/Form.vue`
-   affiche une erreur au lieu d'écrire `'undefined'`.
+4. **Sans en-tête de stratégie ou sans `location`, pas de redirection** :
+   `Login/Form.vue` affiche une erreur au lieu d'écrire `'undefined'`.
 5. Les points 2 à 4 font un lot de code, avec ses specs (`login`,
-   `environments`), reporté sur `4-dev`.
+   `environments`), reporté sur `4-dev`. Le backend de test n'a pas de
+   stratégie Keycloak : les specs de `login` relèvent les requêtes du SDK au
+   niveau du WebSocket, et y répondent à `auth:login` en stratégie
+   `keycloak`.
 
 ## Conséquences
 
@@ -78,8 +83,11 @@ hors de cause : il ne sert qu'une fois.
 
 ### Négatives
 
-- Le format de `localStorage.environments` gagne un champ, et une reprise de
-  l'ancienne clé est à garder tant que des navigateurs l'ont.
+- Le format de `localStorage.environments` gagne un champ.
+- Une session Keycloak ouverte avant la mise à jour perd son `sessionId` :
+  son JWT, toujours valide, la fait reprendre en stratégie locale. Elle se
+  rafraîchit sans Keycloak, et sa déconnexion n'appelle pas
+  `keycloak:closeSession`. Se reconnecter par Keycloak la remet en ordre.
 
 ### Risques acceptés
 
@@ -88,6 +96,9 @@ hors de cause : il ne sert qu'une fois.
 - Sur un poste partagé, quelqu'un qui ouvre le profil du navigateur dans les
   2 h retrouve la session JWT ; le `sessionId` OpenID, plus longtemps. La
   déconnexion explicite les efface.
+- Supprimer un environnement efface son `sessionId` sans appeler
+  `keycloak:closeSession` : la session reste ouverte chez le fournisseur
+  jusqu'à son expiration. Changer l'hôte d'un environnement fait de même.
 
 ## Alternatives écartées
 

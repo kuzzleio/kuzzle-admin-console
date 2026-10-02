@@ -139,7 +139,7 @@ import {
 import { caught } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { useKuzzleStore } from '@/stores';
-import { formatForDom, sortObject } from '@/utils';
+import { ENVIRONMENT_SESSION_FIELDS, formatForDom, sortObject } from '@/utils';
 import { isValidEnvironment } from '@/validators';
 
 withDefaults(
@@ -167,9 +167,11 @@ const menuOpen = ref(false);
 
 const currentEnvironment = computed(() => kuzzleStore.currentEnvironment);
 const exportUrl = computed((): string => {
-  const envWitoutToken = mapValues(kuzzleStore.environments, (e) => omit(e, 'token'));
+  const envWithoutSession = mapValues(kuzzleStore.environments, (e) =>
+    omit(e, ENVIRONMENT_SESSION_FIELDS),
+  );
 
-  const blob = new Blob([JSON.stringify(envWitoutToken)], {
+  const blob = new Blob([JSON.stringify(envWithoutSession)], {
     type: 'application/json',
   });
 

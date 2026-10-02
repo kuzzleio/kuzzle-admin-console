@@ -200,6 +200,109 @@ describe('Login', function() {
   })
 })
 
+// Sessions OpenID (ADR-0064). Le backend de test n'a pas de stratégie
+// Keycloak : les requêtes du SDK sont relevées au niveau du WebSocket, et
+// `auth:login` en stratégie `keycloak` y reçoit, si on la donne, une réponse
+// avec les en-têtes voulus au lieu de partir vers Kuzzle.
+const isKeycloakLogin = request =>
+  request.controller === 'auth' && request.action === 'login' && request.strategy === 'keycloak'
+
+const watchWebSocket = keycloakHeaders => ({
+  onBeforeLoad(win) {
+    win.__kuzzleRequests = []
+    const send = win.WebSocket.prototype.send
+    win.WebSocket.prototype.send = function(data) {
+      let request
+      try {
+        request = JSON.parse(data)
+      } catch {
+        return send.call(this, data)
+      }
+      win.__kuzzleRequests.push(request)
+
+      if (keycloakHeaders && isKeycloakLogin(request)) {
+        setTimeout(() =>
+          this.onmessage({
+            data: JSON.stringify({
+              room: request.requestId,
+              requestId: request.requestId,
+              status: 200,
+              error: null,
+              result: {},
+              headers: keycloakHeaders
+            })
+          })
+        )
+        return
+      }
+      return send.call(this, data)
+    }
+  }
+})
+
+const storedEnv = win => JSON.parse(win.localStorage.getItem('environments'))[validEnvName]
+
+describe('OpenID session', function() {
+  beforeEach(() => {
+    cy.initLocalEnv(2, null)
+    cy.setCookie('telemetry', 'false')
+  })
+
+  const loginWithKeycloak = () => {
+    cy.get('[data-cy="Login-submitBtn-strategy"]').click()
+    cy.get('[data-cy="Login-submitBtn-strategy-keycloak"]').click()
+  }
+
+  it('Should not reopen the Keycloak session of another environment', () => {
+    cy.then(() => {
+      const environments = JSON.parse(localStorage.getItem('environments'))
+      environments.other = {
+        ...environments[validEnvName],
+        name: 'other',
+        openidSessionId: 'session-of-other'
+      }
+      localStorage.setItem('environments', JSON.stringify(environments))
+    })
+    cy.visit('/', watchWebSocket())
+    cy.get('[data-cy="Login-username"]').should('be.visible')
+    cy.window()
+      .its('__kuzzleRequests')
+      .should(requests => expect(requests.filter(isKeycloakLogin)).to.have.length(0))
+  })
+
+  // On ne sait pas à quel environnement l'ancienne clé appartenait : elle
+  // est supprimée, pas reprise.
+  it('Should drop the OpenID session key shared by all environments', () => {
+    cy.then(() => localStorage.setItem('openid-sessionId', 'legacy-session'))
+    cy.visit('/', watchWebSocket())
+    cy.get('[data-cy="Login-username"]').should('be.visible')
+    cy.window().should(win => {
+      expect(win.localStorage.getItem('openid-sessionId')).to.equal(null)
+      expect(storedEnv(win)).to.not.have.property('openidSessionId')
+      expect(win.__kuzzleRequests.filter(isKeycloakLogin)).to.have.length(0)
+    })
+  })
+
+  it('Should keep the Keycloak session in its environment', () => {
+    cy.visit('/', watchWebSocket({ keycloak: 'session-of-valid', location: '/#/login' }))
+    loginWithKeycloak()
+    cy.window().should(win => {
+      expect(storedEnv(win)).to.include({ openidSessionId: 'session-of-valid' })
+      expect(win.localStorage.getItem('openid-sessionId')).to.equal(null)
+    })
+  })
+
+  // Sans en-tête, la console écrivait `'undefined'` comme `sessionId` et
+  // redirigeait vers `undefined`.
+  it('Should display an error when Keycloak returns no session', () => {
+    cy.visit('/', watchWebSocket({}))
+    loginWithKeycloak()
+    cy.get('.LoginForm-error').should('contain', 'did not return a session to open')
+    cy.url().should('contain', '/#/login').and('not.contain', 'undefined')
+    cy.window().should(win => expect(storedEnv(win).openidSessionId).to.equal(null))
+  })
+})
+
 // Gestion de session (ADR-0057). L'horloge de la page est remplacée par
 // `cy.clock` pour `setInterval` et `Date` seulement : la surveillance du token
 // tourne toutes les 20 s et rafraîchit à 30 s de l'expiration, et les tests

@@ -3,6 +3,29 @@ const fmt = word => {
 }
 
 const backendVersion = 2
+
+// Le contenu du fichier d'export, lu depuis l'URL du lien.
+const readExport = () =>
+  cy.get('[data-cy="export-environments"]').then(
+    anchor =>
+      new Cypress.Promise(resolve => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', anchor.prop('href'), true)
+        xhr.responseType = 'blob'
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            const blob = xhr.response
+            const reader = new FileReader()
+            reader.onload = () => {
+              resolve(reader.result)
+            }
+            reader.readAsText(blob)
+          }
+        }
+        xhr.send()
+      })
+  )
+
 describe('Environments', function() {
   this.beforeEach(() => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
@@ -521,29 +544,85 @@ describe('Import and export environments', function() {
     )
 
     // test file content
-    cy.get('[data-cy="export-environments"]')
-      .then(
-        anchor =>
-          new Cypress.Promise(resolve => {
-            const xhr = new XMLHttpRequest()
-            xhr.open('GET', anchor.prop('href'), true)
-            xhr.responseType = 'blob'
-            xhr.onload = () => {
-              if (xhr.status === 200) {
-                const blob = xhr.response
-                const reader = new FileReader()
-                reader.onload = () => {
-                  resolve(reader.result)
-                }
-                reader.readAsText(blob)
-              }
-            }
-            xhr.send()
-          })
-      )
+    readExport()
       .should(
         'equal',
         `{"${newEnvName}":{"name":"${newEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion},"hideAdminWarning":true},"${secondEnvName}":{"name":"${secondEnvName}","color":"darkblue","host":"localhost","port":7512,"ssl":false,"backendMajorVersion":${backendVersion},"hideAdminWarning":true}}`
       )
+  })
+
+  // Un fichier d'environnements ne transporte pas de session, dans aucun
+  // sens : un token importé l'ouvrait sans identifiants (ADR-0064).
+  it('Should not import the session of an environment', () => {
+    const admin = { username: 'admin', password: 'pass' }
+    cy.request('POST', 'http://localhost:7512/_createFirstAdmin', {
+      content: {},
+      credentials: { local: admin }
+    })
+    cy.request('POST', 'http://localhost:7512/_login/local', admin).then(({ body }) => {
+      const jwt = body.result.jwt
+      cy.visit('/')
+      cy.contains('Create a Connection')
+      cy.get('[data-cy="CreateEnvironment-import"]').click()
+      cy.get('[data-cy="EnvironmentImport-fileInput"]').selectFile(
+        {
+          contents: Cypress.Buffer.from(
+            JSON.stringify({
+              withSession: {
+                name: 'withSession',
+                color: 'darkblue',
+                host: 'localhost',
+                port: 7512,
+                ssl: false,
+                backendMajorVersion: backendVersion,
+                token: jwt,
+                openidSessionId: 'imported-session'
+              }
+            })
+          ),
+          fileName: 'connections.json',
+          mimeType: 'application/json'
+        },
+        { force: true }
+      )
+      cy.get('[data-cy=EnvironmentImport-ok]').should('contain', 'Found 1 connections')
+      cy.get('[data-cy=EnvironmentImport-submitBtn]').click()
+      cy.get('[data-cy="EnvironmentSwitch"]').click()
+      cy.get('[data-cy="EnvironmentSwitch-env_withSession"]').click()
+
+      cy.get('[data-cy="Login-username"]').should('be.visible')
+      cy.get('[data-cy="App-loggedIn"]').should('not.exist')
+      cy.window()
+        .then(win => JSON.parse(win.localStorage.getItem('environments')).withSession)
+        .should(env => {
+          expect(env.token).to.not.equal(jwt)
+          expect(env).to.not.have.property('openidSessionId')
+        })
+    })
+  })
+
+  it('Should not export the session of an environment', () => {
+    // Une session Keycloak sur un autre environnement que le courant.
+    cy.initLocalEnv(backendVersion).then(() => {
+      const environments = JSON.parse(localStorage.getItem('environments'))
+      environments.other = {
+        ...environments.valid,
+        name: 'other',
+        token: 'other-token',
+        openidSessionId: 'other-session'
+      }
+      localStorage.setItem('environments', JSON.stringify(environments))
+    })
+    cy.visit('/')
+    cy.get('[data-cy=App-loggedIn]').should('be.visible')
+    cy.get('[data-cy="EnvironmentSwitch"]').first().click()
+
+    readExport()
+      .then(content => JSON.parse(content).other)
+      .should(env => {
+        expect(env).to.include({ name: 'other', host: 'localhost' })
+        expect(env).to.not.have.property('token')
+        expect(env).to.not.have.property('openidSessionId')
+      })
   })
 })
