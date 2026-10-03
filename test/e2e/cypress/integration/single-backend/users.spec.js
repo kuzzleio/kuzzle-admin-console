@@ -687,6 +687,25 @@ describe('Users', function() {
       .should('contain', username)
   })
 
+  it('Should load the credentials of a user when expanding it', () => {
+    const username = 'Lazaaaaro'
+
+    cy.request('POST', `${kuzzleUrl}/users/${username}/_create?refresh=wait_for`, {
+      content: { profileIds: ['default'] },
+      credentials: { local: { username, password: 'test' } }
+    })
+
+    // La liste ne charge que `local` ; le dépliage recharge toutes les
+    // stratégies, et le JSON les rend sans perdre `local`.
+    cy.visit('/#/security/users')
+    cy.get(`[data-cy="local-strategy-username-${username}"]`).should('be.visible')
+    cy.get(`[data-cy=UserItem-${username}--toggle]`).click()
+    cy.get(`[id="collapse-${username}"]`)
+      .should('contain', 'credentials:')
+      .and('contain', 'local:')
+      .and('contain', 'username:')
+  })
+
   it('Should be able to create an user without strategy', () => {
     cy.visit(`/#/security/users/create`)
 
