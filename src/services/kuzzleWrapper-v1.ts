@@ -101,34 +101,48 @@ export class KuzzleWrapperV1 {
     return deleted;
   }
 
+  /*
+   * Folded rows only show the `local` username: other strategies are loaded
+   * when a row is expanded (`getUserCredentials`). Requests run in parallel —
+   * sequentially, a page of 25 users with two strategies took 52 round trips,
+   * several seconds on a remote backend.
+   */
   async performSearchUsers(collection, index, filters = {}, pagination = {}, sort = []) {
-    const strategies = await this.kuzzle.auth.getStrategies();
+    const [strategies, result] = await Promise.all([
+      this.kuzzle.auth.getStrategies(),
+      this.kuzzle.security.searchUsers({ ...filters, sort }, { ...pagination }),
+    ]);
+    const hasLocal = strategies.includes('local');
 
-    const result = await this.kuzzle.security.searchUsers({ ...filters, sort }, { ...pagination });
-
-    const users: any[] = [];
-    for (const user of result.hits) {
-      const formattedUser: any = {
+    const users = await Promise.all(
+      result.hits.map(async (user: any) => ({
         id: user._id,
         ...user.content,
         _kuzzle_info: this.formatMeta(user.content._kuzzle_info),
-        credentials: {},
-      };
-      for (const strategy of strategies) {
-        try {
-          const res = await this.kuzzle.security.getCredentials(strategy, user._id);
-          formattedUser.credentials[strategy] = res;
-        } catch (e) {
-          /* eslint-disable no-empty */
-          // Strategies contains local by default but some user
-          // might not have local credentials
-        }
-      }
-
-      users.push(formattedUser);
-    }
+        credentials: hasLocal ? await this.getUserCredentials(user._id, ['local']) : {},
+      })),
+    );
 
     return { documents: users, total: result.total };
+  }
+
+  /*
+   * A user's credentials by strategy, restricted to `only` when given. A
+   * strategy without credentials for this user throws: it is left out.
+   */
+  async getUserCredentials(kuid: string, only?: string[]) {
+    const strategies: string[] = only ?? (await this.kuzzle.auth.getStrategies());
+    const entries = await Promise.all(
+      strategies.map(async (strategy) => {
+        try {
+          return [strategy, await this.kuzzle.security.getCredentials(strategy, kuid)] as const;
+        } catch (e) {
+          return null;
+        }
+      }),
+    );
+    // In strategy order, not in response order.
+    return Object.fromEntries(entries.filter((entry) => entry !== null) as any);
   }
 
   getMappingUsers() {

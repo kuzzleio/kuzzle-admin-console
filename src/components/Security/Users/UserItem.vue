@@ -87,7 +87,7 @@
       v-model="expanded"
       class="ml-3 DocumentListItem-content"
     >
-      <pre v-json-formatter="{ content: document, open: true }" />
+      <pre v-json-formatter="{ content: expandedDocument, open: true }" />
     </b-collapse>
   </div>
 </template>
@@ -96,7 +96,7 @@
 import { mapState } from 'pinia';
 
 import jsonFormatter from '@/directives/json-formatter.directive';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useKuzzleStore } from '@/stores';
 
 const MAX_PROFILES = 5;
 
@@ -114,10 +114,19 @@ export default {
     return {
       expanded: false,
       checked: false,
+      // Credentials of every strategy, loaded on first expand: the list only
+      // has `local`, the only one shown on the folded row.
+      fullCredentials: null,
     };
   },
   computed: {
     ...mapState(useAuthStore, ['canEditUser', 'canDeleteUser']),
+    ...mapState(useKuzzleStore, ['wrapper']),
+    expandedDocument() {
+      return this.fullCredentials
+        ? { ...this.document, credentials: this.fullCredentials }
+        : this.document;
+    },
     profileList() {
       if (!this.document.profileIds) {
         return [];
@@ -138,6 +147,18 @@ export default {
     },
   },
   watch: {
+    expanded(value) {
+      if (value && !this.fullCredentials) {
+        this.loadCredentials();
+      }
+    },
+    // The list reloaded its documents: what was loaded on expand is stale.
+    document() {
+      this.fullCredentials = null;
+      if (this.expanded) {
+        this.loadCredentials();
+      }
+    },
     isChecked: {
       handler(value) {
         this.checked = value;
@@ -145,6 +166,22 @@ export default {
     },
   },
   methods: {
+    async loadCredentials() {
+      if (!this.wrapper) {
+        return;
+      }
+      const document = this.document;
+      try {
+        const credentials = await this.wrapper.getUserCredentials(document.id);
+        // The list may have reloaded its documents meanwhile.
+        if (this.document === document) {
+          this.fullCredentials = credentials;
+        }
+      } catch (error) {
+        // The JSON then keeps the `local` credentials from the list.
+        this.$log.error(error);
+      }
+    },
     toggleCollapse() {
       this.expanded = !this.expanded;
     },
