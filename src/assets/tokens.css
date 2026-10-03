@@ -138,8 +138,8 @@
   --env-magenta: #d81b60;
 
   /* Élément actif du rail : fuchsia profond et filet blanc, dans les deux
-     thèmes. Le rail garde sa couleur de connexion quel que soit le thème, et
-     son texte reste blanc : il ne peut pas suivre `--primary-hover`, qui
+     thèmes. Le rail garde la teinte de sa connexion quel que soit le thème
+     (assombrie en sombre, ADR-0071), et son texte reste blanc : il ne peut pas suivre `--primary-hover`, qui
      s'éclaircit en sombre. */
   --rail-active: #b8325a;
   --rail-active-rule: #ffffff;
@@ -205,6 +205,18 @@
   --notification-document: #173a2a;
   --notification-subscribe: #33243d;
   --notification-delete: #3d2422;
+
+  /* Couleurs de connexion (ADR-0071) : même teinte, luminance OKLCH bornée à
+     0,40 et chroma réduite d'un quart, pour que le rail ne soit plus la
+     surface la plus claire de l'écran. `darkblue` l'est déjà et ne change
+     pas. Texte blanc à 8,9:1 au moins. */
+  --env-lightblue: #004b7c;
+  --env-purple: #68207c;
+  --env-green: #335219;
+  --env-orange: #6d3700;
+  --env-red: #851617;
+  --env-grey: #394b53;
+  --env-magenta: #880037;
 
   /* Sur fond sombre, une ombre teintée ne se voit plus : noir, plus dense. */
   --elevation-card: 0 1px 3px rgb(0 0 0 / 0.45);

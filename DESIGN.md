@@ -251,9 +251,10 @@ the Kuzzle Blue family and lighten as they rise (page `#06161C`, card
 `#0D232B`, floating panel `#112A33`). Fuchsia stays the one accent, lightened
 to `#F0739A` so it reads at 4.5:1 on every surface; it then carries dark text,
 as do the status colors. Shadows turn black and denser: a blue-tinted shadow
-does not show on a dark surface. The rail keeps its connection color in both
-themes, and its active item keeps the deep fuchsia (`--rail-active`) under
-white text.
+does not show on a dark surface. The rail keeps its connection hue in both
+themes, darkened in dark mode (OKLCH lightness capped at 0.40, ADR-0071) so it
+does not outshine the page; `darkblue` is unchanged. Its active item keeps the
+deep fuchsia (`--rail-active`) under white text.
 
 Measured pairs (WCAG 2.1, `4.5:1` text, `3:1` field borders and focus):
 
@@ -272,6 +273,7 @@ Measured pairs (WCAG 2.1, `4.5:1` text, `3:1` field borders and focus):
 | `ring` / `card` · `background` (3:1) | 8.5 · 9.7 |
 | `foreground` / notifications (publish · document · subscribe · delete) | 11.3 · 10.5 · 12.1 · 12.0 |
 | white / `--rail-active` (both themes) | 5.8 |
+| white / dark `--env-*` (lowest: green) | 8.9 |
 
 The v4 palette mapped `--primary` to Kuzzle Blue and `--destructive` to a pink
 (`#E94E77`) almost identical to the new accent. Both move together in the DA
