@@ -100,33 +100,51 @@ export class KuzzleWrapperV1 {
     return deleted;
   }
 
+  /*
+   * La liste n'affiche, ligne repliée, que le nom d'utilisateur `local` : les
+   * autres stratégies attendent le dépliage (`getUserCredentials`). Les
+   * requêtes partent en parallèle — en série, une page de 25 utilisateurs et
+   * deux stratégies coûtaient 52 allers-retours, plusieurs secondes sur un
+   * backend distant.
+   */
   async performSearchUsers(collection, index, filters = {}, pagination = {}, sort = []) {
-    const strategies = await this.kuzzle.auth.getStrategies();
+    const [strategies, result] = await Promise.all([
+      this.kuzzle.auth.getStrategies(),
+      this.kuzzle.security.searchUsers({ ...filters, sort }, { ...pagination }),
+    ]);
+    const hasLocal = strategies.includes('local');
 
-    const result = await this.kuzzle.security.searchUsers({ ...filters, sort }, { ...pagination });
-
-    const users: any[] = [];
-    for (const user of result.hits) {
-      const formattedUser: any = {
+    const users = await Promise.all(
+      result.hits.map(async (user: any) => ({
         id: user._id,
         ...user.content,
         _kuzzle_info: this.formatMeta(user.content._kuzzle_info),
-        credentials: {},
-      };
-      for (const strategy of strategies) {
-        try {
-          const res = await this.kuzzle.security.getCredentials(strategy, user._id);
-          formattedUser.credentials[strategy] = res;
-        } catch (e) {
-          // Strategies contains local by default but some user
-          // might not have local credentials
-        }
-      }
-
-      users.push(formattedUser);
-    }
+        credentials: hasLocal ? await this.getUserCredentials(user._id, ['local']) : {},
+      })),
+    );
 
     return { documents: users, total: result.total };
+  }
+
+  /*
+   * Les identifiants d'un utilisateur, par stratégie, limités à `only` s'il
+   * est fourni. Une stratégie sans identifiants pour cet utilisateur lève :
+   * elle est simplement absente du résultat.
+   */
+  async getUserCredentials(kuid: string, only?: string[]) {
+    const strategies = only ?? (await this.kuzzle.auth.getStrategies());
+    const entries = await Promise.all(
+      strategies.map(async (strategy) => {
+        try {
+          return [strategy, await this.kuzzle.security.getCredentials(strategy, kuid)] as const;
+        } catch {
+          // Pas d'identifiants pour cette stratégie.
+          return null;
+        }
+      }),
+    );
+    // Dans l'ordre des stratégies, pas dans celui des réponses.
+    return Object.fromEntries(entries.filter((entry) => entry !== null));
   }
 
   getMappingUsers() {

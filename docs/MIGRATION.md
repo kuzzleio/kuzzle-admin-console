@@ -4331,6 +4331,23 @@ Gabarit à copier :
   par git reste copié par `COPY . .`, et en CI, où le checkout est propre, rien
   ne le montre.
 
+#### G-132 — La liste des utilisateurs met plusieurs secondes à s'ouvrir sur un backend distant
+
+- **Contexte** : retour de QA sur console-v5, 2026-10-03 ; le code vient de la v4.
+- **Symptôme** : *Security → Users* met 5 s ou plus à s'afficher sur paas,
+  les autres pages sont instantanées. En local et dans les specs, rien.
+- **Cause** : `performSearchUsers` appelait `getCredentials` pour chaque
+  utilisateur et chaque stratégie, **en série** : 2 + 25 × 2 allers-retours pour
+  une page de 25 utilisateurs et deux stratégies. À 100 ms l'aller-retour, 5 s ;
+  contre le backend local, à 1 ms, ça ne se voit pas.
+- **Solution** : la liste ne charge que `local`, seul affiché ligne repliée, et
+  en parallèle ; les autres stratégies se chargent au dépliage (`UserItem`,
+  `getUserCredentials`). Report sur `4-dev`.
+- **À retenir** : une boucle d'`await` sur des requêtes indépendantes ne se
+  voit que sur un backend distant. Les specs, en local, ne mesurent pas la
+  latence : chercher les `await` dans les boucles quand une page est lente
+  ailleurs.
+
 ### 5.2 Anticipés — à confirmer ou infirmer sur le terrain
 
 Points de vigilance connus pour un passage Vue 2 → Vue 3, à valider contre ce

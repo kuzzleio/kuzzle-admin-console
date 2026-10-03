@@ -84,7 +84,7 @@
     </div>
 
     <div v-show="expanded" :id="`collapse-${document.id}`" class="DocumentListItem-content ms-3">
-      <JsonTree :value="document" />
+      <JsonTree :value="expandedDocument" />
     </div>
   </div>
 </template>
@@ -96,6 +96,7 @@ import { RouterLink } from 'vue-router';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { logger } from '@/lib/logger';
 import { useAuthStore, useKuzzleStore } from '@/stores';
 import type { UserDocument } from './types';
 
@@ -117,6 +118,14 @@ const kuzzleStore = useKuzzleStore();
 
 const expanded = ref(false);
 const checked = ref(false);
+/* Les identifiants de toutes les stratégies, chargés au premier dépliage :
+   la liste n'a que `local`, seul affiché ligne repliée. */
+const fullCredentials = ref<UserDocument['credentials'] | null>(null);
+const expandedDocument = computed<UserDocument>(() =>
+  fullCredentials.value
+    ? { ...props.document, credentials: fullCredentials.value }
+    : props.document,
+);
 
 const profileList = computed(() => {
   if (!props.document.profileIds) {
@@ -135,6 +144,18 @@ const localStrategyUsername = computed(() => {
   return local ? local.username : null;
 });
 
+// La liste recharge ses documents (suppression, filtre) : ce qui a été
+// chargé au dépliage ne vaut plus.
+watch(
+  () => props.document,
+  () => {
+    fullCredentials.value = null;
+    if (expanded.value) {
+      void loadCredentials();
+    }
+  },
+);
+
 watch(
   () => props.isChecked,
   (value) => {
@@ -145,8 +166,28 @@ watch(
 function profileRoute(profile: string) {
   return { name: 'SecurityProfilesUpdate', params: { id: profile } };
 }
+async function loadCredentials(): Promise<void> {
+  const wrapper = kuzzleStore.wrapper;
+  if (!wrapper) {
+    return;
+  }
+  const document = props.document;
+  try {
+    const credentials = await wrapper.getUserCredentials(document.id);
+    // La liste a pu recharger ses documents pendant la requête.
+    if (props.document === document) {
+      fullCredentials.value = credentials as UserDocument['credentials'];
+    }
+  } catch (error) {
+    // Le JSON garde alors les identifiants `local` venus de la liste.
+    logger.error(error);
+  }
+}
 function toggleCollapse(): void {
   expanded.value = !expanded.value;
+  if (expanded.value && !fullCredentials.value) {
+    void loadCredentials();
+  }
 }
 function notifyCheckboxClick(): void {
   emit('checkbox-click', props.document.id);
