@@ -73,9 +73,10 @@ if (!process.env.COMMIT_HASH) {
 }
 
 /*
- * La CSP que CloudFront sert en ligne (`infra/console-v5/main.tf`), lue dans
- * le même fichier : `vite preview` la sert aussi, et les specs, qui tournent
- * contre un build (ADR-0028), la valident à chaque PR (ADR-0065). Le serveur
+ * La CSP que CloudFront sert en ligne (module console-v5 de
+ * kuzzleio/static-sites-infra, ADR-0072), lue dans le même
+ * fichier : `vite preview` la sert aussi, et les specs, qui tournent contre un
+ * build (ADR-0028), la valident à chaque PR (ADR-0065). Le serveur
  * de dev ne la sert pas : il injecte ses propres scripts.
  */
 const contentSecurityPolicy = Object.entries(
