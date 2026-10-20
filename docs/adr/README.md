@@ -93,6 +93,7 @@ en est* (ça, c'est [`../MIGRATION.md`](../MIGRATION.md)) ni à *qui fait quoi*
 | [0069](0069-next-console-redevient-le-staging-de-la-v5.md) | À la bascule, next-console redevient le staging (en v5) et console-v5 est supprimé | Acceptée |
 | [0070](0070-cles-d-api-cadrage.md) | Clés d'API — cadrage de la fonctionnalité | Acceptée |
 | [0071](0071-couleurs-de-connexion-assombries-en-theme-sombre.md) | En thème sombre, les couleurs de connexion sont assombries | Acceptée |
+| [0072](0072-infra-quitte-le-depot.md) | Le Terraform quitte le dépôt, `infra/csp.json` reste | Acceptée |
 
 ## Gabarit
 
